@@ -1,0 +1,532 @@
+import { latest, notificationService } from "onekijs";
+import qs from 'query-string';
+import { useCallback, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { call } from "redux-saga/effects";
+import { authService } from "./auth";
+import { useSettings } from "./context";
+import { useLocalService } from "./service";
+import { useStoreProp } from "./store";
+import { get } from "./utils/object";
+import { absoluteUrl } from "./utils/url";
+import { asyncHttp, asyncPost } from "./xhr";
+import { generateCodeVerifier, generateCodeChallenge, generateNonce, generateState, getIdp, sha256, parseJwt } from "./utils/auth";
+
+const isOauth = idp => ['oauth2', 'oidc'].includes(idp.type);
+const isExternal = idp => {
+  return isOauth(idp) || idp.type === 'exernal';
+}
+
+const parseUrlToken = (hash) => {
+  const token = {};
+  const params = qs.parse(hash);
+  ['access_token', 'id_token', 'refresh_token', 'expires_in', 'expires_at', 'token_type'].forEach(k => {
+    if (params[k]) {
+      token[k] = params[k];
+    }
+  })
+  return token;
+}
+
+function* login(action, { router, settings }) {
+
+  try {
+    // check if the location state if we put a from element and save it in the localStorage
+    const locationState = router.location.state || null;
+    let from = get(settings, 'routes.home', '/');
+    if (locationState) {
+      from = locationState.pathname || get(settings, 'routes.home', '/');
+      from += locationState.search || '';
+      from += locationState.hash || '';
+    }
+    localStorage.setItem('onekijs.from', from);
+
+    // check if there is a access token in localStorage (and that the token is still valid)
+    const idp = getIdp(settings, action.name);
+    let done = false;
+
+    if (isOauth(idp)) {
+      const access_token = localStorage.getItem('onekijs.access_token');
+      let token = null;
+      let expires_at = 0;
+
+      if (access_token && access_token !== 'null') {
+        expires_at = parseInt(localStorage.getItem('onekijs.expires_at') || 0);
+        token = {
+          access_token,
+          id_token: localStorage.getItem('onekijs.access_token'),
+          refresh_token: localStorage.getItem('onekijs.refresh_token'),
+          expires_at,
+          token_type: localStorage.getItem('onekijs.token_type'),
+        }
+        if (expires_at >= Date.now()) {
+          // do a success login
+          done = true;
+          yield call(this.successLogin, {
+            name: action.name,
+            token
+          });
+        }
+      }
+    }
+
+    if (!done) {
+      // try to fetch the security context to see if we are already logged in
+      yield call(this.authService.fetchSecurityContext, {
+        onSuccess: (securityContext => {
+          done = true;
+          return this.successLogin({
+            name: action.name,
+            securityContext
+          });
+        }),
+        onError: (err => {}) // do nothing
+      });
+    }
+
+    if (!done) {
+      if (isExternal(idp)) {
+        yield call(this.externalLogin, {name: action.name});
+      } else {
+        // let print the form
+        yield call(this.setRender, true);
+      }
+    }
+
+  } catch (err) {
+    if (action.onError) {
+      yield call(action.onError, err);
+    } else {
+      yield call(this.onError, err);
+    }
+
+  }
+}
+
+// redirect to the page managing external login
+function* externalLogin(action, { store, router, settings }) {
+  try {
+    // get external url from config
+    const idp = getIdp(settings, action.name);
+    const redirectUri = absoluteUrl(`${router.location.pathname}/callback`);
+    
+    if (!isExternal(idp)) {
+      throw Error(`IDP type ${idp.type} is not valid for an external authentication`);
+    }
+    
+    if (isOauth(idp)) {
+      if (typeof idp.authorizeUrl === 'function') {
+        const url = yield call(idp.authorizeUrl, idp, { store, router, settings });
+        window.location.href = `${absoluteUrl(url, get(settings, 'server.baseUrl'))}`;
+      } else {
+        const responseType = idp.responseType || 'code';
+        const redirectKey = idp.postLoginRedirectKey || 'redirect_uri';
+        const scope = idp.scope ? idp.scope : (idp.type === 'oidc') ? 'openid' : null;
+        let search = `?${redirectKey}=${redirectUri}&client_id=${idp.clientId}&response_type=${responseType}`;
+        if (scope) {
+          search += `&scope=${idp.scope}`;
+        }
+        if (idp.nonce || responseType.includes('id_token')) {
+          const nonce = generateNonce();
+          sessionStorage.setItem('onekijs.nonce', nonce);
+          search += `&nonce=${sha256(nonce)}`;
+        } else {
+          sessionStorage.removeItem('onekijs.nonce');
+        }
+        if (idp.state) {
+          const state = generateState();
+          sessionStorage.setItem('onekijs.state', state);
+          search += `&state=${sha256(state)}`;
+        } else {
+          sessionStorage.removeItem('onekijs.state');
+        }
+        if (responseType === 'code' && idp.pkce) {
+          const verifier = generateCodeVerifier();
+          sessionStorage.setItem('onekijs.verifier', verifier);
+          const challenge = generateCodeChallenge(verifier);
+          search += `&code_challenge=${challenge}&code_challenge_method=S256`;
+        } else {
+          sessionStorage.removeItem('onekijs.verifier');
+        }        
+        window.location.href = `${absoluteUrl(idp.authorizeUrl, get(settings, 'server.baseUrl'))}${search}`;
+      }     
+    } else if (typeof idp.loginUrl === 'function') {
+      const url = yield call(idp.loginUrl, idp, { store, router, settings });
+      window.location.href = `${absoluteUrl(url, get(settings, 'server.baseUrl'))}`;
+    } else {
+      const search = (idp.postLoginRedirectKey) ? `?${idp.postLoginRedirectKey}=${redirectUri}` : '';
+      window.location.href = `${absoluteUrl(idp.loginUrl, get(settings, 'server.baseUrl'))}${search}`;
+    }
+  } catch (err) {
+    if (action.onError) {
+      yield call(action.onError, err);
+    } else {
+      yield call(this.onError, err);
+    }
+  }
+}
+
+
+function* externalLoginCallback(action, { store, router, settings }) {
+  try {
+    const idp = getIdp(settings, action.name);
+    let callback = idp.callback;
+    let token = null;
+    let securityContext = null;
+    let content = router.location;
+    if (isOauth(idp)) {
+      const responseType = idp.responseType || 'code';
+      if (responseType === 'code') {
+        if (typeof idp.tokenFetch === 'function') {
+          token = yield call(idp.tokenFetch, 'authorization_code', idp, { store, router, settings });
+        } else {
+          const params = qs.parse(router.location.search);
+          const state = sessionStorage.getItem('onekijs.state');
+          const headers =  {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+          if (idp.state && sha256(state) !== params.state) {
+            throw Error("Invalid oauth2 state");
+          }
+          const body = {
+            grant_type: 'authorization_code',
+            client_id: idp.clientId,
+            redirect_uri: absoluteUrl(`${router.location.pathname}`),
+            code: params.code
+          }
+          if (idp.clientSecret) {
+            if (idp.clientAuth === 'body') {
+              body.client_secret = idp.clientSecret
+            } else {
+              headers.auth = {
+                basic: {
+                  user: idp.clientId,
+                  password: idp.clientSecret
+                }
+              }
+            }
+          }
+          if (idp.pkce) {
+            body.code_verifier = sessionStorage.getItem('onekijs.verifier');
+          }
+          
+          token = yield call(asyncPost, idp.tokenFetch, body, { headers })
+        }
+
+        content = token;
+
+      } else if (!callback || callback === 'token') {
+        callback = (location) => {
+          return [parseUrlToken(location.hash), null];
+        }
+      }
+    } 
+    
+    if (typeof callback === 'function') {
+      [token, securityContext] = yield call(callback, content, idp, { store, router, settings });
+    }
+
+    if (isOauth(idp) && idp.nonce && token.id_token) {
+      // check nonce in id token
+      const id_token = parseJwt(token.id_token);
+      const nonce = sessionStorage.getItem('onekijs.nonce');
+      if (sha256(nonce) !== id_token.nonce) {
+        console.error(sha256(nonce), id_token.nonce);
+        throw Error('Invalid oauth2 nonce');
+      }
+
+    }
+
+    this.successLogin({
+      token,
+      securityContext,
+      name: action.name
+    })
+
+
+  } catch (err) {
+    if (action.onError) {
+      yield call(action.onError, err);
+    } else {
+      yield call(this.onError, err);
+    }
+  }
+}
+
+function* formLogin(payload, { store, router, settings }) {
+  try {
+    // forward to reducer to set loading flag
+    yield call(this.setLoading, true);
+    const idp = getIdp(settings, payload.name);
+    let result;
+    
+    if (typeof idp.loginFetch === 'function') {
+      result = yield call(idp.loginFetch, idp, payload, { store, router, settings });
+    } else {
+      const method = idp.loginMethod || 'POST';
+      const usernameKey = idp.usernameKey || 'username';
+      const passwordKey = idp.passwordKey || 'password';
+      const rememberMeKey = idp.rememberMeKey || 'rememberMe';
+      const contentType = idp.loginContentType || 'application/json';
+      
+      let url = idp.loginFetch;
+  
+      let body = null;
+      if (method === 'GET') {
+        url += `?${usernameKey}=${payload.username}&${passwordKey}=${payload.password}&${rememberMeKey}=${payload.rememberMe}`
+      } else {
+        body = {
+          [usernameKey]: payload.username,
+          [passwordKey]: payload.password,
+          [rememberMeKey]: payload.rememberMe
+        }
+      }
+
+      result = yield call(asyncHttp,
+        absoluteUrl(url, get(settings, 'server.baseUrl')),
+        method,
+        body,
+        {
+          headers: {
+            'Content-Type': contentType
+          }
+        }
+      );
+    }
+
+    const callback = idp.callback || 'cookie';
+    // forward to reducer to save the security context
+    let token = null, securityContext = null;
+    if (typeof callback === "function") {
+      [token, securityContext] = yield call(callback, result, idp, { store, router, settings });
+    } else if (callback === 'token') {
+      token = result;
+    } else if (callback === 'securityContext') {
+      securityContext = result;
+    }
+
+    yield call(this.successLogin, {
+      token,
+      securityContext,
+      name: payload.name,
+      onError: err => {throw err},
+    });
+
+    if (payload.onSuccess) {
+      yield call(payload.onSuccess, result);
+    }
+
+  } catch (err) {
+    if (payload.onError) {
+      yield call(payload.onError, err);
+    } else {
+      // display error message
+      yield call(this.onError, err);
+    }
+
+  }
+}
+
+function* successLogin(action, { router, settings }) {
+  try {
+    const token = action.token;
+    const idp = getIdp(settings, action.name);
+
+    if (token) {
+      yield call(this.authService.saveToken, {token, idp});
+    } else {
+      yield call(this.authService.setIdp, idp);
+    }
+
+    if (action.securityContext) {
+      yield call(this.authService.setSecurityContext, action.securityContext);
+    } else {
+      yield call(this.authService.fetchSecurityContext, {
+        onError: action.onError || (e => {throw e}),
+      });
+    }
+
+    yield call(this.onSuccess)
+
+    const history = router.history;
+    const from = localStorage.getItem('onekijs.from') || get(settings, 'routes.home', '/');
+    localStorage.removeItem('onekijs.from');
+    yield call([history, history.push], from);
+  } catch (err) {
+    if (action.onError) {
+      yield call(action.onError, err);
+    } else {
+      yield call(this.onError, err);
+    }
+
+  }
+}
+
+function* logout(action, context) {
+  try {
+    // forward to reducer to set loading flag
+    const { router, settings, store } = context;
+    yield this.setLoading(true);
+    const idp = getIdp(settings, action.name);
+    if (isExternal(idp)) {
+      if (typeof idp.logoutUrl === 'function') {
+        const url = yield call(idp.loginUrl, idp, { store, router, settings });
+        window.location.href = `${absoluteUrl(url, get(settings, 'server.baseUrl'))}`;
+      } else {
+        // do a redirect
+        const redirectUri = absoluteUrl(`${router.location.pathname}/callback`);
+        let search = '';
+        if (isOauth(idp)) {
+          const redirectKey = idp.postLogoutRedirectKey || 'post_logout_redirect_uri';
+          search = `?${redirectKey}=${redirectUri}&client_id=${idp.clientId}`;
+        } else if (idp.postLogoutRedirectKey) {
+          search = `?${idp.postLogoutRedirectKey}=${redirectUri}`;
+        }
+
+        window.location.href = `${absoluteUrl(idp.logoutUrl, get(settings, 'server.baseUrl'))}${search}`;
+      }
+      
+    } else {
+      if (typeof idp.logoutFetch === 'function') {
+        yield call(idp.logoutFetch, idp, { store, router, settings });
+      } else {
+        // call the server
+        const method = idp.logoutMethod || 'GET';
+        yield call(asyncHttp,
+          absoluteUrl(idp.logoutFetch, get(settings, 'server.baseUrl')),
+          method,
+          null,
+          { auth: store.getState().auth }
+        );
+      }
+
+      yield call(this.successLogout, action);
+    }
+  } catch (err) {
+    if (action.onError) {
+      yield call(action.onError, err);
+    } else {
+      // display error message
+      yield call(this.onError, err);
+    }
+  }
+}
+
+function* successLogout(action) {
+  try {
+    yield call(this.authService.clear);
+    yield call(this.onSuccess);
+    if (action.onSuccess) {
+      yield call(action.onSuccess);
+    }
+  } catch (err) {
+    if (action.onError) {
+      yield call(action.onError, err);
+    } else {
+      // display error message
+      yield call(this.onError, err);
+    }
+  }
+}
+
+export const loginService = {
+  name: "login",
+  reducers: {
+    setLoading: function (state, loading) {
+      state.loading = loading;
+    },
+    setRender: function (state, render) {
+      state.doNotRender = !render;
+    },
+    onSuccess: function (state) {
+      state.loading = false;
+      state.errorMessage = null;
+    },
+    onError: function (state, error) {
+      console.error(error);
+      state.errorMessage = error.message;
+      state.loading = false;
+    }
+  },
+  sagas: {
+    formLogin: latest(formLogin),
+    userLogout: latest(logout),
+    externalLogin: latest(externalLogin),
+    externalLoginCallback: latest(externalLoginCallback),
+    successLogin: latest(successLogin),
+    login: latest(login)
+  },
+  inject: {
+    notificationService,
+    authService
+  }
+};
+
+export const logoutService = {
+  name: "logout",
+  reducers: {
+    setLoading: function (state, loading) {
+      state.loading = loading;
+    },
+    onSuccess: function (state) {
+      state.loading = false;
+      state.errorMessage = null;
+    },
+    onError: function (state, error) {
+      console.error(error);
+      state.errorMessage = error.message;
+      state.loading = false;
+    }
+  },
+  sagas: {
+    logout: latest(logout),
+    successLogout: latest(successLogout)
+  },
+  inject: {
+    authService
+  }
+}
+
+export const useLoginService = (name) => {
+  const [state, service] =  useLocalService(loginService, { doNotRender: true, loading: false});
+  const location = useLocation();
+  const settings = useSettings();
+  const submit = useCallback(action => {
+    return service.formLogin(Object.assign({name}, action));
+  }, [service, name]);
+
+  useEffect(() => {
+    // it can be either
+    //   - a redirect after trying to access a secure route
+    //   - a callback after a successful external login
+    //   - a logout
+
+    // check if logout
+
+    // check if it's a callback
+    if (location.pathname.endsWith('callback')) {
+      service.externalLoginCallback({name});
+    } else {
+      service.login({ name })
+    }
+  }, [service, location, name, settings]);
+
+  return [state, submit];
+};
+
+export const useLogoutService = (name) => {
+  const [state, service] =  useLocalService(logoutService, { loading: true});
+  const location = useLocation();
+  const auth = useStoreProp('auth');
+
+  useEffect(() => {
+    // check if it's a callback
+    if (location.pathname.endsWith('callback')) {
+      service.successLogout({ name });
+    } else {
+      service.logout({ name })
+    }
+  }, [service, location, name, auth]);
+
+  return state;
+};
