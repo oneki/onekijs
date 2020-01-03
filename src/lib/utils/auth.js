@@ -1,4 +1,8 @@
-import jsrsasign from 'jsrsasign';
+import { sha256 as kjur_sha256 } from 'jsrsasign/lib/jsrsasign/KJUR/crypto/Util';
+import { getKey } from 'jsrsasign/lib/jsrsasign/KEYUTIL';
+import { verify } from 'jsrsasign/lib/jsrsasign/KJUR/jws/JWS';
+
+import { hextob64 } from 'jsrsasign'
 import { asyncGet } from '../xhr';
 
 export function parseJwt (token, section='payload') {
@@ -42,7 +46,7 @@ export function generateCodeVerifier() {
 
 
 export function generateCodeChallenge(codeVerifier) {
-  return jsrsasign.hextob64(sha256(codeVerifier)).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_')
+  return hextob64(sha256(codeVerifier)).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_')
 }
 
 export function getIdp(settings, name) {
@@ -52,7 +56,7 @@ export function getIdp(settings, name) {
 }
 
 export function sha256(str) {
-  return jsrsasign.KJUR.crypto.Util.sha256(str);
+  return kjur_sha256(str);
 }
 
 export async function validateToken(token, pubKeyFetch, idp, context) {
@@ -67,7 +71,7 @@ export async function validateToken(token, pubKeyFetch, idp, context) {
   if (!pubKey) {
     throw Error("Could not find a valid public key for token validation");
   }
-  return jsrsasign.KJUR.jws.JWS.verify(token, jsrsasign.KEYUTIL.getKey(pubKey), [header.alg]);
+  return verify(token, getKey(pubKey), [header.alg]);
 }
 
 
