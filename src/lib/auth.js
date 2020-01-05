@@ -17,33 +17,67 @@ const getCookieExpireTime = (ttl) => {
   return date.toGMTString();
 }
 
-const addCookie = (key, value, ttl=null, path='/') => {
-  let cookie = `onekijs.${key}=${value};path=${path};SameSite=Strict;Secure;`
+async function addCookie(name, value, secure=true, ttl=null, path='/') {
+  if (secure) {
+    value = await encrypt(value);
+  }
+  let cookie = `onekijs.${name}=${value};path=${path};SameSite=Strict;Secure;`
   if (ttl) {
     cookie += `expires=${getCookieExpireTime(ttl)}`
   }
   document.cookie = cookie;
 }
 
-const removeCookie = (key, path='/') => {
-  document.cookie = `onekijs.${key}= ;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=${path}`;
+const removeCookie = (name, path='/') => {
+  document.cookie = `onekijs.${name}= ;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=${path}`;
 }
 
 // https://stackoverflow.com/questions/10730362/get-cookie-by-name
-const getCookie = (name) => {
+async function getCookie(name, secure=true) {
   name = `onekijs.${name}`;
   function escape(s) { return s.replace(/([.*+?\^${}()|\[\]\/\\])/g, '\\$1'); };
   var match = document.cookie.match(RegExp('(?:^|;\\s*)' + escape(name) + '=([^;]*)'));
-  return match ? match[1] : null;
+  const result = match ? match[1] : null;
+  return secure ? await decrypt(result) : result;
 }
 
-const getItem = (storage, key) => {
+async function getItem(storage, key, secure=true) {
+  const fullKey = `onekijs.${key}`;
   if (storage === 'localStorage') {
-    return localStorage.getItem(`onekijs.${key}`);
-  } 
-  return sessionStorage.getItem(`onekijs.${key}`);
+    return localStorage.getItem(fullKey);
+  } else if (storage === 'sessionStorage') {
+    return sessionStorage.getItem(fullKey);
+  } else if (storage === 'cookie') {
+    if (!isNull(sessionStorage.getItem(fullKey))) {
+      return sessionStorage.getItem(fullKey);
+    } else {
+      return await getCookie(key, secure);
+    }
+  }
 }
 
+async function setItem(storage, key, value, secure=true, ttl=null, path='/') {
+  const fullKey = `onekijs.${key}`;
+  if (storage === 'localStorage') {
+    localStorage.setItem(fullKey, value);
+  } else if (storage === 'sessionStorage') {
+    sessionStorage.setItem(fullKey, value);
+  } else if (storage === 'cookie') {
+    await addCookie(key, value, secure, ttl, path);
+  }
+}
+
+function removeItem(storage, key) {
+  const fullKey = `onekijs.${key}`;
+  if (storage === 'localStorage') {
+    localStorage.removeItem(fullKey);
+  } else if (storage === 'sessionStorage') {
+    sessionStorage.removeItem(fullKey);
+  } else if (storage === 'cookie') {
+    sessionStorage.removeItem(fullKey);
+    removeCookie(key);
+  }
+}
 
 const oauth2 = ['access_token', 'id_token', 'refresh_token', 'expires_in', 'expires_at', 'token_type'];
 
@@ -59,33 +93,41 @@ export const authService = {
       const idpName = get(state, 'auth.idp') || getItem('sessionStorage', 'idp') || getItem('localStorage', 'idp');
       const idp = getIdp(settings, idpName);
       const persist = get(idp, 'persist', 'localStorage');
-      const storage = (persist === 'localStorage') ? localStorage : sessionStorage;
 
-      
-      set(state, 'auth.token', token);
-      
+      let toCookie = null;
+      if (persist === 'cookie') {
+        for (let type of ['refresh_token', 'access_token', 'token']) {
+          if (token && token[type]) {
+            toCookie = type;
+            break;
+          }
+        }
+      }
+      const storage = (k) => {
+        if (!token) return persist;
+        if (k === toCookie) return 'cookie';
+        return persist === 'localStorage' ? 'localStorage' : 'sessionStorage'
+      }
+
       if (isNull(token)) {
         oauth2.forEach(k => {
-          storage.removeItem(`onekijs.${k}`);
+          removeItem(storage(k), k)
         });
-        storage.removeItem('onekijs.token');
-        if (persist === 'cookie') {
-          removeCookie('token');
-          removeCookie('refresh_token');
-        }
+        removeItem(storage('token'), 'token');
       } else if (typeof token === 'string') {
-        storage.setItem('onekijs.token', token);     
+        setItem(storage('token'), 'token', token); 
       } else {
         oauth2.forEach(k => {
           if (token[k]) {
-            storage.setItem(`onekijs.${k}`, `${token[k]}`);
+            setItem(storage(k), k, `${token[k]}`);
           }
         });
         if (token.expires_in && !token.expires_at) {
           token.expires_at = Date.now() + parseInt(token.expires_in) * 1000;
-          storage.setItem(`onekijs.expires_at`, `${token.expires_at}`);
+          setItem(storage('expires_at'), 'expires_at', `${token.expires_at}`);
         }           
       }
+      set(state, 'auth.token', token);
     },
 
     setIdp: function (state, idp, {settings}) {
@@ -96,14 +138,14 @@ export const authService = {
         idp = getIdp(settings, idpName);
       }
       const persist = get(idp, 'persist', 'localStorage');
-      const storage = (persist === 'sessionStorage') ? sessionStorage: localStorage;      
+      const storage = (persist === 'sessionStorage') ? 'sessionStorage': 'localStorage';      
       
       if (isNull(nextIdp)) {
         set(state, 'auth.idp', null);
-        storage.removeItem('onekijs.idp');
+        removeItem(storage, 'idp');
       } else {
         set(state, 'auth.idp', nextIdp.name);
-        storage.setItem('onekijs.idp', nextIdp.name);
+        setItem(storage, 'idp', nextIdp.name)
       }
     }
   },
@@ -174,59 +216,61 @@ export const authService = {
     }),
 
     loadToken: latest(function* (payload, { store, settings }) {
-      if (!get(store.getState(), 'auth.token')) {
-        const idpName = get(store.getState(), 'auth.idp') || sessionStorage.getItem('onekijs.idp') || localStorage.getItem('onekijs.idp');
-        if (!idpName || idpName === 'null') {
-          throw Error("A idp is required for loading a token");
-        }
-        const idp = getIdp(settings, idpName);
-        const storage = get(idp, 'persist', 'localStorage');
-
-        if (storage === 'cookie') {
-
-        }
-        
-        let token = getItem(storage, 'token');
-        let refresh_token = getItem(storage, 'refresh_token');
-        let access_token = getItem(storage, 'access_token');
-        const expires_at = parseInt(getItem(storage, 'expires_at'));
-        const clockSkew = idp.clockSkew || 60;
-
-        try{
-          if (storage === 'cookie' && !token && !refresh_token && !access_token) {
-            refresh_token = yield call(decrypt, getCookie('refresh_token'));
-            access_token = yield call(decrypt, getCookie('access_token'));
-            token = yield call(decrypt, getCookie('token'));
+      try {
+        if (!get(store.getState(), 'auth.token')) {
+          const idpName = get(store.getState(), 'auth.idp') || sessionStorage.getItem('onekijs.idp') || localStorage.getItem('onekijs.idp');
+          if (!idpName || idpName === 'null') {
+            throw Error("A idp is required for loading a token");
           }
-        } catch(e) {
-          console.log(e);
+          const idp = getIdp(settings, idpName);
+          const persist = get(idp, 'persist', 'localStorage');
+          const storage = persist === 'localStorage' ? 'localStorage' : 'sessionStorage';
+          
+          const expires_at = parseInt(yield call(getItem, storage, 'expires_at'));
+          const clockSkew = idp.clockSkew || 60;
+
+          const access_token = yield call(getItem, persist, 'access_token');
+          if (access_token && expires_at >= (Date.now() + parseInt(clockSkew) * 1000)) {
+            const token = {
+              access_token
+            };
+            for (let k of oauth2) {
+              if (k !== 'access_token') {
+                token[k] = yield call(getItem, storage, k);
+              }
+            };
+
+            return yield call(this.saveToken, {
+              token,
+              idp
+            })
+
+          }
+          
+          const refresh_token = yield call(getItem, persist, 'refresh_token');
+          if (refresh_token) {
+            return yield call(this.refreshToken, {
+              token: {
+                refresh_token
+              },
+              idp,
+              force: true
+            })
+          } 
+          
+          const token = yield call(getItem, persist, 'token');
+          if (token) {
+            return yield call(this.saveToken, {
+              token,
+              idp
+            })
+          }
         }
-
-
-        if (access_token && expires_at >= (Date.now() + parseInt(clockSkew) * 1000)) {
-          const token = {};
-          oauth2.forEach(k => {
-            token[k] = getItem(storage, k);
-          });
-
-          yield call(this.saveToken, {
-            token,
-            idp
-          })
-
-        } else if (refresh_token) {
-          yield call(this.refreshToken, {
-            token: {
-              refresh_token
-            },
-            idp,
-            force: true
-          })
-        } else if (token) {
-          yield call(this.saveToken, {
-            token,
-            idp
-          })
+      } catch (e) {
+        if (payload.onError) {
+          payload.onError(e);
+        } else {
+          throw e
         }
       }
     }),
@@ -302,26 +346,7 @@ export const authService = {
 
       yield call(this.setIdp, payload.idp)
       yield call(this.setToken, payload.token)
-
-      if (payload.idp.persist === 'cookie') {
-        let value = null, key = null;
-        if (payload.token.refresh_token) {
-          key = 'refresh_token';
-          value = yield call(encrypt, payload.token.refresh_token);
-        } else if (payload.token.access_token) {
-          key = 'access_token';
-          value = yield call(encrypt,payload.token.access_token);
-        } else if (typeof token === 'string') {
-          key = 'token';
-          value = yield call(encrypt, payload.token);
-        }
-
-        if (key) {
-          yield call(addCookie, key, btoa(value), payload.idp.cookieTTL);
-        }
-        
-      }         
-            
+  
       if (payload.token.refresh_token) {
         yield spawn(this.refreshToken, payload)
       }

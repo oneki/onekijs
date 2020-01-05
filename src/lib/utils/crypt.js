@@ -20,7 +20,6 @@ async function getDerivation(hash, salt, password, iterations, keyLength) {
 }
 
 async function getKey(derivation) {
-  const ivlen = 16;
   const keylen = 32;
   const derivedKey = derivation.slice(0, keylen);
   const iv = derivation.slice(keylen);
@@ -73,6 +72,6 @@ export async function decrypt(encryptedB64, pwd) {
 
 	const derivation = await getDerivation(hash, salt, pwd, iterations, keyLength);
 	const keyObject = await getKey(derivation);
-	const decryptedObject = await decryptText(encryptedByteArray, keyObject);
-	return decryptedObject;
+	const decryptedText = await decryptText(encryptedByteArray, keyObject);
+	return JSON.parse(decryptedText);
 }

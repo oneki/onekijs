@@ -11,7 +11,6 @@ import { get } from "./utils/object";
 import { absoluteUrl } from "./utils/url";
 import { asyncHttp, asyncPost } from "./xhr";
 import { generateCodeVerifier, generateCodeChallenge, generateNonce, generateState, getIdp, sha256, parseJwt } from "./utils/auth";
-import { encryptData } from './utils/crypt';
 
 const isOauth = idp => ['oauth2', 'oidc'].includes(idp.type);
 const isExternal = idp => {
@@ -223,7 +222,6 @@ function* externalLoginCallback(action, { store, router, settings }) {
       const nonce = sessionStorage.getItem('onekijs.nonce');
       sessionStorage.removeItem('onekijs.nonce');
       if (sha256(nonce) !== id_token.nonce) {
-        console.error(sha256(nonce), id_token.nonce);
         throw Error('Invalid oauth2 nonce');
       }
 
