@@ -6,7 +6,7 @@ import { call, spawn, delay } from "redux-saga/effects";
 import { useReduxService } from "./redux";
 import { absoluteUrl } from "./utils/url";
 import { parseJwt, getIdp, validateToken } from "./utils/auth";
-import { useStoreProp } from "./store";
+import { useReduxSelector } from "./store";
 import { encrypt, decrypt } from "./utils/crypt";
 
 const getCookieExpireTime = (ttl) => {
@@ -363,5 +363,5 @@ export const useAuthService = () => {
 
 export const useSecurityContext = (prop, defaultValue) => {
   const key = (prop) ? `auth.securityContext.${prop}` : 'auth.securityContext';
-  return useStoreProp(key, defaultValue);
+  return useReduxSelector(key, defaultValue);
 }

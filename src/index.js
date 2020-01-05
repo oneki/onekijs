@@ -54,7 +54,7 @@ export { createReduxService, useReduxService } from "./lib/redux";
 export { every, latest, leading, maybe } from "./lib/saga";
 export { secure, SecureRoute } from "./lib/secure";
 export { useLocalService } from "./lib/service";
-export { useStoreProp, useReduxSelector, createReduxStore } from "./lib/store";
+export { useReduxSelector, createReduxStore } from "./lib/store";
 export {
   loginService,
   useLoginService,

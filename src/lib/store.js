@@ -69,7 +69,7 @@ export const createReduxStore = (initialState={}, middlewares=[]) => {
   return store;
 };
 
-export const useStoreProp = (selector, defaultValue) => {
+export const useReduxSelector = (selector, defaultValue) => {
   const selectorFunction = useCallback(() => {
     return typeof selector === "string"
       ? state => get(state, selector)
@@ -79,5 +79,3 @@ export const useStoreProp = (selector, defaultValue) => {
   const value = useSelector(selectorFunction());
   return value === undefined ? defaultValue : value;
 };
-
-export const useReduxSelector = useStoreProp;

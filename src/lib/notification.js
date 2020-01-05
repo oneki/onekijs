@@ -1,7 +1,7 @@
 import { call, delay } from "redux-saga/effects";
 import { useReduxService } from "./redux";
 import { every } from "./saga";
-import { useStoreProp } from "./store";
+import { useReduxSelector } from "./store";
 import { get, isNull, append } from "./utils/object";
 
 let nextId = 1;
@@ -152,7 +152,7 @@ export const useNotifications = (topic) => {
     topic = 'notifications';
     defaultValue = {};
   }
-  return useStoreProp(topic, defaultValue);
+  return useReduxSelector(topic, defaultValue);
 };
 
 

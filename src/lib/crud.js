@@ -2,7 +2,7 @@ import { useEffect, useRef, useCallback } from 'react';
 import { notificationService } from './notification';
 import { every } from './saga';
 import { useLocalService } from './service';
-import { useStoreProp } from './store';
+import { useReduxSelector } from './store';
 import { shallowEqual } from './utils/object';
 import { asyncHttp } from './xhr';
 import { call } from 'redux-saga/effects';
@@ -77,8 +77,8 @@ export const useGet = (url, options = {}) => {
 };
 
 export const useSecureGet = (url, options = {}) => {
-  const authKey = useStoreProp('settings.auth.key', 'auth');
-  const auth = useStoreProp(authKey);
+  const authKey = useReduxSelector('settings.auth.key', 'auth');
+  const auth = useReduxSelector(authKey);
   options.auth = auth;
   return useGet(url, options);
 };
@@ -105,8 +105,8 @@ export const useDelete = (url, options={}) => {
 };
 
 export const useSecureDelete = (url, options = {}) => {
-  const authKey = useStoreProp('settings.auth.key', 'auth');
-  const auth = useStoreProp(authKey);
+  const authKey = useReduxSelector('settings.auth.key', 'auth');
+  const auth = useReduxSelector(authKey);
   options.auth = auth;
   return useDelete(url, options);
 };
@@ -131,8 +131,8 @@ export const usePostPutPatch = (url, method, options={}) => {
 };
 
 export const useSecurePostPutPatch = (url, options = {}) => {
-  const authKey = useStoreProp('settings.auth.key', 'auth');
-  const auth = useStoreProp(authKey);
+  const authKey = useReduxSelector('settings.auth.key', 'auth');
+  const auth = useReduxSelector(authKey);
   options.auth = auth;
   return usePostPutPatch(url, options);
 };

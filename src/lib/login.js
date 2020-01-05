@@ -5,7 +5,7 @@ import { call } from "redux-saga/effects";
 import { authService } from "./auth";
 import { useSettings } from "./context";
 import { useLocalService } from "./service";
-import { useStoreProp } from "./store";
+import { useReduxSelector } from "./store";
 import { get } from "./utils/object";
 import { absoluteUrl } from "./utils/url";
 import { asyncHttp, asyncPost } from "./xhr";
@@ -508,7 +508,7 @@ export const useLoginService = (name) => {
 export const useLogoutService = (name) => {
   const [state, service] =  useLocalService(logoutService, { loading: true});
   const location = useLocation();
-  const auth = useStoreProp('auth');
+  const auth = useReduxSelector('auth');
 
   useEffect(() => {
     // check if it's a callback

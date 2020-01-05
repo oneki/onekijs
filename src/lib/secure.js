@@ -1,6 +1,6 @@
 import React from "react";
 import { Redirect, Route, useLocation } from "react-router-dom";
-import { useStoreProp } from "./store";
+import { useReduxSelector } from "./store";
 import { useNotificationService } from "./notification";
 import { useTranslation } from "react-i18next";
 import { useSetting } from "./context";
@@ -11,8 +11,8 @@ import { useSetting } from "./context";
 export const secure = (Component, validator) => {
   return React.memo(props => {
     const location = useLocation();
-    const token = useStoreProp('auth.token', null);
-    const securityContext = useStoreProp('auth.securityContext', null);
+    const token = useReduxSelector('auth.token', null);
+    const securityContext = useReduxSelector('auth.securityContext', null);
     const loginRoute = useSetting('routes.login', '/login');
     const notificationService = useNotificationService();
     const { t } = useTranslation();
@@ -40,8 +40,8 @@ export const secure = (Component, validator) => {
 };
 
 export const SecureRoute = ({ component: Component, ...args }) => {
-  const token = useStoreProp('auth.token', null);
-  const securityContext = useStoreProp('auth.securityContext', null);
+  const token = useReduxSelector('auth.token', null);
+  const securityContext = useReduxSelector('auth.securityContext', null);
   const loginRoute = useSetting("routes.login", "/login");
 
   return (
