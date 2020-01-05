@@ -11,9 +11,9 @@ import { useSetting } from "./context";
 export const secure = (Component, validator) => {
   return React.memo(props => {
     const location = useLocation();
-    const token = useReduxSelector('auth.token', null);
-    const securityContext = useReduxSelector('auth.securityContext', null);
-    const loginRoute = useSetting('routes.login', '/login');
+    const token = useReduxSelector("auth.token", null);
+    const securityContext = useReduxSelector("auth.securityContext", null);
+    const loginRoute = useSetting("routes.login", "/login");
     const notificationService = useNotificationService();
     const { t } = useTranslation();
 
@@ -21,17 +21,17 @@ export const secure = (Component, validator) => {
       const to = {
         pathname: loginRoute,
         state: location
-      }
+      };
       return <Redirect to={to} />;
     } else if (validator && !validator(securityContext)) {
       notificationService.send({
-        id: 'AccessDenied',
-        topic: 'error',
+        id: "AccessDenied",
+        topic: "error",
         persist: false,
         payload: {
-          message: t('Access Denied')
+          message: t("Access Denied")
         }
-      })
+      });
       return null;
     } else {
       return <Component {...props} />;
@@ -40,22 +40,21 @@ export const secure = (Component, validator) => {
 };
 
 export const SecureRoute = ({ component: Component, ...args }) => {
-  const token = useReduxSelector('auth.token', null);
-  const securityContext = useReduxSelector('auth.securityContext', null);
+  const token = useReduxSelector("auth.token", null);
+  const securityContext = useReduxSelector("auth.securityContext", null);
   const loginRoute = useSetting("routes.login", "/login");
 
   return (
     <Route
       {...args}
       render={props =>
-        (!securityContext || (token && token.expires_at <= Date.now())) ? (
+        !securityContext || (token && token.expires_at <= Date.now()) ? (
           <Redirect
             to={{
               pathname: loginRoute,
               state: { from: props.location }
             }}
-          />          
-          
+          />
         ) : (
           <Component {...props} />
         )

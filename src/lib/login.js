@@ -1,245 +1,281 @@
-import qs from 'query-string';
+import qs from "query-string";
 import { useCallback, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { call } from "redux-saga/effects";
 import { authService } from "./auth";
-import { useSettings } from "./context";
+import { notificationService, useNotificationService } from "./notification";
+import { latest } from "./saga";
 import { useLocalService } from "./service";
-import { useReduxSelector } from "./store";
+import {
+  generateCodeChallenge,
+  generateCodeVerifier,
+  generateNonce,
+  generateState,
+  getIdp,
+  parseJwt,
+  sha256
+} from "./utils/auth";
 import { get } from "./utils/object";
 import { absoluteUrl } from "./utils/url";
 import { asyncHttp, asyncPost } from "./xhr";
-import { generateCodeVerifier, generateCodeChallenge, generateNonce, generateState, getIdp, sha256, parseJwt } from "./utils/auth";
-import { latest } from './saga';
-import { notificationService } from './notification';
 
-const isOauth = idp => ['oauth2', 'oidc'].includes(idp.type);
+const isOauth = idp => ["oauth2", "oidc"].includes(idp.type);
 const isExternal = idp => {
-  return isOauth(idp) || idp.type === 'exernal';
-}
+  return isOauth(idp) || idp.type === "exernal";
+};
 
-const parseUrlToken = (hash) => {
+const parseUrlToken = hash => {
   const token = {};
   const params = qs.parse(hash);
-  ['access_token', 'id_token', 'refresh_token', 'expires_in', 'expires_at', 'token_type'].forEach(k => {
+  [
+    "access_token",
+    "id_token",
+    "refresh_token",
+    "expires_in",
+    "expires_at",
+    "token_type"
+  ].forEach(k => {
     if (params[k]) {
       token[k] = params[k];
     }
-  })
+  });
   return token;
-}
+};
 
-function* login(action, { store, router, settings }) {
-
+function* login(payload, { store, router, settings }) {
   try {
     // check if the location state if we put a from element and save it in the sessionStorage
     const locationState = router.location.state || null;
-    let from = get(settings, 'routes.home', '/');
+    let from = get(settings, "routes.home", "/");
     if (locationState) {
-      from = locationState.pathname || get(settings, 'routes.home', '/');
-      from += locationState.search || '';
-      from += locationState.hash || '';
+      from = locationState.pathname || get(settings, "routes.home", "/");
+      from += locationState.search || "";
+      from += locationState.hash || "";
     }
-    sessionStorage.setItem('onekijs.from', from);
+    sessionStorage.setItem("onekijs.from", from);
 
-
-    const idp = getIdp(settings, action.name);
+    const idp = getIdp(settings, payload.name);
 
     if (isOauth(idp)) {
       try {
         yield call(this.authService.loadToken);
-        let token = get(store.getState(), 'auth.token');
+        let token = get(store.getState(), "auth.token");
         if (token && parseInt(token.expires_at) >= Date.now()) {
           // do a success login
           return yield call(this.successLogin, {
-            name: action.name,
+            name: payload.name,
             token
           });
         }
-      } catch(e) {}
+      } catch (e) {}
     }
 
     let done = false;
     // try to fetch the security context to see if we are already logged in
     try {
       yield call(this.authService.fetchSecurityContext, {
-        onSuccess: (securityContext => {
+        onSuccess: securityContext => {
           done = true;
           return this.successLogin({
-            name: action.name,
+            name: payload.name,
             securityContext
           });
-        })
+        }
       });
     } catch (e) {}
 
     if (!done) {
       if (isExternal(idp)) {
-        yield call(this.externalLogin, {name: action.name});
+        yield call(this.externalLogin, { name: payload.name });
       } else {
         // let print the form
         yield call(this.setRender, true);
       }
     }
-
-  } catch (err) {
-    if (action.onError) {
-      yield call(action.onError, err);
+  } catch (e) {
+    if (payload.onError) {
+      yield call(payload.onError, e);
     } else {
-      yield call(this.onError, err);
+      throw e;
     }
-
   }
 }
 
 // redirect to the page managing external login
-function* externalLogin(action, { store, router, settings }) {
+function* externalLogin(payload, { store, router, settings }) {
   try {
     // get external url from config
-    const idp = getIdp(settings, action.name);
+    const idp = getIdp(settings, payload.name);
     const redirectUri = absoluteUrl(`${router.location.pathname}/callback`);
-    
+
     if (!isExternal(idp)) {
-      throw Error(`IDP type ${idp.type} is not valid for an external authentication`);
+      throw Error(
+        `IDP type ${idp.type} is not valid for an external authentication`
+      );
     }
-    
+
     if (isOauth(idp)) {
-      if (typeof idp.authorizeUrl === 'function') {
-        const url = yield call(idp.authorizeUrl, idp, { store, router, settings });
-        window.location.href = `${absoluteUrl(url, get(settings, 'server.baseUrl'))}`;
+      if (typeof idp.authorizeUrl === "function") {
+        const url = yield call(idp.authorizeUrl, idp, {
+          store,
+          router,
+          settings
+        });
+        window.location.href = `${absoluteUrl(
+          url,
+          get(settings, "server.baseUrl")
+        )}`;
       } else {
-        const responseType = idp.responseType || 'code';
-        const redirectKey = idp.postLoginRedirectKey || 'redirect_uri';
-        const scope = idp.scope ? idp.scope : (idp.type === 'oidc') ? 'openid' : null;
+        const responseType = idp.responseType || "code";
+        const redirectKey = idp.postLoginRedirectKey || "redirect_uri";
+        const scope = idp.scope
+          ? idp.scope
+          : idp.type === "oidc"
+          ? "openid"
+          : null;
         let search = `?${redirectKey}=${redirectUri}&client_id=${idp.clientId}&response_type=${responseType}`;
         if (scope) {
           search += `&scope=${idp.scope}`;
         }
-        if (idp.nonce || responseType.includes('id_token')) {
+        if (idp.nonce || responseType.includes("id_token")) {
           const nonce = generateNonce();
-          sessionStorage.setItem('onekijs.nonce', nonce);
+          sessionStorage.setItem("onekijs.nonce", nonce);
           search += `&nonce=${sha256(nonce)}`;
         } else {
-          sessionStorage.removeItem('onekijs.nonce');
+          sessionStorage.removeItem("onekijs.nonce");
         }
         if (idp.state) {
           const state = generateState();
-          sessionStorage.setItem('onekijs.state', state);
+          sessionStorage.setItem("onekijs.state", state);
           search += `&state=${sha256(state)}`;
         } else {
-          sessionStorage.removeItem('onekijs.state');
+          sessionStorage.removeItem("onekijs.state");
         }
-        if (responseType === 'code' && idp.pkce) {
+        if (responseType === "code" && idp.pkce) {
           const verifier = generateCodeVerifier();
-          sessionStorage.setItem('onekijs.verifier', verifier);
+          sessionStorage.setItem("onekijs.verifier", verifier);
           const challenge = generateCodeChallenge(verifier);
           search += `&code_challenge=${challenge}&code_challenge_method=S256`;
         } else {
-          sessionStorage.removeItem('onekijs.verifier');
-        }        
-        window.location.href = `${absoluteUrl(idp.authorizeUrl, get(settings, 'server.baseUrl'))}${search}`;
-      }     
-    } else if (typeof idp.loginUrl === 'function') {
+          sessionStorage.removeItem("onekijs.verifier");
+        }
+        window.location.href = `${absoluteUrl(
+          idp.authorizeUrl,
+          get(settings, "server.baseUrl")
+        )}${search}`;
+      }
+    } else if (typeof idp.loginUrl === "function") {
       const url = yield call(idp.loginUrl, idp, { store, router, settings });
-      window.location.href = `${absoluteUrl(url, get(settings, 'server.baseUrl'))}`;
+      window.location.href = `${absoluteUrl(
+        url,
+        get(settings, "server.baseUrl")
+      )}`;
     } else {
-      const search = (idp.postLoginRedirectKey) ? `?${idp.postLoginRedirectKey}=${redirectUri}` : '';
-      window.location.href = `${absoluteUrl(idp.loginUrl, get(settings, 'server.baseUrl'))}${search}`;
+      const search = idp.postLoginRedirectKey
+        ? `?${idp.postLoginRedirectKey}=${redirectUri}`
+        : "";
+      window.location.href = `${absoluteUrl(
+        idp.loginUrl,
+        get(settings, "server.baseUrl")
+      )}${search}`;
     }
-  } catch (err) {
-    if (action.onError) {
-      yield call(action.onError, err);
+  } catch (e) {
+    if (payload.onError) {
+      yield call(payload.onError, e);
     } else {
-      yield call(this.onError, err);
+      throw e;
     }
   }
 }
 
-
-function* externalLoginCallback(action, { store, router, settings }) {
+function* externalLoginCallback(payload, { store, router, settings }) {
   try {
-    const idp = getIdp(settings, action.name);
+    const idp = getIdp(settings, payload.name);
     let callback = idp.callback;
     let token = null;
     let securityContext = null;
     let content = router.location;
     if (isOauth(idp)) {
-      const responseType = idp.responseType || 'code';
-      if (responseType === 'code') {
-        if (typeof idp.tokenFetch === 'function') {
-          token = yield call(idp.tokenFetch, 'authorization_code', idp, { store, router, settings });
+      const responseType = idp.responseType || "code";
+      if (responseType === "code") {
+        if (typeof idp.tokenFetch === "function") {
+          token = yield call(idp.tokenFetch, "authorization_code", idp, {
+            store,
+            router,
+            settings
+          });
         } else {
           const params = qs.parse(router.location.search);
-          const state = sessionStorage.getItem('onekijs.state');
-          sessionStorage.removeItem('onekijs.state');
-          const headers =  {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
+          const state = sessionStorage.getItem("onekijs.state");
+          sessionStorage.removeItem("onekijs.state");
+          const headers = {
+            "Content-Type": "application/x-www-form-urlencoded"
+          };
           if (idp.state && sha256(state) !== params.state) {
             throw Error("Invalid oauth2 state");
           }
           const body = {
-            grant_type: 'authorization_code',
+            grant_type: "authorization_code",
             client_id: idp.clientId,
             redirect_uri: absoluteUrl(`${router.location.pathname}`),
             code: params.code
-          }
+          };
           if (idp.clientSecret) {
-            if (idp.clientAuth === 'body') {
-              body.client_secret = idp.clientSecret
+            if (idp.clientAuth === "body") {
+              body.client_secret = idp.clientSecret;
             } else {
               headers.auth = {
                 basic: {
                   user: idp.clientId,
                   password: idp.clientSecret
                 }
-              }
+              };
             }
           }
           if (idp.pkce) {
-            body.code_verifier = sessionStorage.getItem('onekijs.verifier');
-            sessionStorage.removeItem('onekijs.verifier');
+            body.code_verifier = sessionStorage.getItem("onekijs.verifier");
+            sessionStorage.removeItem("onekijs.verifier");
           }
-          
-          token = yield call(asyncPost, idp.tokenFetch, body, { headers })
+
+          token = yield call(asyncPost, idp.tokenFetch, body, { headers });
         }
 
         content = token;
-
-      } else if (!callback || callback === 'token') {
-        callback = (location) => {
+      } else if (!callback || callback === "token") {
+        callback = location => {
           return [parseUrlToken(location.hash), null];
-        }
+        };
       }
-    } 
-    
-    if (typeof callback === 'function') {
-      [token, securityContext] = yield call(callback, content, idp, { store, router, settings });
+    }
+
+    if (typeof callback === "function") {
+      [token, securityContext] = yield call(callback, content, idp, {
+        store,
+        router,
+        settings
+      });
     }
 
     if (isOauth(idp) && idp.nonce && token.id_token) {
       // check nonce in id token
       const id_token = parseJwt(token.id_token);
-      const nonce = sessionStorage.getItem('onekijs.nonce');
-      sessionStorage.removeItem('onekijs.nonce');
+      const nonce = sessionStorage.getItem("onekijs.nonce");
+      sessionStorage.removeItem("onekijs.nonce");
       if (sha256(nonce) !== id_token.nonce) {
-        throw Error('Invalid oauth2 nonce');
+        throw Error("Invalid oauth2 nonce");
       }
-
     }
 
     this.successLogin({
       token,
       securityContext,
-      name: action.name
-    })
-
-
-  } catch (err) {
-    if (action.onError) {
-      yield call(action.onError, err);
+      name: payload.name
+    });
+  } catch (e) {
+    if (payload.onError) {
+      yield call(payload.onError, e);
     } else {
-      yield call(this.onError, err);
+      throw e;
     }
   }
 }
@@ -250,49 +286,59 @@ function* formLogin(payload, { store, router, settings }) {
     yield call(this.setLoading, true);
     const idp = getIdp(settings, payload.name);
     let result;
-    
-    if (typeof idp.loginFetch === 'function') {
-      result = yield call(idp.loginFetch, idp, payload, { store, router, settings });
+
+    if (typeof idp.loginFetch === "function") {
+      result = yield call(idp.loginFetch, idp, payload, {
+        store,
+        router,
+        settings
+      });
     } else {
-      const method = idp.loginMethod || 'POST';
-      const usernameKey = idp.usernameKey || 'username';
-      const passwordKey = idp.passwordKey || 'password';
-      const rememberMeKey = idp.rememberMeKey || 'rememberMe';
-      const contentType = idp.loginContentType || 'application/json';
-      
+      const method = idp.loginMethod || "POST";
+      const usernameKey = idp.usernameKey || "username";
+      const passwordKey = idp.passwordKey || "password";
+      const rememberMeKey = idp.rememberMeKey || "rememberMe";
+      const contentType = idp.loginContentType || "application/json";
+
       let url = idp.loginFetch;
-  
+
       let body = null;
-      if (method === 'GET') {
-        url += `?${usernameKey}=${payload.username}&${passwordKey}=${payload.password}&${rememberMeKey}=${payload.rememberMe}`
+      if (method === "GET") {
+        url += `?${usernameKey}=${payload.username}&${passwordKey}=${payload.password}&${rememberMeKey}=${payload.rememberMe}`;
       } else {
         body = {
           [usernameKey]: payload.username,
           [passwordKey]: payload.password,
           [rememberMeKey]: payload.rememberMe
-        }
+        };
       }
 
-      result = yield call(asyncHttp,
-        absoluteUrl(url, get(settings, 'server.baseUrl')),
+      result = yield call(
+        asyncHttp,
+        absoluteUrl(url, get(settings, "server.baseUrl")),
         method,
         body,
         {
           headers: {
-            'Content-Type': contentType
+            "Content-Type": contentType
           }
         }
       );
     }
 
-    const callback = idp.callback || 'cookie';
+    const callback = idp.callback || "cookie";
     // forward to reducer to save the security context
-    let token = null, securityContext = null;
+    let token = null,
+      securityContext = null;
     if (typeof callback === "function") {
-      [token, securityContext] = yield call(callback, result, idp, { store, router, settings });
-    } else if (callback === 'token') {
+      [token, securityContext] = yield call(callback, result, idp, {
+        store,
+        router,
+        settings
+      });
+    } else if (callback === "token") {
       token = result;
-    } else if (callback === 'securityContext') {
+    } else if (callback === "securityContext") {
       securityContext = result;
     }
 
@@ -300,122 +346,131 @@ function* formLogin(payload, { store, router, settings }) {
       token,
       securityContext,
       name: payload.name,
-      onError: err => {throw err},
+      onError: err => {
+        throw err;
+      }
     });
 
     if (payload.onSuccess) {
       yield call(payload.onSuccess, result);
     }
-
-  } catch (err) {
+  } catch (e) {
     if (payload.onError) {
-      yield call(payload.onError, err);
+      yield call(payload.onError, e);
     } else {
-      // display error message
-      yield call(this.onError, err);
+      throw e;
     }
-
   }
 }
 
-function* successLogin(action, { router, settings }) {
+function* successLogin(payload, { router, settings }) {
   try {
-    const token = action.token;
-    const idp = getIdp(settings, action.name);
+    const token = payload.token;
+    const idp = getIdp(settings, payload.name);
 
     if (token) {
-      yield call(this.authService.saveToken, {token, idp});
+      yield call(this.authService.saveToken, { token, idp });
     } else {
       yield call(this.authService.setIdp, idp);
     }
 
-    if (action.securityContext) {
-      yield call(this.authService.setSecurityContext, action.securityContext);
+    if (payload.securityContext) {
+      yield call(this.authService.setSecurityContext, payload.securityContext);
     } else {
       yield call(this.authService.fetchSecurityContext, {
-        onError: action.onError || (e => {throw e}),
+        onError:
+          payload.onError ||
+          (e => {
+            throw e;
+          })
       });
     }
 
-    yield call(this.onSuccess)
+    yield call(this.onSuccess);
 
     const history = router.history;
-    const from = sessionStorage.getItem('onekijs.from') || get(settings, 'routes.home', '/');
-    sessionStorage.removeItem('onekijs.from');
+    const from =
+      sessionStorage.getItem("onekijs.from") ||
+      get(settings, "routes.home", "/");
+    sessionStorage.removeItem("onekijs.from");
     yield call([history, history.push], from);
-  } catch (err) {
-    if (action.onError) {
-      yield call(action.onError, err);
+  } catch (e) {
+    if (payload.onError) {
+      yield call(payload.onError, e);
     } else {
-      yield call(this.onError, err);
+      throw e;
     }
-
   }
 }
 
-function* logout(action, context) {
+function* logout(payload, context) {
   try {
     // forward to reducer to set loading flag
     const { router, settings, store } = context;
     yield this.setLoading(true);
-    const idp = getIdp(settings, action.name);
+    const idp = getIdp(settings, payload.name);
     if (isExternal(idp)) {
-      if (typeof idp.logoutUrl === 'function') {
+      if (typeof idp.logoutUrl === "function") {
         const url = yield call(idp.loginUrl, idp, { store, router, settings });
-        window.location.href = `${absoluteUrl(url, get(settings, 'server.baseUrl'))}`;
+        window.location.href = `${absoluteUrl(
+          url,
+          get(settings, "server.baseUrl")
+        )}`;
       } else {
         // do a redirect
         const redirectUri = absoluteUrl(`${router.location.pathname}/callback`);
-        let search = '';
+        let search = "";
         if (isOauth(idp)) {
-          const redirectKey = idp.postLogoutRedirectKey || 'post_logout_redirect_uri';
+          const redirectKey =
+            idp.postLogoutRedirectKey || "post_logout_redirect_uri";
           search = `?${redirectKey}=${redirectUri}&client_id=${idp.clientId}`;
         } else if (idp.postLogoutRedirectKey) {
           search = `?${idp.postLogoutRedirectKey}=${redirectUri}`;
         }
 
-        window.location.href = `${absoluteUrl(idp.logoutUrl, get(settings, 'server.baseUrl'))}${search}`;
+        window.location.href = `${absoluteUrl(
+          idp.logoutUrl,
+          get(settings, "server.baseUrl")
+        )}${search}`;
       }
-      
     } else {
-      if (typeof idp.logoutFetch === 'function') {
+      if (typeof idp.logoutFetch === "function") {
         yield call(idp.logoutFetch, idp, { store, router, settings });
       } else {
         // call the server
-        const method = idp.logoutMethod || 'GET';
-        yield call(asyncHttp,
-          absoluteUrl(idp.logoutFetch, get(settings, 'server.baseUrl')),
+        const method = idp.logoutMethod || "GET";
+        yield call(
+          asyncHttp,
+          absoluteUrl(idp.logoutFetch, get(settings, "server.baseUrl")),
           method,
           null,
           { auth: store.getState().auth }
         );
       }
 
-      yield call(this.successLogout, action);
+      yield call(this.successLogout, payload);
     }
-  } catch (err) {
-    if (action.onError) {
-      yield call(action.onError, err);
+  } catch (e) {
+    if (payload.onError) {
+      yield call(payload.onError, e);
     } else {
-      // display error message
-      yield call(this.onError, err);
+      throw e;
     }
   }
 }
 
-function* successLogout(action) {
+function* successLogout(payload) {
   try {
     yield call(this.authService.clear);
     yield call(this.onSuccess);
-    if (action.onSuccess) {
-      yield call(action.onSuccess);
+    if (payload.onSuccess) {
+      yield call(payload.onSuccess);
     }
-  } catch (err) {
-    if (action.onError) {
-      yield call(action.onError, err);
+  } catch (e) {
+    if (payload.onError) {
+      yield call(payload.onError, e);
     } else {
-      // display error message
-      yield call(this.onError, err);
+      throw e;
     }
   }
 }
@@ -423,18 +478,17 @@ function* successLogout(action) {
 export const loginService = {
   name: "login",
   reducers: {
-    setLoading: function (state, loading) {
+    setLoading: function(state, loading) {
       state.loading = loading;
     },
-    setRender: function (state, render) {
+    setRender: function(state, render) {
       state.doNotRender = !render;
     },
-    onSuccess: function (state) {
+    onSuccess: function(state) {
       state.loading = false;
       state.errorMessage = null;
     },
-    onError: function (state, error) {
-      console.error(error);
+    onError: function(state, error) {
       state.errorMessage = error.message;
       state.loading = false;
     }
@@ -456,15 +510,14 @@ export const loginService = {
 export const logoutService = {
   name: "logout",
   reducers: {
-    setLoading: function (state, loading) {
+    setLoading: function(state, loading) {
       state.loading = loading;
     },
-    onSuccess: function (state) {
+    onSuccess: function(state) {
       state.loading = false;
       state.errorMessage = null;
     },
-    onError: function (state, error) {
-      console.error(error);
+    onError: function(state, error) {
       state.errorMessage = error.message;
       state.loading = false;
     }
@@ -476,48 +529,77 @@ export const logoutService = {
   inject: {
     authService
   }
-}
+};
 
-export const useLoginService = (name) => {
-  const [state, service] =  useLocalService(loginService, { doNotRender: true, loading: false});
+export const useLoginService = (name, options = {}) => {
+  const [state, service] = useLocalService(loginService, {
+    doNotRender: true,
+    loading: false
+  });
+  const notificationService = useNotificationService();
   const location = useLocation();
-  const settings = useSettings();
-  const submit = useCallback(action => {
-    return service.formLogin(Object.assign({name}, action));
-  }, [service, name]);
+  const submit = useCallback(
+    action => {
+      return service.formLogin(Object.assign({ name }, action));
+    },
+    [service, name]
+  );
+
+  let onError = useCallback(
+    e => {
+      notificationService.send({
+        topic: "error",
+        id: "login-error",
+        payload: e
+      });
+    },
+    [notificationService]
+  );
+
+  onError = options.onError || onError;
 
   useEffect(() => {
     // it can be either
     //   - a redirect after trying to access a secure route
     //   - a callback after a successful external login
-    //   - a logout
-
-    // check if logout
 
     // check if it's a callback
-    if (location.pathname.endsWith('callback')) {
-      service.externalLoginCallback({name});
+    if (location.pathname.endsWith("callback")) {
+      service.externalLoginCallback({ name, onError });
     } else {
-      service.login({ name })
+      service.login({ name, onError });
     }
-  }, [service, location, name, settings]);
+  }, [service, location, name, onError]);
 
   return [state, submit];
 };
 
-export const useLogoutService = (name) => {
-  const [state, service] =  useLocalService(logoutService, { loading: true});
+export const useLogoutService = (name, options = {}) => {
+  const [state, service] = useLocalService(logoutService, { loading: true });
   const location = useLocation();
-  const auth = useReduxSelector('auth');
+  const notificationService = useNotificationService();
+
+  let onError = useCallback(
+    e => {
+      notificationService.send({
+        topic: "error",
+        id: "logout-error",
+        payload: e
+      });
+    },
+    [notificationService]
+  );
+
+  onError = options.onError || onError;
 
   useEffect(() => {
     // check if it's a callback
-    if (location.pathname.endsWith('callback')) {
-      service.successLogout({ name });
+    if (location.pathname.endsWith("callback")) {
+      service.successLogout({ name, onError });
     } else {
-      service.logout({ name })
+      service.logout({ name, onError });
     }
-  }, [service, location, name, auth]);
+  }, [service, location, name, onError]);
 
   return state;
 };

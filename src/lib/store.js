@@ -5,8 +5,10 @@ import { get } from "./utils/object";
 import { useSelector } from "react-redux";
 import { useCallback } from "react";
 
-export const createReduxStore = (initialState={}, middlewares=[]) => {
-  let sagaMiddleware = middlewares.find(middleware => middleware.name === 'sagaMiddleware');
+export const createReduxStore = (initialState = {}, middlewares = []) => {
+  let sagaMiddleware = middlewares.find(
+    middleware => middleware.name === "sagaMiddleware"
+  );
   if (!sagaMiddleware) {
     sagaMiddleware = createSagaMiddleware();
     middlewares.push(sagaMiddleware);
@@ -23,7 +25,12 @@ export const createReduxStore = (initialState={}, middlewares=[]) => {
         const nextState = produce(state, draftState => {
           Object.keys(reducers).forEach(k => {
             const payload = action.payload === undefined ? {} : action.payload;
-            reducers[k].func.call(reducers[k].bind, draftState, payload, reducers[k].context);
+            reducers[k].func.call(
+              reducers[k].bind,
+              draftState,
+              payload,
+              reducers[k].context
+            );
           });
         });
         return nextState;

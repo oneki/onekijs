@@ -5,16 +5,21 @@ import { useSettings, useRouter } from "./context";
 
 const services = {};
 
-
 class ReduxService {
   constructor(store, router, settings, schema) {
     this._reducers = {};
     this._sagas = {};
     this._name = schema.name;
     this._context = Object.freeze({
-      get store() { return store },
-      get router() { return router },
-      get settings() { return settings },
+      get store() {
+        return store;
+      },
+      get router() {
+        return router;
+      },
+      get settings() {
+        return settings;
+      }
     });
 
     Object.keys(schema.inject || {}).forEach(serviceName => {
@@ -22,11 +27,7 @@ class ReduxService {
     });
 
     Object.keys(schema.reducers || {}).forEach(type => {
-      this._createReducer(
-        schema.name,
-        type,
-        schema.reducers[type]
-      );
+      this._createReducer(schema.name, type, schema.reducers[type]);
     });
 
     Object.keys(schema.sagas || {}).forEach(type => {
@@ -113,7 +114,7 @@ class ReduxService {
   _injectService(name, defaultSchema) {
     // create service with the default schema if not already present in the context
     const { store, router, settings } = this._context;
-    createReduxService(store, router, settings, defaultSchema); 
+    createReduxService(store, router, settings, defaultSchema);
     this[name] = {};
     Object.keys(defaultSchema.reducers || {}).forEach(type => {
       this[name][type] = payload => {
@@ -138,7 +139,7 @@ class ReduxService {
   }
 
   _run() {
-    const { store } = this._context
+    const { store } = this._context;
     store.injectReducers(this, this._name, this._reducers, this._context);
     store.runSaga(this._name, this._rootSaga);
   }
@@ -169,7 +170,6 @@ export const useReduxService = schema => {
     return createReduxService(store, router, settings, schema);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [store]);
-  
 
   return service;
 };

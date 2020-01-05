@@ -8,7 +8,6 @@ export function isNullOrEmpty(value) {
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze
 export function deepFreeze(object) {
-
   // Retrieve the property names defined on object
   var propNames = Object.getOwnPropertyNames(object);
 
@@ -16,13 +15,12 @@ export function deepFreeze(object) {
   for (let name of propNames) {
     let value = object[name];
 
-    object[name] = value && typeof value === "object" ? 
-      deepFreeze(value) : value;
+    object[name] =
+      value && typeof value === "object" ? deepFreeze(value) : value;
   }
 
   return Object.freeze(object);
 }
-
 
 export function del(content, property) {
   const [subContent, index] = find(content, property);

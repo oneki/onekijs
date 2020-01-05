@@ -18,9 +18,15 @@ class Service {
     this._reducers = {};
     this._sagas = {};
     this._context = Object.freeze({
-      get store() { return store },
-      get router() { return router },
-      get settings() { return settings },
+      get store() {
+        return store;
+      },
+      get router() {
+        return router;
+      },
+      get settings() {
+        return settings;
+      }
     });
 
     Object.keys(schema.inject || {}).forEach(serviceName => {
@@ -43,7 +49,12 @@ class Service {
       const nextState = produce(state, draftState => {
         if (this._reducers[action.type]) {
           const payload = action.payload === undefined ? {} : action.payload;
-          this._reducers[action.type].call(this, draftState, payload, this._context);
+          this._reducers[action.type].call(
+            this,
+            draftState,
+            payload,
+            this._context
+          );
         }
       });
       return nextState;
@@ -58,7 +69,7 @@ class Service {
 
     if (schema.init) {
       schema.init.call(this, this._context);
-    }    
+    }
   }
 
   _createReducer(type, reducer) {
@@ -113,7 +124,7 @@ class Service {
   _injectService(name, defaultSchema) {
     const { store, settings, router } = this._context;
     // create service with the default schema if not already present in the context
-    createReduxService(store, router, settings, defaultSchema);     
+    createReduxService(store, router, settings, defaultSchema);
     this[name] = {};
     Object.keys(defaultSchema.reducers || {}).forEach(type => {
       this[name][type] = payload => {

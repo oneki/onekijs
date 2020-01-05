@@ -14,10 +14,9 @@ export function urlBuilder(path, params = {}, query = {}) {
 }
 
 export function isAbsoluteUrl(url) {
-  var pattern = new RegExp('^(?:[a-z]+:)?//', 'i');
-  return pattern.test(url)
+  var pattern = new RegExp("^(?:[a-z]+:)?//", "i");
+  return pattern.test(url);
 }
-
 
 export function absoluteUrl(url, baseUrl) {
   if (isAbsoluteUrl(url)) {
@@ -25,7 +24,7 @@ export function absoluteUrl(url, baseUrl) {
   }
 
   if (!baseUrl) {
-    baseUrl = `${window.location.protocol}//${window.location.host}`
+    baseUrl = `${window.location.protocol}//${window.location.host}`;
   }
-  return [trimEnd(baseUrl, '/'), trimStart(url, '/')].join('/');
+  return [trimEnd(baseUrl, "/"), trimStart(url, "/")].join("/");
 }
