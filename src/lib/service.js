@@ -153,7 +153,7 @@ export const useLocalService = (schema, initialState) => {
   const channel = useMemo(() => stdChannel(), []);
   const dispatch = useCallback(
     a => {
-      setImmediate(channel.put, a);
+      setTimeout(channel.put, 0, a);
       reactDispatch(a);
     },
     [channel.put]
