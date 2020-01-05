@@ -1,4 +1,3 @@
-import { latest, notificationService } from "onekijs";
 import qs from 'query-string';
 import { useCallback, useEffect } from "react";
 import { useLocation } from "react-router-dom";
@@ -11,6 +10,8 @@ import { get } from "./utils/object";
 import { absoluteUrl } from "./utils/url";
 import { asyncHttp, asyncPost } from "./xhr";
 import { generateCodeVerifier, generateCodeChallenge, generateNonce, generateState, getIdp, sha256, parseJwt } from "./utils/auth";
+import { latest } from './saga';
+import { notificationService } from './notification';
 
 const isOauth = idp => ['oauth2', 'oidc'].includes(idp.type);
 const isExternal = idp => {

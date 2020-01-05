@@ -1,6 +1,6 @@
 {
   "name": "onekijs",
-  "version": "0.1.0",
+  "version": "0.1.5",
   "description": "Opiniated React framework built on top of Redux and React Router",
   "author": "oneki",
   "license": "MIT",
@@ -22,7 +22,6 @@
     "deploy": "gh-pages -d example/build"
   },
   "peerDependencies": {
-    "prop-types": "^15.5.4",
     "react": "^15.0.0 || ^16.0.0",
     "react-dom": "^15.0.0 || ^16.0.0"
   },

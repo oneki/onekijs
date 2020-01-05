@@ -5,14 +5,16 @@ import { get } from "./utils/object";
 import { useSelector } from "react-redux";
 import { useCallback } from "react";
 
-
-
-export const createReduxStore = initialState => {
-  const sagaMiddleware = createSagaMiddleware();
+export const createReduxStore = (initialState={}, middlewares=[]) => {
+  let sagaMiddleware = middlewares.find(middleware => middleware.name === 'sagaMiddleware');
+  if (!sagaMiddleware) {
+    sagaMiddleware = createSagaMiddleware();
+    middlewares.push(sagaMiddleware);
+  }
 
   const store = createStore(() => {
     return initialState;
-  }, applyMiddleware(sagaMiddleware));
+  }, applyMiddleware(...middlewares));
 
   const buildReducer = store => {
     return (state = store.getState(), action) => {
@@ -77,3 +79,5 @@ export const useStoreProp = (selector, defaultValue) => {
   const value = useSelector(selectorFunction());
   return value === undefined ? defaultValue : value;
 };
+
+export const useReduxSelector = useStoreProp;
