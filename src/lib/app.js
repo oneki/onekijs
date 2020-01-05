@@ -5,7 +5,7 @@ import { Router, useHistory, useLocation, useParams } from "react-router-dom";
 import { AppContext } from './context';
 import { createReduxService } from './redux';
 import { createReduxStore } from './store';
-import { deepFreeze } from './utils/object';
+import { deepFreeze, simpleMergeDeep } from './utils/object';
 
 const router = {};
 
@@ -22,7 +22,15 @@ export const App = React.memo(props => {
     store = createReduxStore(props.initialState || {});
   }
 
-  const settings = deepFreeze(props.settings || {});
+  let settings = props.settings;
+  if(Array.isArray(props.settings)) {
+    settings = Object.assign({}, props.settings[0]);
+    for (let i=1; i<props.settings.length; i++) {
+      settings = simpleMergeDeep(settings, props.settings[i]);
+    }
+  }
+
+  settings = deepFreeze(settings || {});
 
   const services = props.services || [];
   services.forEach(service => {
