@@ -22,6 +22,30 @@ export function deepFreeze(object) {
   return Object.freeze(object);
 }
 
+// https://gist.github.com/Salakar/1d7137de9cb8b704e48a
+function isObject(item) {
+  return (
+    item && typeof item === "object" && !Array.isArray(item) && item !== null
+  );
+}
+
+// https://gist.github.com/Salakar/1d7137de9cb8b704e48a
+export function simpleMergeDeep(target, source) {
+  if (isObject(target) && isObject(source)) {
+    Object.keys(source).forEach(key => {
+      if (isObject(source[key])) {
+        if (!target[key] || !isObject(target[key])) {
+          target[key] = source[key];
+        }
+        simpleMergeDeep(target[key], source[key]);
+      } else {
+        Object.assign(target, { [key]: source[key] });
+      }
+    });
+  }
+  return target;
+}
+
 export function del(content, property) {
   const [subContent, index] = find(content, property);
   if (!isNull(subContent)) {
