@@ -1,19 +1,9 @@
 import { hextob64, KEYUTIL, jws, crypto } from 'jsrsasign'
 import { asyncGet } from '../xhr';
+import { isNull } from './object';
 
-export function parseJwt (token, section='payload') {
-  const index = (section === 'header') ? 0 : 1;
 
-  const base64Url = token.split('.')[index];
-  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-  const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-  }).join(''));
-
-  return JSON.parse(jsonPayload);
-};
-
-export function generateRandomString(length, characters) {
+export function generateRandomString(length, characters='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_') {
   const result = [];
   const charactersLength = characters.length;
   for (let i = 0; i < length; i++) {
@@ -23,15 +13,13 @@ export function generateRandomString(length, characters) {
 }
 
 export function generateNonce() {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_';
   const length = Math.floor(Math.random() * (32 - 16 + 1)) + 16;
-  return generateRandomString(length, characters);
+  return generateRandomString(length);
 }
 
 export function generateState() {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_';
   const length = Math.floor(Math.random() * (32 - 16 + 1)) + 16;
-  return generateRandomString(length, characters);
+  return generateRandomString(length);
 }
 
 export function generateCodeVerifier() {
@@ -51,7 +39,20 @@ export function getIdp(settings, name) {
   return Object.assign({name}, idp[name]);
 }
 
+export function parseJwt (token, section='payload') {
+  const index = (section === 'header') ? 0 : 1;
+
+  const base64Url = token.split('.')[index];
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
+
+  return JSON.parse(jsonPayload);
+};
+
 export function sha256(str) {
+  if (isNull(str)) return null;
   return crypto.Util.sha256(str);
 }
 

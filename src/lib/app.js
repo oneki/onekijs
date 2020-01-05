@@ -15,6 +15,7 @@ const RouterSync = React.memo(() => {
   router.params = useParams();
 });
 
+
 export const App = React.memo(props => {
   let store = props.store;
   if (!store) {

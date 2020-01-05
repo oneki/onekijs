@@ -29,10 +29,10 @@ const parseUrlToken = (hash) => {
   return token;
 }
 
-function* login(action, { router, settings }) {
+function* login(action, { store, router, settings }) {
 
   try {
-    // check if the location state if we put a from element and save it in the localStorage
+    // check if the location state if we put a from element and save it in the sessionStorage
     const locationState = router.location.state || null;
     let from = get(settings, 'routes.home', '/');
     if (locationState) {
@@ -40,39 +40,28 @@ function* login(action, { router, settings }) {
       from += locationState.search || '';
       from += locationState.hash || '';
     }
-    localStorage.setItem('onekijs.from', from);
+    sessionStorage.setItem('onekijs.from', from);
 
-    // check if there is a access token in localStorage (and that the token is still valid)
+
     const idp = getIdp(settings, action.name);
-    let done = false;
 
     if (isOauth(idp)) {
-      const access_token = localStorage.getItem('onekijs.access_token');
-      let token = null;
-      let expires_at = 0;
-
-      if (access_token && access_token !== 'null') {
-        expires_at = parseInt(localStorage.getItem('onekijs.expires_at') || 0);
-        token = {
-          access_token,
-          id_token: localStorage.getItem('onekijs.access_token'),
-          refresh_token: localStorage.getItem('onekijs.refresh_token'),
-          expires_at,
-          token_type: localStorage.getItem('onekijs.token_type'),
-        }
-        if (expires_at >= Date.now()) {
+      try {
+        yield call(this.authService.loadToken);
+        let token = get(store.getState(), 'auth.token');
+        if (token && parseInt(token.expires_at) >= Date.now()) {
           // do a success login
-          done = true;
-          yield call(this.successLogin, {
+          return yield call(this.successLogin, {
             name: action.name,
             token
           });
         }
-      }
+      } catch(e) {}
     }
 
-    if (!done) {
-      // try to fetch the security context to see if we are already logged in
+    let done = false;
+    // try to fetch the security context to see if we are already logged in
+    try {
       yield call(this.authService.fetchSecurityContext, {
         onSuccess: (securityContext => {
           done = true;
@@ -80,10 +69,9 @@ function* login(action, { router, settings }) {
             name: action.name,
             securityContext
           });
-        }),
-        onError: (err => {}) // do nothing
+        })
       });
-    }
+    } catch (e) {}
 
     if (!done) {
       if (isExternal(idp)) {
@@ -183,6 +171,7 @@ function* externalLoginCallback(action, { store, router, settings }) {
         } else {
           const params = qs.parse(router.location.search);
           const state = sessionStorage.getItem('onekijs.state');
+          sessionStorage.removeItem('onekijs.state');
           const headers =  {
             'Content-Type': 'application/x-www-form-urlencoded'
           }
@@ -209,6 +198,7 @@ function* externalLoginCallback(action, { store, router, settings }) {
           }
           if (idp.pkce) {
             body.code_verifier = sessionStorage.getItem('onekijs.verifier');
+            sessionStorage.removeItem('onekijs.verifier');
           }
           
           token = yield call(asyncPost, idp.tokenFetch, body, { headers })
@@ -231,6 +221,7 @@ function* externalLoginCallback(action, { store, router, settings }) {
       // check nonce in id token
       const id_token = parseJwt(token.id_token);
       const nonce = sessionStorage.getItem('onekijs.nonce');
+      sessionStorage.removeItem('onekijs.nonce');
       if (sha256(nonce) !== id_token.nonce) {
         console.error(sha256(nonce), id_token.nonce);
         throw Error('Invalid oauth2 nonce');
@@ -350,8 +341,8 @@ function* successLogin(action, { router, settings }) {
     yield call(this.onSuccess)
 
     const history = router.history;
-    const from = localStorage.getItem('onekijs.from') || get(settings, 'routes.home', '/');
-    localStorage.removeItem('onekijs.from');
+    const from = sessionStorage.getItem('onekijs.from') || get(settings, 'routes.home', '/');
+    sessionStorage.removeItem('onekijs.from');
     yield call([history, history.push], from);
   } catch (err) {
     if (action.onError) {
