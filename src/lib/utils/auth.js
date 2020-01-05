@@ -1,19 +1,20 @@
-import { hextob64, KEYUTIL, jws, crypto } from "jsrsasign";
 import { asyncGet } from "../xhr";
-import { isNull } from "./object";
+import { sha256, verify } from "./crypt";
+import { generateRandomString, hex2b64 } from "./string";
 
-export function generateRandomString(
-  length,
-  characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_"
-) {
-  const result = [];
-  const charactersLength = characters.length;
-  for (let i = 0; i < length; i++) {
-    result.push(
-      characters.charAt(Math.floor(Math.random() * charactersLength))
-    );
-  }
-  return result.join("");
+
+export async function generateCodeChallenge(codeVerifier) {
+  return hex2b64(await sha256(codeVerifier))
+    .replace(/=/g, "")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_");
+}
+
+export function generateCodeVerifier() {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
+  const length = Math.floor(Math.random() * (128 - 43 + 1)) + 43;
+  return generateRandomString(length, characters);
 }
 
 export function generateNonce() {
@@ -24,20 +25,6 @@ export function generateNonce() {
 export function generateState() {
   const length = Math.floor(Math.random() * (32 - 16 + 1)) + 16;
   return generateRandomString(length);
-}
-
-export function generateCodeVerifier() {
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
-  const length = Math.floor(Math.random() * (128 - 43 + 1)) + 43;
-  return generateRandomString(length, characters);
-}
-
-export function generateCodeChallenge(codeVerifier) {
-  return hextob64(sha256(codeVerifier))
-    .replace(/=/g, "")
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_");
 }
 
 export function getIdp(settings, name) {
@@ -63,11 +50,6 @@ export function parseJwt(token, section = "payload") {
   return JSON.parse(jsonPayload);
 }
 
-export function sha256(str) {
-  if (isNull(str)) return null;
-  return crypto.Util.sha256(str);
-}
-
 export async function validateToken(token, pubKeyFetch, idp, context) {
   let pubKey = null;
   const header = parseJwt(token, "header");
@@ -80,5 +62,8 @@ export async function validateToken(token, pubKeyFetch, idp, context) {
   if (!pubKey) {
     throw Error("Could not find a valid public key for token validation");
   }
-  return jws.JWS.verify(token, KEYUTIL.getKey(pubKey), [header.alg]);
+  const result = await verify(token, pubKey, header.alg || idp.pubKeyAlgorithm);
+  return result;
 }
+
+

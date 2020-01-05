@@ -28,13 +28,20 @@ export {
   generateCodeChallenge,
   generateCodeVerifier,
   generateNonce,
-  generateRandomString,
   generateState,
   getIdp,
-  sha256,
   parseJwt,
   validateToken
 } from "./lib/utils/auth";
+export {
+  generateRandomString
+} from "./lib/utils/string";
+export {
+  encrypt,
+  decrypt,
+  sha256,
+  verify
+} from "./lib/utils/crypt";
 export { urlBuilder, isAbsoluteUrl, absoluteUrl } from "./lib/utils/url";
 export {
   useDelete,

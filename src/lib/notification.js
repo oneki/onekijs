@@ -2,7 +2,7 @@ import { call, delay } from "redux-saga/effects";
 import { useReduxService } from "./redux";
 import { every } from "./saga";
 import { useReduxSelector } from "./store";
-import { get, isNull, append } from "./utils/object";
+import { append, get, isNull } from "./utils/object";
 
 let nextId = 1;
 

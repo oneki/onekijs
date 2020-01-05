@@ -24,12 +24,12 @@ export default {
   ],
   external:[
     'immer',
-    'jsrsasign',
     'query-string',
     'react-redux',
     'react-router-dom',
     'redux',
-    'redux-saga'
+    'redux-saga',
+    'rfc4648'
   ],
   plugins: [
     external(),

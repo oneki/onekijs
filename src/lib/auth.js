@@ -493,6 +493,6 @@ export const useSecurityContext = (prop, defaultValue, options = {}) => {
         : securityContext;
     }
   }
-
-  return [result, loading, error];
+  const isLoading = loading || (!result && !error);
+  return [result, isLoading, error];
 };

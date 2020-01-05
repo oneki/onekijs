@@ -6,15 +6,8 @@ import { authService } from "./auth";
 import { notificationService, useNotificationService } from "./notification";
 import { latest } from "./saga";
 import { useLocalService } from "./service";
-import {
-  generateCodeChallenge,
-  generateCodeVerifier,
-  generateNonce,
-  generateState,
-  getIdp,
-  parseJwt,
-  sha256
-} from "./utils/auth";
+import { generateCodeChallenge, generateCodeVerifier, generateNonce, generateState, getIdp, parseJwt } from "./utils/auth";
+import { sha256 } from "./utils/crypt";
 import { get } from "./utils/object";
 import { absoluteUrl } from "./utils/url";
 import { asyncHttp, asyncPost } from "./xhr";
@@ -140,21 +133,23 @@ function* externalLogin(payload, { store, router, settings }) {
         if (idp.nonce || responseType.includes("id_token")) {
           const nonce = generateNonce();
           sessionStorage.setItem("onekijs.nonce", nonce);
-          search += `&nonce=${sha256(nonce)}`;
+          const hash = yield call(sha256, nonce);
+          search += `&nonce=${hash}`;
         } else {
           sessionStorage.removeItem("onekijs.nonce");
         }
         if (idp.state) {
           const state = generateState();
           sessionStorage.setItem("onekijs.state", state);
-          search += `&state=${sha256(state)}`;
+          const hash = yield call(sha256, state);
+          search += `&state=${hash}`;
         } else {
           sessionStorage.removeItem("onekijs.state");
         }
         if (responseType === "code" && idp.pkce) {
           const verifier = generateCodeVerifier();
           sessionStorage.setItem("onekijs.verifier", verifier);
-          const challenge = generateCodeChallenge(verifier);
+          const challenge = yield call(generateCodeChallenge, verifier);
           search += `&code_challenge=${challenge}&code_challenge_method=S256`;
         } else {
           sessionStorage.removeItem("onekijs.verifier");
@@ -211,7 +206,8 @@ function* externalLoginCallback(payload, { store, router, settings }) {
           const headers = {
             "Content-Type": "application/x-www-form-urlencoded"
           };
-          if (idp.state && sha256(state) !== params.state) {
+          const hash = yield call(sha256, state);
+          if (idp.state && hash !== params.state) {
             throw Error("Invalid oauth2 state");
           }
           const body = {
@@ -261,7 +257,8 @@ function* externalLoginCallback(payload, { store, router, settings }) {
       const id_token = parseJwt(token.id_token);
       const nonce = sessionStorage.getItem("onekijs.nonce");
       sessionStorage.removeItem("onekijs.nonce");
-      if (sha256(nonce) !== id_token.nonce) {
+      const hash = yield call(sha256, nonce);
+      if (hash !== id_token.nonce) {
         throw Error("Invalid oauth2 nonce");
       }
     }

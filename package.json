@@ -27,7 +27,6 @@
   },
   "dependencies": {
     "immer": "^1.10.0",
-    "jsrsasign": "^8.0.12",
     "query-string": "^6.9.0",
     "react-redux": "^7.1.1",
     "react-router-dom": "^5.1.2",
