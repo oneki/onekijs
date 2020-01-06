@@ -2,7 +2,8 @@ import {
   takeEvery,
   takeLatest,
   takeLeading,
-  takeMaybe
+  debounce as debounceSaga,
+  throttle as throttleSaga,
 } from "redux-saga/effects";
 
 export const every = saga => ({
@@ -20,7 +21,14 @@ export const leading = saga => ({
   saga
 });
 
-export const maybe = saga => ({
-  effect: takeMaybe,
-  saga
+export const debounce = (delay, saga) => ({
+  effect: debounceSaga,
+  saga,
+  delay
+});
+
+export const throttle = (delay, saga) => ({
+  effect: throttleSaga,
+  saga,
+  delay
 });

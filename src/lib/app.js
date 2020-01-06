@@ -7,7 +7,7 @@ import React, { Suspense } from "react";
 import { Provider } from "react-redux";
 import { Router, useHistory, useLocation, useParams } from "react-router-dom";
 import { AppContext } from "./context";
-import { createReduxService } from "./redux";
+import { createReduxService } from "./service";
 import { createReduxStore } from "./store";
 import { deepFreeze, simpleMergeDeep } from "./utils/object";
 

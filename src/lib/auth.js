@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { call, delay, spawn } from "redux-saga/effects";
-import { useReduxService } from "./redux";
+import { useReduxService } from "./service";
 import { every, latest } from "./saga";
 import { useReduxSelector } from "./store";
 import { getIdp, parseJwt, validateToken } from "./utils/auth";

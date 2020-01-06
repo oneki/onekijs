@@ -57,10 +57,9 @@ export {
   useSecurePostPutPatch,
   useSecurePut
 } from "./lib/crud";
-export { createReduxService, useReduxService } from "./lib/redux";
-export { every, latest, leading, maybe } from "./lib/saga";
+export { every, latest, leading, debounce, throttle } from "./lib/saga";
 export { secure, SecureRoute } from "./lib/secure";
-export { useLocalService } from "./lib/service";
+export { useLocalService, createReduxService, useReduxService } from "./lib/service";
 export { useReduxSelector, createReduxStore } from "./lib/store";
 export {
   loginService,

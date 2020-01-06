@@ -1,6 +1,5 @@
 import { call, delay } from "redux-saga/effects";
-import { useReduxService } from "./redux";
-import { every } from "./saga";
+import { useReduxService } from "./service";
 import { useReduxSelector } from "./store";
 import { append, get, isNull } from "./utils/object";
 
@@ -99,7 +98,7 @@ export const notificationService = {
     }
   },
   sagas: {
-    send: every(function*(notification, { store, settings }) {
+    send: function*(notification, { store, settings }) {
       try {
         if (!isNull(notification.id)) {
           // check if this notification is already present
@@ -130,23 +129,23 @@ export const notificationService = {
       } catch (err) {
         throw err;
       }
-    }),
+    },
 
-    error: every(function*(error) {
+    error: function*(error) {
       yield call(this.send, formatLevelNotification("error", error));
-    }),
+    },
 
-    success: every(function*(success) {
+    success: function*(success) {
       yield call(this.send, formatLevelNotification("success", success));
-    }),
+    },
 
-    info: every(function*(info) {
+    info: function*(info) {
       yield call(this.send, formatLevelNotification("info", info));
-    }),
+    },
 
-    warning: every(function*(warning) {
+    warning: function*(warning) {
       yield call(this.send, formatLevelNotification("warning", warning));
-    })
+    }
   }
 };
 
