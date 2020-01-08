@@ -415,18 +415,6 @@ export const authService = {
           if (!payload.idp.pubKeyFetch) {
             throw Error("A pubKeyFetch is required to validate tokens");
           }
-          if (payload.token.access_token) {
-            const isValidAccessToken = yield call(
-              validateToken,
-              payload.token.access_token,
-              payload.idp.pubKeyFetch,
-              payload.idp,
-              context
-            );
-            if (!isValidAccessToken) {
-              throw Error("Invalid access token");
-            }
-          }
           if (payload.token.id_token) {
             const isValidIdToken = yield call(
               validateToken,
@@ -438,7 +426,19 @@ export const authService = {
             if (!isValidIdToken) {
               throw Error("Invalid id token");
             }
+          } else if (payload.token.access_token) {
+            const isValidAccessToken = yield call(
+              validateToken,
+              payload.token.access_token,
+              payload.idp.pubKeyFetch,
+              payload.idp,
+              context
+            );
+            if (!isValidAccessToken) {
+              throw Error("Invalid access token");
+            }
           }
+
         }
 
         yield call(this.setIdp, payload.idp);

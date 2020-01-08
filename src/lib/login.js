@@ -413,7 +413,7 @@ function* logout(payload, context) {
           url,
           get(settings, "server.baseUrl")
         )}`;
-      } else {
+      } else if (idp.logoutUrl) {
         // do a redirect
         const redirectUri = absoluteUrl(`${router.location.pathname}/callback`);
         let search = "";
@@ -429,11 +429,13 @@ function* logout(payload, context) {
           idp.logoutUrl,
           get(settings, "server.baseUrl")
         )}${search}`;
+      } else {
+        yield call(this.successLogout, payload);
       }
     } else {
       if (typeof idp.logoutFetch === "function") {
         yield call(idp.logoutFetch, idp, { store, router, settings });
-      } else {
+      } else if (idp.logoutFetch) {
         // call the server
         const method = idp.logoutMethod || "GET";
         yield call(
