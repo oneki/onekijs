@@ -32,9 +32,9 @@ export async function xhr(url, method, body = null, options = {}) {
     }
     if (o.auth) {
       if (get(o, "auth.token.access_token")) {
-        o.headers.Authorization = `Bearer ${btoa(o.auth.token.access_token)}`;
+        o.headers.Authorization = `Bearer ${o.auth.token.access_token}`;
       } else if (get(o, "auth.token")) {
-        o.headers.Authorization = `Bearer ${btoa(o.auth.token)}`;
+        o.headers.Authorization = `Bearer ${o.auth.token}`;
       } else if (o.auth.basic) {
         o.headers.Authorization = `Basic ${btoa(
           o.auth.basic.user + ":" + o.auth.basic.password
