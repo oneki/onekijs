@@ -139,11 +139,11 @@ export const usePostPutPatch = (url, method, options = {}) => {
   return [executor, state.loading];
 };
 
-export const useSecurePostPutPatch = (url, options = {}) => {
+export const useSecurePostPutPatch = (url, method, options = {}) => {
   const authKey = useReduxSelector("settings.auth.key", "auth");
   const auth = useReduxSelector(authKey);
   options.auth = auth;
-  return usePostPutPatch(url, options);
+  return usePostPutPatch(url, method, options);
 };
 
 export const usePost = (url, options = {}) => {
