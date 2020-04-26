@@ -41,8 +41,9 @@ export default {
     url(),
     svgr(),
     babel({
+      runtimeHelpers: true,
       exclude: 'node_modules/**',
-      plugins: [ '@babel/external-helpers' ]
+      plugins: [ '@babel/external-helpers', '@babel/plugin-transform-runtime' ]
     }),
     resolve(),
     commonjs({
