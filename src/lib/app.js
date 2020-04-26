@@ -1,26 +1,21 @@
-import {
-  createBrowserHistory,
-  createHashHistory,
-  createMemoryHistory,
-} from "history";
-import React, { Suspense, useMemo, useState, useEffect } from "react";
+import { StylesProvider } from "@material-ui/core/styles";
+import Router from 'next/router';
+import React, { useEffect, useMemo, useState } from "react";
 import { Provider } from "react-redux";
-import { Router, useHistory, useLocation, useParams } from "react-router-dom";
+import { ThemeProvider } from "styled-components";
 import { AppContext } from "./context";
 import { createReduxService } from "./service";
 import { createReduxStore } from "./store";
-import { deepFreeze, simpleMergeDeep } from "./utils/object";
-import { ThemeProvider } from "styled-components";
-import { StylesProvider } from "@material-ui/core/styles";
-import { isFunction, isPromise, isFunctionOrPromise } from "./utils/type";
+import { simpleMergeDeep } from "./utils/object";
+import { isPromise } from "./utils/type";
 
 const router = {};
 
-const RouterSync = React.memo(() => {
-  router.location = useLocation();
-  router.history = useHistory();
-  router.params = useParams();
-});
+// const RouterSync = React.memo(() => {
+//   router.location = useLocation();
+//   router.history = useHistory();
+//   router.params = useParams();
+// });
 
 const formatSettings = (settings) => {
   let result = settings;
@@ -86,8 +81,9 @@ export const App = React.memo(({settings={}, store, initialState={}, services=[]
   }
 
   init = true;
+
   return (
-    <AppContext.Provider value={{ router, settings: formattedSettings }}>
+    <AppContext.Provider value={{ router: Router, settings: formattedSettings }}>
       <StylesProvider injectFirst>
         <ThemeProvider theme={theme}>
           <Provider store={appStore}>

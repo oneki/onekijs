@@ -11,6 +11,7 @@ import { sha256 } from "./utils/crypt";
 import { get } from "./utils/object";
 import { absoluteUrl } from "./utils/url";
 import { asyncHttp, asyncPost } from "./xhr";
+import { useRouter } from "next/router";
 
 const isOauth = idp => ["oauth2", "oidc"].includes(idp.type);
 const isExternal = idp => {
@@ -39,7 +40,8 @@ function* login(payload, { store, router, settings }) {
   try {
     if (!sessionStorage.getItem("onekijs.from")) {
       // check if the location state if we put a from element and save it in the sessionStorage
-      const locationState = router.location.state || null;
+      // const locationState = router.location.state || null;
+      const locationState = null;
       let from = get(settings, "routes.home", "/");
       if (locationState) {
         from = locationState.pathname || get(settings, "routes.home", "/");
@@ -539,7 +541,7 @@ export const useLoginService = (name, options = {}) => {
     loading: false
   });
   const notificationService = useNotificationService();
-  const location = useLocation();
+  const router = useRouter();
   const submit = useCallback(
     action => {
       return service.formLogin(Object.assign({ name }, action));
@@ -566,12 +568,12 @@ export const useLoginService = (name, options = {}) => {
     //   - a callback after a successful external login
 
     // check if it's a callback
-    if (location.pathname.endsWith("callback")) {
+    if (router.pathname.endsWith("callback")) {
       service.externalLoginCallback({ name, onError });
     } else {
       service.login({ name, onError });
     }
-  }, [service, location, name, onError]);
+  }, [service, router, name, onError]);
 
   return [state, submit];
 };

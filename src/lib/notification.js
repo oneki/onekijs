@@ -61,12 +61,11 @@ const formatLevelNotification = (level, notification) => {
 export const notificationService = {
   name: "notification",
   init: function({ router }) {
-    router.history.listen(() => {
-      this.onRouteChange();
-    });
+    router.events.on('beforeHistoryChange', this.onRouteChange)
   },
   reducers: {
     add: function(state, notification, { settings }) {
+
       const max = get(
         settings,
         `notification.${notification.topic}.max`,
@@ -100,6 +99,7 @@ export const notificationService = {
   sagas: {
     send: function*(notification, { store, settings }) {
       try {
+        // notification.test = 'test';
         if (!isNull(notification.id)) {
           // check if this notification is already present
           const topic = notification.topic || "default";
@@ -113,14 +113,15 @@ export const notificationService = {
           }
         }
         notification = formatNotification(notification);
-        yield call(this.add, notification);
         if (notification.ttl === undefined) {
           notification.ttl = get(
             settings,
             `notification.${notification.topic}.ttl`,
             get(settings, `notification.default.ttl`)
           );
-        }
+        }        
+        yield call(this.add, notification);
+        
 
         if (notification.ttl) {
           yield delay(notification.ttl);
