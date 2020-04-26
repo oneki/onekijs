@@ -29,7 +29,9 @@ export default {
     'react-router-dom',
     'redux',
     'redux-saga',
-    'rfc4648'
+    'rfc4648',
+    'styled-components',
+    '@material-ui/core'
   ],
   plugins: [
     external(),
@@ -46,7 +48,7 @@ export default {
     commonjs({
       include: 'node_modules/**',
       namedExports: {
-        'node_modules/react-is/index.js': ['isValidElementType']
+        'node_modules/react-is/index.js': ['isValidElementType', 'ForwardRef', 'Memo', 'isFragment']
       }
     })
   ]

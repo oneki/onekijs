@@ -14,7 +14,7 @@ import { asyncHttp, asyncPost } from "./xhr";
 
 const isOauth = idp => ["oauth2", "oidc"].includes(idp.type);
 const isExternal = idp => {
-  return isOauth(idp) || idp.type === "exernal";
+  return isOauth(idp) || idp.type === "external";
 };
 
 const parseUrlToken = hash => {
@@ -37,15 +37,17 @@ const parseUrlToken = hash => {
 
 function* login(payload, { store, router, settings }) {
   try {
-    // check if the location state if we put a from element and save it in the sessionStorage
-    const locationState = router.location.state || null;
-    let from = get(settings, "routes.home", "/");
-    if (locationState) {
-      from = locationState.pathname || get(settings, "routes.home", "/");
-      from += locationState.search || "";
-      from += locationState.hash || "";
+    if (!sessionStorage.getItem("onekijs.from")) {
+      // check if the location state if we put a from element and save it in the sessionStorage
+      const locationState = router.location.state || null;
+      let from = get(settings, "routes.home", "/");
+      if (locationState) {
+        from = locationState.pathname || get(settings, "routes.home", "/");
+        from += locationState.search || "";
+        from += locationState.hash || "";
+      }
+      sessionStorage.setItem("onekijs.from", from);
     }
-    sessionStorage.setItem("onekijs.from", from);
 
     const idp = getIdp(settings, payload.name);
 
@@ -76,9 +78,10 @@ function* login(payload, { store, router, settings }) {
         }
       });
     } catch (e) {}
-
+    
     if (!done) {
       if (isExternal(idp)) {
+        
         yield call(this.externalLogin, { name: payload.name });
       } else {
         // let print the form

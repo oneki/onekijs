@@ -70,3 +70,14 @@ export {
 export { authService, useAuthService, useSecurityContext } from "./lib/auth";
 export { App } from "./lib/app";
 export { useRouter, useSetting, useSettings, AppContext } from "./lib/context";
+export { default as Dashboard } from './components/dashboard';
+export { default as DashboardHeader } from './components/dashboard/header';
+export { default as DashboardFooter } from './components/dashboard/footer';
+export { Left as DashboardLeft } from './components/dashboard/sidebar';
+export { Right as DashboardRight } from './components/dashboard/sidebar';
+export { default as DashboardBody } from './components/dashboard/body';
+export { default as DashboardToggler } from './components/dashboard/toggler';
+export { dashboardService, useDashboardService, useDashboard } from './components/dashboard/service';
+export { Dropdown, DropdownMenu, DropdownAnchor } from './components/dropdown';
+export { Me, MeContainer } from './components/me';
+export { Search, SearchContainer } from './components/search';

@@ -257,7 +257,10 @@ export const authService = {
         } else {
           securityContext = yield call(
             asyncGet,
-            absoluteUrl(securityContextFetch, get(settings, "server.baseUrl"))
+            absoluteUrl(securityContextFetch, get(settings, "server.baseUrl")), 
+            {
+              auth: get(store.getState(), "auth")
+            }
           );
         }
 

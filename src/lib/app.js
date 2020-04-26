@@ -10,6 +10,8 @@ import { AppContext } from "./context";
 import { createReduxService } from "./service";
 import { createReduxStore } from "./store";
 import { deepFreeze, simpleMergeDeep } from "./utils/object";
+import { ThemeProvider } from "styled-components";
+import { StylesProvider } from "@material-ui/core/styles";
 
 const router = {};
 
@@ -63,12 +65,16 @@ export const App = React.memo(props => {
 
   return (
     <AppContext.Provider value={{ router, settings }}>
-      <Provider store={store}>
-        <Router history={history}>
-          <RouterSync />
-          <Suspense fallback={fallback}>{props.children}</Suspense>
-        </Router>
-      </Provider>
+      <StylesProvider injectFirst>
+        <ThemeProvider theme={props.theme || {}}>
+          <Provider store={store}>
+            <Router history={history}>
+              <RouterSync />
+              <Suspense fallback={fallback}>{props.children}</Suspense>
+            </Router>
+          </Provider>
+        </ThemeProvider>
+      </StylesProvider>
     </AppContext.Provider>
   );
 });

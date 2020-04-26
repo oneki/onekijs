@@ -6,6 +6,10 @@ export function isNullOrEmpty(value) {
   return value === undefined || value === null || value === "";
 }
 
+export function or(value, defaultValue) {
+  return isNull(value) ? defaultValue:value;
+}
+
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze
 export function deepFreeze(object) {
   // Retrieve the property names defined on object
