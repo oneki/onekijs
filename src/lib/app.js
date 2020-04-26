@@ -1,9 +1,9 @@
 import {
   createBrowserHistory,
   createHashHistory,
-  createMemoryHistory
+  createMemoryHistory,
 } from "history";
-import React, { Suspense } from "react";
+import React, { Suspense, useMemo, useState, useEffect } from "react";
 import { Provider } from "react-redux";
 import { Router, useHistory, useLocation, useParams } from "react-router-dom";
 import { AppContext } from "./context";
@@ -12,6 +12,7 @@ import { createReduxStore } from "./store";
 import { deepFreeze, simpleMergeDeep } from "./utils/object";
 import { ThemeProvider } from "styled-components";
 import { StylesProvider } from "@material-ui/core/styles";
+import { isFunction, isPromise, isFunctionOrPromise } from "./utils/type";
 
 const router = {};
 
@@ -21,57 +22,77 @@ const RouterSync = React.memo(() => {
   router.params = useParams();
 });
 
-export const App = React.memo(props => {
-  let store = props.store;
-  if (!store) {
-    store = createReduxStore(props.initialState || {});
-  }
-
-  let settings = props.settings;
-  if (Array.isArray(props.settings)) {
-    settings = Object.assign({}, props.settings[0]);
-    for (let i = 1; i < props.settings.length; i++) {
-      settings = simpleMergeDeep(settings, props.settings[i]);
+const formatSettings = (settings) => {
+  let result = settings;
+  if (Array.isArray(settings)) {
+    result = Object.assign({}, settings[0]);
+    for (let i = 1; i < settings.length; i++) {
+      result = simpleMergeDeep(result, settings[i]);
     }
   }
+  // return deepFreeze(settings || {});
+  return result;
+}
 
-  settings = deepFreeze(settings || {});
+let init = false;
 
-  const services = props.services || [];
-  services.forEach(service => {
-    createReduxService(store, router, settings, service);
-  });
+export const App = React.memo(({settings={}, store, initialState={}, services=[], theme={}, children}) => {
 
-  let history = props.history;
-  if (!history) {
-    const routerSettings = settings.router || {};
-    const routerType = routerSettings.type || "browser";
-    switch (routerType) {
-      case "browser":
-        history = createBrowserHistory(routerSettings);
-        break;
-      case "hash":
-        history = createHashHistory(routerSettings);
-        break;
-      case "memory":
-        history = createMemoryHistory(routerSettings);
-        break;
-      default:
-        throw Error(`Unknown router type ${routerType}`);
+  const [loading, setLoading] = useState(isPromise(initialState) || isPromise(settings));
+  const [appSettings, setAppSettings] = useState(isPromise(settings) ? null : settings);
+  const [appInitialState, setAppInitialState] = useState(isPromise(initialState) ? null : initialState);
+
+  const appStore = useMemo(() => {
+    if (!loading) {
+      return store ? store : createReduxStore(appInitialState);
     }
+  }, [loading, store, appInitialState]);
+
+  let formattedSettings;
+  if (!loading) {
+    formattedSettings = formatSettings(appSettings);
+    services.forEach((service) => {
+      createReduxService(store, router, formattedSettings, service);
+    });
   }
 
-  let fallback = props.fallback || <div>Loading...</div>;
+  useEffect(() => {
+    
+    if (!init) {
 
+      init = true;
+      // TODO call initialState and/or settings
+      const promises = [{
+        set: setAppSettings,
+        promise: settings
+      }, {
+        set: setAppInitialState,
+        promise: initialState
+      }].filter(entry => isPromise(entry.promise))
+      Promise.all(promises.map(entry => entry.promise)).then(function(values) {
+
+        values.forEach((v, i) => promises[i].set(v));
+        setLoading(false);
+      });
+    }
+  }, [settings, initialState])
+
+  if (loading) {
+    return (
+      <div>
+        LOADING ...
+      </div>
+    )
+  }
+
+  init = true;
   return (
-    <AppContext.Provider value={{ router, settings }}>
+    <AppContext.Provider value={{ router, settings: formattedSettings }}>
       <StylesProvider injectFirst>
-        <ThemeProvider theme={props.theme || {}}>
-          <Provider store={store}>
-            <Router history={history}>
-              <RouterSync />
-              <Suspense fallback={fallback}>{props.children}</Suspense>
-            </Router>
+        <ThemeProvider theme={theme}>
+          <Provider store={appStore}>
+            {/* <RouterSync /> */}
+            {children}
           </Provider>
         </ThemeProvider>
       </StylesProvider>
