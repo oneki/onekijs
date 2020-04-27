@@ -420,7 +420,7 @@ function* logout(payload, context) {
         )}`;
       } else if (idp.logoutUrl) {
         // do a redirect
-        const redirectUri = absoluteUrl(`${router.pathname}/callback`);
+        const redirectUri = absoluteUrl(get(settings, 'routes.logoutCallback', `${router.pathname}/callback`));
         let search = "";
         if (isOauth(idp)) {
           const redirectKey =
