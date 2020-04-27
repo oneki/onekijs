@@ -42,7 +42,7 @@ export {
   sha256,
   verify
 } from "./lib/utils/crypt";
-export { urlBuilder, isAbsoluteUrl, absoluteUrl } from "./lib/utils/url";
+export { urlBuilder, isAbsoluteUrl, absoluteUrl, toUrl, toLocation } from "./lib/utils/url";
 export {
   useDelete,
   useGet,
@@ -64,8 +64,10 @@ export { useReduxSelector, createReduxStore } from "./lib/store";
 export {
   loginService,
   useLoginService,
+  useLoginCallbackService,
   logoutService,
-  useLogoutService
+  useLogoutService,
+  useLogoutCallbackService
 } from "./lib/login";
 export { authService, useAuthService, useSecurityContext } from "./lib/auth";
 export { App } from "./lib/app";

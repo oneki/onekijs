@@ -1,5 +1,4 @@
 import { StylesProvider } from "@material-ui/core/styles";
-import Router from 'next/router';
 import React, { useEffect, useMemo, useState } from "react";
 import { Provider } from "react-redux";
 import { ThemeProvider } from "styled-components";
@@ -8,8 +7,7 @@ import { createReduxService } from "./service";
 import { createReduxStore } from "./store";
 import { simpleMergeDeep } from "./utils/object";
 import { isPromise } from "./utils/type";
-
-const router = {};
+import NextRouter from "./router/next-router";
 
 // const RouterSync = React.memo(() => {
 //   router.location = useLocation();
@@ -31,6 +29,7 @@ const formatSettings = (settings) => {
 
 let init = false;
 
+
 export const App = React.memo(({settings={}, store, initialState={}, services=[], theme={}, children}) => {
 
   const [loading, setLoading] = useState(isPromise(initialState) || isPromise(settings));
@@ -43,6 +42,11 @@ export const App = React.memo(({settings={}, store, initialState={}, services=[]
     }
   }, [loading, store, appInitialState]);
 
+  const router = useMemo(() => {
+    return new NextRouter()
+    
+  }, []);
+
   let formattedSettings;
   if (!loading) {
     formattedSettings = formatSettings(appSettings);
@@ -50,6 +54,8 @@ export const App = React.memo(({settings={}, store, initialState={}, services=[]
       createReduxService(store, router, formattedSettings, service);
     });
   }
+
+
 
   useEffect(() => {
     
@@ -83,7 +89,7 @@ export const App = React.memo(({settings={}, store, initialState={}, services=[]
   init = true;
 
   return (
-    <AppContext.Provider value={{ router: Router, settings: formattedSettings }}>
+    <AppContext.Provider value={{ router, settings: formattedSettings }}>
       <StylesProvider injectFirst>
         <ThemeProvider theme={theme}>
           <Provider store={appStore}>

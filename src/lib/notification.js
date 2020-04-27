@@ -61,7 +61,7 @@ const formatLevelNotification = (level, notification) => {
 export const notificationService = {
   name: "notification",
   init: function({ router }) {
-    router.events.on('beforeHistoryChange', this.onRouteChange)
+    router.listen(this.onRouteChange);
   },
   reducers: {
     add: function(state, notification, { settings }) {
@@ -98,6 +98,7 @@ export const notificationService = {
   },
   sagas: {
     send: function*(notification, { store, settings }) {
+      console.log("NOTIFICATION", notification);
       try {
         // notification.test = 'test';
         if (!isNull(notification.id)) {

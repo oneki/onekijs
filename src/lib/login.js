@@ -11,7 +11,6 @@ import { sha256 } from "./utils/crypt";
 import { get } from "./utils/object";
 import { absoluteUrl } from "./utils/url";
 import { asyncHttp, asyncPost } from "./xhr";
-import { useRouter } from "next/router";
 
 const isOauth = idp => ["oauth2", "oidc"].includes(idp.type);
 const isExternal = idp => {
@@ -41,12 +40,12 @@ function* login(payload, { store, router, settings }) {
     if (!sessionStorage.getItem("onekijs.from")) {
       // check if the location state if we put a from element and save it in the sessionStorage
       // const locationState = router.location.state || null;
-      const locationState = null;
+      const state = router.state;
       let from = get(settings, "routes.home", "/");
-      if (locationState) {
-        from = locationState.pathname || get(settings, "routes.home", "/");
-        from += locationState.search || "";
-        from += locationState.hash || "";
+      if (state) {
+        from = state.pathname || get(settings, "routes.home", "/");
+        from += state.search || "";
+        from += state.hash || "";
       }
       sessionStorage.setItem("onekijs.from", from);
     }
@@ -104,7 +103,7 @@ function* externalLogin(payload, { store, router, settings }) {
   try {
     // get external url from config
     const idp = getIdp(settings, payload.name);
-    const redirectUri = absoluteUrl(`${router.location.pathname}/callback`);
+    const redirectUri = absoluteUrl(`${router.pathname}/callback`);
 
     if (!isExternal(idp)) {
       throw Error(
@@ -205,20 +204,24 @@ function* externalLoginCallback(payload, { store, router, settings }) {
             settings
           });
         } else {
-          const params = qs.parse(router.location.search);
+          // const params = qs.parse(router.query);
+          console.log("router", router);
+          const params = router.query;
           const state = sessionStorage.getItem("onekijs.state");
+          console.log("state in sessionStorage", state);
           sessionStorage.removeItem("onekijs.state");
           const headers = {
             "Content-Type": "application/x-www-form-urlencoded"
           };
           const hash = yield call(sha256, state);
+          console.log("state hash", hash, params);
           if (idp.state && hash !== params.state) {
             throw Error("Invalid oauth2 state");
           }
           const body = {
             grant_type: "authorization_code",
             client_id: idp.clientId,
-            redirect_uri: absoluteUrl(`${router.location.pathname}`),
+            redirect_uri: absoluteUrl(`${router.pathname}`),
             code: params.code
           };
           if (idp.clientSecret) {
@@ -389,13 +392,11 @@ function* successLogin(payload, { router, settings }) {
     }
 
     yield call(this.onSuccess);
-
-    const history = router.history;
     const from =
       sessionStorage.getItem("onekijs.from") ||
       get(settings, "routes.home", "/");
     sessionStorage.removeItem("onekijs.from");
-    yield call([history, history.push], from);
+    yield call([router, router.push], from);
   } catch (e) {
     if (payload.onError) {
       yield call(payload.onError, e);
@@ -420,7 +421,7 @@ function* logout(payload, context) {
         )}`;
       } else if (idp.logoutUrl) {
         // do a redirect
-        const redirectUri = absoluteUrl(`${router.location.pathname}/callback`);
+        const redirectUri = absoluteUrl(`${router.pathname}/callback`);
         let search = "";
         if (isOauth(idp)) {
           const redirectKey =
@@ -541,7 +542,7 @@ export const useLoginService = (name, options = {}) => {
     loading: false
   });
   const notificationService = useNotificationService();
-  const router = useRouter();
+
   const submit = useCallback(
     action => {
       return service.formLogin(Object.assign({ name }, action));
@@ -549,18 +550,8 @@ export const useLoginService = (name, options = {}) => {
     [service, name]
   );
 
-  let onError = useCallback(
-    e => {
-      notificationService.send({
-        topic: "error",
-        id: "login-error",
-        payload: e
-      });
-    },
-    [notificationService]
-  );
 
-  onError = options.onError || onError;
+  const onError = options.onError || notificationService.error;
 
   useEffect(() => {
     // it can be either
@@ -568,42 +559,51 @@ export const useLoginService = (name, options = {}) => {
     //   - a callback after a successful external login
 
     // check if it's a callback
-    if (router.pathname.endsWith("callback")) {
-      service.externalLoginCallback({ name, onError });
-    } else {
-      service.login({ name, onError });
-    }
-  }, [service, router, name, onError]);
+
+    service.login({ name, onError });
+    
+  }, [service, name, onError]);
 
   return [state, submit];
 };
 
-export const useLogoutService = (name, options = {}) => {
-  const [state, service] = useLocalService(logoutService, { loading: true });
-  const location = useLocation();
+export const useLoginCallbackService = (name, options = {}) => {
+  const [state, service] = useLocalService(loginService, {
+    doNotRender: true,
+    loading: false
+  });
   const notificationService = useNotificationService();
-
-  let onError = useCallback(
-    e => {
-      notificationService.send({
-        topic: "error",
-        id: "logout-error",
-        payload: e
-      });
-    },
-    [notificationService]
-  );
-
-  onError = options.onError || onError;
+  const onError = options.onError || notificationService.error;
 
   useEffect(() => {
-    // check if it's a callback
-    if (location.pathname.endsWith("callback")) {
-      service.successLogout({ name, onError });
-    } else {
-      service.logout({ name, onError });
-    }
-  }, [service, location, name, onError]);
+      service.externalLoginCallback({ name, onError });
+  }, [service, name, onError]);
+
+  return state;
+};
+
+export const useLogoutService = (name, options = {}) => {
+  const [state, service] = useLocalService(logoutService, { loading: true });
+  const notificationService = useNotificationService();
+
+  const onError = options.onError || notificationService.error;
+
+  useEffect(() => {
+    service.logout({ name, onError });
+  }, [service, name, onError]);
+
+  return state;
+};
+
+export const useLogoutCallbackService = (name, options = {}) => {
+  const [state, service] = useLocalService(logoutService, { loading: true });
+  const notificationService = useNotificationService();
+
+  const onError = options.onError || notificationService.error;
+
+  useEffect(() => {
+    service.successLogout({ name, onError });
+  }, [service, name, onError]);
 
   return state;
 };
