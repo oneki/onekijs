@@ -6,12 +6,15 @@ export default class NextRouter {
 
   constructor() {
     this.router = Router;
-    this._currentLocation = toLocation(Router.asPath);
-    this._previousLocation = null;
-    this.listen((location) => {
-      this._previousLocation = this._currentLocation;
-      this._currentLocation = location;
-    })
+    if (typeof window !== 'undefined') {
+      this._currentLocation = toLocation(Router.asPath);
+      this._previousLocation = null;
+      this.listen((location) => {
+        this._previousLocation = this._currentLocation;
+        this._currentLocation = location;
+      })
+    }
+
   }
 
   get location() {
@@ -83,7 +86,7 @@ export default class NextRouter {
    */
   listen(callback) {
     const handler = (url) => {
-      const location = toLocatin(url);
+      const location = toLocation(url);
       location.route = this.router.route;
       callback(location);
     };

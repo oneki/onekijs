@@ -43,7 +43,7 @@ export function toLocation(url) {
     hash: qs.parse(parser.hash),
     host: parser.host, 
     href: parser.href,
-    relative: `${parser.pathname}${parser.search}${parser.hash}`,
+    relativeurl: `${parser.pathname}${parser.search}${parser.hash}`,
     baseurl: `${parser.protocol}//${parser.host}`
   }
   
@@ -80,7 +80,7 @@ export function toUrl(location) {
   if (Object.keys(query).length > 0) {
     url += `?${qs.stringify(location.query)}`;
   }
-  if (location.hash) {
+  if (Object.keys(location.hash).length > 0) {
     url += `#${qs.stringify(location.hash)}`
   } 
   return url;

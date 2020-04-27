@@ -9,7 +9,7 @@ import { useLocalService } from "./service";
 import { generateCodeChallenge, generateCodeVerifier, generateNonce, generateState, getIdp, parseJwt } from "./utils/auth";
 import { sha256 } from "./utils/crypt";
 import { get } from "./utils/object";
-import { absoluteUrl } from "./utils/url";
+import { absoluteUrl, toUrl } from "./utils/url";
 import { asyncHttp, asyncPost } from "./xhr";
 
 const isOauth = idp => ["oauth2", "oidc"].includes(idp.type);
@@ -40,12 +40,11 @@ function* login(payload, { store, router, settings }) {
     if (!sessionStorage.getItem("onekijs.from")) {
       // check if the location state if we put a from element and save it in the sessionStorage
       // const locationState = router.location.state || null;
-      const state = router.state;
+      // const state = router.state;
       let from = get(settings, "routes.home", "/");
-      if (state) {
-        from = state.pathname || get(settings, "routes.home", "/");
-        from += state.search || "";
-        from += state.hash || "";
+      const previous = router.previousLocation;
+      if (previous) {
+        from = previous.relativeurl;
       }
       sessionStorage.setItem("onekijs.from", from);
     }
@@ -63,7 +62,9 @@ function* login(payload, { store, router, settings }) {
             token
           });
         }
-      } catch (e) {}
+      } catch (e) {
+        console.log("ERROR", e);
+      }
     }
 
     let done = false;
@@ -270,7 +271,6 @@ function* externalLoginCallback(payload, { store, router, settings }) {
         throw Error("Invalid oauth2 nonce");
       }
     }
-
     this.successLogin({
       token,
       securityContext,
@@ -346,7 +346,6 @@ function* formLogin(payload, { store, router, settings }) {
     } else if (callback === "securityContext") {
       securityContext = result;
     }
-
     yield call(this.successLogin, {
       token,
       securityContext,
@@ -395,7 +394,7 @@ function* successLogin(payload, { router, settings }) {
     const from =
       sessionStorage.getItem("onekijs.from") ||
       get(settings, "routes.home", "/");
-    sessionStorage.removeItem("onekijs.from");
+      sessionStorage.removeItem("onekijs.from");
     yield call([router, router.push], from);
   } catch (e) {
     if (payload.onError) {
@@ -464,12 +463,14 @@ function* logout(payload, context) {
   }
 }
 
-function* successLogout(payload) {
+function* successLogout(payload, {router, settings}) {
   try {
     yield call(this.authService.clear);
     yield call(this.onSuccess);
     if (payload.onSuccess) {
       yield call(payload.onSuccess);
+    } else {
+      yield call([router, router.push], get(settings, "routes.home", "/"));
     }
   } catch (e) {
     if (payload.onError) {
@@ -600,10 +601,11 @@ export const useLogoutCallbackService = (name, options = {}) => {
   const notificationService = useNotificationService();
 
   const onError = options.onError || notificationService.error;
+  const onSuccess = options.onSuccess;
 
   useEffect(() => {
-    service.successLogout({ name, onError });
-  }, [service, name, onError]);
+    service.successLogout({ name, onError, onSuccess });
+  }, [service, name, onError, onSuccess]);
 
   return state;
 };
