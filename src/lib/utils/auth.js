@@ -28,9 +28,27 @@ export function generateState() {
 }
 
 export function getIdp(settings, name) {
+  const defaultSettings = {
+    oidc_server: {
+      oidc: true,
+      oauth2: true,
+      external: true,
+      postLoginRedirectKey: 'redirect_uri',
+      postLogoutRedirectKey: 'post_logout_redirect_uri',
+      scope: 'openid',
+      pkce: true,
+      nonce: true,
+      state: true,
+      responseType: 'code',
+      codeChallengeMethod: 'S256'
+    }
+  };
+
+
   const idp = settings.idp;
   name = name || "default";
-  return Object.assign({ name }, idp[name]);
+  console.log("DEFAULT SETTINGS", defaultSettings[idp[name].type]);
+  return Object.assign({ name }, defaultSettings[idp[name].type], idp[name]);
 }
 
 export function parseJwt(token, section = "payload") {
@@ -50,19 +68,19 @@ export function parseJwt(token, section = "payload") {
   return JSON.parse(jsonPayload);
 }
 
-export async function validateToken(token, pubKeyFetch, idp, context) {
+export async function validateToken(token, jwksEndpoint, idp, context) {
   let pubKey = null;
   const header = parseJwt(token, "header");
-  if (typeof pubKeyFetch === "function") {
-    pubKey = await pubKeyFetch(token, idp, context);
+  if (typeof jwksEndpoint === "function") {
+    pubKey = await jwksEndpoint(token, idp, context);
   } else {
-    const jwks = await asyncGet(pubKeyFetch);
+    const jwks = await asyncGet(jwksEndpoint);
     pubKey = jwks.keys.find(key => key.kid === header.kid);
   }
   if (!pubKey) {
     throw Error("Could not find a valid public key for token validation");
   }
-  const result = await verify(token, pubKey, header.alg || idp.pubKeyAlgorithm);
+  const result = await verify(token, pubKey, header.alg || idp.jwksAlgorithm);
   return result;
 }
 

@@ -206,58 +206,45 @@ export const authService = {
           sessionStorage.getItem("onekijs.idp") ||
           localStorage.getItem("onekijs.idp");
         if (!idpName || idpName === "null") {
-          throw Error(
-            "Cannot fetch the security context for a non-logged user"
-          );
+          return;
         }
-        const idp = get(settings, `idp.${idpName}`);
+        const idp = getIdp(settings, idpName);
         if (!idp) {
-          throw Error(`Could not find the configuration for IDP ${idpName}`);
+          return;
         }
 
-        let securityContextFetch = idp.securityContextFetch;
-        if (!securityContextFetch) {
-          switch (idp.type) {
-            case "oidc":
-              securityContextFetch = "token://id_token";
-              break;
-            case "oauth2":
-              securityContextFetch = "token://access_token";
-              break;
-            default:
-              throw Error(
-                `Could not find a valid fetcher for the security context`
-              );
-          }
+        let userinfoEndpoint = idp.userinfoEndpoint;
+        if (!userinfoEndpoint) {
+            throw Error(
+              `Could not find a valid userinfo endpoint for idp ${idpName}`
+            );
         }
 
         let securityContext = null;
-        if (typeof securityContextFetch === "function") {
-          securityContext = yield call(securityContextFetch, idp, {
+        if (typeof userinfoEndpoint === "function") {
+          securityContext = yield call(userinfoEndpoint, idp, {
             store,
             router,
             settings
           });
-        } else if (securityContextFetch.startsWith("token://")) {
+        } else if (userinfoEndpoint.startsWith("token://")) {
           let token = get(store.getState(), "auth.token");
           if (!token) {
             // try to load it from the localStorage
             yield call(this.loadToken);
             token = get(store.getState(), "auth.token");
             if (!token) {
-              throw Error(
-                `Could not find a valid token for extracting the security context`
-              );
+              return;
             }
           }
-          const token_prop = securityContextFetch.split("/")[2];
+          const token_prop = userinfoEndpoint.split("/")[2];
           securityContext = token_prop
             ? parseJwt(token[token_prop])
             : parseJwt(token);
         } else {
           securityContext = yield call(
             asyncGet,
-            absoluteUrl(securityContextFetch, get(settings, "server.baseUrl")), 
+            absoluteUrl(userinfoEndpoint, get(settings, "server.baseUrl")), 
             {
               auth: get(store.getState(), "auth")
             }
@@ -269,6 +256,9 @@ export const authService = {
         if (payload.onSuccess) {
           yield call(payload.onSuccess, securityContext);
         }
+
+        return securityContext;
+        
       } catch (e) {
         if (payload && payload.onError) {
           yield call(payload.onError, e);
@@ -286,10 +276,11 @@ export const authService = {
             sessionStorage.getItem("onekijs.idp") ||
             localStorage.getItem("onekijs.idp");
           if (!idpName || idpName === "null") {
-            throw Error("A idp is required for loading a token");
+            return;
           }
           const idp = getIdp(settings, idpName);
-          const persist = get(idp, "persist", "localStorage");
+          const persist = get(idp, "persist");
+          if (!persist) return;
           const storage =
             persist === "localStorage" ? "localStorage" : "sessionStorage";
 
@@ -365,9 +356,9 @@ export const authService = {
         }
 
         let token;
-        if (typeof payload.idp.tokenFetch === "function") {
+        if (typeof payload.idp.tokenEndpoint === "function") {
           token = yield call(
-            payload.idp.tokenFetch,
+            payload.idp.tokenEndpoint,
             "refreshToken",
             payload.idp,
             { store, router, settings }
@@ -394,7 +385,7 @@ export const authService = {
               };
             }
           }
-          token = yield call(asyncPost, payload.idp.tokenFetch, body, {
+          token = yield call(asyncPost, payload.idp.tokenEndpoint, body, {
             headers
           });
         }
@@ -402,7 +393,7 @@ export const authService = {
         if (token.expires_in && !token.expires_at) {
           token.expires_at = Date.now() + parseInt(token.expires_in) * 1000;
         }
-        yield call(this.saveToken, { token, idp: payload.idp });
+        return yield call(this.saveToken, { token, idp: payload.idp });
       } catch (e) {
         if (payload && payload.onError) {
           yield call(payload.onError, e);
@@ -414,15 +405,15 @@ export const authService = {
 
     saveToken: latest(function*(payload, context) {
       try {
-        if (payload.idp.validate !== false) {
-          if (!payload.idp.pubKeyFetch) {
-            throw Error("A pubKeyFetch is required to validate tokens");
+        if (payload.idp.validate) {
+          if (!payload.idp.jwksEndpoint) {
+            throw Error("A jwksEndpoint is required to validate tokens");
           }
           if (payload.token.id_token) {
             const isValidIdToken = yield call(
               validateToken,
               payload.token.id_token,
-              payload.idp.pubKeyFetch,
+              payload.idp.jwksEndpoint,
               payload.idp,
               context
             );
@@ -433,7 +424,7 @@ export const authService = {
             const isValidAccessToken = yield call(
               validateToken,
               payload.token.access_token,
-              payload.idp.pubKeyFetch,
+              payload.idp.jwksEndpoint,
               payload.idp,
               context
             );
@@ -450,6 +441,7 @@ export const authService = {
         if (payload.token.refresh_token) {
           yield spawn(this.refreshToken, payload);
         }
+        return payload.token;
       } catch (e) {
         if (payload && payload.onError) {
           yield call(payload.onError, e);

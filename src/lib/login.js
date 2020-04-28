@@ -12,10 +12,8 @@ import { get } from "./utils/object";
 import { absoluteUrl, toUrl } from "./utils/url";
 import { asyncHttp, asyncPost } from "./xhr";
 
-const isOauth = idp => ["oauth2", "oidc"].includes(idp.type);
-const isExternal = idp => {
-  return isOauth(idp) || idp.type === "external";
-};
+const isOauth = idp => idp.oauth2 === true || idp.oidc === true;
+const isExternal = idp => idp.external === true;
 
 const parseUrlToken = hash => {
   const token = {};
@@ -51,45 +49,37 @@ function* login(payload, { store, router, settings }) {
 
     const idp = getIdp(settings, payload.name);
 
+    console.log("IDP SETTINGS:", idp);
+
     if (isOauth(idp)) {
-      try {
-        yield call(this.authService.loadToken);
-        let token = get(store.getState(), "auth.token");
-        if (token && parseInt(token.expires_at) >= Date.now()) {
-          // do a success login
-          return yield call(this.successLogin, {
-            name: payload.name,
-            token
-          });
-        }
-      } catch (e) {
-        console.log("ERROR", e);
+      yield call(this.authService.loadToken);
+      let token = get(store.getState(), "auth.token");
+      if (token && parseInt(token.expires_at) >= Date.now()) {
+        // do a success login
+        return yield call(this.successLogin, {
+          name: payload.name,
+          token
+        });
       }
     }
 
-    let done = false;
+
     // try to fetch the security context to see if we are already logged in
-    try {
-      yield call(this.authService.fetchSecurityContext, {
-        onSuccess: securityContext => {
-          done = true;
-          return this.successLogin({
-            name: payload.name,
-            securityContext
-          });
-        }
+    const securityContext = yield call(this.authService.fetchSecurityContext);
+    if (securityContext) {
+      return yield call(this.successLogin, {
+        name: payload.name,
+        securityContext
       });
-    } catch (e) {}
-    
-    if (!done) {
-      if (isExternal(idp)) {
-        
-        yield call(this.externalLogin, { name: payload.name });
-      } else {
-        // let print the form
-        yield call(this.setRender, true);
-      }
     }
+
+    if (isExternal(idp)) {
+      yield call(this.externalLogin, { name: payload.name });
+    } else {
+      // let print the form
+      yield call(this.setRender, true);
+    }
+    
   } catch (e) {
     if (payload.onError) {
       yield call(payload.onError, e);
@@ -104,7 +94,7 @@ function* externalLogin(payload, { store, router, settings }) {
   try {
     // get external url from config
     const idp = getIdp(settings, payload.name);
-    const redirectUri = absoluteUrl(`${router.pathname}/callback`);
+    const redirectUri = absoluteUrl(get(settings, 'routes.loginCallback', `${router.pathname}/callback`));
 
     if (!isExternal(idp)) {
       throw Error(
@@ -113,8 +103,8 @@ function* externalLogin(payload, { store, router, settings }) {
     }
 
     if (isOauth(idp)) {
-      if (typeof idp.authorizeUrl === "function") {
-        const url = yield call(idp.authorizeUrl, idp, {
+      if (typeof idp.authorizeEndpoint === "function") {
+        const url = yield call(idp.authorizeEndpoint, idp, {
           store,
           router,
           settings
@@ -124,13 +114,9 @@ function* externalLogin(payload, { store, router, settings }) {
           get(settings, "server.baseUrl")
         )}`;
       } else {
-        const responseType = idp.responseType || "code";
-        const redirectKey = idp.postLoginRedirectKey || "redirect_uri";
-        const scope = idp.scope
-          ? idp.scope
-          : idp.type === "oidc"
-          ? "openid"
-          : null;
+        const responseType = idp.responseType;
+        const redirectKey = idp.postLoginRedirectKey;
+        const scope = idp.scope;
         let search = `?${redirectKey}=${redirectUri}&client_id=${idp.clientId}&response_type=${responseType}`;
         if (scope) {
           search += `&scope=${idp.scope}`;
@@ -155,17 +141,17 @@ function* externalLogin(payload, { store, router, settings }) {
           const verifier = generateCodeVerifier();
           sessionStorage.setItem("onekijs.verifier", verifier);
           const challenge = yield call(generateCodeChallenge, verifier);
-          search += `&code_challenge=${challenge}&code_challenge_method=S256`;
+          search += `&code_challenge=${challenge}&code_challenge_method=${idp.codeChallengeMethod}`;
         } else {
           sessionStorage.removeItem("onekijs.verifier");
         }
         window.location.href = `${absoluteUrl(
-          idp.authorizeUrl,
+          idp.authorizeEndpoint,
           get(settings, "server.baseUrl")
         )}${search}`;
       }
-    } else if (typeof idp.loginUrl === "function") {
-      const url = yield call(idp.loginUrl, idp, { store, router, settings });
+    } else if (typeof idp.loginEndpoint === "function") {
+      const url = yield call(idp.loginEndpoint, idp, { store, router, settings });
       window.location.href = `${absoluteUrl(
         url,
         get(settings, "server.baseUrl")
@@ -175,7 +161,7 @@ function* externalLogin(payload, { store, router, settings }) {
         ? `?${idp.postLoginRedirectKey}=${redirectUri}`
         : "";
       window.location.href = `${absoluteUrl(
-        idp.loginUrl,
+        idp.loginEndpoint,
         get(settings, "server.baseUrl")
       )}${search}`;
     }
@@ -198,24 +184,21 @@ function* externalLoginCallback(payload, { store, router, settings }) {
     if (isOauth(idp)) {
       const responseType = idp.responseType || "code";
       if (responseType === "code") {
-        if (typeof idp.tokenFetch === "function") {
-          token = yield call(idp.tokenFetch, "authorization_code", idp, {
+        if (typeof idp.tokenEndpoint === "function") {
+          token = yield call(idp.tokenEndpoint, "authorization_code", idp, {
             store,
             router,
             settings
           });
         } else {
           // const params = qs.parse(router.query);
-          console.log("router", router);
           const params = router.query;
           const state = sessionStorage.getItem("onekijs.state");
-          console.log("state in sessionStorage", state);
           sessionStorage.removeItem("onekijs.state");
           const headers = {
             "Content-Type": "application/x-www-form-urlencoded"
           };
           const hash = yield call(sha256, state);
-          console.log("state hash", hash, params);
           if (idp.state && hash !== params.state) {
             throw Error("Invalid oauth2 state");
           }
@@ -242,7 +225,7 @@ function* externalLoginCallback(payload, { store, router, settings }) {
             sessionStorage.removeItem("onekijs.verifier");
           }
 
-          token = yield call(asyncPost, idp.tokenFetch, body, { headers });
+          token = yield call(asyncPost, idp.tokenEndpoint, body, { headers });
         }
 
         content = token;
@@ -261,16 +244,17 @@ function* externalLoginCallback(payload, { store, router, settings }) {
       });
     }
 
-    if (isOauth(idp) && idp.nonce && token.id_token) {
+    if (isOauth(idp) && idp.nonce && get(token,'id_token')) {
       // check nonce in id token
       const id_token = parseJwt(token.id_token);
       const nonce = sessionStorage.getItem("onekijs.nonce");
-      sessionStorage.removeItem("onekijs.nonce");
       const hash = yield call(sha256, nonce);
       if (hash !== id_token.nonce) {
+        sessionStorage.removeItem("onekijs.nonce");
         throw Error("Invalid oauth2 nonce");
       }
     }
+    sessionStorage.removeItem("onekijs.nonce");
     this.successLogin({
       token,
       securityContext,
@@ -412,13 +396,13 @@ function* logout(payload, context) {
     yield this.setLoading(true);
     const idp = getIdp(settings, payload.name);
     if (isExternal(idp)) {
-      if (typeof idp.logoutUrl === "function") {
-        const url = yield call(idp.loginUrl, idp, { store, router, settings });
+      if (typeof idp.logoutEndpoint === "function") {
+        const url = yield call(idp.loginEndpoint, idp, { store, router, settings });
         window.location.href = `${absoluteUrl(
           url,
           get(settings, "server.baseUrl")
         )}`;
-      } else if (idp.logoutUrl) {
+      } else if (idp.logoutEndpoint) {
         // do a redirect
         const redirectUri = absoluteUrl(get(settings, 'routes.logoutCallback', `${router.pathname}/callback`));
         let search = "";
@@ -431,7 +415,7 @@ function* logout(payload, context) {
         }
 
         window.location.href = `${absoluteUrl(
-          idp.logoutUrl,
+          idp.logoutEndpoint,
           get(settings, "server.baseUrl")
         )}${search}`;
       } else {
