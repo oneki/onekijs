@@ -47,7 +47,6 @@ export function getIdp(settings, name) {
 
   const idp = settings.idp;
   name = name || "default";
-  console.log("DEFAULT SETTINGS", defaultSettings[idp[name].type]);
   return Object.assign({ name }, defaultSettings[idp[name].type], idp[name]);
 }
 

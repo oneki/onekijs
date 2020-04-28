@@ -49,8 +49,6 @@ function* login(payload, { store, router, settings }) {
 
     const idp = getIdp(settings, payload.name);
 
-    console.log("IDP SETTINGS:", idp);
-
     if (isOauth(idp)) {
       yield call(this.authService.loadToken);
       let token = get(store.getState(), "auth.token");
@@ -65,13 +63,18 @@ function* login(payload, { store, router, settings }) {
 
 
     // try to fetch the security context to see if we are already logged in
-    const securityContext = yield call(this.authService.fetchSecurityContext);
-    if (securityContext) {
+    try {
+      const securityContext = yield call(this.authService.fetchSecurityContext);
       return yield call(this.successLogin, {
         name: payload.name,
         securityContext
       });
+    } catch(e) {
+      if (e.statusCode >= 500) {
+        throw e;
+      }
     }
+
 
     if (isExternal(idp)) {
       yield call(this.externalLogin, { name: payload.name });
@@ -365,6 +368,7 @@ function* successLogin(payload, { router, settings }) {
     if (payload.securityContext) {
       yield call(this.authService.setSecurityContext, payload.securityContext);
     } else {
+      console.log("ICI");
       yield call(this.authService.fetchSecurityContext, {
         onError:
           payload.onError ||
@@ -457,6 +461,7 @@ function* successLogout(payload, {router, settings}) {
       yield call([router, router.push], get(settings, "routes.home", "/"));
     }
   } catch (e) {
+    console.log("successLogout ERROR!!!", e);
     if (payload.onError) {
       yield call(payload.onError, e);
     } else {

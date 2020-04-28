@@ -80,7 +80,8 @@ class ReduxService {
 
     const wrapper = function* wrapper(action) {
       try {
-        const result = yield call([self, saga], action.payload, context);
+        const payload = action.payload === undefined ? {} : action.payload;
+        const result = yield call([self, saga], payload, context);
         if (action.resolve) {
           action.resolve(result);
         }

@@ -9,6 +9,9 @@ import { get, isNull, set } from "./utils/object";
 import { onStorageChange } from "./utils/storage";
 import { absoluteUrl } from "./utils/url";
 import { asyncGet, asyncPost } from "./xhr";
+import { useRouter, useSetting } from "./context";
+import { useNotificationService } from "./notification";
+import HTTPError from "./error";
 
 const getCookieExpireTime = ttl => {
   const date = new Date();
@@ -79,13 +82,21 @@ async function setItem(
   }
 }
 
+function getIdpName(state) {
+  return get(state, "auth.idp") ||
+      sessionStorage.getItem("onekijs.idp") ||
+      localStorage.getItem("onekijs.idp");
+}
+
 function removeItem(storage, key) {
   const fullKey = `onekijs.${key}`;
-  if (storage === "localStorage") {
+  if (storage === null || storage === "localStorage") {
     localStorage.removeItem(fullKey);
-  } else if (storage === "sessionStorage") {
+  } 
+  if (storage === null || storage === "sessionStorage") {
     sessionStorage.removeItem(fullKey);
-  } else if (storage === "cookie") {
+  } 
+  if (storage === null || storage === "cookie") {
     sessionStorage.removeItem(fullKey);
     removeCookie(key);
   }
@@ -108,12 +119,10 @@ export const authService = {
     },
 
     setToken: function(state, token, { settings }) {
-      const idpName =
-        get(state, "auth.idp") ||
-        getItem("sessionStorage", "idp") ||
-        getItem("localStorage", "idp");
+      const idpName = getIdpName(state);
+      console.log("idpName", idpName);
       const idp = getIdp(settings, idpName);
-      const persist = get(idp, "persist", "localStorage");
+      const persist = get(idp, "persist", null);
 
       let toCookie = null;
       if (persist === "cookie") {
@@ -125,12 +134,13 @@ export const authService = {
         }
       }
       const storage = k => {
-        if (!token) return persist;
+        if (!token || persist === null) return persist;
         if (k === toCookie) return "cookie";
+        
         return persist === "localStorage" ? "localStorage" : "sessionStorage";
       };
 
-      if (isNull(token)) {
+      if (isNull(token) || persist === null) {
         oauth2.forEach(k => {
           removeItem(storage(k), k);
         });
@@ -154,14 +164,11 @@ export const authService = {
     setIdp: function(state, idp, { router, settings }) {
       const nextIdp = idp;
       if (isNull(idp)) {
-        const idpName =
-          get(state, "auth.idp") ||
-          getItem("sessionStorage", "idp") ||
-          getItem("localStorage", "idp");
+        const idpName = getIdpName(state);
         if (isNull(idpName)) return;
         idp = getIdp(settings, idpName);
       }
-      const persist = get(idp, "persist", "localStorage");
+      const persist = get(idp, "persist", null);
       const storage =
         persist === "sessionStorage" ? "sessionStorage" : "localStorage";
 
@@ -174,7 +181,7 @@ export const authService = {
         if (storage === "localStorage") {
           onStorageChange("onekijs.idp", value => {
             if (value !== nextIdp.name) {
-              router.history.push(get(settings, "routes.logout") || "/logout");
+              router.push(get(settings, "routes.logout") || "/logout");
             }
           });
         }
@@ -201,23 +208,18 @@ export const authService = {
       { store, router, settings }
     ) {
       try {
-        const idpName =
-          get(store.getState(), "auth.idp") ||
-          sessionStorage.getItem("onekijs.idp") ||
-          localStorage.getItem("onekijs.idp");
+        const idpName =getIdpName(store.getState());
         if (!idpName || idpName === "null") {
-          return;
+          throw new HTTPError(401);
         }
         const idp = getIdp(settings, idpName);
         if (!idp) {
-          return;
+          throw new HTTPError(401);
         }
 
         let userinfoEndpoint = idp.userinfoEndpoint;
         if (!userinfoEndpoint) {
-            throw Error(
-              `Could not find a valid userinfo endpoint for idp ${idpName}`
-            );
+          throw new HTTPError(500, `Could not find a valid userinfo endpoint for idp ${idpName}`);
         }
 
         let securityContext = null;
@@ -271,10 +273,7 @@ export const authService = {
     loadToken: latest(function*(payload, { store, settings }) {
       try {
         if (!get(store.getState(), "auth.token")) {
-          const idpName =
-            get(store.getState(), "auth.idp") ||
-            sessionStorage.getItem("onekijs.idp") ||
-            localStorage.getItem("onekijs.idp");
+          const idpName = getIdpName(store.getState());
           if (!idpName || idpName === "null") {
             return;
           }
@@ -462,17 +461,22 @@ export const useSecurityContext = (prop, defaultValue, options = {}) => {
   const securityContext = useReduxSelector("auth.securityContext");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const errorListener = options.onError;
+  const notificationService = useNotificationService();
+  const errorListener = options.onError || notificationService.error;
+  const router = useRouter();
+  const loginRoute = useSetting('routes.login', '/login');
 
   let onError = useCallback(
     e => {
-      setLoading(false);
       setError(e);
-      if (errorListener) {
+      setLoading(false);
+      if(e.statusCode >= 400 && e.statusCode < 500) {
+        router.push(loginRoute);
+      } else if (errorListener) {
         errorListener(e);
       }
     },
-    [setLoading, setError, errorListener]
+    [setLoading, setError, errorListener, loginRoute, router]
   );
 
   let result = null;
@@ -480,8 +484,9 @@ export const useSecurityContext = (prop, defaultValue, options = {}) => {
     if (!securityContext) {
       setLoading(true);
       authService
-        .fetchSecurityContext({ onError })
-        .then(() => setLoading(false));
+        .fetchSecurityContext()
+        .then(() => setLoading(false))
+        .catch((e) => onError(e))
     } else {
       result = prop
         ? get(securityContext, prop, defaultValue)
