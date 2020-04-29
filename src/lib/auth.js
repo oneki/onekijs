@@ -1,17 +1,16 @@
-import { useCallback, useState } from "react";
+import { useContext } from "react";
 import { call, delay, spawn } from "redux-saga/effects";
-import { useReduxService } from "./service";
+import HTTPError from "./error";
 import { every, latest } from "./saga";
-import { useReduxSelector } from "./store";
+import { useReduxService } from "./service";
 import { getIdp, parseJwt, validateToken } from "./utils/auth";
 import { decrypt, encrypt } from "./utils/crypt";
 import { get, isNull, set } from "./utils/object";
 import { onStorageChange } from "./utils/storage";
 import { absoluteUrl } from "./utils/url";
 import { asyncGet, asyncPost } from "./xhr";
-import { useRouter, useSetting } from "./context";
-import { useNotificationService } from "./notification";
-import HTTPError from "./error";
+import { AppContext } from "./context";
+import { useReduxSelector } from "./store";
 
 const getCookieExpireTime = ttl => {
   const date = new Date();
@@ -456,43 +455,49 @@ export const useAuthService = () => {
   return useReduxService(authService);
 };
 
-export const useSecurityContext = (prop, defaultValue, options = {}) => {
-  const authService = useAuthService();
-  const securityContext = useReduxSelector("auth.securityContext");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const notificationService = useNotificationService();
-  const errorListener = options.onError || notificationService.error;
-  const router = useRouter();
-  const loginRoute = useSetting('routes.login', '/login');
-
-  let onError = useCallback(
-    e => {
-      setError(e);
-      setLoading(false);
-      if(e.statusCode >= 400 && e.statusCode < 500) {
-        router.push(loginRoute);
-      } else if (errorListener) {
-        errorListener(e);
-      }
-    },
-    [setLoading, setError, errorListener, loginRoute, router]
-  );
-
-  let result = null;
-  if (!loading && !error) {
-    if (!securityContext) {
-      setLoading(true);
-      authService
-        .fetchSecurityContext()
-        .then(() => setLoading(false))
-        .catch((e) => onError(e))
-    } else {
-      result = prop
-        ? get(securityContext, prop, defaultValue)
-        : securityContext;
-    }
-  }
-  const isLoading = loading || (!result && !error);
-  return [result, isLoading, error];
+export const useSecurityContext = (selector, defaultValue) => {
+  let key = 'auth.securityContext';
+  if (selector) key += `.${selector}`;
+  return useReduxSelector(key, defaultValue);
 };
+
+// export const useSecurityContext = (prop, defaultValue, options = {}) => {
+//   const authService = useAuthService();
+//   const securityContext = useReduxSelector("auth.securityContext");
+//   const [loading, setLoading] = useState(false);
+//   const [error, setError] = useState(null);
+//   const notificationService = useNotificationService();
+//   const errorListener = options.onError || notificationService.error;
+//   const router = useRouter();
+//   const loginRoute = useSetting('routes.login', '/login');
+
+//   let onError = useCallback(
+//     e => {
+//       setError(e);
+//       setLoading(false);
+//       if(e.statusCode >= 400 && e.statusCode < 500) {
+//         router.push(loginRoute);
+//       } else if (errorListener) {
+//         errorListener(e);
+//       }
+//     },
+//     [setLoading, setError, errorListener, loginRoute, router]
+//   );
+
+//   let result = null;
+//   if (!loading && !error) {
+//     if (!securityContext) {
+//       setLoading(true);
+//       authService
+//         .fetchSecurityContext()
+//         .then(() => setLoading(false))
+//         .catch((e) => onError(e))
+//     } else {
+//       result = prop
+//         ? get(securityContext, prop, defaultValue)
+//         : securityContext;
+//     }
+//   }
+//   const isLoading = loading || (!result && !error);
+//   return [result, isLoading, error];
+// };

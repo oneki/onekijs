@@ -47,15 +47,15 @@ export const App = React.memo(({settings={}, store, initialState={}, services=[]
     
   }, []);
 
-  let formattedSettings;
+  const formattedSettings = useMemo(() => {
+    return formatSettings(appSettings);
+  }, [appSettings]);
+
   if (!loading) {
-    formattedSettings = formatSettings(appSettings);
     services.forEach((service) => {
       createReduxService(store, router, formattedSettings, service);
     });
   }
-
-
 
   useEffect(() => {
     
@@ -70,11 +70,12 @@ export const App = React.memo(({settings={}, store, initialState={}, services=[]
         set: setAppInitialState,
         promise: initialState
       }].filter(entry => isPromise(entry.promise))
-      Promise.all(promises.map(entry => entry.promise)).then(function(values) {
-
-        values.forEach((v, i) => promises[i].set(v));
-        setLoading(false);
-      });
+      if (promises.length > 0) {
+        Promise.all(promises.map(entry => entry.promise)).then(function(values) {
+          values.forEach((v, i) => promises[i].set(v));
+          setLoading(false);
+        });
+      }
     }
   }, [settings, initialState])
 
