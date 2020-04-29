@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState, useEffect } from "react";
 import { call, delay, spawn } from "redux-saga/effects";
 import HTTPError from "./error";
 import { every, latest } from "./saga";
@@ -456,9 +456,23 @@ export const useAuthService = () => {
 };
 
 export const useSecurityContext = (selector, defaultValue) => {
-  let key = 'auth.securityContext';
-  if (selector) key += `.${selector}`;
-  return useReduxSelector(key, defaultValue);
+  const [loading, setLoading] = useState(false);
+  const securityContext = useReduxSelector('auth.securityContext');
+  const authService = useAuthService();
+
+  useEffect(() => {
+    if (securityContext !== undefined) {
+      setLoading(false);
+    } else {
+      setLoading(true);
+      authService.fetchSecurityContext({
+        onError: (e) => authService.setSecurityContext(null)
+      });
+    }
+    
+  }, [authService, securityContext])
+  
+  return [get(securityContext, selector, defaultValue), loading];
 };
 
 // export const useSecurityContext = (prop, defaultValue, options = {}) => {

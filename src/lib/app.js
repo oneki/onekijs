@@ -102,3 +102,5 @@ export const App = React.memo(({settings={}, store, initialState={}, services=[]
     </AppContext.Provider>
   );
 });
+
+export const NextApp = App;

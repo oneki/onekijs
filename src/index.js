@@ -70,7 +70,7 @@ export {
   useLogoutCallbackService
 } from "./lib/login";
 export { authService, useAuthService, useSecurityContext } from "./lib/auth";
-export { App } from "./lib/app";
+export { App, NextApp } from "./lib/app";
 export { useRouter, useSetting, useSettings, AppContext } from "./lib/context";
 export { default as Dashboard } from './components/dashboard';
 export { default as DashboardHeader } from './components/dashboard/header';
