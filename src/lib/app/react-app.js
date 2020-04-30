@@ -1,14 +1,14 @@
 import { createBrowserHistory, createHashHistory, createMemoryHistory } from "history";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, Suspense } from "react";
 import { Provider } from "react-redux";
 import { Router } from "react-router-dom";
 import ReactRouter from "../router/react-router";
 import { DefaultLoadingComponent, formatSettings } from "../utils/app";
 import { get } from "../utils/object";
 import { isPromise } from "../utils/type";
-import { AppContext } from "./context";
-import { createReduxService } from "./service";
-import { createReduxStore } from "./store";
+import { AppContext } from "../context";
+import { createReduxService } from "../service";
+import { createReduxStore } from "../store";
 
 let init = false;
 export const App = React.memo(
@@ -103,7 +103,7 @@ export const App = React.memo(
       <AppContext.Provider value={{ router, settings: formattedSettings }}>
         <Provider store={appStore}>
           <Router history={history}>
-            {children}
+            <Suspense fallback={<LoadingComponent />}>{children}</Suspense>
           </Router>
         </Provider>
       </AppContext.Provider>

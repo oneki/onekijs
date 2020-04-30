@@ -413,10 +413,9 @@ function* formLogin({idpName, onError, onSuccess, username, password, rememberMe
       const passwordKey = idp.passwordKey || "password";
       const rememberMeKey = idp.rememberMeKey || "rememberMe";
       const contentType = idp.loginContentType || "application/json";
-
       let url = idp.loginEndpoint;
-
       let body = null;
+      
       if (method === "GET") {
         url += `?${usernameKey}=${username}&${passwordKey}=${password}&${rememberMeKey}=${rememberMe}`;
       } else {

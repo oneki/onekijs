@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { Redirect, Route } from "react-router-dom";
 import { useAuthService } from "./auth";
 import { useRouter, useSetting } from "./context";
@@ -10,8 +10,13 @@ const DefaultErrorComponent = ({error}) => {
   const router = useRouter();
   const loginRoute = useSetting('routes.login', '/login');
 
+  useEffect(() => {
+    if (error.statusCode === 401) {
+      router.push(loginRoute);
+    }
+  }, [error.statusCode, router, loginRoute])
+  
   if (error.statusCode === 401) {
-    router.push(loginRoute);
     return null;
   }
 

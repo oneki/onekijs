@@ -1,15 +1,15 @@
 export default class BaseRouter {
 
   constructor() {
-    this._history = [];
+    this.history = [];
   }
 
   get location() {
-    return this._history[0];
+    return this.history[0];
   }
 
   get previousLocation() {
-    return this._history[1];
+    return this.history[1];
   }
 
   get hash() {

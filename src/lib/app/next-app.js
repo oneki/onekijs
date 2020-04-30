@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Provider } from "react-redux";
-import { AppContext } from "./context";
-import NextRouter from "./router/next-router";
-import { createReduxService } from "./service";
-import { createReduxStore } from "./store";
-import { isPromise } from "./utils/type";
+import { AppContext } from "../context";
+import NextRouter from "../router/next-router";
+import { createReduxService } from "../service";
+import { createReduxStore } from "../store";
+import { isPromise } from "../utils/type";
 import { formatSettings, DefaultLoadingComponent } from "../utils/app";
 
 

@@ -6,6 +6,7 @@ export default class ReactRouter extends BaseRouter {
 
   constructor(history) {
     super();
+    this._reactRouterHistory = history;
     this._pushLocation(history.location);
     history.listen(reactRouterLocation => {
       this._pushLocation(reactRouterLocation);
@@ -25,11 +26,11 @@ export default class ReactRouter extends BaseRouter {
    * }
    */
   push(url) {
-    return this.router.push(url);
+    return this._reactRouterHistory.push(url);
   }
 
   replace(url) {
-    return this.router.replace(url);
+    return this._reactRouterHistory.replace(url);
   }
 
   /**
@@ -47,13 +48,13 @@ export default class ReactRouter extends BaseRouter {
     const handler = (reactRouterLocation) => {
       callback(this._convertLocation(reactRouterLocation));
     };
-    this.router.listen(handler);
+    this._reactRouterHistory.listen(handler);
 
     return handler;
   }
 
   unlisten(handler) {
-    this.router.unlisten(handler);
+    this._reactRouterHistory.unlisten(handler);
   }
 
   _convertLocation(reactRouterLocation) {

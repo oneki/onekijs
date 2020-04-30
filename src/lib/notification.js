@@ -133,6 +133,7 @@ export const notificationService = {
     },
 
     error: function*(error) {
+      console.error(error);
       yield call(this.send, formatLevelNotification("error", error));
     },
 

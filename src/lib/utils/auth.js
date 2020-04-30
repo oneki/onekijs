@@ -44,7 +44,7 @@ export function getIdp(settings, name) {
   if (!idp) {
     return null;
   }
-  return Object.assign({ name }, defaultIdpSettings[idp.type], idp[name]);
+  return Object.assign({ name }, defaultIdpSettings[idp.type], idp);
 }
 
 export function getIdpName(state) {

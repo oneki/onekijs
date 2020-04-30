@@ -30,8 +30,7 @@ export default {
     'redux',
     'redux-saga',
     'rfc4648',
-    'styled-components',
-    '@material-ui/core'
+    'styled-components'
   ],
   plugins: [
     external(),
@@ -49,7 +48,7 @@ export default {
     commonjs({
       include: 'node_modules/**',
       namedExports: {
-        'node_modules/react-is/index.js': ['isValidElementType', 'ForwardRef', 'Memo', 'isFragment']
+        'node_modules/react-is/index.js': ['isElement', 'isValidElementType', 'ForwardRef', 'Memo', 'isFragment']
       }
     })
   ]
