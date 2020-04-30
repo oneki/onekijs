@@ -8,6 +8,8 @@ import { createReduxStore } from "./store";
 import { simpleMergeDeep } from "./utils/object";
 import { isPromise } from "./utils/type";
 import NextRouter from "./router/next-router";
+import Router from 'next/router'; 
+import { useRouter } from 'next/router'
 
 // const RouterSync = React.memo(() => {
 //   router.location = useLocation();
@@ -31,10 +33,11 @@ let init = false;
 
 
 export const App = React.memo(({settings={}, store, initialState={}, services=[], theme={}, children}) => {
-
+  
   const [loading, setLoading] = useState(isPromise(initialState) || isPromise(settings));
   const [appSettings, setAppSettings] = useState(isPromise(settings) ? null : settings);
   const [appInitialState, setAppInitialState] = useState(isPromise(initialState) ? null : initialState);
+  const nextRouter = useRouter();
 
   const appStore = useMemo(() => {
     if (!loading) {
@@ -43,9 +46,9 @@ export const App = React.memo(({settings={}, store, initialState={}, services=[]
   }, [loading, store, appInitialState]);
 
   const router = useMemo(() => {
-    return new NextRouter()
+    return new NextRouter(nextRouter)
     
-  }, []);
+  }, [nextRouter]);
 
   const formattedSettings = useMemo(() => {
     return formatSettings(appSettings);

@@ -1,13 +1,12 @@
-import qs from "query-string";
-import { extractState, toLocation, toUrl, URL_STATE } from "../utils/url";
-import Router from 'next/router';
+import { toLocation, toUrl } from "../utils/url";
+import Router from 'next/router'
 
 export default class NextRouter {
 
-  constructor() {
-    this.router = Router;
+  constructor(router) {
+    this.router = router;
     if (typeof window !== 'undefined') {
-      this._currentLocation = toLocation(Router.asPath);
+      this._currentLocation = toLocation(router.asPath);
       this._previousLocation = null;
       this.listen((location) => {
         this._previousLocation = this._currentLocation;
