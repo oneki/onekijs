@@ -89,15 +89,15 @@ export default class NextRouter {
       location.route = this.router.route;
       callback(location);
     };
-    this.router.events.on('routeChangeStart', handler);
-    this.router.events.on('hashChangeStart', handler);
+    Router.events.on('routeChangeStart', handler);
+    Router.events.on('hashChangeStart', handler);
 
     return handler;
   }
 
   unlisten(handler) {
-    this.router.events.off('routeChangeStart', handler);
-    this.router.events.off('hashChangeStart', handler);
+    Router.events.off('routeChangeStart', handler);
+    Router.events.off('hashChangeStart', handler);
   }
 
   _goto(url, type) {
