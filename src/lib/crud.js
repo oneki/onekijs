@@ -34,7 +34,8 @@ const Service = {
         if (onSuccess) {
           if (typeof onSuccess === "string") {
             // onSuccess is a URL -> redirect to this one
-            yield call(router.history.push, onSuccess);
+            console.log("SUCCESS")
+            yield call([router, router.push], onSuccess);
           } else {
             yield call(options.onSuccess, result);
           }
@@ -45,7 +46,7 @@ const Service = {
         if (onError) {
           if (typeof onError === "string") {
             // onError is a URL -> redirect to this one
-            yield call(router.history.push, onError);
+            yield call([router, router.push], onError);
           } else {
             yield call(onError, e);
           }
