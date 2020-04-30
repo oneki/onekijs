@@ -1,14 +1,74 @@
-export default class ReactRouter {
+import BaseRouter from "./base";
+import { toLocation } from "../utils/url";
+import produce from "immer";
 
-  constructor(router) {
-    this.router = router;
+export default class ReactRouter extends BaseRouter {
+
+  constructor(history) {
+    super();
+    this._pushLocation(history.location);
+    history.listen(reactRouterLocation => {
+      this._pushLocation(reactRouterLocation);
+    })
   }
 
-  sync(location, history, params) {
-    this.router.location = location;
-    this.router.history = history;
-    this.router.params = params;
+  /**
+   * url can be a string or an object.
+   * If object, the format is the following
+   * {
+   *   url: string, // example: /users/1?test=1&test2#h=3&h2
+   *   route: string, // example: /users/[id]
+   *   pathname: string, // example: /users/1
+   *   query: obj, // example: {test:1,test2:null}
+   *   hash: obj // example: {h:3, h2:null}
+   *   state: obj // example: {key1: 'value1'}
+   * }
+   */
+  push(url) {
+    return this.router.push(url);
   }
+
+  replace(url) {
+    return this.router.replace(url);
+  }
+
+  /**
+   * callback(url) where url is:
+   * {
+   *   url: string, // example: /users/1?test=1&test2#h=3&h2
+   *   route: string, // example: /users/[id]
+   *   pathname: string, // example: /users/1
+   *   query: obj, // example: {test:1,test2:null}
+   *   hash: obj // example: {h:3, h2:null}
+   *   state: obj // example: {key1: 'value1'}
+   * }
+   */
+  listen(callback) {
+    const handler = (reactRouterLocation) => {
+      callback(this._convertLocation(reactRouterLocation));
+    };
+    this.router.listen(handler);
+
+    return handler;
+  }
+
+  unlisten(handler) {
+    this.router.unlisten(handler);
+  }
+
+  _convertLocation(reactRouterLocation) {
+    return toLocation(`${reactRouterLocation.pathname}${reactRouterLocation.search}${reactRouterLocation.hash}`);
+  }
+
+  _pushLocation(reactRouterLocation) {
+    const location = this._convertLocation(reactRouterLocation);
+    this.history = produce(this.history, draft => {
+      draft.unshift(location);
+      // keep max 20 items
+      draft.splice(20, draft.length);
+    });
+  }
+
 
 
 }

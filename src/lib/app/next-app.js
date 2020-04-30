@@ -1,36 +1,15 @@
-import { StylesProvider } from "@material-ui/core/styles";
 import React, { useEffect, useMemo, useState } from "react";
 import { Provider } from "react-redux";
-import { ThemeProvider } from "styled-components";
 import { AppContext } from "./context";
+import NextRouter from "./router/next-router";
 import { createReduxService } from "./service";
 import { createReduxStore } from "./store";
-import { simpleMergeDeep } from "./utils/object";
 import { isPromise } from "./utils/type";
-import NextRouter from "./router/next-router";
+import { formatSettings, DefaultLoadingComponent } from "../utils/app";
 
-// const RouterSync = React.memo(() => {
-//   router.location = useLocation();
-//   router.history = useHistory();
-//   router.params = useParams();
-// });
-
-const formatSettings = (settings) => {
-  let result = settings;
-  if (Array.isArray(settings)) {
-    result = Object.assign({}, settings[0]);
-    for (let i = 1; i < settings.length; i++) {
-      result = simpleMergeDeep(result, settings[i]);
-    }
-  }
-  // return deepFreeze(settings || {});
-  return result;
-}
 
 let init = false;
-
-
-export const App = React.memo(({settings={}, store, initialState={}, services=[], theme={}, children}) => {
+export const NextApp = React.memo(({settings={}, store, initialState={}, services=[], theme={}, LoadingComponent=DefaultLoadingComponent, children}) => {
 
   const [loading, setLoading] = useState(isPromise(initialState) || isPromise(settings));
   const [appSettings, setAppSettings] = useState(isPromise(settings) ? null : settings);
@@ -44,7 +23,6 @@ export const App = React.memo(({settings={}, store, initialState={}, services=[]
 
   const router = useMemo(() => {
     return new NextRouter()
-    
   }, []);
 
   const formattedSettings = useMemo(() => {
@@ -58,9 +36,7 @@ export const App = React.memo(({settings={}, store, initialState={}, services=[]
   }
 
   useEffect(() => {
-    
     if (!init) {
-
       init = true;
       // TODO call initialState and/or settings
       const promises = [{
@@ -80,27 +56,16 @@ export const App = React.memo(({settings={}, store, initialState={}, services=[]
   }, [settings, initialState])
 
   if (loading) {
-    return (
-      <div>
-        LOADING ...
-      </div>
-    )
+    return <LoadingComponent />
   }
 
   init = true;
 
   return (
     <AppContext.Provider value={{ router, settings: formattedSettings }}>
-      <StylesProvider injectFirst>
-        <ThemeProvider theme={theme}>
-          <Provider store={appStore}>
-            {/* <RouterSync /> */}
-            {children}
-          </Provider>
-        </ThemeProvider>
-      </StylesProvider>
+      <Provider store={appStore}>
+        {children}
+      </Provider>
     </AppContext.Provider>
   );
 });
-
-export const NextApp = App;

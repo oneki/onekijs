@@ -1,57 +1,26 @@
-import qs from "query-string";
-import { extractState, toLocation, toUrl, URL_STATE } from "../utils/url";
 import Router from 'next/router';
+import { toLocation, toUrl } from "../utils/url";
+import produce from 'immer';
+import BaseRouter from './base';
 
-export default class NextRouter {
+export default class NextRouter extends BaseRouter {
 
   constructor() {
-    this.router = Router;
+    super();
     if (typeof window !== 'undefined') {
-      this._currentLocation = toLocation(Router.asPath);
-      this._previousLocation = null;
+      const pathname = Router.router.pathname;
+      if (!pathname.includes('[')) {
+        this._pushLocation(toLocation(Router.router.asPath));
+      }
       this.listen((location) => {
-        this._previousLocation = this._currentLocation;
-        this._currentLocation = location;
+        this._pushLocation(location);
       })
     }
-
-  }
-
-  get location() {
-    return this._currentLocation;
-  }
-
-  get previousLocation() {
-    return this._previousLocation;
-  }
-
-  get hash() {
-    return this.location.hash;
-  }
-
-  get query() {
-    return this.location.query;
-  }
-
-  get href() {
-    return this.location.href;
-  }
-
-  get pathname() {
-    return this.location.pathname;
-  }
-
-  get state() {
-    return this.location.state;
   }
 
   get native() {
-    return this.router;
-  }
-
-  sync(location, history, params) {
-    
-  }
+    return Router.router;
+  }  
 
   /**
    * url can be a string or an object.
@@ -111,5 +80,14 @@ export default class NextRouter {
     } else {
       return this.router[type](routerUrl);
     }
+  }
+
+  _pushLocation(location) {
+    this._location = location;
+    this.history = produce(this.history, draft => {
+      draft.unshift(location);
+      // keep max 20 items
+      draft.splice(20, draft.length);
+    });
   }
 }

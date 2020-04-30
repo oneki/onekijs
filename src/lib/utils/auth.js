@@ -2,6 +2,7 @@ import { asyncGet } from "../xhr";
 import { sha256, verify } from "./crypt";
 import { generateRandomString, hex2b64 } from "./string";
 import { get } from "./object";
+import { defaultIdpSettings } from "../settings";
 
 export const oauth2Keys = [
   "access_token",
@@ -37,26 +38,13 @@ export function generateState() {
 }
 
 export function getIdp(settings, name) {
-  const defaultSettings = {
-    oidc_server: {
-      oidc: true,
-      oauth2: true,
-      external: true,
-      postLoginRedirectKey: 'redirect_uri',
-      postLogoutRedirectKey: 'post_logout_redirect_uri',
-      scope: 'openid',
-      pkce: true,
-      nonce: true,
-      state: true,
-      responseType: 'code',
-      codeChallengeMethod: 'S256'
-    }
-  };
-
-
-  const idp = settings.idp;
+  const idps = settings.idp;
   name = name || "default";
-  return Object.assign({ name }, defaultSettings[idp[name].type], idp[name]);
+  const idp = idps[name];
+  if (!idp) {
+    return null;
+  }
+  return Object.assign({ name }, defaultIdpSettings[idp.type], idp[name]);
 }
 
 export function getIdpName(state) {
