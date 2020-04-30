@@ -1,129 +1,43 @@
-import { useContext, useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { call, delay, spawn } from "redux-saga/effects";
 import HTTPError from "./error";
 import { every, latest } from "./saga";
 import { useReduxService } from "./service";
-import { getIdp, parseJwt, validateToken } from "./utils/auth";
-import { decrypt, encrypt } from "./utils/crypt";
-import { get, isNull, set } from "./utils/object";
-import { onStorageChange } from "./utils/storage";
+import { useReduxSelector } from "./store";
+import { getIdp, getIdpName, parseJwt, validateToken, oauth2Keys } from "./utils/auth";
+import { get, isNull, set, del } from "./utils/object";
+import { onStorageChange, removeItem, setItem, getItem } from "./utils/storage";
 import { absoluteUrl } from "./utils/url";
 import { asyncGet, asyncPost } from "./xhr";
-import { AppContext } from "./context";
-import { useReduxSelector } from "./store";
-
-const getCookieExpireTime = ttl => {
-  const date = new Date();
-  var time = date.getTime();
-  var expireTime = time + 1000 * parseInt(ttl);
-  date.setTime(expireTime);
-  return date.toGMTString();
-};
-
-async function addCookie(name, value, secure = true, ttl = null, path = "/") {
-  if (secure) {
-    value = await encrypt(value);
-  }
-  let cookie = `onekijs.${name}=${value};path=${path};SameSite=Strict;Secure;`;
-  if (ttl) {
-    cookie += `expires=${getCookieExpireTime(ttl)};`;
-  }
-  document.cookie = cookie;
-}
-
-const removeCookie = (name, path = "/") => {
-  document.cookie = `onekijs.${name}= ;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=${path};`;
-};
-
-// https://stackoverflow.com/questions/10730362/get-cookie-by-name
-async function getCookie(name, secure = true) {
-  name = `onekijs.${name}`;
-  function escape(s) {
-    return s.replace(/([.*+?\^${}()|\[\]\/\\])/g, "\\$1");
-  }
-  var match = document.cookie.match(
-    RegExp("(?:^|;\\s*)" + escape(name) + "=([^;]*)")
-  );
-  const result = match ? match[1] : null;
-  return secure ? await decrypt(result) : result;
-}
-
-async function getItem(storage, key, secure = true) {
-  const fullKey = `onekijs.${key}`;
-  if (storage === "localStorage") {
-    return localStorage.getItem(fullKey);
-  } else if (storage === "sessionStorage") {
-    return sessionStorage.getItem(fullKey);
-  } else if (storage === "cookie") {
-    if (!isNull(sessionStorage.getItem(fullKey))) {
-      return sessionStorage.getItem(fullKey);
-    } else {
-      return await getCookie(key, secure);
-    }
-  }
-}
-
-async function setItem(
-  storage,
-  key,
-  value,
-  secure = true,
-  ttl = null,
-  path = "/"
-) {
-  const fullKey = `onekijs.${key}`;
-  if (storage === "localStorage") {
-    localStorage.setItem(fullKey, value);
-  } else if (storage === "sessionStorage") {
-    sessionStorage.setItem(fullKey, value);
-  } else if (storage === "cookie") {
-    await addCookie(key, value, secure, ttl, path);
-  }
-}
-
-function getIdpName(state) {
-  return get(state, "auth.idp") ||
-      sessionStorage.getItem("onekijs.idp") ||
-      localStorage.getItem("onekijs.idp");
-}
-
-function removeItem(storage, key) {
-  const fullKey = `onekijs.${key}`;
-  if (storage === null || storage === "localStorage") {
-    localStorage.removeItem(fullKey);
-  } 
-  if (storage === null || storage === "sessionStorage") {
-    sessionStorage.removeItem(fullKey);
-  } 
-  if (storage === null || storage === "cookie") {
-    sessionStorage.removeItem(fullKey);
-    removeCookie(key);
-  }
-}
-
-const oauth2 = [
-  "access_token",
-  "id_token",
-  "refresh_token",
-  "expires_in",
-  "expires_at",
-  "token_type"
-];
 
 export const authService = {
   name: "auth",
   reducers: {
+    /**
+     * Save the security context in the redux store
+     * 
+     * @param {object} state : state of the redux store
+     * @param {object} securityContext : the security context to save
+     */
     setSecurityContext: function(state, securityContext) {
       set(state, "auth.securityContext", securityContext);
     },
 
+    /**
+     * Save the token in the redux store
+     * 
+     * @param {object} state : state of the redux store
+     * @param {string|object} token : the token to save
+     * @param {object} context :
+     *    - settings: the full settings object passed to the application
+     */
     setToken: function(state, token, { settings }) {
       const idpName = getIdpName(state);
-      console.log("idpName", idpName);
       const idp = getIdp(settings, idpName);
       const persist = get(idp, "persist", null);
 
       let toCookie = null;
+      // we only persist in the cookie the refresh token and if not specified, the access token
       if (persist === "cookie") {
         for (let type of ["refresh_token", "access_token", "token"]) {
           if (token && token[type]) {
@@ -132,55 +46,97 @@ export const authService = {
           }
         }
       }
+
+      // any other key will not be saved in the cookie but in the sessionStorage
       const storage = k => {
         if (!token || persist === null) return persist;
         if (k === toCookie) return "cookie";
         
         return persist === "localStorage" ? "localStorage" : "sessionStorage";
       };
-
+      
       if (isNull(token) || persist === null) {
-        oauth2.forEach(k => {
-          removeItem(storage(k), k);
+        // if the token is null or the config specifies to persist nothing, 
+        // we remove to token from the persistent storage
+        oauth2Keys.forEach(k => {
+          removeItem(`onekijs.${k}`, storage(k));
         });
-        removeItem(storage("token"), "token");
-      } else if (typeof token === "string") {
-        setItem(storage("token"), "token", token);
-      } else {
-        oauth2.forEach(k => {
+        removeItem('onekijs.token', storage("token"));
+        // remove the token from the redux state.
+        del(state, 'auth.token');
+      } 
+      
+      else if (typeof token === "string") {
+        // it's not a oauth2 token but a simple "string" token. Persist as it is
+        setItem("onekijs.token", token, storage("token"));
+        // persist the token in the redux state. It can be added as a bearer to any ajax request.
+        set(state, 'auth.token', token);
+      } 
+      
+      else {
+        // it's an oauth2 token, persist all keys
+        oauth2Keys.forEach(k => {
           if (token[k]) {
-            setItem(storage(k), k, `${token[k]}`);
+            setItem(`onekijs.${k}`, `${token[k]}`, storage(k));
           }
         });
+        // create a expirtes_at key for convenience
         if (token.expires_in && !token.expires_at) {
           token.expires_at = Date.now() + parseInt(token.expires_in) * 1000;
-          setItem(storage("expires_at"), "expires_at", `${token.expires_at}`);
+          setItem('onekijs.expires_at', `${token.expires_at}`, storage('expires_at'));
         }
+        // persist the token in the redux state. It can be added as a bearer to any ajax request.
+        set(state, 'auth.token', token);
       }
-      set(state, "auth.token", token);
+  
     },
 
+    /**
+     * Save the idp name in the redux store
+     * 
+     * @param {object} state : state of the redux store
+     * @param {object} idp : the IDP to save (full object). Can be null for removal
+     * @param {object} context :
+     *    - router: the OnekiJS router of the application
+     *    - settings: the full settings object passed to the application
+     */
     setIdp: function(state, idp, { router, settings }) {
       const nextIdp = idp;
+      
       if (isNull(idp)) {
+        // if it's a removal, we need to check in which storage the idp name was saved
+        // get the current idpName from the redux store
         const idpName = getIdpName(state);
+        // if not found, the idp was already removed
         if (isNull(idpName)) return;
+        // build the full IDP object from the settings
         idp = getIdp(settings, idpName);
       }
-      const persist = get(idp, "persist", null);
+
+      // get the persistence storage specified by the IDP (null means that 
+      // nothing related to authentication is persisted on the client side)
+      const persist = get(idp, 'persist', null);
+
+      // the idpName is always persisted (in the localStorage except if persist is sessionStorage)
+      // This allows a user to refresh the tab (always) and open a new tab (if persist is not sessionStorage) 
       const storage =
-        persist === "sessionStorage" ? "sessionStorage" : "localStorage";
+        persist === 'sessionStorage' ? 'sessionStorage' : 'localStorage';
 
       if (isNull(nextIdp)) {
-        set(state, "auth.idp", null);
-        removeItem(storage, "idp");
+        // it's a removal, just remove from the redux store
+        set(state, 'auth.idpName', null);
+        // and the persistence storage
+        removeItem('onekijs.idpName', storage);
       } else {
-        set(state, "auth.idp", nextIdp.name);
-        setItem(storage, "idp", nextIdp.name);
+        // save the idp name in the redux store
+        set(state, 'auth.idpName', nextIdp.name);
+        // and in the persistence storage
+        setItem('onekijs.idpName', nextIdp.name, storage);
         if (storage === "localStorage") {
-          onStorageChange("onekijs.idp", value => {
+          // listen to change on the idpName key and logout every other tab
+          onStorageChange("onekijs.idpName", value => {
             if (value !== nextIdp.name) {
-              router.push(get(settings, "routes.logout") || "/logout");
+              router.push(get(settings, 'routes.logout') || '/logout');
             }
           });
         }
@@ -188,32 +144,56 @@ export const authService = {
     }
   },
   sagas: {
-    clear: latest(function*(payload) {
+    /**
+     * Clear all authentication data from the redux store 
+     * and the persistence storage
+     * 
+     * @param {object} action :
+     *    - onError: callback for any error
+     *    - onSuccess: callback for any success
+     */
+    clear: latest(function*({onError, onSuccess}) {
       try {
         yield call(this.setSecurityContext, null);
         yield call(this.setToken, null);
         yield call(this.setIdp, null);
+        if (onSuccess) {
+          yield call(onSuccess);
+        }        
       } catch (e) {
-        if (payload && payload.onError) {
-          yield call(payload.onError, e);
+        if (onError) {
+          yield call(onError, e);
         } else {
           throw e;
         }
       }
     }),
 
+    /**
+     * Get the security context from the server and save it
+     * 
+     * @param {object} action :
+     *    - onError: callback for any error
+     *    - onSuccess: callback for any success
+     * @param {object} context : 
+     *    - store: the redux store
+     *    - router: the OnekiJS router of the application
+     *    - settings: the full settings object passed to the application
+     */
     fetchSecurityContext: latest(function*(
-      payload,
+      { onSuccess, onError },
       { store, router, settings }
     ) {
       try {
-        const idpName =getIdpName(store.getState());
+        const idpName = getIdpName(store.getState());
         if (!idpName || idpName === "null") {
+          // not idp name in the stage or the persistence storage => not yet authenticated
           throw new HTTPError(401);
         }
+
         const idp = getIdp(settings, idpName);
         if (!idp) {
-          throw new HTTPError(401);
+          throw new HTTPError(500, `Could not find the configuration for IDP ${idpName} in the settings`);
         }
 
         let userinfoEndpoint = idp.userinfoEndpoint;
@@ -223,94 +203,129 @@ export const authService = {
 
         let securityContext = null;
         if (typeof userinfoEndpoint === "function") {
+          // delegate the security context fetching to the user-passed function
           securityContext = yield call(userinfoEndpoint, idp, {
             store,
             router,
             settings
           });
         } else if (userinfoEndpoint.startsWith("token://")) {
+          // we fetch the token from the redux store 
           let token = get(store.getState(), "auth.token");
+
+          // or from the persistence storage
           if (!token) {
             // try to load it from the localStorage
             yield call(this.loadToken);
             token = get(store.getState(), "auth.token");
             if (!token) {
-              return;
+              // if the token was not found, we are not yet authenticated
+              throw new HTTPError(401);
             }
           }
+          // from the userinfo endpoint, we check which property of the token 
+          // contains the security context (usually the id_token)
+          // if no property was specified, the full token is the security context
           const token_prop = userinfoEndpoint.split("/")[2];
           securityContext = token_prop
             ? parseJwt(token[token_prop])
             : parseJwt(token);
         } else {
+          // the userinfo endpoint is an URL, do a ajax call to 
+          // get the security context
           securityContext = yield call(
             asyncGet,
             absoluteUrl(userinfoEndpoint, get(settings, "server.baseUrl")), 
             {
+              // we add a bearer auth if a token was saved in the redux store
               auth: get(store.getState(), "auth")
             }
           );
         }
-
+        
+        // save the security context in the store
         yield call(this.setSecurityContext, securityContext);
 
-        if (payload.onSuccess) {
-          yield call(payload.onSuccess, securityContext);
+        if (onSuccess) {
+          // call the success callback
+          yield call(onSuccess, securityContext);
         }
 
         return securityContext;
         
       } catch (e) {
-        if (payload && payload.onError) {
-          yield call(payload.onError, e);
+        if (onError) {
+          yield call(onError, e);
         } else {
           throw e;
         }
       }
     }),
 
-    loadToken: latest(function*(payload, { store, settings }) {
+
+    /**
+     * Load the token from the persistence storage to the redux store
+     * 
+     * @param {object} action :
+     *    - onError: callback for any error
+     *    - onSuccess: callback for any success
+     * @param {object} context : 
+     *    - store: the redux store
+     *    - settings: the full settings object passed to the application
+     */
+    loadToken: latest(function*({onError, onSuccess}, { store, settings }) {
       try {
-        if (!get(store.getState(), "auth.token")) {
+        let result = get(store.getState(), "auth.token", null);
+        if (isNull(result)) {
           const idpName = getIdpName(store.getState());
           if (!idpName || idpName === "null") {
-            return;
+            // not authenticated
+            return null;
           }
           const idp = getIdp(settings, idpName);
           const persist = get(idp, "persist");
-          if (!persist) return;
+          if (!persist) {
+            // the token is not persisted in the store
+            return null;
+          }
+          
+          // TODO: manage cookie storage
           const storage =
             persist === "localStorage" ? "localStorage" : "sessionStorage";
 
           const expires_at = parseInt(
-            yield call(getItem, storage, "expires_at")
+            yield call(getItem, "onekijs.expires_at", storage)
           );
           const clockSkew = idp.clockSkew || 60;
 
-          const access_token = yield call(getItem, persist, "access_token");
-          const refresh_token = yield call(getItem, persist, "refresh_token");
+          const access_token = yield call(getItem, "onekijs.access_token", persist);
+          const refresh_token = yield call(getItem, "onekijs.refresh_token", persist);
           if (
             access_token &&
             expires_at >= Date.now() + parseInt(clockSkew) * 1000
           ) {
+            // the token is still valid
             const token = {
               access_token,
               refresh_token
             };
-            for (let k of oauth2) {
+            // build the token
+            for (let k of oauth2Keys) {
               if (!token[k]) {
-                token[k] = yield call(getItem, storage, k);
+                token[k] = yield call(getItem, `onekijs.${k}`, storage);
               }
             }
-
-            return yield call(this.saveToken, {
+            // save it 
+            result = yield call(this.saveToken, {
               token,
               idp
             });
           }
 
-          if (refresh_token) {
-            return yield call(this.refreshToken, {
+          else if (refresh_token) {
+            // the access token is not still valid but we have a refresh token
+            // use the refresh token to get a new valid token
+            result = yield call(this.refreshToken, {
               token: {
                 refresh_token
               },
@@ -319,130 +334,181 @@ export const authService = {
             });
           }
 
-          const token = yield call(getItem, persist, "token");
-          if (token) {
-            return yield call(this.saveToken, {
-              token,
-              idp
-            });
+          else {
+            const token = yield call(getItem, 'onekijs.token', persist);
+            if (token) {
+              result = yield call(this.saveToken, {
+                token,
+                idp
+              });
+            }
           }
         }
+
+        if (onSuccess) {
+          // call the success callback
+          yield call(onSuccess, result);
+        }
+
+        return result;
       } catch (e) {
-        if (payload && payload.onError) {
-          yield call(payload.onError, e);
+        if (onError) {
+          yield call(onError, e);
         } else {
           throw e;
         }
       }
     }),
 
-    refreshToken: every(function*(payload, { store, router, settings }) {
+    /**
+     * Refresh the token against an IDP
+     * 
+     * @param {object} action :
+     *    - token: the current oauth token
+     *    - idp: the IDP used to refresh the token
+     *    - force: refresh the token even the current one is not expired
+     *    - onError: callback for any error
+     * @param {object} context : 
+     *    - store: the redux store
+     *    - settings: the full settings object passed to the application
+     */
+    refreshToken: every(function*({token, idp, force, onError }, { store, router, settings }) {
       try {
-        if (!payload.force && !payload.token.expires_at) return;
-
-        // delay the refresh until the expiration of the token with a tolerance of idp.clockSkew
-        if (!payload.force) {
-          const clockSkew = payload.idp.clockSkew || 60;
-          const expires_at = parseInt(payload.token.expires_at);
-          const to_delay = expires_at - clockSkew * 1000 - Date.now();
-          if (to_delay > 0) {
-            yield delay(to_delay);
-          }
-          // check that the token has not been revoked or changed
-          const actualToken = get(store.getState(), "auth.token");
-          if (payload.token !== actualToken) return;
+        if (!force && !token.expires_at) {
+          // the token has no expiration time, so it's still valid
+          return token;
         }
 
-        let token;
-        if (typeof payload.idp.tokenEndpoint === "function") {
-          token = yield call(
-            payload.idp.tokenEndpoint,
+        if (!force) {
+          // clockSkew is the delay before the end of token validity triggering 
+          // the refreshing of the token
+          const clockSkew = idp.clockSkew || 60;
+          const expires_at = parseInt(token.expires_at);
+          const to_delay = expires_at - clockSkew * 1000 - Date.now();
+          
+          if (to_delay > 0) {
+            // we don't need to refresh yet the token => sleep the saga until then
+            yield delay(to_delay);
+          }
+
+          // check that the token has not been revoked or changed
+          const actualToken = get(store.getState(), "auth.token");
+          if (token !== actualToken) {
+            // another method has refresh / change the token (during the nap of this saga)
+            // just return the actual one
+            return actualToken;
+          }
+        }
+
+        // refresh the token
+        let nextToken;
+        if (typeof idp.tokenEndpoint === "function") {
+          // delegate to the function the task of refreshing the token
+          nextToken = yield call(
+            idp.tokenEndpoint,
             "refreshToken",
-            payload.idp,
+            idp,
             { store, router, settings }
           );
         } else {
+          // build the request for refreshing the token
           const body = {
             grant_type: "refresh_token",
-            client_id: payload.idp.clientId,
-            refresh_token: payload.token.refresh_token
+            client_id: idp.clientId,
+            refresh_token: token.refresh_token
           };
           const headers = {
             "Content-Type": "application/x-www-form-urlencoded"
           };
 
-          if (payload.idp.clientSecret) {
-            if (payload.idp.clientAuth === "body") {
-              body.client_secret = payload.idp.clientSecret;
+          if (idp.clientSecret) {
+            if (idp.clientAuth === "body") {
+              body.client_secret = idp.clientSecret;
             } else {
               headers.auth = {
                 basic: {
-                  user: payload.idp.clientId,
-                  password: payload.idp.clientSecret
+                  user: idp.clientId,
+                  password: idp.clientSecret
                 }
               };
             }
           }
-          token = yield call(asyncPost, payload.idp.tokenEndpoint, body, {
+          nextToken = yield call(asyncPost, idp.tokenEndpoint, body, {
             headers
           });
         }
-        token.refresh_token = payload.token.refresh_token;
-        if (token.expires_in && !token.expires_at) {
-          token.expires_at = Date.now() + parseInt(token.expires_in) * 1000;
+        // add to the result the refresh token (when refreshing a token, 
+        // the result don't have the refresh token)
+        nextToken.refresh_token = token.refresh_token;
+
+        // add a expires_at property to the token for convenience
+        if (nextToken.expires_in && !nextToken.expires_at) {
+          nextToken.expires_at = Date.now() + parseInt(token.expires_in) * 1000;
         }
-        return yield call(this.saveToken, { token, idp: payload.idp });
+        return yield call(this.saveToken, { token: nextToken, idp });
       } catch (e) {
-        if (payload && payload.onError) {
-          yield call(payload.onError, e);
+        if (onError) {
+          yield call(onError, e);
         } else {
           throw e;
         }
       }
     }),
 
-    saveToken: latest(function*(payload, context) {
+    /**
+     * Validate the token and save it in the store and persistence storage and  
+     * trigger the refreshing of the token if applicable
+     * 
+     * @param {object} action :
+     *    - token: the current oauth token
+     *    - idp: the IDP used to refresh the token
+     *    - onError: callback for any error
+     * @param {object} context : 
+     *    - store: the redux store
+     *    - settings: the full settings object passed to the application
+     */
+    saveToken: latest(function*({token, idp, onError}, {store, router, settings}) {
       try {
-        if (payload.idp.validate) {
-          if (!payload.idp.jwksEndpoint) {
-            throw Error("A jwksEndpoint is required to validate tokens");
+        if (idp.validate) {
+          if (!idp.jwksEndpoint) {
+            throw new HTTPError(500, "A jwksEndpoint is required to validate tokens");
           }
-          if (payload.token.id_token) {
+          if (token.id_token) {
             const isValidIdToken = yield call(
               validateToken,
-              payload.token.id_token,
-              payload.idp.jwksEndpoint,
-              payload.idp,
-              context
+              token.id_token,
+              idp.jwksEndpoint,
+              idp,
+              {store, router, settings}
             );
             if (!isValidIdToken) {
-              throw Error("Invalid id token");
+              throw new HTTPError(400, "Invalid id token");
             }
-          } else if (payload.token.access_token) {
+          } else if (token.access_token) {
             const isValidAccessToken = yield call(
               validateToken,
-              payload.token.access_token,
-              payload.idp.jwksEndpoint,
-              payload.idp,
-              context
+              token.access_token,
+              idp.jwksEndpoint,
+              idp,
+              {store, router, settings}
             );
             if (!isValidAccessToken) {
-              throw Error("Invalid access token");
+              throw new HTTPError(400, "Invalid access token");
             }
           }
 
         }
 
-        yield call(this.setIdp, payload.idp);
-        yield call(this.setToken, payload.token);
+        yield call(this.setIdp, idp);
+        yield call(this.setToken, token);
 
-        if (payload.token.refresh_token) {
-          yield spawn(this.refreshToken, payload);
+        if (token.refresh_token) {
+          yield spawn(this.refreshToken, { token, idp, onError });
         }
-        return payload.token;
+        return token;
       } catch (e) {
-        if (payload && payload.onError) {
-          yield call(payload.onError, e);
+        if (onError) {
+          yield call(onError, e);
         } else {
           throw e;
         }
@@ -474,44 +540,3 @@ export const useSecurityContext = (selector, defaultValue) => {
   
   return [get(securityContext, selector, defaultValue), loading];
 };
-
-// export const useSecurityContext = (prop, defaultValue, options = {}) => {
-//   const authService = useAuthService();
-//   const securityContext = useReduxSelector("auth.securityContext");
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState(null);
-//   const notificationService = useNotificationService();
-//   const errorListener = options.onError || notificationService.error;
-//   const router = useRouter();
-//   const loginRoute = useSetting('routes.login', '/login');
-
-//   let onError = useCallback(
-//     e => {
-//       setError(e);
-//       setLoading(false);
-//       if(e.statusCode >= 400 && e.statusCode < 500) {
-//         router.push(loginRoute);
-//       } else if (errorListener) {
-//         errorListener(e);
-//       }
-//     },
-//     [setLoading, setError, errorListener, loginRoute, router]
-//   );
-
-//   let result = null;
-//   if (!loading && !error) {
-//     if (!securityContext) {
-//       setLoading(true);
-//       authService
-//         .fetchSecurityContext()
-//         .then(() => setLoading(false))
-//         .catch((e) => onError(e))
-//     } else {
-//       result = prop
-//         ? get(securityContext, prop, defaultValue)
-//         : securityContext;
-//     }
-//   }
-//   const isLoading = loading || (!result && !error);
-//   return [result, isLoading, error];
-// };

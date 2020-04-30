@@ -1,7 +1,16 @@
 import { asyncGet } from "../xhr";
 import { sha256, verify } from "./crypt";
 import { generateRandomString, hex2b64 } from "./string";
+import { get } from "./object";
 
+export const oauth2Keys = [
+  "access_token",
+  "id_token",
+  "refresh_token",
+  "expires_in",
+  "expires_at",
+  "token_type"
+];
 
 export async function generateCodeChallenge(codeVerifier) {
   return hex2b64(await sha256(codeVerifier))
@@ -48,6 +57,12 @@ export function getIdp(settings, name) {
   const idp = settings.idp;
   name = name || "default";
   return Object.assign({ name }, defaultSettings[idp[name].type], idp[name]);
+}
+
+export function getIdpName(state) {
+  return get(state, "auth.idpName") ||
+      sessionStorage.getItem("onekijs.idpName") ||
+      localStorage.getItem("onekijs.idpName");
 }
 
 export function parseJwt(token, section = "payload") {
