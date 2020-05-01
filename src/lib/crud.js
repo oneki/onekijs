@@ -70,11 +70,15 @@ export const useGet = (url, options = {}) => {
   }
 
   const [state, service] = useLocalService(Service, { loading: true });
-
-  useEffect(() => {
+  
+  const refresh = useCallback(() => {
     service.fetch({ url, method: "GET", options });
   }, [url, service, options]);
-  return [state.result, state.loading];
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+  return [state.result, state.loading, refresh];
 };
 
 export const useSecureGet = (url, options = {}) => {
