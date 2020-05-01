@@ -56,7 +56,7 @@ export default class NextRouter extends BaseRouter {
   listen(callback) {
     const handler = (url) => {
       const location = toLocation(url);
-      location.route = this.router.route;
+      location.route = Router.router.route;
       callback(location);
     };
     Router.events.on('routeChangeStart', handler);
@@ -76,9 +76,9 @@ export default class NextRouter extends BaseRouter {
     let routerUrl = toUrl(url);
     
     if (url.route) {
-      return this.router[type](url.route, routerUrl);
+      return Router.router[type](url.route, routerUrl);
     } else {
-      return this.router[type](routerUrl);
+      return Router.router[type](routerUrl);
     }
   }
 
