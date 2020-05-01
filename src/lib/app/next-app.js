@@ -1,11 +1,27 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { Provider } from "react-redux";
-import { AppContext } from "../context";
+import { AppContext, useRouter } from "../context";
 import NextRouter from "../router/next-router";
 import { createReduxService } from "../service";
 import { createReduxStore } from "../store";
+import { DefaultLoadingComponent, formatSettings } from "../utils/app";
 import { isPromise } from "../utils/type";
-import { formatSettings, DefaultLoadingComponent } from "../utils/app";
+import { useRouter as useNextRouter } from "next/router";
+
+const RouterSync = () => {
+  const nextRouter = useNextRouter();
+  const router = useRouter();
+  if (nextRouter) {
+    router.sync(nextRouter);
+  }
+
+  useEffect(() => {
+    router.onLocationChange();
+  }, [nextRouter, router])
+
+
+  return null;
+}
 
 let init = false;
 export const NextApp = React.memo(
@@ -20,6 +36,19 @@ export const NextApp = React.memo(
     Component, 
     pageProps
   }) => {
+    const router = useMemo(() => new NextRouter(), []);
+    // const [, setInitialLocation] = useState(router.location);
+
+    // const listener = useCallback((location) => {
+    //     setInitialLocation(location);
+    //     router.unlisten(listener);
+    //   },[router]
+    // )
+
+    // if (!router.location) {
+    //   router.listen(listener);
+    // }
+
     const [loading, setLoading] = useState(
       isPromise(initialState) || isPromise(settings)
     );
@@ -36,9 +65,7 @@ export const NextApp = React.memo(
       }
     }, [loading, store, appInitialState]);
 
-    const router = useMemo(() => {
-      return new NextRouter();
-    }, []);
+
 
     const formattedSettings = useMemo(() => {
       return formatSettings(appSettings);
@@ -86,7 +113,10 @@ export const NextApp = React.memo(
     return (
       <AppContext.Provider value={{ router, settings: formattedSettings }}>
         <Provider store={appStore}>
-          {getLayout(<Component {...pageProps}></Component>)}
+          <>
+            <RouterSync />
+            {getLayout(<Component {...pageProps}></Component>)}
+          </>
         </Provider>
       </AppContext.Provider>
     );

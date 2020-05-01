@@ -82,7 +82,10 @@ export const useGet = (url, options = {}) => {
   const [state, service] = useLocalService(Service, { loading: false });
   
   const refresh = useCallback(() => {
-    service.fetch({ url, method: "GET", options });
+    if (url) {
+      service.fetch({ url, method: "GET", options });
+    }
+    
   }, [url, service, options]);
 
   useEffect(() => {

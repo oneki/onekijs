@@ -7,15 +7,24 @@ export default class NextRouter extends BaseRouter {
 
   constructor() {
     super();
-    if (typeof window !== 'undefined') {
-      const pathname = Router.router.pathname;
-      if (!pathname.includes('[')) {
-        this._pushLocation(this._toLocation(Router.router.asPath));
-      }
-      this.listen((location) => {
-        this._pushLocation(location);
-      })
-    }
+    this._listeners = [];
+    // if (typeof window !== 'undefined') {
+    //   const pathname = Router.router.pathname;
+    //   const asPath = Router.router.asPath;
+    //   if (!pathname.includes('[') || pathname !== asPath) {
+    //     this._pushLocation(this._toLocation(Router.router.asPath));
+    //   }
+
+    //   const handler = (url) => {
+    //     const location = this._toLocation(url);
+    //     this._pushLocation(location);
+    //     this._listeners.forEach(listener => {
+    //       listener(location);
+    //     })
+    //   };
+    //   Router.events.on('routeChangeComplete', handler);
+    //   Router.events.on('hashChangeComplete', handler);
+    // }
   }
 
   get native() {
@@ -53,19 +62,42 @@ export default class NextRouter extends BaseRouter {
    *   state: obj // example: {key1: 'value1'}
    * }
    */
-  listen(callback) {
-    const handler = (url) => {
-      callback(this._toLocation(url));
-    };
-    Router.events.on('routeChangeStart', handler);
-    Router.events.on('hashChangeStart', handler);
+  // listen(callback) {
+  //   const handler = (url) => {
+  //     callback(this._toLocation(url));
+  //   };
+  //   Router.events.on('routeChangeComplete', handler);
+  //   Router.events.on('hashChangeComplete', handler);
 
-    return handler;
+  //   return handler;
+  // }
+
+  listen(callback) {
+    this._listeners.push(callback);
   }
 
-  unlisten(handler) {
-    Router.events.off('routeChangeStart', handler);
-    Router.events.off('hashChangeStart', handler);
+  onLocationChange() {
+    this._listeners.forEach(listener => {
+      console.log("call listeners");
+      listener(this.location);
+    });
+  }
+
+  sync(nextRouter) {
+    console.log("sync");
+    const pathname = nextRouter.pathname;
+    const asPath = nextRouter.asPath;
+    if (!pathname.includes('[') || pathname !== asPath) {
+      const location = toLocation(asPath);
+      location.route = Router.router.route;
+      location.params = Router.router.query;
+      this._pushLocation(location);
+    }
+  }
+
+
+  unlisten(callback) {
+    this._listeners.splice(this._listeners.indexOf(callback),1);
   }
 
   _goto(url, type) {
@@ -84,6 +116,7 @@ export default class NextRouter extends BaseRouter {
     const location = toLocation(url);
     location.route = Router.router.route;
     location.params = Router.router.query;
+    return location;
   }
 
   _pushLocation(location) {
