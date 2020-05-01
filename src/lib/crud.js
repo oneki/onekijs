@@ -5,36 +5,46 @@ import { useLocalService } from "./service";
 import { useReduxSelector } from "./store";
 import { shallowEqual } from "./utils/object";
 import { asyncHttp } from "./xhr";
-import { call } from "redux-saga/effects";
+import { call, delay, fork, cancel } from "redux-saga/effects";
+
+function* delayLoading(delay_ms) {
+  try {
+    yield delay(delay_ms);
+    yield call(this.setLoading, true);
+  } finally {
+  }
+}
 
 const Service = {
   reducers: {
     setLoading: (state, isLoading) => {
+      console.log('set loading to', isLoading);
       state.loading = isLoading;
     },
     fetchSuccess: (state, result) => {
+      console.log('set loading to', false);
       state.result = result;
       state.loading = false;
     }
   },
   sagas: {
-    fetch: every(function*(payload, { router }) {
-      const options = payload.options || {};
+    fetch: every(function*({url, method, body=null, options={}}, { router }) {
       try {
-        yield call(this.setLoading, true); // to update the store and trigger a re-render with a loading indicator
+        //yield call(this.setLoading, true); // to update the store and trigger a re-render with a loading indicator
+        const loadingTask = yield fork([this,delayLoading], options.delayLoading || 200);
         const result = yield call(
           asyncHttp,
-          payload.url,
-          payload.method,
-          payload.body || null,
-          payload.options || {}
+          url,
+          method,
+          body,
+          options
         );
+        yield cancel(loadingTask);
         yield call(this.fetchSuccess, result); // to update the store and trigger a re-render.
         const onSuccess = options.onSuccess;
         if (onSuccess) {
           if (typeof onSuccess === "string") {
             // onSuccess is a URL -> redirect to this one
-            console.log("SUCCESS")
             yield call([router, router.push], onSuccess);
           } else {
             yield call(options.onSuccess, result);
@@ -69,7 +79,7 @@ export const useGet = (url, options = {}) => {
     ref.current = options;
   }
 
-  const [state, service] = useLocalService(Service, { loading: true });
+  const [state, service] = useLocalService(Service, { loading: false });
   
   const refresh = useCallback(() => {
     service.fetch({ url, method: "GET", options });

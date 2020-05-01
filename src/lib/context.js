@@ -24,6 +24,14 @@ export const useLocation = () => {
   }, [location]);  
 }
 
+// change the state every time it changes
+export const useParams = () => {
+  const location = useContext(AppContext).router.location;
+  return useMemo(() => {
+    return get(location, 'params', {})
+  }, [location]);  
+}
+
 export const useSetting = (selector, defaultValue) => {
   const settings = useContext(AppContext).settings;
   if (selector) {

@@ -10,7 +10,7 @@ export default class NextRouter extends BaseRouter {
     if (typeof window !== 'undefined') {
       const pathname = Router.router.pathname;
       if (!pathname.includes('[')) {
-        this._pushLocation(toLocation(Router.router.asPath));
+        this._pushLocation(this._toLocation(Router.router.asPath));
       }
       this.listen((location) => {
         this._pushLocation(location);
@@ -55,9 +55,7 @@ export default class NextRouter extends BaseRouter {
    */
   listen(callback) {
     const handler = (url) => {
-      const location = toLocation(url);
-      location.route = Router.router.route;
-      callback(location);
+      callback(this._toLocation(url));
     };
     Router.events.on('routeChangeStart', handler);
     Router.events.on('hashChangeStart', handler);
@@ -80,6 +78,12 @@ export default class NextRouter extends BaseRouter {
     } else {
       return Router.router[type](routerUrl);
     }
+  }
+
+  _toLocation(url) {
+    const location = toLocation(url);
+    location.route = Router.router.route;
+    location.params = Router.router.query;
   }
 
   _pushLocation(location) {
