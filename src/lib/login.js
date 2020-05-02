@@ -137,8 +137,9 @@ function* externalLogin({ idpName, onError }, { store, router, settings }) {
 
     // get the loginCallback route the settings
     const redirectUri = absoluteUrl(
-      get(settings, "routes.loginCallback", `${router.pathname}/callback`)
+      idp.loginCallbackRoute || `${router.pathname}/callback`
     );
+    console.log("redirect_uri", redirectUri, router.pathname, idp.loginCallbackRoute);
 
     if (!isExternal(idp)) {
       throw Error(
@@ -577,7 +578,7 @@ function* logout({idpName, onError, onSuccess},  { router, settings, store }) {
       } else if (idp.logoutEndpoint) {
          // Build the logout URL
         const redirectUri = absoluteUrl(
-          get(settings, "routes.logoutCallback", `${router.pathname}/callback`)
+          idp.logoutCallbackRoute ||  `${router.pathname}/callback`
         );
         let search = "";
         if (isOauth(idp)) {

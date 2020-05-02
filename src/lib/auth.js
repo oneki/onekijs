@@ -202,6 +202,19 @@ export const authService = {
         }
 
         let securityContext = null;
+        // we fetch the token from the redux store 
+        let token = get(store.getState(), "auth.token");
+
+        // or from the persistence storage
+        if (!token) {
+          // try to load it from the localStorage
+          yield call(this.loadToken);
+          token = get(store.getState(), "auth.token");
+          if (!token) {
+            // if the token was not found, we are not yet authenticated
+            throw new HTTPError(401);
+          }
+        }        
         if (typeof userinfoEndpoint === "function") {
           // delegate the security context fetching to the user-passed function
           securityContext = yield call(userinfoEndpoint, idp, {
@@ -210,19 +223,6 @@ export const authService = {
             settings
           });
         } else if (userinfoEndpoint.startsWith("token://")) {
-          // we fetch the token from the redux store 
-          let token = get(store.getState(), "auth.token");
-
-          // or from the persistence storage
-          if (!token) {
-            // try to load it from the localStorage
-            yield call(this.loadToken);
-            token = get(store.getState(), "auth.token");
-            if (!token) {
-              // if the token was not found, we are not yet authenticated
-              throw new HTTPError(401);
-            }
-          }
           // from the userinfo endpoint, we check which property of the token 
           // contains the security context (usually the id_token)
           // if no property was specified, the full token is the security context
@@ -276,6 +276,7 @@ export const authService = {
       try {
         let result = get(store.getState(), "auth.token", null);
         if (isNull(result)) {
+          
           const idpName = getIdpName(store.getState());
           if (!idpName || idpName === "null") {
             // not authenticated

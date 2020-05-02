@@ -70,6 +70,14 @@ export function toUrl(location) {
       throw new Error("URL protocol is defined but no host/hostname");
     }
   }
+  url += toRelativeUrl(location); 
+  return url;
+}
+
+export function toRelativeUrl(location) {
+  if (!location) return null;
+  if (typeof location === 'string') return location;
+  let url = "";
   if (location.pathname) {
     url += location.pathname
   }
@@ -85,6 +93,8 @@ export function toUrl(location) {
   } 
   return url;
 }
+
+
 
 export function extractState(query) {
   if (!query || !query[URL_STATE]) return null;

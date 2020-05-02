@@ -42,7 +42,7 @@ export {
   sha256,
   verify
 } from "./lib/utils/crypt";
-export { urlBuilder, isAbsoluteUrl, absoluteUrl, toUrl, toLocation } from "./lib/utils/url";
+export { urlBuilder, isAbsoluteUrl, absoluteUrl, toUrl, toRelativeUrl, toLocation } from "./lib/utils/url";
 export {
   useDelete,
   useGet,
