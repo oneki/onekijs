@@ -18,11 +18,9 @@ function* delayLoading(delay_ms) {
 const Service = {
   reducers: {
     setLoading: (state, isLoading) => {
-      console.log('set loading to', isLoading);
       state.loading = isLoading;
     },
     fetchSuccess: (state, result) => {
-      console.log('set loading to', false);
       state.result = result;
       state.loading = false;
     }

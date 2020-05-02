@@ -46,7 +46,6 @@ export const useLocation = () => {
 
 // change the state every time it changes
 export const useParams = () => {
-  console.log("useParams");
   const router = useContext(AppContext).router;
   const [params, setParams] = useState(get(router, 'location.params', {}));
   const listener = useCallback((location) => {

@@ -18,6 +18,8 @@ export const layout = (Layout, ParentLayout) => {
 }
 
 export const withLayout = (Page, Layout) => {
-  Page.getLayout = Layout.getLayout;
+  if (Page && Layout) {
+    Page.getLayout = Layout.getLayout;
+  }
   return Page;
 }

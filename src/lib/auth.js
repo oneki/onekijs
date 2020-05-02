@@ -250,7 +250,6 @@ export const authService = {
           // call the success callback
           yield call(onSuccess, securityContext);
         }
-
         return securityContext;
         
       } catch (e) {

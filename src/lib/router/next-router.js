@@ -78,13 +78,11 @@ export default class NextRouter extends BaseRouter {
 
   onLocationChange() {
     this._listeners.forEach(listener => {
-      console.log("call listeners");
       listener(this.location);
     });
   }
 
   sync(nextRouter) {
-    console.log("sync");
     const pathname = nextRouter.pathname;
     const asPath = nextRouter.asPath;
     if (!pathname.includes('[') || pathname !== asPath) {

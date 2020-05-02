@@ -108,7 +108,7 @@ export const NextApp = React.memo(
 
     init = true;
 
-    const getLayout = Component.getLayout || (page => page)
+    const getLayout = (Component && Component.getLayout) || (page => page)
 
     return (
       <AppContext.Provider value={{ router, settings: formattedSettings }}>

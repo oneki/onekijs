@@ -24,7 +24,7 @@ const DefaultErrorComponent = ({error}) => {
 }
 
 export const secure = (Component, validator, options={}) => {
-  return React.memo(props => {
+  const SecureComponent = React.memo(props => {
     const authService = useAuthService();
     const securityContext = useReduxSelector("auth.securityContext", null);
     const token = useReduxSelector("auth.token", null);
@@ -40,10 +40,23 @@ export const secure = (Component, validator, options={}) => {
       [setLoading, setError]
     );
 
+    useEffect(() => {
+      if (!loading && !securityContext && !error) {
+        setLoading(true);
+        authService
+          .fetchSecurityContext()
+          .then(() => {
+            setLoading(false)
+          })
+          .catch((e) => {
+            onError(e)
+          })        
+      }
+    }, [authService, onError, error, loading, securityContext])
+
     if (!loading && !error) {
       if (token && token.expires_at && parseInt(token.expires_at) < Date.now())  {
         onError(new HTTPError(401));
-        
       } else if (securityContext) {
         if (validator && !validator(securityContext)) {
           // Example: user doesn't have the required role
@@ -51,14 +64,8 @@ export const secure = (Component, validator, options={}) => {
         } else {
           return <Component {...props} />;
         }
-
       } else {
-        setLoading(true);
-        authService
-          .fetchSecurityContext()
-          .then(() => setLoading(false))
-          .catch((e) => onError(e))
-
+        return null;
       }
     } else if (loading) {
       return <div>Loading...</div>
@@ -66,6 +73,10 @@ export const secure = (Component, validator, options={}) => {
       return <ErrorComponent error={error} />
     }
   });
+
+  SecureComponent.getLayout = Component.getLayout;
+
+  return SecureComponent;
 };
 
 export const SecureRoute = ({ component: Component, ...args }) => {
