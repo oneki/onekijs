@@ -1,6 +1,6 @@
 {
   "name": "onekijs",
-  "version": "0.1.9",
+  "version": "0.2.1",
   "description": "Opiniated React framework built on top of Redux and React Router",
   "author": "oneki",
   "license": "MIT",
@@ -22,9 +22,9 @@
     "deploy": "gh-pages -d example/build"
   },
   "peerDependencies": {
+    "next": "^9.3.5",
     "react": "^15.0.0 || ^16.0.0",
-    "react-dom": "^15.0.0 || ^16.0.0",
-    "next": "^9.3.5"
+    "react-dom": "^15.0.0 || ^16.0.0"
   },
   "dependencies": {
     "immer": "^6.0.2",
@@ -53,9 +53,9 @@
     "@babel/plugin-proposal-optional-chaining": "^7.9.0",
     "@babel/plugin-proposal-pipeline-operator": "^7.8.3",
     "@babel/plugin-proposal-throw-expressions": "^7.8.3",
-    "@babel/plugin-transform-runtime": "^7.9.0",
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
     "@babel/plugin-syntax-import-meta": "^7.8.3",
+    "@babel/plugin-transform-runtime": "^7.9.0",
     "@babel/preset-env": "^7.9.0",
     "@babel/preset-react": "^7.9.1",
     "@iconify/icons-entypo": "^1.0.3",
