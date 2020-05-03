@@ -4,7 +4,7 @@ import { authService } from "./auth";
 import { notificationService, useNotificationService } from "./notification";
 import { latest } from "./saga";
 import { useLocalService } from "./service";
-import { generateCodeChallenge, generateCodeVerifier, generateNonce, generateState, getIdp, parseJwt } from "./utils/auth";
+import { generateCodeChallenge, generateCodeVerifier, generateNonce, generateState, getIdp, getIdpName, parseJwt } from "./utils/auth";
 import { sha256 } from "./utils/crypt";
 import { get } from "./utils/object";
 import { absoluteUrl } from "./utils/url";
@@ -553,8 +553,13 @@ function* successLogin({token, securityContext, idpName, onError, onSuccess}, { 
  *    - router: an OnekiJS router
  *    - settings: the full settings object passed to the application
  */
-function* logout({idpName, onError, onSuccess},  { router, settings, store }) {
+function* logout({onError, onSuccess},  { router, settings, store }) {
   try {
+    const idpName = getIdpName(store.getState());
+    if (!idpName) {
+      return yield call(this.successLogout, {onError, onSuccess});
+    }
+
     // forward to reducer to set loading flag
     yield this.setLoading(true);
 
@@ -577,6 +582,7 @@ function* logout({idpName, onError, onSuccess},  { router, settings, store }) {
         )}`;
       } else if (idp.logoutEndpoint) {
          // Build the logout URL
+         console.log("PATHNAME", router.pathname);
         const redirectUri = absoluteUrl(
           idp.logoutCallbackRoute ||  `${router.pathname}/callback`
         );
@@ -805,7 +811,7 @@ export const useLoginCallbackService = (name, options = {}) => {
   return state;
 };
 
-export const useLogoutService = (idpName, options = {}) => {
+export const useLogoutService = (options = {}) => {
   const [state, service] = useLocalService(logoutService, { loading: true });
   const notificationService = useNotificationService();
 
@@ -816,17 +822,17 @@ export const useLogoutService = (idpName, options = {}) => {
 
   useEffect(() => {
     if (callback) {
-      service.successLogout({ idpName, onError, onSuccess });
+      service.successLogout({  onError, onSuccess });
     } else {
-      service.logout({ idpName, onError, onSuccess });
+      service.logout({ onError, onSuccess });
     }
     
-  }, [service, idpName, onError, onSuccess, callback]);
+  }, [service, onError, onSuccess, callback]);
 
   return state;
 };
 
-export const useLogoutCallbackService = (idpName, options = {}) => {
+export const useLogoutCallbackService = (options = {}) => {
   options.callback = true;
-  return useLogoutService(idpName, options);
+  return useLogoutService(options);
 };

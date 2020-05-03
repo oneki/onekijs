@@ -210,10 +210,6 @@ export const authService = {
           // try to load it from the localStorage
           yield call(this.loadToken);
           token = get(store.getState(), "auth.token");
-          if (!token) {
-            // if the token was not found, we are not yet authenticated
-            throw new HTTPError(401);
-          }
         }        
         if (typeof userinfoEndpoint === "function") {
           // delegate the security context fetching to the user-passed function
@@ -227,6 +223,10 @@ export const authService = {
           // contains the security context (usually the id_token)
           // if no property was specified, the full token is the security context
           const token_prop = userinfoEndpoint.split("/")[2];
+          if (!token) {
+            // if the token was not found, we are not yet authenticated
+            throw new HTTPError(401);
+          }          
           securityContext = token_prop
             ? parseJwt(token[token_prop])
             : parseJwt(token);
