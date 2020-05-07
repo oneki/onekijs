@@ -11,7 +11,7 @@ import {
 } from "react";
 import { stdChannel, runSaga } from "@redux-saga/core";
 import { ReactReduxContext } from "react-redux";
-import { useSettings, useRouter } from "./context";
+import { useSettings, useOnekiRouter } from "./context";
 
 const services = {};
 
@@ -211,7 +211,7 @@ export const createReduxService = (store, router, settings, schema) => {
 export const useReduxService = schema => {
   // definition and store should be immutable.
   const store = useStore();
-  const router = useRouter();
+  const router = useOnekiRouter();
   const settings = useSettings();
 
   const service = useMemo(() => {
@@ -224,7 +224,7 @@ export const useReduxService = schema => {
 
 export const useLocalService = (schema, initialState) => {
   const reduxContext = useContext(ReactReduxContext) || {};
-  const router = useRouter();
+  const router = useOnekiRouter();
   const settings = useSettings();
 
   const service = useMemo(() => {

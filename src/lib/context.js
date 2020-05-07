@@ -4,7 +4,7 @@ import { get } from "./utils/object";
 export const AppContext = React.createContext();
 
 // never change the state => no refresh
-export const useRouter = () => {
+export const useOnekiRouter = () => {
   return useContext(AppContext).router;
 };
 

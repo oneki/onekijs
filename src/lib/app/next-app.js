@@ -1,23 +1,27 @@
 import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { Provider } from "react-redux";
-import { AppContext, useRouter } from "../context";
+import { AppContext, useOnekiRouter } from "../context";
 import NextRouter from "../router/next-router";
 import { createReduxService } from "../service";
 import { createReduxStore } from "../store";
 import { DefaultLoadingComponent, formatSettings } from "../utils/app";
 import { isPromise } from "../utils/type";
-import { useRouter as useNextRouter } from "next/router";
+import { useRouter } from "next/router";
+
+const useNextRouter = useRouter || (() => null);
+console.log("useNextrouter", useNextRouter);
 
 const RouterSync = () => {
   const nextRouter = useNextRouter();
-  const router = useRouter();
-  if (nextRouter) {
-    router.sync(nextRouter);
+  console.log("nextRouter", nextRouter);
+  const onekiRouter = useOnekiRouter();
+  if (typeof window !== 'undefined') {
+    onekiRouter.sync(nextRouter);
   }
 
   useEffect(() => {
-    router.onLocationChange();
-  }, [nextRouter, router])
+    onekiRouter.onLocationChange();
+  }, [nextRouter, onekiRouter])
 
 
   return null;

@@ -72,7 +72,7 @@ export {
 export { authService, useAuthService, useSecurityContext } from "./lib/auth";
 export { NextApp } from "./lib/app/next-app";
 export { App } from "./lib/app/react-app";
-export { useRouter, useLocation, useHistory, useParams, useSetting, useSettings, AppContext } from "./lib/context";
+export { useOnekiRouter, useLocation, useHistory, useParams, useSetting, useSettings, AppContext } from "./lib/context";
 export { layout, withLayout } from './lib/layout';
 export { default as Dashboard } from './components/dashboard';
 export { default as DashboardHeader } from './components/dashboard/header';

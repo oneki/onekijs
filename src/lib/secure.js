@@ -1,13 +1,13 @@
 import React, { useCallback, useState, useEffect } from "react";
 import { Redirect, Route } from "react-router-dom";
 import { useAuthService } from "./auth";
-import { useRouter, useSetting } from "./context";
+import { useOnekiRouter, useSetting } from "./context";
 import HTTPError from "./error";
 import { useReduxSelector } from "./store";
 
 
 const DefaultErrorComponent = ({error}) => {
-  const router = useRouter();
+  const router = useOnekiRouter();
   const loginRoute = useSetting('routes.login', '/login');
 
   useEffect(() => {
