@@ -9,11 +9,9 @@ import { isPromise } from "../utils/type";
 import { useRouter } from "next/router";
 
 const useNextRouter = useRouter || (() => null);
-console.log("useNextrouter", useNextRouter);
 
 const RouterSync = () => {
   const nextRouter = useNextRouter();
-  console.log("nextRouter", nextRouter);
   const onekiRouter = useOnekiRouter();
   if (typeof window !== 'undefined') {
     onekiRouter.sync(nextRouter);
