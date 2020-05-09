@@ -1,4 +1,6 @@
 import {
+  delay,
+  call,
   takeEvery,
   takeLatest,
   takeLeading,
@@ -32,3 +34,11 @@ export const throttle = (delay, saga) => ({
   saga,
   delay
 });
+
+export function* delayLoading(delay_ms, reducer) {
+  try {
+    yield delay(delay_ms);
+    yield call(reducer, true);
+  } finally {
+  }
+}

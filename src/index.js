@@ -85,3 +85,4 @@ export { dashboardService, useDashboardService, useDashboard } from './component
 export { Dropdown, DropdownMenu, DropdownAnchor } from './components/dropdown';
 export { Me, MeContainer } from './components/me';
 export { Search, SearchContainer } from './components/search';
+export { use18nService, i18nService, useTranslation, url2locale, useLocale } from './lib/i18n'

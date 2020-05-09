@@ -1,15 +1,11 @@
 export const defaultSettings = {
-  router: {
-    type: 'browser'
-  },
-  routes: {
-    login: '/login',
-    loginCallback: '/login/callback',
-    logout: '/logout',
-    logoutCallback: '/logout/callback',
-    home: '/'
-  },
-  idp: {},
+  contextPath: "/",
+  i18n: {
+    locales: ["en"],
+    defaultLocale: "en",
+    url: "/locales"
+  }, 
+  idp: {}, 
   notification: {
     default: {
       ttl: 5000,
@@ -19,6 +15,16 @@ export const defaultSettings = {
       ttl: 0,
       max: 0
     }
+  },  
+  router: {
+    type: 'browser'
+  },
+  routes: {
+    login: '/login',
+    loginCallback: '/login/callback',
+    logout: '/logout',
+    logoutCallback: '/logout/callback',
+    home: '/'
   }
 };
 

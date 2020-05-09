@@ -7,12 +7,15 @@ import { createReduxStore } from "../store";
 import { DefaultLoadingComponent, formatSettings } from "../utils/app";
 import { isPromise } from "../utils/type";
 import { useRouter } from "next/router";
+import { get } from "../utils/object";
+import { url2locale, flattenTranslations } from "../i18n";
+import { isBrowser } from "../utils/browser";
+import produce from "immer";
 
 const useNextRouter = useRouter || (() => null);
 
-const RouterSync = () => {
+const useRouterSync = (onekiRouter) => {
   const nextRouter = useNextRouter();
-  const onekiRouter = useOnekiRouter();
   if (typeof window !== 'undefined') {
     onekiRouter.sync(nextRouter);
   }
@@ -20,10 +23,9 @@ const RouterSync = () => {
   useEffect(() => {
     onekiRouter.onLocationChange();
   }, [nextRouter, onekiRouter])
-
-
-  return null;
 }
+
+let i18n = {};
 
 let init = false;
 export const NextApp = React.memo(
@@ -39,17 +41,7 @@ export const NextApp = React.memo(
     pageProps
   }) => {
     const router = useMemo(() => new NextRouter(), []);
-    // const [, setInitialLocation] = useState(router.location);
-
-    // const listener = useCallback((location) => {
-    //     setInitialLocation(location);
-    //     router.unlisten(listener);
-    //   },[router]
-    // )
-
-    // if (!router.location) {
-    //   router.listen(listener);
-    // }
+    useRouterSync(router);
 
     const [loading, setLoading] = useState(
       isPromise(initialState) || isPromise(settings)
@@ -67,11 +59,30 @@ export const NextApp = React.memo(
       }
     }, [loading, store, appInitialState]);
 
-
-
     const formattedSettings = useMemo(() => {
       return formatSettings(appSettings);
     }, [appSettings]);
+
+    const locale = useMemo(() => {
+      if (!loading) {
+        let locale = pageProps.locale;
+        if (!locale && router.location) {
+          locale = url2locale(
+            get(router.location, 'pathname'), 
+            get(formattedSettings, 'contextPath', '/'), 
+            get(formattedSettings, 'i18n.locales')
+          );
+        }
+        if (!locale) {
+          locale = get(appStore.getState(), 'i18n.locale');;
+        }
+        if (!locale && isBrowser()) {
+          locale = localStorage.getItem('onekijs.locale')
+        }
+        return locale || get(formattedSettings, 'i18n.defaultLocale');
+      }
+      
+    }, [loading, pageProps.locale, router.location, appStore, formattedSettings]);
 
     if (!loading) {
       services.forEach((service) => {
@@ -112,13 +123,16 @@ export const NextApp = React.memo(
 
     const getLayout = (Component && Component.getLayout) || (page => page)
 
+    i18n = produce(i18n, draft => {
+      draft.locale = locale;
+      draft.ns = Object.keys(pageProps.translations || {});
+      draft.translations = flattenTranslations(pageProps.translations || {});
+    });
+
     return (
-      <AppContext.Provider value={{ router, settings: formattedSettings }}>
+      <AppContext.Provider value={{ router, settings: formattedSettings, i18n }}>
         <Provider store={appStore}>
-          <>
-            <RouterSync />
-            {getLayout(<Component {...pageProps}></Component>)}
-          </>
+          {getLayout(<Component {...pageProps}></Component>)}
         </Provider>
       </AppContext.Provider>
     );

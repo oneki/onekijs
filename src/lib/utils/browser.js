@@ -8,3 +8,7 @@ export function isMobile() {
   || navigator.userAgent.match(/Windows Phone/i));
 }
 
+export function isBrowser() {
+  return typeof window !== 'undefined';
+}
+
