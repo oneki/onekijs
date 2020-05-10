@@ -145,7 +145,6 @@ export const NextApp = React.memo(
     }
     
     if (nextRouter.route === '/404') {
-      console.log("route", route);
       if (route || !router.location) return null;
       return <Error statusCode={404} />
     }
