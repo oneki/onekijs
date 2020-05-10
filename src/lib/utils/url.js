@@ -54,7 +54,7 @@ export function toLocation(url) {
   return location;
 }
 
-export function toUrl(location) {
+export function toUrl(location, options) {
   if (!location) return null;
   if (typeof location === 'string') return location;
   let url = "";
@@ -70,11 +70,11 @@ export function toUrl(location) {
       throw new Error("URL protocol is defined but no host/hostname");
     }
   }
-  url += toRelativeUrl(location); 
+  url += toRelativeUrl(location, options); 
   return url;
 }
 
-export function toRelativeUrl(location) {
+export function toRelativeUrl(location, options) {
   if (!location) return null;
   if (typeof location === 'string') return location;
   let url = "";
@@ -85,10 +85,10 @@ export function toRelativeUrl(location) {
   if (location.state) {
     query[URL_STATE] = atob(JSON.stringify(location.state));
   }
-  if (Object.keys(query).length > 0) {
+  if (Object.keys(query).length > 0 && options.query !== false) {
     url += `?${qs.stringify(location.query)}`;
   }
-  if (Object.keys(location.hash).length > 0) {
+  if (Object.keys(location.hash).length > 0 && options.hash !== false) {
     url += `#${qs.stringify(location.hash)}`
   } 
   return url;

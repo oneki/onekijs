@@ -5,7 +5,7 @@ import { notificationService } from "./notification";
 import { delayLoading, latest } from "./saga";
 import { useReduxService } from "./service";
 import { useReduxSelector } from "./store";
-import { get, set, append } from "./utils/object";
+import { get, set, append, isNull } from "./utils/object";
 import { isFunction } from "./utils/type";
 import { asyncGet } from "./xhr";
 
@@ -115,16 +115,18 @@ export const use18nService = () => {
   return useReduxService(i18nService);
 };
 
-const stringifyJsx = (reactElement, idx=1) => { 
+const stringifyJsx = (reactElement, ctx={}, idx=1) => { 
   const children = [].concat(reactElement.props.children);
   const str = children.reduce((accumulator, child) => {
     if (typeof child === 'string') return `${accumulator}${child}`;
     if (React.isValidElement(child)) {
-      const [childStr, nextIdx] = stringifyJsx(child, idx+1);
+      const [childStr, nextIdx] = stringifyJsx(child, ctx, idx+1);
       const str = `${accumulator}<${idx}>${childStr}</${idx}>`;
+      ctx[`el-${idx}`] = child;
       idx = nextIdx;
       return str;
     } else {
+      set(ctx, `vars.${Object.keys(child)[0]}`, Object.values(child)[0])
       return `${accumulator}{{${Object.keys(child)[0]}}}`;
     }
   }, '');
@@ -136,8 +138,9 @@ const regexIndexOf = (str, regex, startpos=0) => {
   return (indexOf >= 0) ? (indexOf + startpos) : indexOf;
 }
 
-const parseJsx = (str, startPos=0) => {
+const parseJsx = (str, ctx={}, startPos=0) => {
   const result = [];
+  let count = 0;
   do {
     const [content, idx, start, end] = extractTag(str, startPos);
     if (content === undefined) {
@@ -152,7 +155,13 @@ const parseJsx = (str, startPos=0) => {
       result.push(str.substring(startPos, start));
     }
 
-    break;
+    const childJsx = parseJsx(content, ctx);
+    const el = React.cloneElement(ctx[`el-${idx}`],{key: `el-${idx}`}, childJsx);
+    result.push(el);
+
+    startPos = end;
+    if (startPos >= str.length) break;
+    if (++count > 10) break;
   } while (true)
 
   return result;
@@ -215,17 +224,17 @@ export const useTranslation = (namespaces, options) => {
     (key) => {
       
       if (fetching) return null;
-
+      const ctx = {};
+      let jsxKey = null;
       if (typeof key !== 'string') {
-        const [str] = stringifyJsx(key);
-        console.log("str", str);
-        console.log(parseJsx(str));
+        jsxKey = key;
+        key = stringifyJsx(key, ctx)[0];
       }
 
-      if (translations[key] !== undefined) return translations[key];
+      if (translations[key] !== undefined) return buildJsx(translations[key], ctx, jsxKey);
       for (let ns of nsRequired) {
         const nsKey = `${ns}:${key}`;
-        if (translations[nsKey] !== undefined) return translations[nsKey];
+        if (translations[nsKey] !== undefined) return  buildJsx(translations[nsKey], ctx, jsxKey);
       }
       return null;
     },
@@ -241,3 +250,15 @@ export const useTranslation = (namespaces, options) => {
 
   return [t, locale, fetching || nsNotLoaded.length > 0];
 };
+
+const buildJsx = (str, ctx, wrapperReactElement) => {
+  if (ctx.vars) {
+    Object.keys(ctx.vars).forEach(key => {
+      const regex = new RegExp(`{{${key}}}`, 'g');
+      str = str.replace(regex, ctx.vars[key]);
+    })
+  }
+  if (isNull(wrapperReactElement)) return str;
+  const children = parseJsx(str, ctx);
+  return React.cloneElement(wrapperReactElement, {}, children);
+}

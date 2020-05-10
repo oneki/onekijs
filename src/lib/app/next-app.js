@@ -6,11 +6,15 @@ import { createReduxService } from "../service";
 import { createReduxStore } from "../store";
 import { DefaultLoadingComponent, formatSettings } from "../utils/app";
 import { isPromise } from "../utils/type";
-import { useRouter } from "next/router";
+import Router, { useRouter } from "next/router";
 import { get } from "../utils/object";
 import { url2locale, flattenTranslations } from "../i18n";
 import { isBrowser } from "../utils/browser";
 import produce from "immer";
+import { getRouteMatcher } from 'next/dist/next-server/lib/router/utils/route-matcher'
+import { getRouteRegex } from 'next/dist/next-server/lib/router/utils/route-regex'
+import Error from 'next/error'
+import { toUrl, toRelativeUrl } from "../utils/url";
 
 const useNextRouter = useRouter || (() => null);
 
@@ -38,7 +42,8 @@ export const NextApp = React.memo(
     LoadingComponent = DefaultLoadingComponent,
     children,
     Component, 
-    pageProps
+    pageProps,
+    router: nextRouter
   }) => {
     const router = useMemo(() => new NextRouter(), []);
     useRouterSync(router);
@@ -66,7 +71,9 @@ export const NextApp = React.memo(
     const locale = useMemo(() => {
       if (!loading) {
         let locale = pageProps.locale;
+        
         if (!locale && router.location) {
+          
           locale = url2locale(
             get(router.location, 'pathname'), 
             get(formattedSettings, 'contextPath', '/'), 
@@ -74,7 +81,8 @@ export const NextApp = React.memo(
           );
         }
         if (!locale) {
-          locale = get(appStore.getState(), 'i18n.locale');;
+          locale = get(appStore.getState(), 'i18n.locale');
+          
         }
         if (!locale && isBrowser()) {
           locale = localStorage.getItem('onekijs.locale')
@@ -84,12 +92,16 @@ export const NextApp = React.memo(
       
     }, [loading, pageProps.locale, router.location, appStore, formattedSettings]);
 
-    if (!loading) {
-      services.forEach((service) => {
-        createReduxService(store, router, formattedSettings, service);
-      });
-    }
+    const route = useMemo(() => {
+      if (pageProps.routes && nextRouter.route === '/404') {
 
+        return pageProps.routes.find(route => {
+          const routeRegex = getRouteRegex(route);
+          return getRouteMatcher(routeRegex)(nextRouter.asPath);
+        });
+      }
+    }, [pageProps.routes, nextRouter.route, nextRouter.asPath])
+    
     useEffect(() => {
       if (!init) {
         init = true;
@@ -115,8 +127,27 @@ export const NextApp = React.memo(
       }
     }, [settings, initialState]);
 
+    useEffect(() => {
+      if (route) {
+        Router.replace(route, toRelativeUrl(router.location, { hash: false }), { shallow: true });
+      }
+      
+    }, [router, route])
+
+    if (!loading) {
+      services.forEach((service) => {
+        createReduxService(store, router, formattedSettings, service);
+      });
+    }    
+
     if (loading) {
       return <LoadingComponent />;
+    }
+    
+    if (nextRouter.route === '/404') {
+      console.log("route", route);
+      if (route || !router.location) return null;
+      return <Error statusCode={404} />
     }
 
     init = true;
