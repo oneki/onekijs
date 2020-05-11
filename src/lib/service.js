@@ -12,6 +12,9 @@ import {
 import { stdChannel, runSaga } from "@redux-saga/core";
 import { ReactReduxContext } from "react-redux";
 import { useSettings, useOnekiRouter } from "./context";
+import { isFunction } from "./utils/type";
+import { set, useShallowEqual } from "./utils/object";
+import { latest, every } from "./saga";
 
 const services = {};
 
@@ -260,3 +263,40 @@ export const useLocalService = (schema, initialState) => {
 
   return [state, service];
 };
+
+export const genericService = {
+  name: "generic",
+  reducers: {
+    executeReducer: function(state, { reducer, key, payload, context }) {
+      if (reducer) {
+        reducer(state, context);
+      } else {
+        set(state, key, payload);
+      }
+    }
+  },
+  sagas: {
+    executeSaga: every(function*({saga}, context) {
+      yield call(saga, context)
+    })
+  }
+}
+
+export const useGenericReducer = (reducer, payload) => {
+  const service = useReduxService(genericService);
+  payload = useShallowEqual(payload);
+
+  useEffect(() => {
+    if (typeof reducer === 'string') {
+      service.executeReducer({
+        key: reducer,
+        payload
+      });
+    } else {
+      service.executeReducer({ reducer });
+    }
+    
+  }, [reducer, payload, service])
+};
+
+export const useGenericSaga = () => {}

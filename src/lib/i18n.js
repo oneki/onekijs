@@ -221,24 +221,42 @@ export const useTranslation = (namespaces, options) => {
   const fetching = useReduxSelector("i18.fetching", false);
   
   const t = useCallback(
-    (key) => {
-      
+    (content, alias, count) => {
       if (fetching) return null;
+      let key = alias ? alias : content;
       const ctx = {};
-      let jsxKey = null;
-      if (typeof key !== 'string') {
-        jsxKey = key;
-        key = stringifyJsx(key, ctx)[0];
+      let jsx = null;
+      const candidateKeys = [];
+
+      if (typeof content !== 'string') {
+        jsx = content;
+        const [jsxKey] = stringifyJsx(content, ctx);
+        if (!alias) {
+          key = jsxKey;
+        }
       }
 
-      if (translations[key] !== undefined) return buildJsx(translations[key], ctx, jsxKey);
-      for (let ns of nsRequired) {
-        const nsKey = `${ns}:${key}`;
-        if (translations[nsKey] !== undefined) return  buildJsx(translations[nsKey], ctx, jsxKey);
+      if (count >= 1) {
+        const prefix = count > 1 ? 'plural' : 'singular';
+        candidateKeys.push(`${prefix}::${key}`);
+        nsRequired.forEach(ns => candidateKeys.push(`${ns}:${prefix}::${key}`));
+      }
+      candidateKeys.push(key);
+      nsRequired.forEach(ns => candidateKeys.push(`${ns}:${key}`));      
+
+      for (let candidateKey of candidateKeys) {
+        if (translations[candidateKey] !== undefined) return  buildJsx(translations[candidateKey], ctx, jsx);
       }
       return null;
     },
     [fetching, translations, nsRequired]
+  );
+
+  const T = useCallback(
+    ({ alias, count, children }) => {
+      return t(<>{children}</>, alias, count);
+    },
+    [t]
   );
 
   useEffect(() => {
@@ -248,7 +266,7 @@ export const useTranslation = (namespaces, options) => {
     }
   }, [nsNotLoaded, i18nService, locale, fetching]);
 
-  return [t, locale, fetching || nsNotLoaded.length > 0];
+  return [T, t, locale, fetching || nsNotLoaded.length > 0];
 };
 
 const buildJsx = (str, ctx, wrapperReactElement) => {

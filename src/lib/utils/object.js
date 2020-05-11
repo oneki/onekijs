@@ -1,3 +1,5 @@
+import { useRef } from "react";
+
 export function isNull(value) {
   return value === undefined || value === null;
 }
@@ -209,4 +211,15 @@ export function shallowEqual(objA, objB) {
   }
 
   return true;
+}
+
+export const useShallowEqual = (obj) => {
+  const ref = useRef(obj);
+  if (shallowEqual(ref.current, obj)) {
+    obj = ref.current;
+  } else {
+    ref.current = obj;
+  }
+
+  return obj;
 }

@@ -22,6 +22,7 @@ export {
   isNullOrEmpty,
   set,
   shallowEqual,
+  useShallowEqual,
   update
 } from "./lib/utils/object";
 export {
@@ -59,7 +60,7 @@ export {
 } from "./lib/crud";
 export { every, latest, leading, debounce, throttle } from "./lib/saga";
 export { secure, SecureRoute } from "./lib/secure";
-export { useLocalService, createReduxService, useReduxService } from "./lib/service";
+export { useLocalService, createReduxService, useReduxService, useGenericReducer, useGenericSaga, genericService } from "./lib/service";
 export { useReduxSelector, createReduxStore } from "./lib/store";
 export {
   loginService,
