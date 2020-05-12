@@ -10,14 +10,14 @@ import { isFunction } from "./utils/type";
 import { asyncGet } from "./xhr";
 
 
-export const url2locale = (pathname, contextPath, candidates) => {
-  const length = contextPath.endsWith("/")
-    ? contextPath.length
-    : contextPath.length + 1;
-  const locale = pathname.substring(length).split("/")[0];
-  if (candidates.includes(locale)) return locale;
-  return null;
-};
+// export const url2locale = (pathname, contextPath, candidates) => {
+//   const length = contextPath.endsWith("/")
+//     ? contextPath.length
+//     : contextPath.length + 1;
+//   const locale = pathname.substring(length).split("/")[0];
+//   if (candidates.includes(locale)) return locale;
+//   return null;
+// };
 
 export const flattenTranslations = (translations) => {
   /* Example:
@@ -80,6 +80,10 @@ export const i18nService = {
     }
   },
   sagas: {
+    changeLocale: latest(function*(locale, context) {
+      yield call(this.setLocale, locale);
+      yield call(context.settings.i18n.changeLocale, locale, context);
+    }),
     fetchTranslations: latest(function* (
       { locale, namespaces, options = {} },
       { settings }
@@ -111,7 +115,7 @@ export const i18nService = {
   },
 };
 
-export const use18nService = () => {
+export const useI18nService = () => {
   return useReduxService(i18nService);
 };
 
@@ -201,7 +205,7 @@ export const useTranslation = (namespaces, options) => {
     ];
   }, [appContextNs, reduxNs])
 
-  const i18nService = use18nService();
+  const i18nService = useI18nService();
 
   const nsRequired = useMemo(() => {
     let nsRequired = namespaces || [];

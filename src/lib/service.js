@@ -1,25 +1,16 @@
-import { call, take } from "redux-saga/effects";
-import { useStore } from "react-redux";
+import { runSaga, stdChannel } from "@redux-saga/core";
 import produce from "immer";
-import {
-  useMemo,
-  useReducer,
-  useRef,
-  useCallback,
-  useEffect,
-  useContext
-} from "react";
-import { stdChannel, runSaga } from "@redux-saga/core";
-import { ReactReduxContext } from "react-redux";
-import { useSettings, useOnekiRouter } from "./context";
-import { isFunction } from "./utils/type";
+import { useCallback, useContext, useEffect, useMemo, useReducer, useRef } from "react";
+import { ReactReduxContext, useStore } from "react-redux";
+import { call, take } from "redux-saga/effects";
+import { useOnekiRouter, useSettings, AppContext } from "./context";
+import { every } from "./saga";
 import { set, useShallowEqual } from "./utils/object";
-import { latest, every } from "./saga";
 
 const services = {};
 
 class ReduxService {
-  constructor(store, router, settings, schema) {
+  constructor(store, router, settings, i18n, schema) {
     this._reducers = {};
     this._sagas = {};
     this._name = schema.name;
@@ -32,6 +23,9 @@ class ReduxService {
       },
       get settings() {
         return settings;
+      },
+      get i18n() {
+        return i18n;
       }
     });
 
@@ -134,8 +128,8 @@ class ReduxService {
 
   _injectService(name, defaultSchema) {
     // create service with the default schema if not already present in the context
-    const { store, router, settings } = this._context;
-    createReduxService(store, router, settings, defaultSchema);
+    const { store, router, settings, i18n } = this._context;
+    createReduxService(store, router, settings, i18n, defaultSchema);
     this[name] = {};
     Object.keys(defaultSchema.reducers || {}).forEach(type => {
       this[name][type] = payload => {
@@ -179,8 +173,8 @@ class ReduxService {
 }
 
 class Service extends ReduxService {
-  constructor(store, router, settings, schema) {
-    super(store, router, settings, schema);
+  constructor(store, router, settings, i18n, schema) {
+    super(store, router, settings, i18n, schema);
     
     this._reducer = (state, action) => {
       const nextState = produce(state, draftState => {
@@ -202,9 +196,9 @@ class Service extends ReduxService {
 }
 
 // singleton
-export const createReduxService = (store, router, settings, schema) => {
+export const createReduxService = (store, router, settings, i18n, schema) => {
   if (!services[schema.name]) {
-    const service = new ReduxService(store, router, settings, schema);
+    const service = new ReduxService(store, router, settings, i18n, schema);
     service._run();
     services[schema.name] = service;
   }
@@ -214,11 +208,10 @@ export const createReduxService = (store, router, settings, schema) => {
 export const useReduxService = schema => {
   // definition and store should be immutable.
   const store = useStore();
-  const router = useOnekiRouter();
-  const settings = useSettings();
+  const { router, settings, i18n } = useContext(AppContext);
 
   const service = useMemo(() => {
-    return createReduxService(store, router, settings, schema);
+    return createReduxService(store, router, settings, i18n, schema);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [store]);
 
@@ -227,12 +220,11 @@ export const useReduxService = schema => {
 
 export const useLocalService = (schema, initialState) => {
   const reduxContext = useContext(ReactReduxContext) || {};
-  const router = useOnekiRouter();
-  const settings = useSettings();
+  const { router, settings, i18n } = useContext(AppContext);
 
   const service = useMemo(() => {
-    return new Service(reduxContext.store, router, settings, schema);
-  }, [reduxContext.store, router, settings, schema]);
+    return new Service(reduxContext.store, router, settings, i18n, schema);
+  }, [reduxContext.store, router, settings, i18n, schema]);
 
   const [state, reactDispatch] = useReducer(service._reducer, initialState);
   const env = useRef(state);

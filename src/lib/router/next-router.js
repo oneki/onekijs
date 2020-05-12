@@ -100,7 +100,7 @@ export default class NextRouter extends BaseRouter {
 
   _goto(url, type) {
     if (!url) throw new Error("URL is undefined in router.push");
-    
+
     let routerUrl = toUrl(url);
     
     if (url.route) {

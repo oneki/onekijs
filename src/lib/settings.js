@@ -1,9 +1,37 @@
+import { url2locale } from "./i18n";
+
 export const defaultSettings = {
   contextPath: "/",
   i18n: {
     locales: ["en"],
     defaultLocale: "en",
-    url: "/locales"
+    url: "/locales",
+    localeFromLocation: (location, settings ) => {
+      const { contextPath, i18n } = settings;
+      const length = contextPath.endsWith("/")
+        ? contextPath.length
+        : contextPath.length + 1;
+      const locale = location.pathname.substring(length).split("/")[0];
+      if (i18n.locales.includes(locale)) return locale;
+      return null;
+    },
+    addLocaleToPath: (locale, path) => {
+      return `/${locale}${path}`;
+    },
+    changeLocale: (locale, { router, settings, i18n}) => {
+      const { contextPath } = settings;
+      const length = contextPath.endsWith("/")
+        ? contextPath.length
+        : contextPath.length + 1;
+      const currentLocale = i18n.locale;
+      console.log("currentLocale", currentLocale);
+      const pathTokens = router.pathname.substring(length).split("/");
+      console.log("pathTokens", pathTokens);
+      if (pathTokens[0] === currentLocale) {
+        pathTokens[0] = locale;
+        router.push(Object.assign({}, router.location, { pathname: `${router.pathname.substring(0, length)}${pathTokens.join('/')}`}))
+      }
+    } 
   }, 
   idp: {}, 
   notification: {

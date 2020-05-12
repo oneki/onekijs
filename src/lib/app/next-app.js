@@ -29,8 +29,6 @@ const useRouterSync = (onekiRouter) => {
   }, [nextRouter, onekiRouter])
 }
 
-let i18n = {};
-
 let init = false;
 export const NextApp = React.memo(
   ({
@@ -69,16 +67,13 @@ export const NextApp = React.memo(
     }, [appSettings]);
 
     const locale = useMemo(() => {
+      console.log("MEMO LOCALE");
       if (!loading) {
         let locale = pageProps.locale;
         
         if (!locale && router.location) {
-          
-          locale = url2locale(
-            get(router.location, 'pathname'), 
-            get(formattedSettings, 'contextPath', '/'), 
-            get(formattedSettings, 'i18n.locales')
-          );
+          console.log("localeFromLocation");
+          locale = formattedSettings.i18n.localeFromLocation(router.location, formattedSettings);
         }
         if (!locale) {
           locale = get(appStore.getState(), 'i18n.locale');
@@ -134,16 +129,29 @@ export const NextApp = React.memo(
       
     }, [router, route])
 
-    if (!loading) {
-      services.forEach((service) => {
-        createReduxService(store, router, formattedSettings, service);
-      });
-    }    
+   
+    const i18n = useMemo(() => {
+      console.log("build i18n", locale);
+      return {
+        locale,
+        ns: Object.keys(pageProps.translations || {}),
+        translations: flattenTranslations(pageProps.translations || {})
+      }
+    }, [locale, pageProps.translations])
+
+    useMemo(() => {
+      if (!loading) {
+        services.forEach((service) => {
+          createReduxService(store, router, formattedSettings, i18n, service);
+        });
+      }
+
+    }, [loading, services, store, router, i18n, formattedSettings])
 
     if (loading) {
       return <LoadingComponent />;
     }
-    
+
     if (nextRouter.route === '/404') {
       if (route || !router.location) return null;
       return <Error statusCode={404} />
@@ -153,11 +161,17 @@ export const NextApp = React.memo(
 
     const getLayout = (Component && Component.getLayout) || (page => page)
 
-    i18n = produce(i18n, draft => {
-      draft.locale = locale;
-      draft.ns = Object.keys(pageProps.translations || {});
-      draft.translations = flattenTranslations(pageProps.translations || {});
-    });
+
+
+    
+
+         
+
+    // i18n = produce(i18n, draft => {
+    //   draft.locale = locale;
+    //   draft.ns = Object.keys(pageProps.translations || {});
+    //   draft.translations = flattenTranslations(pageProps.translations || {});
+    // });
 
     return (
       <AppContext.Provider value={{ router, settings: formattedSettings, i18n }}>

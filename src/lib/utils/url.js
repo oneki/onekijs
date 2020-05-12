@@ -1,5 +1,6 @@
 import { trimEnd, trimStart } from "./string";
 import qs from "query-string";
+import { isNull } from "./object";
 
 export function urlBuilder(path, params = {}, query = {}) {
   var esc = encodeURIComponent;
@@ -85,10 +86,10 @@ export function toRelativeUrl(location, options) {
   if (location.state) {
     query[URL_STATE] = atob(JSON.stringify(location.state));
   }
-  if (Object.keys(query).length > 0 && options.query !== false) {
+  if (query && Object.keys(query).length > 0 && options.query !== false) {
     url += `?${qs.stringify(location.query)}`;
   }
-  if (Object.keys(location.hash).length > 0 && options.hash !== false) {
+  if (!isNull(location.hash) && Object.keys(location.hash).length > 0 && options.hash !== false) {
     url += `#${qs.stringify(location.hash)}`
   } 
   return url;

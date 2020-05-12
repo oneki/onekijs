@@ -10,7 +10,7 @@ export const formatSettings = (settings) => {
       result = simpleMergeDeep(result, settings[i]);
     }
   }
-  return Object.assign(defaultSettings, result);
+  return simpleMergeDeep(defaultSettings, result);
 }
 
 export const DefaultLoadingComponent = () => <div>LOADING ...</div>
