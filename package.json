@@ -1,6 +1,6 @@
 {
   "name": "onekijs",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Opiniated React framework built on top of Redux and React Router",
   "author": "oneki",
   "license": "MIT",
