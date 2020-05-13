@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useMemo, useEffect } from "react";
 import { all, call, cancel, fork } from "redux-saga/effects";
-import { AppContext } from "./context";
+import { AppContext, useSettings } from "./context";
 import { notificationService } from "./notification";
 import { delayLoading, latest } from "./saga";
 import { useReduxService } from "./service";
@@ -8,6 +8,8 @@ import { useReduxSelector } from "./store";
 import { get, set, append, isNull } from "./utils/object";
 import { isFunction } from "./utils/type";
 import { asyncGet } from "./xhr";
+import { toLocation, toRelativeUrl } from "./utils/url";
+import Link from 'next/link';
 
 
 // export const url2locale = (pathname, contextPath, candidates) => {
@@ -283,4 +285,39 @@ const buildJsx = (str, ctx, wrapperReactElement) => {
   if (isNull(wrapperReactElement)) return str;
   const children = parseJsx(str, ctx);
   return React.cloneElement(wrapperReactElement, {}, children);
+}
+
+export const toI18nLocation = (urlOrLocation, {i18n, settings}, route) => {
+  let location = urlOrLocation;
+  if (typeof urlOrLocation === 'string') {
+    location = toLocation(urlOrLocation);
+    location.route = route;
+  }
+  if (settings && i18n.locale) {
+    location = settings.i18n.addLocaleToLocation(i18n.locale, location, settings);
+  } 
+  return location; 
+}
+
+export const useI18n = () => {
+  return useContext(AppContext).i18n;
+}
+
+export const I18nLink = (props) => {
+  const { href, as } = props;
+  const settings = useSettings();
+  const i18n = useI18n();
+  let location;
+  if (as) {
+    location = toI18nLocation(as, { i18n, settings }, href);
+  } else {
+    location = toI18nLocation(href, { i18n, settings });
+  }
+  const i18nAs = toRelativeUrl(location);
+  const i18nHref = location.route;
+
+  return (
+    <Link {...props} as={i18nAs} href={i18nHref} />
+  )
+
 }

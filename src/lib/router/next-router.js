@@ -1,5 +1,6 @@
 import Router from 'next/router';
 import { toLocation, toUrl, toRelativeUrl } from "../utils/url";
+import { toI18nLocation } from '../i18n';
 import produce from 'immer';
 import BaseRouter from './base';
 
@@ -100,14 +101,11 @@ export default class NextRouter extends BaseRouter {
 
   _goto(type, urlOrLocation, route) {
     if (!urlOrLocation) throw new Error("URL is undefined in router.push");
-    let location = urlOrLocation;
-    if (typeof urlOrLocation === 'string') {
-      location = toLocation(urlOrLocation);
-      location.route = route;
-    }
-    if (this.settings && this.i18n.locale) {
-      location = this.settings.i18n.addLocaleToLocation(this.i18n.locale, location, this.settings);
-    }
+    const location = toI18nLocation(urlOrLocation, {
+      settings: this.settings,
+      i18n: this.i18n
+    }, route);
+
     if (location.route) {
       return Router.router[type](location.route, toRelativeUrl(location));
     } else {

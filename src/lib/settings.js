@@ -17,10 +17,8 @@ export const defaultSettings = {
       return null;
     },
     addLocaleToLocation: (locale, location, settings) => {
-      console.log("addLocaleToLocation", locale, location.pathname);
       const pathname = location.pathname;
       const hasLocale = settings.i18n.locales.find(l => pathname.startsWith(`/${l}`));
-      console.log("hasLocale", hasLocale, settings.i18n.locales);
       if (!hasLocale) {
         location.pathname = `/${locale}${pathname}`;
         if (location.pathname.endsWith('/')) location.pathname = location.pathname.slice(0,-1);

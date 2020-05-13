@@ -70,7 +70,6 @@ export const NextApp = React.memo(
     router.i18n = i18n;
 
     const locale = useMemo(() => {
-      console.log("changeLocale");
       if (!loading) {
         let locale = pageProps.locale;
         
@@ -100,8 +99,6 @@ export const NextApp = React.memo(
       }
       
     }, [loading, pageProps.locale, router.location, appStore, formattedSettings]);
-
-    console.log("locale", locale);
 
     const route = useMemo(() => {
       if (pageProps.routes && nextRouter.route === '/404') {

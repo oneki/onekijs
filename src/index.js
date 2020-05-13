@@ -86,6 +86,6 @@ export { dashboardService, useDashboardService, useDashboard } from './component
 export { Dropdown, DropdownMenu, DropdownAnchor } from './components/dropdown';
 export { Me, MeContainer } from './components/me';
 export { Search, SearchContainer } from './components/search';
-export { useI18nService, i18nService, useTranslation, useLocale } from './lib/i18n';
+export { useI18nService, i18nService, useTranslation, useLocale, useI18n, I18nLink } from './lib/i18n';
 export { get404StaticProps } from './lib/404/next-404';
 export { getI18nStaticProps, getI18nTranslations, withI18nPaths } from './lib/i18n/next-i18n';
