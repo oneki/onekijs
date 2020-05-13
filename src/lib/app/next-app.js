@@ -30,6 +30,7 @@ const useRouterSync = (onekiRouter) => {
 }
 
 let init = false;
+const i18n = {};
 export const NextApp = React.memo(
   ({
     settings = {},
@@ -65,14 +66,15 @@ export const NextApp = React.memo(
     const formattedSettings = useMemo(() => {
       return formatSettings(appSettings);
     }, [appSettings]);
+    router.settings = formattedSettings;
+    router.i18n = i18n;
 
     const locale = useMemo(() => {
-      console.log("MEMO LOCALE");
+      console.log("changeLocale");
       if (!loading) {
         let locale = pageProps.locale;
         
         if (!locale && router.location) {
-          console.log("localeFromLocation");
           locale = formattedSettings.i18n.localeFromLocation(router.location, formattedSettings);
         }
         if (!locale) {
@@ -80,12 +82,26 @@ export const NextApp = React.memo(
           
         }
         if (!locale && isBrowser()) {
-          locale = localStorage.getItem('onekijs.locale')
+          locale = localStorage.getItem('onekijs.locale');
+          if (!locale) {
+            const languages = navigator.languages;
+            if (languages && languages.length > 0) {
+              locale = languages.find(language => formattedSettings.i18n.locales.includes(language.slice(0,2)))
+              if (locale) return locale.slice(0,2);
+            } 
+            else if (navigator.language) locale = navigator.language.slice(0,2);
+            else if (navigator.userLanguage) locale = navigator.userLanguage.slice(0,2);
+          }
         }
-        return locale || get(formattedSettings, 'i18n.defaultLocale');
+        if (locale && formattedSettings.i18n.locales.includes(locale)) {
+          return locale;
+        }
+        return get(formattedSettings, 'i18n.defaultLocale');
       }
       
     }, [loading, pageProps.locale, router.location, appStore, formattedSettings]);
+
+    console.log("locale", locale);
 
     const route = useMemo(() => {
       if (pageProps.routes && nextRouter.route === '/404') {
@@ -129,15 +145,17 @@ export const NextApp = React.memo(
       
     }, [router, route])
 
-   
-    const i18n = useMemo(() => {
-      console.log("build i18n", locale);
-      return {
-        locale,
-        ns: Object.keys(pageProps.translations || {}),
-        translations: flattenTranslations(pageProps.translations || {})
-      }
-    }, [locale, pageProps.translations])
+    const translations = useMemo(() => {
+      return flattenTranslations(pageProps.translations || {});
+    }, [pageProps.translations]);
+
+    const i18nNs = useMemo(() => {
+      return Object.keys(pageProps.translations || {});
+    }, [pageProps.translations])
+
+    i18n.locale = locale;
+    i18n.translations = translations;
+    i18n.ns = i18nNs;
 
     useMemo(() => {
       if (!loading) {
@@ -146,7 +164,7 @@ export const NextApp = React.memo(
         });
       }
 
-    }, [loading, services, store, router, i18n, formattedSettings])
+    }, [loading, services, store, router, formattedSettings])
 
     if (loading) {
       return <LoadingComponent />;
@@ -159,13 +177,7 @@ export const NextApp = React.memo(
 
     init = true;
 
-    const getLayout = (Component && Component.getLayout) || (page => page)
-
-
-
-    
-
-         
+    const getLayout = (Component && Component.getLayout) || (page => page)  
 
     // i18n = produce(i18n, draft => {
     //   draft.locale = locale;

@@ -1,5 +1,5 @@
 import Router from 'next/router';
-import { toLocation, toUrl } from "../utils/url";
+import { toLocation, toUrl, toRelativeUrl } from "../utils/url";
 import produce from 'immer';
 import BaseRouter from './base';
 
@@ -43,12 +43,12 @@ export default class NextRouter extends BaseRouter {
    *   state: obj // example: {key1: 'value1'}
    * }
    */
-  push(url) {
-    return this._goto(url, 'push');
+  push(urlOrLocation, route) {
+    return this._goto('push', urlOrLocation, route);
   }
 
-  replace(url) {
-    return this._goto(url, 'replace');
+  replace(urlOrLocation, route) {
+    return this._goto('replace', urlOrLocation, route);
   }
 
   /**
@@ -98,15 +98,20 @@ export default class NextRouter extends BaseRouter {
     this._listeners.splice(this._listeners.indexOf(callback),1);
   }
 
-  _goto(url, type) {
-    if (!url) throw new Error("URL is undefined in router.push");
-
-    let routerUrl = toUrl(url);
-    
-    if (url.route) {
-      return Router.router[type](url.route, routerUrl);
+  _goto(type, urlOrLocation, route) {
+    if (!urlOrLocation) throw new Error("URL is undefined in router.push");
+    let location = urlOrLocation;
+    if (typeof urlOrLocation === 'string') {
+      location = toLocation(urlOrLocation);
+      location.route = route;
+    }
+    if (this.settings && this.i18n.locale) {
+      location = this.settings.i18n.addLocaleToLocation(this.i18n.locale, location, this.settings);
+    }
+    if (location.route) {
+      return Router.router[type](location.route, toRelativeUrl(location));
     } else {
-      return Router.router[type](routerUrl);
+      return Router.router[type]( toRelativeUrl(location));
     }
   }
 
