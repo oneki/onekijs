@@ -1,8 +1,9 @@
 export function getI18nStaticProps(fs, path, lang, namespaces=[]) {
   return {
     props: { 
-      translations: getI18nTranslations(fs, path, lang, namespaces)
-     }
+      translations: getI18nTranslations(fs, path, lang, namespaces),
+      locale: lang
+    }
   }
 }
 

@@ -32,9 +32,32 @@ export function absoluteUrl(url, baseUrl) {
 }
 
 export const URL_STATE = '__STATE__';
+// export function toLocation(url) {
+//   const parser = document.createElement('a');
+//   parser.href = url;
+//   const location = {
+//     protocol: parser.protocol ? parser.protocol.slice(0,-1) : null,
+//     hostname: parser.hostname,
+//     port: parser.port,
+//     pathname: parser.pathname,
+//     query: qs.parse(parser.search),
+//     hash: qs.parse(parser.hash),
+//     host: parser.host, 
+//     href: parser.href,
+//     relativeurl: `${parser.pathname}${parser.search}${parser.hash}`,
+//     baseurl: `${parser.protocol}//${parser.host}`
+//   }
+  
+//   if(location.query && location.query[URL_STATE]) {
+//     location.state = JSON.parse(atob(location.query[URL_STATE]));
+//     delete location.query[URL_STATE];
+//   }
+//   return location;
+// }
+
 export function toLocation(url) {
-  const parser = document.createElement('a');
-  parser.href = url;
+  const base = typeof window !== 'undefined' ? window.origin : 'http://localhost';
+  const parser = new URL(url, base);
   const location = {
     protocol: parser.protocol ? parser.protocol.slice(0,-1) : null,
     hostname: parser.hostname,

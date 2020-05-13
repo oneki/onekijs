@@ -294,6 +294,7 @@ export const toI18nLocation = (urlOrLocation, {i18n, settings}, route) => {
     location.route = route;
   }
   if (settings && i18n.locale) {
+    
     location = settings.i18n.addLocaleToLocation(i18n.locale, location, settings);
   } 
   return location; 
@@ -314,7 +315,7 @@ export const I18nLink = (props) => {
     location = toI18nLocation(href, { i18n, settings });
   }
   const i18nAs = toRelativeUrl(location);
-  const i18nHref = location.route;
+  const i18nHref = location.route || toRelativeUrl(location);
 
   return (
     <Link {...props} as={i18nAs} href={i18nHref} />
