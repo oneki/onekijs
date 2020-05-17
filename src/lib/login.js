@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { call } from "redux-saga/effects";
 import { authService } from "./auth";
-import { notificationService, useNotificationService } from "./notification";
+import { notificationService, useNotificationService, useNotifications } from "./notification";
 import { latest } from "./saga";
 import { useLocalService } from "./service";
 import { generateCodeChallenge, generateCodeVerifier, generateNonce, generateState, getIdp, getIdpName, parseJwt } from "./utils/auth";
@@ -9,6 +9,7 @@ import { sha256 } from "./utils/crypt";
 import { get } from "./utils/object";
 import { absoluteUrl } from "./utils/url";
 import { asyncHttp, asyncPost } from "./xhr";
+import { SimpleError } from "./error";
 
 const isOauth = (idp) => idp.oauth2 === true || idp.oidc === true;
 const isExternal = (idp) => idp.external === true;
@@ -45,7 +46,8 @@ const parseHashToken = (hash) => {
  *    - router: an OnekiJS router
  *    - settings: the full settings object passed to the application
  */
-function* login({ idpName, onError, onSuccess }, { router, settings }) {
+function* login({ idpName, onError, onSuccess }, context) {
+  const { router, settings } = context;
   try {
     if (!sessionStorage.getItem("onekijs.from")) {
       // get the previous location from the router and put the URL in the
@@ -92,9 +94,9 @@ function* login({ idpName, onError, onSuccess }, { router, settings }) {
     } catch (e) {
       // for any technical error (50X), we stop here and forward the error 
       // to the caller
-      // for any business error (40X), we bypass the error (it's like an 
+      // for any business error (40X), we bypass the error (it's likely an 
       // unauthenticate error, so we continue the login process)
-      if (e.statusCode >= 500) {
+      if (e.code >= 500) {
         throw e;
       }
     }
@@ -102,15 +104,13 @@ function* login({ idpName, onError, onSuccess }, { router, settings }) {
     if (isExternal(idp)) {
       // do not render anything and redirect to an external login page
       yield call(this.externalLogin, { idpName, onError, onSuccess });
-    } else {
-      // let print the form
-      yield call(this.setRender, true);
     }
   } catch (e) {
+    yield call(this.onError, e);
     if (onError) {
       // the caller is not an async or generator function and manages error 
       // via a callback
-      yield call(onError, e);
+      yield call(onError, e, context);
     } else {
       // the caller is an async or generator function and manages error 
       // via a try/catch
@@ -130,11 +130,13 @@ function* login({ idpName, onError, onSuccess }, { router, settings }) {
  *    - router: an OnekiJS router
  *    - settings: the full settings object passed to the application
  */
-function* externalLogin({ idpName, onError }, { store, router, settings }) {
+function* externalLogin({ idpName, onError }, context) {
+  const { router, settings } = context;
   try {
     // build the IDP configuration from the settings and some default values
     const idp = getIdp(settings, idpName);
 
+    const idpContext = Object.assign({}, context, { idp });
     // get the loginCallback route the settings
     const redirectUri = absoluteUrl(
       idp.loginCallbackRoute || `${router.pathname}/callback`
@@ -146,15 +148,48 @@ function* externalLogin({ idpName, onError }, { store, router, settings }) {
       );
     }
 
+    
     if (isOauth(idp)) {
+
+      const params = {
+        client_id: idp.clientId,
+        response_type: idp.responseType,
+        [idp.postLoginRedirectKey]: redirectUri,
+      }
+      if (idp.scope) {
+        params.scope = idp.scope;
+      }
+      if (idp.nonce || idp.responseType.includes("id_token")) {
+        const nonce = generateNonce();
+        sessionStorage.setItem("onekijs.nonce", nonce);
+        const hash = yield call(sha256, nonce);
+        params.nonce = hash;
+      } else {
+        sessionStorage.removeItem("onekijs.nonce");
+      }
+      if (idp.state) {
+        const state = generateState();
+        sessionStorage.setItem("onekijs.state", state);
+        const hash = yield call(sha256, state);
+        params.state = hash;
+      } else {
+        sessionStorage.removeItem("onekijs.state");
+      }
+      if (idp.responseType === "code" && idp.pkce) {
+        const verifier = generateCodeVerifier();
+        sessionStorage.setItem("onekijs.verifier", verifier);
+        const challenge = yield call(generateCodeChallenge, verifier);
+        params.code_challenge = challenge;
+        params.code_challenge_method = idp.codeChallengeMethod;
+      } else {
+        sessionStorage.removeItem("onekijs.verifier");
+      }      
+
+
       if (typeof idp.authorizeEndpoint === "function") {
         // if the user specifies a function as authorizeEndpoint, we delegate to 
         // this function the task of building the URL of the external login page
-        const url = yield call(idp.authorizeEndpoint, idp, {
-          store,
-          router,
-          settings,
-        });
+        const url = yield call(idp.authorizeEndpoint, params, idpContext);
         window.location.href = `${absoluteUrl(
           url,
           get(settings, "server.baseUrl")
@@ -162,70 +197,71 @@ function* externalLogin({ idpName, onError }, { store, router, settings }) {
       } else {
         // build the URL based on the spec
         // https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
-        const responseType = idp.responseType;
-        const redirectKey = idp.postLoginRedirectKey;
-        const scope = idp.scope;
-        let search = `?${redirectKey}=${redirectUri}&client_id=${idp.clientId}&response_type=${responseType}`;
-        if (scope) {
-          search += `&scope=${idp.scope}`;
-        }
-        if (idp.nonce || responseType.includes("id_token")) {
-          const nonce = generateNonce();
-          sessionStorage.setItem("onekijs.nonce", nonce);
-          const hash = yield call(sha256, nonce);
-          search += `&nonce=${hash}`;
-        } else {
-          sessionStorage.removeItem("onekijs.nonce");
-        }
-        if (idp.state) {
-          const state = generateState();
-          sessionStorage.setItem("onekijs.state", state);
-          const hash = yield call(sha256, state);
-          search += `&state=${hash}`;
-        } else {
-          sessionStorage.removeItem("onekijs.state");
-        }
-        if (responseType === "code" && idp.pkce) {
-          const verifier = generateCodeVerifier();
-          sessionStorage.setItem("onekijs.verifier", verifier);
-          const challenge = yield call(generateCodeChallenge, verifier);
-          search += `&code_challenge=${challenge}&code_challenge_method=${idp.codeChallengeMethod}`;
-        } else {
-          sessionStorage.removeItem("onekijs.verifier");
-        }
+        // const responseType = idp.responseType;
+        // const redirectKey = idp.postLoginRedirectKey;
+        // const scope = idp.scope;
+        const search = Object.keys(params).reduce((accumulator, key) => {
+          accumulator += accumulator.length > 1 ? '&' : '';
+          return `${accumulator}${key}=${params[key]}`;
+        }, "?");
+        // let search = `?${redirectKey}=${redirectUri}&client_id=${idp.clientId}&response_type=${responseType}`;
+        // if (scope) {
+        //   search += `&scope=${idp.scope}`;
+        // }
+        // if (idp.nonce || responseType.includes("id_token")) {
+        //   const nonce = generateNonce();
+        //   sessionStorage.setItem("onekijs.nonce", nonce);
+        //   const hash = yield call(sha256, nonce);
+        //   search += `&nonce=${hash}`;
+        // } else {
+        //   sessionStorage.removeItem("onekijs.nonce");
+        // }
+        // if (idp.state) {
+        //   const state = generateState();
+        //   sessionStorage.setItem("onekijs.state", state);
+        //   const hash = yield call(sha256, state);
+        //   search += `&state=${hash}`;
+        // } else {
+        //   sessionStorage.removeItem("onekijs.state");
+        // }
+        // if (responseType === "code" && idp.pkce) {
+        //   const verifier = generateCodeVerifier();
+        //   sessionStorage.setItem("onekijs.verifier", verifier);
+        //   const challenge = yield call(generateCodeChallenge, verifier);
+        //   search += `&code_challenge=${challenge}&code_challenge_method=${idp.codeChallengeMethod}`;
+        // } else {
+        //   sessionStorage.removeItem("onekijs.verifier");
+        // }
         window.location.href = `${absoluteUrl(
           idp.authorizeEndpoint,
           get(settings, "server.baseUrl")
         )}${search}`;
       }
-    } else if (typeof idp.loginEndpoint === "function") {
-      // if the user specifies a function as loginEndpoint, we delegate to 
+    } else if (typeof idp.externalLoginEndpoint === "function") {
+      // if the user specifies a function as externalLoginEndpoint, we delegate to 
       // this function the task of building the URL of the external login page
-      const url = yield call(idp.loginEndpoint, idp, {
-        store,
-        router,
-        settings,
-      });
+      const url = yield call(idp.externalLoginEndpoint, idpContext);
       window.location.href = `${absoluteUrl(
         url,
         get(settings, "server.baseUrl")
       )}`;
     } else {
-      // we don't actually have a spec to follow. Just use the loginEndpoint
+      // we don't actually have a spec to follow. Just use the externalLoginEndpoint
       // and add the callback URL       
       const search = idp.postLoginRedirectKey
         ? `?${idp.postLoginRedirectKey}=${redirectUri}`
         : "";
       window.location.href = `${absoluteUrl(
-        idp.loginEndpoint,
+        idp.externalLoginEndpoint,
         get(settings, "server.baseUrl")
       )}${search}`;
     }
   } catch (e) {
+    yield call(this.onError, e);
     if (onError) {
       // the caller is not an async or generator function and manages error 
       // via a callback
-      yield call(onError, e);
+      yield call(onError, e, context);
     } else {
       // the caller is an async or generator function and manages error 
       // via a try/catch
@@ -246,10 +282,12 @@ function* externalLogin({ idpName, onError }, { store, router, settings }) {
  *    - router: an OnekiJS router
  *    - settings: the full settings object passed to the application
  */
-function* externalLoginCallback({idpName, onError, onSuccess}, { store, router, settings }) {
+function* externalLoginCallback({idpName, onError, onSuccess}, context) {
+  const { router, settings } = context;
   try {
     // build the IDP configuration from the settings and some default values
     const idp = getIdp(settings, idpName);
+    const idpContext = Object.assign({}, context, { idp })
 
     // by default, the response is the current location containing all 
     // parameters found in the URL
@@ -273,20 +311,25 @@ function* externalLoginCallback({idpName, onError, onSuccess}, { store, router, 
           // if the user specifies a function as tokenEndpoint, we delegate to 
           // this function the task of validating the authorizeEndpoint response
           // and getting the token from the tokenEndpoint
-          token = yield call(idp.tokenEndpoint, "authorization_code", idp, {
-            store,
-            router,
-            settings,
-          });
+          token = yield call(idp.tokenEndpoint, "authorization_code", idpContext);
         } else {
           // validating the authorizeEndpoint response based on spec
           // https://openid.net/specs/openid-connect-core-1_0.html#AuthResponseValidation
           const params = router.query;
           const state = sessionStorage.getItem("onekijs.state");
           sessionStorage.removeItem("onekijs.state");
+
+          if (params.error) {
+            throw new SimpleError(params.error_description, params.error);
+          }
+
+          if (!params.code) {
+            throw new SimpleError("No authorization code received from Identity Provider", "missing_authorization_code");
+          }
+
           const hash = yield call(sha256, state);
           if (idp.state && hash !== params.state) {
-            throw Error("Invalid oauth2 state");
+            throw new SimpleError("Invalid oauth2 state", "invalid_state");
           }
           
           // build the token request based on spec
@@ -335,11 +378,7 @@ function* externalLoginCallback({idpName, onError, onSuccess}, { store, router, 
     if (typeof callback === "function") {
       // delegate to the callback the task of parsing the token and the 
       // security context from the response
-      [token, securityContext] = yield call(callback, response, idp, {
-        store,
-        router,
-        settings,
-      });
+      [token, securityContext] = yield call(callback, response, idpContext);
     }
 
     if (isOauth(idp) && idp.nonce && get(token, "id_token")) {
@@ -362,10 +401,11 @@ function* externalLoginCallback({idpName, onError, onSuccess}, { store, router, 
       onSuccess,
     });
   } catch (e) {
+    yield call(this.onError, e);
     if (onError) {
       // the caller is not an async or generator function and manages error 
       // via a callback
-      yield call(onError, e);
+      yield call(onError, e, context);
     } else {
       // the caller is an async or generator function and manages error 
       // via a try/catch
@@ -387,13 +427,15 @@ function* externalLoginCallback({idpName, onError, onSuccess}, { store, router, 
  *    - router: an OnekiJS router
  *    - settings: the full settings object passed to the application
  */
-function* formLogin({idpName, onError, onSuccess, username, password, rememberMe}, { store, router, settings }) {
+function* formLogin({idpName, onError, onSuccess, username, password, rememberMe}, context) {
+  const { settings } = context
   try {
     // forward to reducer to set the loading flag to true
     yield call(this.setLoading, true);
     
     // build the IDP configuration from the settings and some default values
     const idp = getIdp(settings, idpName);
+    const idpContext = Object.assign({}, context, { idp })
     
     // will contain the result of the submit
     let response;
@@ -401,11 +443,7 @@ function* formLogin({idpName, onError, onSuccess, username, password, rememberMe
     if (typeof idp.loginEndpoint === "function") {
       // if the user specifies a function as loginEndpoint, we delegate to 
       // this function the task of submitting the form     
-      response = yield call(idp.loginEndpoint, idp, {username, password, rememberMe}, {
-        store,
-        router,
-        settings,
-      });
+      response = yield call(idp.loginEndpoint, {username, password, rememberMe}, idpContext);
     } else {
       // create the submit request 
       const method = idp.loginMethod || "POST";
@@ -446,11 +484,7 @@ function* formLogin({idpName, onError, onSuccess, username, password, rememberMe
       // when the user specifies a function as the callback, we delegate to this
       // function the task of parsing the token and the security context from 
       // the response
-      [token, securityContext] = yield call(idp.callback, response, idp, {
-        store,
-        router,
-        settings,
-      });
+      [token, securityContext] = yield call(idp.callback, response, idpContext);
     } else if (idp.callback === "token") {
       // when the callback is set to "token", the response is the token
       token = response;
@@ -469,10 +503,11 @@ function* formLogin({idpName, onError, onSuccess, username, password, rememberMe
     });
 
   } catch (e) {
+    yield call(this.onError, e);
     if (onError) {
       // the caller is not an async or generator function and manages error 
       // via a callback
-      yield call(onError, e);
+      yield call(onError, e, context);
     } else {
       // the caller is an async or generator function and manages error 
       // via a try/catch
@@ -491,7 +526,8 @@ function* formLogin({idpName, onError, onSuccess, username, password, rememberMe
  *    - router: an OnekiJS router
  *    - settings: the full settings object passed to the application
  */
-function* successLogin({token, securityContext, idpName, onError, onSuccess}, { router, settings }) {
+function* successLogin({token, securityContext, idpName, onError, onSuccess}, context) {
+  const { settings, router } = context;
   try {
     // build the IDP configuration from the settings and some default values
     const idp = getIdp(settings, idpName);
@@ -514,6 +550,7 @@ function* successLogin({token, securityContext, idpName, onError, onSuccess}, { 
 
     // call the reducer to update the local state
     yield call(this.onSuccess);
+    yield call(this.notificationService.clearTopic, 'login-error');
     
     // get the original route
     const from =
@@ -523,17 +560,18 @@ function* successLogin({token, securityContext, idpName, onError, onSuccess}, { 
     
     if (onSuccess) {
       // the caller manages the success login
-      yield call(onSuccess, [token, securityContext]);
+      yield call(onSuccess, [token, securityContext], Object.assign({}, context, { from }));
     } else {
       // redirect the user to the original route
       yield call([router, router.push], from);
     }
 
   } catch (e) {
+    yield call(this.onError, e);
     if (onError) {
       // the caller is not an async or generator function and manages error 
       // via a callback
-      yield call(onError, e);
+      yield call(onError, e, context);
     } else {
       // the caller is an async or generator function and manages error 
       // via a try/catch
@@ -552,7 +590,8 @@ function* successLogin({token, securityContext, idpName, onError, onSuccess}, { 
  *    - router: an OnekiJS router
  *    - settings: the full settings object passed to the application
  */
-function* logout({onError, onSuccess},  { router, settings, store }) {
+function* logout({onError, onSuccess}, context) {
+  const { router, settings, store } = context;
   try {
     const idpName = getIdpName(store.getState());
     if (!idpName) {
@@ -564,22 +603,19 @@ function* logout({onError, onSuccess},  { router, settings, store }) {
 
     // build the IDP configuration from the settings and some default values
     const idp = getIdp(settings, idpName);
+    const idpContext = Object.assign({}, context, { idp })
     
     if (isExternal(idp)) {
-      if (typeof idp.logoutEndpoint === "function") {
-        // if the user specifies a function as logoutEndpoint, we delegate to 
+      if (typeof idp.externalLogoutEndpoint === "function") {
+        // if the user specifies a function as externalLogoutEndpoint, we delegate to 
         // this function the task of building the URL of the external logout
         // page
-        const url = yield call(idp.logoutEndpoint, idp, {
-          store,
-          router,
-          settings,
-        });
+        const url = yield call(idp.externalLogoutEndpoint, idpContext);
         window.location.href = `${absoluteUrl(
           url,
           get(settings, "server.baseUrl")
         )}`;
-      } else if (idp.logoutEndpoint) {
+      } else if (idp.externalLogoutEndpoint) {
          // Build the logout URL
         const redirectUri = absoluteUrl(
           idp.logoutCallbackRoute ||  `${router.pathname}/callback`
@@ -596,7 +632,7 @@ function* logout({onError, onSuccess},  { router, settings, store }) {
         }
 
         window.location.href = `${absoluteUrl(
-          idp.logoutEndpoint,
+          idp.externalLogoutEndpoint,
           get(settings, "server.baseUrl")
         )}${search}`;
       } else {
@@ -607,7 +643,7 @@ function* logout({onError, onSuccess},  { router, settings, store }) {
       if (typeof idp.logoutEndpoint === "function") {
         // if the user specifies a function as logoutEndpoint, we delegate to 
         // this function the task of doing the logout request
-        yield call(idp.logoutEndpoint, idp, { store, router, settings });
+        yield call(idp.logoutEndpoint, idpContext);
       } else if (idp.logoutEndpoint) {
         // call the server
         const method = idp.logoutMethod || "GET";
@@ -624,10 +660,11 @@ function* logout({onError, onSuccess},  { router, settings, store }) {
       yield call(this.successLogout, {onError, onSuccess});
     }
   } catch (e) {
+    yield call(this.onError, e);
     if (onError) {
       // the caller is not an async or generator function and manages error 
       // via a callback
-      yield call(onError, e);
+      yield call(onError, e, context);
     } else {
       // the caller is an async or generator function and manages error 
       // via a try/catch
@@ -636,14 +673,16 @@ function* logout({onError, onSuccess},  { router, settings, store }) {
   }
 }
 
-function* successLogout({onError, onSuccess}, { router, settings }) {
+function* successLogout({onError, onSuccess}, context) {
+  const { router, settings } = context;
   try {
     // clear the token and the security context
     yield call(this.authService.clear);
     
     // call the reducer to update the local state
     yield call(this.onSuccess);
-    
+    yield call(this.notificationService.clearTopic, 'logout-error');
+
     if (onSuccess) {
       // the caller manages the success logout
       yield call(onSuccess);
@@ -652,10 +691,11 @@ function* successLogout({onError, onSuccess}, { router, settings }) {
       yield call([router, router.push], get(settings, "routes.home", "/"));
     }
   } catch (e) {
+    yield call(this.onError, e);
     if (onError) {
       // the caller is not an async or generator function and manages error 
       // via a callback
-      yield call(onError, e);
+      yield call(onError, e, context);
     } else {
       // the caller is an async or generator function and manages error 
       // via a try/catch
@@ -678,14 +718,15 @@ export const loginService = {
     },
 
     /**
-     * Avoid rendering something if not necessary
+     * Inform the user if there is an error
      * 
      * @param {object} state: the redux state 
-     * @param {boolean} render 
+     * @param {object} error 
      */
-    setRender: function (state, render) {
-      state.doNotRender = !render;
-    },
+    onError: function (state, error) {
+      state.error = error;
+      state.loading = false;
+    },    
 
     /**
      * Reset the loading and error message after a successful operation
@@ -694,17 +735,7 @@ export const loginService = {
      */
     onSuccess: function (state) {
       state.loading = false;
-      state.errorMessage = null;
-    },
-
-    /**
-     * Set the error message and reset the loading flag
-     * 
-     * @param {object} state: the redux state 
-     */    
-    onError: function (state, error) {
-      state.errorMessage = error.message;
-      state.loading = false;
+      state.error = null;
     },
   },
 
@@ -737,23 +768,24 @@ export const logoutService = {
     },
 
     /**
+     * Inform the user if there is an error
+     * 
+     * @param {object} state: the redux state 
+     * @param {object} error 
+     */
+    onError: function (state, error) {
+      state.error = error;
+      state.loading = false;
+    },    
+
+    /**
      * Reset the loading and error message after a successful operation
      * 
      * @param {object} state: the redux state 
      */
     onSuccess: function (state) {
       state.loading = false;
-      state.errorMessage = null;
-    },
-
-    /**
-     * Set the error message and reset the loading flag
-     * 
-     * @param {object} state: the redux state 
-     */   
-    onError: function (state, error) {
-      state.errorMessage = error.message;
-      state.loading = false;
+      state.error = null;
     },
   },
   sagas: {
@@ -762,6 +794,7 @@ export const logoutService = {
   },
   inject: {
     authService,
+    notificationService,
   },
 };
 
@@ -769,8 +802,8 @@ export const logoutService = {
 export const useLoginService = (idpName, options = {}) => {
   // create the local login service
   const [state, service] = useLocalService(loginService, {
-    doNotRender: true,
     loading: false,
+    error: null
   });
 
   // inject the global notificationService
@@ -785,11 +818,18 @@ export const useLoginService = (idpName, options = {}) => {
   );
 
   // we send errors to the notification service
-  const onError = options.onError || notificationService.error;
+  const defaultOnError = useCallback((error) => {
+    notificationService.send({
+      topic: 'login-error',
+      payload: error
+    })
+  },[notificationService])
+  const onError = options.onError || defaultOnError;
   const onSuccess = options.onSuccess;
   const callback = options.callback;
 
   useEffect(() => {
+    console.log("useEffect loginSErvice");
     if (callback) {
       // call the external login callback saga
       service.externalLoginCallback({ idpName, onError, onSuccess });
@@ -799,22 +839,33 @@ export const useLoginService = (idpName, options = {}) => {
     }
   }, [service, idpName, onError, onSuccess, callback]);
 
-  return [state, submit];
+  return [state.error, state.loading, submit];
 };
 
 // manage the result of a external login
 export const useLoginCallbackService = (name, options = {}) => {
   options.callback = true;
-  const [state,] = useLoginService(name, options)
-  return state;
+  const [error, loading,] = useLoginService(name, options)
+  return [error, loading];
 };
+
+export const useLoginError = () => {
+  const errors = useNotifications('login-error');
+  return errors[0];
+}
 
 export const useLogoutService = (options = {}) => {
   const [state, service] = useLocalService(logoutService, { loading: true });
   const notificationService = useNotificationService();
 
   // we send errors to the notification service
-  const onError = options.onError || notificationService.error;
+  const defaultOnError = useCallback((error) => {
+    notificationService.send({
+      topic: 'logout-error',
+      payload: error
+    })
+  },[notificationService])
+  const onError = options.onError || defaultOnError
   const onSuccess = options.onSuccess;
   const callback = options.callback;  
 
@@ -834,3 +885,8 @@ export const useLogoutCallbackService = (options = {}) => {
   options.callback = true;
   return useLogoutService(options);
 };
+
+export const useLogoutError = () => {
+  const errors = useNotifications('logout-error');
+  return errors[0];
+}

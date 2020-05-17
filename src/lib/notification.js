@@ -5,7 +5,7 @@ import { append, get, isNull } from "./utils/object";
 
 let nextId = 1;
 
-const formatNotification = (notification, settings) => {
+const formatNotification = (notification, settings, notificationService) => {
   if (typeof notification === "string") {
     notification = {
       payload: notification
@@ -38,6 +38,10 @@ const formatNotification = (notification, settings) => {
     notification.persist = persist;
   }
 
+  notification.remove = () => {
+    notificationService.remove(notification.id);
+  }
+
   return notification;
 };
 
@@ -65,7 +69,6 @@ export const notificationService = {
   },
   reducers: {
     add: function(state, notification, { settings }) {
-
       const max = get(
         settings,
         `notification.${notification.topic}.max`,
@@ -76,10 +79,13 @@ export const notificationService = {
         state.notifications[notification.topic].unshift();
       }
     },
-    remove: function(state, id) {
+    clearTopic: function(state, topic) {
+      state.notifications[topic] = [];
+    },
+    remove: function(state, notificationId) {
       Object.keys(state.notifications || {}).forEach(topic => {
         for (let i = 0; i < state.notifications[topic].length; i++) {
-          if (state.notifications[topic][i].id === id) {
+          if (state.notifications[topic][i].id === notificationId) {
             state.notifications[topic].splice(i, 1);
             break;
           }
@@ -99,7 +105,6 @@ export const notificationService = {
   sagas: {
     send: function*(notification, { store, settings }) {
       try {
-        // notification.test = 'test';
         if (!isNull(notification.id)) {
           // check if this notification is already present
           const topic = notification.topic || "default";
@@ -112,7 +117,7 @@ export const notificationService = {
             return;
           }
         }
-        notification = formatNotification(notification);
+        notification = formatNotification(notification, settings, this);
         if (notification.ttl === undefined) {
           notification.ttl = get(
             settings,

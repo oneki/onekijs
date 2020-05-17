@@ -44,12 +44,12 @@ export default class NextRouter extends BaseRouter {
    *   state: obj // example: {key1: 'value1'}
    * }
    */
-  push(urlOrLocation, route) {
-    return this._goto('push', urlOrLocation, route);
+  push(urlOrLocation, route, options) {
+    return this._goto('push', urlOrLocation, route, options);
   }
 
-  replace(urlOrLocation, route) {
-    return this._goto('replace', urlOrLocation, route);
+  replace(urlOrLocation, route, options) {
+    return this._goto('replace', urlOrLocation, route, options);
   }
 
   /**
@@ -86,6 +86,7 @@ export default class NextRouter extends BaseRouter {
   sync(nextRouter) {
     const pathname = nextRouter.pathname;
     const asPath = nextRouter.asPath;
+    
     if (!pathname.includes('[') || pathname !== asPath) {
       const location = toLocation(asPath);
       location.route = Router.router.route;
@@ -99,17 +100,18 @@ export default class NextRouter extends BaseRouter {
     this._listeners.splice(this._listeners.indexOf(callback),1);
   }
 
-  _goto(type, urlOrLocation, route) {
+  _goto(type, urlOrLocation, route, options) {
     if (!urlOrLocation) throw new Error("URL is undefined in router.push");
     const location = toI18nLocation(urlOrLocation, {
       settings: this.settings,
       i18n: this.i18n
     }, route);
 
+    const relativeUrl = toRelativeUrl(location);
     if (location.route) {
-      return Router.router[type](location.route, toRelativeUrl(location));
+      return Router.router[type](location.route, relativeUrl, options);
     } else {
-      return Router.router[type]( toRelativeUrl(location));
+      return Router.router[type](relativeUrl, relativeUrl, options);
     }
   }
 

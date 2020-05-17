@@ -78,7 +78,7 @@ export function toLocation(url) {
   return location;
 }
 
-export function toUrl(location, options) {
+export function toUrl(location, options={}) {
   if (!location) return null;
   if (typeof location === 'string') return location;
   let url = "";
@@ -98,7 +98,7 @@ export function toUrl(location, options) {
   return url;
 }
 
-export function toRelativeUrl(location, options) {
+export function toRelativeUrl(location, options={}) {
   if (!location) return null;
   if (typeof location === 'string') return location;
   let url = "";

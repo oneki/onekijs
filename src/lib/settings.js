@@ -1,4 +1,4 @@
-import { url2locale } from "./i18n";
+import { toRelativeUrl } from "./utils/url";
 
 export const defaultSettings = {
   contextPath: "/",
@@ -18,13 +18,14 @@ export const defaultSettings = {
     },
     addLocaleToLocation: (locale, location, settings) => {
       const pathname = location.pathname;
+      const relativeUrl = toRelativeUrl(location);
       const hasLocale = settings.i18n.locales.find(l => pathname.startsWith(`/${l}`));
       if (!hasLocale) {
         location.pathname = `/${locale}${pathname}`;
         if (location.pathname.endsWith('/')) location.pathname = location.pathname.slice(0,-1);
       }
       if (Object.keys(location).includes('route')) {
-        const route = location.route || pathname;
+        const route = location.route || relativeUrl;
         if (!route.startsWith(`/${settings.i18n.slug}`)) {
           location.route = `/${settings.i18n.slug}${route}`;
           if (location.route.endsWith('/')) location.route = location.route.slice(0,-1);
@@ -54,6 +55,14 @@ export const defaultSettings = {
     error: {
       ttl: 0,
       max: 0
+    },
+    "login-error": {
+      ttl: 0,
+      max: 1
+    },
+    "logout-error": {
+      ttl: 0,
+      max: 1
     }
   },  
   router: {

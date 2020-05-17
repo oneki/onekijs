@@ -2,7 +2,7 @@ import { useNotificationService } from "./notification";
 import { useCallback } from "react";
 
 // https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
-const statusCodes = {
+const httpCodes = {
   "100": "Continue",
   "101": "Switching Protocol",
   "102": "Processing",
@@ -68,11 +68,17 @@ const statusCodes = {
   "511": "Network Authentication Required"
 };
 
-export class HTTPError extends Error {
-  constructor(code, message = null, payload = {}) {
-    super(message || statusCodes[code.toString()]);
-    this.statusCode = code;
+export class SimpleError extends Error {
+  constructor(message, code=null, payload = {}) {
+    super(message);
+    this.code = code;
     this.payload = payload;
+  }
+}
+
+export class HTTPError extends SimpleError {
+  constructor(code, message = null, payload = {}) {
+    super(message || httpCodes[code.toString()], code, payload);
   }
 }
 

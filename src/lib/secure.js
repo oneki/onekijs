@@ -11,16 +11,16 @@ const DefaultErrorComponent = ({error}) => {
   const loginRoute = useSetting('routes.login', '/login');
 
   useEffect(() => {
-    if (error.statusCode === 401) {
+    if (error.code === 401) {
       router.push(loginRoute);
     }
-  }, [error.statusCode, router, loginRoute])
+  }, [error.code, router, loginRoute])
   
-  if (error.statusCode === 401) {
+  if (error.code === 401) {
     return null;
   }
 
-  return <div>ERROR COMPONENT HERE {error.statusCode}</div>
+  return <div>ERROR COMPONENT HERE {error.code}</div>
 }
 
 export const secure = (Component, validator, options={}) => {

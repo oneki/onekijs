@@ -1,20 +1,19 @@
-import React, { useEffect, useMemo, useState, useCallback } from "react";
+import { getRouteMatcher } from 'next/dist/next-server/lib/router/utils/route-matcher';
+import { getRouteRegex } from 'next/dist/next-server/lib/router/utils/route-regex';
+import Error from 'next/error';
+import Router, { useRouter } from "next/router";
+import React, { useEffect, useMemo, useState } from "react";
 import { Provider } from "react-redux";
-import { AppContext, useOnekiRouter } from "../context";
+import { AppContext } from "../context";
+import { flattenTranslations } from "../i18n";
 import NextRouter from "../router/next-router";
 import { createReduxService } from "../service";
 import { createReduxStore } from "../store";
 import { DefaultLoadingComponent, formatSettings } from "../utils/app";
-import { isPromise } from "../utils/type";
-import Router, { useRouter } from "next/router";
-import { get } from "../utils/object";
-import { url2locale, flattenTranslations } from "../i18n";
 import { isBrowser } from "../utils/browser";
-import produce from "immer";
-import { getRouteMatcher } from 'next/dist/next-server/lib/router/utils/route-matcher'
-import { getRouteRegex } from 'next/dist/next-server/lib/router/utils/route-regex'
-import Error from 'next/error'
-import { toUrl, toRelativeUrl } from "../utils/url";
+import { get } from "../utils/object";
+import { isPromise } from "../utils/type";
+import { toRelativeUrl } from "../utils/url";
 
 const useNextRouter = useRouter || (() => null);
 
@@ -169,7 +168,7 @@ export const NextApp = React.memo(
 
     if (nextRouter.route === '/404') {
       if (route || !router.location) return null;
-      return <Error statusCode={404} />
+      return <Error code={404} />
     }
 
     init = true;

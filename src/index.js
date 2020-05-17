@@ -7,7 +7,7 @@ export {
   asyncPut,
   xhr
 } from "./lib/xhr";
-export { HTTPError } from "./lib/error";
+export { SimpleError, HTTPError } from "./lib/error";
 export {
   notificationService,
   useNotificationService,
@@ -66,9 +66,11 @@ export {
   loginService,
   useLoginService,
   useLoginCallbackService,
+  useLoginError,
   logoutService,
   useLogoutService,
-  useLogoutCallbackService
+  useLogoutCallbackService,
+  useLogoutError
 } from "./lib/login";
 export { authService, useAuthService, useSecurityContext } from "./lib/auth";
 export { NextApp } from "./lib/app/next-app";

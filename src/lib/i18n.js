@@ -294,7 +294,6 @@ export const toI18nLocation = (urlOrLocation, {i18n, settings}, route) => {
     location.route = route;
   }
   if (settings && i18n.locale) {
-    
     location = settings.i18n.addLocaleToLocation(i18n.locale, location, settings);
   } 
   return location; 
