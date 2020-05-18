@@ -1,7 +1,7 @@
 import { call, delay } from "redux-saga/effects";
 import { useReduxService } from "./service";
 import { useReduxSelector } from "./store";
-import { append, get, isNull } from "./utils/object";
+import { append, get, isNull, set } from "./utils/object";
 
 let nextId = 1;
 
@@ -80,7 +80,7 @@ export const notificationService = {
       }
     },
     clearTopic: function(state, topic) {
-      state.notifications[topic] = [];
+      set(state, `notifications.${topic}`, [])
     },
     remove: function(state, notificationId) {
       Object.keys(state.notifications || {}).forEach(topic => {
