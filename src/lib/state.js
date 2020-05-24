@@ -14,8 +14,9 @@ const globalService = {
 
 const defaultSelector = (state) => state;
 
-export const useGlobalState = (selector) => {
-  const state = useSelector(selector || defaultSelector);
+export const useGlobalState = (selector, defaultValue) => {
+  let state = useSelector(selector || defaultSelector);
+  state = state === undefined ? defaultValue : state;
   const service = useReduxService(globalService);
   const setState = useCallback((key, value) => {
     service.setState({ key, value })
