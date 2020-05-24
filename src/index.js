@@ -91,4 +91,4 @@ export { layout, withLayout } from './lib/layout';
 export { useI18nService, i18nService, useTranslation, useLocale, useI18n, I18nLink } from './lib/i18n';
 export { get404StaticProps } from './lib/404/next-404';
 export { getI18nStaticProps, getI18nTranslations, withI18nPaths } from './lib/i18n/next-i18n';
-export { useGlobalState, useGlobalProp } from './lib/state';
+export { useGlobalState, useGlobalProp, useLocalState } from './lib/state';

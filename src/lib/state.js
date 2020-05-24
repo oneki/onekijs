@@ -1,9 +1,9 @@
 import { useCallback } from "react";
 import { useSelector } from "react-redux";
-import { useReduxService } from "./service";
+import { useReduxService, useLocalService } from "./service";
 import { set, get } from "./utils/object";
 
-const service = {
+const globalService = {
   name: "state",
   reducers: {
     setState: (state, payload) => {
@@ -16,20 +16,36 @@ const defaultSelector = (state) => state;
 
 export const useGlobalState = (selector) => {
   const state = useSelector(selector || defaultSelector);
-  const stateService = useReduxService(service);
+  const service = useReduxService(globalService);
   const setState = useCallback((key, value) => {
-    stateService.setState({ key, value })
-  }, [stateService]);
+    service.setState({ key, value })
+  }, [service]);
   return [state, setState]
 }
 
 export const useGlobalProp = (key, defaultValue) => {
   let value = useSelector(state => get(state, key));
   value = value === undefined ? defaultValue : value;
-  const stateService = useReduxService(service);
+  const service = useReduxService(globalService);
   const setValue = useCallback(value => {
-    stateService.setState({ key, value })
-  }, [stateService, key]);
+    service.setState({ key, value })
+  }, [service, key]);
   return [value, setValue]
+}
+
+const localService = {
+  reducers: {
+    setState: (state, payload) => {
+      set(state, payload.key, payload.value);
+    }
+  }
+}
+
+export const useLocalState = (initialState) => {
+  const [state, service] = useLocalService(localService, initialState);
+  const setState = useCallback((key, value) => {
+    service.setState({ key, value })
+  }, [service]);
+  return [state, setState]
 }
 
