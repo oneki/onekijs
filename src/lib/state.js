@@ -24,6 +24,14 @@ export const useGlobalState = (selector, defaultValue) => {
   return [state, setState]
 }
 
+export const useGlobalStateModifier = () => {
+  const service = useReduxService(globalService);
+  const setState = useCallback((key, value) => {
+    service.setState({ key, value })
+  }, [service]);
+  return setState;
+}
+
 export const useGlobalProp = (key, defaultValue) => {
   let value = useSelector(state => get(state, key));
   value = value === undefined ? defaultValue : value;
