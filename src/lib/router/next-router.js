@@ -1,11 +1,11 @@
-import Router from 'next/router';
+import Router from "next/router";
 import { toLocation, toUrl, toRelativeUrl } from "../utils/url";
-import { toI18nLocation } from '../i18n';
-import produce from 'immer';
-import BaseRouter from './base';
+import { toI18nLocation } from "../i18n";
+import produce from "immer";
+import BaseRouter from "./base";
+import { get } from "../utils/object";
 
 export default class NextRouter extends BaseRouter {
-
   constructor() {
     super();
     this._listeners = [];
@@ -30,7 +30,22 @@ export default class NextRouter extends BaseRouter {
 
   get native() {
     return Router.router;
-  }  
+  }
+
+  deleteOrigin() {
+    sessionStorage.removeItem("onekijs.from");
+    sessionStorage.removeItem("onekijs.from_route");
+  }
+
+  getOrigin() {
+    const from =
+      sessionStorage.getItem("onekijs.from") ||
+      get(this.settings, "routes.home", "/");
+    const fromRoute =
+      sessionStorage.getItem("onekijs.from_route") ||
+      get(this.settings, "routes.home_route", from);
+    return { from, fromRoute };
+  }
 
   /**
    * url can be a string or an object.
@@ -45,11 +60,11 @@ export default class NextRouter extends BaseRouter {
    * }
    */
   push(urlOrLocation, route, options) {
-    return this._goto('push', urlOrLocation, route, options);
+    return this._goto("push", urlOrLocation, route, options);
   }
 
   replace(urlOrLocation, route, options) {
-    return this._goto('replace', urlOrLocation, route, options);
+    return this._goto("replace", urlOrLocation, route, options);
   }
 
   /**
@@ -78,16 +93,31 @@ export default class NextRouter extends BaseRouter {
   }
 
   onLocationChange() {
-    this._listeners.forEach(listener => {
+    this._listeners.forEach((listener) => {
       listener(this.location);
     });
+  }
+
+  saveOrigin(force=true) {
+    const currentValue = sessionStorage.getItem("onekijs.from");
+    if (!force && currentValue) return;
+    
+    let from = get(this.settings, "routes.home", "/");
+    let fromRoute = get(this.settings, "routes.home_route", from);
+    const previous = this.previousLocation;
+    if (previous) {
+      from = previous.relativeurl;
+      fromRoute = previous.route || from;
+    }
+    sessionStorage.setItem("onekijs.from", from);
+    sessionStorage.setItem("onekijs.from_route", fromRoute);
   }
 
   sync(nextRouter) {
     const pathname = nextRouter.pathname;
     const asPath = nextRouter.asPath;
-    
-    if (!pathname.includes('[') || pathname !== asPath) {
+
+    if (!pathname.includes("[") || pathname !== asPath) {
       const location = toLocation(asPath);
       location.route = Router.router.route;
       location.params = Router.router.query;
@@ -95,17 +125,20 @@ export default class NextRouter extends BaseRouter {
     }
   }
 
-
   unlisten(callback) {
-    this._listeners.splice(this._listeners.indexOf(callback),1);
+    this._listeners.splice(this._listeners.indexOf(callback), 1);
   }
 
   _goto(type, urlOrLocation, route, options) {
     if (!urlOrLocation) throw new Error("URL is undefined in router.push");
-    const location = toI18nLocation(urlOrLocation, {
-      settings: this.settings,
-      i18n: this.i18n
-    }, route);
+    const location = toI18nLocation(
+      urlOrLocation,
+      {
+        settings: this.settings,
+        i18n: this.i18n,
+      },
+      route
+    );
 
     const relativeUrl = toRelativeUrl(location);
     if (location.route) {
@@ -124,7 +157,7 @@ export default class NextRouter extends BaseRouter {
 
   _pushLocation(location) {
     this._location = location;
-    this.history = produce(this.history, draft => {
+    this.history = produce(this.history, (draft) => {
       draft.unshift(location);
       // keep max 20 items
       draft.splice(20, draft.length);

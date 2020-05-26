@@ -60,7 +60,7 @@ export {
 } from "./lib/crud";
 export { every, latest, leading, debounce, throttle } from "./lib/saga";
 export { secure, SecureRoute } from "./lib/secure";
-export { useLocalService, createReduxService, useReduxService, useGenericReducer, useGenericSaga, genericService } from "./lib/service";
+export { useLocalService, createReduxService, useReduxService, useGlobalService, useGenericReducer, genericService } from "./lib/service";
 export { useReduxSelector, createReduxStore } from "./lib/store";
 export {
   loginService,
@@ -91,3 +91,4 @@ export { layout, withLayout } from './lib/layout';
 export { useI18nService, i18nService, useTranslation, useLocale, useI18n, I18nLink } from './lib/i18n';
 export { get404StaticProps } from './lib/404/next-404';
 export { getI18nStaticProps, getI18nTranslations, withI18nPaths } from './lib/i18n/next-i18n';
+export { useGlobalState, useGlobalProp, useLocalState, useGlobalStateModifier } from './lib/state';
