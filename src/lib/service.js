@@ -205,7 +205,7 @@ export const createReduxService = (store, router, settings, i18n, schema) => {
   return services[schema.name];
 };
 
-export const useReduxService = schema => {
+export const useGlobalService = schema => {
   // definition and store should be immutable.
   const store = useStore();
   const { router, settings, i18n } = useContext(AppContext);
@@ -217,6 +217,8 @@ export const useReduxService = schema => {
 
   return service;
 };
+
+export const useReduxService = useGlobalService;  // alias
 
 export const useLocalService = (schema, initialState) => {
   const reduxContext = useContext(ReactReduxContext) || {};
