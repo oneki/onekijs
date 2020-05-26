@@ -55,11 +55,14 @@ function* login({ idpName, onError, onSuccess }, context) {
       // the URL will be used during the callback to redirect the user to the 
       // original location leading to the login page
       let from = get(settings, "routes.home", "/");
+      let fromRoute = get(settings, "routes.home_route", from);
       const previous = router.previousLocation;
       if (previous) {
         from = previous.relativeurl;
+        fromRoute = previous.route || from;
       }
       sessionStorage.setItem("onekijs.from", from);
+      sessionStorage.setItem("onekijs.from_route", fromRoute);
     }
 
     // build the IDP configuration from the settings and some default values
@@ -556,14 +559,18 @@ function* successLogin({token, securityContext, idpName, onError, onSuccess}, co
     const from =
       sessionStorage.getItem("onekijs.from") ||
       get(settings, "routes.home", "/");
+    const from_route =
+      sessionStorage.getItem("onekijs.from_route") ||
+      get(settings, "routes.home_route", from);      
     sessionStorage.removeItem("onekijs.from");
+    sessionStorage.removeItem("onekijs.from_route");
     
     if (onSuccess) {
       // the caller manages the success login
       yield call(onSuccess, [token, securityContext], Object.assign({}, context, { from }));
     } else {
       // redirect the user to the original route
-      yield call([router, router.push], from);
+      yield call([router, router.push], from, from_route);
     }
 
   } catch (e) {
