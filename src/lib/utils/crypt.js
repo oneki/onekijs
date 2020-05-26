@@ -1,6 +1,7 @@
 import { base64url } from "rfc4648";
 import { isNull } from "./object";
 import { generateRandomString } from "./string";
+import { TextEncoder, TextDecoder } from 'text-encoding-shim';
 
 // https://medium.com/@fsjohnny/fun-times-with-webcrypto-part-2-encrypting-decrypting-dfb9fadba5bc
 const hash = "SHA-256";
@@ -43,7 +44,7 @@ async function getKey(derivation) {
   );
   return {
     key: importedEncryptionKey,
-    iv: iv
+    iv: iv,
   };
 }
 
@@ -90,7 +91,7 @@ export async function encrypt(text, pwd) {
   const encryptedObject = await encryptText(JSON.stringify(text), keyObject);
   const encryptedByteArray = Array.from(new Uint8Array(encryptedObject));
   const encryptedString = encryptedByteArray
-    .map(byte => String.fromCharCode(byte))
+    .map((byte) => String.fromCharCode(byte))
     .join("");
   return btoa(encryptedString);
 }
@@ -102,7 +103,7 @@ export async function decrypt(encryptedB64, pwd) {
   }
   const encryptedString = atob(encryptedB64);
   const encryptedByteArray = new Uint8Array(
-    encryptedString.match(/[\s\S]/g).map(ch => ch.charCodeAt(0))
+    encryptedString.match(/[\s\S]/g).map((ch) => ch.charCodeAt(0))
   );
 
   const derivation = await getDerivation(
@@ -119,10 +120,12 @@ export async function decrypt(encryptedB64, pwd) {
 
 // https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest
 export async function sha256(message) {
-  const msgUint8 = new TextEncoder().encode(message);                           // encode as (utf-8) Uint8Array
-  const hashBuffer = await window.crypto.subtle.digest('SHA-256', msgUint8);           // hash the message
-  const hashArray = Array.from(new Uint8Array(hashBuffer));                     // convert buffer to byte array
-  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join(''); // convert bytes to hex string
+  const msgUint8 = new TextEncoder().encode(message); // encode as (utf-8) Uint8Array
+  const hashBuffer = await window.crypto.subtle.digest("SHA-256", msgUint8); // hash the message
+  const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
+  const hashHex = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join(""); // convert bytes to hex string
   return hashHex;
 }
 
@@ -176,13 +179,10 @@ export async function verify(token, jwKey, alg) {
         break;
     }
 
-    const jwsSigningInput = token
-      .split(".")
-      .slice(0, 2)
-      .join(".");
+    const jwsSigningInput = token.split(".").slice(0, 2).join(".");
     const jwsSignature = token.split(".")[2];
     const key = await window.crypto.subtle.importKey("jwk", jwKey, alg, false, [
-      "verify"
+      "verify",
     ]);
     return await window.crypto.subtle.verify(
       alg,

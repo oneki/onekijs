@@ -30,7 +30,8 @@ export default {
     'redux',
     'redux-saga',
     'rfc4648',
-    'styled-components'
+    'styled-components',
+    'text-encoding-shim',
   ],
   plugins: [
     external(),
