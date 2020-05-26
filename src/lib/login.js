@@ -49,21 +49,7 @@ const parseHashToken = (hash) => {
 function* login({ idpName, onError, onSuccess }, context) {
   const { router, settings } = context;
   try {
-    if (!sessionStorage.getItem("onekijs.from")) {
-      // get the previous location from the router and put the URL in the
-      // sessionStorage
-      // the URL will be used during the callback to redirect the user to the 
-      // original location leading to the login page
-      let from = get(settings, "routes.home", "/");
-      let fromRoute = get(settings, "routes.home_route", from);
-      const previous = router.previousLocation;
-      if (previous) {
-        from = previous.relativeurl;
-        fromRoute = previous.route || from;
-      }
-      sessionStorage.setItem("onekijs.from", from);
-      sessionStorage.setItem("onekijs.from_route", fromRoute);
-    }
+    router.saveOrigin(false);
 
     // build the IDP configuration from the settings and some default values
     const idp = getIdp(settings, idpName);
@@ -556,21 +542,15 @@ function* successLogin({token, securityContext, idpName, onError, onSuccess}, co
     yield call(this.notificationService.clearTopic, 'login-error');
     
     // get the original route
-    const from =
-      sessionStorage.getItem("onekijs.from") ||
-      get(settings, "routes.home", "/");
-    const from_route =
-      sessionStorage.getItem("onekijs.from_route") ||
-      get(settings, "routes.home_route", from);      
-    sessionStorage.removeItem("onekijs.from");
-    sessionStorage.removeItem("onekijs.from_route");
+    const { from, fromRoute } = router.getOrigin();
+    router.deleteOrigin();    
     
     if (onSuccess) {
       // the caller manages the success login
       yield call(onSuccess, [token, securityContext], Object.assign({}, context, { from }));
     } else {
       // redirect the user to the original route
-      yield call([router, router.push], from, from_route);
+      yield call([router, router.push], from, fromRoute);
     }
 
   } catch (e) {
@@ -836,7 +816,6 @@ export const useLoginService = (idpName, options = {}) => {
   const callback = options.callback;
 
   useEffect(() => {
-    console.log("useEffect loginSErvice");
     if (callback) {
       // call the external login callback saga
       service.externalLoginCallback({ idpName, onError, onSuccess });
