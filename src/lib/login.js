@@ -796,14 +796,6 @@ export const useLoginService = (idpName, options = {}) => {
   // inject the global notificationService
   const notificationService = useNotificationService();
 
-  // build the submit method in case of a form login
-  const submit = useCallback(
-    (action) => {
-      return service.formLogin(Object.assign({idpName}, action));
-    },
-    [service, idpName]
-  );
-
   // we send errors to the notification service
   const defaultOnError = useCallback((error) => {
     notificationService.send({
@@ -814,6 +806,16 @@ export const useLoginService = (idpName, options = {}) => {
   const onError = options.onError || defaultOnError;
   const onSuccess = options.onSuccess;
   const callback = options.callback;
+
+  // build the submit method in case of a form login
+  const submit = useCallback(
+    (action) => {
+      return service.formLogin(Object.assign({idpName, onError, onSuccess }, action));
+    },
+    [service, idpName, onError, onSuccess]
+  );
+
+
 
   useEffect(() => {
     if (callback) {

@@ -59,6 +59,7 @@ const Service = {
             yield call(onError, e);
           }
         } else {
+          
           yield call(this.notificationService.error, e);
         }
       }
