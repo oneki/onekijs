@@ -45,6 +45,7 @@ export {
 } from "./lib/utils/crypt";
 export { urlBuilder, isAbsoluteUrl, absoluteUrl, toUrl, toRelativeUrl, toLocation } from "./lib/utils/url";
 export {
+  crudService,
   useDelete,
   useGet,
   usePatch,
@@ -92,3 +93,4 @@ export { useI18nService, i18nService, useTranslation, useLocale, useI18n, I18nLi
 export { get404StaticProps } from './lib/404/next-404';
 export { getI18nStaticProps, getI18nTranslations, withI18nPaths } from './lib/i18n/next-i18n';
 export { useGlobalState, useGlobalProp, useLocalState, useGlobalStateModifier } from './lib/state';
+export { formService, useForm } from './lib/form';

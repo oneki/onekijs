@@ -29,7 +29,7 @@ export function deepFreeze(object) {
 }
 
 // https://gist.github.com/Salakar/1d7137de9cb8b704e48a
-function isObject(item) {
+export function isObject(item) {
   return (
     item && typeof item === "object" && !Array.isArray(item) && item !== null
   );

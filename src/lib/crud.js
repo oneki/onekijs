@@ -15,7 +15,7 @@ function* delayLoading(delay_ms) {
   }
 }
 
-const Service = {
+export const crudService = {
   reducers: {
     setLoading: (state, isLoading) => {
       state.loading = isLoading;
@@ -78,7 +78,7 @@ export const useGet = (url, options = {}) => {
     ref.current = options;
   }
 
-  const [state, service] = useLocalService(Service, { loading: false });
+  const [state, service] = useLocalService(crudService, { loading: false });
   
   const refresh = useCallback(() => {
     if (url) {
@@ -108,7 +108,7 @@ export const useDelete = (url, options = {}) => {
     ref.current = options;
   }
 
-  const [state, service] = useLocalService(Service, { loading: false });
+  const [state, service] = useLocalService(crudService, { loading: false });
 
   const executor = useCallback(
     (extraOptions = {}) => {
@@ -139,7 +139,7 @@ export const usePostPutPatch = (url, method, options = {}) => {
   } else {
     ref.current = options;
   }
-  const [state, service] = useLocalService(Service, { loading: false });
+  const [state, service] = useLocalService(crudService, { loading: false });
   const executor = useCallback(
     (body, extraOptions = {}) => {
       extraOptions = Object.assign({}, options, extraOptions);
