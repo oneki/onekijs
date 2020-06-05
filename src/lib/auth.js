@@ -49,7 +49,7 @@ export const authService = {
 
       // any other key will not be saved in the cookie but in the sessionStorage
       const storage = k => {
-        if (!token || persist === null) return persist;
+        if (!token || persist === null || persist === "memory") return persist;
         if (k === toCookie) return "cookie";
         
         return persist === "localStorage" ? "localStorage" : "sessionStorage";
@@ -65,6 +65,10 @@ export const authService = {
         // remove the token from the redux state.
         del(state, 'auth.token');
       } 
+
+      else if (persist === "memory") {
+        set(state, 'auth.token', token);
+      }
       
       else if (typeof token === "string") {
         // it's not a oauth2 token but a simple "string" token. Persist as it is
@@ -72,7 +76,7 @@ export const authService = {
         // persist the token in the redux state. It can be added as a bearer to any ajax request.
         set(state, 'auth.token', token);
       } 
-      
+
       else {
         // it's an oauth2 token, persist all keys
         oauth2Keys.forEach(k => {
