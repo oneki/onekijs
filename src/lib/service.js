@@ -1,9 +1,10 @@
 import { runSaga, stdChannel } from "@redux-saga/core";
+import { EventEmitter } from 'events';
 import produce from "immer";
 import { useCallback, useContext, useEffect, useMemo, useReducer, useRef } from "react";
 import { ReactReduxContext, useStore } from "react-redux";
 import { call, take } from "redux-saga/effects";
-import { useOnekiRouter, useSettings, AppContext } from "./context";
+import { AppContext } from "./context";
 import { every } from "./saga";
 import { set, useShallowEqual } from "./utils/object";
 
@@ -220,7 +221,7 @@ export const useGlobalService = schema => {
 
 export const useReduxService = useGlobalService;  // alias
 
-export const useLocalService = (schema, initialState) => {
+export const useLocalService = (schema, initialState={}) => {
   const reduxContext = useContext(ReactReduxContext) || {};
   const { router, settings, i18n } = useContext(AppContext);
 
@@ -232,12 +233,18 @@ export const useLocalService = (schema, initialState) => {
   const env = useRef(state);
   env.current = state;
   const channel = useMemo(() => stdChannel(), []);
+  const emitter = useMemo(() => {
+    const emitter = new EventEmitter();
+    emitter.on("action", channel.put)
+    return emitter;
+  }, [channel.put]);
   const dispatch = useCallback(
     a => {
-      setTimeout(channel.put, 0, a);
+      //setTimeout(channel.put, 0, a);
+      emitter.emit("action", a)
       reactDispatch(a);
     },
-    [channel.put]
+    [emitter, channel.put]
   );
   service._dispatch = dispatch;
 

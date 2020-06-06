@@ -15,6 +15,15 @@ export function isPromise(value) {
   return typeof value.then == 'function'
 }
 
+export function isAsyncFunction(value) {
+  if (!value || !value.constructor) return false;
+  return value.constructor.name === "AsyncFunction";
+}
+
 export function isFunctionOrPromise(value) {
   return isFunction(value) ||isPromise(value);
+}
+
+export function isAsyncOrPromise(value) {
+  return isAsyncFunction(value) ||isPromise(value);
 }
