@@ -35,12 +35,12 @@ export default class BaseRouter {
   }
 
   deleteOrigin() {
-    sessionStorage.removeItem("onekijs.from");
+    localStorage.removeItem("onekijs.from");
   }
 
   getOrigin() {
     const from =
-      sessionStorage.getItem("onekijs.from") ||
+    localStorage.getItem("onekijs.from") ||
       get(this.settings, "routes.home", "/");
     return { from };
   }
@@ -66,7 +66,7 @@ export default class BaseRouter {
   }
 
   saveOrigin(force=true) {
-    const currentValue = sessionStorage.getItem("onekijs.from");
+    const currentValue = localStorage.getItem("onekijs.from");
     if (!force && currentValue) return;
     
     let from = get(this.settings, "routes.home", "/");
@@ -75,7 +75,7 @@ export default class BaseRouter {
       from = previous.relativeurl;
     }
     
-    sessionStorage.setItem("onekijs.from", from);
+    localStorage.setItem("onekijs.from", from);
   }  
 
   /**

@@ -36,6 +36,13 @@ const parseHashToken = (hash) => {
   return token;
 };
 
+const storage = (idp) => {
+  if (idp.persist && idp.persist === 'sessionStorage') {
+    return sessionStorage;
+  }
+  return localStorage;
+}
+
 /**
  * Check if a login is necessary.
  *
@@ -150,28 +157,28 @@ function* externalLogin({ idpName, onError }, context) {
       }
       if (idp.nonce || idp.responseType.includes("id_token")) {
         const nonce = generateNonce();
-        sessionStorage.setItem("onekijs.nonce", nonce);
+        storage(idp).setItem("onekijs.nonce", nonce);
         const hash = yield call(sha256, nonce);
         params.nonce = hash;
       } else {
-        sessionStorage.removeItem("onekijs.nonce");
+        storage(idp).removeItem("onekijs.nonce");
       }
       if (idp.state) {
         const state = generateState();
-        sessionStorage.setItem("onekijs.state", state);
+        storage(idp).setItem("onekijs.state", state);
         const hash = yield call(sha256, state);
         params.state = hash;
       } else {
-        sessionStorage.removeItem("onekijs.state");
+        storage(idp).removeItem("onekijs.state");
       }
       if (idp.responseType === "code" && idp.pkce) {
         const verifier = generateCodeVerifier();
-        sessionStorage.setItem("onekijs.verifier", verifier);
+        storage(idp).setItem("onekijs.verifier", verifier);
         const challenge = yield call(generateCodeChallenge, verifier);
         params.code_challenge = challenge;
         params.code_challenge_method = idp.codeChallengeMethod;
       } else {
-        sessionStorage.removeItem("onekijs.verifier");
+        storage(idp).removeItem("onekijs.verifier");
       }      
 
 
@@ -193,34 +200,7 @@ function* externalLogin({ idpName, onError }, context) {
           accumulator += accumulator.length > 1 ? '&' : '';
           return `${accumulator}${key}=${params[key]}`;
         }, "?");
-        // let search = `?${redirectKey}=${redirectUri}&client_id=${idp.clientId}&response_type=${responseType}`;
-        // if (scope) {
-        //   search += `&scope=${idp.scope}`;
-        // }
-        // if (idp.nonce || responseType.includes("id_token")) {
-        //   const nonce = generateNonce();
-        //   sessionStorage.setItem("onekijs.nonce", nonce);
-        //   const hash = yield call(sha256, nonce);
-        //   search += `&nonce=${hash}`;
-        // } else {
-        //   sessionStorage.removeItem("onekijs.nonce");
-        // }
-        // if (idp.state) {
-        //   const state = generateState();
-        //   sessionStorage.setItem("onekijs.state", state);
-        //   const hash = yield call(sha256, state);
-        //   search += `&state=${hash}`;
-        // } else {
-        //   sessionStorage.removeItem("onekijs.state");
-        // }
-        // if (responseType === "code" && idp.pkce) {
-        //   const verifier = generateCodeVerifier();
-        //   sessionStorage.setItem("onekijs.verifier", verifier);
-        //   const challenge = yield call(generateCodeChallenge, verifier);
-        //   search += `&code_challenge=${challenge}&code_challenge_method=${idp.codeChallengeMethod}`;
-        // } else {
-        //   sessionStorage.removeItem("onekijs.verifier");
-        // }
+
         window.location.href = `${absoluteUrl(
           idp.authorizeEndpoint,
           get(settings, "server.baseUrl")
@@ -305,8 +285,8 @@ function* externalLoginCallback({idpName, onError, onSuccess}, context) {
           // validating the authorizeEndpoint response based on spec
           // https://openid.net/specs/openid-connect-core-1_0.html#AuthResponseValidation
           const params = router.query;
-          const state = sessionStorage.getItem("onekijs.state");
-          sessionStorage.removeItem("onekijs.state");
+          const state = storage(idp).getItem("onekijs.state");
+          storage(idp).removeItem("onekijs.state");
 
           if (params.error) {
             throw new SimpleError(params.error_description, params.error);
@@ -345,8 +325,8 @@ function* externalLoginCallback({idpName, onError, onSuccess}, context) {
             }
           }
           if (idp.pkce) {
-            body.code_verifier = sessionStorage.getItem("onekijs.verifier");
-            sessionStorage.removeItem("onekijs.verifier");
+            body.code_verifier = storage(idp).getItem("onekijs.verifier");
+            storage(idp).removeItem("onekijs.verifier");
           }
           
           // get the token from the tokenEndpoint
@@ -374,9 +354,9 @@ function* externalLoginCallback({idpName, onError, onSuccess}, context) {
       // validates the nonce found in the id_token
       // https://openid.net/specs/openid-connect-core-1_0.html#TokenResponseValidation
       const id_token = parseJwt(token.id_token);
-      const nonce = sessionStorage.getItem("onekijs.nonce");
+      const nonce = storage(idp).getItem("onekijs.nonce");
       const hash = yield call(sha256, nonce);
-      sessionStorage.removeItem("onekijs.nonce");
+      storage(idp).removeItem("onekijs.nonce");
       if (hash !== id_token.nonce) {
         throw Error("Invalid oauth2 nonce");
       }

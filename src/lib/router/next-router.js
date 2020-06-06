@@ -33,16 +33,16 @@ export default class NextRouter extends BaseRouter {
   }
 
   deleteOrigin() {
-    sessionStorage.removeItem("onekijs.from");
-    sessionStorage.removeItem("onekijs.from_route");
+    localStorage.removeItem("onekijs.from");
+    localStorage.removeItem("onekijs.from_route");
   }
 
   getOrigin() {
     const from =
-      sessionStorage.getItem("onekijs.from") ||
+      localStorage.getItem("onekijs.from") ||
       get(this.settings, "routes.home", "/");
     const fromRoute =
-      sessionStorage.getItem("onekijs.from_route") ||
+      localStorage.getItem("onekijs.from_route") ||
       get(this.settings, "routes.home_route", from);
     return { from, fromRoute };
   }
@@ -99,7 +99,7 @@ export default class NextRouter extends BaseRouter {
   }
 
   saveOrigin(force=true) {
-    const currentValue = sessionStorage.getItem("onekijs.from");
+    const currentValue = localStorage.getItem("onekijs.from");
     if (!force && currentValue) return;
     
     let from = get(this.settings, "routes.home", "/");
@@ -109,8 +109,8 @@ export default class NextRouter extends BaseRouter {
       from = previous.relativeurl;
       fromRoute = previous.route || from;
     }
-    sessionStorage.setItem("onekijs.from", from);
-    sessionStorage.setItem("onekijs.from_route", fromRoute);
+    localStorage.setItem("onekijs.from", from);
+    localStorage.setItem("onekijs.from_route", fromRoute);
   }
 
   sync(nextRouter) {
