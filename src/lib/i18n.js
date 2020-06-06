@@ -9,8 +9,7 @@ import { get, set, append, isNull } from "./utils/object";
 import { isFunction } from "./utils/type";
 import { asyncGet } from "./xhr";
 import { toLocation, toRelativeUrl } from "./utils/url";
-import Link from 'next/link';
-
+import Link from "next/link";
 
 // export const url2locale = (pathname, contextPath, candidates) => {
 //   const length = contextPath.endsWith("/")
@@ -50,7 +49,7 @@ export const flattenTranslations = (translations) => {
 };
 
 export const useLocale = () => {
-  return get(useContext(AppContext), 'i18n.locale');
+  return get(useContext(AppContext), "i18n.locale");
 };
 
 const getLocaleUrl = (locale, ns, settings) => {
@@ -62,11 +61,10 @@ const getLocaleUrl = (locale, ns, settings) => {
 
 export const i18nService = {
   name: "i18n",
-  init: function({i18n, settings}) {
-    this['filters'] = {}
+  init: function ({ i18n, settings }) {
+    this["filters"] = {};
     if (settings.i18n && settings.i18n.filters) {
-      console.log("add filters", settings.i18n.filters);
-      Object.assign(this['filters'], settings.i18n.filters);
+      Object.assign(this["filters"], settings.i18n.filters);
     }
   },
   reducers: {
@@ -82,14 +80,16 @@ export const i18nService = {
           flattenTranslations(translations)
         )
       );
-      Object.keys(translations).forEach(ns => append(state, `i18n.ns.${locale}`, ns));
+      Object.keys(translations).forEach((ns) =>
+        append(state, `i18n.ns.${locale}`, ns)
+      );
     },
     setFetchingTranslations: (state, fetching) => {
-      set(state, 'i18n.fetching', fetching);
-    }
+      set(state, "i18n.fetching", fetching);
+    },
   },
   sagas: {
-    changeLocale: latest(function*(locale, context) {
+    changeLocale: latest(function* (locale, context) {
       yield call(this.setLocale, locale);
       yield call(context.settings.i18n.changeLocale, locale, context);
     }),
@@ -106,7 +106,7 @@ export const i18nService = {
         );
         const translations = {};
         namespaces.forEach((ns, i) => (translations[ns] = results[i]));
-        yield call(this.setTranslations, {translations, locale}); // to update the store and trigger a re-render.
+        yield call(this.setTranslations, { translations, locale }); // to update the store and trigger a re-render.
         yield call(this.setFetchingTranslations, false);
       } catch (e) {
         yield call(this.setFetchingTranslations, false);
@@ -128,30 +128,30 @@ export const useI18nService = () => {
   return useReduxService(i18nService);
 };
 
-const stringifyJsx = (reactElement, ctx={}, idx=1) => { 
+const stringifyJsx = (reactElement, ctx = {}, idx = 1) => {
   const children = [].concat(reactElement.props.children);
   const str = children.reduce((accumulator, child) => {
-    if (typeof child === 'string') return `${accumulator}${child}`;
+    if (typeof child === "string") return `${accumulator}${child}`;
     if (React.isValidElement(child)) {
-      const [childStr, nextIdx] = stringifyJsx(child, ctx, idx+1);
+      const [childStr, nextIdx] = stringifyJsx(child, ctx, idx + 1);
       const str = `${accumulator}<${idx}>${childStr}</${idx}>`;
       ctx[`el-${idx}`] = child;
       idx = nextIdx;
       return str;
     } else {
-      set(ctx, `vars.${Object.keys(child)[0]}`, Object.values(child)[0])
+      set(ctx, `vars.${Object.keys(child)[0]}`, Object.values(child)[0]);
       return `${accumulator}{{${Object.keys(child)[0]}}}`;
     }
-  }, '');
+  }, "");
   return [str, idx];
-}
+};
 
-const regexIndexOf = (str, regex, startpos=0) => {
+const regexIndexOf = (str, regex, startpos = 0) => {
   var indexOf = str.substring(startpos).search(regex);
-  return (indexOf >= 0) ? (indexOf + startpos) : indexOf;
-}
+  return indexOf >= 0 ? indexOf + startpos : indexOf;
+};
 
-const parseJsx = (str, ctx={}, startPos=0) => {
+const parseJsx = (str, ctx = {}, startPos = 0) => {
   const result = [];
   let count = 0;
   do {
@@ -163,56 +163,58 @@ const parseJsx = (str, ctx={}, startPos=0) => {
       }
       break;
     }
-    
+
     if (start > startPos) {
       result.push(str.substring(startPos, start));
     }
 
     const childJsx = parseJsx(content, ctx);
-    const el = React.cloneElement(ctx[`el-${idx}`],{key: `el-${idx}`}, childJsx);
+    const el = React.cloneElement(
+      ctx[`el-${idx}`],
+      { key: `el-${idx}` },
+      childJsx
+    );
     result.push(el);
 
     startPos = end;
     if (startPos >= str.length) break;
     if (++count > 10) break;
-  } while (true)
+  } while (true);
 
   return result;
-}
+};
 
 const extractTag = (str, startPos) => {
   const openingStart = regexIndexOf(str, /<[1-9][0-9]*>/, startPos);
   if (openingStart > -1) {
-    const openingEnd = str.indexOf('>', openingStart);
-    const idx = str.substring(openingStart+1, openingEnd);
-    
+    const openingEnd = str.indexOf(">", openingStart);
+    const idx = str.substring(openingStart + 1, openingEnd);
+
     const closingStart = str.indexOf(`</${idx}>`, openingEnd);
-    const content = str.substring(openingEnd+1, closingStart);
-    return [content, idx, openingStart, closingStart + `</${idx}>`.length]
+    const content = str.substring(openingEnd + 1, closingStart);
+    return [content, idx, openingStart, closingStart + `</${idx}>`.length];
   }
   return [];
-}
+};
 
 export const useTranslation = (namespaces, options) => {
   const locale = useLocale();
-  const appContextTranslations =  get(useContext(AppContext), "i18n.translations");
+  const appContextTranslations = get(
+    useContext(AppContext),
+    "i18n.translations"
+  );
   const reduxTranslations = useReduxSelector(`i18n.translations.${locale}`);
 
   const translations = useMemo(() => {
-    return Object.assign({}, appContextTranslations, reduxTranslations)
+    return Object.assign({}, appContextTranslations, reduxTranslations);
   }, [appContextTranslations, reduxTranslations]);
 
   const appContextNs = get(useContext(AppContext), "i18n.ns");
   const reduxNs = useReduxSelector(`i18n.ns.${locale}`);
 
   const nsLoaded = useMemo(() => {
-    return [
-      ...new Set([
-        ...appContextNs || [],
-        ...reduxNs || [],
-      ]),
-    ];
-  }, [appContextNs, reduxNs])
+    return [...new Set([...(appContextNs || []), ...(reduxNs || [])])];
+  }, [appContextNs, reduxNs]);
 
   const i18nService = useI18nService();
 
@@ -226,13 +228,13 @@ export const useTranslation = (namespaces, options) => {
     }
     return nsRequired;
   }, []);
-  
+
   const nsNotLoaded = useMemo(() => {
-    return nsRequired.filter((ns) => !nsLoaded.includes(ns)); 
-  }, [nsRequired, nsLoaded])
-  
+    return nsRequired.filter((ns) => !nsLoaded.includes(ns));
+  }, [nsRequired, nsLoaded]);
+
   const fetching = useReduxSelector("i18.fetching", false);
-  
+
   const t = useCallback(
     (content, alias, count) => {
       if (fetching) return null;
@@ -241,7 +243,7 @@ export const useTranslation = (namespaces, options) => {
       let jsx = null;
       const candidateKeys = [];
 
-      if (typeof content !== 'string') {
+      if (typeof content !== "string") {
         jsx = content;
         const [jsxKey] = stringifyJsx(content, ctx);
         if (!alias) {
@@ -250,15 +252,24 @@ export const useTranslation = (namespaces, options) => {
       }
 
       if (count >= 1) {
-        const prefix = count > 1 ? 'plural' : 'singular';
+        const prefix = count > 1 ? "plural" : "singular";
         candidateKeys.push(`${prefix}::${key}`);
-        nsRequired.forEach(ns => candidateKeys.push(`${ns}:${prefix}::${key}`));
+        nsRequired.forEach((ns) =>
+          candidateKeys.push(`${ns}:${prefix}::${key}`)
+        );
       }
       candidateKeys.push(key);
-      nsRequired.forEach(ns => candidateKeys.push(`${ns}:${key}`));      
+      nsRequired.forEach((ns) => candidateKeys.push(`${ns}:${key}`));
 
       for (let candidateKey of candidateKeys) {
-        if (translations[candidateKey] !== undefined) return  buildJsx(translations[candidateKey], ctx, jsx, i18nService, locale);
+        if (translations[candidateKey] !== undefined)
+          return buildJsx(
+            translations[candidateKey],
+            ctx,
+            jsx,
+            i18nService,
+            locale
+          );
       }
       return null;
     },
@@ -273,8 +284,7 @@ export const useTranslation = (namespaces, options) => {
   );
 
   useEffect(() => {
-    
-    if (nsNotLoaded.length > 0  && !fetching) {
+    if (nsNotLoaded.length > 0 && !fetching) {
       i18nService.fetchTranslations({ locale, namespaces: nsNotLoaded });
     }
   }, [nsNotLoaded, i18nService, locale, fetching]);
@@ -284,84 +294,98 @@ export const useTranslation = (namespaces, options) => {
 
 const buildJsx = (str, ctx, wrapperReactElement, i18nService, locale) => {
   const result = {
-    str
-  }  
+    str,
+  };
   if (ctx.vars) {
-    Object.keys(ctx.vars).forEach(key => {
-      const regex = new RegExp(`{{\\s*${key}[^}]*}}`, 'g');
+    Object.keys(ctx.vars).forEach((key) => {
+      const regex = new RegExp(`{{\\s*${key}[^}]*}}`, "g");
       let m;
       while ((m = regex.exec(str)) !== null) {
-        // Code generated by https://regex101.com
-        // This is necessary to avoid infinite loops with zero-width matches
         if (m.index === regex.lastIndex) {
-            regex.lastIndex++;
+          regex.lastIndex++;
         }
-        
-        m.forEach((match, groupIndex) => {
-            const tokens = match.slice(0,-2).split('|');
-            let value = ctx.vars[key];
-            const args = [value, locale];
-            if (tokens.length > 1) {
-              for(let i = 1; i < tokens.length; i++) {
-                const filter = tokens[i].trim();
-                const pos = filter.indexOf('(');
-                let filterNoArgs = filter;
-                if (pos > -1) {
-                  filterNoArgs = filterNoArgs.substring(0, pos);
-                }
-                const regexArgs = /\(.*\)/gm;
-                let m2;
-                
-                while ((m2 = regexArgs.exec(filter)) !== null) {
-                    // This is necessary to avoid infinite loops with zero-width matches
-                    if (m2.index === regexArgs.lastIndex) {
-                      regexArgs.lastIndex++;
-                    }
-                    
-                    // The result can be accessed through the `m`-variable.
-                    m2.forEach((match2) => {
-                        const tokens2 = match2.slice(1,-1).split(',');
-                        tokens2.forEach(t => {
-                          args.push(JSON.parse(t));
-                        })
-                    });
-                }                
-                if (i18nService.filters[filterNoArgs]) {
-                  value = i18nService.filters[filterNoArgs].apply(this, args);
-                } else {
-                  console.error("filter " + filterNoArgs + " not found in settings");
-                }
-                
-              }
-            }
-            result.str = result.str.replace(match, value);
+
+        m.forEach((match) => {
+          result.str = result.str.replace(
+            match,
+            handleFilters(
+              match.slice(0, -2),
+              ctx.vars[key],
+              locale,
+              i18nService
+            )
+          );
         });
-        
       }
-      
-    })    
+    });
   }
   str = result.str;
   if (isNull(wrapperReactElement)) return str;
   const children = parseJsx(str, ctx);
   return React.cloneElement(wrapperReactElement, {}, children);
-}
+};
 
-export const toI18nLocation = (urlOrLocation, {i18n, settings}, route) => {
+const handleFilters = (input, value, locale, i18nService) => {
+  const filters = input.split("|");
+  const args = [value, locale];
+  if (filters.length > 1) {
+    for (let i = 1; i < filters.length; i++) {
+      const filter = filters[i].trim();
+      let filterNoArgs = filter;
+      const pos = filter.indexOf("(");
+      if (pos > -1) {
+        filterNoArgs = filterNoArgs.substring(0, pos);
+      }
+      handleFilterArgs(filter, args);
+      if (i18nService.filters[filterNoArgs]) {
+        return i18nService.filters[filterNoArgs].apply(this, args);
+      } else {
+        console.error("filter " + filterNoArgs + " not found in settings");
+        return value;
+      }
+    }
+  }
+};
+
+const handleFilterArgs = (filter, result) => {
+  const regexArgs = /\(.*\)/gm;
+  let filterArgs;
+
+  while ((filterArgs = regexArgs.exec(filter)) !== null) {
+    if (filterArgs.index === regexArgs.lastIndex) {
+      regexArgs.lastIndex++;
+    }
+
+    filterArgs.forEach((filterArg) => {
+      const args = filterArg.slice(1, -1).split(",");
+      args.forEach((arg) => {
+        arg = arg.trim();
+        if (arg.indexOf("'") === 0) arg = `"${arg.slice(1, -1)}"`;
+        result.push(JSON.parse(arg));
+      });
+    });
+  }
+};
+
+export const toI18nLocation = (urlOrLocation, { i18n, settings }, route) => {
   let location = urlOrLocation;
-  if (typeof urlOrLocation === 'string') {
+  if (typeof urlOrLocation === "string") {
     location = toLocation(urlOrLocation);
     location.route = route;
   }
   if (settings && i18n.locale) {
-    location = settings.i18n.addLocaleToLocation(i18n.locale, location, settings);
-  } 
-  return location; 
-}
+    location = settings.i18n.addLocaleToLocation(
+      i18n.locale,
+      location,
+      settings
+    );
+  }
+  return location;
+};
 
 export const useI18n = () => {
   return useContext(AppContext).i18n;
-}
+};
 
 export const I18nLink = (props) => {
   const { href, as } = props;
@@ -376,8 +400,5 @@ export const I18nLink = (props) => {
   const i18nAs = toRelativeUrl(location);
   const i18nHref = location.route || toRelativeUrl(location);
 
-  return (
-    <Link {...props} as={i18nAs} href={i18nHref} />
-  )
-
-}
+  return <Link {...props} as={i18nAs} href={i18nHref} />;
+};
