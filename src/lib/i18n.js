@@ -62,11 +62,11 @@ const getLocaleUrl = (locale, ns, settings) => {
 export const i18nService = {
   name: "i18n",
   init: function ({ i18n, settings }) {
-    this["filters"] = {
+    this["modifiers"] = {
       locale: (value, locale) => value ? value.toLocaleString(locale) : value
     };
-    if (settings.i18n && settings.i18n.filters) {
-      Object.assign(this["filters"], settings.i18n.filters);
+    if (settings.i18n && settings.i18n.modifiers) {
+      Object.assign(this["modifiers"], settings.i18n.modifiers);
     }
   },
   reducers: {
@@ -310,7 +310,7 @@ const buildJsx = (str, ctx, wrapperReactElement, i18nService, locale) => {
         m.forEach((match) => {
           result.str = result.str.replace(
             match,
-            handleFilters(
+            handlemodifiers(
               match.slice(0, -2),
               ctx.vars[key],
               locale,
@@ -327,23 +327,22 @@ const buildJsx = (str, ctx, wrapperReactElement, i18nService, locale) => {
   return React.cloneElement(wrapperReactElement, {}, children);
 };
 
-const handleFilters = (input, value, locale, i18nService) => {
-  const filters = input.split("|");
+const handlemodifiers = (input, value, locale, i18nService) => {
+  const modifiers = input.split("|");
   const args = [value, locale];
-  if (filters.length > 1) {
-    for (let i = 1; i < filters.length; i++) {
-      const filter = filters[i].trim();
-      let filterNoArgs = filter;
+  if (modifiers.length > 1) {
+    for (let i = 1; i < modifiers.length; i++) {
+      const filter = modifiers[i].trim();
+      let modifierNoArgs = filter;
       const pos = filter.indexOf("(");
       if (pos > -1) {
-        filterNoArgs = filterNoArgs.substring(0, pos);
+        modifierNoArgs = modifierNoArgs.substring(0, pos);
       }
       handleFilterArgs(filter, args);
-      if (i18nService.filters[filterNoArgs]) {
-        console.log("args", args);
-        return i18nService.filters[filterNoArgs].apply(this, args);
+      if (i18nService.modifiers[modifierNoArgs]) {
+        return i18nService.modifiers[modifierNoArgs].apply(this, args);
       } else {
-        console.error("filter " + filterNoArgs + " not found in settings");
+        console.error("filter " + modifierNoArgs + " not found in settings");
       }
     }
   }
