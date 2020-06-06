@@ -62,7 +62,9 @@ const getLocaleUrl = (locale, ns, settings) => {
 export const i18nService = {
   name: "i18n",
   init: function ({ i18n, settings }) {
-    this["filters"] = {};
+    this["filters"] = {
+      locale: (value, locale) => value ? value.toLocaleString(locale) : value
+    };
     if (settings.i18n && settings.i18n.filters) {
       Object.assign(this["filters"], settings.i18n.filters);
     }
@@ -338,13 +340,15 @@ const handleFilters = (input, value, locale, i18nService) => {
       }
       handleFilterArgs(filter, args);
       if (i18nService.filters[filterNoArgs]) {
+        console.log("args", args);
         return i18nService.filters[filterNoArgs].apply(this, args);
       } else {
         console.error("filter " + filterNoArgs + " not found in settings");
-        return value;
       }
     }
   }
+  return value;
+  
 };
 
 const handleFilterArgs = (filter, result) => {
