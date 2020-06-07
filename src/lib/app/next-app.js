@@ -14,6 +14,8 @@ import { isBrowser } from "../utils/browser";
 import { get } from "../utils/object";
 import { isPromise } from "../utils/type";
 import { toRelativeUrl } from "../utils/url";
+import { detectLocale } from '../utils/i18n';
+import { AppProvider } from './app-provider';
 
 const useNextRouter = useRouter || (() => null);
 
@@ -29,7 +31,6 @@ const useRouterSync = (onekiRouter) => {
 }
 
 let init = false;
-const i18n = {};
 export const NextApp = React.memo(
   ({
     settings = {},
@@ -41,7 +42,10 @@ export const NextApp = React.memo(
     children,
     Component, 
     pageProps,
-    router: nextRouter
+    router: nextRouter,
+    initialLocale,
+    translations,
+    i18nNs    
   }) => {
     const router = useMemo(() => new NextRouter(), []);
     useRouterSync(router);
@@ -66,38 +70,6 @@ export const NextApp = React.memo(
       return formatSettings(appSettings);
     }, [appSettings]);
     router.settings = formattedSettings;
-    router.i18n = i18n;
-
-    const locale = useMemo(() => {
-      if (!loading) {
-        let locale = pageProps.locale;
-        
-        if (!locale && router.location) {
-          locale = formattedSettings.i18n.localeFromLocation(router.location, formattedSettings);
-        }
-        if (!locale) {
-          locale = get(appStore.getState(), 'i18n.locale');
-          
-        }
-        if (!locale && isBrowser()) {
-          locale = localStorage.getItem('onekijs.locale');
-          if (!locale) {
-            const languages = navigator.languages;
-            if (languages && languages.length > 0) {
-              locale = languages.find(language => formattedSettings.i18n.locales.includes(language.slice(0,2)))
-              if (locale) return locale.slice(0,2);
-            } 
-            else if (navigator.language) locale = navigator.language.slice(0,2);
-            else if (navigator.userLanguage) locale = navigator.userLanguage.slice(0,2);
-          }
-        }
-        if (locale && formattedSettings.i18n.locales.includes(locale)) {
-          return locale;
-        }
-        return get(formattedSettings, 'i18n.defaultLocale');
-      }
-      
-    }, [loading, pageProps.locale, router.location, appStore, formattedSettings]);
 
     const route = useMemo(() => {
       if (pageProps.routes && nextRouter.route === '/404') {
@@ -141,26 +113,23 @@ export const NextApp = React.memo(
       
     }, [router, route])
 
-    const translations = useMemo(() => {
-      return flattenTranslations(pageProps.translations || {});
-    }, [pageProps.translations]);
+    translations = useMemo(() => {
+      const result = flattenTranslations(pageProps.translations || {});
+      if (translations) Object.assign(result, flattenTranslations(translations));
+      return result;
+    }, [pageProps.translations, translations]);
 
-    const i18nNs = useMemo(() => {
-      return Object.keys(pageProps.translations || {});
-    }, [pageProps.translations])
+    i18nNs = useMemo(() => {
+      const ns = Object.keys(pageProps.translations || {});
+      if (i18nNs) ns.push(i18nNs);
+      return ns;
+    }, [pageProps.translations, i18nNs])
 
-    i18n.locale = locale;
-    i18n.translations = translations;
-    i18n.ns = i18nNs;
+    initialLocale = useMemo(() => {
+      if (pageProps.locale) return pageProps.locale;
+      return initialLocale;
+    }, [pageProps.locale, initialLocale])
 
-    useMemo(() => {
-      if (!loading) {
-        services.forEach((service) => {
-          createReduxService(store, router, formattedSettings, i18n, service);
-        });
-      }
-
-    }, [loading, services, store, router, formattedSettings])
 
     if (loading) {
       return <LoadingComponent />;
@@ -182,11 +151,17 @@ export const NextApp = React.memo(
     // });
 
     return (
-      <AppContext.Provider value={{ router, settings: formattedSettings, i18n }}>
         <Provider store={appStore}>
-          {getLayout(<Component {...pageProps}></Component>)}
+          <AppProvider
+            router={router} 
+            settings={formattedSettings} 
+            initialLocale={initialLocale}
+            translations={translations}
+            i18nNs={i18nNs}
+            services={services}>
+             {getLayout(<Component {...pageProps}></Component>)}
+          </AppProvider>          
         </Provider>
-      </AppContext.Provider>
     );
   }
 );

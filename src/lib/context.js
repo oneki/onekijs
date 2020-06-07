@@ -2,6 +2,7 @@ import React, { useContext, useMemo, useState, useEffect, useCallback } from "re
 import { get } from "./utils/object";
 
 export const AppContext = React.createContext();
+export const I18nContext = React.createContext();
 
 // never change the state => no refresh
 export const useOnekiRouter = () => {

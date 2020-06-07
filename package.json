@@ -6,8 +6,8 @@
   "license": "MIT",
   "repository": "oneki/onekijs",
   "main": "dist/index.js",
-  "module": "dist/index.es.js",
-  "jsnext:main": "dist/index.es.js",
+  "module": "dist/esm/index.js",
+  "jsnext:main": "dist/esm/index.js",
   "engines": {
     "node": ">=8",
     "npm": ">=5"
@@ -16,7 +16,7 @@
     "test": "cross-env CI=1 react-scripts test --env=jsdom",
     "test:watch": "react-scripts test --env=jsdom",
     "build": "rollup -c",
-    "start": "rollup -c -w",
+    "start": "babel src --out-dir dist/esm --watch --source-maps",
     "prepare": "npm run build",
     "predeploy": "cd example && npm install && npm run build",
     "deploy": "gh-pages -d example/build"
@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
+    "@babel/cli": "^7.9.0",
     "@babel/plugin-external-helpers": "^7.8.3",
     "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@babel/plugin-proposal-decorators": "^7.8.3",
@@ -94,5 +95,6 @@
   ],
   "eslintConfig": {
     "extends": "react-app"
-  }
+  },
+  "sideEffects": false
 }
