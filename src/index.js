@@ -93,5 +93,7 @@ export { useI18nService, i18nService, useTranslation, useLocale, useI18n, I18nLi
 export { get404StaticProps } from './lib/404/next-404';
 export { getI18nStaticProps, getI18nTranslations, withI18nPaths } from './lib/i18n/next-i18n';
 export { useGlobalState, useGlobalProp, useLocalState, useGlobalStateModifier } from './lib/state';
-export { formService, useForm, FormContext, useFormContext, useRule } from './lib/form';
+export { formService, useForm, FormContext, useFormContext, useField } from './lib/form';
+export { Input } from './lib/form/input';
 export { required, regex, email } from './lib/validation';
+export { extractValidators } from './lib/utils/form';

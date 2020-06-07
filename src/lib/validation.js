@@ -37,9 +37,7 @@ export const required = (message) => {
 
 export const regex = (regex, message) => {
   return (value) => {
-
-    
-    if (typeof config === 'string') {
+    if (typeof regex === 'string') {
       regex = new RegExp(regex);
     }
 

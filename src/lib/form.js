@@ -1,9 +1,8 @@
-import React, { useRef, useContext } from 'react'
-import { useCallback, useMemo } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { call, fork } from "redux-saga/effects";
 import { latest } from './saga';
 import { useLocalService } from './service';
-import { del, get, set } from './utils/object';
+import { del, get, isNull, set } from './utils/object';
 import { ERROR, LOADING, OK, WARNING } from './validation';
 
 export const FormContext = React.createContext();
@@ -22,35 +21,43 @@ const serializeLevel = (level) => {
 }
 
 const compileValidations = (state, field)=> {
-  for (let level in field.validations) {
-    for (let id in field.validations[level]) {
-      set(state, `validations.${field.name}`, {
-        status: serializeLevel(level),
-        message: field.validations[level][id]
-      })
-      return;
+  if (field) {
+    for (let level in field.validations) {
+      for (let id in field.validations[level]) {
+        set(state, `validations.${field.name}`, {
+          status: serializeLevel(level),
+          message: field.validations[level][id]
+        })
+        return;
+      }
     }
+    set(state, `validations.${field.name}`, {
+      status: 'ok',
+      message: null
+    });
   }
-  set(state, `validations.${field.name}`, {
-    status: 'ok',
-    message: null
-  });
+
 }
 
 
 const setValidation = (field, id, level, message=null) => {
   // clean first
-  const validations = field['validations'] || []
-  for (let i in validations) {
-    delete validations[i][id]
+  if (field) {
+    const validations = field['validations'] || []
+    for (let i in validations) {
+      delete validations[i][id]
+    }
+    
+    // set the message
+    set(field, `validations.${level}.${id}`, message);
   }
-  
-  // set the message
-  set(field, `validations.${level}.${id}`, message);
+
 }
 
 const clearValidation = (field, id, level) => {
-  del(field.validations, `${level}.${id}`);
+  if (field) {
+    del(field.validations, `${level}.${id}`);
+  }
 }
 
 const validate = function* (field, validatorName, validator, value) {
@@ -62,7 +69,7 @@ const validate = function* (field, validatorName, validator, value) {
   }  
 }
 
-const validateAll = function* (field, value) {
+const validateAll = function* (field, value, values) {
   const validators = field.validators;
         
   // do all validations
@@ -75,77 +82,106 @@ const validateAll = function* (field, value) {
 
   const hasAsync = tasks.find(t => t.isRunning());
   yield call(this._setValue, {name: field.name, value, loading: hasAsync !== undefined})
+  for (let key of Object.keys(this._listeners)) {
+    if (key.startsWith(field.name)) {
+      for (let rule of this._listeners[key]) {
+        yield call(this.triggerRule, rule);
+      }
+    }
+  }  
   
   return hasAsync
 }
 
 export const formService = {
   init: function() {
-    this.fields = {};
+    this._fields = {};
+    this._listeners = {};
+
+    this.listen = (listener, watchers) => {
+      for (let watcher of watchers) {
+        this._listeners[watcher] = this._listeners[watcher] || [];
+        this._listeners[watcher].push({ listener, watchers });
+      }
+    }
+    this.unlisten = (listener, watchers) => {
+      for (let watcher of watchers) {
+        this._listeners[watcher] = this._listeners[watcher] || [];
+        this._listeners[watcher] = this._listeners[watcher].filter(x => x.listener !== listener);
+      }
+    }
+
+    this.initField = (name, validators, options) => {
+      if (!this._fields[name]) {
+        this._fields[name] = {
+          name,
+          validators,
+          validations: {},
+          options,
+          onChange: (value) => {
+            if (value && value.nativeEvent && value.nativeEvent instanceof Event) {
+              value = value.target.value;
+            }        
+            this.setValue({name, value})
+          },
+          onBlur: () => {
+            // mark the field as touched
+          }
+        };
+      }
+      return this._fields[name]
+    }  
   },
   reducers: {
-    initField: function(state, {name, validators, options}) {
-      this.fields[name] = {
-        name,
-        validators,
-        validations: {},
-        options,
-        onChange: (value) => {
-          if (value && value.nativeEvent && value.nativeEvent instanceof Event) {
-            value = value.target.value;
-          }        
-          this.setValue({name, value})
-        },
-        onBlur: () => {
-          // mark the field as touched
-        }
-      };
-    },
-
     _setValue: function(state, {name, value, loading=false}) {
       set(state, `values.${name}`, value);
       if (loading) {
-        setValidation(this.fields[name], '__loading', LOADING, null);
+        setValidation(this._fields[name], '__loading', LOADING, null);
       } else {
-        clearValidation(this.fields[name], '__loading', LOADING);
+        clearValidation(this._fields[name], '__loading', LOADING);
       }
-      compileValidations(state, this.fields[name])
+      compileValidations(state, this._fields[name])
     },
 
     setError: function(state, {id, name, message}) {
-      setValidation(this.fields[name], id, ERROR, message);
-      compileValidations(state, this.fields[name])
+      setValidation(this._fields[name], id, ERROR, message);
+      compileValidations(state, this._fields[name])
     },
 
     setWarning: function(state, {id, name, message}) {
-      setValidation(this.fields[name], id, WARNING, message)
-      compileValidations(state, this.fields[name])
+      setValidation(this._fields[name], id, WARNING, message)
+      compileValidations(state, this._fields[name])
     }, 
     
     setOK: function(state, {id, name, message}) {
-      setValidation(this.fields[name], id, OK, message)
-      compileValidations(state, this.fields[name])
+      setValidation(this._fields[name], id, OK, message)
+      compileValidations(state, this._fields[name])
     },  
     
     compileValidations: function(state, name) {
-      compileValidations(state, this.fields[name])
+      compileValidations(state, this._fields[name])
     },
 
     setPendingValidation: function(state, {name, pending}) {
       if (pending) {
-        setValidation(this.fields[name], '__loading', LOADING, null);
+        setValidation(this._fields[name], '__loading', LOADING, null);
       } else {
-        clearValidation(this.fields[name], '__loading', LOADING);
+        clearValidation(this._fields[name], '__loading', LOADING);
       }      
-      compileValidations(state, this.fields[name])
+      compileValidations(state, this._fields[name])
     },
+
+    triggerRule: function(state, rule) {
+      const watchers = rule.watchers.map(w => get(state, `values.${w}`));
+      rule.listener.apply(undefined, watchers);
+    }
 
   },
   sagas: {
-    setValue: latest(function*({name, value})  {
-      const field = this.fields[name];
+    setValue: latest(function*({name, value}, { store })  {
+      const field = this._fields[name];
       if (field) {
-        const hasAsync = yield call([this, validateAll], field, value)
+        const hasAsync = yield call([this, validateAll], field, value, store.getState().values)
         if (hasAsync) {
           yield call(this.setPendingValidation, {name, pending: false})
         }
@@ -193,10 +229,13 @@ export const useForm = (onSubmit, options={}) => {
    *                    - onBlur
    */
   const field = useCallback((name, validators=[], options={}) => {
-    if (!service.fields[name]) {
-      service.initField({name, validators, options})
+    const field = service.initField(name, validators, options);
+    return {
+      value: get(values, name, ''),
+      onChange: field.onChange,
+      onBlur: field.onBlur,
+      name: field.name
     }
-    return Object.assign({value: get(values, name, '') }, service.fields[name]);
   }, [service, values])
 
   /**
@@ -223,22 +262,75 @@ export const useForm = (onSubmit, options={}) => {
     return get(values, name, defaultValue)
   }, [values]);
 
+
+  const setError = useCallback((fieldName, validatorName, message, matcher) => {
+    if (isNull(matcher) || matcher) {
+      return service.setError({
+        id: validatorName,
+        name: fieldName,
+        message
+      })
+    } else {
+      return service.setOK({
+        id: validatorName,
+        name: fieldName
+      })
+    }
+  }, [service]);
+
+  const setOK = useCallback((fieldName, validatorName) => {
+    service.setOK({
+      id: validatorName,
+      name: fieldName
+    })
+  }, [service]);
+  
+  const setWarning = useCallback((fieldName, validatorName, message, matcher) => {
+    if (isNull(matcher) || matcher) {
+      return service.setWarning({
+        id: validatorName,
+        name: fieldName,
+        message
+      })
+    } else {
+      return service.setWarning({
+        id: validatorName,
+        name: fieldName
+      })
+    }
+  }, [service]);  
+
+  const setValue = useCallback((name, value) => {
+    return service.setValue({name, value})
+  }, [service]);
+
+  const setPendingValidation = useCallback((name, pending) => {
+    return service.setPendingValidation({name, pending})
+  }, [service])
+
+  const contextRef = useRef({});
+  contextRef.current.state = state;
+  contextRef.current.service = service;
+  const useRuleRef = useRef(useRule.bind(contextRef.current));
+
+
   const formContextRef = useRef();
   const formContext = useMemo(() => {
     return { 
       field, 
+      setError,
+      setValue,
+      setOK,
+      setWarning,
+      setPendingValidation,
       submit, 
-      value,
-      values,
+      useRule: useRuleRef.current,
+      validation, 
       validations, 
-      validation,
-      setError: service.setError,
-      setValue: service.setValue,
-      setOK: service.setOK,
-      setWarning: service.setWarning,
-      setPendingValidation: service.setPendingValidation
+      value,
+      values,           
     }
-  }, [field, submit, value, values, validations, validation, service.setError, service.setValue, service.setOK, service.setWarning, service.setPendingValidation])
+  }, [field, setError, setValue, setOK, setWarning, setPendingValidation, submit, validation, validations, value, values])
   formContextRef.current = formContext;
 
   const Form = useMemo(() => {
@@ -260,28 +352,33 @@ export const useForm = (onSubmit, options={}) => {
 
 }
 
-export const useRule = (rule, watchers=[]) => {
-  const watchersRef = useRef(null);
-  const resultRef = useRef(null);
-
-  let execute = false;
-  if (watchersRef.current === null || watchersRef.current.length !== watchers.length) {
-    execute = true;
-  } else if (watchers.length !== 0) {
-    for (let i in watchers) {
-      if (watchers[i] !== watchersRef.current[i]) {
-        execute = true;
-        break;
-      }
-    }
-  }
-  watchersRef.current = watchers;
-
-  let result = resultRef.current;
-  if (execute) {
-    result = rule.apply(this, watchers);
-    resultRef.current = result;
-  }
-  
+export const useField = (name, validators=[], options={}) => {
+  const { field } = useFormContext();
+  const result = field(name, validators, options);
   return result;
 }
+
+const useRule = function (rule, watchers=[]) {
+  // initial call
+  const initialValue = useMemo(() => {
+    const values = this.state.values;
+    return rule.apply(this, watchers.map(w => get(values, w)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const [value, setValue] = useState(initialValue);
+  useEffect(() => {
+    const listener = function() {
+      const value = rule.apply(this, arguments);
+      setValue(value);
+    }
+    this.service.listen(listener, watchers);
+    return () => {
+      this.service.unlisten(listener, watchers);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  return value;
+}
+
