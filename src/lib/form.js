@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { call, fork } from "redux-saga/effects";
+import { call, fork, apply } from "redux-saga/effects";
 import { latest } from './saga';
 import { useLocalService } from './service';
 import { del, get, isNull, set } from './utils/object';
@@ -8,6 +8,11 @@ import { ERROR, LOADING, OK, WARNING } from './validation';
 export const FormContext = React.createContext();
 export const useFormContext = () => {
   return useContext(FormContext);
+}
+
+export const FieldContext = React.createContext();
+export const useFieldContext = () => {
+  return useContext(FieldContext);
 }
 
 const serializeLevel = (level) => {
@@ -85,10 +90,12 @@ const validateAll = function* (field, value, values) {
   for (let key of Object.keys(this._listeners)) {
     if (key.startsWith(field.name)) {
       for (let rule of this._listeners[key]) {
-        yield call(this.triggerRule, rule);
+        console.log(this._state);
+        const watchers = rule.watchers.map(w => get(this._state, `values.${w}`));     
+        yield apply(this, rule.listener, watchers);
       }
     }
-  }  
+  }
   
   return hasAsync
 }
@@ -135,6 +142,7 @@ export const formService = {
   reducers: {
     _setValue: function(state, {name, value, loading=false}) {
       set(state, `values.${name}`, value);
+      this._values = state.values;
       if (loading) {
         setValidation(this._fields[name], '__loading', LOADING, null);
       } else {
@@ -186,7 +194,7 @@ export const formService = {
           yield call(this.setPendingValidation, {name, pending: false})
         }
       }
-    }), 
+    })
   
   },
 
@@ -212,8 +220,35 @@ export const useForm = (onSubmit, options={}) => {
   const [state, service] = useLocalService(formService, options)
   const { values, validations } = state;
 
+  // we put values in a ref object. For some features, we don't need to force a rerender if a value is changed
+  // but we need the last value during the render
+  const valuesRef = useRef();
+  valuesRef.current = values;
+
   /**
-   *  this method will built 4 props for any named field.
+   *  this method will register a field and return some two listeners
+   *   - onChange
+   *   - onBlur
+   * 
+   * @param {string} name - the name of the field. Must be related to a key in values
+   * @param {Object} validators - a object of validators
+   * 
+   * @return {Object} a list of listeners for the field and its name
+   *                    - name
+   *                    - onChange
+   *                    - onBlur
+   */
+  const init = useCallback((name, validators=[], options={}) => {
+    const field = service.initField(name, validators, options);
+    return {
+      onChange: field.onChange,
+      onBlur: field.onBlur,
+      name
+    }
+  }, [service])
+
+  /**
+   *  this method is an helper to quickly register a field from a component. It will return
    *   - name
    *   - value
    *   - onChange
@@ -229,14 +264,10 @@ export const useForm = (onSubmit, options={}) => {
    *                    - onBlur
    */
   const field = useCallback((name, validators=[], options={}) => {
-    const field = service.initField(name, validators, options);
-    return {
-      value: get(values, name, ''),
-      onChange: field.onChange,
-      onBlur: field.onBlur,
-      name: field.name
-    }
-  }, [service, values])
+    const field = init(name, validators, options);
+    field.value =  get(values, name, options.defaultValue === undefined ? '' : options.defaultValue);
+    return field
+  }, [init, values])
 
   /**
    * this method will just call the submit function passed to useForm with the whole value object
@@ -312,11 +343,12 @@ export const useForm = (onSubmit, options={}) => {
   contextRef.current.state = state;
   contextRef.current.service = service;
   const useRuleRef = useRef(useRule.bind(contextRef.current));
-
+  const useBindRef = useRef(useBind.bind(contextRef.current));
 
   const formContextRef = useRef();
   const formContext = useMemo(() => {
     return { 
+      listen: service.listen,
       field, 
       setError,
       setValue,
@@ -324,25 +356,42 @@ export const useForm = (onSubmit, options={}) => {
       setWarning,
       setPendingValidation,
       submit, 
+      unlisten: service.unlisten,
+      useBind: useBindRef.current,
       useRule: useRuleRef.current,
       validation, 
       validations, 
       value,
       values,           
     }
-  }, [field, setError, setValue, setOK, setWarning, setPendingValidation, submit, validation, validations, value, values])
+  }, [field, service.listen, setError, setValue, setOK, setWarning, setPendingValidation, submit, service.unlisten, validation, validations, value, values])
   formContextRef.current = formContext;
+
+  // The field context should never force a rerender of a component.
+  // The field itself will use the listen method to get notified when its value is changed
+  const fieldContextRef = useRef();
+  const fieldContext = useMemo(() => {
+    return {
+      init,
+      listen: service.listen,
+      unlisten: service.unlisten,
+      values: valuesRef.current  // use for the initial value of the field
+    }
+
+  }, [init, service.listen, service.unlisten])
+  fieldContextRef.current = fieldContext;
 
   const Form = useMemo(() => {
     return (props) => {
-      const formContext = formContextRef.current;
       return (
-        <FormContext.Provider value={formContext}>
-          <form {...props} onSubmit={formContext.submit}/>
+        <FormContext.Provider value={formContextRef.current}>
+          <FieldContext.Provider value={fieldContextRef.current}>
+            <form {...props} onSubmit={fieldContextRef.current.submit}/>
+          </FieldContext.Provider>
         </FormContext.Provider>
       )
     }
-  }, [formContextRef])
+  }, [formContextRef, fieldContextRef])
 
   const result = useMemo(() => {
     return Object.assign({}, {Form}, formContext);
@@ -353,12 +402,39 @@ export const useForm = (onSubmit, options={}) => {
 }
 
 export const useField = (name, validators=[], options={}) => {
-  const { field } = useFormContext();
-  const result = field(name, validators, options);
-  return result;
+  const { init, listen, unlisten, values } = useFieldContext();
+  const field = init(name, validators, options);
+  const [value, setValue] = useState(get(values, name, options.defaultValue === undefined ? '' : options.defaultValue));
+  field.value = value;
+  
+  useEffect(() => {
+    const listener = function() {
+      setValue(value);
+    }
+    listen(listener, [name]);
+    return () => {
+      unlisten(listener, [name]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  
+  return field;
 }
 
 const useRule = function (rule, watchers=[]) {
+  useEffect(() => {
+    const listener = function() {
+      rule.apply(this, arguments);
+    }
+    this.service.listen(listener, watchers);
+    return () => {
+      this.service.unlisten(listener, watchers);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+}
+
+const useBind = function (rule, watchers=[]) {
   // initial call
   const initialValue = useMemo(() => {
     const values = this.state.values;
@@ -381,4 +457,5 @@ const useRule = function (rule, watchers=[]) {
 
   return value;
 }
+
 

@@ -189,6 +189,8 @@ class Service extends ReduxService {
           );
         }
       });
+      console.log('nextState', action.type, nextState);
+      this._state = nextState;
       return nextState;
     };
   }
@@ -244,7 +246,7 @@ export const useLocalService = (schema, initialState={}) => {
       emitter.emit("action", a)
       reactDispatch(a);
     },
-    [emitter, channel.put]
+    [emitter]
   );
   service._dispatch = dispatch;
 
