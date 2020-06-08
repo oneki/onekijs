@@ -1,5 +1,6 @@
 import { get } from "./object";
 import { isBrowser } from "./browser";
+import { toLocation } from "./url";
 
 export function detectLocale(location, reduxLocale, settings, initialLocale) {
   let locale = initialLocale;
@@ -27,3 +28,19 @@ export function detectLocale(location, reduxLocale, settings, initialLocale) {
   }
   return get(settings, 'i18n.defaultLocale');
 }
+
+export const toI18nLocation = (urlOrLocation, { i18n, settings }, route) => {
+  let location = urlOrLocation;
+  if (typeof urlOrLocation === "string") {
+    location = toLocation(urlOrLocation);
+    location.route = route;
+  }
+  if (settings && i18n.locale) {
+    location = settings.i18n.addLocaleToLocation(
+      i18n.locale,
+      location,
+      settings
+    );
+  }
+  return location;
+};

@@ -1,9 +1,11 @@
+import React from 'react'
 import Router from "next/router";
 import { toLocation, toUrl, toRelativeUrl } from "../utils/url";
-import { toI18nLocation } from "../i18n";
 import produce from "immer";
 import BaseRouter from "./base";
 import { get } from "../utils/object";
+import Link from 'next/link';
+import { toI18nLocation } from '../utils/i18n';
 
 export default class NextRouter extends BaseRouter {
   constructor() {
@@ -127,6 +129,20 @@ export default class NextRouter extends BaseRouter {
 
   unlisten(callback) {
     this._listeners.splice(this._listeners.indexOf(callback), 1);
+  }
+
+  i18nLink(props, i18n, settings) {
+    const { href, as } = props;
+    let location;
+    if (as) {
+      location = toI18nLocation(as, { i18n, settings }, href);
+    } else {
+      location = toI18nLocation(href, { i18n, settings });
+    }
+    const i18nAs = toRelativeUrl(location);
+    const i18nHref = location.route || toRelativeUrl(location);
+  
+    return <Link {...props} as={i18nAs} href={i18nHref} />;
   }
 
   _goto(type, urlOrLocation, route, options) {
