@@ -1,13 +1,13 @@
 {
   "name": "onekijs",
-  "version": "0.3.7",
+  "version": "0.4.1",
   "description": "Opiniated React framework built on top of Redux and React Router",
   "author": "oneki",
   "license": "MIT",
   "repository": "oneki/onekijs",
   "main": "dist/index.js",
-  "module": "dist/index.es.js",
-  "jsnext:main": "dist/index.es.js",
+  "module": "dist/esm/index.js",
+  "jsnext:main": "dist/esm/index.js",
   "engines": {
     "node": ">=8",
     "npm": ">=5"
@@ -15,8 +15,8 @@
   "scripts": {
     "test": "cross-env CI=1 react-scripts test --env=jsdom",
     "test:watch": "react-scripts test --env=jsdom",
-    "build": "rollup -c",
-    "start": "rollup -c -w",
+    "build": "babel src --out-dir dist/esm --source-maps",
+    "start": "babel src --out-dir dist/esm --watch --source-maps",
     "prepare": "npm run build",
     "predeploy": "cd example && npm install && npm run build",
     "deploy": "gh-pages -d example/build"
@@ -38,6 +38,7 @@
     "text-encoding-shim": "^1.0.5"
   },
   "devDependencies": {
+    "@babel/cli": "^7.9.0",
     "@babel/core": "^7.9.0",
     "@babel/plugin-external-helpers": "^7.8.3",
     "@babel/plugin-proposal-class-properties": "^7.8.3",
@@ -94,5 +95,6 @@
   ],
   "eslintConfig": {
     "extends": "react-app"
-  }
+  },
+  "sideEffects": false
 }

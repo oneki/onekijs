@@ -1,16 +1,24 @@
 import { createBrowserHistory, createHashHistory, createMemoryHistory } from "history";
-import React, { useEffect, useMemo, useState, Suspense } from "react";
-import { Provider } from "react-redux";
+import React, { Suspense, useEffect, useMemo, useState } from "react";
+import { Provider, useStore } from "react-redux";
 import { Router } from "react-router-dom";
+import { AppContext, I18nContext } from "../context";
 import ReactRouter from "../router/react-router";
-import { DefaultLoadingComponent, formatSettings } from "../utils/app";
-import { get } from "../utils/object";
-import { isPromise } from "../utils/type";
-import { AppContext } from "../context";
 import { createReduxService } from "../service";
 import { createReduxStore } from "../store";
+import { DefaultLoadingComponent, formatSettings } from "../utils/app";
+import { detectLocale } from "../utils/i18n";
+import { get } from "../utils/object";
+import { isPromise } from "../utils/type";
+import { useGlobalProp } from "../state";
+import { useSelector } from "react-redux";
+import { AppProvider } from "./app-provider";
 
 let init = false;
+const i18n = {
+  translations: {},
+  ns: []
+};
 export const App = React.memo(
   ({
     settings = {},
@@ -21,6 +29,9 @@ export const App = React.memo(
     LoadingComponent = DefaultLoadingComponent,
     history,
     children,
+    initialLocale,
+    translations,
+    i18nNs
   }) => {
     const [loading, setLoading] = useState(
       isPromise(initialState) || isPromise(settings)
@@ -66,12 +77,16 @@ export const App = React.memo(
         return new ReactRouter(history);
       }
     }, [loading, history]);
+    router.settings = formattedSettings;
+    router.i18n = i18n;
 
-    if (!loading) {
-      services.forEach((service) => {
-        createReduxService(store, router, formattedSettings, service);
-      });
-    }    
+    const locale = useMemo(() => {
+      if (!loading) {
+        return detectLocale(router.location, appStore, formattedSettings);
+      }
+      
+    }, [loading, router.location, appStore, formattedSettings]);
+    i18n.locale = locale;  
 
     useEffect(() => {
       if (!init) {
@@ -100,13 +115,59 @@ export const App = React.memo(
     init = true;
 
     return (
-      <AppContext.Provider value={{ router, settings: formattedSettings }}>
-        <Provider store={appStore}>
+      <Provider store={appStore}>
+        <AppProvider 
+          router={router} 
+          settings={formattedSettings} 
+          initialLocale={initialLocale}
+          translations={translations}
+          i18nNs={i18nNs}
+          services={services}>
           <Router history={history}>
             <Suspense fallback={<LoadingComponent />}>{children}</Suspense>
           </Router>
-        </Provider>
-      </AppContext.Provider>
+        </AppProvider>
+      </Provider>
     );
   }
 );
+
+// const AppProvider = ({ router, settings, initialLocale, translations, i18nNs, services, children }) => {
+//   const reduxLocale = useSelector(state => get(state, 'i18n.locale'));
+//   const store = useStore();
+
+//   console.log("store", store);
+
+//   const locale = useMemo(() => {
+//       return detectLocale(router.location, reduxLocale, settings, initialLocale);   
+//   }, [router.location, reduxLocale, settings, initialLocale]);
+
+//   const appContext = useMemo(() => {
+//     return {
+//       router,
+//       settings,
+//       i18n: {
+//         translations,
+//         ns: i18nNs,
+//         locale
+//       }
+//     }
+//   }, [router, settings, translations, i18nNs, locale]);
+
+//   const context = useMemo(()=> {
+//     return {}
+//   }, []);
+//   Object.assign(context, appContext, { store });  
+
+//   useMemo(() => {
+//     services.forEach((service) => {
+//       createReduxService(service, context);
+//     });
+//   }, [services, context])
+
+//   return (
+//     <AppContext.Provider value={appContext}>
+//       {children}
+//     </AppContext.Provider>
+//   )
+// }

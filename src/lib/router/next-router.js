@@ -1,9 +1,11 @@
+import React from 'react'
 import Router from "next/router";
 import { toLocation, toUrl, toRelativeUrl } from "../utils/url";
-import { toI18nLocation } from "../i18n";
 import produce from "immer";
 import BaseRouter from "./base";
 import { get } from "../utils/object";
+import Link from 'next/link';
+import { toI18nLocation } from '../utils/i18n';
 
 export default class NextRouter extends BaseRouter {
   constructor() {
@@ -33,16 +35,16 @@ export default class NextRouter extends BaseRouter {
   }
 
   deleteOrigin() {
-    sessionStorage.removeItem("onekijs.from");
-    sessionStorage.removeItem("onekijs.from_route");
+    localStorage.removeItem("onekijs.from");
+    localStorage.removeItem("onekijs.from_route");
   }
 
   getOrigin() {
     const from =
-      sessionStorage.getItem("onekijs.from") ||
+      localStorage.getItem("onekijs.from") ||
       get(this.settings, "routes.home", "/");
     const fromRoute =
-      sessionStorage.getItem("onekijs.from_route") ||
+      localStorage.getItem("onekijs.from_route") ||
       get(this.settings, "routes.home_route", from);
     return { from, fromRoute };
   }
@@ -99,7 +101,7 @@ export default class NextRouter extends BaseRouter {
   }
 
   saveOrigin(force=true) {
-    const currentValue = sessionStorage.getItem("onekijs.from");
+    const currentValue = localStorage.getItem("onekijs.from");
     if (!force && currentValue) return;
     
     let from = get(this.settings, "routes.home", "/");
@@ -109,8 +111,8 @@ export default class NextRouter extends BaseRouter {
       from = previous.relativeurl;
       fromRoute = previous.route || from;
     }
-    sessionStorage.setItem("onekijs.from", from);
-    sessionStorage.setItem("onekijs.from_route", fromRoute);
+    localStorage.setItem("onekijs.from", from);
+    localStorage.setItem("onekijs.from_route", fromRoute);
   }
 
   sync(nextRouter) {
@@ -127,6 +129,20 @@ export default class NextRouter extends BaseRouter {
 
   unlisten(callback) {
     this._listeners.splice(this._listeners.indexOf(callback), 1);
+  }
+
+  i18nLink(props, i18n, settings) {
+    const { href, as } = props;
+    let location;
+    if (as) {
+      location = toI18nLocation(as, { i18n, settings }, href);
+    } else {
+      location = toI18nLocation(href, { i18n, settings });
+    }
+    const i18nAs = toRelativeUrl(location);
+    const i18nHref = location.route || toRelativeUrl(location);
+  
+    return <Link {...props} as={i18nAs} href={i18nHref} />;
   }
 
   _goto(type, urlOrLocation, route, options) {
