@@ -167,6 +167,7 @@ class Service extends ReduxService {
     this._reducer = (state, action) => {
       const nextState = produce(state, draftState => {
         if (this._reducers[action.type]) {
+          //debugger;
           const payload = action.payload === undefined ? {} : action.payload;
           this._reducers[action.type].call(
             this,
@@ -176,7 +177,6 @@ class Service extends ReduxService {
           );
         }
       });
-      console.log('nextState', action.type, nextState);
       this._state = nextState;
       return nextState;
     };
@@ -218,31 +218,30 @@ export const useReduxService = useGlobalService;  // alias
 export const useLocalService = (schema, initialState={}) => {
   const reduxContext = useContext(ReactReduxContext) || {};
   const appContext = useContext(AppContext);
-  const context = useMemo(()=> {
-    return {}
-  }, []);
-  Object.assign(context, appContext, { store : reduxContext.store });  
+  const contextRef = useRef({})
+  Object.assign(contextRef.current, appContext, { store : reduxContext.store });  
 
   const service = useMemo(() => {
-    return new Service(schema, context);
-  }, [schema, context]);
-
+    return new Service(schema, contextRef.current);
+  }, [schema]);
+  const reducerRef = useRef(service._reducer);
+  reducerRef.current = service._reducer;
   const [state, reactDispatch] = useReducer(service._reducer, initialState);
   const env = useRef(state);
   env.current = state;
   const channel = useMemo(() => stdChannel(), []);
-  const emitter = useMemo(() => {
-    const emitter = new EventEmitter();
-    emitter.on("action", channel.put)
-    return emitter;
-  }, [channel.put]);
+  // const emitter = useMemo(() => {
+  //   const emitter = new EventEmitter();
+  //   emitter.on("action", channel.put)
+  //   return emitter;
+  // }, [channel.put]);
   const dispatch = useCallback(
     a => {
-      //setTimeout(channel.put, 0, a);
-      emitter.emit("action", a)
+      setTimeout(channel.put, 0, a);
+      //emitter.emit("action", a)
       reactDispatch(a);
     },
-    [emitter]
+    []
   );
   service._dispatch = dispatch;
 

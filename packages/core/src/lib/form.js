@@ -1,18 +1,19 @@
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState, useReducer } from 'react';
 import { call, fork, apply } from "redux-saga/effects";
 import { latest } from './saga';
 import { useLocalService } from './service';
 import { del, get, isNull, set } from './utils/object';
 import { ERROR, LOADING, OK, WARNING } from './validation';
+import { useIsomorphicLayoutEffect } from './utils/hook';
 
 export const FormContext = React.createContext();
 export const useFormContext = () => {
   return useContext(FormContext);
 }
 
-export const FieldContext = React.createContext();
-export const useFieldContext = () => {
-  return useContext(FieldContext);
+export const StaticFormContext = React.createContext();
+export const useStaticFormContext = () => {
+  return useContext(StaticFormContext);
 }
 
 const serializeLevel = (level) => {
@@ -44,6 +45,25 @@ const compileValidations = (state, field)=> {
 
 }
 
+const hasValidation = (field, id, level, message=null) => {
+  if (field) {
+    const validation = get(field, `validations.${level}.${id}`);
+    return validation === message;
+  }
+  return false;
+}
+
+const hasNonOkValidation = (field, id) => {
+  if (field) {
+    const validations = field['validations'] || []
+    for (let i in validations) {
+      if (i !== OK && validations[i][id] !== undefined) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
 
 const setValidation = (field, id, level, message=null) => {
   // clean first
@@ -87,16 +107,6 @@ const validateAll = function* (field, value, values) {
 
   const hasAsync = tasks.find(t => t.isRunning());
   yield call(this._setValue, {name: field.name, value, loading: hasAsync !== undefined})
-  for (let key of Object.keys(this._listeners)) {
-    if (key.startsWith(field.name)) {
-      for (let rule of this._listeners[key]) {
-        console.log(this._state);
-        const watchers = rule.watchers.map(w => get(this._state, `values.${w}`));     
-        yield apply(this, rule.listener, watchers);
-      }
-    }
-  }
-  
   return hasAsync
 }
 
@@ -104,11 +114,12 @@ export const formService = {
   init: function() {
     this._fields = {};
     this._listeners = {};
+    this._pendingTrigger = [];
 
     this.listen = (listener, watchers) => {
       for (let watcher of watchers) {
         this._listeners[watcher] = this._listeners[watcher] || [];
-        this._listeners[watcher].push({ listener, watchers });
+        this._listeners[watcher].unshift({ listener, watchers });
       }
     }
     this.unlisten = (listener, watchers) => {
@@ -141,6 +152,7 @@ export const formService = {
   },
   reducers: {
     _setValue: function(state, {name, value, loading=false}) {
+      this._pendingTrigger.push(name);     
       set(state, `values.${name}`, value);
       this._values = state.values;
       if (loading) {
@@ -182,14 +194,26 @@ export const formService = {
     triggerRule: function(state, rule) {
       const watchers = rule.watchers.map(w => get(state, `values.${w}`));
       rule.listener.apply(undefined, watchers);
+    },
+
+    setStateValue: function( state, {name, value}) {
+      set(state, `values.${name}`, value)
+      for (let key of Object.keys(this._listeners)) {
+        if (key.startsWith(name)) {
+          for (let rule of this._listeners[key]) {
+            const watchers = rule.watchers.map(w => get(state, `values.${w}`));
+            rule.listener.apply(undefined, watchers);
+          }
+        }
+      }
     }
 
   },
   sagas: {
-    setValue: latest(function*({name, value}, { store })  {
+    setValue: latest(function*({name, value})  {
       const field = this._fields[name];
       if (field) {
-        const hasAsync = yield call([this, validateAll], field, value, store.getState().values)
+        const hasAsync = yield call([this, validateAll], field, value)
         if (hasAsync) {
           yield call(this.setPendingValidation, {name, pending: false})
         }
@@ -197,7 +221,6 @@ export const formService = {
     })
   
   },
-
 }
 
 /**
@@ -224,6 +247,9 @@ export const useForm = (onSubmit, options={}) => {
   // but we need the last value during the render
   const valuesRef = useRef();
   valuesRef.current = values;
+
+  const validationsRef = useRef();
+  validationsRef.current = validations;  
 
   /**
    *  this method will register a field and return some two listeners
@@ -293,28 +319,35 @@ export const useForm = (onSubmit, options={}) => {
     return get(values, name, defaultValue)
   }, [values]);
 
-
-  const setError = useCallback((fieldName, validatorName, message, matcher) => {
-    if (isNull(matcher) || matcher) {
-      return service.setError({
-        id: validatorName,
-        name: fieldName,
-        message
-      })
-    } else {
-      return service.setOK({
+  const setOK = useCallback((fieldName, validatorName) => {
+    if (!hasValidation(field, validatorName, OK) && hasNonOkValidation(field, validatorName)) {
+      service.setOK({
         id: validatorName,
         name: fieldName
-      })
+      })      
     }
-  }, [service]);
+  }, [service, defaultValidation]);
+  
+  const setError = useCallback((fieldName, validatorName, message, matcher) => {
+    const field = service._fields[fieldName];
+    if (field) {
+      if (isNull(matcher) || matcher) {
+        if (!hasValidation(field, validatorName, ERROR, message)) {
+          console.log('setError')
+          service.setError({
+            id: validatorName,
+            name: fieldName,
+            message
+          })
+        }
+      } else {
+        setOK(fieldName, validatorName);
+      }
+    }
 
-  const setOK = useCallback((fieldName, validatorName) => {
-    service.setOK({
-      id: validatorName,
-      name: fieldName
-    })
-  }, [service]);
+  }, [service, defaultValidation, setOK]);
+
+
   
   const setWarning = useCallback((fieldName, validatorName, message, matcher) => {
     if (isNull(matcher) || matcher) {
@@ -342,13 +375,12 @@ export const useForm = (onSubmit, options={}) => {
   const contextRef = useRef({});
   contextRef.current.state = state;
   contextRef.current.service = service;
-  const useRuleRef = useRef(useRule.bind(contextRef.current));
-  const useBindRef = useRef(useBind.bind(contextRef.current));
+  const useRuleRef = useRef(useFormRule.bind(contextRef.current));
+  const useBindRef = useRef(useFormBind.bind(contextRef.current));
 
   const formContextRef = useRef();
   const formContext = useMemo(() => {
     return { 
-      listen: service.listen,
       field, 
       setError,
       setValue,
@@ -356,9 +388,6 @@ export const useForm = (onSubmit, options={}) => {
       setWarning,
       setPendingValidation,
       submit, 
-      unlisten: service.unlisten,
-      useBind: useBindRef.current,
-      useRule: useRuleRef.current,
       validation, 
       validations, 
       value,
@@ -367,34 +396,56 @@ export const useForm = (onSubmit, options={}) => {
   }, [field, service.listen, setError, setValue, setOK, setWarning, setPendingValidation, submit, service.unlisten, validation, validations, value, values])
   formContextRef.current = formContext;
 
-  // The field context should never force a rerender of a component.
-  // The field itself will use the listen method to get notified when its value is changed
-  const fieldContextRef = useRef();
-  const fieldContext = useMemo(() => {
+  // The static context should never force a rerender of a component.
+  // A field will use the listen method to get notified when its value is changed
+  const staticFormContextRef = useRef();
+  const staticFormContext = useMemo(() => {
     return {
       init,
       listen: service.listen,
       unlisten: service.unlisten,
-      values: valuesRef.current  // use for the initial value of the field
+      values: valuesRef.current,
+      validations: validationsRef.current
     }
 
   }, [init, service.listen, service.unlisten])
-  fieldContextRef.current = fieldContext;
+  staticFormContextRef.current = staticFormContext;
 
   const Form = useMemo(() => {
     return (props) => {
+      useIsomorphicLayoutEffect(() => {
+        for (let prop of service._pendingTrigger) {
+          for (let key of Object.keys(service._listeners)) {
+            if (key.startsWith(prop)) {
+              for (let rule of service._listeners[key]) {
+                //const watchers = rule.watchers.map(w => get(this._state, `values.${w}`));     
+                //yield apply(this, rule.listener, watchers);
+                //yield call(this.triggerRule, rule);
+                const watchers = rule.watchers.map(w => get(valuesRef.current, w, ''));
+                rule.listener.apply(undefined, watchers);            
+              }
+            }
+          } 
+        }
+        service._pendingTrigger = [];  
+      })
+    
       return (
         <FormContext.Provider value={formContextRef.current}>
-          <FieldContext.Provider value={fieldContextRef.current}>
-            <form {...props} onSubmit={fieldContextRef.current.submit}/>
-          </FieldContext.Provider>
+          <StaticFormContext.Provider value={staticFormContextRef.current}>
+            <form {...props} onSubmit={staticFormContextRef.current.submit}/>
+          </StaticFormContext.Provider>
         </FormContext.Provider>
       )
     }
-  }, [formContextRef, fieldContextRef])
+  }, [formContextRef, staticFormContextRef, service])
 
   const result = useMemo(() => {
-    return Object.assign({}, {Form}, formContext);
+    return Object.assign({}, formContext, {
+      Form,
+      bind: useBindRef.current,
+      rule: useRuleRef.current,
+    });
   }, [formContext, Form])
 
   return result;
@@ -402,14 +453,15 @@ export const useForm = (onSubmit, options={}) => {
 }
 
 export const useField = (name, validators=[], options={}) => {
-  const { init, listen, unlisten, values } = useFieldContext();
+  const { init, listen, unlisten, values } = useStaticFormContext();
   const field = init(name, validators, options);
   const [value, setValue] = useState(get(values, name, options.defaultValue === undefined ? '' : options.defaultValue));
   field.value = value;
   
   useEffect(() => {
-    const listener = function() {
-      setValue(value);
+    const listener = function(value) {
+      //setImmediate(() => setValue(value)); 
+      setValue(value)
     }
     listen(listener, [name]);
     return () => {
@@ -421,36 +473,52 @@ export const useField = (name, validators=[], options={}) => {
   return field;
 }
 
-const useRule = function (rule, watchers=[]) {
-  useEffect(() => {
+const useFormRule = function (rule, watchers=[]) {
+  const values = watchers.map(w => get(this.state.values, w));
+  
+  useMemo(() => {
+    rule.apply(undefined, values);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, values)
+  
+}
+
+export const useRule = (rule, watchers=[]) => {
+  const {listen, unlisten} = useStaticFormContext();
+  useIsomorphicLayoutEffect(() => {
     const listener = function() {
       rule.apply(this, arguments);
     }
-    this.service.listen(listener, watchers);
+    listen(listener, watchers);
     return () => {
-      this.service.unlisten(listener, watchers);
+      unlisten(listener, watchers);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 }
 
-const useBind = function (rule, watchers=[]) {
+// useFormBind does not interact with valueChange via a listener as it should be defined at the same level as useForm
+const useFormBind = function (rule, watchers=[]) {
+  return rule.apply(this, watchers.map(w => get(this.state.values, w)));
+}
+
+export const useBind = (rule, watchers=[]) => {
   // initial call
+  const {values, listen, unlisten} = useStaticFormContext();
+  
   const initialValue = useMemo(() => {
-    const values = this.state.values;
     return rule.apply(this, watchers.map(w => get(values, w)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
   const [value, setValue] = useState(initialValue);
-  useEffect(() => {
+
+  useIsomorphicLayoutEffect(() => {
     const listener = function() {
-      const value = rule.apply(this, arguments);
-      setValue(value);
+      setValue(rule.apply(this, arguments))
     }
-    this.service.listen(listener, watchers);
+    listen(listener, watchers);
     return () => {
-      this.service.unlisten(listener, watchers);
+      unlisten(listener, watchers);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

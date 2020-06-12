@@ -1,5 +1,5 @@
 import React from 'react'
-import { isNull, isObject } from "./utils/object"
+import { isNull, isObject, isNullOrEmpty } from "./utils/object"
 import { isTrue, isFalse } from './utils/type';
 
 export const LOADING = 0;
@@ -37,6 +37,12 @@ export const required = (message) => {
 
 export const regex = (regex, message) => {
   return (value) => {
+    if (isNullOrEmpty(value)) {
+      return {
+        valid: true,
+        message: null
+      }
+    }
     if (typeof regex === 'string') {
       regex = new RegExp(regex);
     }
