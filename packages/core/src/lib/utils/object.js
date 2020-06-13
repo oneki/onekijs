@@ -136,7 +136,9 @@ export function set(content, property, value) {
     return value;
   }
   const [subContent, index] = find(content, property, true);
-  subContent[index] = value;
+  if (!isNull(subContent)) {
+    subContent[index] = value;
+  }
   return content;
 }
 

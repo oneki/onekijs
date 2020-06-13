@@ -6,6 +6,7 @@ export const LOADING = 0;
 export const ERROR = 1;
 export const WARNING = 2;
 export const OK = 3;
+export const LOADING_VALIDATOR_NAME = '__loading';
 
 export const required = (message) => {
   return (value) => {
@@ -61,5 +62,10 @@ export const regex = (regex, message) => {
 export const email = (message) => {
   return regex(new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, 'i'), message);
 }
+
+export const defaultValidation = {
+  message: null,
+  status: null,
+};
 
 

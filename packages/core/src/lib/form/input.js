@@ -1,11 +1,17 @@
-import React from 'react'
-import { useField } from '../form';
-import { useGlobalProp } from '../state';
-import { extractValidators } from '../utils/form';
+import React from "react";
+import { useField } from "../form";
+import { extractValidators } from "../utils/form";
 
-export const Input = React.memo(props => {
+export const Input = React.memo((props) => {
   const [validators, extraProps] = extractValidators(props);
-  const field = useField(props.name, validators);
-  console.log('render', props.name, 'with value = ', field.value)
-  return <input {...extraProps} {...field} />
+  const { validation, ...field } = useField(props.name, validators, {
+    defaultValue: ''
+  });
+  console.log('render input', props.name);
+  return (
+    <>
+      <input {...extraProps} {...field} /> {validation.status} :{" "}
+      {validation.message}
+    </>
+  );
 });

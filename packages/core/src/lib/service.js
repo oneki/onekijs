@@ -237,9 +237,14 @@ export const useLocalService = (schema, initialState={}) => {
   // }, [channel.put]);
   const dispatch = useCallback(
     a => {
-      setTimeout(channel.put, 0, a);
+      if (service._reducers && service._reducers[a.type]) {
+        reactDispatch(a);
+      } else {
+        channel.put(a);
+      }
+      //setTimeout(channel.put, 0, a);
       //emitter.emit("action", a)
-      reactDispatch(a);
+      
     },
     []
   );
