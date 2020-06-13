@@ -1,0 +1,1 @@
+{"ast":null,"code":"export { default } from './SiteLayout';","map":{"version":3,"sources":["/home/onurb/workspace/oneki/onekijs/examples/next-i18n/src/layout/siteLayout/index.js"],"names":["default"],"mappings":"AAAA,SAASA,OAAT,QAAwB,cAAxB","sourcesContent":["export { default } from './SiteLayout';"]},"metadata":{},"sourceType":"module"}
