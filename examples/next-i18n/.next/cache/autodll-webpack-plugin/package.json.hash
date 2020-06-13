@@ -1,0 +1,1 @@
+{"name":"next-i18n","version":"0.1.0","private":true,"scripts":{"dev":"next","build":"next build","buildstart":"next build && next start","start":"next start","export":"next export"},"dependencies":{"next":"9.3.6","onekijs-next":"0.0.1","react":"^16.13.1","react-dom":"^16.13.1"},"readme":"ERROR: No README data found!","_id":"next-i18n@0.1.0"}
