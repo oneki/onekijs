@@ -6,7 +6,7 @@ import { IndexPage } from './pages';
 
 ReactDOM.render(
   <App>
-    <Switch>
+    <Switch>   
       <Route>
         <IndexPage />
       </Route>
