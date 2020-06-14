@@ -12,7 +12,7 @@
   "dependencies": {
     "@zeit/next-css": "^1.0.1",
     "next": "9.3.6",
-    "onekijs-next": "0.0.1",
+    "onekijs-next": "0.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "tailwindcss": "^1.4.2"
