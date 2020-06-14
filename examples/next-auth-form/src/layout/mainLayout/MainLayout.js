@@ -1,9 +1,8 @@
-import React from "react";
-import Header from "../../component/header";
-import Body from "../../component/body";
+import React from 'react';
+import Header from '../../component/header';
+import Body from '../../component/body';
 import { layout } from 'onekijs-next';
-import PropTypes from 'prop-types'
-
+import PropTypes from 'prop-types';
 
 const MainLayout = ({ children }) => {
   return (
@@ -15,7 +14,7 @@ const MainLayout = ({ children }) => {
 };
 
 MainLayout.propTypes = {
-  children: PropTypes.element
-}
+  children: PropTypes.element,
+};
 
 export default layout(MainLayout);

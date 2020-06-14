@@ -5,6 +5,6 @@ export default {
       loginEndpoint: '/api/login',
       logoutEndpoint: '/api/logout',
       userinfoEndpoint: '/api/whoami',
-    },    
-  }
-}
+    },
+  },
+};

@@ -1,5 +1,9 @@
-import { useLogoutCallbackService, getI18nStaticProps, withI18nPaths } from "onekijs-next";
-import React from "react";
+import {
+  useLogoutCallbackService,
+  getI18nStaticProps,
+  withI18nPaths,
+} from 'onekijs-next';
+import React from 'react';
 import fs from 'fs';
 import path from 'path';
 
@@ -10,8 +14,8 @@ export async function getStaticProps(context) {
 export async function getStaticPaths() {
   return {
     paths: withI18nPaths(fs, path),
-    fallback: false
-  }
+    fallback: false,
+  };
 }
 
 const LogoutCallbackPage = React.memo(() => {
@@ -19,6 +23,6 @@ const LogoutCallbackPage = React.memo(() => {
   return null;
 });
 
-LogoutCallbackPage.displayName = "LogoutCallbackPage";
+LogoutCallbackPage.displayName = 'LogoutCallbackPage';
 
 export default LogoutCallbackPage;

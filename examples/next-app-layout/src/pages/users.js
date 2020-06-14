@@ -1,5 +1,5 @@
-import React from 'react'
-import Head from "next/head";
+import React from 'react';
+import Head from 'next/head';
 import { withLayout } from 'onekijs-next';
 import SiteLayout from '../layout/siteLayout';
 
@@ -12,6 +12,6 @@ const UsersPage = () => {
       <div>This is the users page</div>
     </>
   );
-}
+};
 
 export default withLayout(UsersPage, SiteLayout);

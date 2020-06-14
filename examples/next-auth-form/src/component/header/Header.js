@@ -1,6 +1,6 @@
-import { I18nLink } from "onekijs-next";
-import React from "react";
-import LoggedUser from "./LoggedUser";
+import { I18nLink } from 'onekijs-next';
+import React from 'react';
+import LoggedUser from './LoggedUser';
 
 const Header = () => {
   return (

@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from "next/link";
+import Link from 'next/link';
 
 const UsersPage = () => {
   return (
@@ -7,8 +7,8 @@ const UsersPage = () => {
       This is the users page. Go to <Link href="/">Index page</Link>
     </div>
   );
-}
+};
 
-UsersPage.displayName = "UsersPage";
+UsersPage.displayName = 'UsersPage';
 
 export default UsersPage;

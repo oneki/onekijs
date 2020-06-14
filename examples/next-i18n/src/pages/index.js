@@ -7,10 +7,10 @@ const IndexPage = () => {
   const router = useOnekiRouter();
 
   useEffect(() => {
-    router.push("/");
-  }, [locale])
+    router.push('/');
+  }, [locale]);
 
   return null;
-}
+};
 
 export default withLayout(IndexPage, SiteLayout);

@@ -6,10 +6,10 @@ const IndexPage = () => {
   const router = useOnekiRouter();
 
   useEffect(() => {
-    router.push("/");
-  }, [locale, router])
+    router.push('/');
+  }, [locale, router]);
 
   return null;
-}
+};
 
 export default IndexPage;

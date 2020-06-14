@@ -1,10 +1,8 @@
-import { App } from "onekijs-next";
-import React from "react";
+import { App } from 'onekijs-next';
+import React from 'react';
 
-const MyApp = (props) => {
-  return (
-    <App {...props} />
-  );
+const MyApp = props => {
+  return <App {...props} />;
 };
 
 export default MyApp;

@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
-import React from "react";
-import Header from "../../component/header";
-import Body from "../../component/body";
+import React from 'react';
+import Header from '../../component/header';
+import Body from '../../component/body';
 import { layout } from 'onekijs-next';
 
 const MainLayout = ({ children }) => {
@@ -12,7 +12,5 @@ const MainLayout = ({ children }) => {
     </div>
   );
 };
-
-
 
 export default layout(MainLayout);

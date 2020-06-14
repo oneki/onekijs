@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
-import Link from "next/link";
-import { useLoginService } from "onekijs-next";
-import React from "react";
-import { useForm } from "react-hook-form";
-import ErrorNotification from "../component/notification/ErrorNotification";
+import Link from 'next/link';
+import { useLoginService } from 'onekijs-next';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import ErrorNotification from '../component/notification/ErrorNotification';
 
 const LoginPage = () => {
   const [error, , submit] = useLoginService();
@@ -44,8 +44,8 @@ const LoginPage = () => {
   );
 };
 
-const SubmitButton = ({ loading, label = "Submit", onClick }) => {
-  const buttonLabel = loading ? "Loading ..." : label;
+const SubmitButton = ({ loading, label = 'Submit', onClick }) => {
+  const buttonLabel = loading ? 'Loading ...' : label;
   return (
     <button
       type="button"
@@ -71,9 +71,9 @@ const LoginHeader = () => {
         <span className="ml-4">Basic username / password login</span>
       </p>
       <p className="text-gray-500 text-sm mt-5">
-        <b>User</b>: user / user<br/>
+        <b>User</b>: user / user
+        <br />
         <b>Admin</b>: admin / admin
-        
       </p>
     </>
   );
@@ -103,11 +103,7 @@ const LoginSubmit = ({ onSubmit }) => {
       <Link href="/">
         <a className="text-black mt-2">Cancel</a>
       </Link>
-      <SubmitButton
-        label="Submit"
-        loading={false}
-        onClick={onSubmit}
-      />
+      <SubmitButton label="Submit" loading={false} onClick={onSubmit} />
     </div>
   );
 };

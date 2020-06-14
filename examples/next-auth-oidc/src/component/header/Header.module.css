@@ -1,16 +1,16 @@
 .container {
-    background-color: #6D6875;
-    padding: 10px;
-    margin-bottom: 10px;
-    color: white;
+  background-color: #6d6875;
+  padding: 10px;
+  margin-bottom: 10px;
+  color: white;
 }
 
 .link {
-    padding: 10px;
-    color: white;
+  padding: 10px;
+  color: white;
 }
 
 .login {
-    float: right;
-    padding-right: 10px;
+  float: right;
+  padding-right: 10px;
 }

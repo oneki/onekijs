@@ -1,6 +1,11 @@
-import { useLoginCallbackService, useOnekiRouter, getI18nStaticProps, withI18nPaths } from "onekijs-next";
-import React from "react";
-import { useEffect } from "react";
+import {
+  useLoginCallbackService,
+  useOnekiRouter,
+  getI18nStaticProps,
+  withI18nPaths,
+} from 'onekijs-next';
+import React from 'react';
+import { useEffect } from 'react';
 import fs from 'fs';
 import path from 'path';
 
@@ -11,8 +16,8 @@ export async function getStaticProps(context) {
 export async function getStaticPaths() {
   return {
     paths: withI18nPaths(fs, path),
-    fallback: false
-  }
+    fallback: false,
+  };
 }
 
 const ItsmeCallbackPage = React.memo(() => {
@@ -24,7 +29,7 @@ const ItsmeCallbackPage = React.memo(() => {
     if (error) {
       router.push('/login');
     }
-  }, [error])
+  }, [error]);
 
   return null;
 
@@ -32,7 +37,7 @@ const ItsmeCallbackPage = React.memo(() => {
   // if (!error) {
   //   return null;
   // }
-  
+
   // return (
   //   <div>An error occured:
   //     <ul>
@@ -41,9 +46,8 @@ const ItsmeCallbackPage = React.memo(() => {
   //     </ul>
   //   </div>
   // )
-
 });
 
-ItsmeCallbackPage.displayName = "ItsmeCallbackPage";
+ItsmeCallbackPage.displayName = 'ItsmeCallbackPage';
 
 export default ItsmeCallbackPage;

@@ -1,8 +1,7 @@
-import Link from "next/link";
-import { layout } from "onekijs-next";
-import React from "react";
-import PropTypes from 'prop-types'
-
+import Link from 'next/link';
+import { layout } from 'onekijs-next';
+import React from 'react';
+import PropTypes from 'prop-types';
 
 const SiteLayout = ({ children }) => {
   return (
@@ -13,10 +12,7 @@ const SiteLayout = ({ children }) => {
             <nav>
               <div className="py-4 flex-shrink-0 flex items-center">
                 <Link href="/">
-                  <img
-                    className="h-8 w-8 cursor-pointer"
-                    src="/logo.svg"
-                  />
+                  <img className="h-8 w-8 cursor-pointer" src="/logo.svg" />
                 </Link>
                 <Link href="/">
                   <a className="ml-8 font-medium text-gray-900">Home</a>
@@ -38,6 +34,6 @@ const SiteLayout = ({ children }) => {
 
 SiteLayout.propTypes = {
   children: PropTypes.element,
-}
+};
 
 export default layout(SiteLayout);

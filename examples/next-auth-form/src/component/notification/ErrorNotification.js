@@ -1,9 +1,8 @@
 /* eslint-disable react/prop-types */
-import React from "react";
-import PropTypes from 'prop-types'
+import React from 'react';
+import PropTypes from 'prop-types';
 
-
-const ErrorNotification = React.memo(({error}) => {
+const ErrorNotification = React.memo(({ error }) => {
   return (
     <div className="flex items-stretch mb-5">
       <div
@@ -12,8 +11,7 @@ const ErrorNotification = React.memo(({error}) => {
       >
         <strong className="font-bold mr-2">Error!</strong>
         <span className="block sm:inline mr-10">
-          {error.message}{" "}
-          {error.code ? `(${error.code})` : ""}
+          {error.message} {error.code ? `(${error.code})` : ''}
         </span>
         <span
           className="absolute top-0 bottom-0 right-0 px-4 py-3"
@@ -34,9 +32,9 @@ const ErrorNotification = React.memo(({error}) => {
   );
 });
 
-ErrorNotification.displayName = "ErrorNotification";
+ErrorNotification.displayName = 'ErrorNotification';
 ErrorNotification.PropTypes = {
   error: PropTypes.object,
-}
+};
 
 export default ErrorNotification;

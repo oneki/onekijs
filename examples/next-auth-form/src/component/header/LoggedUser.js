@@ -1,9 +1,9 @@
-import Link from "next/link";
-import { useSecurityContext } from "onekijs-next";
-import React from "react";
+import Link from 'next/link';
+import { useSecurityContext } from 'onekijs-next';
+import React from 'react';
 
 const LoggedUser = () => {
-  const [email, emailLoading] = useSecurityContext("email");
+  const [email, emailLoading] = useSecurityContext('email');
 
   if (emailLoading) return null;
 

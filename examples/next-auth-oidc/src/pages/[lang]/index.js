@@ -1,9 +1,9 @@
 /* eslint-disable no-undef */
 /* eslint-disable react/no-unescaped-entities */
-import Head from "next/head";
-import React from "react";
-import MainLayout from "../../layout/mainLayout";
-import { withLayout,  getI18nStaticProps, withI18nPaths } from 'onekijs-next';
+import Head from 'next/head';
+import React from 'react';
+import MainLayout from '../../layout/mainLayout';
+import { withLayout, getI18nStaticProps, withI18nPaths } from 'onekijs-next';
 import fs from 'fs';
 import path from 'path';
 
@@ -20,8 +20,8 @@ export async function getStaticProps(context) {
 export async function getStaticPaths() {
   return {
     paths: withI18nPaths(fs, path),
-    fallback: false
-  }
+    fallback: false,
+  };
 }
 
 const Main = () => {
