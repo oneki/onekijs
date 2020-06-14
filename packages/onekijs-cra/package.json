@@ -1,6 +1,6 @@
 {
   "name": "onekijs-cra",
-  "version": "0.0.1",
+  "version": "0.5.0",
   "description": "Opiniated React framework built on top of Redux and React Router",
   "author": "oneki",
   "license": "MIT",
@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "immer": "^6.0.2",
+    "onekijs-core": "^0.5.0",
     "query-string": "^6.11.1",
     "react-redux": "^7.2.0",
     "react-router-dom": "^5.1.2",
@@ -33,8 +34,7 @@
     "redux-saga": "^1.1.3",
     "rfc4648": "^1.3.0",
     "styled-components": "^5.0.1",
-    "text-encoding-shim": "^1.0.5",
-    "onekijs-core": "0.0.1"
+    "text-encoding-shim": "^1.0.5"
   },
   "sideEffects": false
 }

@@ -5,7 +5,10 @@
     "bootstrap": "lerna bootstrap --use-workspaces",
     "build": "lerna exec --parallel -- babel --root-mode upward src -d dist/esm --ignore **/*.story.js,**/*.spec.js",
     "start": "lerna exec --parallel --scope onekijs-* -- babel --watch --source-maps --root-mode upward src -d dist/esm",
-    "lint": "eslint ."
+    "cm": "git-cz",
+    "lerna-version": "lerna version --conventional-commits",
+    "lerna-publish": "lerna publish --conventional-commits",
+    "lerna-release": "lerna publish --conventional-commits --create-release github"
   },
   "workspaces": [
     "packages/*",
@@ -35,7 +38,9 @@
     "@babel/preset-env": "^7.9.0",
     "@babel/preset-react": "^7.9.1",
     "babel-eslint": "^10.1.0",
+    "commitizen": "^4.1.2",
     "cross-env": "^7.0.2",
+    "cz-conventional-changelog": "^3.2.0",
     "eslint": "^7.2.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-config-react-app": "^5.2.1",
@@ -69,5 +74,10 @@
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "prettier --write"
     ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }

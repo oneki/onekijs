@@ -1,6 +1,7 @@
 import { App } from 'onekijs-cra';
 import React from 'react';
 import ReactDOM from 'react-dom';
+<<<<<<< HEAD
 import { Route, Switch, Link } from 'react-router-dom';
 import { BasicPage } from './pages/basic';
 import { WrapperPage } from './pages/wrapper';
@@ -37,6 +38,18 @@ ReactDOM.render(
         </Route>
       </Switch>
     </>
+=======
+import { Route, Switch } from 'react-router-dom';
+import { IndexPage } from './pages';
+
+ReactDOM.render(
+  <App>
+    <Switch>   
+      <Route>
+        <IndexPage />
+      </Route>
+    </Switch>
+>>>>>>> master
   </App>,
   document.getElementById('root')
 );
