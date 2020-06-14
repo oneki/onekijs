@@ -6,8 +6,9 @@
     "build": "lerna exec --parallel -- babel --root-mode upward src -d dist/esm --ignore **/*.story.js,**/*.spec.js",
     "start": "lerna exec --parallel --scope onekijs-* -- babel --watch --source-maps --root-mode upward src -d dist/esm",
     "cm": "git-cz",
-    "lerna-publish": "lerna version --conventional-commits --no-private",
-    "lerna-release": "lerna version --conventional-commits --no-private --create-release github"
+    "lerna-version": "lerna version --conventional-commits",
+    "lerna-publish": "lerna publish --conventional-commits",
+    "lerna-release": "lerna publish --conventional-commits --create-release github"
   },
   "workspaces": [
     "packages/*",
