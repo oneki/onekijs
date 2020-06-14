@@ -89,7 +89,7 @@ export { layout, withLayout } from './lib/layout';
 // export { Search, SearchContainer } from './components/search';
 export { useI18nService, i18nService, useTranslation, useLocale, useI18n, I18nLink, flattenTranslations } from './lib/i18n';
 export { useGlobalState, useGlobalProp, useLocalState, useGlobalStateModifier } from './lib/state';
-export { formService, useForm, FormContext, useFormContext, useField, useBind, useRule } from './lib/form';
+export { formService, useForm, FormContext, useFormContext, useField, useBind, useRule, useAsyncBind } from './lib/form';
 export { Input } from './lib/form/input';
 export { required, regex, email } from './lib/validation';
 export { extractValidators } from './lib/utils/form';
