@@ -1,0 +1,39 @@
+{
+  "name": "onekijs-next",
+  "version": "0.0.1",
+  "description": "Opiniated React framework built on top of Next.js",
+  "author": "oneki",
+  "license": "MIT",
+  "repository": "oneki/onekijs",
+  "main": "dist/index.js",
+  "module": "dist/esm/index.js",
+  "engines": {
+    "node": ">=8",
+    "npm": ">=5"
+  },
+  "scripts": {
+    "test": "cross-env CI=1 react-scripts test --env=jsdom",
+    "test:watch": "react-scripts test --env=jsdom",
+    "build": "babel src --out-dir dist/esm --source-maps",
+    "start": "babel src --out-dir dist/esm --watch --source-maps",
+    "prepare": "npm run build",
+    "predeploy": "cd example && npm install && npm run build",
+    "deploy": "gh-pages -d example/build"
+  },
+  "peerDependencies": {
+    "next": "^9.3.5",
+    "react": "^15.0.0 || ^16.0.0",
+    "react-dom": "^15.0.0 || ^16.0.0"
+  },
+  "dependencies": {
+    "immer": "^6.0.2",
+    "query-string": "^6.11.1",
+    "redux": "^4.0.5",
+    "redux-saga": "^1.1.3",
+    "rfc4648": "^1.3.0",
+    "styled-components": "^5.0.1",
+    "text-encoding-shim": "^1.0.5",
+    "onekijs-core": "0.0.1"
+  },
+  "sideEffects": false
+}

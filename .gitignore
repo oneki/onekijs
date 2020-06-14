@@ -1,4 +1,3 @@
-
 # See https://help.github.com/ignore-files/ for more about ignoring files.
 
 # dependencies
@@ -9,9 +8,10 @@ build
 dist
 .rpt2_cache
 
+.next
+
 # misc
 .DS_Store
-.env
 .env.local
 .env.development.local
 .env.test.local
@@ -20,3 +20,5 @@ dist
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+*.pem
