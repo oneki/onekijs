@@ -7,7 +7,7 @@ const IndexPage = () => {
 
   useEffect(() => {
     router.push("/");
-  }, [locale])
+  }, [locale, router])
 
   return null;
 }
