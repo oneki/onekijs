@@ -1,9 +1,12 @@
 {
-  "version": "0.4.2",
+  "version": "0.5.0",
   "npmClient": "yarn",
   "command": {
     "publish": {
-      "ignoreChanges": ["ignored-file", "*.md"],
+      "ignoreChanges": [
+        "ignored-file",
+        "*.md"
+      ],
       "conventionalCommits": true
     },
     "version": {
@@ -13,8 +16,8 @@
     }
   },
   "packages": [
-    "packages/*", "examples/*"
+    "packages/*",
+    "examples/*"
   ],
   "useWorkspaces": true
-  
 }
