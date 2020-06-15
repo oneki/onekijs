@@ -8,18 +8,23 @@ import { InitialValuePage } from './pages/initial_value';
 import { CustomComponentPage } from './pages/custom_component';
 import { BindPage } from './pages/bind';
 import { RulesPage } from './pages/rules';
+import { FieldPage } from './pages/field';
 
 ReactDOM.render(
   <App>
     <>
-      <Link to="/">Basic</Link> | <Link to="/wrapper">Wrapper</Link> |{' '}
+      <Link to="/">Basic</Link> | <Link to="/field">Field</Link> |{' '}
+      <Link to="/wrapper">Wrapper</Link> |{' '}
       <Link to="/initialvalue">Initial Value</Link> |{' '}
       <Link to="/customcomponent">Custom Components</Link> |{' '}
-      <Link to="/bind">Bind</Link> |{' '}<Link to="/rules">Rules</Link>
+      <Link to="/bind">Bind</Link> | <Link to="/rules">Rules</Link>
       <Switch>
-      <Route path="/rules">
+        <Route path="/field">
+          <FieldPage />
+        </Route>
+        <Route path="/rules">
           <RulesPage />
-        </Route>        
+        </Route>
         <Route path="/bind">
           <BindPage />
         </Route>
