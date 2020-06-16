@@ -35,15 +35,6 @@ export const RulesPage = () => {
     setError('assignee', 'required', 'Assignee is mandatory if status is not Waiting for approval', !assignee && status && status !== 'waiting_approval')
   }, ['status', 'assignee'])
 
-  if (result) {
-    return (
-      <>
-        <pre>{result}</pre>
-        <br />
-        <button onClick={() => setResult(null)}>Back</button>
-      </>
-    );
-  }
   return (
     <>
       {/* 
@@ -78,6 +69,12 @@ export const RulesPage = () => {
           <button type="submit">Submit</button>
         </div>
       </Form>
+      {result && (
+        <div>
+          <h2>Result</h2>     
+          <pre>{result}</pre>
+        </div>
+      )}      
     </>
   );
 };

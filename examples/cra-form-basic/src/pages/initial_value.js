@@ -21,15 +21,6 @@ export const InitialValuePage = () => {
   }
   const { Form, getValidation } = useForm(doSubmit, options);
 
-  if (result) {
-    return (
-      <>
-        <pre>{result}</pre>
-        <br />
-        <button onClick={() => setResult(null)}>Back</button>
-      </>
-    );
-  }
   return (
     <>
       {/* 
@@ -80,6 +71,12 @@ export const InitialValuePage = () => {
           <button type="submit">Submit</button>
         </div>
       </Form>
+      {result && (
+        <div>
+          <h2>Result</h2>     
+          <pre>{result}</pre>
+        </div>
+      )}      
     </>
   );
 };

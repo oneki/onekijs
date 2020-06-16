@@ -32,15 +32,6 @@ export const BindPage = () => {
     ['country']
   );
 
-  if (result) {
-    return (
-      <>
-        <pre>{result}</pre>
-        <br />
-        <button onClick={() => setResult(null)}>Back</button>
-      </>
-    );
-  }
   return (
     <>
       {/* 
@@ -78,6 +69,12 @@ export const BindPage = () => {
           <button type="submit">Submit</button>
         </div>
       </Form>
+      {result && (
+        <div>
+          <h2>Result</h2>     
+          <pre>{result}</pre>
+        </div>
+      )}      
     </>
   );
 };

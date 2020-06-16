@@ -46,15 +46,6 @@ export const CustomComponentPage = () => {
   // to get these props (for performance reasons)
   const { Form, field } = useForm(doSubmit);
 
-  if (result) {
-    return (
-      <>
-        <pre>{result}</pre>
-        <br />
-        <button onClick={() => setResult(null)}>Back</button>
-      </>
-    );
-  }
   return (
     <>
       {/* 
@@ -88,6 +79,12 @@ export const CustomComponentPage = () => {
           <button type="submit">Submit</button>
         </div>
       </Form>
+      {result && (
+        <div>
+          <h2>Result</h2>     
+          <pre>{result}</pre>
+        </div>
+      )}      
     </>
   );
 };
