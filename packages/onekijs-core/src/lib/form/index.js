@@ -258,18 +258,41 @@ export const useForm = (onSubmit, options = {}) => {
     // eslint-disable-next-line
   }, []);
 
-  const validation = useCallback(
+  const getValidation = useCallback(
     name => {
       return get(validations, name, defaultValidation);
     },
     [validations]
   );
 
-  const value = useCallback(
+  const getValue = useCallback(
     (name, defaultValue) => {
       return get(values, name, defaultValue);
     },
     [values]
+  );
+
+  const setLevelValidation = useCallback(
+    (fieldName, validatorName, level, message) => {
+      service.setValidation({
+        id: validatorName,
+        name: fieldName,
+        message,
+        level,
+      });
+    },
+    [service]
+  );
+
+  const clearLevelValidation = useCallback(
+    (fieldName, validatorName, level) => {
+      service.clearValidation({
+        id: validatorName,
+        name: fieldName,
+        level,
+      });
+    },
+    [service]
   );
 
   const setOrClearValidation = useCallback(
@@ -343,7 +366,7 @@ export const useForm = (onSubmit, options = {}) => {
   );
 
   const setPendingValidation = useCallback(
-    (fieldName, validatorName, pending) => {
+    (fieldName, validatorName, pending = true) => {
       return setOrClearValidation(
         LOADING,
         fieldName,
@@ -365,7 +388,7 @@ export const useForm = (onSubmit, options = {}) => {
   const formContextRef = useRef();
   const formContext = useMemo(() => {
     return {
-      clearValidation: service.clearValidation,
+      clearValidation: clearLevelValidation,
       init,
       offFieldChange: service.offFieldChange,
       offValidationChange: service.offValidationChange,
@@ -374,7 +397,7 @@ export const useForm = (onSubmit, options = {}) => {
       onValidationChange: service.onValidationChange,
       onValueChange: service.onValueChange,
       setError,
-      setValidation: service.setValidation,
+      setValidation: setLevelValidation,
       setValue,
       setOK,
       setWarning,
@@ -384,7 +407,7 @@ export const useForm = (onSubmit, options = {}) => {
       validations: validationsRef.current,
     };
   }, [
-    service.clearValidation,
+    clearLevelValidation,
     init,
     service.offFieldChange,
     service.offValidationChange,
@@ -393,7 +416,7 @@ export const useForm = (onSubmit, options = {}) => {
     service.onValidationChange,
     service.onValueChange,
     setError,
-    service.setValidation,
+    setLevelValidation,
     setValue,
     setOK,
     setPendingValidation,
@@ -474,18 +497,41 @@ export const useForm = (onSubmit, options = {}) => {
   }, [formContextRef, service, submit]);
 
   const result = useMemo(() => {
-    return Object.assign({}, formContext, {
+    return {
       asyncBind: useAsyncBindRef.current,
       bind: useBindRef.current,
+      clearValidation: clearLevelValidation,
       field,
       Form,
+      getValue,
+      getValidation,
       rule: useRuleRef.current,
-      validation,
+      setError,
+      setValidation: setLevelValidation,
+      setValue,
+      setOK,
+      setWarning,
+      setPendingValidation,
+      submit,
       validations,
-      value,
       values,
-    });
-  }, [formContext, field, Form, validation, validations, value, values]);
+    };
+  }, [
+    clearLevelValidation,
+    field,
+    Form,
+    setError,
+    setLevelValidation,
+    setValue,
+    setOK,
+    setWarning,
+    setPendingValidation,
+    submit,
+    getValidation,
+    validations,
+    getValue,
+    values,
+  ]);
 
   useEffect(() => {
     if (Object.keys(defaultValuesRef.current).length > 0) {

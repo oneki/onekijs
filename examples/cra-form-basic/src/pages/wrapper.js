@@ -11,7 +11,7 @@ export const WrapperPage = () => {
   // useForm should be used anytime a new form is needed.
   // Never pass any props of useForm to nested components. A nested component should always use useFormContext
   // to get these props (for performance reasons)
-  const { Form, validation } = useForm(doSubmit);
+  const { Form, getValidation } = useForm(doSubmit);
 
   if (result) {
     return (
@@ -50,9 +50,9 @@ export const WrapperPage = () => {
               regexMessage="Can only contains alphanumeric characters, dashes or underscores"
             />
             {/* 
-              You can use the validation helper to get the result of the validation
+              You can use the getValidation helper to get the result of the validation
              */}
-            {validation('firstName').status} : {validation('firstName').message}
+            {getValidation('firstName').status} : {getValidation('firstName').message}
           </div>
           <div>
             <b>Gender: </b>

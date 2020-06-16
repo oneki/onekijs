@@ -11,7 +11,7 @@ export const BindPage = () => {
   // useForm should be used anytime a new form is needed.
   // Never pass any props of useForm to nested components. A nested component should always use useFormContext
   // to get these props (for performance reasons)
-  const { Form, validation, bind, asyncBind } = useForm(doSubmit);
+  const { Form, getValidation, bind, asyncBind } = useForm(doSubmit);
 
   // Hide the state field if country is not USA
   const showState = bind(country => country === 'usa', ['country'])
@@ -57,7 +57,7 @@ export const BindPage = () => {
               regex="^[a-zA-Z0-9\-_]*$"
               regexMessage="Can only contains alphanumeric characters, dashes or underscores"
             />         
-            {validation('firstName').status} : {validation('firstName').message}            
+            {getValidation('firstName').status} : {getValidation('firstName').message}            
           </div>
           
           <div>

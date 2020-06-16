@@ -28,7 +28,7 @@ export const RulesPage = () => {
   // useForm should be used anytime a new form is needed.
   // Never pass any props of useForm to nested components. A nested component should always use useFormContext
   // to get these props (for performance reasons)
-  const { Form, validation, rule, setError } = useForm(doSubmit);
+  const { Form, getValidation, rule, setError } = useForm(doSubmit);
 
   // assignee must be set if status is not waiting_approval
   rule((status, assignee) => {
@@ -59,17 +59,17 @@ export const RulesPage = () => {
               <option value="started">Started</option>
               <option value="closed">Closed</option>
             </Select>
-            {validation('status').status} : {validation('status').message}
+            {getValidation('status').status} : {getValidation('status').message}
           </div>
           <div>
             <b>Assignee: </b>
             <Input name="assignee" validators={[email('Invalid email')]} />
-            {validation('assignee').status} : {validation('assignee').message}
+            {getValidation('assignee').status} : {getValidation('assignee').message}
           </div>
           <div>
             <b>Repository password: </b>
             <Input name="repo_password" type="password" required />
-            {validation('password').status} : {validation('password').message}
+            {getValidation('password').status} : {getValidation('password').message}
           </div>
           <div>
             <b>Confirm password: </b>

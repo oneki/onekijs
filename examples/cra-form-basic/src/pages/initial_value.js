@@ -19,7 +19,7 @@ export const InitialValuePage = () => {
       gender: "male"
     }
   }
-  const { Form, validation } = useForm(doSubmit, options);
+  const { Form, getValidation } = useForm(doSubmit, options);
 
   if (result) {
     return (
@@ -58,9 +58,9 @@ export const InitialValuePage = () => {
               regexMessage="Can only contains alphanumeric characters, dashes or underscores"
             />
             {/* 
-              You can use the validation helper to get the result of the validation
+              You can use the getValidation helper to get the result of the validation
              */}            
-            {validation('firstName').status} : {validation('firstName').message}            
+            {getValidation('firstName').status} : {getValidation('firstName').message}            
           </div>
           <div>
             <b>Gender: </b>

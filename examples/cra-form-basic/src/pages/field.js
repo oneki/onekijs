@@ -12,7 +12,7 @@ export const FieldPage = () => {
     setResult(JSON.stringify(data, null, 2));
   }, []);
 
-  const { Form, field, validation } = useForm(doSubmit);
+  const { Form, field, getValidation } = useForm(doSubmit);
 
 
   if (result) {
@@ -50,9 +50,9 @@ export const FieldPage = () => {
               regex("^[a-zA-Z0-9\-_]*$", "Can only contains alphanumeric characters, dashes or underscores")
             ])} /> 
             {/* 
-              You can use the validation helper to get the result of the validation
+              You can use the getValidation helper to get the result of the validation
              */}            
-            {validation('firstName').status} : {validation('firstName').message}
+            {getValidation('firstName').status} : {getValidation('firstName').message}
           </div>
           <div>
             <b>Gender: </b>
