@@ -14,8 +14,8 @@
   "scripts": {
     "test": "cross-env CI=1 react-scripts test --env=jsdom",
     "test:watch": "react-scripts test --env=jsdom",
-    "build": "babel src --out-dir dist/esm --source-maps",
-    "start": "babel src --out-dir dist/esm --watch --source-maps",
+    "build": "babel --root-mode upward src -d dist/esm --source-maps",
+    "start": "babel --root-mode upward src -d dist/esm --watch --source-maps",
     "prepare": "npm run build",
     "predeploy": "cd example && npm install && npm run build",
     "deploy": "gh-pages -d example/build"
@@ -36,5 +36,6 @@
     "styled-components": "^5.0.1",
     "text-encoding-shim": "^1.0.5"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "gitHead": "17140980acf00663c000eb4381e35370592b95cd"
 }

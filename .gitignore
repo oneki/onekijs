@@ -8,8 +8,6 @@ build
 dist
 .rpt2_cache
 
-.next
-
 # misc
 .DS_Store
 .env.local

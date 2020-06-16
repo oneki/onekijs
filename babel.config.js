@@ -1,17 +1,16 @@
-// eslint-disable-next-line
 module.exports = {
   presets: [
     [
-      "@babel/preset-env",
+      '@babel/preset-env',
       {
         modules: false,
       },
     ],
-    "@babel/preset-react",
+    '@babel/preset-react',
   ],
   plugins: [
-    "@babel/plugin-proposal-class-properties",
-    "@babel/plugin-transform-runtime",
+    '@babel/plugin-proposal-class-properties',
+    '@babel/plugin-transform-runtime',
   ],
 };
 // module.exports = {
