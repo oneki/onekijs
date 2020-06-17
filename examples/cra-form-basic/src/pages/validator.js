@@ -1,7 +1,11 @@
-import { required, useForm } from 'onekijs-cra';
+import { required, useForm, Input, isNull, useValidation } from 'onekijs-cra';
 import React, { useCallback, useState } from 'react';
 
+/**
+ * This example explains how to use a core validator and a custom reusable and a inline validator
+ */
 
+// custom validator
 const maxlength = (maxlength, message) => {
   return value => {
     let valid;
@@ -24,9 +28,22 @@ const maxlength = (maxlength, message) => {
   }
 }
 
-/**
- * This example explains how to use a core validator and a custom reusable and a inline validator
- */
+// custom component using this validator
+const Firstname = props => {
+  const { maxlength: maxlengthValue, maxlengthMessage, validators=[], ...fieldProps } = props
+  if (!isNull(maxlengthValue)) {
+    validators.push(maxlength(maxlengthValue, maxlengthMessage))
+  }
+  const validation = useValidation(props.name);
+  return (
+    <>
+      <Input validators={validators} {...fieldProps} /> 
+      {validation.status} : {validation.message}
+    </>
+  )
+}
+
+
 export const ValidatorPage = () => {
   const [result, setResult] = useState();
 
@@ -54,7 +71,9 @@ export const ValidatorPage = () => {
             ])} />
             {getValidation('lastname').status} : {getValidation('lastname').message}
           </div>
-          
+          <div>
+            <b>Firstname: </b> <Firstname name="firstName" required maxlength={5} /> 
+          </div>        
           <button type="submit">Submit</button>
         </div>
       </Form>
