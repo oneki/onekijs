@@ -9,16 +9,26 @@ import { CustomComponentPage } from './pages/custom_component';
 import { BindPage } from './pages/bind';
 import { RulesPage } from './pages/rules';
 import { FieldPage } from './pages/field';
+import { ValidatorPage } from './pages/validator';
+import { ComplexValidatorPage } from './pages/complex_validator';
 
 ReactDOM.render(
   <App>
     <>
       <Link to="/">Basic</Link> | <Link to="/field">Field</Link> |{' '}
       <Link to="/wrapper">Wrapper</Link> |{' '}
-      <Link to="/initialvalue">Initial Value</Link> |{' '}
+      <Link to="/validator">Simple Validation</Link> |{' '}
+      <Link to="/complex_validator">Complex Validation</Link> |{' '}
       <Link to="/customcomponent">Custom Components</Link> |{' '}
+      <Link to="/initialvalue">Initial Value</Link> |{' '}
       <Link to="/bind">Bind</Link> | <Link to="/rules">Rules</Link>
       <Switch>
+      <Route path="/complex_validator">
+          <ComplexValidatorPage />
+        </Route>          
+      <Route path="/validator">
+          <ValidatorPage />
+        </Route>        
         <Route path="/field">
           <FieldPage />
         </Route>

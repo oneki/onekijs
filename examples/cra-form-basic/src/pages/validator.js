@@ -14,35 +14,44 @@ const maxlength = (maxlength, message) => {
     } else if (Array.isArray(value) || typeof value === 'string') {
       valid = value.length <= maxlength;
     } else {
-      throw Error(`Invalid type ${typeof value} for maxlength validator`)
+      throw Error(`Invalid type ${typeof value} for maxlength validator`);
     }
 
     if (!message) {
-      message = `Cannot exceed ${maxlength} ${typeof value == 'string' ? 'characters' : 'items'}`;
+      message = `Cannot exceed ${maxlength} ${
+        typeof value == 'string' ? 'characters' : 'items'
+      }`;
     }
 
     return {
       valid,
       message,
     };
-  }
-}
+  };
+};
 
 // custom component using this validator
 const Firstname = props => {
-  const { maxlength: maxlengthValue, maxlengthMessage, validators=[], ...fieldProps } = props
+  const {
+    maxlength: maxlengthValue,
+    maxlengthMessage,
+    validators = [],
+    ...fieldProps
+  } = props;
+
   if (!isNull(maxlengthValue)) {
-    validators.push(maxlength(maxlengthValue, maxlengthMessage))
+    validators.push(maxlength(maxlengthValue, maxlengthMessage));
   }
+
   const validation = useValidation(props.name);
+  
   return (
     <>
-      <Input validators={validators} {...fieldProps} /> 
+      <Input validators={validators} {...fieldProps} />
       {validation.status} : {validation.message}
     </>
-  )
-}
-
+  );
+};
 
 export const ValidatorPage = () => {
   const [result, setResult] = useState();
@@ -59,28 +68,32 @@ export const ValidatorPage = () => {
         <div>
           <div>
             <b>Lastname: </b>
-            <input {...field('lastname', [
-              required(), 
-              maxlength(5),
-              value => {
-                return {
-                  valid: value !== 'foo',
-                  message: 'Cannot be equals to foo'
-                }
-              }
-            ])} />
-            {getValidation('lastname').status} : {getValidation('lastname').message}
+            <input
+              {...field('lastname', [
+                required(),
+                maxlength(5),
+                value => {
+                  return {
+                    valid: value !== 'foo',
+                    message: 'Cannot be equals to foo',
+                  };
+                },
+              ])}
+            />
+            {getValidation('lastname').status} :{' '}
+            {getValidation('lastname').message}
           </div>
           <div>
-            <b>Firstname: </b> <Firstname name="firstName" required maxlength={5} /> 
-          </div>        
+            <b>Firstname: </b>{' '}
+            <Firstname name="firstName" required maxlength={5} />
+          </div>
           <button type="submit">Submit</button>
         </div>
       </Form>
-      
+
       {result && (
         <div>
-          <h2>Result</h2>     
+          <h2>Result</h2>
           <pre>{result}</pre>
         </div>
       )}
