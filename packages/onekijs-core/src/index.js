@@ -113,6 +113,7 @@ export { useBind, useAsyncBind } from './lib/form/bind';
 export { useRule } from './lib/form/rule';
 export { Input } from './lib/form/components/input';
 export { Select } from './lib/form/components/select';
+export { Textarea } from './lib/form/components/textarea';
 export { required } from './lib/form/validations/required';
 export { regex } from './lib/form/validations/regex';
 export { email } from './lib/form/validations/email';
