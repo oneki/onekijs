@@ -14,60 +14,43 @@ export const InitialValuePage = () => {
   // You can pass initialValue to the Form. Useful for a form of type "edit"
   const options = {
     initialValues: {
-      firstName: "Olivier",
-      name: "Franki",
-      gender: "male"
+      firstName: "Olivier"
     }
   }
-  const { Form, getValidation } = useForm(doSubmit, options);
+  const { Form, setValue, rule } = useForm(doSubmit, options);
+
+  rule(name => {
+    if (name === '') {
+      setValue(name, 'Franki');
+    }
+  })
 
   return (
     <>
-      {/* 
-        The Form component acts a FormContex.Provider and handle the submit action
-        */}
       <Form>
         <div>
+          {/* 
+            No default value or initial value are set for the field "name".
+            The first value will be an empty string but will be replaced by "Franki" due to the presence of the above rule 
+          */}
+          <div><b>Name: </b><Input name="name" /></div>
+          
+          {/* 
+            There is a default value but since a initial value has been specified for the field firstName,
+            the initial content of this field will be Olivier and not "none"
+          */}
+          <div><b>Firstname: </b><Input name="firstName" defaultValue="none" /></div>
+
+          {/* 
+            Since there is not initialValue, the defaultValue is applied and the initial value will be "male"
+          */}
           <div>
-            <b>Name: </b>
-            {/* 
-              the Input component wraps the core <input> react component and accepts the same props
-              It will automatically register the field
-              
-             */}
-            <Input name="name" />
-          </div>
-          <div>
-            <b>Firstname: </b>
-            {/* 
-              The Input component accepts additional props for specifying validators
-             */}
-            <Input
-              name="firstName"
-              required
-              regex="^[a-zA-Z0-9\-_]*$"
-              regexMessage="Can only contains alphanumeric characters, dashes or underscores"
-            />
-            {/* 
-              You can use the getValidation helper to get the result of the validation
-             */}            
-            {getValidation('firstName').status} : {getValidation('firstName').message}            
-          </div>
-          <div>
-            <b>Gender: </b>
-            {/* 
-              The different core react form components have their corresponding wrapper
-             */}
-            
             <Select name="gender" defaultValue="male">
               <option value="female">Female</option>
               <option value="male">Male</option>
             </Select>   
           </div>
 
-          {/* 
-              The submit button will trigger the method passed as argument to useForm 
-             */}
           <button type="submit">Submit</button>
         </div>
       </Form>
