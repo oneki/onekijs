@@ -35,7 +35,7 @@ export const BindPage = () => {
   return (
     <>
       {/* 
-        The Form component acts a FormContex.Provider and handle the submit action
+        The Form component acts as a FormContext.Provider and handles the submit action
         */}
       <Form>
         <div>

@@ -20,7 +20,7 @@ export const ComplexValidatorPage = () => {
   useEffect(() => {
     setError(
       'confirmPassword',
-      'password_match',
+      'password-validator',
       "Passwords don't match",
       password !== confirmPassword
     );

@@ -23,12 +23,11 @@ export const WrapperPage = () => {
           <div>
             <b>Name: </b>
             {/* 
-              the Input component wraps the core <input> react component and accepts the same props
+              the Input component wraps the core <input> react component
               It will automatically register the field
-              
              */}
             <Input name="name" />
-          </div>
+          </div>       
           <div>
             <b>Firstname: </b>
             {/* 
@@ -45,6 +44,13 @@ export const WrapperPage = () => {
              */}
             {getValidation('firstName').status} : {getValidation('firstName').message}
           </div>
+          <div>
+            <b>Name: </b>
+            {/* 
+              the Input component accepts the same props as the <input> core component
+             */}
+            <Input type="password" name="password" />
+          </div>             
           <div>
             <b>Gender: </b>
             {/* 

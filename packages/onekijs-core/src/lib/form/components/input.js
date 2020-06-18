@@ -9,6 +9,7 @@ export const Input = React.memo(props => {
   const field = useField(name, validators, {
     defaultValue: defaultValue === undefined ? '' : defaultValue,
   });
+
   return (
     <>
       <input {...inputProps} {...field} />

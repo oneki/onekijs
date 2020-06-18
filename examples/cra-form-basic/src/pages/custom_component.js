@@ -1,6 +1,8 @@
 import { Input, useForm, useValidation, useField } from 'onekijs-cra';
 import React, { useCallback, useState } from 'react';
 
+
+
 const Firstname = React.memo(props => {
   // useValidation return the validation object related to the field
   const validation = useValidation(props.name);
@@ -20,12 +22,11 @@ const Firstname = React.memo(props => {
 
 const Lastname = React.memo(props => {
   // useField register the field in the form object. It returns an object containing
-  //   - validation: the validation object related to the field
   //   - name: the name of the field
   //   - value: the value of th field
   //   - onChange: the onChange method to call when the value is changed
   //   - onBlur: the onBlur method to call when the field is blurred
-  const { validation, ...field } = useField(props.name);
+  const { field } = useField(props.name);
   return (
     <div>
       <b>Lastname: </b>
@@ -49,7 +50,7 @@ export const CustomComponentPage = () => {
   return (
     <>
       {/* 
-        The Form component acts a FormContex.Provider and handle the submit action
+        The Form component acts as a FormContext.Provider and handle the submit action
       */}
       <Form>
         <div>

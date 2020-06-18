@@ -10,20 +10,13 @@ export const InitialValuePage = () => {
     setResult(JSON.stringify(data, null, 2));
   }, []);
 
-  // useForm should be used anytime a new form is needed.
-  // You can pass initialValue to the Form. Useful for a form of type "edit"
-  const options = {
+
+  const { Form } = useForm(doSubmit, {
     initialValues: {
       firstName: "Olivier"
     }
-  }
-  const { Form, setValue, rule } = useForm(doSubmit, options);
+  });
 
-  rule(name => {
-    if (name === '') {
-      setValue(name, 'Franki');
-    }
-  })
 
   return (
     <>
@@ -31,7 +24,7 @@ export const InitialValuePage = () => {
         <div>
           {/* 
             No default value or initial value are set for the field "name".
-            The first value will be an empty string but will be replaced by "Franki" due to the presence of the above rule 
+            The initial value will be an empty string
           */}
           <div><b>Name: </b><Input name="name" /></div>
           
