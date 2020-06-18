@@ -1,6 +1,6 @@
 {
   "name": "onekijs-next",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Opiniated React framework built on top of Next.js",
   "author": "oneki",
   "license": "MIT",
@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "immer": "^6.0.2",
-    "onekijs-core": "^0.5.0",
+    "onekijs-core": "^0.5.1",
     "query-string": "^6.11.1",
     "redux": "^4.0.5",
     "redux-saga": "^1.1.3",
