@@ -1,0 +1,7 @@
+66 error TypeError: Invalid Version: independant
+66 error     at new SemVer (/home/onurb/workspace/oneki/onekijs/node_modules/@lerna/version/node_modules/semver/semver.js:332:11)
+66 error     at compare (/home/onurb/workspace/oneki/onekijs/node_modules/@lerna/version/node_modules/semver/semver.js:647:39)
+66 error     at Function.lt (/home/onurb/workspace/oneki/onekijs/node_modules/@lerna/version/node_modules/semver/semver.js:688:10)
+66 error     at VersionCommand.setGlobalVersionFloor (/home/onurb/workspace/oneki/onekijs/node_modules/@lerna/version/index.js:413:18)
+66 error     at /home/onurb/workspace/oneki/onekijs/node_modules/@lerna/version/index.js:384:37
+66 error     at processTicksAndRejections (internal/process/task_queues.js:97:5)
