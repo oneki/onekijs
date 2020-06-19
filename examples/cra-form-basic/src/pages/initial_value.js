@@ -38,6 +38,7 @@ export const InitialValuePage = () => {
             Since there is not initialValue, the defaultValue is applied and the initial value will be "male"
           */}
           <div>
+            <b>Gender: </b>
             <Select name="gender" defaultValue="male">
               <option value="female">Female</option>
               <option value="male">Male</option>
