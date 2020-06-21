@@ -26,7 +26,8 @@ export const WrapperPage = () => {
               the Input component wraps the core <input> react component
               It will automatically register the field
              */}
-            <Input name="name" />
+            <Input name="name" required />
+            {getValidation('name').status} : {getValidation('name').message}
           </div>       
           <div>
             <b>Firstname: </b>
@@ -45,11 +46,11 @@ export const WrapperPage = () => {
             {getValidation('firstName').status} : {getValidation('firstName').message}
           </div>
           <div>
-            <b>Name: </b>
+            <b>Password: </b>
             {/* 
               the Input component accepts the same props as the <input> core component
              */}
-            <Input type="password" name="password" />
+            <Input type="text" name="password" />
           </div>             
           <div>
             <b>Gender: </b>
@@ -64,7 +65,7 @@ export const WrapperPage = () => {
           </div>
 
           {/* 
-              The submit button will trigger the method passed as argument to useForm 
+              The submit wrapper listen on the form status and is disabled when status is not OK
              */}
           <button type="submit">Submit</button>
         </div>

@@ -10,11 +10,7 @@ export const Input = React.memo(props => {
     defaultValue: defaultValue === undefined ? '' : defaultValue,
   });
 
-  return (
-    <>
-      <input {...inputProps} {...field} />
-    </>
-  );
+  return <input {...inputProps} {...field} />;
 });
 
 Input.propTypes = {

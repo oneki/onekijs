@@ -1,7 +1,8 @@
-import { set, del, get } from '../../utils/object';
+import { set, del, get, isNullOrEmpty } from '../../utils/object';
 import { call, fork } from 'redux-saga/effects';
 import { useFormContext } from '../context';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import produce from 'immer';
 
 export const LOADING = 0;
 export const ERROR = 1;
@@ -12,6 +13,13 @@ export const defaultValidation = {
   message: null,
   status: null,
 };
+
+export const statusValidation = [
+  { status: LOADING, message: null },
+  { status: ERROR, message: null },
+  { status: WARNING, message: null },
+  { status: OK, message: null },
+];
 
 export const serializeValidationLevel = level => {
   switch (parseInt(level)) {
@@ -28,21 +36,51 @@ export const serializeValidationLevel = level => {
   }
 };
 
+export const getContainerFieldValidation = (validations, name = '') => {
+  // compile the validations to get the status
+  const messages = [];
+  let result = {
+    status: null,
+    fields: {},
+    message: null,
+  };
+
+  for (let fieldName of Object.keys(validations).filter(k =>
+    k.startsWith(name)
+  )) {
+    const validation = validations[fieldName];
+    if (result.status === null || validation.statusCode <= result.status) {
+      if (result.status === null || validation.statusCode < result.status) {
+        result.status = validation.status;
+        result.statusCode = validation.statusCode;
+        result.fields = {};
+      }
+      result.fields[fieldName] = validation.message;
+      if (validation.message) {
+        messages.push(`<${fieldName}>: ${validation.message}`);
+      }
+    }
+  }
+  if (messages.length > 0) {
+    result.message = messages.join('\n');
+  }
+  return result;
+};
+
 export const compileValidations = (state, field) => {
-  if (field && field.touched) {
+  if (field) {
     for (let level in field.validations) {
       for (let id in field.validations[level]) {
-        set(state, `validations.${field.name}`, {
+        const validation = {
           status: serializeValidationLevel(level),
+          statusCode: parseInt(level),
           message: field.validations[level][id],
-        });
+        };
+        state.validations[field.name] = validation;
         return;
       }
     }
-    set(state, `validations.${field.name}`, {
-      status: 'ok',
-      message: null,
-    });
+    state.validations[field.name] = defaultValidation;
   }
 };
 
@@ -115,24 +153,72 @@ export const validateAll = function* (fields) {
   return async;
 };
 
-export const useValidation = name => {
+export const useValidation = (name = '', touchedOnly = true) => {
   const {
     onValidationChange,
     offValidationChange,
-    validations,
+    validationsRef,
+    fields,
   } = useFormContext();
 
-  const [validation, setValidation] = useState(
-    get(validations, name, defaultValidation)
+  const getFieldValidation = useCallback(
+    name => {
+      if (fields[name]) {
+        if (touchedOnly) {
+          return fields[name].touched
+            ? validationsRef.current[name] || defaultValidation
+            : defaultValidation;
+        } else {
+          return validationsRef.current[name] || defaultValidation;
+        }
+      } else {
+        return getContainerFieldValidation(validationsRef.current, name);
+      }
+    },
+    [fields, validationsRef, touchedOnly]
   );
 
+  const [validation, setValidation] = useState(() => {
+    if (isNullOrEmpty(name)) {
+      return getContainerFieldValidation(validationsRef.current);
+    } else if (Array.isArray(name)) {
+      return produce({}, result => {
+        name.forEach(n => (result[n] = getFieldValidation(n)));
+      });
+    } else {
+      return getFieldValidation(name);
+    }
+  });
+
   useEffect(() => {
-    const listener = function (validation) {
-      setValidation(validation);
-    };
-    onValidationChange(listener, [name]);
+    const watchers = Array.isArray(name) ? name : [name];
+    const listeners = watchers.map((w, i) => {
+      const listener = nextValidation => {
+        if (isNullOrEmpty(name)) {
+          setValidation(getContainerFieldValidation(validationsRef.current));
+        } else if (Array.isArray(name)) {
+          if (!touchedOnly || fields[w].touched) {
+            setValidation(
+              produce(validation, draftValidation => {
+                draftValidation[w] = nextValidation;
+              })
+            );
+          }
+        } else {
+          if (!touchedOnly || fields[w].touched) {
+            setValidation(nextValidation);
+          }
+        }
+      };
+      onValidationChange(listener, [w]);
+      return {
+        fct: listener,
+        watch: [w],
+      };
+    });
+
     return () => {
-      offValidationChange(listener, [name]);
+      listeners.forEach(l => offValidationChange(l.fct, l.watch));
     };
     // eslint-disable-next-line
   }, []);

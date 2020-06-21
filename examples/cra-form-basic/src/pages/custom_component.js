@@ -1,4 +1,4 @@
-import { Input, useForm, useValidation, useField } from 'onekijs-cra';
+import { Input, useField, useForm, useValidation, useFormStatus, ERROR } from 'onekijs-cra';
 import React, { useCallback, useState } from 'react';
 
 
@@ -27,12 +27,22 @@ const Lastname = React.memo(props => {
   //   - onChange: the onChange method to call when the value is changed
   //   - onBlur: the onBlur method to call when the field is blurred
   const { field } = useField(props.name);
+
   return (
     <div>
       <b>Lastname: </b>
       <input {...props} {...field} />
     </div>
   );
+});
+
+const Submit = React.memo(props => {
+  // usetFormStatus get the live status of the form
+  // doesn't take care of the touch status, so you are sure to have the actual status
+  const formStatus = useFormStatus();
+  const disabled = formStatus.statusCode !== null && formStatus.statusCode <= ERROR
+  console.log(formStatus);
+  return <button {...props } disabled={disabled} />
 });
 
 export const CustomComponentPage = () => {
@@ -45,7 +55,7 @@ export const CustomComponentPage = () => {
   // useForm should be used anytime a new form is needed.
   // Never pass any props of useForm to nested components. A nested component should always use useFormContext
   // to get these props (for performance reasons)
-  const { Form, field } = useForm(doSubmit);
+  const { Form, field } = useForm(doSubmit, {touchOn: 'load'});
 
   return (
     <>
@@ -77,7 +87,7 @@ export const CustomComponentPage = () => {
           {/* 
             The submit button will trigger the method passed as first argument to useForm 
           */}
-          <button type="submit">Submit</button>
+          <Submit>Submit</Submit>
         </div>
       </Form>
       {result && (
