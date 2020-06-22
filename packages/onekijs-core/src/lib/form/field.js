@@ -1,4 +1,4 @@
-import { useValue } from '.';
+import { useValue } from './index';
 import { useFormContext } from './context';
 
 export const useField = (name, validators = [], options = {}) => {
