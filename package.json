@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "bootstrap": "lerna bootstrap --use-workspaces",
-    "build": "rimraf packages/**/dist && LIBRARY_OUTPUT=es6 lerna exec --parallel --scope onekijs-* -- babel --source-maps --root-mode upward src -d dist/esm && LIBRARY_OUTPUT=es5 lerna exec --parallel --scope onekijs-* -- babel --source-maps --root-mode upward src -d dist/es",
+    "build": "LIBRARY_OUTPUT=es6 lerna exec --parallel --scope onekijs-* -- babel --source-maps --root-mode upward src -d dist/esm && LIBRARY_OUTPUT=es5 lerna exec --parallel --scope onekijs-* -- babel --source-maps --root-mode upward src -d dist/es",
     "start": "LIBRARY_OUTPUT=es6 lerna exec --parallel --scope onekijs-* -- babel --watch --source-maps --root-mode upward src -d dist/esm",
     "cm": "git-cz",
     "lerna-version": "lerna version --conventional-commits",
