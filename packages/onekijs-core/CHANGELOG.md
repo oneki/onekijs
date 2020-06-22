@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.2](https://github.com/oneki/onekijs/compare/onekijs-core@0.5.1...onekijs-core@0.5.2) (2020-06-22)
+
+**Note:** Version bump only for package onekijs-core
+
+
+
+
+
 ## 0.5.1 (2020-06-18)
 
 
