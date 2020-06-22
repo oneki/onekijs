@@ -1,8 +1,9 @@
 import { set, del, get, isNullOrEmpty } from '../../utils/object';
 import { call, fork } from 'redux-saga/effects';
 import { useFormContext } from '../context';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useReducer, useRef } from 'react';
 import produce from 'immer';
+import { useLazyRef } from '../../utils/hook';
 
 export const LOADING = 0;
 export const ERROR = 1;
@@ -36,7 +37,12 @@ export const serializeValidationLevel = level => {
   }
 };
 
-export const getContainerFieldValidation = (validations, name = '') => {
+export const getContainerFieldValidation = (
+  validations,
+  fields,
+  name = '',
+  touchedOnly = true
+) => {
   // compile the validations to get the status
   const messages = [];
   let result = {
@@ -48,16 +54,18 @@ export const getContainerFieldValidation = (validations, name = '') => {
   for (let fieldName of Object.keys(validations).filter(k =>
     k.startsWith(name)
   )) {
-    const validation = validations[fieldName];
-    if (result.status === null || validation.statusCode <= result.status) {
-      if (result.status === null || validation.statusCode < result.status) {
-        result.status = validation.status;
-        result.statusCode = validation.statusCode;
-        result.fields = {};
-      }
-      result.fields[fieldName] = validation.message;
-      if (validation.message) {
-        messages.push(`<${fieldName}>: ${validation.message}`);
+    if (!touchedOnly || fields[fieldName].touched) {
+      const validation = validations[fieldName];
+      if (result.status === null || validation.statusCode <= result.status) {
+        if (result.status === null || validation.statusCode < result.status) {
+          result.status = validation.status;
+          result.statusCode = validation.statusCode;
+          result.fields = {};
+        }
+        result.fields[fieldName] = validation.message;
+        if (validation.message) {
+          messages.push(`<${fieldName}>: ${validation.message}`);
+        }
       }
     }
   }
@@ -154,15 +162,17 @@ export const validateAll = function* (fields) {
 };
 
 export const useValidation = (name = '', touchedOnly = true) => {
+  const [, forceRender] = useReducer(s => s + 1, 0);
   const {
     onValidationChange,
     offValidationChange,
     validationsRef,
     fields,
   } = useFormContext();
+  const argsRef = useRef({ name, touchedOnly });
 
   const getFieldValidation = useCallback(
-    name => {
+    (name, touchedOnly) => {
       if (fields[name]) {
         if (touchedOnly) {
           return fields[name].touched
@@ -172,43 +182,60 @@ export const useValidation = (name = '', touchedOnly = true) => {
           return validationsRef.current[name] || defaultValidation;
         }
       } else {
-        return getContainerFieldValidation(validationsRef.current, name);
+        return getContainerFieldValidation(
+          validationsRef.current,
+          fields,
+          name,
+          touchedOnly
+        );
       }
     },
-    [fields, validationsRef, touchedOnly]
+    [fields, validationsRef]
   );
 
-  const [validation, setValidation] = useState(() => {
-    if (isNullOrEmpty(name)) {
-      return getContainerFieldValidation(validationsRef.current);
-    } else if (Array.isArray(name)) {
-      return produce({}, result => {
-        name.forEach(n => (result[n] = getFieldValidation(n)));
-      });
+  const validationRef = useLazyRef(() => {
+    if (isNullOrEmpty(argsRef.current.name)) {
+      return getContainerFieldValidation(
+        validationsRef.current,
+        fields,
+        '',
+        argsRef.current.touchedOnly
+      );
+    } else if (Array.isArray(argsRef.current.name)) {
+      return argsRef.current.name.map(n =>
+        getFieldValidation(n, argsRef.current.touchedOnly)
+      );
     } else {
-      return getFieldValidation(name);
+      return getFieldValidation(
+        argsRef.current.name,
+        argsRef.current.touchedOnly
+      );
     }
   });
 
   useEffect(() => {
-    const watchers = Array.isArray(name) ? name : [name];
+    const watchers = Array.isArray(argsRef.current.name)
+      ? argsRef.current.name
+      : [argsRef.current.name];
     const listeners = watchers.map((w, i) => {
       const listener = nextValidation => {
-        if (isNullOrEmpty(name)) {
-          setValidation(getContainerFieldValidation(validationsRef.current));
-        } else if (Array.isArray(name)) {
-          if (!touchedOnly || fields[w].touched) {
-            setValidation(
-              produce(validation, draftValidation => {
-                draftValidation[w] = nextValidation;
-              })
-            );
+        if (isNullOrEmpty(argsRef.current.name)) {
+          validationRef.current = getContainerFieldValidation(
+            validationsRef.current,
+            fields,
+            '',
+            argsRef.current.touchedOnly
+          );
+        } else if (Array.isArray(argsRef.current.name)) {
+          if (!argsRef.current.touchedOnly || fields[w].touched) {
+            validationRef.current[i] = nextValidation;
           }
         } else {
-          if (!touchedOnly || fields[w].touched) {
-            setValidation(nextValidation);
+          if (!argsRef.current.touchedOnly || fields[w].touched) {
+            validationRef.current = nextValidation;
           }
         }
+        forceRender();
       };
       onValidationChange(listener, [w]);
       return {
@@ -220,8 +247,13 @@ export const useValidation = (name = '', touchedOnly = true) => {
     return () => {
       listeners.forEach(l => offValidationChange(l.fct, l.watch));
     };
-    // eslint-disable-next-line
-  }, []);
+  }, [
+    fields,
+    onValidationChange,
+    offValidationChange,
+    validationRef,
+    validationsRef,
+  ]);
 
-  return validation;
+  return validationRef.current;
 };

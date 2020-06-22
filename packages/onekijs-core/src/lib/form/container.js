@@ -1,17 +1,23 @@
 import produce from 'immer';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useReducer } from 'react';
 import { diffArrays, get, set } from '../utils/object';
 import { useFormContext } from './context';
 import { getContainerFieldValidation } from './validations';
 
 export const useFieldContainer = () => {
   const fieldsRef = useRef([]);
-  const validationsRef = useRef({});
+  const fieldValidationsRef = useRef({});
+  const validationRef = useRef({
+    message: null,
+    statusCode: null,
+    status: null,
+    fields: {},
+  });
+  const valueRef = useRef({});
   const valueListenersRef = useRef({});
   const validationListenersRef = useRef({});
   const context = useFormContext();
-  const [value, setValue] = useState({});
-  const [validation, setValidation] = useState({});
+  const [, forceRender] = useReducer(s => s + 1, 0);
 
   const containerContext = useMemo(() => {
     const result = Object.assign({}, context);
@@ -19,6 +25,9 @@ export const useFieldContainer = () => {
       fieldsRef.current.push(name);
       const field = context.init(name, validators, options);
       field.value = get(context.values, name, '');
+      valueRef.current = produce(valueRef.current, draft => {
+        set(draft, name, field.value);
+      });
       return field;
     };
     return result;
@@ -44,10 +53,14 @@ export const useFieldContainer = () => {
 
     diff.added.forEach(fieldName => {
       const valueListener = fieldValue => {
-        const nextValue = produce(value, draft => {
-          set(draft, fieldName, fieldValue);
+        const prev = valueRef.current;
+        const next = produce(valueRef.current, draft => {
+          draft[fieldName] = fieldValue;
         });
-        setValue(nextValue);
+        if (prev !== next) {
+          valueRef.current = next;
+          forceRender();
+        }
       };
       const watch = [fieldName];
       context.onValueChange(valueListener, watch);
@@ -57,13 +70,14 @@ export const useFieldContainer = () => {
       };
 
       const validationListener = fieldValidation => {
-        const prev = validationsRef.current;
-        const next = produce(validationsRef.current, draft => {
+        const prev = fieldValidationsRef.current;
+        const next = produce(fieldValidationsRef.current, draft => {
           draft[fieldName] = fieldValidation;
         });
         if (prev !== next) {
-          validationsRef.current = next;
-          setValidation(getContainerFieldValidation(next));
+          fieldValidationsRef.current = next;
+          validationRef.current = getContainerFieldValidation(next);
+          forceRender();
         }
       };
       context.onValidationChange(validationListener, watch);
@@ -90,7 +104,7 @@ export const useFieldContainer = () => {
 
   return {
     context: containerContext,
-    value,
-    validation,
+    value: valueRef.current,
+    validation: validationRef.current,
   };
 };

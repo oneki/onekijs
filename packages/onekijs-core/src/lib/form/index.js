@@ -4,6 +4,7 @@ import React, {
   useMemo,
   useRef,
   useState,
+  useReducer,
 } from 'react';
 import { call } from 'redux-saga/effects';
 import { latest } from '../saga';
@@ -28,6 +29,7 @@ import {
   getContainerFieldValidation,
 } from './validations';
 import produce from 'immer';
+import { useLazyRef } from '../utils/hook';
 
 export const formService = {
   init: function () {
@@ -300,7 +302,10 @@ export const useForm = (onSubmit, formOptions = {}) => {
   const submit = useCallback(e => {
     // compile the validations to get the status
     const { statusCode, fields } = getContainerFieldValidation(
-      validationsRef.current
+      validationsRef.current,
+      service.fields,
+      '',
+      false
     );
     service.touchAll();
 
@@ -342,12 +347,22 @@ export const useForm = (onSubmit, formOptions = {}) => {
             return validations[name] || defaultValidation;
           }
         } else {
-          return getContainerFieldValidation(validations, name);
+          return getContainerFieldValidation(
+            validations,
+            service.fields,
+            name,
+            touchedOnly
+          );
         }
       };
 
       if (isNullOrEmpty(name)) {
-        return getContainerFieldValidation(validations);
+        return getContainerFieldValidation(
+          validations,
+          service.fields,
+          '',
+          touchedOnly
+        );
         // if (!touchedOnly) {
         //   return validations;
         // } else {
@@ -566,11 +581,15 @@ export const useForm = (onSubmit, formOptions = {}) => {
                       if (!service.fields[w]) {
                         prev = getContainerFieldValidation(
                           prevValidationsRef.current,
-                          w
+                          service.fields,
+                          w,
+                          false
                         );
                         next = getContainerFieldValidation(
                           validationsRef.current,
-                          w
+                          service.fields,
+                          w,
+                          false
                         );
                         if (
                           prev.status !== next.status ||
@@ -661,32 +680,33 @@ export const useForm = (onSubmit, formOptions = {}) => {
 };
 
 export const useValue = name => {
+  const [, forceRender] = useReducer(s => s + 1, 0);
   const { onValueChange, offValueChange, valuesRef } = useFormContext();
-
-  const [value, setValue] = useState(() => {
-    if (isNullOrEmpty(name)) {
-      return produce(valuesRef.current, draftValue => draftValue);
+  const nameRef = useRef(name);
+  const valueRef = useLazyRef(() => {
+    if (isNullOrEmpty(nameRef.current)) {
+      return valuesRef.current;
     }
-    if (Array.isArray(name)) {
-      return produce({}, result => {
-        name.forEach(n => set(result, n, get(valuesRef.current, n)));
-      });
+    if (Array.isArray(nameRef.current)) {
+      return name.map(n => get(valuesRef.current, n));
     }
-    return valuesRef.current[name];
+    return valuesRef.current[nameRef.current];
   });
 
   useEffect(() => {
-    const watchers = Array.isArray(name) ? name : [name || ''];
+    const watchers = Array.isArray(nameRef.current)
+      ? nameRef.current
+      : [nameRef.current || ''];
     const listeners = watchers.map((w, i) => {
       const listener = value => {
-        if (isNullOrEmpty(name) || Array.isArray(name)) {
-          const nextValue = produce(value, draftValue => {
-            set(draftValue, w, value);
+        if (Array.isArray(nameRef.current)) {
+          valueRef.current = produce(valueRef.current, draftValue => {
+            draftValue[i] = value;
           });
-          setValue(nextValue);
         } else {
-          setValue(value);
+          valueRef.current = value;
         }
+        forceRender();
       };
 
       onValueChange(listener, [w]);
@@ -699,10 +719,9 @@ export const useValue = name => {
     return () => {
       listeners.forEach(l => offValueChange(l.fct, l.watch));
     };
-    // eslint-disable-next-line
-  }, []);
+  }, [onValueChange, offValueChange, valueRef]);
 
-  return value;
+  return valueRef.current;
 };
 
 export const useFormStatus = () => {

@@ -10,7 +10,7 @@ export const MyContainer = (props) => {
   return (
     <FormContext.Provider value={context}>
       <div {...props}/>
-      <div>Status of the container: {validation.status}</div>
+      <div>Validation of the container: <pre>{JSON.stringify(validation)}</pre></div>
       <div>Value of the container: <pre>{JSON.stringify(value)}</pre></div>
     </FormContext.Provider>
   )
