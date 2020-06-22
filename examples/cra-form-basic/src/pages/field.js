@@ -17,7 +17,7 @@ export const FieldPage = () => {
   return (
     <>
       {/* 
-        The Form component acts a FormContex.Provider and handle the submit action
+        The Form component acts as a FormContext.Provider and handle the submit action
         */}
       <Form>
         <div>
@@ -25,15 +25,13 @@ export const FieldPage = () => {
             <b>Name: </b>
             {/* 
               you can register a field by using the field method helper coming from useForm
-              This solution is quite inefficient as the field will be rerendered for any 
-              modification of the form
              */}
             <input {...field('name')} />
           </div>
           <div>
             <b>Firstname: </b>
             {/* 
-              You can spcecify some validators when registering the field
+              You can specify some validators when registering the field
              */}
             <input {...field('firstName', [
               required(), 

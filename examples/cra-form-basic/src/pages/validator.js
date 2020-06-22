@@ -31,7 +31,7 @@ const maxlength = (maxlength, message) => {
 };
 
 // custom component using this validator
-const Firstname = props => {
+const MaxlengthInput = props => {
   const {
     maxlength: maxlengthValue,
     maxlengthMessage,
@@ -70,9 +70,9 @@ export const ValidatorPage = () => {
             <b>Lastname: </b>
             <input
               {...field('lastname', [
-                required(),
-                maxlength(5),
-                value => {
+                required(),    // core validator
+                maxlength(5),  // custom reusable validator
+                value => {     // inline validator
                   return {
                     valid: value !== 'foo',
                     message: 'Cannot be equals to foo',
@@ -85,7 +85,7 @@ export const ValidatorPage = () => {
           </div>
           <div>
             <b>Firstname: </b>{' '}
-            <Firstname name="firstName" required maxlength={5} />
+            <MaxlengthInput name="firstName" required maxlength={5} />
           </div>
           <button type="submit">Submit</button>
         </div>

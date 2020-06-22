@@ -16,7 +16,7 @@ export const BindPage = () => {
   // Hide the state field if country is not USA
   const showState = bind(country => country === 'usa', ['country'])
 
-  // Simulate retrieve the state from the server
+  // Simulate retrieving the state from the server
   // During the loading, the asyncBind will return [undefined, true]
   // Once the async function will be resolved, the asyncBind will force a rerender and returns [stateList, false]
   const [states, statesLoading] = asyncBind(
@@ -35,7 +35,7 @@ export const BindPage = () => {
   return (
     <>
       {/* 
-        The Form component acts a FormContex.Provider and handle the submit action
+        The Form component acts as a FormContext.Provider and handles the submit action
         */}
       <Form>
         <div>
