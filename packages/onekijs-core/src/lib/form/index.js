@@ -4,7 +4,6 @@ import React, {
   useMemo,
   useRef,
   useState,
-  useReducer,
 } from 'react';
 import { call } from 'redux-saga/effects';
 import { latest } from '../saga';
@@ -19,17 +18,15 @@ import {
   compileValidations,
   defaultValidation,
   ERROR,
+  getContainerFieldValidation,
   hasValidation,
   LOADING,
   OK,
   setValidation,
+  useValidation,
   validateAll,
   WARNING,
-  useValidation,
-  getContainerFieldValidation,
 } from './validations';
-import produce from 'immer';
-import { useLazyRef } from '../utils/hook';
 
 export const formService = {
   init: function () {
@@ -40,30 +37,33 @@ export const formService = {
     };
     this.pendingDispatch = [];
 
-    const onChange = (type, listener, watchers) => {
-      for (let watcher of watchers) {
-        this.listeners[type][watcher] = this.listeners[type][watcher] || [];
-        this.listeners[type][watcher].push({ listener, watchers });
+    const onChange = (type, listener, watchs) => {
+      watchs = Array.isArray(watchs) ? watchs : [watchs];
+
+      for (let watch of watchs) {
+        this.listeners[type][watch] = this.listeners[type][watch] || [];
+        this.listeners[type][watch].push({ listener, watchs });
       }
     };
 
-    const offChange = (type, listener, watchers) => {
-      for (let watcher of watchers) {
-        this.listeners[type][watcher] = this.listeners[type][watcher] || [];
-        this.listeners[type][watcher] = this.listeners[type][watcher].filter(
+    const offChange = (type, listener, watchs) => {
+      watchs = Array.isArray(watchs) ? watchs : [watchs];
+      for (let watch of watchs) {
+        this.listeners[type][watch] = this.listeners[type][watch] || [];
+        this.listeners[type][watch] = this.listeners[type][watch].filter(
           x => x.listener !== listener
         );
       }
     };
 
-    this.onValueChange = (listener, watchers) =>
-      onChange('valueChange', listener, watchers);
-    this.offValueChange = (listener, watchers) =>
-      offChange('valueChange', listener, watchers);
-    this.onValidationChange = (listener, watchers) =>
-      onChange('validationChange', listener, watchers);
-    this.offValidationChange = (listener, watchers) =>
-      offChange('validationChange', listener, watchers);
+    this.onValueChange = (listener, watchs) =>
+      onChange('valueChange', listener, watchs);
+    this.offValueChange = (listener, watchs) =>
+      offChange('valueChange', listener, watchs);
+    this.onValidationChange = (listener, watchs) =>
+      onChange('validationChange', listener, watchs);
+    this.offValidationChange = (listener, watchs) =>
+      offChange('validationChange', listener, watchs);
   },
   reducers: {
     _setValues: function (state, values = {}) {
@@ -178,8 +178,8 @@ export const useForm = (onSubmit, formOptions = {}) => {
     return initialState;
   });
   const { values, validations } = state;
-  const createRef = useRef(true);
   const defaultValuesRef = useRef({});
+  const formOptionsRef = useRef(formOptions);
 
   // we put values in a ref object. For some features, we don't need to force a rerender if a value is changed
   // but we need the last value during the render
@@ -212,7 +212,7 @@ export const useForm = (onSubmit, formOptions = {}) => {
             ? ''
             : fieldOptions.defaultValue;
         fieldOptions.touchOn =
-          fieldOptions.touchOn || formOptions.touchOn || 'blur';
+          fieldOptions.touchOn || formOptionsRef.current.touchOn || 'blur';
 
         service.fields[name] = Object.assign(fieldOptions, {
           name,
@@ -245,13 +245,7 @@ export const useForm = (onSubmit, formOptions = {}) => {
           },
         });
         if (get(valuesRef.current, name) === undefined) {
-          if (createRef.current) {
-            // queue all default values to trigger a unique change
-            defaultValuesRef.current[name] = fieldOptions.defaultValue;
-          } else {
-            // execute immediately the change
-            service.setValue({ name, value: fieldOptions.defaultValue });
-          }
+          defaultValuesRef.current[name] = fieldOptions.defaultValue;
         }
       }
       const field = service.fields[name];
@@ -307,6 +301,7 @@ export const useForm = (onSubmit, formOptions = {}) => {
       '',
       false
     );
+
     service.touchAll();
 
     switch (statusCode) {
@@ -315,14 +310,14 @@ export const useForm = (onSubmit, formOptions = {}) => {
         break;
       case ERROR:
         service.submitting = false;
-        if (isFunction(formOptions.onError)) {
-          formOptions.onError(fields, valuesRef.current);
+        if (isFunction(formOptionsRef.current.onError)) {
+          formOptionsRef.current.onError(fields, valuesRef.current);
         }
         break;
       case WARNING:
         service.submitting = false;
-        if (isFunction(formOptions.onWarning)) {
-          formOptions.onWarning(fields, valuesRef.current);
+        if (isFunction(formOptionsRef.current.onWarning)) {
+          formOptionsRef.current.onWarning(fields, valuesRef.current);
         } else {
           onSubmit(valuesRef.current);
         }
@@ -561,21 +556,22 @@ export const useForm = (onSubmit, formOptions = {}) => {
           for (let type of Object.keys(service.listeners)) {
             for (let key of Object.keys(service.listeners[type])) {
               if (prop.startsWith(key)) {
-                for (let rule of service.listeners[type][key]) {
-                  let watchers = [];
+                for (let listener of service.listeners[type][key]) {
+                  let watchs = [];
                   let changed = false;
                   if (type === 'valueChange') {
-                    rule.watchers.forEach(w => {
+                    listener.watchs.forEach(w => {
                       const prev = get(prevValuesRef.current, w, '');
                       const next = get(valuesRef.current, w, '');
-                      watchers.push(next);
+                      watchs.push(next);
                       if (prev !== next) {
                         changed = true;
                       }
                     });
                   }
+
                   if (type === 'validationChange') {
-                    rule.watchers.forEach(w => {
+                    listener.watchs.forEach(w => {
                       let prev, next;
                       // check if w is a field or a composition
                       if (!service.fields[w]) {
@@ -604,11 +600,11 @@ export const useForm = (onSubmit, formOptions = {}) => {
                           changed = true;
                         }
                       }
-                      watchers.push(next);
+                      watchs.push(next);
                     });
                   }
                   if (changed) {
-                    rule.listener(...watchers);
+                    listener.listener(...watchs);
                   }
                 }
               }
@@ -672,58 +668,37 @@ export const useForm = (onSubmit, formOptions = {}) => {
   useEffect(() => {
     if (Object.keys(defaultValuesRef.current).length > 0) {
       service.setValues(defaultValuesRef.current);
+      defaultValuesRef.current = {};
     }
-    createRef.current = false;
   }, [service]);
 
   return result;
 };
 
 export const useValue = name => {
-  const [, forceRender] = useReducer(s => s + 1, 0);
   const { onValueChange, offValueChange, valuesRef } = useFormContext();
   const nameRef = useRef(name);
-  const valueRef = useLazyRef(() => {
+  const [value, setValue] = useState(() => {
     if (isNullOrEmpty(nameRef.current)) {
       return valuesRef.current;
-    }
-    if (Array.isArray(nameRef.current)) {
-      return name.map(n => get(valuesRef.current, n));
     }
     return valuesRef.current[nameRef.current];
   });
 
   useEffect(() => {
-    const watchers = Array.isArray(nameRef.current)
-      ? nameRef.current
-      : [nameRef.current || ''];
-    const listeners = watchers.map((w, i) => {
-      const listener = value => {
-        if (Array.isArray(nameRef.current)) {
-          valueRef.current = produce(valueRef.current, draftValue => {
-            draftValue[i] = value;
-          });
-        } else {
-          valueRef.current = value;
-        }
-        forceRender();
-      };
-
-      onValueChange(listener, [w]);
-      return {
-        fct: listener,
-        watch: [w],
-      };
-    });
+    const watch = [nameRef.current || ''];
+    const listener = nextValue => setValue(nextValue);
+    onValueChange(listener, watch);
 
     return () => {
-      listeners.forEach(l => offValueChange(l.fct, l.watch));
+      offValueChange(listener, watch);
     };
-  }, [onValueChange, offValueChange, valueRef]);
+  }, [onValueChange, offValueChange]);
 
-  return valueRef.current;
+  return value;
 };
 
 export const useFormStatus = () => {
-  return useValidation('', false);
+  const result = useValidation('', false);
+  return result;
 };

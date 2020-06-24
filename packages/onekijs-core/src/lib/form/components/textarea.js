@@ -12,6 +12,8 @@ export const Textarea = React.memo(props => {
   return <textarea {...textareaProps} {...field} />;
 });
 
+Textarea.displayName = 'Textarea';
+
 Textarea.propTypes = {
   props: PropTypes.object,
 };

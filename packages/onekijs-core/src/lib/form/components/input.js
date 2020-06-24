@@ -13,6 +13,8 @@ export const Input = React.memo(props => {
   return <input {...inputProps} {...field} />;
 });
 
+Input.displayName = 'Input';
+
 Input.propTypes = {
   props: PropTypes.object,
 };

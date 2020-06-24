@@ -40,8 +40,7 @@ const Submit = React.memo(props => {
   // usetFormStatus get the live status of the form
   // doesn't take care of the touch status, so you are sure to have the actual status
   const formStatus = useFormStatus();
-  const disabled = formStatus.statusCode !== null && formStatus.statusCode <= ERROR
-  console.log(formStatus);
+  const disabled = formStatus.statusCode <= ERROR
   return <button {...props } disabled={disabled} />
 });
 

@@ -1,26 +1,19 @@
-import { set, del, get, isNullOrEmpty } from '../../utils/object';
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { call, fork } from 'redux-saga/effects';
-import { useFormContext } from '../context';
-import { useState, useEffect, useCallback, useReducer, useRef } from 'react';
-import produce from 'immer';
 import { useLazyRef } from '../../utils/hook';
+import { del, get, isNullOrEmpty, set } from '../../utils/object';
+import { useFormContext } from '../context';
 
 export const LOADING = 0;
 export const ERROR = 1;
 export const WARNING = 2;
 export const OK = 3;
+export const NONE = 4;
 
 export const defaultValidation = {
   message: null,
   status: null,
 };
-
-export const statusValidation = [
-  { status: LOADING, message: null },
-  { status: ERROR, message: null },
-  { status: WARNING, message: null },
-  { status: OK, message: null },
-];
 
 export const serializeValidationLevel = level => {
   switch (parseInt(level)) {
@@ -47,6 +40,7 @@ export const getContainerFieldValidation = (
   const messages = [];
   let result = {
     status: null,
+    statusCode: NONE,
     fields: {},
     message: null,
   };
@@ -56,8 +50,11 @@ export const getContainerFieldValidation = (
   )) {
     if (!touchedOnly || fields[fieldName].touched) {
       const validation = validations[fieldName];
-      if (result.status === null || validation.statusCode <= result.status) {
-        if (result.status === null || validation.statusCode < result.status) {
+      if (
+        validation.statusCode <= result.statusCode &&
+        validation.statusCode < NONE
+      ) {
+        if (validation.statusCode < result.statusCode) {
           result.status = validation.status;
           result.statusCode = validation.statusCode;
           result.fields = {};
@@ -162,7 +159,6 @@ export const validateAll = function* (fields) {
 };
 
 export const useValidation = (name = '', touchedOnly = true) => {
-  const [, forceRender] = useReducer(s => s + 1, 0);
   const {
     onValidationChange,
     offValidationChange,
@@ -193,17 +189,13 @@ export const useValidation = (name = '', touchedOnly = true) => {
     [fields, validationsRef]
   );
 
-  const validationRef = useLazyRef(() => {
+  const [validation, setValidation] = useState(() => {
     if (isNullOrEmpty(argsRef.current.name)) {
       return getContainerFieldValidation(
         validationsRef.current,
         fields,
         '',
         argsRef.current.touchedOnly
-      );
-    } else if (Array.isArray(argsRef.current.name)) {
-      return argsRef.current.name.map(n =>
-        getFieldValidation(n, argsRef.current.touchedOnly)
       );
     } else {
       return getFieldValidation(
@@ -214,46 +206,28 @@ export const useValidation = (name = '', touchedOnly = true) => {
   });
 
   useEffect(() => {
-    const watchers = Array.isArray(argsRef.current.name)
-      ? argsRef.current.name
-      : [argsRef.current.name];
-    const listeners = watchers.map((w, i) => {
-      const listener = nextValidation => {
-        if (isNullOrEmpty(argsRef.current.name)) {
-          validationRef.current = getContainerFieldValidation(
+    const { name, touchedOnly } = argsRef.current;
+    const listener = nextValidation => {
+      if (isNullOrEmpty(name)) {
+        setValidation(
+          getContainerFieldValidation(
             validationsRef.current,
             fields,
             '',
-            argsRef.current.touchedOnly
-          );
-        } else if (Array.isArray(argsRef.current.name)) {
-          if (!argsRef.current.touchedOnly || fields[w].touched) {
-            validationRef.current[i] = nextValidation;
-          }
-        } else {
-          if (!argsRef.current.touchedOnly || fields[w].touched) {
-            validationRef.current = nextValidation;
-          }
+            touchedOnly
+          )
+        );
+      } else {
+        if (!touchedOnly || fields[name].touched) {
+          setValidation(nextValidation);
         }
-        forceRender();
-      };
-      onValidationChange(listener, [w]);
-      return {
-        fct: listener,
-        watch: [w],
-      };
-    });
-
-    return () => {
-      listeners.forEach(l => offValidationChange(l.fct, l.watch));
+      }
     };
-  }, [
-    fields,
-    onValidationChange,
-    offValidationChange,
-    validationRef,
-    validationsRef,
-  ]);
+    onValidationChange(listener, [name]);
+    return () => {
+      offValidationChange(listener, [name]);
+    };
+  }, [onValidationChange, offValidationChange, fields, validationsRef]);
 
-  return validationRef.current;
+  return validation;
 };

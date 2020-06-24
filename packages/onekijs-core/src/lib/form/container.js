@@ -1,15 +1,15 @@
-import produce from 'immer';
-import { useEffect, useMemo, useRef, useState, useReducer } from 'react';
+import { useEffect, useReducer, useRef } from 'react';
+import { useLazyRef } from '../utils/hook';
 import { diffArrays, get, set } from '../utils/object';
 import { useFormContext } from './context';
-import { getContainerFieldValidation } from './validations';
+import { getContainerFieldValidation, NONE } from './validations';
 
 export const useFieldContainer = () => {
   const fieldsRef = useRef([]);
   const fieldValidationsRef = useRef({});
   const validationRef = useRef({
     message: null,
-    statusCode: null,
+    statusCode: NONE,
     status: null,
     fields: {},
   });
@@ -19,15 +19,15 @@ export const useFieldContainer = () => {
   const context = useFormContext();
   const [, forceRender] = useReducer(s => s + 1, 0);
 
-  const containerContext = useMemo(() => {
+  const containerContextRef = useLazyRef(() => {
     const result = Object.assign({}, context);
     result.init = (name, validators = [], options = {}) => {
-      fieldsRef.current.push(name);
       const field = context.init(name, validators, options);
       field.value = get(context.values, name, '');
-      valueRef.current = produce(valueRef.current, draft => {
-        set(draft, name, field.value);
-      });
+      if (!fieldsRef.current.includes(name)) {
+        fieldsRef.current.push(name);
+        set(valueRef.current, name, field.value);
+      }
       return field;
     };
     return result;
@@ -40,11 +40,11 @@ export const useFieldContainer = () => {
     );
     diff.removed.forEach(fieldName => {
       context.offValueChange(
-        valueListenersRef.current[fieldName].fct,
+        valueListenersRef.current[fieldName].listener,
         valueListenersRef.current[fieldName].watch
       );
       context.offValidationChange(
-        validationListenersRef.current[fieldName].fct,
+        validationListenersRef.current[fieldName].listener,
         validationListenersRef.current[fieldName].watch
       );
       delete valueListenersRef.current[fieldName];
@@ -52,38 +52,34 @@ export const useFieldContainer = () => {
     });
 
     diff.added.forEach(fieldName => {
-      const valueListener = fieldValue => {
-        const prev = valueRef.current;
-        const next = produce(valueRef.current, draft => {
-          draft[fieldName] = fieldValue;
-        });
-        if (prev !== next) {
-          valueRef.current = next;
+      const valueListener = fieldName => {
+        return fieldValue => {
+          set(valueRef.current, fieldName, fieldValue);
           forceRender();
-        }
+        };
       };
-      const watch = [fieldName];
-      context.onValueChange(valueListener, watch);
+      context.onValueChange(valueListener, [fieldName]);
       valueListenersRef.current[fieldName] = {
-        fct: valueListener,
-        watch,
+        listener: valueListener,
+        watch: [fieldName],
       };
 
-      const validationListener = fieldValidation => {
-        const prev = fieldValidationsRef.current;
-        const next = produce(fieldValidationsRef.current, draft => {
-          draft[fieldName] = fieldValidation;
-        });
-        if (prev !== next) {
-          fieldValidationsRef.current = next;
-          validationRef.current = getContainerFieldValidation(next);
+      const validationListener = fieldName => {
+        return fieldValidation => {
+          fieldValidationsRef.current[fieldName] = fieldValidation;
+          validationRef.current = getContainerFieldValidation(
+            fieldValidationsRef.current,
+            context.fields,
+            '',
+            true
+          );
           forceRender();
-        }
+        };
       };
-      context.onValidationChange(validationListener, watch);
+      context.onValidationChange(validationListener, [fieldName]);
       validationListenersRef.current[fieldName] = {
-        fct: validationListener,
-        watch,
+        listener: validationListener,
+        watch: [fieldName],
       };
     });
   });
@@ -91,19 +87,19 @@ export const useFieldContainer = () => {
   useEffect(() => {
     return () => {
       // eslint-disable-next-line
-      Object.values(valueListenersRef.current).forEach(l =>
-        context.offValueChange(l.fct, l.watch)
+      Object.values(valueListenersRef.current).forEach(listener =>
+        context.offValueChange(listener.listener, listener.watch)
       );
 
       // eslint-disable-next-line
-      Object.values(validationListenersRef.current).forEach(l =>
-        context.offValidationChange(l.fct, l.watch)
+      Object.values(validationListenersRef.current).forEach(listener =>
+        context.offValidationChange(listener.listener, listener.watch)
       );
     };
   }, [context]);
 
   return {
-    context: containerContext,
+    context: containerContextRef.current,
     value: valueRef.current,
     validation: validationRef.current,
   };

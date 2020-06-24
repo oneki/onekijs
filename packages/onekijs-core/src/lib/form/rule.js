@@ -3,24 +3,26 @@ import { useMemo } from 'react';
 import { useFormContext } from './context';
 import { useIsomorphicLayoutEffect } from '../utils/hook';
 
-export const useFormRule = function (rule, watchers = []) {
-  const values = watchers.map(w => get(this.state.values, w));
+export const useFormRule = function (rule, watch = []) {
+  const values = watch.map(w => get(this.state.values, w));
 
   useMemo(() => {
-    rule.apply(undefined, values);
+    rule(...values);
     // eslint-disable-next-line
   }, values);
 };
 
-export const useRule = (rule, watchers = []) => {
+export const useRule = (rule, watch = []) => {
   const { onValueChange, offValueChange } = useFormContext();
   useIsomorphicLayoutEffect(() => {
     const listener = function () {
       rule.apply(this, arguments);
     };
-    onValueChange(listener, watchers);
+
+    onValueChange(listener, watch);
+
     return () => {
-      offValueChange(listener, watchers);
+      offValueChange(listener, watch);
     };
     // eslint-disable-next-line
   }, []);
