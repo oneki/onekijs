@@ -72,7 +72,7 @@ export const getContainerFieldValidation = (
   return result;
 };
 
-export const compileValidations = (state, field) => {
+const getValidation = field => {
   if (field) {
     for (let level in field.validations) {
       for (let id in field.validations[level]) {
@@ -81,11 +81,17 @@ export const compileValidations = (state, field) => {
           statusCode: parseInt(level),
           message: field.validations[level][id],
         };
-        state.validations[field.name] = validation;
-        return;
+        return validation;
       }
     }
-    state.validations[field.name] = defaultValidation;
+    return defaultValidation;
+  }
+  return null;
+};
+
+export const compileValidations = (state, field) => {
+  if (field) {
+    state.validations[field.name] = getValidation(field);
   }
 };
 
@@ -131,29 +137,41 @@ export const validate = function* (field, validatorName, validator, value) {
   }
 };
 
-export const validateAll = function* (fields) {
+export const validateAll = function* (values) {
   // do all validations
   const tasks = {};
-  const values = {};
-  for (let field of fields) {
-    const validators = field.validators;
-    tasks[field.name] = [];
-    values[field.name] = field.value;
-    for (let i in validators) {
-      const validatorName = `__validator_${i}`;
-      const validator = validators[i];
-      tasks[field.name].push(
-        yield fork(validate, field, validatorName, validator, field.value)
-      );
+  const validations = {};
+  const keys = Object.keys(values);
+  for (let key of keys) {
+    // we need to find all sub fields (if any) and do the validations for these fields
+    const fieldNames = this.getSubFieldNames(key);
+    for (let fieldName of fieldNames) {
+      const field = this.fields[fieldName];
+      const validators = field.validators;
+      tasks[fieldName] = [];
+      for (let i in validators) {
+        const validatorName = `__validator_${i}`;
+        const validator = validators[i];
+        tasks[fieldName].push(
+          yield fork(
+            validate,
+            field,
+            validatorName,
+            validator,
+            get(values[key], fieldName.substr(key.length + 1))
+          )
+        );
+      }
     }
   }
-  yield call(this._setValues, values);
   const async = [];
-  for (let field of fields) {
-    if (tasks[field.name].find(t => t.isRunning())) {
-      async.push(field.name);
+  Object.keys(tasks).forEach(fieldName => {
+    validations[fieldName] = getValidation(this.fields[fieldName]);
+    if (tasks[fieldName].find(t => t.isRunning())) {
+      async.push(fieldName);
     }
-  }
+  });
+  yield call(this._setValues, { values, validations });
 
   return async;
 };

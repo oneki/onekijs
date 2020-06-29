@@ -27,3 +27,7 @@ export function isFunctionOrPromise(value) {
 export function isAsyncOrPromise(value) {
   return isAsyncFunction(value) || isPromise(value);
 }
+
+export function isInteger(str) {
+  return /^(0|[1-9]\d*)$/.test(str);
+}

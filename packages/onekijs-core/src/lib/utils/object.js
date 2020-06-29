@@ -131,13 +131,15 @@ export function append(content, property, value) {
   });
 }
 
-export function set(content, property, value) {
+export function set(content, property, value, force = true) {
   if (property === '') {
     return value;
   }
   const [subContent, index] = find(content, property, true);
   if (!isNull(subContent)) {
-    subContent[index] = value;
+    if (force || subContent[index] === undefined) {
+      subContent[index] = value;
+    }
   }
   return content;
 }

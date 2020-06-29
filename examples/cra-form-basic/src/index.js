@@ -12,6 +12,7 @@ import { FieldPage } from './pages/field';
 import { ValidatorPage } from './pages/validator';
 import { ComplexValidatorPage } from './pages/complex_validator';
 import { ContainerPage } from './pages/container';
+import { ArrayPage } from './pages/array';
 
 ReactDOM.render(
   <App>
@@ -23,8 +24,11 @@ ReactDOM.render(
       <Link to="/customcomponent">Custom Components</Link> |{' '}
       <Link to="/initialvalue">Initial Value</Link> |{' '}
       <Link to="/bind">Bind</Link> | <Link to="/rules">Rules</Link> |{' '}
-      <Link to="/container">Container</Link>
+      <Link to="/container">Container</Link> | <Link to="/array">Array</Link>
       <Switch>
+      <Route path="/array">
+          <ArrayPage />
+        </Route>        
         <Route path="/container">
           <ContainerPage />
         </Route>
