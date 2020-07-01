@@ -1,6 +1,6 @@
 {
   "name": "next-auth-form",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": true,
   "scripts": {
     "dev": "next",
@@ -12,7 +12,7 @@
   "dependencies": {
     "@zeit/next-css": "^1.0.1",
     "next": "9.3.6",
-    "onekijs-next": "^0.5.2",
+    "onekijs-next": "^0.5.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-hook-form": "^5.7.2",
