@@ -11,8 +11,8 @@ export const WrapperPage = () => {
   // useForm should be used anytime a new form is needed.
   // Never pass any props of useForm to nested components. A nested component should always use useFormContext
   // to get these props (for performance reasons)
-  const { Form, getValidation } = useForm(doSubmit);
-
+  const { Form, getValidation, values } = useForm(doSubmit);
+  console.log("values", values);
   return (
     <>
       {/* 
@@ -62,6 +62,10 @@ export const WrapperPage = () => {
               <option value="female">Female</option>
               <option value="male">Male</option>
             </Select>
+          </div>
+          <div>
+            <b>Admin: </b>
+            <Input name="admin" type="checkbox" />
           </div>
 
           {/* 
