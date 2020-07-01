@@ -7,33 +7,28 @@ import { latest } from '../saga';
 import { useLocalService } from '../service';
 
 // useFormBind does not interact with valueChange via a listener as it should be defined at the same level as useForm
-export const useFormBind = function (rule, watchers = []) {
+export const useFormBind = function (rule, watch = []) {
   return rule.apply(
     this,
-    watchers.map(w => get(this.state.values, w))
+    watch.map(w => get(this.state.values, w))
   );
 };
 
-export const useBind = (rule, watchers = []) => {
+export const useBind = (rule, watch = []) => {
   // initial call
-  const { values, onValueChange, offValueChange } = useFormContext();
+  const { valuesRef, onValueChange, offValueChange } = useFormContext();
 
-  const initialValue = useMemo(() => {
-    return rule.apply(
-      this,
-      watchers.map(w => get(values, w))
-    );
-    // eslint-disable-next-line
-  }, []);
-  const [value, setValue] = useState(initialValue);
+  const [value, setValue] = useState(() => {
+    return rule(...watch.map(w => get(valuesRef.current, w)));
+  });
 
   useIsomorphicLayoutEffect(() => {
     const listener = function () {
-      setValue(rule.apply(this, arguments));
+      setValue(rule(...arguments));
     };
-    onValueChange(listener, watchers);
+    onValueChange(listener, watch);
     return () => {
-      offValueChange(listener, watchers);
+      offValueChange(listener, watch);
     };
     // eslint-disable-next-line
   }, []);
@@ -41,8 +36,8 @@ export const useBind = (rule, watchers = []) => {
   return value;
 };
 
-const forkAsyncBind = function* (asyncMethod, watchers) {
-  const task = yield fork(asyncMethod, ...watchers);
+const forkAsyncBind = function* (asyncMethod, watch) {
+  const task = yield fork(asyncMethod, ...watch);
   const async = task.isRunning();
   if (async) {
     yield call(this.setLoading, true);
@@ -66,9 +61,9 @@ export const asyncBindService = {
     },
   },
   sagas: {
-    execute: latest(function* ({ asyncMethod, watchers }) {
+    execute: latest(function* ({ asyncMethod, watch }) {
       try {
-        const task = yield call([this, forkAsyncBind], asyncMethod, watchers);
+        const task = yield call([this, forkAsyncBind], asyncMethod, watch);
         const error = task.error();
         if (error) {
           yield call(this.error, error);
@@ -82,7 +77,7 @@ export const asyncBindService = {
   },
 };
 
-export const useAsyncBind = (rule, watchers = []) => {
+export const useAsyncBind = (rule, watch = []) => {
   const { values, onValueChange, offValueChange } = useFormContext();
   const [state, service] = useLocalService(asyncBindService, {
     loading: true,
@@ -94,12 +89,12 @@ export const useAsyncBind = (rule, watchers = []) => {
     const listener = function () {
       service.execute({
         asyncMethod: rule,
-        watchers: arguments,
+        watch: arguments,
       });
     };
-    onValueChange(listener, watchers);
+    onValueChange(listener, watch);
     return () => {
-      offValueChange(listener, watchers);
+      offValueChange(listener, watch);
     };
     // eslint-disable-next-line
   }, []);
@@ -107,7 +102,7 @@ export const useAsyncBind = (rule, watchers = []) => {
   useEffect(() => {
     service.execute({
       asyncMethod: rule,
-      watchers: watchers.map(w => get(values, w)),
+      watch: watch.map(w => get(values, w)),
     });
     // eslint-disable-next-line
   }, []);
@@ -115,20 +110,20 @@ export const useAsyncBind = (rule, watchers = []) => {
   return [state.result, state.loading, state.error];
 };
 
-export const useFormAsyncBind = function (rule, watchers = [], options = {}) {
+export const useFormAsyncBind = function (rule, watch = [], options = {}) {
   const [state, service] = useLocalService(asyncBindService, {
     loading: true,
     result: options.defaultValue,
     error: null,
   });
-  watchers = watchers.map(w => get(this.state.values, w));
+  watch = watch.map(w => get(this.state.values, w));
   useEffect(() => {
     service.execute({
       asyncMethod: rule,
-      watchers,
+      watch,
     });
     // eslint-disable-next-line
-  }, watchers);
+  }, watch);
 
   return [state.result, state.loading, state.error];
 };

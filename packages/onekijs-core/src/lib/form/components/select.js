@@ -12,6 +12,8 @@ export const Select = React.memo(props => {
   return <select {...selectProps} {...field} />;
 });
 
+Select.displayName = 'Select';
+
 Select.propTypes = {
   props: PropTypes.object,
 };

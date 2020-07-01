@@ -1,11 +1,19 @@
-import { runSaga, stdChannel } from "@redux-saga/core";
-import produce from "immer";
-import { useCallback, useContext, useEffect, useMemo, useReducer, useRef } from "react";
-import { ReactReduxContext, useStore } from "react-redux";
-import { call, take } from "redux-saga/effects";
-import { AppContext } from "./context";
-import { every } from "./saga";
-import { set, useShallowEqual } from "./utils/object";
+import { runSaga, stdChannel } from '@redux-saga/core';
+import produce from 'immer';
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+} from 'react';
+import { ReactReduxContext, useStore } from 'react-redux';
+import { call, take } from 'redux-saga/effects';
+import { AppContext } from './context';
+import { every } from './saga';
+import { set, useShallowEqual } from './utils/object';
+import { isFunction } from './utils/type';
 
 const services = {};
 
@@ -25,11 +33,16 @@ class ReduxService {
     });
 
     Object.keys(schema.sagas || {}).forEach(type => {
-      const effect = (typeof schema.sagas[type] === 'function') ? null : schema.sagas[type]["effect"];
-      const fn = (typeof schema.sagas[type] === 'function') ? schema.sagas[type] : schema.sagas[type]["saga"];
+      const effect =
+        typeof schema.sagas[type] === 'function'
+          ? null
+          : schema.sagas[type]['effect'];
+      const fn =
+        typeof schema.sagas[type] === 'function'
+          ? schema.sagas[type]
+          : schema.sagas[type]['saga'];
       this._createSaga(type, effect, fn, schema.sagas.delay);
     });
-
 
     if (schema.init) {
       schema.init.call(this, this._context);
@@ -37,18 +50,19 @@ class ReduxService {
   }
 
   _createReducer(type, reducer) {
-    let [actionType, alias] = type.split(" as ");
+    let [actionType, alias] = type.split(' as ');
     alias = alias ? alias : actionType;
-    actionType = (actionType.includes(".") || !this._name)
-      ? actionType
-      : `${this._name}.${actionType}`;
+    actionType =
+      actionType.includes('.') || !this._name
+        ? actionType
+        : `${this._name}.${actionType}`;
     if (reducer) {
       this._reducers[actionType] = reducer;
     }
     this[alias] = payload => {
       this._dispatch({
         type: actionType,
-        payload
+        payload,
       });
     };
   }
@@ -56,11 +70,12 @@ class ReduxService {
   _createSaga(type, effect, saga, delay) {
     const self = this;
     const context = this._context;
-    let [actionType, alias] = type.split(" as ");
+    let [actionType, alias] = type.split(' as ');
     alias = alias ? alias : actionType;
-    actionType = (actionType.includes(".") || !this._name)
-      ? actionType
-      : `${this._name}.${actionType}`;
+    actionType =
+      actionType.includes('.') || !this._name
+        ? actionType
+        : `${this._name}.${actionType}`;
 
     const wrapper = function* wrapper(action) {
       try {
@@ -81,25 +96,22 @@ class ReduxService {
 
     if (effect) {
       if (delay) {
-        this._sagas[actionType] = function*() {
+        this._sagas[actionType] = function* () {
           yield effect(delay, actionType, wrapper);
         };
       } else {
-        this._sagas[actionType] = function*() {
+        this._sagas[actionType] = function* () {
           yield effect(actionType, wrapper);
         };
       }
-
     } else {
-      this._sagas[actionType] = function*() {
-        while(true) {
+      this._sagas[actionType] = function* () {
+        while (true) {
           const action = yield take(actionType, wrapper);
           yield call(wrapper, action);
         }
-        
       };
     }
-
 
     this[alias] = payload => {
       return new Promise((resolve, reject) => {
@@ -107,7 +119,7 @@ class ReduxService {
           type: actionType,
           payload,
           resolve,
-          reject
+          reject,
         });
       });
     };
@@ -122,7 +134,7 @@ class ReduxService {
       this[name][type] = payload => {
         return store.dispatch({
           type: `${defaultSchema.name}.${type}`,
-          payload
+          payload,
         });
       };
     });
@@ -133,7 +145,7 @@ class ReduxService {
             type: `${defaultSchema.name}.${type}`,
             payload,
             resolve,
-            reject
+            reject,
           });
         });
       };
@@ -146,7 +158,7 @@ class ReduxService {
     store.injectReducers(this, this._name, this._reducers, this._context);
     Object.keys(this._sagas).forEach(type => {
       store.runSaga(this._name, this._sagas[type], type);
-    })
+    });
   }
 
   _stop() {
@@ -155,14 +167,14 @@ class ReduxService {
     store.removeReducers(this._name, this._reducers);
     Object.keys(this._sagas).forEach(type => {
       store.cancelSaga(this._name, type);
-    })    
+    });
   }
 }
 
 class Service extends ReduxService {
   constructor(schema, context) {
     super(schema, context);
-    
+
     this._reducer = (state, action) => {
       const nextState = produce(state, draftState => {
         if (this._reducers[action.type]) {
@@ -199,8 +211,8 @@ export const useGlobalService = schema => {
   const store = useStore();
   const appContext = useContext(AppContext);
 
-  const context = useMemo(()=> {
-    return {}
+  const context = useMemo(() => {
+    return {};
   }, []);
   Object.assign(context, appContext, { store });
 
@@ -212,13 +224,16 @@ export const useGlobalService = schema => {
   return service;
 };
 
-export const useReduxService = useGlobalService;  // alias
+export const useReduxService = useGlobalService; // alias
 
-export const useLocalService = (schema, initialState={}) => {
+export const useLocalService = (schema, initialState = {}) => {
+  if (isFunction(initialState)) {
+    initialState = initialState();
+  }
   const reduxContext = useContext(ReactReduxContext) || {};
   const appContext = useContext(AppContext);
-  const contextRef = useRef({})
-  Object.assign(contextRef.current, appContext, { store : reduxContext.store });  
+  const contextRef = useRef({});
+  Object.assign(contextRef.current, appContext, { store: reduxContext.store });
 
   const service = useMemo(() => {
     return new Service(schema, contextRef.current);
@@ -243,7 +258,6 @@ export const useLocalService = (schema, initialState={}) => {
       }
       //setTimeout(channel.put, 0, a);
       //emitter.emit("action", a)
-      
     },
     [channel, service._reducers]
   );
@@ -254,8 +268,10 @@ export const useLocalService = (schema, initialState={}) => {
   useEffect(() => {
     const tasks = [];
     Object.keys(service._sagas).forEach(type => {
-      tasks.push(runSaga({ channel, dispatch, getState }, service._sagas[type]));
-    })    
+      tasks.push(
+        runSaga({ channel, dispatch, getState }, service._sagas[type])
+      );
+    });
     return () => {
       for (let task of tasks) {
         task.cancel();
@@ -267,22 +283,22 @@ export const useLocalService = (schema, initialState={}) => {
 };
 
 export const genericService = {
-  name: "generic",
+  name: 'generic',
   reducers: {
-    executeReducer: function(state, { reducer, key, payload, context }) {
+    executeReducer: function (state, { reducer, key, payload, context }) {
       if (reducer) {
         reducer(state, context);
       } else {
         set(state, key, payload);
       }
-    }
+    },
   },
   sagas: {
-    executeSaga: every(function*({saga}, context) {
-      yield call(saga, context)
-    })
-  }
-}
+    executeSaga: every(function* ({ saga }, context) {
+      yield call(saga, context);
+    }),
+  },
+};
 
 export const useGenericReducer = (reducer, payload) => {
   const service = useReduxService(genericService);
@@ -292,13 +308,12 @@ export const useGenericReducer = (reducer, payload) => {
     if (typeof reducer === 'string') {
       service.executeReducer({
         key: reducer,
-        payload
+        payload,
       });
     } else {
       service.executeReducer({ reducer });
     }
-    
-  }, [reducer, payload, service])
+  }, [reducer, payload, service]);
 };
 
-export const useGenericSaga = () => {}
+export const useGenericSaga = () => {};

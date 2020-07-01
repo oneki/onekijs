@@ -1,15 +1,15 @@
-import { useRef } from "react";
+import { useRef } from 'react';
 
 export function isNull(value) {
   return value === undefined || value === null;
 }
 
 export function isNullOrEmpty(value) {
-  return value === undefined || value === null || value === "";
+  return value === undefined || value === null || value === '';
 }
 
 export function or(value, defaultValue) {
-  return isNull(value) ? defaultValue:value;
+  return isNull(value) ? defaultValue : value;
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze
@@ -22,7 +22,7 @@ export function deepFreeze(object) {
     let value = object[name];
 
     object[name] =
-      value && typeof value === "object" ? deepFreeze(value) : value;
+      value && typeof value === 'object' ? deepFreeze(value) : value;
   }
 
   return Object.freeze(object);
@@ -31,7 +31,7 @@ export function deepFreeze(object) {
 // https://gist.github.com/Salakar/1d7137de9cb8b704e48a
 export function isObject(item) {
   return (
-    item && typeof item === "object" && !Array.isArray(item) && item !== null
+    item && typeof item === 'object' && !Array.isArray(item) && item !== null
   );
 }
 
@@ -65,16 +65,16 @@ export function del(content, property) {
 }
 
 export function find(content, property, populate = false) {
-  if (typeof property !== "string") {
+  if (typeof property !== 'string') {
     property = `${property}`;
   }
   if (isNull(content)) {
     return [undefined, undefined];
   }
-  if (property === "") {
+  if (property === '') {
     return [content, undefined];
   }
-  const parts = property.split(".");
+  const parts = property.split('.');
   for (let i = 0; i < parts.length - 1; i++) {
     const part = parts[i];
     const index = !isNaN(part) ? parseInt(part) : part;
@@ -105,7 +105,7 @@ export function find(content, property, populate = false) {
 }
 
 export function get(content, property, defaultValue) {
-  if (isNull(property) || property === "") {
+  if (isNull(property) || property === '') {
     return content;
   }
   const [subContent, index] = find(content, property);
@@ -131,13 +131,15 @@ export function append(content, property, value) {
   });
 }
 
-export function set(content, property, value) {
-  if (property === "") {
+export function set(content, property, value, force = true) {
+  if (property === '') {
     return value;
   }
   const [subContent, index] = find(content, property, true);
   if (!isNull(subContent)) {
-    subContent[index] = value;
+    if (force || subContent[index] === undefined) {
+      subContent[index] = value;
+    }
   }
   return content;
 }
@@ -187,9 +189,9 @@ export function shallowEqual(objA, objB) {
   }
 
   if (
-    typeof objA !== "object" ||
+    typeof objA !== 'object' ||
     objA === null ||
-    typeof objB !== "object" ||
+    typeof objB !== 'object' ||
     objB === null
   ) {
     return false;
@@ -215,7 +217,7 @@ export function shallowEqual(objA, objB) {
   return true;
 }
 
-export const useShallowEqual = (obj) => {
+export const useShallowEqual = obj => {
   const ref = useRef(obj);
   if (shallowEqual(ref.current, obj)) {
     obj = ref.current;
@@ -224,4 +226,11 @@ export const useShallowEqual = (obj) => {
   }
 
   return obj;
-}
+};
+
+export const diffArrays = (arr1, arr2) => {
+  const removed = arr1.filter(x => !arr2.includes(x));
+  const added = arr2.filter(x => !arr1.includes(x));
+  const same = arr1.filter(x => arr2.includes(x));
+  return { added, removed, same };
+};

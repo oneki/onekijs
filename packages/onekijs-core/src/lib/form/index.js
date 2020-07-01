@@ -8,18 +8,26 @@ import React, {
 import { call } from 'redux-saga/effects';
 import { latest } from '../saga';
 import { useLocalService } from '../service';
-import { get, isNull, set } from '../utils/object';
-import { defaultValidation, ERROR, LOADING, OK, WARNING } from './validations';
-import {
-  compileValidations,
-  setValidation,
-  clearValidation,
-  validateAll,
-  hasValidation,
-} from './validations';
-import { useFormRule } from './rule';
-import { useFormBind, useFormAsyncBind } from './bind';
+import { get, isNull, isNullOrEmpty, set, isObject } from '../utils/object';
+import { isFunction } from '../utils/type';
+import { useFormAsyncBind, useFormBind } from './bind';
 import { FormContext, useFormContext } from './context';
+import { useFormRule } from './rule';
+import { isInteger } from '../utils/type';
+import {
+  clearValidation,
+  compileValidations,
+  defaultValidation,
+  ERROR,
+  getContainerFieldValidation,
+  hasValidation,
+  LOADING,
+  OK,
+  setValidation,
+  useValidation,
+  validateAll,
+  WARNING,
+} from './validations';
 
 export const formService = {
   init: function () {
@@ -27,54 +35,92 @@ export const formService = {
     this.listeners = {
       valueChange: {},
       validationChange: {},
-      fieldChange: {},
     };
     this.pendingDispatch = [];
 
-    const onChange = (type, listener, watchers) => {
-      for (let watcher of watchers) {
-        this.listeners[type][watcher] = this.listeners[type][watcher] || [];
-        this.listeners[type][watcher].unshift({ listener, watchers });
+    const fieldIndex = {};
+    const watchIndex = {};
+
+    const onChange = (type, listener, watchs) => {
+      watchs = Array.isArray(watchs) ? watchs : [watchs];
+
+      for (let watch of watchs) {
+        this.listeners[type][watch] = this.listeners[type][watch] || [];
+        this.listeners[type][watch].push({ listener, watchs });
+        if (type === 'valueChange') {
+          set(watchIndex, watch, true, false);
+        }
       }
     };
 
-    const offChange = (type, listener, watchers) => {
-      for (let watcher of watchers) {
-        this.listeners[type][watcher] = this.listeners[type][watcher] || [];
-        this.listeners[type][watcher] = this.listeners[type][watcher].filter(
+    const offChange = (type, listener, watchs) => {
+      watchs = Array.isArray(watchs) ? watchs : [watchs];
+      for (let watch of watchs) {
+        this.listeners[type][watch] = this.listeners[type][watch] || [];
+        this.listeners[type][watch] = this.listeners[type][watch].filter(
           x => x.listener !== listener
         );
       }
     };
 
-    this.onValueChange = (listener, watchers) =>
-      onChange('valueChange', listener, watchers);
-    this.offValueChange = (listener, watchers) =>
-      offChange('valueChange', listener, watchers);
-    this.onValidationChange = (listener, watchers) =>
-      onChange('validationChange', listener, watchers);
-    this.offValidationChange = (listener, watchers) =>
-      offChange('validationChange', listener, watchers);
-    this.onFieldChange = (listener, watchers) =>
-      onChange('fieldChange', listener, watchers);
-    this.offFieldChange = (listener, watchers) =>
-      offChange('fieldChange', listener, watchers);
+    this.addField = field => {
+      if (!this.fields[field.name]) {
+        this.fields[field.name] = field;
+        set(fieldIndex, field.name, true, false);
+      }
+    };
+
+    this.onValueChange = (listener, watchs) =>
+      onChange('valueChange', listener, watchs);
+    this.offValueChange = (listener, watchs) =>
+      offChange('valueChange', listener, watchs);
+    this.onValidationChange = (listener, watchs) =>
+      onChange('validationChange', listener, watchs);
+    this.offValidationChange = (listener, watchs) =>
+      offChange('validationChange', listener, watchs);
+
+    this.getSubFieldNames = fieldName => {
+      let result = [];
+      const index = get(fieldIndex, fieldName);
+      if (index) {
+        if (Array.isArray(index)) {
+          for (let i in index) {
+            result = result.concat(this.getSubFieldNames(`${fieldName}.${i}`));
+          }
+        } else if (isObject(index)) {
+          Object.keys(index).forEach(childFieldName => {
+            result = result.concat(
+              this.getSubFieldNames(`${fieldName}.${childFieldName}`)
+            );
+          });
+        }
+        if (this.fields[fieldName]) {
+          result.push(fieldName);
+        }
+      }
+      return result;
+    };
+
+    this.getSubWatchs = watch => {
+      let result = [];
+
+      const index = get(watchIndex, watch);
+      if (index) {
+        if (Array.isArray(index)) {
+          for (let i in index) {
+            result = result.concat(this.getSubWatchs(`${watch}.${i}`));
+          }
+        } else if (isObject(index)) {
+          Object.keys(index).forEach(childWatch => {
+            result = result.concat(this.getSubWatchs(`${watch}.${childWatch}`));
+          });
+        }
+        result.push(watch);
+      }
+      return result;
+    };
   },
   reducers: {
-    _setValues: function (state, values = {}) {
-      Object.keys(values).forEach(name => {
-        set(state, `values.${name}`, values[name]);
-        compileValidations(state, this.fields[name]);
-        this.pendingDispatch.push(name);
-      });
-    },
-
-    setValidation: function (state, { id, name, message, level }) {
-      const field = this.fields[name];
-      compileValidations(state, field);
-      this.pendingDispatch.push(name);
-    },
-
     clearValidation: function (state, { id, name, level }) {
       const field = this.fields[name];
       clearValidation(field, id, level);
@@ -92,38 +138,63 @@ export const formService = {
       });
     },
 
-    touch: function (state, name) {
-      this.fields[name].touched = true;
-      compileValidations(state, this.fields[name]);
+    _setValues: function (state, { values = {}, validations = {} }) {
+      Object.keys(values).forEach(key => {
+        const field = this.fields[key];
+        if (field && field.touchOn === 'change' && !field.touched) {
+          field.touched = true;
+        }
+        set(state, `values.${key}`, values[key]);
+        this.pendingDispatch = this.pendingDispatch.concat(
+          this.getSubWatchs(key)
+        );
+      });
+
+      Object.keys(validations).forEach(fieldName => {
+        state.validations[fieldName] = validations[fieldName];
+        this.pendingDispatch.push(fieldName);
+      });
+    },
+
+    setValidation: function (state, { id, name, message, level }) {
+      const field = this.fields[name];
+      setValidation(field, id, level, message);
+      compileValidations(state, field);
       this.pendingDispatch.push(name);
+    },
+
+    touch: function (state, name) {
+      if (!this.fields[name].touched) {
+        this.fields[name].touched = true;
+        compileValidations(state, this.fields[name]);
+        this.pendingDispatch.push(name);
+      }
+    },
+
+    touchAll: function (state) {
+      Object.keys(this.fields).forEach(name => {
+        if (!this.fields[name].touched) {
+          this.fields[name].touched = true;
+          compileValidations(state, this.fields[name]);
+          this.pendingDispatch.push(name);
+        }
+      });
     },
   },
   sagas: {
     setValue: latest(function* ({ name, value }) {
-      const field = this.fields[name];
-      if (field) {
-        const toValidate = Object.assign({}, field, { value });
-        const async = yield call([this, validateAll], [toValidate]);
-        if (async.length > 0) {
-          yield call(this.compileValidations, name);
-        }
+      const async = yield call([this, validateAll], {
+        [name]: value,
+      });
+      if (async.length > 0) {
+        yield call(this.compileValidations, async);
       }
     }),
 
     setValues: latest(function* (values) {
-      const toValidate = [];
-      Object.keys(values).forEach(name => {
-        const field = this.fields[name];
-        if (field) {
-          toValidate.push(Object.assign({}, field, { value: values[name] }));
-        }
-      });
-
-      if (toValidate.length > 0) {
-        const async = yield call([this, validateAll], toValidate);
-        if (async.length > 0) {
-          yield call(this.compileValidations, async);
-        }
+      const async = yield call([this, validateAll], values);
+      if (async.length > 0) {
+        yield call(this.compileValidations, async);
       }
     }),
   },
@@ -139,17 +210,25 @@ export const formService = {
  * @param {string|submitCallback} onSubmit - an url or a submit callback
  * @param {Object} options
  */
-export const useForm = (onSubmit, options = {}) => {
-  // options cannot be changed afterwards. Used as initialState for the service
+export const useForm = (onSubmit, formOptions = {}) => {
+  // formOptions cannot be changed afterwards. Used as initialState for the service
   // we copy initialValues to values to be able to reset the form to its initial state
   // immer will not kept a reference between to two objects. So changing values will not change initialValues
-  options.initialValues = options.initialValues || {};
-  options.validations = options.validations || {};
-  options.values = options.initialValues;
-  const [state, service] = useLocalService(formService, options);
+  const [state, service] = useLocalService(formService, () => {
+    const initialState = Object.assign(
+      {
+        touchOn: 'blur',
+        initialValues: {},
+        validations: {},
+      },
+      formOptions
+    );
+    initialState.values = initialState.initialValues;
+    return initialState;
+  });
   const { values, validations } = state;
-  const createRef = useRef(true);
   const defaultValuesRef = useRef({});
+  const formOptionsRef = useRef(formOptions);
 
   // we put values in a ref object. For some features, we don't need to force a rerender if a value is changed
   // but we need the last value during the render
@@ -160,8 +239,9 @@ export const useForm = (onSubmit, options = {}) => {
   validationsRef.current = validations;
 
   /**
-   *  this method will register a field and return some two listeners
+   *  this method will register a field and return three listeners
    *   - onChange
+   *   - onFocus
    *   - onBlur
    *
    * @param {string} name - the name of the field. Must be related to a key in values
@@ -170,49 +250,59 @@ export const useForm = (onSubmit, options = {}) => {
    * @return {Object} a list of listeners for the field and its name
    *                    - name
    *                    - onChange
+   *                    - onFocus
    *                    - onBlur
    */
   const init = useCallback(
-    (name, validators = [], options = {}) => {
+    (name, validators = [], fieldOptions = {}) => {
       if (!service.fields[name]) {
-        options.defaultValue =
-          options.defaultValue === undefined ? '' : options.defaultValue;
-        service.fields[name] = {
-          name,
-          validators,
-          validations: {},
-          options,
-          onChange: value => {
-            if (
-              value &&
-              value.nativeEvent &&
-              value.nativeEvent instanceof Event
-            ) {
-              value = value.target.value;
-            }
-            if (get(valuesRef.current, name) !== value) {
-              service.setValue({ name, value });
-            }
-          },
-          onBlur: () => {
-            if (!service.fields[name].touched) {
-              service.touch(name);
-            }
-          },
-        };
+        fieldOptions.defaultValue =
+          fieldOptions.defaultValue === undefined
+            ? ''
+            : fieldOptions.defaultValue;
+        fieldOptions.touchOn =
+          fieldOptions.touchOn || formOptionsRef.current.touchOn || 'blur';
+
+        service.addField(
+          Object.assign(fieldOptions, {
+            name,
+            validators,
+            validations: {},
+            touched: fieldOptions.touchOn === 'load',
+            onChange: value => {
+              if (
+                value &&
+                value.nativeEvent &&
+                value.nativeEvent instanceof Event
+              ) {
+                value = value.target.value;
+              }
+              if (get(valuesRef.current, name) !== value) {
+                service.setValue({ name, value });
+              }
+            },
+            onFocus: () => {
+              const field = service.fields[name];
+              if (field.touchOn === 'focus' && !field.touched) {
+                service.touch(name);
+              }
+            },
+            onBlur: () => {
+              const field = service.fields[name];
+              if (field.touchOn === 'blur' && !field.touched) {
+                service.touch(name);
+              }
+            },
+          })
+        );
         if (get(valuesRef.current, name) === undefined) {
-          if (createRef.current) {
-            // queue all default values to trigger a unique change
-            defaultValuesRef.current[name] = options.defaultValue;
-          } else {
-            // execute immediately the change
-            service.setValue({ name, value: options.defaultValue });
-          }
+          defaultValuesRef.current[name] = fieldOptions.defaultValue;
         }
       }
       const field = service.fields[name];
       return {
         onChange: field.onChange,
+        onFocus: field.onFocus,
         onBlur: field.onBlur,
         name,
       };
@@ -225,6 +315,7 @@ export const useForm = (onSubmit, options = {}) => {
    *   - name
    *   - value
    *   - onChange
+   *   - onFocus
    *   - onBlur
    *
    * @param {string} name - the name of the field. Must be related to a key in values
@@ -234,6 +325,7 @@ export const useForm = (onSubmit, options = {}) => {
    *                    - name
    *                    - value
    *                    - onChange
+   *                    - onFocus
    *                    - onBlur
    */
   const field = useCallback(
@@ -253,20 +345,99 @@ export const useForm = (onSubmit, options = {}) => {
    * this method will just call the submit function passed to useForm with the whole value object
    */
   const submit = useCallback(e => {
-    onSubmit(valuesRef.current);
+    // compile the validations to get the status
+    const { statusCode, fields } = getContainerFieldValidation(
+      validationsRef.current,
+      service.fields,
+      '',
+      false
+    );
+
+    service.touchAll();
+
+    switch (statusCode) {
+      case LOADING:
+        service.submitting = true;
+        break;
+      case ERROR:
+        service.submitting = false;
+        if (isFunction(formOptionsRef.current.onError)) {
+          formOptionsRef.current.onError(fields, valuesRef.current);
+        }
+        break;
+      case WARNING:
+        service.submitting = false;
+        if (isFunction(formOptionsRef.current.onWarning)) {
+          formOptionsRef.current.onWarning(fields, valuesRef.current);
+        } else {
+          onSubmit(valuesRef.current);
+        }
+        break;
+      default:
+        onSubmit(valuesRef.current);
+        break;
+    }
     e.preventDefault();
     // eslint-disable-next-line
   }, []);
 
   const getValidation = useCallback(
-    name => {
-      return get(validations, name, defaultValidation);
+    (name, touchedOnly = true) => {
+      const getFieldValidation = name => {
+        if (service.fields[name]) {
+          if (touchedOnly) {
+            return service.fields[name].touched
+              ? validations[name] || defaultValidation
+              : defaultValidation;
+          } else {
+            return validations[name] || defaultValidation;
+          }
+        } else {
+          return getContainerFieldValidation(
+            validations,
+            service.fields,
+            name,
+            touchedOnly
+          );
+        }
+      };
+
+      if (isNullOrEmpty(name)) {
+        return getContainerFieldValidation(
+          validations,
+          service.fields,
+          '',
+          touchedOnly
+        );
+        // if (!touchedOnly) {
+        //   return validations;
+        // } else {
+        //   const result = {};
+        //   Object.keys(service.fields).forEach(fieldName => {
+        //     result[fieldName] = getFieldValidation(fieldName);
+        //   });
+        //   return result;
+        // }
+      } else if (Array.isArray(name)) {
+        const result = {};
+        name.forEach(n => (result[n] = getFieldValidation(n)));
+        return result;
+      } else {
+        return getFieldValidation(name);
+      }
     },
-    [validations]
+    [validations, service.fields]
   );
 
   const getValue = useCallback(
     (name, defaultValue) => {
+      if (isNullOrEmpty(name)) {
+        return values || defaultValue;
+      } else if (Array.isArray(name)) {
+        const result = {};
+        name.forEach(n => set(result, n, get(values, n)));
+        return result;
+      }
       return get(values, name, defaultValue);
     },
     [values]
@@ -357,8 +528,7 @@ export const useForm = (onSubmit, options = {}) => {
 
   const setValue = useCallback(
     (name, value) => {
-      const field = service.fields[name];
-      if (field && get(valuesRef.current, name) !== value) {
+      if (get(valuesRef.current, name) !== value) {
         return service.setValue({ name, value });
       }
     },
@@ -378,6 +548,51 @@ export const useForm = (onSubmit, options = {}) => {
     [setOrClearValidation]
   );
 
+  const add = useCallback(
+    (fieldArrayName, initialValue) => {
+      // get current value
+      const currentArrayValue = get(valuesRef.current, fieldArrayName, []);
+      const index = currentArrayValue.length;
+      service.setValue({
+        name: `${fieldArrayName}.${index}`,
+        value: initialValue || {},
+      });
+      // const keys = Object.keys(initialValue || {});
+      // if (keys.length > 0) {
+      //   const values = {};
+      //   keys.forEach(
+      //     k => (values[`${fieldArrayName}.${index}.${k}`] = initialValue[k])
+      //   );
+      //   service.setValues(values);
+      // } else {
+      //   console.log('setValue', `${fieldArrayName}.${index}`, {});
+
+      // }
+    },
+    [service]
+  );
+
+  const remove = useCallback(
+    (fieldArrayName, index) => {
+      const currentArrayValue = get(valuesRef.current, fieldArrayName, []);
+      if (currentArrayValue.length - 1 >= index) {
+        const nextValues = {};
+        // need to modifiy all values with an index superior to the removed one
+        for (let i = index + 1; i < currentArrayValue.length; i++) {
+          Object.keys(currentArrayValue[i]).forEach(fieldName => {
+            nextValues[`${fieldArrayName}.${i - 1}.${fieldName}`] =
+              currentArrayValue[i][fieldName];
+          });
+        }
+        nextValues[fieldArrayName] = currentArrayValue.filter(
+          (x, i) => i !== index
+        );
+        service.setValues(nextValues);
+      }
+    },
+    [service]
+  );
+
   const contextRef = useRef({});
   contextRef.current.state = state;
   contextRef.current.service = service;
@@ -388,38 +603,42 @@ export const useForm = (onSubmit, options = {}) => {
   const formContextRef = useRef();
   const formContext = useMemo(() => {
     return {
+      add,
       clearValidation: clearLevelValidation,
+      fields: service.fields,
       init,
-      offFieldChange: service.offFieldChange,
       offValidationChange: service.offValidationChange,
       offValueChange: service.offValueChange,
-      onFieldChange: service.onFieldChange,
       onValidationChange: service.onValidationChange,
       onValueChange: service.onValueChange,
+      remove,
       setError,
+      setOK,
+      setPendingValidation,
       setValidation: setLevelValidation,
       setValue,
-      setOK,
+      setValues: service.setValues,
       setWarning,
-      setPendingValidation,
       submit,
-      values: valuesRef.current,
-      validations: validationsRef.current,
+      valuesRef,
+      validationsRef,
     };
   }, [
+    add,
     clearLevelValidation,
+    service.fields,
     init,
-    service.offFieldChange,
     service.offValidationChange,
     service.offValueChange,
-    service.onFieldChange,
     service.onValidationChange,
     service.onValueChange,
+    remove,
     setError,
     setLevelValidation,
-    setValue,
     setOK,
     setPendingValidation,
+    setValue,
+    service.setValues,
     setWarning,
     submit,
   ]);
@@ -437,45 +656,56 @@ export const useForm = (onSubmit, options = {}) => {
         for (let prop of service.pendingDispatch) {
           for (let type of Object.keys(service.listeners)) {
             for (let key of Object.keys(service.listeners[type])) {
-              if (key.startsWith(prop)) {
-                for (let rule of service.listeners[type][key]) {
-                  let watchers = [];
+              if (prop.startsWith(key)) {
+                for (let listener of service.listeners[type][key]) {
+                  let watchs = [];
                   let changed = false;
-                  if (type === 'valueChange' || type === 'fieldChange') {
-                    rule.watchers.forEach(w => {
+                  if (type === 'valueChange') {
+                    listener.watchs.forEach(w => {
                       const prev = get(prevValuesRef.current, w, '');
                       const next = get(valuesRef.current, w, '');
-                      watchers.push(next);
+                      watchs.push(next);
                       if (prev !== next) {
                         changed = true;
                       }
                     });
                   }
 
-                  if (type === 'validationChange' || type === 'fieldChange') {
-                    rule.watchers.forEach(w => {
-                      const prev = get(prevValidationsRef.current, w);
-                      const next = get(validationsRef.current, w);
-                      watchers.push(next);
-                      if (prev !== next) {
-                        changed = true;
+                  if (type === 'validationChange') {
+                    listener.watchs.forEach(w => {
+                      let prev, next;
+                      // check if w is a field or a composition
+                      if (!service.fields[w]) {
+                        prev = getContainerFieldValidation(
+                          prevValidationsRef.current,
+                          service.fields,
+                          w,
+                          false
+                        );
+                        next = getContainerFieldValidation(
+                          validationsRef.current,
+                          service.fields,
+                          w,
+                          false
+                        );
+                        if (
+                          prev.status !== next.status ||
+                          prev.message !== next.message
+                        ) {
+                          changed = true;
+                        }
+                      } else {
+                        prev = prevValidationsRef.current[w];
+                        next = validationsRef.current[w];
+                        if (prev !== next) {
+                          changed = true;
+                        }
                       }
+                      watchs.push(next);
                     });
                   }
                   if (changed) {
-                    if (type === 'fieldChange') {
-                      watchers = rule.watchers.map(w => {
-                        return {
-                          value: get(valuesRef.current, w, ''),
-                          validation: get(
-                            validationsRef.current,
-                            w,
-                            defaultValidation
-                          ),
-                        };
-                      });
-                    }
-                    rule.listener.apply(undefined, watchers);
+                    listener.listener(...watchs);
                   }
                 }
               }
@@ -485,6 +715,9 @@ export const useForm = (onSubmit, options = {}) => {
         service.pendingDispatch = [];
         prevValuesRef.current = valuesRef.current;
         prevValidationsRef.current = validationsRef.current;
+        if (service.submitting) {
+          submit();
+        }
       });
 
       return (
@@ -498,6 +731,7 @@ export const useForm = (onSubmit, options = {}) => {
 
   const result = useMemo(() => {
     return {
+      add,
       asyncBind: useAsyncBindRef.current,
       bind: useBindRef.current,
       clearValidation: clearLevelValidation,
@@ -505,10 +739,12 @@ export const useForm = (onSubmit, options = {}) => {
       Form,
       getValue,
       getValidation,
+      remove,
       rule: useRuleRef.current,
       setError,
       setValidation: setLevelValidation,
       setValue,
+      setValues: service.setValues,
       setOK,
       setWarning,
       setPendingValidation,
@@ -517,53 +753,59 @@ export const useForm = (onSubmit, options = {}) => {
       values,
     };
   }, [
+    add,
     clearLevelValidation,
     field,
+    getValidation,
+    getValue,
     Form,
+    remove,
     setError,
     setLevelValidation,
     setValue,
+    service.setValues,
     setOK,
     setWarning,
     setPendingValidation,
     submit,
-    getValidation,
     validations,
-    getValue,
     values,
   ]);
 
   useEffect(() => {
     if (Object.keys(defaultValuesRef.current).length > 0) {
       service.setValues(defaultValuesRef.current);
+      defaultValuesRef.current = {};
     }
-    createRef.current = false;
-  }, [service]);
+  });
 
   return result;
 };
 
-export const useValue = (name, options = {}) => {
-  const { onValueChange, offValueChange, values } = useFormContext();
-
-  const [value, setValue] = useState(
-    get(
-      values,
-      name,
-      options.defaultValue === undefined ? '' : options.defaultValue
-    )
-  );
+export const useValue = name => {
+  const { onValueChange, offValueChange, valuesRef } = useFormContext();
+  const nameRef = useRef(name);
+  const [value, setValue] = useState(() => {
+    if (isNullOrEmpty(nameRef.current)) {
+      return valuesRef.current;
+    }
+    return valuesRef.current[nameRef.current];
+  });
 
   useEffect(() => {
-    const listener = function (value) {
-      setValue(value);
-    };
-    onValueChange(listener, [name]);
+    const watch = [nameRef.current || ''];
+    const listener = nextValue => setValue(nextValue);
+    onValueChange(listener, watch);
+
     return () => {
-      offValueChange(listener, [name]);
+      offValueChange(listener, watch);
     };
-    // eslint-disable-next-line
-  }, []);
+  }, [onValueChange, offValueChange]);
 
   return value;
+};
+
+export const useFormStatus = () => {
+  const result = useValidation('', false);
+  return result;
 };

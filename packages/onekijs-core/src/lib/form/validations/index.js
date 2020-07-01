@@ -1,12 +1,14 @@
-import { set, del, get } from '../../utils/object';
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { call, fork } from 'redux-saga/effects';
+import { useLazyRef } from '../../utils/hook';
+import { del, get, isNullOrEmpty, set } from '../../utils/object';
 import { useFormContext } from '../context';
-import { useState, useEffect } from 'react';
 
 export const LOADING = 0;
 export const ERROR = 1;
 export const WARNING = 2;
 export const OK = 3;
+export const NONE = 4;
 
 export const defaultValidation = {
   message: null,
@@ -28,21 +30,68 @@ export const serializeValidationLevel = level => {
   }
 };
 
-export const compileValidations = (state, field) => {
-  if (field && field.touched) {
-    for (let level in field.validations) {
-      for (let id in field.validations[level]) {
-        set(state, `validations.${field.name}`, {
-          status: serializeValidationLevel(level),
-          message: field.validations[level][id],
-        });
-        return;
+export const getContainerFieldValidation = (
+  validations,
+  fields,
+  name = '',
+  touchedOnly = true
+) => {
+  // compile the validations to get the status
+  const messages = [];
+  let result = {
+    status: null,
+    statusCode: NONE,
+    fields: {},
+    message: null,
+  };
+
+  for (let fieldName of Object.keys(validations).filter(k =>
+    k.startsWith(name)
+  )) {
+    if (!touchedOnly || fields[fieldName].touched) {
+      const validation = validations[fieldName];
+      if (
+        validation.statusCode <= result.statusCode &&
+        validation.statusCode < NONE
+      ) {
+        if (validation.statusCode < result.statusCode) {
+          result.status = validation.status;
+          result.statusCode = validation.statusCode;
+          result.fields = {};
+        }
+        result.fields[fieldName] = validation.message;
+        if (validation.message) {
+          messages.push(`<${fieldName}>: ${validation.message}`);
+        }
       }
     }
-    set(state, `validations.${field.name}`, {
-      status: 'ok',
-      message: null,
-    });
+  }
+  if (messages.length > 0) {
+    result.message = messages.join('\n');
+  }
+  return result;
+};
+
+const getValidation = field => {
+  if (field) {
+    for (let level in field.validations) {
+      for (let id in field.validations[level]) {
+        const validation = {
+          status: serializeValidationLevel(level),
+          statusCode: parseInt(level),
+          message: field.validations[level][id],
+        };
+        return validation;
+      }
+    }
+    return defaultValidation;
+  }
+  return null;
+};
+
+export const compileValidations = (state, field) => {
+  if (field) {
+    state.validations[field.name] = getValidation(field);
   }
 };
 
@@ -88,54 +137,115 @@ export const validate = function* (field, validatorName, validator, value) {
   }
 };
 
-export const validateAll = function* (fields) {
+export const validateAll = function* (values) {
   // do all validations
   const tasks = {};
-  const values = {};
-  for (let field of fields) {
-    const validators = field.validators;
-    tasks[field.name] = [];
-    values[field.name] = field.value;
-    for (let i in validators) {
-      const validatorName = `__validator_${i}`;
-      const validator = validators[i];
-      tasks[field.name].push(
-        yield fork(validate, field, validatorName, validator, field.value)
-      );
+  const validations = {};
+  const keys = Object.keys(values);
+  for (let key of keys) {
+    // we need to find all sub fields (if any) and do the validations for these fields
+    const fieldNames = this.getSubFieldNames(key);
+    for (let fieldName of fieldNames) {
+      const field = this.fields[fieldName];
+      const validators = field.validators;
+      tasks[fieldName] = [];
+      for (let i in validators) {
+        const validatorName = `__validator_${i}`;
+        const validator = validators[i];
+        tasks[fieldName].push(
+          yield fork(
+            validate,
+            field,
+            validatorName,
+            validator,
+            get(values[key], fieldName.substr(key.length + 1))
+          )
+        );
+      }
     }
   }
-  yield call(this._setValues, values);
   const async = [];
-  for (let field of fields) {
-    if (tasks[field.name].find(t => t.isRunning())) {
-      async.push(field.name);
+  Object.keys(tasks).forEach(fieldName => {
+    validations[fieldName] = getValidation(this.fields[fieldName]);
+    if (tasks[fieldName].find(t => t.isRunning())) {
+      async.push(fieldName);
     }
-  }
+  });
+  yield call(this._setValues, { values, validations });
 
   return async;
 };
 
-export const useValidation = name => {
+export const useValidation = (name = '', touchedOnly = true) => {
   const {
     onValidationChange,
     offValidationChange,
-    validations,
+    validationsRef,
+    fields,
   } = useFormContext();
+  const argsRef = useRef({ name, touchedOnly });
 
-  const [validation, setValidation] = useState(
-    get(validations, name, defaultValidation)
+  const getFieldValidation = useCallback(
+    (name, touchedOnly) => {
+      if (fields[name]) {
+        if (touchedOnly) {
+          return fields[name].touched
+            ? validationsRef.current[name] || defaultValidation
+            : defaultValidation;
+        } else {
+          return validationsRef.current[name] || defaultValidation;
+        }
+      } else {
+        return getContainerFieldValidation(
+          validationsRef.current,
+          fields,
+          name,
+          touchedOnly
+        );
+      }
+    },
+    [fields, validationsRef]
   );
 
+  const [validation, setValidation] = useState(() => {
+    if (isNullOrEmpty(argsRef.current.name)) {
+      return getContainerFieldValidation(
+        validationsRef.current,
+        fields,
+        '',
+        argsRef.current.touchedOnly
+      );
+    } else {
+      return getFieldValidation(
+        argsRef.current.name,
+        argsRef.current.touchedOnly
+      );
+    }
+  });
+
   useEffect(() => {
-    const listener = function (validation) {
-      setValidation(validation);
+    const { name, touchedOnly } = argsRef.current;
+    const listener = nextValidation => {
+      if (isNullOrEmpty(name)) {
+        setValidation(
+          getContainerFieldValidation(
+            validationsRef.current,
+            fields,
+            '',
+            touchedOnly
+          )
+        );
+      } else {
+        if (!touchedOnly || fields[name].touched) {
+          setValidation(nextValidation);
+        }
+      }
     };
     onValidationChange(listener, [name]);
     return () => {
       offValidationChange(listener, [name]);
     };
-    // eslint-disable-next-line
-  }, []);
+  }, [onValidationChange, offValidationChange, fields, validationsRef]);
 
   return validation;
 };

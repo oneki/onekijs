@@ -1,14 +1,30 @@
-import { Input, Select, useForm, email, useRule, useFormContext, useValidation } from 'onekijs-cra';
+import {
+  Input,
+  Select,
+  useForm,
+  email,
+  useRule,
+  useFormContext,
+  useValidation,
+} from 'onekijs-cra';
 import React, { useCallback, useState } from 'react';
 
 export const ConfirmPassword = props => {
-  const { peer, ...inputProps} = props;
+  const { peer, ...inputProps } = props;
   const validation = useValidation(props.name);
   const { setError } = useFormContext();
 
-  useRule((password, confirmPassword) => {
-    setError(props.name, 'match', 'Passwords do not match', password !== confirmPassword)
-  }, [peer, props.name])
+  useRule(
+    (password, confirmPassword) => {
+      setError(
+        props.name,
+        'match',
+        'Passwords do not match',
+        password !== confirmPassword
+      );
+    },
+    [peer, props.name]
+  );
 
   return (
     <>
@@ -31,9 +47,17 @@ export const RulesPage = () => {
   const { Form, getValidation, rule, setError } = useForm(doSubmit);
 
   // assignee must be set if status is not waiting_approval
-  rule((status, assignee) => {
-    setError('assignee', 'required', 'Assignee is mandatory if status is not Waiting for approval', !assignee && status && status !== 'waiting_approval')
-  }, ['status', 'assignee'])
+  rule(
+    (status, assignee) => {
+      setError(
+        'assignee',
+        'required',
+        'Assignee is mandatory if status is not Waiting for approval',
+        !assignee && status && status !== 'waiting_approval'
+      );
+    },
+    ['status', 'assignee']
+  );
 
   return (
     <>
@@ -55,26 +79,31 @@ export const RulesPage = () => {
           <div>
             <b>Assignee: </b>
             <Input name="assignee" validators={[email('Invalid email')]} />
-            {getValidation('assignee').status} : {getValidation('assignee').message}
+            {getValidation('assignee').status} :{' '}
+            {getValidation('assignee').message}
           </div>
           <div>
             <b>Repository password: </b>
             <Input name="repo_password" type="password" required />
-            {getValidation('password').status} : {getValidation('password').message}
+            {getValidation('password').status} :{' '}
+            {getValidation('password').message}
           </div>
           <div>
             <b>Confirm password: </b>
-            <ConfirmPassword name="repo_confirm_password" peer="repo_password" /> 
-          </div>         
+            <ConfirmPassword
+              name="repo_confirm_password"
+              peer="repo_password"
+            />
+          </div>
           <button type="submit">Submit</button>
         </div>
       </Form>
       {result && (
         <div>
-          <h2>Result</h2>     
+          <h2>Result</h2>
           <pre>{result}</pre>
         </div>
-      )}      
+      )}
     </>
   );
 };

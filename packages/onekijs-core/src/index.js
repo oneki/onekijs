@@ -106,7 +106,7 @@ export {
   useLocalState,
   useGlobalStateModifier,
 } from './lib/state';
-export { formService, useForm, useValue } from './lib/form';
+export { formService, useForm, useValue, useFormStatus } from './lib/form';
 export { FormContext, useFormContext } from './lib/form/context';
 export { useField } from './lib/form/field';
 export { useBind, useAsyncBind } from './lib/form/bind';
@@ -114,10 +114,18 @@ export { useRule } from './lib/form/rule';
 export { Input } from './lib/form/components/input';
 export { Select } from './lib/form/components/select';
 export { Textarea } from './lib/form/components/textarea';
+export { Submit } from './lib/form/components/submit';
 export { required } from './lib/form/validations/required';
 export { regex } from './lib/form/validations/regex';
 export { email } from './lib/form/validations/email';
-export { useValidation } from './lib/form/validations';
+export {
+  LOADING,
+  ERROR,
+  WARNING,
+  OK,
+  useValidation,
+} from './lib/form/validations';
+export { useFieldContainer } from './lib/form/container';
 export { extractValidators } from './lib/utils/form';
 export { default as BaseRouter } from './lib/router/base';
 export { AppProvider } from './lib/app/app-provider';

@@ -9,12 +9,10 @@ export const Textarea = React.memo(props => {
   const field = useField(name, validators, {
     defaultValue: defaultValue === undefined ? '' : defaultValue,
   });
-  return (
-    <>
-      <textarea {...textareaProps} {...field} />
-    </>
-  );
+  return <textarea {...textareaProps} {...field} />;
 });
+
+Textarea.displayName = 'Textarea';
 
 Textarea.propTypes = {
   props: PropTypes.object,
