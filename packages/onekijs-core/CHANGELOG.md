@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.1](https://github.com/oneki/onekijs/compare/onekijs-core@0.7.0...onekijs-core@0.7.1) (2020-07-11)
+
+
+### Bug Fixes
+
+* **onekijs-core:** force a payload when calling a saga ([62b9f41](https://github.com/oneki/onekijs/commit/62b9f4117b4ab48b275e4e33ba6a54f9fc72db3f))
+
+
+
+
+
 # 0.7.0 (2020-07-11)
 
 
