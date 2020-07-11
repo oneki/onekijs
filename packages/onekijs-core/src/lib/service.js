@@ -115,6 +115,7 @@ class ReduxService {
 
   __injectService__(name, defaultSchema) {
     // create service with the default schema if not already present in the context
+    const self = this;
     createReduxService(defaultSchema, this.context);
     this[name] = {};
 
@@ -123,7 +124,7 @@ class ReduxService {
       if (value) {
         if (value.reducer) {
           this[name][key] = function () {
-            return this.context.store.dispatch({
+            return self.context.store.dispatch({
               type: `${defaultSchema.name}.${key}`,
               payload: toPayload(arguments),
             });
@@ -131,7 +132,7 @@ class ReduxService {
         } else if (value.saga) {
           this[name][key] = function () {
             return new Promise((resolve, reject) => {
-              this.context.store.dispatch({
+              self.context.store.dispatch({
                 type: `${defaultSchema.name}.${key}`,
                 payload: toPayload(arguments),
                 resolve,
