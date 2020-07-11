@@ -1,13 +1,13 @@
-import { createStore, applyMiddleware } from "redux";
-import createSagaMiddleware from "redux-saga";
-import produce from "immer";
-import { get } from "./utils/object";
-import { useSelector } from "react-redux";
-import { useCallback } from "react";
+import { createStore, applyMiddleware } from 'redux';
+import createSagaMiddleware from 'redux-saga';
+import produce from 'immer';
+import { get } from './utils/object';
+import { useSelector } from 'react-redux';
+import { useCallback } from 'react';
 
 export const createReduxStore = (initialState = {}, middlewares = []) => {
   let sagaMiddleware = middlewares.find(
-    middleware => middleware.name === "sagaMiddleware"
+    middleware => middleware.name === 'sagaMiddleware'
   );
   if (!sagaMiddleware) {
     sagaMiddleware = createSagaMiddleware();
@@ -27,8 +27,8 @@ export const createReduxStore = (initialState = {}, middlewares = []) => {
             const payload = action.payload === undefined ? {} : action.payload;
             reducers[k].func.call(
               reducers[k].bind,
-              draftState,
               payload,
+              draftState,
               reducers[k].context
             );
           });
@@ -42,10 +42,10 @@ export const createReduxStore = (initialState = {}, middlewares = []) => {
   store._reducers = {};
   store._sagas = {};
 
-  store.runSaga = (namespace, saga, name = "root") => {
+  store.runSaga = (namespace, saga, name = 'root') => {
     store._sagas[`${namespace}.${name}`] = sagaMiddleware.run(saga);
   };
-  store.cancelSaga = (namespace, name = "root") => {
+  store.cancelSaga = (namespace, name = 'root') => {
     const task = store._sagas[`${namespace}.${name}`];
     if (task) {
       task.cancel();
@@ -58,7 +58,7 @@ export const createReduxStore = (initialState = {}, middlewares = []) => {
       store._reducers[actionType][`${namespace}.${actionType}`] = {
         func: reducers[actionType],
         bind,
-        context
+        context,
       };
     });
 
@@ -78,7 +78,7 @@ export const createReduxStore = (initialState = {}, middlewares = []) => {
 
 export const useReduxSelector = (selector, defaultValue) => {
   const selectorFunction = useCallback(() => {
-    return typeof selector === "string"
+    return typeof selector === 'string'
       ? state => get(state, selector)
       : selector;
   }, [selector]);

@@ -1,15 +1,27 @@
-import { createBrowserHistory, createHashHistory, createMemoryHistory } from "history";
-import React, { Suspense, useEffect, useMemo, useState } from "react";
+import {
+  createBrowserHistory,
+  createHashHistory,
+  createMemoryHistory,
+} from 'history';
+import React, { Suspense, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Provider } from "react-redux";
-import { Router } from "react-router-dom";
-import ReactRouter from "./router";
-import { createReduxStore, DefaultLoadingComponent, formatSettings, detectLocale, get, isPromise, AppProvider } from "onekijs-core";
+import { Provider } from 'react-redux';
+import { Router } from 'react-router-dom';
+import ReactRouter from './router';
+import {
+  createReduxStore,
+  DefaultLoadingComponent,
+  formatSettings,
+  detectLocale,
+  get,
+  isPromise,
+  AppProvider,
+} from 'onekijs-core';
 
 let init = false;
 const i18n = {
   translations: {},
-  ns: []
+  ns: [],
 };
 export const App = React.memo(
   ({
@@ -22,7 +34,7 @@ export const App = React.memo(
     children,
     initialLocale,
     translations,
-    i18nNs
+    i18nNs,
   }) => {
     const [loading, setLoading] = useState(
       isPromise(initialState) || isPromise(settings)
@@ -46,15 +58,15 @@ export const App = React.memo(
 
     if (!loading) {
       if (!history) {
-        const routerType = get(formattedSettings, 'router.type')
+        const routerType = get(formattedSettings, 'router.type');
         switch (routerType) {
-          case "browser":
+          case 'browser':
             history = createBrowserHistory(formattedSettings.router);
             break;
-          case "hash":
+          case 'hash':
             history = createHashHistory(formattedSettings.router);
             break;
-          case "memory":
+          case 'memory':
             history = createMemoryHistory(formattedSettings.router);
             break;
           default:
@@ -75,45 +87,50 @@ export const App = React.memo(
       if (!loading) {
         return detectLocale(router.location, appStore, formattedSettings);
       }
-      
     }, [loading, router.location, appStore, formattedSettings]);
-    i18n.locale = locale;  
+    i18n.locale = locale;
 
     useEffect(() => {
       if (!init) {
         init = true;
         // TODO call initialState and/or settings
-        const promises = [{
-          set: setAppSettings,
-          promise: settings
-        }, {
-          set: setAppInitialState,
-          promise: initialState
-        }].filter(entry => isPromise(entry.promise))
+        const promises = [
+          {
+            set: setAppSettings,
+            promise: settings,
+          },
+          {
+            set: setAppInitialState,
+            promise: initialState,
+          },
+        ].filter(entry => isPromise(entry.promise));
         if (promises.length > 0) {
-          Promise.all(promises.map(entry => entry.promise)).then(function(values) {
+          Promise.all(promises.map(entry => entry.promise)).then(function (
+            values
+          ) {
             values.forEach((v, i) => promises[i].set(v));
             setLoading(false);
           });
         }
       }
-    }, [settings, initialState])
-  
+    }, [settings, initialState]);
+
     if (loading) {
-      return <LoadingComponent />
+      return <LoadingComponent />;
     }
 
     init = true;
 
     return (
       <Provider store={appStore}>
-        <AppProvider 
-          router={router} 
-          settings={formattedSettings} 
+        <AppProvider
+          router={router}
+          settings={formattedSettings}
           initialLocale={initialLocale}
           translations={translations}
           i18nNs={i18nNs}
-          services={services}>
+          services={services}
+        >
           <Router history={history}>
             <Suspense fallback={<LoadingComponent />}>{children}</Suspense>
           </Router>
@@ -135,8 +152,8 @@ App.propTypes = {
   children: PropTypes.element,
   initialLocale: PropTypes.string,
   translations: PropTypes.object,
-  i18nNs: PropTypes.arrayOf(PropTypes.string)
-}
+  i18nNs: PropTypes.arrayOf(PropTypes.string),
+};
 
 // const AppProvider = ({ router, settings, initialLocale, translations, i18nNs, services, children }) => {
 //   const reduxLocale = useSelector(state => get(state, 'i18n.locale'));
@@ -145,7 +162,7 @@ App.propTypes = {
 //   console.log("store", store);
 
 //   const locale = useMemo(() => {
-//       return detectLocale(router.location, reduxLocale, settings, initialLocale);   
+//       return detectLocale(router.location, reduxLocale, settings, initialLocale);
 //   }, [router.location, reduxLocale, settings, initialLocale]);
 
 //   const appContext = useMemo(() => {
@@ -163,7 +180,7 @@ App.propTypes = {
 //   const context = useMemo(()=> {
 //     return {}
 //   }, []);
-//   Object.assign(context, appContext, { store });  
+//   Object.assign(context, appContext, { store });
 
 //   useMemo(() => {
 //     services.forEach((service) => {

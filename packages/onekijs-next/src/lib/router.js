@@ -1,7 +1,13 @@
-import produce from "immer";
+import produce from 'immer';
 import Link from 'next/link';
-import Router from "next/router";
-import { BaseRouter, get, toI18nLocation, toLocation, toRelativeUrl } from "onekijs-core";
+import Router from 'next/router';
+import {
+  BaseRouter,
+  get,
+  toI18nLocation,
+  toLocation,
+  toRelativeUrl,
+} from 'onekijs-core';
 import React from 'react';
 
 export default class NextRouter extends BaseRouter {
@@ -15,17 +21,17 @@ export default class NextRouter extends BaseRouter {
   }
 
   deleteOrigin() {
-    localStorage.removeItem("onekijs.from");
-    localStorage.removeItem("onekijs.from_route");
+    localStorage.removeItem('onekijs.from');
+    localStorage.removeItem('onekijs.from_route');
   }
 
   getOrigin() {
     const from =
-      localStorage.getItem("onekijs.from") ||
-      get(this.settings, "routes.home", "/");
+      localStorage.getItem('onekijs.from') ||
+      get(this.settings, 'routes.home', '/');
     const fromRoute =
-      localStorage.getItem("onekijs.from_route") ||
-      get(this.settings, "routes.home_route", from);
+      localStorage.getItem('onekijs.from_route') ||
+      get(this.settings, 'routes.home_route', from);
     return { from, fromRoute };
   }
 
@@ -42,11 +48,11 @@ export default class NextRouter extends BaseRouter {
    * }
    */
   push(urlOrLocation, route, options) {
-    return this._goto("push", urlOrLocation, route, options);
+    return this._goto('push', urlOrLocation, route, options);
   }
 
   replace(urlOrLocation, route, options) {
-    return this._goto("replace", urlOrLocation, route, options);
+    return this._goto('replace', urlOrLocation, route, options);
   }
 
   /**
@@ -75,31 +81,31 @@ export default class NextRouter extends BaseRouter {
   }
 
   onLocationChange() {
-    this._listeners.forEach((listener) => {
+    this._listeners.forEach(listener => {
       listener(this.location);
     });
   }
 
-  saveOrigin(force=true) {
-    const currentValue = localStorage.getItem("onekijs.from");
+  saveOrigin(force = true) {
+    const currentValue = localStorage.getItem('onekijs.from');
     if (!force && currentValue) return;
-    
-    let from = get(this.settings, "routes.home", "/");
-    let fromRoute = get(this.settings, "routes.home_route", from);
+
+    let from = get(this.settings, 'routes.home', '/');
+    let fromRoute = get(this.settings, 'routes.home_route', from);
     const previous = this.previousLocation;
     if (previous) {
       from = previous.relativeurl;
       fromRoute = previous.route || from;
     }
-    localStorage.setItem("onekijs.from", from);
-    localStorage.setItem("onekijs.from_route", fromRoute);
+    localStorage.setItem('onekijs.from', from);
+    localStorage.setItem('onekijs.from_route', fromRoute);
   }
 
   sync(nextRouter) {
     const pathname = nextRouter.pathname;
     const asPath = nextRouter.asPath;
 
-    if (!pathname.includes("[") || pathname !== asPath) {
+    if (!pathname.includes('[') || pathname !== asPath) {
       const location = toLocation(asPath);
       location.route = Router.router.route;
       location.params = Router.router.query;
@@ -121,12 +127,12 @@ export default class NextRouter extends BaseRouter {
     }
     const i18nAs = toRelativeUrl(location);
     const i18nHref = location.route || toRelativeUrl(location);
-  
+
     return <Link {...props} as={i18nAs} href={i18nHref} />;
   }
 
   _goto(type, urlOrLocation, route, options) {
-    if (!urlOrLocation) throw new Error("URL is undefined in router.push");
+    if (!urlOrLocation) throw new Error('URL is undefined in router.push');
     const location = toI18nLocation(
       urlOrLocation,
       {
@@ -153,7 +159,7 @@ export default class NextRouter extends BaseRouter {
 
   _pushLocation(location) {
     this._location = location;
-    this.history = produce(this.history, (draft) => {
+    this.history = produce(this.history, draft => {
       draft.unshift(location);
       // keep max 20 items
       draft.splice(20, draft.length);

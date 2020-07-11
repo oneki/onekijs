@@ -1,18 +1,26 @@
-import { getRouteMatcher } from "next/dist/next-server/lib/router/utils/route-matcher";
-import { getRouteRegex } from "next/dist/next-server/lib/router/utils/route-regex";
-import Error from "next/error";
-import Router, { useRouter } from "next/router";
-import { AppProvider, createReduxStore, DefaultLoadingComponent, flattenTranslations, formatSettings, isPromise, toRelativeUrl } from "onekijs-core";
-import PropTypes from "prop-types";
-import React, { useEffect, useMemo, useState } from "react";
-import { Provider } from "react-redux";
-import NextRouter from "./router";
+import { getRouteMatcher } from 'next/dist/next-server/lib/router/utils/route-matcher';
+import { getRouteRegex } from 'next/dist/next-server/lib/router/utils/route-regex';
+import Error from 'next/error';
+import Router, { useRouter } from 'next/router';
+import {
+  AppProvider,
+  createReduxStore,
+  DefaultLoadingComponent,
+  flattenTranslations,
+  formatSettings,
+  isPromise,
+  toRelativeUrl,
+} from 'onekijs-core';
+import PropTypes from 'prop-types';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Provider } from 'react-redux';
+import NextRouter from './router';
 
 const useNextRouter = useRouter || (() => null);
 
-const useRouterSync = (onekiRouter) => {
+const useRouterSync = onekiRouter => {
   const nextRouter = useNextRouter();
-  if (typeof window !== "undefined") {
+  if (typeof window !== 'undefined') {
     onekiRouter.sync(nextRouter);
   }
 
@@ -61,8 +69,8 @@ export const App = React.memo(
     router.settings = formattedSettings;
 
     const route = useMemo(() => {
-      if (pageProps.routes && nextRouter.route === "/404") {
-        return pageProps.routes.find((route) => {
+      if (pageProps.routes && nextRouter.route === '/404') {
+        return pageProps.routes.find(route => {
           const routeRegex = getRouteRegex(route);
           return getRouteMatcher(routeRegex)(nextRouter.asPath);
         });
@@ -82,9 +90,9 @@ export const App = React.memo(
             set: setAppInitialState,
             promise: initialState,
           },
-        ].filter((entry) => isPromise(entry.promise));
+        ].filter(entry => isPromise(entry.promise));
         if (promises.length > 0) {
-          Promise.all(promises.map((entry) => entry.promise)).then(function (
+          Promise.all(promises.map(entry => entry.promise)).then(function (
             values
           ) {
             values.forEach((v, i) => promises[i].set(v));
@@ -124,14 +132,14 @@ export const App = React.memo(
       return <LoadingComponent />;
     }
 
-    if (nextRouter.route === "/404") {
+    if (nextRouter.route === '/404') {
       if (route || !router.location) return null;
       return <Error code={404} />;
     }
 
     init = true;
 
-    const getLayout = (Component && Component.getLayout) || ((page) => page);
+    const getLayout = (Component && Component.getLayout) || (page => page);
 
     return (
       <Provider store={appStore}>
@@ -150,7 +158,7 @@ export const App = React.memo(
   }
 );
 
-App.displayName = "App";
+App.displayName = 'App';
 App.propTypes = {
   settings: PropTypes.object,
   store: PropTypes.object,
