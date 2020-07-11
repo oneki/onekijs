@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { call, delay, spawn } from 'redux-saga/effects';
 import HTTPError from './error';
-import { every, latest } from './saga';
+import { every, latest, leading } from './saga';
 import { useReduxService } from './service';
 import { useReduxSelector } from './store';
 
@@ -187,7 +187,7 @@ export const authService = {
    *    - router: the OnekiJS router of the application
    *    - settings: the full settings object passed to the application
    */
-  fetchSecurityContext: latest(function* (
+  fetchSecurityContext: leading(function* (
     { onSuccess, onError },
     { store, router, settings }
   ) {
