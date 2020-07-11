@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.3](https://github.com/oneki/onekijs/compare/onekijs-core@0.7.2...onekijs-core@0.7.3) (2020-07-11)
+
+
+### Bug Fixes
+
+* **onekijs-core:** use self instead of this after switching from an arrow function to a normal fct ([08012a0](https://github.com/oneki/onekijs/commit/08012a05da333ad1ccfaa60041aba64b12f6ee5d))
+
+
+
+
+
 ## [0.7.2](https://github.com/oneki/onekijs/compare/onekijs-core@0.7.1...onekijs-core@0.7.2) (2020-07-11)
 
 **Note:** Version bump only for package onekijs-core
