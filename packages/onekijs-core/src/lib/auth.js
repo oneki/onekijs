@@ -1,46 +1,41 @@
 import { useEffect, useState } from 'react';
-import { call, delay, spawn } from 'redux-saga/effects';
+import { delay, spawn } from 'redux-saga/effects';
 import HTTPError from './error';
+import { reducer } from './reducer';
 import { every, latest, leading } from './saga';
 import { useReduxService } from './service';
 import { useReduxSelector } from './store';
-
 import {
   getIdp,
   getIdpName,
+  oauth2Keys,
   parseJwt,
   validateToken,
-  oauth2Keys,
 } from './utils/auth';
-import { get, isNull, set, del } from './utils/object';
-import { onStorageChange, removeItem, setItem, getItem } from './utils/storage';
+import { del, get, isNull, set } from './utils/object';
+import { getItem, onStorageChange, removeItem, setItem } from './utils/storage';
 import { absoluteUrl } from './utils/url';
 import { asyncGet, asyncPost } from './xhr';
-import { reducer } from './reducer';
 
 export const authService = {
   name: 'auth',
   /**
    * Save the security context in the redux store
    *
-   * @param {object} state : state of the redux store
    * @param {object} securityContext : the security context to save
    */
-  setSecurityContext: reducer(function (securityContext, state) {
-    set(state, 'auth.securityContext', securityContext);
+  setSecurityContext: reducer(function (securityContext) {
+    set(this.state, 'auth.securityContext', securityContext);
   }),
 
   /**
    * Save the token in the redux store
    *
-   * @param {object} state : state of the redux store
    * @param {string|object} token : the token to save
-   * @param {object} context :
-   *    - settings: the full settings object passed to the application
    */
-  setToken: reducer(function (token, state, { settings }) {
-    const idpName = getIdpName(state);
-    const idp = getIdp(settings, idpName);
+  setToken: reducer(function (token) {
+    const idpName = getIdpName(this.state);
+    const idp = getIdp(this.context.settings, idpName);
     const persist = get(idp, 'persist', null);
 
     let toCookie = null;
@@ -70,14 +65,14 @@ export const authService = {
       });
       removeItem('onekijs.token', storage('token'));
       // remove the token from the redux state.
-      del(state, 'auth.token');
+      del(this.state, 'auth.token');
     } else if (persist === 'memory') {
-      set(state, 'auth.token', token);
+      set(this.state, 'auth.token', token);
     } else if (typeof token === 'string') {
       // it's not a oauth2 token but a simple "string" token. Persist as it is
       setItem('onekijs.token', token, storage('token'));
       // persist the token in the redux state. It can be added as a bearer to any ajax request.
-      set(state, 'auth.token', token);
+      set(this.state, 'auth.token', token);
     } else {
       // it's an oauth2 token, persist all keys
       oauth2Keys.forEach(k => {
@@ -95,26 +90,23 @@ export const authService = {
         );
       }
       // persist the token in the redux state. It can be added as a bearer to any ajax request.
-      set(state, 'auth.token', token);
+      set(this.state, 'auth.token', token);
     }
   }),
 
   /**
    * Save the idp name in the redux store
    *
-   * @param {object} state : state of the redux store
    * @param {object} idp : the IDP to save (full object). Can be null for removal
-   * @param {object} context :
-   *    - router: the OnekiJS router of the application
-   *    - settings: the full settings object passed to the application
    */
-  setIdp: reducer(function (idp, state, { router, settings }) {
+  setIdp: reducer(function (idp) {
+    const { router, settings } = this.context;
     const nextIdp = idp;
 
     if (isNull(idp)) {
       // if it's a removal, we need to check in which storage the idp name was saved
       // get the current idpName from the redux store
-      const idpName = getIdpName(state);
+      const idpName = getIdpName(this.state);
       // if not found, the idp was already removed
       if (isNull(idpName)) return;
       // build the full IDP object from the settings
@@ -132,12 +124,12 @@ export const authService = {
 
     if (isNull(nextIdp)) {
       // it's a removal, just remove from the redux store
-      set(state, 'auth.idpName', null);
+      set(this.state, 'auth.idpName', null);
       // and the persistence storage
       removeItem('onekijs.idpName', storage);
     } else {
       // save the idp name in the redux store
-      set(state, 'auth.idpName', nextIdp.name);
+      set(this.state, 'auth.idpName', nextIdp.name);
       // and in the persistence storage
       setItem('onekijs.idpName', nextIdp.name, storage);
       if (storage === 'localStorage') {
@@ -159,7 +151,7 @@ export const authService = {
    *    - onError: callback for any error
    *    - onSuccess: callback for any success
    */
-  clear: latest(function* ({ onError, onSuccess }) {
+  clear: latest(function* (onError, onSuccess) {
     try {
       yield this.setSecurityContext(null);
       yield this.setToken(null);
@@ -187,10 +179,8 @@ export const authService = {
    *    - router: the OnekiJS router of the application
    *    - settings: the full settings object passed to the application
    */
-  fetchSecurityContext: leading(function* (
-    { onSuccess, onError },
-    { store, router, settings }
-  ) {
+  fetchSecurityContext: leading(function* (onError, onSuccess) {
+    const { store, settings } = this.context;
     try {
       const idpName = getIdpName(store.getState());
       if (!idpName || idpName === 'null') {
@@ -226,11 +216,7 @@ export const authService = {
       }
       if (typeof userinfoEndpoint === 'function') {
         // delegate the security context fetching to the user-passed function
-        securityContext = yield userinfoEndpoint(idp, {
-          store,
-          router,
-          settings,
-        });
+        securityContext = yield userinfoEndpoint(idp, this.context);
       } else if (userinfoEndpoint.startsWith('token://')) {
         // from the userinfo endpoint, we check which property of the token
         // contains the security context (usually the id_token)
@@ -282,7 +268,8 @@ export const authService = {
    *    - store: the redux store
    *    - settings: the full settings object passed to the application
    */
-  loadToken: latest(function* ({ onError, onSuccess }, { store, settings }) {
+  loadToken: latest(function* (onError, onSuccess) {
+    const { store, settings } = this.context;
     try {
       let result = get(store.getState(), 'auth.token', null);
       if (isNull(result)) {
@@ -325,27 +312,15 @@ export const authService = {
             }
           }
           // save it
-          result = yield this.saveToken({
-            token,
-            idp,
-          });
+          result = yield this.saveToken(token, idp);
         } else if (refresh_token) {
           // the access token is not still valid but we have a refresh token
           // use the refresh token to get a new valid token
-          result = yield this.refreshToken({
-            token: {
-              refresh_token,
-            },
-            idp,
-            force: true,
-          });
+          result = yield this.refreshToken({ refresh_token }, idp, true);
         } else {
           const token = yield getItem('onekijs.token', persist);
           if (token) {
-            result = yield this.saveToken({
-              token,
-              idp,
-            });
+            result = yield this.saveToken(token, idp);
           }
         }
       }
@@ -377,10 +352,8 @@ export const authService = {
    *    - store: the redux store
    *    - settings: the full settings object passed to the application
    */
-  refreshToken: every(function* (
-    { token, idp, force, onError },
-    { store, router, settings }
-  ) {
+  refreshToken: every(function* (token, idp, force, onError) {
+    const { store } = this.context;
     try {
       if (!force && !token.expires_at) {
         // the token has no expiration time, so it's still valid
@@ -412,11 +385,7 @@ export const authService = {
       let nextToken;
       if (typeof idp.tokenEndpoint === 'function') {
         // delegate to the function the task of refreshing the token
-        nextToken = yield idp.tokenEndpoint('refreshToken', idp, {
-          store,
-          router,
-          settings,
-        });
+        nextToken = yield idp.tokenEndpoint('refreshToken', idp, this.context);
       } else {
         // build the request for refreshing the token
         const body = {
@@ -452,7 +421,7 @@ export const authService = {
       if (nextToken.expires_in && !nextToken.expires_at) {
         nextToken.expires_at = Date.now() + parseInt(token.expires_in) * 1000;
       }
-      return yield this.saveToken({ token: nextToken, idp });
+      return yield this.saveToken(nextToken, idp);
     } catch (e) {
       if (onError) {
         yield onError(e);
@@ -474,10 +443,7 @@ export const authService = {
    *    - store: the redux store
    *    - settings: the full settings object passed to the application
    */
-  saveToken: latest(function* (
-    { token, idp, onError },
-    { store, router, settings }
-  ) {
+  saveToken: latest(function* (token, idp, onError) {
     try {
       if (idp.validate) {
         if (!idp.jwksEndpoint) {
@@ -491,7 +457,7 @@ export const authService = {
             token.id_token,
             idp.jwksEndpoint,
             idp,
-            { store, router, settings }
+            this.context
           );
           if (!isValidIdToken) {
             throw new HTTPError(400, 'Invalid id token');
@@ -501,7 +467,7 @@ export const authService = {
             token.access_token,
             idp.jwksEndpoint,
             idp,
-            { store, router, settings }
+            this.context
           );
           if (!isValidAccessToken) {
             throw new HTTPError(400, 'Invalid access token');
@@ -513,7 +479,7 @@ export const authService = {
       yield this.setToken(token);
 
       if (token.refresh_token) {
-        yield spawn(this.refreshToken, { token, idp, onError });
+        yield spawn(this.refreshToken, token, idp, onError);
       }
       return token;
     } catch (e) {
@@ -540,9 +506,9 @@ export const useSecurityContext = (selector, defaultValue) => {
       setLoading(false);
     } else {
       setLoading(true);
-      authService.fetchSecurityContext({
-        onError: () => authService.setSecurityContext(null),
-      });
+      authService.fetchSecurityContext(() =>
+        authService.setSecurityContext(null)
+      );
     }
   }, [authService, securityContext]);
 

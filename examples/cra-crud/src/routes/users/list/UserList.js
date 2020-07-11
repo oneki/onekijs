@@ -26,6 +26,8 @@ export default () => {
   // call useGet to retrieve the list of users
   const [users, loading] = useGet(`${baseUrl}/api/users`, {
     onError,
+    defaultValue: [],
+    throttle: 1000,
   });
 
   // Display a loading indicator while the request is pending
@@ -33,17 +35,16 @@ export default () => {
 
   return (
     <>
-      {users && (
-        <ul>
-          {users.map(user => (
-            <li key={`key-${user.id}`}>
-              <Link to={location => `${location.pathname}/${user.id}`}>
-                {user.firstname} {user.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+      <ul>
+        {users.map(user => (
+          <li key={`key-${user.id}`}>
+            <Link to={location => `${location.pathname}/${user.id}`}>
+              {user.firstname} {user.name}
+            </Link>
+          </li>
+        ))}
+      </ul>
+
       <Link to={location => `${location.pathname}/create`}>Add a user</Link>
     </>
   );

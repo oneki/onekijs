@@ -33,22 +33,24 @@ export const formService = {
   },
 
   clearValidation: reducer(function (
-    { fieldName, validatorName, level, compile = true },
-    state
+    fieldName,
+    validatorName,
+    level,
+    compile = true
   ) {
     del(this.fields[fieldName], `validations.${level}.${validatorName}`);
     if (compile) {
-      this.compileValidations(fieldName, state);
+      this.compileValidations(fieldName, this.state);
     }
   }),
 
-  compileValidations: reducer(function (fieldNames, state) {
+  compileValidations: reducer(function (fieldNames) {
     if (!Array.isArray(fieldNames)) {
       fieldNames = [fieldNames];
     }
     fieldNames.forEach(fieldName => {
       if (this.fields[fieldName]) {
-        state.validations[fieldName] = this.getValidation(fieldName);
+        this.state.validations[fieldName] = this.getValidation(fieldName);
         this.pendingDispatch.add(fieldName);
       }
     });
@@ -213,9 +215,9 @@ export const formService = {
     this.onChange('valueChange', listener, watchs, once);
   },
 
-  reset: reducer(function (payload, state) {
-    state.values = state.initialValues;
-    state.validations = {};
+  reset: reducer(function () {
+    this.state.values = this.state.initialValues;
+    this.state.validations = {};
     this.init();
   }),
 
@@ -234,13 +236,16 @@ export const formService = {
     }
   },
 
-  setSubmitting: reducer(function (submitting, state) {
-    state.submitting = submitting;
+  setSubmitting: reducer(function (submitting) {
+    this.state.submitting = submitting;
   }),
 
   setValidation: reducer(function (
-    { fieldName, validatorName, message, level, compile = true },
-    state
+    fieldName,
+    validatorName,
+    level,
+    message = null,
+    compile = true
   ) {
     if (this.fields[fieldName]) {
       set(
@@ -250,29 +255,29 @@ export const formService = {
       );
     }
     if (compile) {
-      this.compileValidations(fieldName, state);
+      this.compileValidations(fieldName);
     }
   }),
 
-  _setValues: reducer(function ({ values = {}, validations = {} }, state) {
+  _setValues: reducer(function (values = {}, validations = {}) {
     Object.keys(values).forEach(key => {
       const field = this.fields[key];
       if (field && field.touchOn === 'change' && !field.touched) {
         field.touched = true;
       }
-      set(state, `values.${key}`, values[key]);
+      set(this.state, `values.${key}`, values[key]);
       this._getSubWatchs(key).forEach(key => this.pendingDispatch.add(key));
     });
 
     Object.keys(validations).forEach(fieldName => {
-      state.validations[fieldName] = validations[fieldName];
-      this.compileValidations(fieldName, state);
+      this.state.validations[fieldName] = validations[fieldName];
+      this.compileValidations(fieldName);
     });
   }),
 
-  setValue: latest(function* ({ name, value }) {
+  setValue: latest(function* (fieldName, value) {
     const async = yield this.validateAll({
-      [name]: value,
+      [fieldName]: value,
     });
     if (async.length > 0) {
       yield this.compileValidations(async);
@@ -286,14 +291,14 @@ export const formService = {
     }
   }),
 
-  submit: leading(function* ({
-    resubmit,
-    onSuccess,
-    onError,
-    onWarning,
+  submit: leading(function* (
     values,
     validations,
-  }) {
+    resubmit,
+    onError,
+    onWarning,
+    onSuccess
+  ) {
     // compile the validations to get the status
     const { statusCode, fields } = yield this.getContainerFieldValidation(
       validations,
@@ -329,48 +334,33 @@ export const formService = {
     }
   }),
 
-  touch: reducer(function (fieldName, state) {
+  touch: reducer(function (fieldName) {
     if (!this.fields[fieldName].touched) {
       this.fields[fieldName].touched = true;
-      this.compileValidations(fieldName, state);
+      this.compileValidations(fieldName);
     }
   }),
 
-  touchAll: reducer(function (payload, state) {
+  touchAll: reducer(function () {
     Object.keys(this.fields).forEach(fieldName => {
-      this.touch(fieldName, state);
+      this.touch(fieldName);
     });
   }),
 
   validate: function* (fieldName, validatorName, validator, value) {
-    yield this.setValidation({
-      fieldName,
-      validatorName,
-      level: LOADING,
-      compile: false,
-    });
+    yield this.setValidation(fieldName, validatorName, LOADING, null, false);
     const result = yield validator(value);
-    yield this.clearValidation({
-      fieldName,
-      validatorName,
-      level: LOADING,
-      compile: false,
-    });
+    yield this.clearValidation(fieldName, validatorName, LOADING, false);
     if (result.valid) {
-      yield this.clearValidation({
-        fieldName,
-        validatorName,
-        level: ERROR,
-        compile: false,
-      });
+      yield this.clearValidation(fieldName, validatorName, ERROR, false);
     } else {
-      yield this.setValidation({
+      yield this.setValidation(
         fieldName,
         validatorName,
-        level: ERROR,
-        message: result.message,
-        compile: false,
-      });
+        ERROR,
+        result.message,
+        false
+      );
     }
   },
 
@@ -408,7 +398,7 @@ export const formService = {
         async.push(fieldName);
       }
     });
-    yield this._setValues({ values, validations });
+    yield this._setValues(values, validations);
     return async;
   },
 };

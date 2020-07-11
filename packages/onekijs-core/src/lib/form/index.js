@@ -109,7 +109,7 @@ export const useForm = (onSubmit, formOptions = {}) => {
                 value = value.target.value;
               }
               if (get(valuesRef.current, name) !== value) {
-                service.setValue({ name, value });
+                service.setValue(name, value);
               }
             },
             onFocus: () => {
@@ -179,14 +179,14 @@ export const useForm = (onSubmit, formOptions = {}) => {
    */
   const submit = useCallback(
     e => {
-      service.submit({
-        onSuccess: onSubmitRef.current,
-        onError: formOptionsRef.current.onError,
-        onWarning: formOptionsRef.current.onWarning,
-        resubmit: submit,
-        values: valuesRef.current,
-        validations: validationsRef.current,
-      });
+      service.submit(
+        valuesRef.current,
+        validationsRef.current,
+        submit,
+        formOptionsRef.current.onError,
+        formOptionsRef.current.onWarning,
+        onSubmitRef.current
+      );
       if (e) {
         e.preventDefault();
       }
@@ -249,23 +249,14 @@ export const useForm = (onSubmit, formOptions = {}) => {
 
   const setLevelValidation = useCallback(
     (fieldName, validatorName, level, message) => {
-      service.setValidation({
-        fieldName,
-        validatorName,
-        message,
-        level,
-      });
+      service.setValidation(fieldName, validatorName, level, message);
     },
     [service]
   );
 
   const clearLevelValidation = useCallback(
     (fieldName, validatorName, level) => {
-      service.clearValidation({
-        fieldName,
-        validatorName,
-        level,
-      });
+      service.clearValidation(fieldName, validatorName, level);
     },
     [service]
   );
@@ -274,21 +265,19 @@ export const useForm = (onSubmit, formOptions = {}) => {
     (level, fieldName, validatorName, message, matcher) => {
       let changed = false;
       if (service.fields[fieldName]) {
-        if (
-          service.hasValidation({ fieldName, validatorName, level: LOADING })
-        ) {
-          service.clearValidation({ fieldName, validatorName, level: LOADING });
+        if (service.hasValidation(fieldName, validatorName, LOADING)) {
+          service.clearValidation(fieldName, validatorName, LOADING);
           changed = true;
         }
         if (isNull(matcher) || matcher) {
           if (
-            !service.hasValidation({ fieldName, validatorName, level, message })
+            !service.hasValidation(fieldName, validatorName, level, message)
           ) {
-            service.setValidation({ fieldName, validatorName, level, message });
+            service.setValidation(fieldName, validatorName, level, message);
             changed = true;
           }
-        } else if (service.hasValidation({ fieldName, validatorName, level })) {
-          service.clearValidation({ fieldName, validatorName, level });
+        } else if (service.hasValidation(fieldName, validatorName, level)) {
+          service.clearValidation(fieldName, validatorName, level);
           changed = true;
         }
       }
@@ -331,9 +320,9 @@ export const useForm = (onSubmit, formOptions = {}) => {
   );
 
   const setValue = useCallback(
-    (name, value) => {
-      if (get(valuesRef.current, name) !== value) {
-        return service.setValue({ name, value });
+    (fieldName, value) => {
+      if (get(valuesRef.current, fieldName) !== value) {
+        return service.setValue(fieldName, value);
       }
     },
     [service]
@@ -357,10 +346,7 @@ export const useForm = (onSubmit, formOptions = {}) => {
       // get current value
       const currentArrayValue = get(valuesRef.current, fieldArrayName, []);
       const index = currentArrayValue.length;
-      service.setValue({
-        name: `${fieldArrayName}.${index}`,
-        value: initialValue || {},
-      });
+      service.setValue(`${fieldArrayName}.${index}`, initialValue || {});
     },
     [service]
   );

@@ -2,10 +2,11 @@ import { useCallback, useEffect, useRef } from 'react';
 import { call, cancel, delay, fork } from 'redux-saga/effects';
 import { notificationService } from './notification';
 import { reducer } from './reducer';
-import { every } from './saga';
+import { every, throttle, debounce } from './saga';
 import { useLocalService } from './service';
 import { useReduxSelector } from './store';
 import { asyncHttp } from './xhr';
+import { useLazyRef } from './utils/hook';
 
 export const crudService = {
   delayLoading: function* (delay_ms) {
@@ -13,15 +14,13 @@ export const crudService = {
     yield this.setLoading(true);
   },
 
-  fetchSuccess: reducer((result, state) => {
-    state.result = result;
-    state.loading = false;
+  fetchSuccess: reducer(function (result) {
+    this.state.result = result;
+    this.state.loading = false;
   }),
 
-  fetch: every(function* (
-    { url, method, body = null, options = {} },
-    { router }
-  ) {
+  fetch: every(function* (url, method, body = null, options = {}) {
+    const { router } = this.context;
     let loadingTask = null;
     try {
       loadingTask = yield fork(this.delayLoading, options.delayLoading || 200);
@@ -56,8 +55,8 @@ export const crudService = {
     }
   }),
 
-  setLoading: reducer((isLoading, state) => {
-    state.loading = isLoading;
+  setLoading: reducer(function (isLoading) {
+    this.state.loading = isLoading;
   }),
 
   inject: {
@@ -69,11 +68,40 @@ export const useGet = (url, options = {}) => {
   const optionsRef = useRef();
   optionsRef.current = options;
 
-  const [state, service] = useLocalService(crudService, { loading: false });
+  const crudSchema = useLazyRef(() => {
+    let delayFetch = every(function* (url, method, body = null, options = {}) {
+      return yield this.fetch(url, method, body, options);
+    });
+    if (options.throttle) {
+      delayFetch = throttle(options.throttle, function* (
+        url,
+        method,
+        body = null,
+        options = {}
+      ) {
+        return yield this.fetch(url, method, body, options);
+      });
+    } else if (options.debounce) {
+      delayFetch = debounce(options.debounce, function* (
+        url,
+        method,
+        body = null,
+        options = {}
+      ) {
+        return yield this.fetch(url, method, body, options);
+      });
+    }
+    return Object.assign({ delayFetch }, crudService);
+  });
+
+  const [state, service] = useLocalService(crudSchema.current, {
+    loading: false,
+    result: optionsRef.current.defaultValue,
+  });
 
   const refresh = useCallback(() => {
     if (url) {
-      service.fetch({ url, method: 'GET', options: optionsRef.current });
+      service.delayFetch(url, 'GET', null, optionsRef.current);
     }
   }, [url, service]);
 
@@ -99,11 +127,7 @@ export const useDelete = (url, options = {}) => {
   const executor = useCallback(
     (extraOptions = {}) => {
       extraOptions = Object.assign({}, optionsRef.current, extraOptions);
-      service.fetch({
-        url: extraOptions.url || url,
-        method: 'DELETE',
-        options: extraOptions,
-      });
+      service.fetch(extraOptions.url || url, 'DELETE', null, extraOptions);
     },
     [service, url]
   );
@@ -126,12 +150,7 @@ export const usePostPutPatch = (url, method, options = {}) => {
   const executor = useCallback(
     (body, extraOptions = {}) => {
       extraOptions = Object.assign({}, optionsRef.current, extraOptions);
-      service.fetch({
-        url: extraOptions.url || url,
-        method,
-        body,
-        options: extraOptions,
-      });
+      service.fetch(extraOptions.url || url, method, body, extraOptions);
     },
     [service, url, method]
   );

@@ -1,9 +1,9 @@
-import { createStore, applyMiddleware } from 'redux';
-import createSagaMiddleware from 'redux-saga';
 import produce from 'immer';
-import { get } from './utils/object';
-import { useSelector } from 'react-redux';
 import { useCallback } from 'react';
+import { useSelector } from 'react-redux';
+import { applyMiddleware, createStore } from 'redux';
+import createSagaMiddleware from 'redux-saga';
+import { fromPayload, get } from './utils/object';
 
 export const createReduxStore = (initialState = {}, middlewares = []) => {
   let sagaMiddleware = middlewares.find(
@@ -24,14 +24,20 @@ export const createReduxStore = (initialState = {}, middlewares = []) => {
       if (reducers) {
         const nextState = produce(state, draftState => {
           Object.keys(reducers).forEach(k => {
-            const payload = action.payload === undefined ? {} : action.payload;
-            reducers[k].func.call(
-              reducers[k].bind,
-              payload,
-              draftState,
-              reducers[k].context
-            );
+            try {
+              reducers[k].bind.__inReducer__ = true;
+              reducers[k].bind.state = draftState;
+              reducers[k].func.apply(
+                reducers[k].bind,
+                fromPayload(action.payload)
+              );
+            } finally {
+              reducers[k].bind.__inReducer__ = false;
+            }
           });
+        });
+        Object.keys(reducers).forEach(k => {
+          reducers[k].bind.state = nextState;
         });
         return nextState;
       }
@@ -52,13 +58,12 @@ export const createReduxStore = (initialState = {}, middlewares = []) => {
     }
   };
 
-  store.injectReducers = (bind, namespace, reducers, context) => {
+  store.injectReducers = (bind, namespace, reducers) => {
     Object.keys(reducers).forEach(actionType => {
       store._reducers[actionType] = store._reducers[actionType] || {};
       store._reducers[actionType][`${namespace}.${actionType}`] = {
         func: reducers[actionType],
         bind,
-        context,
       };
     });
 

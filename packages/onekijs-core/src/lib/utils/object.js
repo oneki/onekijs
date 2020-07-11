@@ -234,3 +234,21 @@ export const diffArrays = (arr1, arr2) => {
   const same = arr1.filter(x => arr2.includes(x));
   return { added, removed, same };
 };
+
+export const toPayload = args => {
+  const payload = {};
+  Array.prototype.slice
+    .call(args)
+    .forEach((arg, i) => (payload[`arg${i.toString().padStart(5, 0)}`] = arg));
+  return payload;
+};
+
+export const fromPayload = payload => {
+  const args = [];
+  Object.keys(payload)
+    .sort()
+    .forEach(k => {
+      args.push(payload[k]);
+    });
+  return args;
+};

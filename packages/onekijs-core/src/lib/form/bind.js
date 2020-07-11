@@ -1,11 +1,11 @@
-import { get } from '../utils/object';
-import { useFormContext } from './context';
-import { useState, useMemo, useEffect } from 'react';
-import { useIsomorphicLayoutEffect } from '../utils/hook';
-import { fork, call } from 'redux-saga/effects';
+import { useEffect, useState } from 'react';
+import { call, fork } from 'redux-saga/effects';
+import { reducer } from '../reducer';
 import { latest } from '../saga';
 import { useLocalService } from '../service';
-import { reducer } from '../reducer';
+import { useIsomorphicLayoutEffect } from '../utils/hook';
+import { get } from '../utils/object';
+import { useFormContext } from './context';
 
 // useFormBind does not interact with valueChange via a listener as it should be defined at the same level as useForm
 export const useFormBind = function (rule, watch = []) {
@@ -47,27 +47,27 @@ const forkAsyncBind = function* (asyncMethod, watch) {
 };
 
 export const asyncBindService = {
-  setLoading: reducer((isLoading, state) => {
-    state.loading = isLoading;
+  setLoading: reducer(function (isLoading) {
+    this.state.loading = isLoading;
   }),
-  success: reducer(({ result }, state) => {
-    state.result = result;
-    state.loading = false;
-    state.error = null;
+  success: reducer(function (result) {
+    this.state.result = result;
+    this.state.loading = false;
+    this.state.error = null;
   }),
-  error: reducer((error, state) => {
-    state.loading = false;
-    state.error = error;
+  error: reducer(function (error) {
+    this.state.loading = false;
+    this.state.error = error;
   }),
 
-  execute: latest(function* ({ asyncMethod, watch }) {
+  execute: latest(function* (asyncMethod, watch) {
     try {
       const task = yield call([this, forkAsyncBind], asyncMethod, watch);
       const error = task.error();
       if (error) {
         yield this.error(error);
       } else {
-        yield this.success({ result: task.result() });
+        yield this.success(task.result());
       }
     } catch (e) {
       yield this.error(e);
@@ -85,10 +85,7 @@ export const useAsyncBind = (rule, watch = []) => {
 
   useIsomorphicLayoutEffect(() => {
     const listener = function () {
-      service.execute({
-        asyncMethod: rule,
-        watch: arguments,
-      });
+      service.execute(rule, arguments);
     };
     onValueChange(listener, watch);
     return () => {
@@ -98,10 +95,10 @@ export const useAsyncBind = (rule, watch = []) => {
   }, []);
 
   useEffect(() => {
-    service.execute({
-      asyncMethod: rule,
-      watch: watch.map(w => get(values, w)),
-    });
+    service.execute(
+      rule,
+      watch.map(w => get(values, w))
+    );
     // eslint-disable-next-line
   }, []);
 
@@ -116,10 +113,7 @@ export const useFormAsyncBind = function (rule, watch = [], options = {}) {
   });
   watch = watch.map(w => get(this.state.values, w));
   useEffect(() => {
-    service.execute({
-      asyncMethod: rule,
-      watch,
-    });
+    service.execute(rule, watch);
     // eslint-disable-next-line
   }, watch);
 

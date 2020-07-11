@@ -69,34 +69,32 @@ export const i18nService = {
     }
   },
 
-  setLocale: reducer((locale, state) => {
-    set(state, 'i18n.locale', locale);
+  setLocale: reducer(function (locale) {
+    set(this.state, 'i18n.locale', locale);
   }),
-  setTranslations: reducer(({ translations, locale }, state) => {
+  setTranslations: reducer(function (translations, locale) {
     set(
-      state,
+      this.state,
       `i18n.translations.${locale}`,
       Object.assign(
-        get(state, `i18n.translations.${locale}`, {}),
+        get(this.state, `i18n.translations.${locale}`, {}),
         flattenTranslations(translations)
       )
     );
     Object.keys(translations).forEach(ns =>
-      append(state, `i18n.ns.${locale}`, ns)
+      append(this.state, `i18n.ns.${locale}`, ns)
     );
   }),
-  setFetchingTranslations: reducer((fetching, state) => {
-    set(state, 'i18n.fetching', fetching);
+  setFetchingTranslations: reducer(function (fetching) {
+    set(this.state, 'i18n.fetching', fetching);
   }),
 
-  changeLocale: latest(function* (locale, context) {
+  changeLocale: latest(function* (locale) {
     yield this.setLocale(locale);
-    yield context.settings.i18n.changeLocale(locale, context);
+    yield this.context.settings.i18n.changeLocale(locale, this.context);
   }),
-  fetchTranslations: latest(function* (
-    { locale, namespaces, options = {} },
-    { settings }
-  ) {
+  fetchTranslations: latest(function* (locale, namespaces, options = {}) {
+    const { settings } = this.context;
     try {
       yield this.setFetchingTranslations(true);
       const results = yield all(
@@ -106,7 +104,7 @@ export const i18nService = {
       );
       const translations = {};
       namespaces.forEach((ns, i) => (translations[ns] = results[i]));
-      yield this.setTranslations({ translations, locale }); // to update the store and trigger a re-render.
+      yield this.setTranslations(translations, locale); // to update the store and trigger a re-render.
       yield this.setFetchingTranslations(false);
     } catch (e) {
       yield this.setFetchingTranslations(false);
@@ -286,7 +284,7 @@ export const useTranslation = namespaces => {
 
   useEffect(() => {
     if (nsNotLoaded.length > 0 && !fetching) {
-      i18nService.fetchTranslations({ locale, namespaces: nsNotLoaded });
+      i18nService.fetchTranslations(locale, nsNotLoaded);
     }
   }, [nsNotLoaded, i18nService, locale, fetching]);
 

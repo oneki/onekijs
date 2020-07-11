@@ -2,11 +2,11 @@ import { runSaga, stdChannel } from '@redux-saga/core';
 import produce from 'immer';
 import { useCallback, useContext, useEffect, useReducer, useRef } from 'react';
 import { ReactReduxContext, useStore } from 'react-redux';
-import { call, take } from 'redux-saga/effects';
+import { call, take, apply } from 'redux-saga/effects';
 import { AppContext } from './context';
 import { every } from './saga';
 import { useLazyRef } from './utils/hook';
-import { set, useShallowEqual } from './utils/object';
+import { set, useShallowEqual, toPayload, fromPayload } from './utils/object';
 import { isFunction } from './utils/type';
 import { reducer } from './reducer';
 
@@ -18,7 +18,8 @@ class ReduxService {
     this.__types__ = {};
     this.__sagas__ = {};
     this.__name__ = schema.name;
-    this.__context__ = context;
+    this.__inReducer__ = false;
+    this.context = context;
     this.__initialized__ = false;
 
     Object.keys(schema).forEach(key => {
@@ -43,6 +44,7 @@ class ReduxService {
   }
 
   __createReducer__(type, reducer) {
+    const self = this;
     const actionType = this.__name__ ? `${this.__name__}.${type}` : type;
     if (reducer) {
       this.__reducers__[actionType] = reducer;
@@ -51,32 +53,25 @@ class ReduxService {
         actionType,
       };
     }
-    this[type] = (payload, state, context) => {
-      if (state) {
-        // call from another reducer (the second argument is the state)
-        if (!context) {
-          context = this.__context__;
-        }
-        return reducer.call(this, payload, state, context);
-      } else {
+    this[type] = function () {
+      if (!self.__inReducer__) {
         // call from a saga -> dispatch
-        return this.__dispatch__({
+        return self.__dispatch__({
           type: actionType,
-          payload,
+          payload: toPayload(arguments),
         });
       }
+      return reducer.apply(self, arguments);
     };
   }
 
   __createSaga__(type, effect, saga, delay) {
     const self = this;
-    const context = this.__context__;
     const actionType = this.__name__ ? `${this.__name__}.${type}` : type;
 
     const wrapper = function* wrapper(action) {
       try {
-        const payload = action.payload === undefined ? {} : action.payload;
-        const result = yield call([self, saga], payload, context);
+        const result = yield apply(self, saga, fromPayload(action.payload));
         if (action.resolve) {
           action.resolve(result);
         }
@@ -114,37 +109,31 @@ class ReduxService {
     };
     this[type] = saga;
     this[type] = function* () {
-      if (arguments.length > 1) {
-        return yield saga.apply(self, arguments);
-      } else {
-        const payload = arguments[0] === undefined ? {} : arguments[0];
-        return yield saga.call(self, payload, self.__context__);
-      }
+      yield saga.apply(self, arguments);
     };
   }
 
   __injectService__(name, defaultSchema) {
     // create service with the default schema if not already present in the context
-    const { store } = this.__context__;
-    createReduxService(defaultSchema, this.__context__);
+    createReduxService(defaultSchema, this.context);
     this[name] = {};
 
     Object.keys(defaultSchema).forEach(key => {
       const value = defaultSchema[key];
       if (value) {
         if (value.reducer) {
-          this[name][key] = function (payload) {
-            return store.dispatch({
+          this[name][key] = function () {
+            return this.context.store.dispatch({
               type: `${defaultSchema.name}.${key}`,
-              payload,
+              payload: toPayload(arguments),
             });
           };
         } else if (value.saga) {
-          this[name][key] = function (payload) {
+          this[name][key] = function () {
             return new Promise((resolve, reject) => {
-              store.dispatch({
+              this.context.store.dispatch({
                 type: `${defaultSchema.name}.${key}`,
-                payload,
+                payload: toPayload(arguments),
                 resolve,
                 reject,
               });
@@ -156,25 +145,18 @@ class ReduxService {
   }
 
   _run() {
-    const { store } = this.__context__;
-    this.__dispatch__ = store.dispatch;
-    store.injectReducers(
-      this,
-      this.__name__,
-      this.__reducers__,
-      this.__context__
-    );
+    this.__dispatch__ = this.context.store.dispatch;
+    this.context.store.injectReducers(this, this.__name__, this.__reducers__);
     Object.keys(this.__sagas__).forEach(type => {
-      store.runSaga(this.__name__, this.__sagas__[type], type);
+      this.context.store.runSaga(this.__name__, this.__sagas__[type], type);
     });
   }
 
   _stop() {
-    const { store } = this.__context__;
     this.__dispatch__ = null;
-    store.removeReducers(this.__name__, this.__reducers__);
+    this.context.store.removeReducers(this.__name__, this.__reducers__);
     Object.keys(this.__sagas__).forEach(type => {
-      store.cancelSaga(this.__name__, type);
+      this.context.store.cancelSaga(this.__name__, type);
     });
   }
 }
@@ -184,20 +166,23 @@ class Service extends ReduxService {
     super(schema, context);
 
     this.__reducer__ = (state, action) => {
-      const nextState = produce(state, draftState => {
-        if (this.__reducers__[action.type]) {
-          //debugger;
-          const payload = action.payload === undefined ? {} : action.payload;
-          this.__reducers__[action.type].call(
-            this,
-            payload,
-            draftState,
-            this.__context__
-          );
-        }
-      });
-      this._state = nextState;
-      return nextState;
+      this.__inReducer__ = true;
+      try {
+        const nextState = produce(state, draftState => {
+          this.state = draftState;
+          if (this.__reducers__[action.type]) {
+            //debugger;
+            this.__reducers__[action.type].apply(
+              this,
+              fromPayload(action.payload)
+            );
+          }
+        });
+        this.state = nextState;
+        return nextState;
+      } finally {
+        this.__inReducer__ = false;
+      }
     };
   }
   _run() {}
@@ -209,18 +194,18 @@ const handler = {
     const alias = target.__types__[prop];
     if (alias) {
       if (alias.type === 'reducer') {
-        return payload => {
+        return function () {
           target.__dispatch__({
             type: alias.actionType,
-            payload,
+            payload: toPayload(arguments),
           });
         };
       } else if (alias.type === 'saga') {
-        return payload => {
+        return function () {
           return new Promise((resolve, reject) => {
             target.__dispatch__({
               type: alias.actionType,
-              payload,
+              payload: toPayload(arguments),
               resolve,
               reject,
             });
@@ -334,19 +319,16 @@ export const useLocalService = (schema, initialState = {}) => {
 export const genericService = {
   name: 'generic',
 
-  executeReducer: reducer(function (
-    { reducer: r, key, payload, context },
-    state
-  ) {
+  executeReducer: reducer(function ({ reducer: r, key, payload }) {
     if (r) {
-      r(context, state);
+      r(payload).bind(this);
     } else {
-      set(state, key, payload);
+      set(this.state, key, payload);
     }
   }),
 
-  executeSaga: every(function* ({ saga }, context) {
-    yield saga(context);
+  executeSaga: every(function* (saga) {
+    yield saga();
   }),
 };
 

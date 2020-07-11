@@ -7,8 +7,8 @@ import { reducer } from './reducer';
 const globalService = {
   name: 'state',
 
-  setState: reducer((payload, state) => {
-    set(state, payload.key, payload.value);
+  setState: reducer(function (payload) {
+    set(this.state, payload.key, payload.value);
   }),
 };
 
@@ -52,8 +52,8 @@ export const useGlobalProp = (key, defaultValue) => {
 };
 
 const localService = {
-  setState: reducer((payload, state) => {
-    set(state, payload.key, payload.value);
+  setState: reducer(function (payload) {
+    set(this.state, payload.key, payload.value);
   }),
 };
 

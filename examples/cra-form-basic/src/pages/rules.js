@@ -38,6 +38,7 @@ export const RulesPage = () => {
   const [result, setResult] = useState();
 
   const doSubmit = useCallback(data => {
+    console.log('doSubmit')
     setResult(JSON.stringify(data, null, 2));
   }, []);
 
@@ -84,9 +85,9 @@ export const RulesPage = () => {
           </div>
           <div>
             <b>Repository password: </b>
-            <Input name="repo_password" type="password" required />
-            {getValidation('password').status} :{' '}
-            {getValidation('password').message}
+            <Input name="repo_password" type="password"  autoComplete="new-password" required />
+            {getValidation('repo_password').status} :{' '}
+            {getValidation('repo_password').message}
           </div>
           <div>
             <b>Confirm password: </b>

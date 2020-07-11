@@ -69,41 +69,46 @@ export const notificationService = {
   init: function ({ router }) {
     router.listen(this.onRouteChange);
   },
-  add: reducer(function (notification, state, { settings }) {
+
+  add: reducer(function (notification) {
     const max = get(
-      settings,
+      this.context.settings,
       `notification.${notification.topic}.max`,
-      get(settings, `notification.default.max`, 0)
+      get(this.context.settings, `notification.default.max`, 0)
     );
-    append(state, `notifications.${notification.topic}`, notification);
-    if (max > 0 && state.notifications[notification.topic].length > max) {
-      state.notifications[notification.topic].unshift();
+    append(this.state, `notifications.${notification.topic}`, notification);
+    if (max > 0 && this.state.notifications[notification.topic].length > max) {
+      this.state.notifications[notification.topic].unshift();
     }
   }),
-  clearTopic: reducer(function (topic, state) {
-    set(state, `notifications.${topic}`, []);
+
+  clearTopic: reducer(function (topic) {
+    set(this.state, `notifications.${topic}`, []);
   }),
-  remove: reducer(function (notificationId, state) {
-    Object.keys(state.notifications || {}).forEach(topic => {
-      for (let i = 0; i < state.notifications[topic].length; i++) {
-        if (state.notifications[topic][i].id === notificationId) {
-          state.notifications[topic].splice(i, 1);
+
+  remove: reducer(function (notificationId) {
+    Object.keys(this.state.notifications || {}).forEach(topic => {
+      for (let i = 0; i < this.state.notifications[topic].length; i++) {
+        if (this.state.notifications[topic][i].id === notificationId) {
+          this.state.notifications[topic].splice(i, 1);
           break;
         }
       }
     });
   }),
-  onRouteChange: reducer(function (payload, state) {
-    Object.keys(state.notifications || {}).forEach(topic => {
-      for (let i = state.notifications[topic].length - 1; i >= 0; i--) {
-        if (!state.notifications[topic][i].persist) {
-          state.notifications[topic].splice(i, 1);
+
+  onRouteChange: reducer(function () {
+    Object.keys(this.state.notifications || {}).forEach(topic => {
+      for (let i = this.state.notifications[topic].length - 1; i >= 0; i--) {
+        if (!this.state.notifications[topic][i].persist) {
+          this.state.notifications[topic].splice(i, 1);
         }
       }
     });
   }),
 
-  send: every(function* (notification, { store, settings }) {
+  send: every(function* (notification) {
+    const { store, settings } = this.context;
     if (!isNull(notification.id)) {
       // check if this notification is already present
       const topic = notification.topic || 'default';
