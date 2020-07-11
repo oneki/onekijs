@@ -1,13 +1,14 @@
-import React, { useCallback, useContext, useEffect, useMemo } from "react";
-import { all, call } from "redux-saga/effects";
-import { AppContext, useOnekiRouter, useSettings } from "./context";
-import { notificationService } from "./notification";
-import { latest } from "./saga";
-import { useReduxService } from "./service";
-import { useReduxSelector } from "./store";
-import { append, get, isNull, set } from "./utils/object";
-import { isFunction } from "./utils/type";
-import { asyncGet } from "./xhr";
+import React, { useCallback, useContext, useEffect, useMemo } from 'react';
+import { all, call } from 'redux-saga/effects';
+import { AppContext, useOnekiRouter, useSettings } from './context';
+import { notificationService } from './notification';
+import { latest } from './saga';
+import { useReduxService } from './service';
+import { useReduxSelector } from './store';
+import { append, get, isNull, set } from './utils/object';
+import { isFunction } from './utils/type';
+import { asyncGet } from './xhr';
+import { reducer } from './reducer';
 
 // export const url2locale = (pathname, contextPath, candidates) => {
 //   const length = contextPath.endsWith("/")
@@ -18,7 +19,7 @@ import { asyncGet } from "./xhr";
 //   return null;
 // };
 
-export const flattenTranslations = (translations) => {
+export const flattenTranslations = translations => {
   /* Example:
   Input:
   {
@@ -37,7 +38,7 @@ export const flattenTranslations = (translations) => {
   }
   */
   const result = {};
-  Object.keys(translations).forEach((ns) => {
+  Object.keys(translations).forEach(ns => {
     Object.keys(translations[ns]).reduce((accumulator, key) => {
       accumulator[`${ns}:${key}`] = translations[ns][key];
       return accumulator;
@@ -47,7 +48,7 @@ export const flattenTranslations = (translations) => {
 };
 
 export const useLocale = () => {
-  return get(useContext(AppContext), "i18n.locale");
+  return get(useContext(AppContext), 'i18n.locale');
 };
 
 const getLocaleUrl = (locale, ns, settings) => {
@@ -58,67 +59,66 @@ const getLocaleUrl = (locale, ns, settings) => {
 };
 
 export const i18nService = {
-  name: "i18n",
+  name: 'i18n',
   init: function ({ settings }) {
-    this["modifiers"] = {
+    this['modifiers'] = {
       locale: (value, locale) => (value ? value.toLocaleString(locale) : value),
     };
     if (settings.i18n && settings.i18n.modifiers) {
-      Object.assign(this["modifiers"], settings.i18n.modifiers);
+      Object.assign(this['modifiers'], settings.i18n.modifiers);
     }
   },
-  reducers: {
-    setLocale: (state, locale) => {
-      set(state, "i18n.locale", locale);
-    },
-    setTranslations: (state, { translations, locale }) => {
-      set(
-        state,
-        `i18n.translations.${locale}`,
-        Object.assign(
-          get(state, `i18n.translations.${locale}`, {}),
-          flattenTranslations(translations)
-        )
+
+  setLocale: reducer((locale, state) => {
+    set(state, 'i18n.locale', locale);
+  }),
+  setTranslations: reducer(({ translations, locale }, state) => {
+    set(
+      state,
+      `i18n.translations.${locale}`,
+      Object.assign(
+        get(state, `i18n.translations.${locale}`, {}),
+        flattenTranslations(translations)
+      )
+    );
+    Object.keys(translations).forEach(ns =>
+      append(state, `i18n.ns.${locale}`, ns)
+    );
+  }),
+  setFetchingTranslations: reducer((fetching, state) => {
+    set(state, 'i18n.fetching', fetching);
+  }),
+
+  changeLocale: latest(function* (locale, context) {
+    yield this.setLocale(locale);
+    yield context.settings.i18n.changeLocale(locale, context);
+  }),
+  fetchTranslations: latest(function* (
+    { locale, namespaces, options = {} },
+    { settings }
+  ) {
+    try {
+      yield this.setFetchingTranslations(true);
+      const results = yield all(
+        namespaces.map(ns => {
+          return call(asyncGet, getLocaleUrl(locale, ns, settings), options);
+        })
       );
-      Object.keys(translations).forEach((ns) =>
-        append(state, `i18n.ns.${locale}`, ns)
-      );
-    },
-    setFetchingTranslations: (state, fetching) => {
-      set(state, "i18n.fetching", fetching);
-    },
-  },
-  sagas: {
-    changeLocale: latest(function* (locale, context) {
-      yield call(this.setLocale, locale);
-      yield call(context.settings.i18n.changeLocale, locale, context);
-    }),
-    fetchTranslations: latest(function* (
-      { locale, namespaces, options = {} },
-      { settings }
-    ) {
-      try {
-        yield call(this.setFetchingTranslations, true);
-        const results = yield all(
-          namespaces.map((ns) => {
-            return call(asyncGet, getLocaleUrl(locale, ns, settings), options);
-          })
-        );
-        const translations = {};
-        namespaces.forEach((ns, i) => (translations[ns] = results[i]));
-        yield call(this.setTranslations, { translations, locale }); // to update the store and trigger a re-render.
-        yield call(this.setFetchingTranslations, false);
-      } catch (e) {
-        yield call(this.setFetchingTranslations, false);
-        const onError = options.onError;
-        if (onError) {
-          yield call(onError, e);
-        } else {
-          yield call(this.notificationService.error, e);
-        }
+      const translations = {};
+      namespaces.forEach((ns, i) => (translations[ns] = results[i]));
+      yield this.setTranslations({ translations, locale }); // to update the store and trigger a re-render.
+      yield this.setFetchingTranslations(false);
+    } catch (e) {
+      yield this.setFetchingTranslations(false);
+      const onError = options.onError;
+      if (onError) {
+        yield onError(e);
+      } else {
+        yield this.notificationService.error(e);
       }
-    }),
-  },
+    }
+  }),
+
   inject: {
     notificationService,
   },
@@ -131,7 +131,7 @@ export const useI18nService = () => {
 const stringifyJsx = (reactElement, ctx = {}, idx = 1) => {
   const children = [].concat(reactElement.props.children);
   const str = children.reduce((accumulator, child) => {
-    if (typeof child === "string") return `${accumulator}${child}`;
+    if (typeof child === 'string') return `${accumulator}${child}`;
     if (React.isValidElement(child)) {
       const [childStr, nextIdx] = stringifyJsx(child, ctx, idx + 1);
       const str = `${accumulator}<${idx}>${childStr}</${idx}>`;
@@ -142,7 +142,7 @@ const stringifyJsx = (reactElement, ctx = {}, idx = 1) => {
       set(ctx, `vars.${Object.keys(child)[0]}`, Object.values(child)[0]);
       return `${accumulator}{{${Object.keys(child)[0]}}}`;
     }
-  }, "");
+  }, '');
   return [str, idx];
 };
 
@@ -190,7 +190,7 @@ const parseJsx = (str, ctx = {}, startPos = 0) => {
 const extractTag = (str, startPos) => {
   const openingStart = regexIndexOf(str, /<[1-9][0-9]*>/, startPos);
   if (openingStart > -1) {
-    const openingEnd = str.indexOf(">", openingStart);
+    const openingEnd = str.indexOf('>', openingStart);
     const idx = str.substring(openingStart + 1, openingEnd);
 
     const closingStart = str.indexOf(`</${idx}>`, openingEnd);
@@ -200,11 +200,11 @@ const extractTag = (str, startPos) => {
   return [];
 };
 
-export const useTranslation = (namespaces) => {
+export const useTranslation = namespaces => {
   const locale = useLocale();
   const appContextTranslations = get(
     useContext(AppContext),
-    "i18n.translations"
+    'i18n.translations'
   );
   const reduxTranslations = useReduxSelector(`i18n.translations.${locale}`);
 
@@ -212,7 +212,7 @@ export const useTranslation = (namespaces) => {
     return Object.assign({}, appContextTranslations, reduxTranslations);
   }, [appContextTranslations, reduxTranslations]);
 
-  const appContextNs = get(useContext(AppContext), "i18n.ns");
+  const appContextNs = get(useContext(AppContext), 'i18n.ns');
   const reduxNs = useReduxSelector(`i18n.ns.${locale}`);
 
   const nsLoaded = useMemo(() => {
@@ -223,20 +223,20 @@ export const useTranslation = (namespaces) => {
 
   const nsRequired = useMemo(() => {
     let nsRequired = namespaces || [];
-    if (typeof namespaces === "string") {
+    if (typeof namespaces === 'string') {
       nsRequired = [namespaces];
     }
-    if (!nsRequired.includes("common")) {
-      nsRequired.push("common");
+    if (!nsRequired.includes('common')) {
+      nsRequired.push('common');
     }
     return nsRequired;
   }, []);
 
   const nsNotLoaded = useMemo(() => {
-    return nsRequired.filter((ns) => !nsLoaded.includes(ns));
+    return nsRequired.filter(ns => !nsLoaded.includes(ns));
   }, [nsRequired, nsLoaded]);
 
-  const fetching = useReduxSelector("i18.fetching", false);
+  const fetching = useReduxSelector('i18.fetching', false);
 
   const t = useCallback(
     (content, alias, count) => {
@@ -246,7 +246,7 @@ export const useTranslation = (namespaces) => {
       let jsx = null;
       const candidateKeys = [];
 
-      if (typeof content !== "string") {
+      if (typeof content !== 'string') {
         jsx = content;
         const [jsxKey] = stringifyJsx(content, ctx);
         if (!alias) {
@@ -255,14 +255,12 @@ export const useTranslation = (namespaces) => {
       }
 
       if (count >= 1) {
-        const prefix = count > 1 ? "plural" : "singular";
+        const prefix = count > 1 ? 'plural' : 'singular';
         candidateKeys.push(`${prefix}::${key}`);
-        nsRequired.forEach((ns) =>
-          candidateKeys.push(`${ns}:${prefix}::${key}`)
-        );
+        nsRequired.forEach(ns => candidateKeys.push(`${ns}:${prefix}::${key}`));
       }
       candidateKeys.push(key);
-      nsRequired.forEach((ns) => candidateKeys.push(`${ns}:${key}`));
+      nsRequired.forEach(ns => candidateKeys.push(`${ns}:${key}`));
 
       for (let candidateKey of candidateKeys) {
         if (translations[candidateKey] !== undefined)
@@ -300,15 +298,15 @@ const buildJsx = (str, ctx, wrapperReactElement, i18nService, locale) => {
     str,
   };
   if (ctx.vars) {
-    Object.keys(ctx.vars).forEach((key) => {
-      const regex = new RegExp(`{{\\s*${key}[^}]*}}`, "g");
+    Object.keys(ctx.vars).forEach(key => {
+      const regex = new RegExp(`{{\\s*${key}[^}]*}}`, 'g');
       let m;
       while ((m = regex.exec(str)) !== null) {
         if (m.index === regex.lastIndex) {
           regex.lastIndex++;
         }
 
-        m.forEach((match) => {
+        m.forEach(match => {
           result.str = result.str.replace(
             match,
             handlemodifiers(
@@ -329,13 +327,13 @@ const buildJsx = (str, ctx, wrapperReactElement, i18nService, locale) => {
 };
 
 const handlemodifiers = (input, value, locale, i18nService) => {
-  const modifiers = input.split("|");
+  const modifiers = input.split('|');
   const args = [value, locale];
   if (modifiers.length > 1) {
     for (let i = 1; i < modifiers.length; i++) {
       const filter = modifiers[i].trim();
       let modifierNoArgs = filter;
-      const pos = filter.indexOf("(");
+      const pos = filter.indexOf('(');
       if (pos > -1) {
         modifierNoArgs = modifierNoArgs.substring(0, pos);
       }
@@ -343,7 +341,7 @@ const handlemodifiers = (input, value, locale, i18nService) => {
       if (i18nService.modifiers[modifierNoArgs]) {
         return i18nService.modifiers[modifierNoArgs].apply(this, args);
       } else {
-        console.error("filter " + modifierNoArgs + " not found in settings");
+        console.error('filter ' + modifierNoArgs + ' not found in settings');
       }
     }
   }
@@ -359,9 +357,9 @@ const handleFilterArgs = (filter, result) => {
       regexArgs.lastIndex++;
     }
 
-    filterArgs.forEach((filterArg) => {
-      const args = filterArg.slice(1, -1).split(",");
-      args.forEach((arg) => {
+    filterArgs.forEach(filterArg => {
+      const args = filterArg.slice(1, -1).split(',');
+      args.forEach(arg => {
         arg = arg.trim();
         if (arg.indexOf("'") === 0) arg = `"${arg.slice(1, -1)}"`;
         result.push(JSON.parse(arg));
@@ -374,7 +372,7 @@ export const useI18n = () => {
   return useContext(AppContext).i18n;
 };
 
-export const I18nLink = (props) => {
+export const I18nLink = props => {
   // const { href, as } = props;
   const settings = useSettings();
   const i18n = useI18n();

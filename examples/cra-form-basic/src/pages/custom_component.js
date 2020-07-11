@@ -36,12 +36,12 @@ const Lastname = React.memo(props => {
   );
 });
 
-const Submit = React.memo(props => {
+const SubmitButton = React.memo(props => {
   // usetFormStatus get the live status of the form
   // doesn't take care of the touch status, so you are sure to have the actual status
   const formStatus = useFormStatus();
   const disabled = formStatus.statusCode <= ERROR
-  return <button {...props } disabled={disabled} />
+  return <button {...props } type="submit" disabled={disabled} />
 });
 
 export const CustomComponentPage = () => {
@@ -86,7 +86,7 @@ export const CustomComponentPage = () => {
           {/* 
             The submit button will trigger the method passed as first argument to useForm 
           */}
-          <Submit>Submit</Submit>
+          <SubmitButton>Submit</SubmitButton>
         </div>
       </Form>
       {result && (

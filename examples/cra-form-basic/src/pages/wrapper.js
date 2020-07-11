@@ -11,7 +11,7 @@ export const WrapperPage = () => {
   // useForm should be used anytime a new form is needed.
   // Never pass any props of useForm to nested components. A nested component should always use useFormContext
   // to get these props (for performance reasons)
-  const { Form, getValidation } = useForm(doSubmit);
+  const { Form, getValidation, reset } = useForm(doSubmit);
 
   return (
     <>
@@ -67,7 +67,7 @@ export const WrapperPage = () => {
           {/* 
               The submit wrapper listen on the form status and is disabled when status is not OK
              */}
-          <button type="submit">Submit</button>
+          <button type="submit">Submit</button> <div onClick={reset}>Reset</div>
         </div>
       </Form>
       {result && (

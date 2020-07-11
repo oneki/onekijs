@@ -60,6 +60,7 @@ export {
   useSecurePut,
 } from './lib/crud';
 export { every, latest, leading, debounce, throttle } from './lib/saga';
+export { reducer } from './lib/reducer';
 export { secure, SecureRoute } from './lib/secure';
 export {
   useLocalService,
@@ -106,7 +107,8 @@ export {
   useLocalState,
   useGlobalStateModifier,
 } from './lib/state';
-export { formService, useForm, useValue, useFormStatus } from './lib/form';
+export { useForm, useValue, useFormStatus, useSubmit } from './lib/form';
+export { formService } from './lib/form/service';
 export { FormContext, useFormContext } from './lib/form/context';
 export { useField } from './lib/form/field';
 export { useBind, useAsyncBind } from './lib/form/bind';
@@ -114,7 +116,7 @@ export { useRule } from './lib/form/rule';
 export { Input } from './lib/form/components/input';
 export { Select } from './lib/form/components/select';
 export { Textarea } from './lib/form/components/textarea';
-export { Submit } from './lib/form/components/submit';
+export { SubmitButton } from './lib/form/components/submitButton';
 export { required } from './lib/form/validations/required';
 export { regex } from './lib/form/validations/regex';
 export { email } from './lib/form/validations/email';

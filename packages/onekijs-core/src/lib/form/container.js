@@ -2,7 +2,7 @@ import { useEffect, useReducer, useRef } from 'react';
 import { useLazyRef } from '../utils/hook';
 import { diffArrays, get, set } from '../utils/object';
 import { useFormContext } from './context';
-import { getContainerFieldValidation, NONE } from './validations';
+import { NONE } from './validations';
 
 export const useFieldContainer = () => {
   const fieldsRef = useRef([]);
@@ -67,7 +67,7 @@ export const useFieldContainer = () => {
       const validationListener = fieldName => {
         return fieldValidation => {
           fieldValidationsRef.current[fieldName] = fieldValidation;
-          validationRef.current = getContainerFieldValidation(
+          validationRef.current = context.getContainerFieldValidation(
             fieldValidationsRef.current,
             context.fields,
             '',

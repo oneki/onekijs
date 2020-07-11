@@ -5,6 +5,7 @@ import { useIsomorphicLayoutEffect } from '../utils/hook';
 import { fork, call } from 'redux-saga/effects';
 import { latest } from '../saga';
 import { useLocalService } from '../service';
+import { reducer } from '../reducer';
 
 // useFormBind does not interact with valueChange via a listener as it should be defined at the same level as useForm
 export const useFormBind = function (rule, watch = []) {
@@ -40,41 +41,38 @@ const forkAsyncBind = function* (asyncMethod, watch) {
   const task = yield fork(asyncMethod, ...watch);
   const async = task.isRunning();
   if (async) {
-    yield call(this.setLoading, true);
+    yield this.setLoading(true);
   }
   return task;
 };
 
 export const asyncBindService = {
-  reducers: {
-    setLoading: (state, isLoading) => {
-      state.loading = isLoading;
-    },
-    success: (state, { result }) => {
-      state.result = result;
-      state.loading = false;
-      state.error = null;
-    },
-    error: (state, error) => {
-      state.loading = false;
-      state.error = error;
-    },
-  },
-  sagas: {
-    execute: latest(function* ({ asyncMethod, watch }) {
-      try {
-        const task = yield call([this, forkAsyncBind], asyncMethod, watch);
-        const error = task.error();
-        if (error) {
-          yield call(this.error, error);
-        } else {
-          yield call(this.success, { result: task.result() });
-        }
-      } catch (e) {
-        yield call(this.error, e);
+  setLoading: reducer((isLoading, state) => {
+    state.loading = isLoading;
+  }),
+  success: reducer(({ result }, state) => {
+    state.result = result;
+    state.loading = false;
+    state.error = null;
+  }),
+  error: reducer((error, state) => {
+    state.loading = false;
+    state.error = error;
+  }),
+
+  execute: latest(function* ({ asyncMethod, watch }) {
+    try {
+      const task = yield call([this, forkAsyncBind], asyncMethod, watch);
+      const error = task.error();
+      if (error) {
+        yield this.error(error);
+      } else {
+        yield this.success({ result: task.result() });
       }
-    }),
-  },
+    } catch (e) {
+      yield this.error(e);
+    }
+  }),
 };
 
 export const useAsyncBind = (rule, watch = []) => {

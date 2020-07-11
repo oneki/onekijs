@@ -1,7 +1,6 @@
-import { get } from "../utils/object";
+import { get } from '../utils/object';
 
 export default class BaseRouter {
-
   constructor() {
     this.history = [];
   }
@@ -35,13 +34,13 @@ export default class BaseRouter {
   }
 
   deleteOrigin() {
-    localStorage.removeItem("onekijs.from");
+    localStorage.removeItem('onekijs.from');
   }
 
   getOrigin() {
     const from =
-    localStorage.getItem("onekijs.from") ||
-      get(this.settings, "routes.home", "/");
+      localStorage.getItem('onekijs.from') ||
+      get(this.settings, 'routes.home', '/');
     return { from };
   }
 
@@ -59,26 +58,30 @@ export default class BaseRouter {
    */
   // eslint-disable-next-line
   push(url_or_location) {
-    throw Error(`method push of class ${this.constructor.name}  must be redefined`)
+    throw Error(
+      `method push of class ${this.constructor.name}  must be redefined`
+    );
   }
 
   // eslint-disable-next-line
   replace(url_or_location) {
-    throw Error(`method replace of class ${this.constructor.name}  must be redefined`)
+    throw Error(
+      `method replace of class ${this.constructor.name}  must be redefined`
+    );
   }
 
-  saveOrigin(force=true) {
-    const currentValue = localStorage.getItem("onekijs.from");
+  saveOrigin(force = true) {
+    const currentValue = localStorage.getItem('onekijs.from');
     if (!force && currentValue) return;
-    
-    let from = get(this.settings, "routes.home", "/");
+
+    let from = get(this.settings, 'routes.home', '/');
     const previous = this.previousLocation;
     if (previous) {
       from = previous.relativeurl;
     }
-    
-    localStorage.setItem("onekijs.from", from);
-  }  
+
+    localStorage.setItem('onekijs.from', from);
+  }
 
   /**
    * callback(url) where url is:
@@ -93,11 +96,15 @@ export default class BaseRouter {
    */
   // eslint-disable-next-line
   listen(callback) {
-    throw Error(`method listen of class ${this.constructor.name}  must be redefined`)
+    throw Error(
+      `method listen of class ${this.constructor.name}  must be redefined`
+    );
   }
-  
+
   // eslint-disable-next-line
   unlisten(handler) {
-    throw Error(`method unlisten of class ${this.constructor.name}  must be redefined`)
+    throw Error(
+      `method unlisten of class ${this.constructor.name}  must be redefined`
+    );
   }
 }

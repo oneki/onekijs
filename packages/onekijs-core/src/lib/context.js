@@ -1,5 +1,5 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import { get } from "./utils/object";
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { get } from './utils/object';
 
 export const AppContext = React.createContext();
 export const I18nContext = React.createContext();
@@ -15,52 +15,58 @@ export const useHistory = () => {
   const [history, setHistory] = useState(router.history);
   const listener = useCallback(() => {
     setHistory(router.history);
-  }, [setHistory, router.history])
+  }, [setHistory, router.history]);
 
   useEffect(() => {
     router.listen(listener);
     return () => {
       router.unlisten(listener);
-    }
-  }, [router, listener])
-  
+    };
+  }, [router, listener]);
+
   return history;
-}
+};
 
 // change the state every time it changes
 export const useLocation = () => {
   const router = useContext(AppContext).router;
   const [location, setLocation] = useState(router.location);
-  const listener = useCallback((location) => {
-    setLocation(location)
-  }, [setLocation])
+  const listener = useCallback(
+    location => {
+      setLocation(location);
+    },
+    [setLocation]
+  );
 
   useEffect(() => {
     router.listen(listener);
     return () => {
       router.unlisten(listener);
-    }
-  }, [router, listener])
-  
-  return location;  
-}
+    };
+  }, [router, listener]);
+
+  return location;
+};
 
 // change the state every time it changes
 export const useParams = () => {
   const router = useContext(AppContext).router;
   const [params, setParams] = useState(get(router, 'location.params', {}));
-  const listener = useCallback((location) => {
-    setParams(location.params);
-  }, [setParams])
+  const listener = useCallback(
+    location => {
+      setParams(location.params);
+    },
+    [setParams]
+  );
 
   useEffect(() => {
     router.listen(listener);
     return () => {
       router.unlisten(listener);
-    }
-  }, [router, listener])
-  return params;  
-}
+    };
+  }, [router, listener]);
+  return params;
+};
 
 export const useSetting = (selector, defaultValue) => {
   const settings = useContext(AppContext).settings;
