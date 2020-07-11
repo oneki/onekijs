@@ -117,7 +117,7 @@ class ReduxService {
       if (arguments.length > 1) {
         return yield saga.apply(self, arguments);
       } else {
-        return yield saga.call(self, arguments[0], this.__context__);
+        return yield saga.call(self, arguments[0], self.__context__);
       }
     };
   }
