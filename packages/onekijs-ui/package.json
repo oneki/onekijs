@@ -1,6 +1,7 @@
 {
   "name": "onekijs-ui",
   "version": "0.0.3",
+  "private": true,
   "description": "Widgets for Oneki.js library",
   "author": "oneki",
   "license": "MIT",
@@ -16,16 +17,21 @@
     "test:watch": "react-scripts test --env=jsdom",
     "build": "babel --root-mode upward src -d dist/esm --source-maps",
     "start": "babel --root-mode upward src -d dist/esm --watch --source-maps",
-    "prepare": "npm run build",
-    "predeploy": "cd example && npm install && npm run build",
-    "deploy": "gh-pages -d example/build"
+    "prepare": "yarn build",
+    "predeploy": "cd example && npm install && yarn build",
+    "deploy": "gh-pages -d example/build",
+    "build:styles": "tailwind build src/styles/index.css -o src/styles/tailwind.css",
+    "prebuild": "yarn build:styles",
+    "prestart": "yarn build:styles"
   },
   "peerDependencies": {
     "react": "^15.0.0 || ^16.0.0",
     "react-dom": "^15.0.0 || ^16.0.0"
   },
   "dependencies": {
-    "onekijs-core": "^0.7.3"
+    "onekijs-core": "^0.7.3",
+    "styled-components": "^5.1.1",
+    "tailwindcss": "^1.4.6"
   },
   "sideEffects": false
 }
