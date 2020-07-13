@@ -12,7 +12,9 @@ export const ButtonComponent = ({ className, children }) => {
 const buttonStyle = ({ kind = 'primary', theme }) => {
   const t = theme.button[kind];
   return css`
-    ${backgroundColor(t.backgroundColor, { hover: t.hoverBackgroundColor })}
+    ${backgroundColor(t.backgroundColor, {
+      hover: t.hoverBackgroundColor,
+    })}
     ${color(t.color)}
     ${fontWeight(t.fontWeight)}
     ${paddingX(t.paddingX)}

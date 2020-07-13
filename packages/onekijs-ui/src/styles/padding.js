@@ -1,45 +1,34 @@
 import { css } from 'styled-components';
+import { cssProperty } from '../utils/style';
 
 export const padding = (spacing, variants = {}) => {
-  return css`
-    padding: ${props => props.theme.spacings[spacing]};
-  `;
+  return cssProperty('padding', 'spacings', spacing, variants);
 };
 
 export const paddingY = (spacing, variants = {}) => {
-  return css`
-    padding-top: ${props => props.theme.spacings[spacing]};
-    padding-bottom: ${props => props.theme.spacings[spacing]};
-  `;
+  return cssProperty('padding-top', 'spacings', spacing, variants).concat(
+    cssProperty('padding-bottom', 'spacings', spacing, variants)
+  );
 };
 
 export const paddingX = (spacing, variants = {}) => {
-  return css`
-    padding-left: ${props => props.theme.spacings[spacing]};
-    padding-right: ${props => props.theme.spacings[spacing]};
-  `;
+  return cssProperty('padding-left', 'spacings', spacing, variants).concat(
+    cssProperty('padding-right', 'spacings', spacing, variants)
+  );
 };
 
 export const paddingLeft = (spacing, variants = {}) => {
-  return css`
-    padding-left: ${props => props.theme.spacings[spacing]};
-  `;
+  return cssProperty('padding-left', 'spacings', spacing, variants);
 };
 
 export const paddingRight = (spacing, variants = {}) => {
-  return css`
-    padding-right: ${props => props.theme.spacings[spacing]};
-  `;
+  return cssProperty('padding-right', 'spacings', spacing, variants);
 };
 
 export const paddingTop = (spacing, variants = {}) => {
-  return css`
-    padding-top: ${props => props.theme.spacings[spacing]};
-  `;
+  return cssProperty('padding-top', 'spacings', spacing, variants);
 };
 
 export const paddingBottom = (spacing, variants = {}) => {
-  return css`
-    padding-bottom: ${props => props.theme.spacings[spacing]};
-  `;
+  return cssProperty('padding-bottom', 'spacings', spacing, variants);
 };

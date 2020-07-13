@@ -1,13 +1,9 @@
-import { css } from 'styled-components';
+import { cssProperty } from '../utils/style';
 
 export const color = (color, variants = {}) => {
-  return css`
-    color: ${props => props.theme.colors[color]};
-  `;
+  return cssProperty('color', 'colors', color, variants);
 };
 
 export const fontWeight = (weight, variants = {}) => {
-  return css`
-    font-weight: ${props => props.theme.weights[weight]};
-  `;
+  return cssProperty('font-weight', 'weights', weight, variants);
 };
