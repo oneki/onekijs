@@ -2,16 +2,19 @@
 import { css } from 'styled-components';
 import { lcfirst } from './string';
 
-const mediaMinWidth = {
-  sm: '640px',
-  md: '768px',
-  lg: '1024px',
-  xl: '1280px',
+const formatValue = (value, formatter, theme) => {
+  if (formatter === null || formatter === undefined) {
+    return value;
+  }
+  if (typeof formatter === 'function') {
+    return formatter(value);
+  }
+  return theme[formatter][value];
 }
 
-export const cssProperty = (property, category, value, variants = {}) => {
+export const cssProperty = (property, formatter, value, variants = {}) => {
   let result = css`
-    ${property}: ${props => props.theme[category][value]};
+    ${property}: ${props => formatValue(value, formatter, props.theme)};
   `;
 
   const responsives = {
@@ -35,19 +38,21 @@ export const cssProperty = (property, category, value, variants = {}) => {
   Object.keys(responsives).forEach(media => {
 
     if (media !== 'all' && Object.keys(responsives[media]).length > 0) {
-      result = result.concat(['@media (min-width: ' + mediaMinWidth[media] + ') {']);
+      result = result.concat(css`
+        ${props => `@media (min-width: ${props.theme.breakpoints[media]}) {`}
+    `);      
     }
     Object.keys(responsives[media]).forEach(pseudoClass => {
       if (['hover', 'focus', 'active', 'visited', 'focusWithin'].includes(pseudoClass)) {
         const cssPseudoClass = (pseudoClass === 'focusWithin') ? 'focus-within' : pseudoClass;
         result = result.concat(css`
           &:${cssPseudoClass} {
-            ${property}: ${props => props.theme[category][responsives[media][pseudoClass]]};
+            ${property}: ${props => formatValue(responsives[media][pseudoClass], formatter, props.theme)};
           }
         `);
       } else if (pseudoClass === 'all') {
         result = result.concat(css`
-          ${property}: ${props => props.theme[category][responsives[media][pseudoClass]]};
+          ${property}: ${props => formatValue(responsives[media][pseudoClass], formatter, props.theme)};
         `);
       }
     });
