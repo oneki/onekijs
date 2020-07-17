@@ -3,13 +3,10 @@ import { css } from 'styled-components';
 import { lcfirst } from './string';
 
 const formatValue = (value, formatter, theme) => {
-  if (formatter === null || formatter === undefined) {
-    return value;
+  if (formatter) {
+    return formatter(value, theme);
   }
-  if (typeof formatter === 'function') {
-    return formatter(value);
-  }
-  return theme[formatter][value];
+  return value;
 }
 
 export const cssProperty = (property, formatter, value, variants = {}) => {
@@ -47,12 +44,12 @@ export const cssProperty = (property, formatter, value, variants = {}) => {
         const cssPseudoClass = (pseudoClass === 'focusWithin') ? 'focus-within' : pseudoClass;
         result = result.concat(css`
           &:${cssPseudoClass} {
-            ${property}: ${props => formatValue(responsives[media][pseudoClass], formatter, props.theme)};
+            ${property !== null ? property+': ' : ''}${props => formatValue(responsives[media][pseudoClass], formatter, props.theme)};
           }
         `);
       } else if (pseudoClass === 'all') {
         result = result.concat(css`
-          ${property}: ${props => formatValue(responsives[media][pseudoClass], formatter, props.theme)};
+          ${property !== null ? property+': ' : ''}${props => formatValue(responsives[media][pseudoClass], formatter, props.theme)};
         `);
       }
     });
