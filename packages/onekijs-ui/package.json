@@ -7,31 +7,25 @@
   "license": "MIT",
   "repository": "oneki/onekijs",
   "main": "dist/index.js",
-  "module": "dist/esm/index.js",
+  "typings": "dist/index.d.ts",
   "engines": {
-    "node": ">=8",
+    "node": ">=10",
     "npm": ">=5"
   },
   "scripts": {
-    "test": "cross-env CI=1 react-scripts test --env=jsdom",
-    "test:watch": "react-scripts test --env=jsdom",
-    "build": "babel --root-mode upward src -d dist/esm --source-maps",
-    "start": "babel --root-mode upward src -d dist/esm --watch --source-maps",
-    "prepare": "yarn build",
-    "predeploy": "cd example && npm install && yarn build",
-    "deploy": "gh-pages -d example/build",
-    "build:styles": "tailwind build src/styles/index.css -o src/styles/tailwind.css",
-    "prebuild": "yarn build:styles",
-    "prestart": "yarn build:styles"
+    "start": "tsdx watch",
+    "build": "tsdx build",
+    "test": "tsdx test --passWithNoTests",
+    "lint": "tsdx lint",
+    "prepare": "tsdx build"
   },
   "peerDependencies": {
     "react": "^15.0.0 || ^16.0.0",
     "react-dom": "^15.0.0 || ^16.0.0"
   },
   "dependencies": {
-    "onekijs-core": "^0.7.3",
-    "styled-components": "^5.1.1",
-    "tailwindcss": "^1.4.6"
+    "onekijs": "^0.4.2",
+    "styled-components": "^5.1.1"
   },
   "sideEffects": false
 }

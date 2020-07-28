@@ -1,14 +1,14 @@
-import React from 'react';
+import React, { FC } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { bg } from '../../styles/bg';
+import { backgroundColor } from '../../styles/background';
 
-export const Select = ({ className }) => {
+export const Select: FC<any> = ({ className }) => {
   return <button className={className}>Toto</button>;
 };
 
 export const SelectButton = styled(Select)`
-  ${bg('primary')}
+  ${backgroundColor('primary')}
 `;
 
 Select.propTypes = {

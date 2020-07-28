@@ -1,10 +1,10 @@
-import { App } from 'onekijs-cra';
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { Route, Switch, Link } from 'react-router-dom';
-import { ButtonPage } from './pages/button';
-import { ThemeProvider } from 'styled-components';
 import { theme } from 'onekijs-ui';
+import ReactDOM from 'react-dom';
+import React from 'react';
+import { Link, Route, Switch } from 'react-router-dom';
+import { ThemeProvider } from 'styled-components';
+import { App } from 'onekijs';
+import { ButtonPage } from './pages/button';
 
 const customTheme = {};
 
@@ -30,5 +30,5 @@ ReactDOM.render(
       </Switch>
     </ThemeProvider>
   </App>,
-  document.getElementById('root')
+  document.getElementById('root'),
 );

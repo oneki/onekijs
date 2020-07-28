@@ -97,7 +97,16 @@ export {
   removeItem,
   setItem,
 } from './lib/core/utils/storage';
-export { hex2b64, generateRandomString, regexIndexOf, trimStart, trimEnd, trim } from './lib/core/utils/string';
+export {
+  hex2b64,
+  generateRandomString,
+  lcfirst,
+  toKebabCase,
+  regexIndexOf,
+  trimStart,
+  trimEnd,
+  trim,
+} from './lib/core/utils/string';
 export {
   isTrue,
   isFalse,

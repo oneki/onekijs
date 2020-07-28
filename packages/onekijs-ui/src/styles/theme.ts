@@ -1,8 +1,9 @@
-import { get } from 'onekijs-core';
+import { get } from 'onekijs';
 import { deriveColor } from '../utils/color';
+import { Theme } from './typings';
 
-export const theme = (customTheme = {}) => {
-  const theme = Object.assign(
+export const theme = (customTheme = {}): Theme => {
+  const theme: Theme = Object.assign(
     {
       dark: false,
       breakpoints: {
@@ -175,14 +176,13 @@ export const theme = (customTheme = {}) => {
           sans:
             'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
           serif: 'Georgia, Cambria, "Times New Roman", Times, serif',
-          mono:
-            'Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+          mono: 'Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
         },
         lineHeights: {
           none: 1,
           tight: 1.25,
           snug: 1.375,
-          nromal: 1.5,
+          normal: 1.5,
           relaxed: 1.625,
           loose: 2,
           3: '.75rem',
@@ -229,16 +229,12 @@ export const theme = (customTheme = {}) => {
 
       button: {},
     },
-    customTheme
+    customTheme,
   );
 
-  Object.keys(theme.kind).forEach(kind => {
+  Object.keys(theme.kind).forEach((kind) => {
     theme.button[kind] = {
-      backgroundColor: get(
-        theme,
-        `button.${kind}.backgroundColor`,
-        theme.kind[kind]
-      ),
+      backgroundColor: get(theme, `button.${kind}.backgroundColor`, theme.kind[kind]),
       color: get(theme, `button.${kind}.color`, 'white'),
       fontWeight: get(theme, `button.${kind}.fontWeight`, 'bold'),
       paddingY: get(theme, `button.${kind}.paddingY`, 2),
@@ -246,11 +242,11 @@ export const theme = (customTheme = {}) => {
     };
   });
 
-  Object.keys(theme.kind).forEach(kind => {
+  Object.keys(theme.kind).forEach((kind) => {
     theme.button[kind].hoverBackgroundColor = get(
       theme,
       `button.${kind}.hoverBackgroundColor`,
-      deriveColor(theme.button[kind].backgroundColor, 200, theme.dark)
+      deriveColor(theme.button[kind].backgroundColor, 200, theme.dark),
     );
   });
 
