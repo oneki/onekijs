@@ -1,5 +1,5 @@
 import { defaultSettings } from './settings';
-import { simpleMergeDeep, fromPayload } from '../core/utils/object';
+import { simpleMergeDeep, fromPayload, clone } from '../core/utils/object';
 import { AppSettings, AppStore, reducersSymbol, sagasSymbol } from './typings';
 import { AnonymousObject } from '../core/typings';
 import { Middleware, createStore, applyMiddleware, Store, AnyAction } from 'redux';
@@ -89,5 +89,6 @@ export const formatSettings = (settings: AppSettings): AppSettings => {
       result = simpleMergeDeep(result, settings[i]);
     }
   }
-  return simpleMergeDeep(defaultSettings, result);
+  const cloneDefaultSettings = clone(defaultSettings);
+  return simpleMergeDeep(cloneDefaultSettings, result);
 };

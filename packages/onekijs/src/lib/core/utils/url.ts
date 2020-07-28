@@ -36,7 +36,7 @@ export function absoluteUrl(url: string, baseUrl?: string): string {
 export const URL_STATE = '__STATE__';
 
 export function toLocation(url: string): Location {
-  const base = typeof window !== 'undefined' ? window.origin : 'http://localhost';
+  const base = typeof window !== 'undefined' && window.origin ? window.origin : 'http://localhost';
   const parser = new URL(url, base);
   const location: Location = {
     protocol: parser.protocol ? parser.protocol.slice(0, -1) : null,

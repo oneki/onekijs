@@ -1,6 +1,6 @@
 export interface NotificationContent {
   payload?: any;
-  id?: string | number | symbol;
+  id?: string | number;
   topic?: string;
   timestamp?: number;
   ttl?: number;
@@ -9,7 +9,7 @@ export interface NotificationContent {
 
 export interface Notification {
   payload: any;
-  id: string | number | symbol;
+  id: string | number;
   topic: string;
   timestamp: number;
   expires: number | null;

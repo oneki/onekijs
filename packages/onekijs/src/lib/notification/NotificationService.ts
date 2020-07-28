@@ -21,9 +21,10 @@ export default class NotificationService extends GlobalService {
       `notification.${notification.topic}.max`,
       get(this.context.settings, `notification.default.max`, 0),
     );
+
     append(this.state, `notifications.${notification.topic}`, notification);
     if (max > 0 && this.state.notifications[notification.topic].length > max) {
-      this.state.notifications[notification.topic].unshift();
+      this.state.notifications[notification.topic].shift();
     }
   }
 
