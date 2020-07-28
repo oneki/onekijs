@@ -1,13 +1,6 @@
 import fs from 'fs';
 import Head from 'next/head';
-import {
-  getI18nStaticProps,
-  I18nLink,
-  useOnekiRouter,
-  useParams,
-  withI18nPaths,
-  withLayout,
-} from 'onekijs-next';
+import { getI18nStaticProps, I18nLink, useOnekiRouter, useParams, withI18nPaths, withLayout } from 'onekijs-next';
 import path from 'path';
 import React from 'react';
 import SiteLayout from '../../layout/siteLayout';
@@ -33,19 +26,8 @@ const IndexPage = () => {
         <title>About</title>
       </Head>
       <div>About: id = {params.id}</div>
-      <button
-        onClick={() => router.push('/about?id=1', null, { shallow: true })}
-      >
-        id1
-      </button>{' '}
-      |
-      <button
-        onClick={() =>
-          router.push('/about?id=2', '/about?id=2', { shallow: true })
-        }
-      >
-        id2
-      </button>
+      <button onClick={() => router.push('/about?id=1', null, { shallow: true })}>id1</button> |
+      <button onClick={() => router.push('/about?id=2', '/about?id=2', { shallow: true })}>id2</button>
       <br />
       <I18nLink href="/about?id=1" shallow={true}>
         <a>id1</a>

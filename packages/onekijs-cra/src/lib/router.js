@@ -1,14 +1,14 @@
 import { BaseRouter, toLocation } from 'onekijs-core';
-import produce from "immer";
+import produce from 'immer';
 
 export default class ReactRouter extends BaseRouter {
   constructor(history) {
     super();
     this._reactRouterHistory = history;
     this._pushLocation(history.location);
-    history.listen(reactRouterLocation => {
+    history.listen((reactRouterLocation) => {
       this._pushLocation(reactRouterLocation);
-    })
+    });
   }
 
   /**
@@ -61,13 +61,10 @@ export default class ReactRouter extends BaseRouter {
 
   _pushLocation(reactRouterLocation) {
     const location = this._convertLocation(reactRouterLocation);
-    this.history = produce(this.history, draft => {
+    this.history = produce(this.history, (draft) => {
       draft.unshift(location);
       // keep max 20 items
       draft.splice(20, draft.length);
     });
   }
-
-
-
 }

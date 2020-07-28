@@ -1,12 +1,6 @@
 export default () => {
   return (
-    <svg
-      data-name="Layer 1"
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 362.8 362.8"
-      width="2em"
-      height="2em"
-    >
+    <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 362.8 362.8" width="2em" height="2em">
       <path
         d="M19.4 260a75.5 75.5 0 0 1-17.6-65.7L32.3 80.4a75.5 75.5 0 0 1 48.1-48.1L194.3 1.8A75.5 75.5 0 0 1 260 19.4l83.3 83.4a75.6 75.6 0 0 1 17.7 65.7l-30.6 113.8a75.5 75.5 0 0 1-48 48.1l-114 30.6a75.5 75.5 0 0 1-65.7-17.6z"
         fill="#ff4612"

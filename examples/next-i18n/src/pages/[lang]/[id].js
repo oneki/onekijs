@@ -22,7 +22,7 @@ const IndexPage = () => {
               <i>mister</i> {{ firstname }} {{ lastname }} <i>male</i>
             </b>{' '}
             <u>address</u>
-          </>
+          </>,
         )}
       </div>
       <div>{t(<>Welcome {{ lastname }} on Flora</>)}</div>

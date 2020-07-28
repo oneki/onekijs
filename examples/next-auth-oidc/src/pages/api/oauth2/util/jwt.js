@@ -17,7 +17,7 @@ export default class {
           alg: 'RSA-OAEP',
           kid: 'e1',
           use: 'enc',
-        }
+        },
       );
 
     this.decryptKey =
@@ -32,7 +32,7 @@ export default class {
           alg: 'RSA-OAEP',
           kid: 'e1',
           use: 'enc',
-        }
+        },
       );
 
     this.signKey =
@@ -48,7 +48,7 @@ export default class {
           kid: 's1',
           use: 'sig',
           typ: 'JWT',
-        }
+        },
       );
 
     this.verifyKey =
@@ -64,7 +64,7 @@ export default class {
           kid: 's1',
           use: 'sig',
           typ: 'JWT',
-        }
+        },
       );
   }
 

@@ -23,8 +23,7 @@ export default async (req, res) => {
       code: req.body.code,
       redirect_uri: req.body.redirect_uri,
       client_assertion: signedAndEncryptedAssertion,
-      client_assertion_type:
-        'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
+      client_assertion_type: 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
     });
 
     const response = await axios({
@@ -58,10 +57,6 @@ export default async (req, res) => {
   } catch (error) {
     console.error(error.response.data.error, error.response.data.detail);
     res.statusCode = error.response.status;
-    res.end(
-      JSON.stringify(
-        error.response ? error.response.data : { error: 'Unexpected error' }
-      )
-    );
+    res.end(JSON.stringify(error.response ? error.response.data : { error: 'Unexpected error' }));
   }
 };

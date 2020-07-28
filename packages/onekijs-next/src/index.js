@@ -70,7 +70,7 @@
 //   BaseRouter
 // } from "onekijs-core";
 
-export * from "onekijs-core";
+export * from 'onekijs-core';
 
 export { App } from './lib/app';
 export { default as NextRouter } from './lib/router';

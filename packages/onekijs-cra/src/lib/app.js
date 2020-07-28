@@ -1,8 +1,4 @@
-import {
-  createBrowserHistory,
-  createHashHistory,
-  createMemoryHistory,
-} from 'history';
+import { createBrowserHistory, createHashHistory, createMemoryHistory } from 'history';
 import React, { Suspense, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
@@ -36,15 +32,9 @@ export const App = React.memo(
     translations,
     i18nNs,
   }) => {
-    const [loading, setLoading] = useState(
-      isPromise(initialState) || isPromise(settings)
-    );
-    const [appSettings, setAppSettings] = useState(
-      isPromise(settings) ? null : settings
-    );
-    const [appInitialState, setAppInitialState] = useState(
-      isPromise(initialState) ? null : initialState
-    );
+    const [loading, setLoading] = useState(isPromise(initialState) || isPromise(settings));
+    const [appSettings, setAppSettings] = useState(isPromise(settings) ? null : settings);
+    const [appInitialState, setAppInitialState] = useState(isPromise(initialState) ? null : initialState);
 
     const appStore = useMemo(() => {
       if (!loading) {
@@ -103,11 +93,9 @@ export const App = React.memo(
             set: setAppInitialState,
             promise: initialState,
           },
-        ].filter(entry => isPromise(entry.promise));
+        ].filter((entry) => isPromise(entry.promise));
         if (promises.length > 0) {
-          Promise.all(promises.map(entry => entry.promise)).then(function (
-            values
-          ) {
+          Promise.all(promises.map((entry) => entry.promise)).then(function (values) {
             values.forEach((v, i) => promises[i].set(v));
             setLoading(false);
           });
@@ -137,7 +125,7 @@ export const App = React.memo(
         </AppProvider>
       </Provider>
     );
-  }
+  },
 );
 
 App.displayName = 'App';

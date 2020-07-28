@@ -1,13 +1,7 @@
 import produce from 'immer';
 import Link from 'next/link';
 import Router from 'next/router';
-import {
-  BaseRouter,
-  get,
-  toI18nLocation,
-  toLocation,
-  toRelativeUrl,
-} from 'onekijs-core';
+import { BaseRouter, get, toI18nLocation, toLocation, toRelativeUrl } from 'onekijs-core';
 import React from 'react';
 
 export default class NextRouter extends BaseRouter {
@@ -26,12 +20,8 @@ export default class NextRouter extends BaseRouter {
   }
 
   getOrigin() {
-    const from =
-      localStorage.getItem('onekijs.from') ||
-      get(this.settings, 'routes.home', '/');
-    const fromRoute =
-      localStorage.getItem('onekijs.from_route') ||
-      get(this.settings, 'routes.home_route', from);
+    const from = localStorage.getItem('onekijs.from') || get(this.settings, 'routes.home', '/');
+    const fromRoute = localStorage.getItem('onekijs.from_route') || get(this.settings, 'routes.home_route', from);
     return { from, fromRoute };
   }
 
@@ -81,7 +71,7 @@ export default class NextRouter extends BaseRouter {
   }
 
   onLocationChange() {
-    this._listeners.forEach(listener => {
+    this._listeners.forEach((listener) => {
       listener(this.location);
     });
   }
@@ -139,7 +129,7 @@ export default class NextRouter extends BaseRouter {
         settings: this.settings,
         i18n: this.i18n,
       },
-      route
+      route,
     );
 
     const relativeUrl = toRelativeUrl(location);
@@ -159,7 +149,7 @@ export default class NextRouter extends BaseRouter {
 
   _pushLocation(location) {
     this._location = location;
-    this.history = produce(this.history, draft => {
+    this.history = produce(this.history, (draft) => {
       draft.unshift(location);
       // keep max 20 items
       draft.splice(20, draft.length);

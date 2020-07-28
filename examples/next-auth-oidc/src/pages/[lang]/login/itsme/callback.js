@@ -1,9 +1,4 @@
-import {
-  useLoginCallbackService,
-  useOnekiRouter,
-  getI18nStaticProps,
-  withI18nPaths,
-} from 'onekijs-next';
+import { useLoginCallbackService, useOnekiRouter, getI18nStaticProps, withI18nPaths } from 'onekijs-next';
 import React from 'react';
 import { useEffect } from 'react';
 import fs from 'fs';

@@ -21,19 +21,9 @@ const LoginPage = () => {
             <LoginHeader />
             <div className="mt-6">
               <div className="max-w-4xl mx-auto">
-                <LoginField
-                  name="username"
-                  label="Username"
-                  type="text"
-                  register={register}
-                />
+                <LoginField name="username" label="Username" type="text" register={register} />
                 <div className="mt-5" />
-                <LoginField
-                  name="password"
-                  label="Password"
-                  type="password"
-                  register={register}
-                />
+                <LoginField name="password" label="Password" type="password" register={register} />
               </div>
             </div>
             <LoginSubmit onSubmit={handleSubmit(submit)} />
@@ -63,11 +53,7 @@ const LoginHeader = () => {
   return (
     <>
       <p className="text-xl text-gray-700 font-bold">
-        <img
-          className="h-8 w-8 cursor-pointer inline-block"
-          src="/logo.svg"
-          alt=""
-        />
+        <img className="h-8 w-8 cursor-pointer inline-block" src="/logo.svg" alt="" />
         <span className="ml-4">Basic username / password login</span>
       </p>
       <p className="text-gray-500 text-sm mt-5">
@@ -82,9 +68,7 @@ const LoginHeader = () => {
 const LoginField = ({ label, name, type, register }) => {
   return (
     <label className="block">
-      <span className="block font-medium text-sm text-gray-900 leading-tight">
-        {label}
-      </span>
+      <span className="block font-medium text-sm text-gray-900 leading-tight">{label}</span>
       <div className="mt-2">
         <input
           name={name}

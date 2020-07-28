@@ -1,8 +1,4 @@
-import {
-  useLogoutService,
-  getI18nStaticProps,
-  withI18nPaths,
-} from 'onekijs-next';
+import { useLogoutService, getI18nStaticProps, withI18nPaths } from 'onekijs-next';
 import fs from 'fs';
 import path from 'path';
 

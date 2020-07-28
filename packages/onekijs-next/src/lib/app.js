@@ -18,7 +18,7 @@ import NextRouter from './router';
 
 const useNextRouter = useRouter || (() => null);
 
-const useRouterSync = onekiRouter => {
+const useRouterSync = (onekiRouter) => {
   const nextRouter = useNextRouter();
   if (typeof window !== 'undefined') {
     onekiRouter.sync(nextRouter);
@@ -47,15 +47,9 @@ export const App = React.memo(
     const router = useMemo(() => new NextRouter(), []);
     useRouterSync(router);
 
-    const [loading, setLoading] = useState(
-      isPromise(initialState) || isPromise(settings)
-    );
-    const [appSettings, setAppSettings] = useState(
-      isPromise(settings) ? null : settings
-    );
-    const [appInitialState, setAppInitialState] = useState(
-      isPromise(initialState) ? null : initialState
-    );
+    const [loading, setLoading] = useState(isPromise(initialState) || isPromise(settings));
+    const [appSettings, setAppSettings] = useState(isPromise(settings) ? null : settings);
+    const [appInitialState, setAppInitialState] = useState(isPromise(initialState) ? null : initialState);
 
     const appStore = useMemo(() => {
       if (!loading) {
@@ -70,7 +64,7 @@ export const App = React.memo(
 
     const route = useMemo(() => {
       if (pageProps.routes && nextRouter.route === '/404') {
-        return pageProps.routes.find(route => {
+        return pageProps.routes.find((route) => {
           const routeRegex = getRouteRegex(route);
           return getRouteMatcher(routeRegex)(nextRouter.asPath);
         });
@@ -90,11 +84,9 @@ export const App = React.memo(
             set: setAppInitialState,
             promise: initialState,
           },
-        ].filter(entry => isPromise(entry.promise));
+        ].filter((entry) => isPromise(entry.promise));
         if (promises.length > 0) {
-          Promise.all(promises.map(entry => entry.promise)).then(function (
-            values
-          ) {
+          Promise.all(promises.map((entry) => entry.promise)).then(function (values) {
             values.forEach((v, i) => promises[i].set(v));
             setLoading(false);
           });
@@ -112,8 +104,7 @@ export const App = React.memo(
 
     translations = useMemo(() => {
       const result = flattenTranslations(pageProps.translations || {});
-      if (translations)
-        Object.assign(result, flattenTranslations(translations));
+      if (translations) Object.assign(result, flattenTranslations(translations));
       return result;
     }, [pageProps.translations, translations]);
 
@@ -139,7 +130,7 @@ export const App = React.memo(
 
     init = true;
 
-    const getLayout = (Component && Component.getLayout) || (page => page);
+    const getLayout = (Component && Component.getLayout) || ((page) => page);
 
     return (
       <Provider store={appStore}>
@@ -155,7 +146,7 @@ export const App = React.memo(
         </AppProvider>
       </Provider>
     );
-  }
+  },
 );
 
 App.displayName = 'App';

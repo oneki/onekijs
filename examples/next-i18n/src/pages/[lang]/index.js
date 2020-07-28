@@ -9,12 +9,7 @@ import path from 'path';
 const i18nNamespaces = ['users', 'common'];
 
 export async function getStaticProps(context) {
-  const result = getI18nStaticProps(
-    fs,
-    path,
-    context.params.lang,
-    i18nNamespaces
-  );
+  const result = getI18nStaticProps(fs, path, context.params.lang, i18nNamespaces);
   return result;
 }
 

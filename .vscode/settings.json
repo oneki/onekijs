@@ -1,0 +1,3 @@
+{
+    "eslint.lintTask.options": "'packages/onekijs/src/**/*.{js,ts,tsx}' --fix"
+}

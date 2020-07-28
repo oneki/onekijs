@@ -14,7 +14,7 @@ export default async (req, res) => {
           sub: 'admin',
           email: 'admin@oneki.net',
           roles: ['USER', 'ADMIN'],
-        })
+        }),
       );
     } else if (req.cookies.access_token === 'TOKEN_USER') {
       res.statusCode = 200;
@@ -24,7 +24,7 @@ export default async (req, res) => {
           sub: 'user',
           email: 'user@oneki.net',
           roles: ['USER'],
-        })
+        }),
       );
     } else {
       res.statusCode = 401;

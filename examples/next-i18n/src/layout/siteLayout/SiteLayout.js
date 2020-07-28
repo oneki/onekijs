@@ -1,10 +1,4 @@
-import {
-  I18nLink,
-  layout,
-  useI18nService,
-  useLocale,
-  useSetting,
-} from 'onekijs-next';
+import { I18nLink, layout, useI18nService, useLocale, useSetting } from 'onekijs-next';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -33,17 +27,13 @@ const SiteLayout = ({ children }) => {
           </I18nLink>
         </h3>
         <h4>
-          Change locale via buttons:{' '}
-          <button onClick={() => i18nService.changeLocale('en')}>en</button> |{' '}
+          Change locale via buttons: <button onClick={() => i18nService.changeLocale('en')}>en</button> |{' '}
           <button onClick={() => i18nService.changeLocale('fr')}>fr</button>
         </h4>
         <h4>
           Change locale via dropdown:
-          <select
-            value={locale}
-            onChange={e => i18nService.changeLocale(e.target.value)}
-          >
-            {locales.map(l => (
+          <select value={locale} onChange={(e) => i18nService.changeLocale(e.target.value)}>
+            {locales.map((l) => (
               <option key={l} value={l}>
                 {l}
               </option>

@@ -10,11 +10,7 @@ const Header = () => {
           <nav>
             <div className="py-4 flex-shrink-0 content-between flex items-center">
               <I18nLink href="/">
-                <img
-                  className="h-8 w-8 cursor-pointer"
-                  src="/logo.svg"
-                  alt=""
-                />
+                <img className="h-8 w-8 cursor-pointer" src="/logo.svg" alt="" />
               </I18nLink>
               <I18nLink href="/">
                 <a className="ml-8 font-medium text-gray-900">Home</a>

@@ -23,10 +23,7 @@ const AdminPage = () => {
       <Head>
         <title>Admin</title>
       </Head>
-      <h3>
-        Congratulations! You have access to admin page because you are logged in
-        !
-      </h3>
+      <h3>Congratulations! You have access to admin page because you are logged in !</h3>
     </>
   );
 };
