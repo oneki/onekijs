@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
+import { Provider } from 'react-redux';
 import Container from '../core/Container';
 import ContainerContext from '../core/ContainerContext';
 import useLazyRef from '../core/useLazyRef';
@@ -9,7 +10,6 @@ import AppContext, { DefaultAppContext } from './AppContext';
 import DefaultLoadingComponent from './DefaultLoadingComponent';
 import { AppProviderProps } from './typings';
 import { createReduxStore, formatSettings } from './utils';
-import { Provider } from 'react-redux';
 
 const AppProvider: FC<AppProviderProps> = ({
   settings,
