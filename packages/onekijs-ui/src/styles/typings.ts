@@ -22,6 +22,7 @@ export type SizeProperty =
   | 'full'
   | 'screen'
   | string;
+export type ColorPropertyTheme = string;
 export type SpacingPropertyTheme =
   | 0
   | 1
@@ -55,7 +56,7 @@ export type FontWeightPropertyTheme =
   | 'extrabold'
   | 'black';
 
-export type lineHeightPropertyTheme =
+export type LineHeightPropertyTheme =
   | 'none'
   | 'tight'
   | 'snug'
@@ -71,4 +72,8 @@ export type lineHeightPropertyTheme =
   | 9
   | 10;
 
-export type letterSpacingPropertyTheme = 'tighte' | 'tight' | 'normal' | 'wide' | 'wider' | 'widest';
+export type LetterSpacingPropertyTheme = 'tighte' | 'tight' | 'normal' | 'wide' | 'wider' | 'widest';
+
+export type RadiusPropertyTheme = 'none' | 'sm' | 'default' | 'md' | 'lg' | 'full';
+
+export type ShadowPropertyTheme = 'xs' | 'sm' | 'default' | 'md' | 'lg' | 'xl' | '2xl' | 'inner' | 'outline' | 'none';

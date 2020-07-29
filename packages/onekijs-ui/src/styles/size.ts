@@ -1,5 +1,12 @@
+import {
+  OverscrollBehaviorBlockProperty,
+  OverscrollBehaviorInlineProperty,
+  OverscrollBehaviorProperty,
+  OverscrollBehaviorXProperty,
+  OverscrollBehaviorYProperty,
+} from 'csstype';
 import { cssProperty } from '../utils/style';
-import { SizeProperty, Theme, Formatter } from './typings';
+import { Formatter, SizeProperty, Theme } from './typings';
 
 const sizeFormatter = (type: 'width' | 'height', value: SizeProperty, theme: Theme) => {
   if (theme.sizes[value] !== undefined) {
@@ -38,6 +45,16 @@ export const maxWidth = cssProperty<SizeProperty>('max-width', widthFormatter);
 
 export const height = cssProperty<SizeProperty>('height', heightFormatter);
 
-export const minHeight = cssProperty<SizeProperty>('minHeight', heightFormatter);
+export const minHeight = cssProperty<SizeProperty>('min-height', heightFormatter);
 
-export const maxHeight = cssProperty<SizeProperty>('maxHeight', heightFormatter);
+export const maxHeight = cssProperty<SizeProperty>('max-height', heightFormatter);
+
+export const overscrollBehavior = cssProperty<OverscrollBehaviorProperty>('overscroll-behavior');
+
+export const overscrollBehaviorBlock = cssProperty<OverscrollBehaviorBlockProperty>('overscroll-behavior-block');
+
+export const overscrollBehaviorInline = cssProperty<OverscrollBehaviorInlineProperty>('overscroll-behavior-inline');
+
+export const overscrollBehaviorX = cssProperty<OverscrollBehaviorXProperty>('overscroll-behavior-x');
+
+export const overscrollBehaviorY = cssProperty<OverscrollBehaviorYProperty>('overscroll-behavior-y');
