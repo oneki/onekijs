@@ -11,9 +11,9 @@ export const reducersSymbol = Symbol('onekijs.store.reducers');
 export const sagasSymbol = Symbol('onekijs.store.sagas');
 
 export interface AppProps {
-  settings?: AppSettings;
+  settings?: AppSettings | Promise<AppSettings>;
   store?: AppStore;
-  initialState?: AnyState;
+  initialState?: AnyState | Promise<AnyState>;
   services?: Class<Service>[];
   LoadingComponent?: ElementType;
   initialLocale?: string;
@@ -21,13 +21,8 @@ export interface AppProps {
   i18nNs?: string[];
 }
 
-export interface AppProviderProps {
+export interface AppProviderProps extends AppProps {
   router: AppRouter;
-  settings: AppSettings;
-  initialLocale?: string;
-  translations?: Collection<Collection<string>>;
-  i18nNs: string[];
-  services: Class<Service>[];
 }
 
 export interface AppStore<S = any, A extends Action = AnyAction> extends Store<S, A> {
@@ -56,4 +51,7 @@ export interface Location {
   baseurl?: string;
   state?: string;
   route?: string;
+  params?: AnonymousObject;
 }
+
+export type LocationChangeCallback = (location: Location) => void;

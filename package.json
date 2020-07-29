@@ -75,6 +75,7 @@
     "immer": "^6.0.2",
     "lerna": "^3.22.1",
     "lint-staged": "^10.2.10",
+    "next": "^9.5.0",
     "prettier": "2.0.5",
     "query-string": "^6.11.1",
     "react": "^16.13.1",

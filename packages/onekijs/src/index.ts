@@ -6,7 +6,7 @@ export { default as DefaultLoadingComponent } from './lib/app/DefaultLoadingComp
 export { default as GlobalStateService } from './lib/app/GlobalStateService';
 export { default as LocalStateService } from './lib/app/LocalStateService';
 export { defaultSettings, defaultIdpSettings } from './lib/app/settings';
-export { AppProps, AppProviderProps, AppStore, AppSettings, Location } from './lib/app/typings';
+export { AppProps, AppProviderProps, AppStore, AppSettings, Location, LocationChangeCallback } from './lib/app/typings';
 export { default as useGlobalSelector, useReduxSelector } from './lib/app/useGlobalSelector';
 export { default as useGlobalState } from './lib/app/useGlobalState';
 export { default as useGlobalStateModifier } from './lib/app/useGlobalStateModifier';
@@ -248,6 +248,3 @@ export { NotificationContent, Notification, NotificationLevel } from './lib/noti
 export { default as useAllNotifications } from './lib/notification/useAllNotifications';
 export { default as useNotifications } from './lib/notification/useNotifications';
 export { default as useNotificationService } from './lib/notification/useNotificationService';
-export { App } from './cra/App';
-export { ReactRouter } from './cra/ReactRouter';
-export { CraAppProps } from './cra/typings';

@@ -1,7 +1,7 @@
 import { ParsedQuery } from 'query-string';
 import { get } from '../core/utils/object';
 import { I18n } from '../i18n/typings';
-import { AppSettings, Location } from './typings';
+import { AppSettings, Location, LocationChangeCallback } from './typings';
 
 export default abstract class AppRouter {
   settings: AppSettings = {};
@@ -89,7 +89,7 @@ export default abstract class AppRouter {
    *   state: obj // example: {key1: 'value1'}
    * }
    */
-  abstract listen(callback: (location: Location) => void): any;
+  abstract listen(callback: LocationChangeCallback): any;
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   abstract unlisten(handler: any): void;

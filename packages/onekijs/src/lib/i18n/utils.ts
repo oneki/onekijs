@@ -46,31 +46,31 @@ export const buildJsx = (
 export function detectLocale(
   location: Location,
   reduxLocale: string,
-  settings: AppSettings,
-  initialLocale?: string | null,
-): any {
+  settings?: AppSettings,
+  initialLocale?: string,
+): string | undefined {
   let locale = initialLocale;
-  if (!locale && location) {
+  if (!locale && location && settings) {
     locale = settings.i18n.localeFromLocation(location, settings);
   }
   if (!locale) {
     locale = reduxLocale;
   }
   if (!locale && isBrowser()) {
-    locale = localStorage.getItem('onekijs.locale');
+    locale = localStorage.getItem('onekijs.locale') || undefined;
     if (!locale) {
       const languages = navigator.languages;
-      if (languages && languages.length > 0) {
+      if (languages && languages.length > 0 && settings) {
         locale = languages.find((language) => settings.i18n.locales.includes(language.slice(0, 2)));
         if (locale) return locale.slice(0, 2);
       } else if (navigator.language) locale = navigator.language.slice(0, 2);
       else if ((navigator as any).userLanguage) locale = (navigator as any).userLanguage.slice(0, 2);
     }
   }
-  if (locale && settings.i18n.locales.includes(locale)) {
+  if (locale && settings && get<string[]>(settings, 'i18n.locales', []).includes(locale)) {
     return locale;
   }
-  return get(settings, 'i18n.defaultLocale');
+  return get<string>(settings, 'i18n.defaultLocale');
 }
 
 export const flattenTranslations = (translations: Collection<Collection<string>>): Collection<string> => {
@@ -144,17 +144,11 @@ export const handleModifiers = (input: string, value: any, locale: string, i18nS
   return value;
 };
 
-export const toI18nLocation = (
-  urlOrLocation: string | Location,
-  { i18n, settings }: AppContext,
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  route: any,
-): Location => {
+export const toI18nLocation = (urlOrLocation: string | Location, { i18n, settings }: AppContext): Location => {
   // TODO
   let location: Location;
   if (typeof urlOrLocation === 'string') {
     location = toLocation(urlOrLocation);
-    location.route = route;
   } else {
     location = urlOrLocation;
   }
