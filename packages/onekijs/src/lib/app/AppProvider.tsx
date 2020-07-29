@@ -12,9 +12,9 @@ import { AppProviderProps } from './typings';
 import { createReduxStore, formatSettings } from './utils';
 
 const AppProvider: FC<AppProviderProps> = ({
-  settings,
+  settings = {},
   store,
-  initialState,
+  initialState = {},
   router,
   initialLocale,
   translations,
@@ -102,6 +102,7 @@ const AppProvider: FC<AppProviderProps> = ({
   };
 
   if (loading || !appContext || !appStore) {
+    console.log(loading, appContext, appStore);
     return <LoadingComponent />;
   }
 

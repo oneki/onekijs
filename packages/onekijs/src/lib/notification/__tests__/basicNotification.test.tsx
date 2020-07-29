@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/extend-expect';
 import * as React from 'react';
 import { NotificationContent } from '../typings';
-import { fireEvent, render } from './helper/customRenderer';
+import { fireEvent, render } from '../../__tests__/customRenderer';
 import NotificationSender from './helper/NotificationSender';
 
 describe('it', () => {

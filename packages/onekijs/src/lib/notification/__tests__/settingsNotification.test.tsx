@@ -3,7 +3,7 @@ import * as React from 'react';
 import { defaultSettings } from '../../app/settings';
 import { AppSettings } from '../../app/typings';
 import { NotificationContent } from '../typings';
-import { fireEvent, render } from './helper/customRenderer';
+import { fireEvent, render } from '../../__tests__/customRenderer';
 import NotificationSender from './helper/NotificationSender';
 
 // const sleep = (milliseconds: number) => {
@@ -86,7 +86,7 @@ describe('it', () => {
           : defaultSettings.notification.default.max;
       const { getByText, findByTestId, getByTestId, queryByTestId } = render(
         <NotificationSender notifications={test.notifications} />,
-        test.settings,
+        { settings: test.settings },
       );
 
       for (let i = 0; i < test.notifications.length; i++) {

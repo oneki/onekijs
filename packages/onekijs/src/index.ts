@@ -23,7 +23,6 @@ export { default as DefaultAuthErrorComponent } from './lib/auth/DefaultAuthErro
 export { default as LoginService } from './lib/auth/LoginService';
 export { default as LogoutService } from './lib/auth/LogoutService';
 export { secure } from './lib/auth/secure';
-export { default as SecureRoute } from './lib/auth/SecureRoute';
 export {
   AuthErrorProps,
   IdpClientAuth,
