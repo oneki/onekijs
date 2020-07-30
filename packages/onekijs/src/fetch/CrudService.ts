@@ -3,9 +3,10 @@ import NotificationService from '../notification/NotificationService';
 import LocalService from '../core/LocalService';
 import { CrudState, FetchOptions } from './typings';
 import { asyncHttp } from './utils';
-import { reducer, saga } from '../core/annotations';
+import { reducer, saga, service } from '../core/annotations';
 import { SagaEffect } from '../core/typings';
 
+@service
 export default class CrudService<T = any> extends LocalService<CrudState> {
   protected notificationService: NotificationService;
 
@@ -33,8 +34,9 @@ export default class CrudService<T = any> extends LocalService<CrudState> {
     const { router } = this.context;
     let loadingTask = null;
     try {
-      loadingTask = yield fork([this, this.delayLoading], options.delayLoading || 200);
+      loadingTask = yield fork([this, this.delayLoading], options.delayLoading ?? 200);
       const result = yield asyncHttp(url, method, body, options);
+
       yield cancel(loadingTask);
       yield this.fetchSuccess(result); // to update the store and trigger a re-render.
       const onSuccess = options.onSuccess;
@@ -47,6 +49,9 @@ export default class CrudService<T = any> extends LocalService<CrudState> {
         }
       }
     } catch (e) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Fetch error', e);
+      }
       if (loadingTask) {
         yield cancel(loadingTask);
       }

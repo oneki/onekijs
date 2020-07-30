@@ -1,6 +1,5 @@
 {
   "include": ["src", "typings", "types"],
-  "exclude": ["**/__tests__/**"],
   "compilerOptions": {
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,

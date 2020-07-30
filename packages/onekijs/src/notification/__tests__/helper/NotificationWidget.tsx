@@ -8,16 +8,24 @@ const NotificationWidget: FC = () => {
   return (
     <>
       <div>
-        {errors.map((notification) => (
-          <div style={{ backgroundColor: 'red' }} key={notification.id} data-testid={notification.id}>
-            {notification.payload.message}
+        {errors.length > 0 && (
+          <div data-testid="notifications-error-container">
+            {errors.map((notification) => (
+              <div style={{ backgroundColor: 'red' }} key={notification.id} data-testid={notification.id}>
+                {notification.payload.message}
+              </div>
+            ))}
           </div>
-        ))}
-        {successes.map((notification) => (
-          <div style={{ backgroundColor: 'green' }} key={notification.id} data-testid={notification.id}>
-            {notification.payload.message}
+        )}
+        {successes.length > 0 && (
+          <div data-testid="notifications-success-container">
+            {successes.map((notification) => (
+              <div style={{ backgroundColor: 'green' }} key={notification.id} data-testid={notification.id}>
+                {notification.payload.message}
+              </div>
+            ))}
           </div>
-        ))}
+        )}
       </div>
     </>
   );
