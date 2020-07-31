@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/extend-expect';
 import * as React from 'react';
 import { render, TestAppProps } from '../../__tests__/customRenderer';
-import asyncTimeout from '../../__tests__/utils/timeout';
+import { asyncTimeout } from '../../__tests__/utils/timeout';
 import { IdpType } from '../typings';
 import { oidcServer } from '../utils';
 import UseLoginCallbackWidget from './components/UseLoginCallbackWidget';

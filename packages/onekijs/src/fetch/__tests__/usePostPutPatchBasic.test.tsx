@@ -1,15 +1,17 @@
 import '@testing-library/jest-dom/extend-expect';
 import * as React from 'react';
-import { render, fireEvent } from '../../__tests__/customRenderer';
-import UseMutationWidget, { SubmitDataType, textDisplay } from './components/UseMutationWidget';
-import { FetchOptions } from '../typings';
 import NotificationWidget from '../../__tests__/components/NotificationWidget';
+import { fireEvent, render } from '../../__tests__/customRenderer';
+import { waitCallback } from '../../__tests__/utils/timeout';
+import { FetchOptions } from '../typings';
+import UseMutationWidget, { SubmitDataType } from './components/UseMutationWidget';
+import { act } from 'react-dom/test-utils';
 
 type usePostPutPatchTestProps = {
   title: string;
   method: 'post' | 'put' | 'patch';
   baseUrl?: string;
-  path?: string;
+  path: string;
   options?: FetchOptions;
   onError?: boolean;
   onSuccess?: boolean;
@@ -20,19 +22,25 @@ const tests: usePostPutPatchTestProps[] = [
     title: 'does a simple POST with onSuccess',
     method: 'post',
     path: '/echo',
-    onSuccess: true,
+    options: {
+      onSuccess: jest.fn(),
+    },
   },
   {
     title: 'does a simple PUT with onSuccess',
     method: 'put',
     path: '/echo',
-    onSuccess: true,
+    options: {
+      onSuccess: jest.fn(),
+    },
   },
   {
     title: 'does a simple PATCH with onSuccess',
     method: 'patch',
     path: '/echo',
-    onSuccess: true,
+    options: {
+      onSuccess: jest.fn(),
+    },
   },
 ];
 
@@ -42,15 +50,18 @@ tests.forEach((test) => {
       name: 'Doe',
       firstname: 'John',
     };
-    const { getByTestId, findByTestId, getByText } = render(
+    const { getByText } = render(
       <>
-        <UseMutationWidget method={test.method} data={data} path={test.path} onSuccess={test.onSuccess} />
+        <UseMutationWidget method={test.method} data={data} path={test.path} options={test.options} />
         <NotificationWidget />
       </>,
     );
-    fireEvent.click(getByText('Submit'));
-    await findByTestId('use-result');
-    const resultElement = getByTestId('use-result');
-    expect(resultElement).toHaveTextContent(textDisplay(data));
+    await act(async () => {
+      fireEvent.click(getByText('Submit'));
+      await waitCallback(test.options?.onSuccess as jest.Mock);
+      expect(test.options?.onSuccess).toHaveBeenCalled();
+      expect((test.options?.onSuccess as jest.Mock).mock.calls[0][0]).toHaveProperty('name', 'Doe');
+      expect((test.options?.onSuccess as jest.Mock).mock.calls[0][0]).toHaveProperty('firstname', 'John');
+    });
   });
 });

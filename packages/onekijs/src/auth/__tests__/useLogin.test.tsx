@@ -3,7 +3,7 @@ import qs from 'query-string';
 import * as React from 'react';
 import { AppSettings } from '../../app/typings';
 import { render, TestAppProps } from '../../__tests__/customRenderer';
-import asyncTimeout from '../../__tests__/utils/timeout';
+import { asyncTimeout } from '../../__tests__/utils/timeout';
 import { IdpType } from '../typings';
 import { oidcBrowser, oidcServer } from '../utils';
 import UseLoginWidget from './components/UseLoginWidget';

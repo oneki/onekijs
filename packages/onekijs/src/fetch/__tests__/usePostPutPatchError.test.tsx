@@ -4,6 +4,7 @@ import { fireEvent, render } from '../../__tests__/customRenderer';
 import { FetchOptions } from '../typings';
 import UseMutationWidget, { SubmitDataType } from './components/UseMutationWidget';
 import NotificationWidget from '../../__tests__/components/NotificationWidget';
+import { waitCallback } from '../../__tests__/utils/timeout';
 
 type usePostPutPatchTestProps = {
   title: string;
@@ -11,8 +12,6 @@ type usePostPutPatchTestProps = {
   baseUrl?: string;
   path?: string;
   options?: FetchOptions;
-  onError?: boolean;
-  onSuccess?: boolean;
 };
 
 const tests: usePostPutPatchTestProps[] = [
@@ -20,43 +19,43 @@ const tests: usePostPutPatchTestProps[] = [
     title: 'does a POST returning error (default behavior)',
     method: 'post',
     path: '/error',
-    onSuccess: true,
-    onError: false,
   },
   {
     title: 'does a POST returning error handled with onError',
     method: 'post',
     path: '/error',
-    onSuccess: true,
-    onError: true,
+    options: {
+      onError: jest.fn(),
+    },
   },
   {
     title: 'does a PUT returning error (default behavior)',
     method: 'put',
     path: '/error',
-    onSuccess: true,
-    onError: false,
+    options: {
+      onSuccess: jest.fn(),
+    },
   },
   {
     title: 'does a PUT returning error handled with onError',
     method: 'post',
     path: '/error',
-    onSuccess: true,
-    onError: true,
+    options: {
+      onError: jest.fn(),
+    },
   },
   {
     title: 'does a PATCH returning error (default behavior)',
     method: 'patch',
     path: '/error',
-    onSuccess: true,
-    onError: false,
   },
   {
     title: 'does a PATCH returning error handled with onError',
     method: 'post',
     path: '/error',
-    onSuccess: true,
-    onError: true,
+    options: {
+      onError: jest.fn(),
+    },
   },
 ];
 
@@ -68,31 +67,20 @@ tests.forEach((test) => {
     };
     const { findByTestId, getByText, queryByTestId } = render(
       <>
-        <UseMutationWidget
-          method={test.method}
-          data={data}
-          path={test.path}
-          onSuccess={test.onSuccess}
-          onError={test.onError}
-        />
+        <UseMutationWidget method={test.method} data={data} path={test.path} options={test.options} />
         <NotificationWidget />
       </>,
     );
     fireEvent.click(getByText('Submit'));
-    if (!test.onError) {
+    if (!test.options?.onError) {
       // Error is displayed via a Notification Widget (default behavior)
       await findByTestId('notifications-error-container');
-    } else {
-      // Error is displayed directly by the useGetWidget
-      await findByTestId('on-error');
-    }
-
-    const notificationElement = getByText('this is the error message');
-    expect(notificationElement).toHaveTextContent('this is the error message');
-    if (!test.onError) {
+      const notificationElement = getByText('this is the error message');
+      expect(notificationElement).toHaveTextContent('this is the error message');
       expect(queryByTestId('on-error')).toBeNull();
     } else {
-      expect(queryByTestId('notifications-error-container')).toBeNull();
+      await waitCallback(test.options?.onError as jest.Mock);
+      expect(test.options?.onError).toHaveBeenCalled();
     }
   });
 });
