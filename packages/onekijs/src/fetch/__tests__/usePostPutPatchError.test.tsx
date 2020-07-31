@@ -1,8 +1,9 @@
 import '@testing-library/jest-dom/extend-expect';
 import * as React from 'react';
-import { render, fireEvent } from '../../__tests__/customRenderer';
-import UsePostPutPatchWidget, { SubmitDataType, textDisplay } from './helper/UsePostPutPatchWidget';
+import { fireEvent, render } from '../../__tests__/customRenderer';
 import { FetchOptions } from '../typings';
+import UseMutationWidget, { SubmitDataType } from './components/UseMutationWidget';
+import NotificationWidget from '../../__tests__/components/NotificationWidget';
 
 type usePostPutPatchTestProps = {
   title: string;
@@ -16,22 +17,46 @@ type usePostPutPatchTestProps = {
 
 const tests: usePostPutPatchTestProps[] = [
   {
-    title: 'does a simple POST with onSuccess',
+    title: 'does a POST returning error (default behavior)',
     method: 'post',
-    path: '/echo',
+    path: '/error',
     onSuccess: true,
+    onError: false,
   },
   {
-    title: 'does a simple PUT with onSuccess',
+    title: 'does a POST returning error handled with onError',
+    method: 'post',
+    path: '/error',
+    onSuccess: true,
+    onError: true,
+  },
+  {
+    title: 'does a PUT returning error (default behavior)',
     method: 'put',
-    path: '/echo',
+    path: '/error',
     onSuccess: true,
+    onError: false,
   },
   {
-    title: 'does a simple PATCH with onSuccess',
-    method: 'patch',
-    path: '/echo',
+    title: 'does a PUT returning error handled with onError',
+    method: 'post',
+    path: '/error',
     onSuccess: true,
+    onError: true,
+  },
+  {
+    title: 'does a PATCH returning error (default behavior)',
+    method: 'patch',
+    path: '/error',
+    onSuccess: true,
+    onError: false,
+  },
+  {
+    title: 'does a PATCH returning error handled with onError',
+    method: 'post',
+    path: '/error',
+    onSuccess: true,
+    onError: true,
   },
 ];
 
@@ -41,12 +66,33 @@ tests.forEach((test) => {
       name: 'Doe',
       firstname: 'John',
     };
-    const { getByTestId, findByTestId, getByText } = render(
-      <UsePostPutPatchWidget method={test.method} data={data} path={test.path} onSuccess={test.onSuccess} />,
+    const { findByTestId, getByText, queryByTestId } = render(
+      <>
+        <UseMutationWidget
+          method={test.method}
+          data={data}
+          path={test.path}
+          onSuccess={test.onSuccess}
+          onError={test.onError}
+        />
+        <NotificationWidget />
+      </>,
     );
     fireEvent.click(getByText('Submit'));
-    await findByTestId('use-result');
-    const resultElement = getByTestId('use-result');
-    expect(resultElement).toHaveTextContent(textDisplay(data));
+    if (!test.onError) {
+      // Error is displayed via a Notification Widget (default behavior)
+      await findByTestId('notifications-error-container');
+    } else {
+      // Error is displayed directly by the useGetWidget
+      await findByTestId('on-error');
+    }
+
+    const notificationElement = getByText('this is the error message');
+    expect(notificationElement).toHaveTextContent('this is the error message');
+    if (!test.onError) {
+      expect(queryByTestId('on-error')).toBeNull();
+    } else {
+      expect(queryByTestId('notifications-error-container')).toBeNull();
+    }
   });
 });

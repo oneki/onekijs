@@ -1,13 +1,13 @@
-import { defaultIdpSettings } from '../app/settings';
-import { AnyState, AnonymousObject } from '../core/typings';
-import { asyncGet } from '../fetch/utils';
-import { Idp } from './typings';
-import { get } from '../core/utils/object';
-import { hex2b64, generateRandomString } from '../core/utils/string';
-import { sha256, verify } from '../core/utils/crypt';
-import BasicError from '../core/BasicError';
 import AppContext from '../app/AppContext';
+import { defaultIdpSettings } from '../app/settings';
 import { AppSettings } from '../app/typings';
+import BasicError from '../core/BasicError';
+import { AnonymousObject, AnyState } from '../core/typings';
+import { sha256, verify } from '../core/utils/crypt';
+import { get } from '../core/utils/object';
+import { generateRandomString, hex2b64 } from '../core/utils/string';
+import { asyncGet } from '../fetch/utils';
+import { Idp, IdpSettings } from './typings';
 
 export const oauth2Keys = ['access_token', 'id_token', 'refresh_token', 'expires_in', 'expires_at', 'token_type'];
 
@@ -42,6 +42,14 @@ export function getIdp(settings: AppSettings, name?: string): Idp {
     throw new BasicError(`Cannot find a valid IDP named ${name}`);
   }
   return Object.assign({ name }, defaultIdpSettings[idp.type], idp);
+}
+
+export function oidcServer(idpConfig: IdpSettings): Idp {
+  return Object.assign({}, defaultIdpSettings.oidc_server, idpConfig);
+}
+
+export function oidcBrowser(idpConfig: IdpSettings): Idp {
+  return Object.assign({}, defaultIdpSettings.oidc_browser, idpConfig);
 }
 
 export function getIdpName(state: AnyState): string | undefined {

@@ -4,7 +4,8 @@ import { defaultSettings } from '../../app/settings';
 import { AppSettings } from '../../app/typings';
 import { NotificationContent } from '../typings';
 import { fireEvent, render } from '../../__tests__/customRenderer';
-import NotificationSender from './helper/NotificationSender';
+import NotificationSender from './components/NotificationSender';
+import NotificationWidget from '../../__tests__/components/NotificationWidget';
 
 // const sleep = (milliseconds: number) => {
 //   return new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -85,7 +86,10 @@ tests.forEach((test) => {
         ? test.settings.notification.success.max
         : defaultSettings.notification.default.max;
     const { getByText, findByTestId, getByTestId, queryByTestId } = render(
-      <NotificationSender notifications={test.notifications} />,
+      <>
+        <NotificationSender notifications={test.notifications} />
+        <NotificationWidget />
+      </>,
       { settings: test.settings },
     );
 

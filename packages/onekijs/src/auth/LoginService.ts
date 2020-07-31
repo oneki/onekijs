@@ -196,6 +196,7 @@ export default class LoginService extends LocalService<LoginState> {
         if (idp.scope) {
           params.scope = idp.scope;
         }
+
         if (idp.nonce || (idp.responseType && idp.responseType.includes('id_token'))) {
           const nonce = generateNonce();
           getIdpStorage(idp).setItem('onekijs.nonce', nonce);
@@ -207,11 +208,13 @@ export default class LoginService extends LocalService<LoginState> {
         if (idp.state) {
           const state = generateState();
           getIdpStorage(idp).setItem('onekijs.state', state);
+
           const hash = yield sha256(state);
           params.state = hash;
         } else {
           getIdpStorage(idp).removeItem('onekijs.state');
         }
+
         if (idp.responseType === 'code' && idp.pkce) {
           const verifier = generateCodeVerifier();
           getIdpStorage(idp).setItem('onekijs.verifier', verifier);
@@ -445,7 +448,6 @@ export default class LoginService extends LocalService<LoginState> {
         // save only the IDP
         yield this.authService.setIdp(idp);
       }
-
       if (securityContext) {
         // save the securityContext
         yield this.authService.setSecurityContext(securityContext);
@@ -453,8 +455,8 @@ export default class LoginService extends LocalService<LoginState> {
         // get the securityContext from the userInfo endpoint and save it
         yield this.authService.fetchSecurityContext();
       }
-
       // call the reducer to update the local state
+
       yield this.onSuccess();
       yield this.notificationService.clearTopic('login-error');
 

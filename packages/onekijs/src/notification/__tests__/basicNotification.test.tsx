@@ -1,8 +1,9 @@
 import '@testing-library/jest-dom/extend-expect';
 import * as React from 'react';
-import { NotificationContent } from '../typings';
+import NotificationWidget from '../../__tests__/components/NotificationWidget';
 import { fireEvent, render } from '../../__tests__/customRenderer';
-import NotificationSender from './helper/NotificationSender';
+import { NotificationContent } from '../typings';
+import NotificationSender from './components/NotificationSender';
 
 const notifications: NotificationContent[] = [
   {
@@ -23,7 +24,12 @@ const notifications: NotificationContent[] = [
 
 notifications.forEach((notification) => {
   it(`it renders an ${notification.topic} notification`, async () => {
-    const { getByText, findByTestId, getByTestId } = render(<NotificationSender notifications={[notification]} />);
+    const { getByText, findByTestId, getByTestId } = render(
+      <>
+        <NotificationSender notifications={[notification]} />
+        <NotificationWidget />
+      </>,
+    );
     fireEvent.click(getByText(`Send a ${notification.payload.message} notification`));
     await findByTestId(notification.id as string);
     const notificationElement = getByTestId(notification.id as string);

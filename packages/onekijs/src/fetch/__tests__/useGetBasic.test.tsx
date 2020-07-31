@@ -1,11 +1,17 @@
 import '@testing-library/jest-dom/extend-expect';
 import * as React from 'react';
-import { render } from '../../__tests__/customRenderer';
 import { successResponse } from '../../__tests__/mocks/responses';
-import UseGetWidget, { textDisplay } from './helper/UseGetWidget';
+import UseGetWidget, { textDisplay } from './components/UseGetWidget';
+import { render } from '../../__tests__/customRenderer';
+import NotificationWidget from '../../__tests__/components/NotificationWidget';
 
 it('it does a simple GET', async () => {
-  const { getByTestId, findByTestId } = render(<UseGetWidget path="/success" />);
+  const { getByTestId, findByTestId } = render(
+    <>
+      <UseGetWidget path="/success" />
+      <NotificationWidget />
+    </>,
+  );
 
   await findByTestId('use-get-result');
   const resultElement = getByTestId('use-get-result');

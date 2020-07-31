@@ -51,8 +51,8 @@ export enum IdpMethod {
   Post = 'POST',
 }
 
-export interface Idp {
-  authorizeEndpoint?: string | ((params: AnonymousObject, idp: Idp, context: AppContext) => string);
+export interface IdpSettings extends AnonymousObject {
+  authorizeEndpoint?: string | ((params: AnonymousObject, idp: Idp, context: AppContext) => string | Promise<string>);
   callback?: string | ((response: any, idp: Idp, context: AppContext) => [any?, AnonymousObject?]);
   clientAuth?: IdpClientAuth;
   clientId?: string;
@@ -60,7 +60,7 @@ export interface Idp {
   clockSkew?: number;
   codeChallengeMethod?: IdpCodeChallengeMethod;
   cookieTTL?: number;
-  external: boolean;
+  external?: boolean;
   externalLoginEndpoint?: string | ((idp: Idp, context: AppContext) => string);
   externalLogoutEndpoint?: string | ((idp: Idp, context: AppContext) => string);
   jwksEndpoint?: string | ((token: any, idp: Idp, context: AppContext) => string);
@@ -71,10 +71,10 @@ export interface Idp {
   logoutMethod?: IdpMethod;
   logoutCallbackRoute?: string;
   logoutEndpoint?: string | ((idp: Idp, context: AppContext) => string);
-  name: string;
+  name?: string;
   nonce?: boolean;
-  oauth2: boolean;
-  oidc: boolean;
+  oauth2?: boolean;
+  oidc?: boolean;
   passwordKey?: string;
   rememberMeKey?: string;
   usernameKey?: string;
@@ -86,6 +86,17 @@ export interface Idp {
   responseType?: IdpResponseType;
   scope?: string;
   state?: boolean;
+  type?: IdpType;
+  tokenEndpoint?: string | ((grant_type: string, idp: Idp, context: AppContext) => string);
+  userinfoEndpoint?: string | ((idp: Idp, context: AppContext) => string);
+  validate?: boolean;
+}
+
+export interface Idp extends IdpSettings {
+  external: boolean;
+  name: string;
+  oauth2: boolean;
+  oidc: boolean;
   type: IdpType;
   tokenEndpoint?: string | ((grant_type: string, idp: Idp, context: AppContext) => string);
   userinfoEndpoint?: string | ((idp: Idp, context: AppContext) => string);

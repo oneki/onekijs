@@ -1,5 +1,10 @@
 import { server } from './mocks/server';
 import 'isomorphic-fetch';
+import { Crypto } from '@peculiar/webcrypto';
+
+const crypto = new Crypto();
+
+(window as any).crypto = crypto;
 
 // Establish API mocking before all tests.
 beforeAll(() => server.listen());

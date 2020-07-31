@@ -1,6 +1,5 @@
 import React, { FC, useState } from 'react';
 import useSetting from '../../../app/useSetting';
-import NotificationWidget from '../../../notification/__tests__/helper/NotificationWidget';
 import { GetOptions } from '../../typings';
 import useGet from '../../useGet';
 import BasicError from '../../../core/BasicError';
@@ -33,7 +32,6 @@ const UseGetWidget: FC<UseGetWidgetProps> = ({ path = '', baseUrl, options, onEr
   return (
     <>
       {error && <div data-testid="use-get-on-error">{error.payload.message}</div>}
-      <NotificationWidget />
       {data && (
         <>
           <span data-testid="use-get-result">{textDisplay(data)}</span>

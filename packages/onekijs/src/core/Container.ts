@@ -6,6 +6,7 @@ import { toPayload } from './utils/object';
 import ServiceType from './ServiceType';
 import BasicError from './BasicError';
 import AppContext from '../app/AppContext';
+import 'reflect-metadata';
 
 export const handler = {
   get: function <S extends State, T extends Service<S>>(target: T, prop: string | number | symbol, receiver?: T): any {

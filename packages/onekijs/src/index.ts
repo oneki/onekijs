@@ -33,7 +33,7 @@ export {
   IdpResponseType,
   IdpContentType,
   IdpMethod,
-  Idp,
+  IdpSettings,
   LoginOptions,
   LogoutOptions,
   LoginState,
@@ -61,6 +61,8 @@ export {
   isExternal,
   parseHashToken,
   getIdpStorage,
+  oidcBrowser,
+  oidcServer,
 } from './auth/utils';
 export { delayLoading } from './core/utils/async';
 export { isMobile, isBrowser } from './core/utils/browser';

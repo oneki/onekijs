@@ -7,6 +7,7 @@ import {
   takeLeading,
   throttle as throttleSaga,
 } from 'redux-saga/effects';
+import 'reflect-metadata';
 
 const uids = new Set<string>();
 let counter = 0;

@@ -1,8 +1,9 @@
 import '@testing-library/jest-dom/extend-expect';
 import * as React from 'react';
 import { render, fireEvent } from '../../__tests__/customRenderer';
-import UsePostPutPatchWidget, { SubmitDataType, textDisplay } from './helper/UsePostPutPatchWidget';
+import UseMutationWidget, { SubmitDataType, textDisplay } from './components/UseMutationWidget';
 import { FetchOptions } from '../typings';
+import NotificationWidget from '../../__tests__/components/NotificationWidget';
 
 type usePostPutPatchTestProps = {
   title: string;
@@ -42,7 +43,10 @@ tests.forEach((test) => {
       firstname: 'John',
     };
     const { getByTestId, findByTestId, getByText } = render(
-      <UsePostPutPatchWidget method={test.method} data={data} path={test.path} onSuccess={test.onSuccess} />,
+      <>
+        <UseMutationWidget method={test.method} data={data} path={test.path} onSuccess={test.onSuccess} />
+        <NotificationWidget />
+      </>,
     );
     fireEvent.click(getByText('Submit'));
     await findByTestId('use-result');

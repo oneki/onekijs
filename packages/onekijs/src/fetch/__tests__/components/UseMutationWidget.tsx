@@ -1,13 +1,12 @@
 import React, { FC, useState } from 'react';
 import useSetting from '../../../app/useSetting';
 import BasicError from '../../../core/BasicError';
-import NotificationWidget from '../../../notification/__tests__/helper/NotificationWidget';
 import { FetchOptions } from '../../typings';
 import usePatch from '../../usePatch';
 import { usePost } from '../../usePost';
 import usePut from '../../usePut';
 
-type UsePostPutPatchWidgetProps = {
+type UseMutationWidgetProps = {
   method: 'post' | 'put' | 'patch';
   data: SubmitDataType;
   path?: string;
@@ -25,7 +24,7 @@ export type SubmitDataType = {
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const textDisplay = (data: any) => `RESULT=${JSON.stringify(data)}`;
 
-const UsePostPutPatchWidget: FC<UsePostPutPatchWidgetProps> = ({
+const UseMutationWidget: FC<UseMutationWidgetProps> = ({
   method,
   data,
   path = '',
@@ -70,7 +69,6 @@ const UsePostPutPatchWidget: FC<UsePostPutPatchWidgetProps> = ({
   return (
     <>
       {error && <div data-testid="on-error">{error.payload.message}</div>}
-      <NotificationWidget />
       <button onClick={() => submit(data)}>Submit</button>
       {response && (
         <>
@@ -81,4 +79,4 @@ const UsePostPutPatchWidget: FC<UsePostPutPatchWidgetProps> = ({
   );
 };
 
-export default UsePostPutPatchWidget;
+export default UseMutationWidget;

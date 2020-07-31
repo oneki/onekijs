@@ -8,7 +8,7 @@ import { AppProps } from '../app/typings';
 import useLazyRef from '../core/useLazyRef';
 import AppProvider from '../app/AppProvider';
 
-interface TestAppProps extends AppProps {
+export interface TestAppProps extends AppProps {
   history?: History<LocationState>;
 }
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types

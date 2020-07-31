@@ -2,7 +2,8 @@ import '@testing-library/jest-dom/extend-expect';
 import * as React from 'react';
 import { render } from '../../__tests__/customRenderer';
 import { GetOptions } from '../typings';
-import UseGetWidget from './helper/UseGetWidget';
+import UseGetWidget from './components/UseGetWidget';
+import NotificationWidget from '../../__tests__/components/NotificationWidget';
 
 type useGetTestProps = {
   title: string;
@@ -27,7 +28,10 @@ const tests: useGetTestProps[] = [
 tests.forEach((test) => {
   it(`it ${test.title}`, async () => {
     const { getByText, findByTestId } = render(
-      <UseGetWidget baseUrl={test.baseUrl} path={test.path} options={test.options} onError={test.onError} />,
+      <>
+        <UseGetWidget baseUrl={test.baseUrl} path={test.path} options={test.options} onError={test.onError} />
+        <NotificationWidget />
+      </>,
     );
     if (!test.onError) {
       // Error is displayed via the Notification Widget (default behavior)

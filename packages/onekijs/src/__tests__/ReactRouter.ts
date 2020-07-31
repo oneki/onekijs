@@ -38,6 +38,7 @@ export class ReactRouter extends AppRouter {
     if (this.reactRouterHistory) {
       const url: string = typeof urlOrLocation === 'string' ? urlOrLocation : toUrl(urlOrLocation);
       this.reactRouterHistory.push(url);
+      window.location.href = url;
     }
   }
 
@@ -45,6 +46,7 @@ export class ReactRouter extends AppRouter {
     if (this.reactRouterHistory) {
       const url: string = typeof urlOrLocation === 'string' ? urlOrLocation : toUrl(urlOrLocation);
       this.reactRouterHistory.replace(url);
+      window.location.href = url;
     }
   }
 

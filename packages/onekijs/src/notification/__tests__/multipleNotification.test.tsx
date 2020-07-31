@@ -2,7 +2,8 @@ import '@testing-library/jest-dom/extend-expect';
 import * as React from 'react';
 import { NotificationContent } from '../typings';
 import { fireEvent, render } from '../../__tests__/customRenderer';
-import NotificationSender from './helper/NotificationSender';
+import NotificationSender from './components/NotificationSender';
+import NotificationWidget from '../../__tests__/components/NotificationWidget';
 
 // const sleep = (milliseconds: number) => {
 //   return new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -39,7 +40,12 @@ const tests: TestNotification[] = [
 
 tests.forEach((test) => {
   it(`it ${test.title}`, async () => {
-    const { getByText, findByTestId, getByTestId } = render(<NotificationSender notifications={test.notifications} />);
+    const { getByText, findByTestId, getByTestId } = render(
+      <>
+        <NotificationSender notifications={test.notifications} />
+        <NotificationWidget />
+      </>,
+    );
     for (const notification of test.notifications) {
       fireEvent.click(getByText(`Send a ${notification.payload.message} notification`));
       await findByTestId(notification.id as string);

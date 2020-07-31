@@ -2,8 +2,9 @@ import '@testing-library/jest-dom/extend-expect';
 import * as React from 'react';
 import { render } from '../../__tests__/customRenderer';
 import { successResponse } from '../../__tests__/mocks/responses';
-import UseGetWidget, { textDisplay } from './helper/UseGetWidget';
+import UseGetWidget, { textDisplay } from './components/UseGetWidget';
 import { GetOptions } from '../typings';
+import NotificationWidget from '../../__tests__/components/NotificationWidget';
 
 type useGetTestProps = {
   title: string;
@@ -55,7 +56,10 @@ tests.forEach((test) => {
     const loadingDelay = test.options?.delayLoading ?? 200;
     if (test.serverDelay) test.path = `${test.path}?delay=${serverDelay}`;
     const { findByText, getByTestId, findByTestId } = render(
-      <UseGetWidget baseUrl={test.baseUrl} path={test.path} options={test.options} />,
+      <>
+        <UseGetWidget baseUrl={test.baseUrl} path={test.path} options={test.options} />
+        <NotificationWidget />
+      </>,
     );
     if (loadingDelay < serverDelay) {
       // check that the loading indicator is correctly displayed

@@ -1,18 +1,18 @@
 import { delay, spawn } from 'redux-saga/effects';
-import { getIdp, getIdpName, oauth2Keys, parseJwt, validateToken } from './utils';
+import { reducer, saga, service } from '../core/annotations';
+import BasicError from '../core/BasicError';
+import GlobalService from '../core/GlobalService';
+import HTTPError from '../core/HTTPError';
+import { AnonymousObject, ErrorCallback, SagaEffect, SuccessCallback } from '../core/typings';
+import { del, get, isNull, set } from '../core/utils/object';
+import { getItem, onStorageChange, removeItem, setItem } from '../core/utils/storage';
+import { absoluteUrl } from '../core/utils/url';
 import { asyncGet, asyncPost } from '../fetch/utils';
 import { Idp } from './typings';
-import { SuccessCallback, ErrorCallback, AnonymousObject, SagaEffect } from '../core/typings';
-import { service, reducer, saga } from '../core/annotations';
-import Service from '../core/Service';
-import { removeItem, setItem, onStorageChange, getItem } from '../core/utils/storage';
-import { del, get, set, isNull } from '../core/utils/object';
-import HTTPError from '../core/HTTPError';
-import { absoluteUrl } from '../core/utils/url';
-import BasicError from '../core/BasicError';
+import { getIdp, getIdpName, oauth2Keys, parseJwt, validateToken } from './utils';
 
 @service
-export default class AuthService extends Service {
+export default class AuthService extends GlobalService {
   /**
    * Save the security context in the redux store
    *
