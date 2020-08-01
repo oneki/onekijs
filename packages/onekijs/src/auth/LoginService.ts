@@ -180,7 +180,6 @@ export default class LoginService extends LocalService<LoginState> {
 
       // get the loginCallback route the settings
       const redirectUri = absoluteUrl(idp.loginCallbackRoute || `${router.pathname}/callback`);
-
       if (!isExternal(idp)) {
         throw Error(`IDP type ${idp.type} is not valid for an external authentication`);
       }
@@ -348,7 +347,7 @@ export default class LoginService extends LocalService<LoginState> {
             const body: AnonymousObject = {
               grant_type: 'authorization_code',
               client_id: idp.clientId,
-              redirect_uri: absoluteUrl(`${router.pathname}`),
+              redirect_uri: absoluteUrl(idp.loginCallbackRoute || `${router.pathname}`),
               code: params.code,
             };
             if (idp.clientSecret) {
@@ -448,6 +447,7 @@ export default class LoginService extends LocalService<LoginState> {
         // save only the IDP
         yield this.authService.setIdp(idp);
       }
+
       if (securityContext) {
         // save the securityContext
         yield this.authService.setSecurityContext(securityContext);
