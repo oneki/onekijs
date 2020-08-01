@@ -261,3 +261,9 @@ export const fromPayload = (payload: AnonymousObject): any[] => {
     });
   return args;
 };
+
+export const omit = <T> (source: any, keys: string[]): T => {
+  const clone = Object.assign({}, source);
+  keys.forEach(key => delete clone[key]);
+  return clone as T;
+}

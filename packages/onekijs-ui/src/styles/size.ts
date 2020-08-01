@@ -7,6 +7,7 @@ import {
 } from 'csstype';
 import { cssProperty } from '../utils/style';
 import { Formatter, SizeProperty, Theme } from './typings';
+import { pxFormatter } from '../utils/formatter';
 
 const sizeFormatter = (type: 'width' | 'height', value: SizeProperty, theme: Theme) => {
   if (theme.sizes[value] !== undefined) {
@@ -24,7 +25,7 @@ const sizeFormatter = (type: 'width' | 'height', value: SizeProperty, theme: The
       .map((x) => parseInt(x));
     return `${(100 * time) / div}%`;
   }
-  return String(value);
+  return pxFormatter(value, theme);
 };
 
 const widthFormatter: Formatter<SizeProperty> = (value, theme) => {

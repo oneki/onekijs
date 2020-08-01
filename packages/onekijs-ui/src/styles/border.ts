@@ -104,10 +104,16 @@ export const borderBottomStyle = cssProperty<BorderBottomStyleProperty>('border-
 export const borderLeftStyle = cssProperty<BorderLeftStyleProperty>('border-left-style');
 export const borderRightStyle = cssProperty<BorderRightStyleProperty>('border-right-style');
 
-export const borderWidth = cssProperty<BorderWidthProperty<TLength>>('border-width', pxFormatter);
-export const borderTopWidth = cssProperty<BorderTopWidthProperty<TLength>>('border-top-width', pxFormatter);
-export const borderBottomWidth = cssProperty<BorderBottomWidthProperty<TLength>>('border-bottom-width', pxFormatter);
-export const borderLeftWidth = cssProperty<BorderLeftWidthProperty<TLength>>('border-left-width', pxFormatter);
-export const borderRightWidth = cssProperty<BorderRightWidthProperty<TLength>>('border-right-width', pxFormatter);
+export const borderWidth = cssProperty<number | BorderWidthProperty<TLength>>('border-width', pxFormatter);
+export const borderTopWidth = cssProperty<number | BorderTopWidthProperty<TLength>>('border-top-width', pxFormatter);
+export const borderBottomWidth = cssProperty<number | BorderBottomWidthProperty<TLength>>(
+  'border-bottom-width',
+  pxFormatter,
+);
+export const borderLeftWidth = cssProperty<number | BorderLeftWidthProperty<TLength>>('border-left-width', pxFormatter);
+export const borderRightWidth = cssProperty<number | BorderRightWidthProperty<TLength>>(
+  'border-right-width',
+  pxFormatter,
+);
 
 export const boxShadow = cssProperty<ShadowPropertyTheme | BoxShadowProperty>('box-shadow', themeFormatter('shadow'));

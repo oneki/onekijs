@@ -24,8 +24,20 @@
     "react-dom": "^15.0.0 || ^16.0.0"
   },
   "dependencies": {
+    "@popperjs/core": "^2.4.4",
     "onekijs": "^0.4.2",
+    "react-popper": "^2.2.3",
+    "react-transition-group": "^4.4.1",
+    "react-virtual": "^2.2.1",
+    "react-virtualized-auto-sizer": "^1.0.2",
+    "react-window": "^1.8.5",
+    "react-window-infinite-loader": "^1.0.5",
     "styled-components": "^5.1.1"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "devDependencies": {
+    "@types/react-transition-group": "^4.4.0",
+    "@types/react-virtualized-auto-sizer": "^1.0.0",
+    "@types/react-window": "^1.8.2"
+  }
 }

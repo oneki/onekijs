@@ -1,7 +1,8 @@
 /* eslint-disable prettier/prettier */
 import { AnonymousObject, Collection, lcfirst, toKebabCase } from 'onekijs';
 import { css, FlattenInterpolation, ThemeProps } from 'styled-components';
-import { Formatter, Theme, CssProperty } from '../styles/typings';
+import { CssProperty, Formatter, Theme } from '../styles/typings';
+import { themeFormatter } from './formatter';
 
 const formatValue = <T>(value: T, theme: Theme, formatter?: Formatter<T>): string => {
   if (formatter) {
@@ -156,3 +157,29 @@ export const cssProperty = <T>(property: string | null, formatter?: Formatter<T>
     return toCss(property, formatter, value, variants);
   };
 };
+
+export const preflight = (): FlattenInterpolation<ThemeProps<any>> => {
+  return css`
+    *,
+    ::after,
+    ::before {
+      box-sizing: border-box;
+      border-style: solid;
+      border-width: 0;
+    }
+    ${toCss('font-family', themeFormatter('font.families'), 'sans', {})}
+    button, input, optgroup, select, textarea {
+      font-family: inherit;
+      font-size: 100%;
+      margin: 0;
+      line-height: 1.15;
+    }
+  `;
+};
+
+export const addClassname = (classname: string, existing?: string, after: boolean = true): string => {
+  if (existing) {
+    return after ? `${existing} ${classname}` : `${classname} ${existing}`;
+  }
+  return classname;
+}

@@ -86,6 +86,7 @@ export {
   diffArrays,
   toPayload,
   fromPayload,
+  omit,
 } from './lib/core/utils/object';
 export {
   getItem,
