@@ -3,34 +3,34 @@ import * as React from 'react';
 import { act } from 'react-dom/test-utils';
 import NotificationWidget from '../../__tests__/components/NotificationWidget';
 import { render, TestAppProps } from '../../__tests__/customRenderer';
-import { wait } from '../../__tests__/utils/timeout';
-import { IdpType, IdpStorage } from '../typings';
-import { oidcServer } from '../utils';
-import UseLoginCallbackWidget from './components/UseLoginCallbackWidget';
 import {
   authorizationCode,
-  stateSha,
-  nonce,
-  state,
-  verifier,
-  clientId,
-  redirectUri,
   authorizeEndpoint,
+  clientId,
+  jwksEndpoint,
+  oauthLogoutEndpoint,
+  nonce,
+  redirectUri,
+  state,
+  stateSha,
   tokenEndpoint,
+  tokenWithPkceEndpoint,
   userinfoEndpoint,
-  logoutEndpoint,
-} from '../../__tests__/utils/oidc';
+  verifier,
+} from '../../__tests__/utils/auth';
+import { wait } from '../../__tests__/utils/timeout';
+import { IdpStorage, IdpType } from '../typings';
+import { oidcBrowser, oidcServer } from '../utils';
+import UseLoginCallbackWidget from './components/UseLoginCallbackWidget';
 
 type TestProps = {
   title: string;
   props?: TestAppProps;
-  onError?: boolean;
-  onSucces?: boolean;
 };
 
 const tests: TestProps[] = [
   {
-    title: 'type = default oidc_server configuration',
+    title: 'oidc_server/default config',
     props: {
       settings: {
         idp: {
@@ -40,7 +40,49 @@ const tests: TestProps[] = [
             authorizeEndpoint,
             tokenEndpoint,
             userinfoEndpoint,
-            logoutEndpoint,
+            logoutEndpoint: oauthLogoutEndpoint,
+            scope: 'openid email profile',
+            loginCallbackRoute: redirectUri,
+            persist: IdpStorage.Memory,
+          }),
+        },
+      },
+    },
+  },
+  {
+    title: 'oidc_server/nonce=true',
+    props: {
+      settings: {
+        idp: {
+          default: oidcServer({
+            type: IdpType.OidcServer,
+            clientId: clientId,
+            authorizeEndpoint,
+            tokenEndpoint: tokenWithPkceEndpoint,
+            userinfoEndpoint,
+            logoutEndpoint: oauthLogoutEndpoint,
+            scope: 'openid email profile',
+            loginCallbackRoute: redirectUri,
+            persist: IdpStorage.Memory,
+            nonce: true,
+          }),
+        },
+      },
+    },
+  },
+  {
+    title: 'oidc_browser/default config',
+    props: {
+      settings: {
+        idp: {
+          default: oidcBrowser({
+            type: IdpType.OidcBrowser,
+            clientId: clientId,
+            authorizeEndpoint,
+            tokenEndpoint: tokenWithPkceEndpoint,
+            userinfoEndpoint,
+            logoutEndpoint: oauthLogoutEndpoint,
+            jwksEndpoint,
             scope: 'openid email profile',
             loginCallbackRoute: redirectUri,
             persist: IdpStorage.Memory,
@@ -53,7 +95,7 @@ const tests: TestProps[] = [
 
 const { location } = window;
 
-beforeAll((): void => {
+beforeEach((): void => {
   delete window.location;
   (window as any).location = {
     href: '',
@@ -62,7 +104,7 @@ beforeAll((): void => {
   };
 });
 
-afterAll((): void => {
+afterEach((): void => {
   window.location = location;
 });
 
@@ -74,10 +116,9 @@ describe('it handles OIDC auth callback', () => {
       localStorage.setItem('onekijs.nonce', nonce);
       localStorage.setItem('onekijs.state', state);
       localStorage.setItem('onekijs.verifier', verifier);
-
       render(
         <>
-          <UseLoginCallbackWidget idpName="default" onError={test.onError} />
+          <UseLoginCallbackWidget idpName="default" />
           <NotificationWidget />
         </>,
         test.props,
@@ -85,7 +126,7 @@ describe('it handles OIDC auth callback', () => {
       await act(async () => {
         await wait(() => {
           return window.location.href !== '';
-        }, 200);
+        }, 500);
         // const settings = test.props?.settings as AppSettings;
         const href = window.location.href;
         expect(href).toBeDefined();

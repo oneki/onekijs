@@ -148,6 +148,9 @@ export default class LoginService extends LocalService<LoginState> {
 
       yield this.successLogin(token, securityContext, idpName, onError, onSuccess);
     } catch (e) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Form login error', e);
+      }
       yield this.onError(e);
       if (onError) {
         // the caller is not an async or generator function and manages error
@@ -258,6 +261,9 @@ export default class LoginService extends LocalService<LoginState> {
         throw new BasicError(`Cannot find a valid externalLoginEndpoint for IDP ${idp.name}`);
       }
     } catch (e) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('External login error', e);
+      }
       yield this.onError(e);
       if (onError) {
         // the caller is not an async or generator function and manages error
@@ -362,6 +368,7 @@ export default class LoginService extends LocalService<LoginState> {
                 };
               }
             }
+
             if (idp.pkce) {
               body.code_verifier = getIdpStorage(idp).getItem('onekijs.verifier');
               getIdpStorage(idp).removeItem('onekijs.verifier');
@@ -404,6 +411,9 @@ export default class LoginService extends LocalService<LoginState> {
 
       yield this.successLogin(token, securityContext, idpName, onError, onSuccess);
     } catch (e) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('External login callback error', e);
+      }
       yield this.onError(e);
       if (onError) {
         // the caller is not an async or generator function and manages error
@@ -439,7 +449,6 @@ export default class LoginService extends LocalService<LoginState> {
     try {
       // build the IDP configuration from the settings and some default values
       const idp = getIdp(settings, idpName);
-
       if (token) {
         // save the IDP and the token
         yield this.authService.saveToken(token, idp);
@@ -456,7 +465,6 @@ export default class LoginService extends LocalService<LoginState> {
         yield this.authService.fetchSecurityContext();
       }
       // call the reducer to update the local state
-
       yield this.onSuccess();
       yield this.notificationService.clearTopic('login-error');
 
@@ -472,6 +480,10 @@ export default class LoginService extends LocalService<LoginState> {
         yield call([router, router.push], from);
       }
     } catch (e) {
+      console.error(e);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Success login error', e);
+      }
       yield this.onError(e);
       if (onError) {
         // the caller is not an async or generator function and manages error
@@ -535,6 +547,9 @@ export default class LoginService extends LocalService<LoginState> {
         yield this.externalLogin(idpName, onError);
       }
     } catch (e) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Login error', e);
+      }
       yield this.onError(e);
       if (onError) {
         // the caller is not an async or generator function and manages error

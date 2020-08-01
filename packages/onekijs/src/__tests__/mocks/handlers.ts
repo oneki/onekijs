@@ -1,7 +1,8 @@
-import { rest, MockedRequest } from 'msw';
+import { MockedRequest, rest } from 'msw';
 import { ResponseComposition } from 'msw/lib/types/response';
-import { token, verifyToken, clientId, authorizationCode, verifier, redirectUri } from '../utils/oidc';
 import qs from 'query-string';
+import { AnonymousObject } from '../../core/typings';
+import { authorizationCode, clientId, redirectUri, token, verifier, verifyToken, nonceSha, jkws } from '../utils/auth';
 
 const successResponse = {
   result: 'success',
@@ -58,29 +59,20 @@ export const handlers = [
     );
   }),
 
+  // FORM BASED AUTH
+  rest.post('/auth/login', (req, res, ctx) => {
+    const body = (req.body as Record<string, any>) || {};
+    expect(body.username).toBe('john.doe');
+    expect(body.password).toBe('secret');
+    return generateAndReturnTokens(res, ctx);
+  }),
+
   // OIDC
   rest.post('/oauth2/token', (req, res, ctx) => {
-    let params = '';
-    if (req.body && typeof req.body === 'string') {
-      params = req.body;
-    }
-    const query = qs.parse(params);
-    expect(query.client_id).toBe(clientId);
-    expect(query.code).toBe(authorizationCode);
-    expect(query.code_verifier).toBe(verifier);
-    expect(query.grant_type).toBe('authorization_code');
-    expect(query.redirect_uri).toBe(redirectUri);
-    const access_token = token({ mock_token_type: 'access' });
-    const refresh_token = token({ mock_token_type: 'refresh' });
-    const id_token = token({ mock_token_type: 'id', name: 'Doe', firstname: 'John', email: 'john.doe@mock.com' });
-    return res(
-      ctx.delay(1),
-      ctx.json({
-        access_token,
-        refresh_token,
-        id_token,
-      }),
-    );
+    return oidcTokenHandler(req, res, ctx, { pkce: false });
+  }),
+  rest.post('/oauth2/token-with-pkce', (req, res, ctx) => {
+    return oidcTokenHandler(req, res, ctx, { pkce: true });
   }),
 
   rest.get('/oauth/userinfo', (req, res, ctx) => {
@@ -90,14 +82,53 @@ export const handlers = [
         verifyToken(token);
         return res(ctx.delay(1), ctx.json({ name: 'Doe', firstname: 'John', email: 'john.doe@mock.com' }));
       } catch (e) {
-        return res(ctx.status(403), ctx.json({ message: 'invalid access token' }));
+        return res(ctx.status(403), ctx.json({ message: 'userinfo: invalid access token' }));
       }
     } else {
-      return res(ctx.status(401), ctx.json({ message: 'missing access token' }));
+      return res(ctx.status(401), ctx.json({ message: 'userinfo: missing access token' }));
     }
+  }),
+  rest.get('/.well-known/jwks.json', (_req, res, ctx) => {
+    return res(ctx.json(jkws));
   }),
 
   /*            tokenEndpoint: 'http://localhost/oauth2/token',
             userinfoEndpoint: 'http://localhost/oauth/userinfo',
             logoutEndpoint: 'http://localhost/oauth/logout',*/
 ];
+
+const oidcTokenHandler = (req: MockedRequest, res: ResponseComposition, ctx: any, options: AnonymousObject) => {
+  let params = '';
+  if (req.body && typeof req.body === 'string') {
+    params = req.body;
+  }
+  const query = qs.parse(params);
+  expect(query.client_id).toBe(clientId);
+  expect(query.code).toBe(authorizationCode);
+  expect(query.grant_type).toBe('authorization_code');
+  expect(query.redirect_uri).toBe(redirectUri);
+  if (options.pkce) {
+    expect(query.code_verifier).toBe(verifier);
+  }
+  return generateAndReturnTokens(res, ctx);
+};
+
+const generateAndReturnTokens = (res: ResponseComposition, ctx: any) => {
+  const access_token = token({ mock_token_type: 'access' });
+  const refresh_token = token({ mock_token_type: 'refresh' });
+  const id_token = token({
+    mock_token_type: 'id',
+    name: 'Doe',
+    firstname: 'John',
+    email: 'john.doe@mock.com',
+    nonce: nonceSha,
+  });
+  return res(
+    ctx.delay(1),
+    ctx.json({
+      access_token,
+      refresh_token,
+      id_token,
+    }),
+  );
+};

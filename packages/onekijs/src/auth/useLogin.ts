@@ -33,7 +33,7 @@ const useLogin = (idpName = 'default', options: LoginOptions = {}): [BasicError 
   // build the submit method in case of a form login
   const submit = useCallback(
     (data) => {
-      return service.formLogin(Object.assign(data, idpName, onError, onSuccess));
+      return service.formLogin(Object.assign({}, data, idpName, onError, onSuccess));
     },
     [service, idpName, onError, onSuccess],
   );

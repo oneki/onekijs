@@ -12,8 +12,6 @@ import NotificationWidget from '../../__tests__/components/NotificationWidget';
 type TestProps = {
   title: string;
   props?: TestAppProps;
-  onError?: boolean;
-  onSucces?: boolean;
 };
 
 const tests: TestProps[] = [
@@ -114,7 +112,7 @@ describe('it builds OIDC authorization URL', () => {
     it(`${test.title}`, async () => {
       render(
         <>
-          <UseLoginWidget idpName="default" onError={test.onError} />
+          <UseLoginWidget idpName="default" />
           <NotificationWidget />
         </>,
         test.props,

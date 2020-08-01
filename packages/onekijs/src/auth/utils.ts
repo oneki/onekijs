@@ -7,7 +7,7 @@ import { sha256, verify } from '../core/utils/crypt';
 import { get } from '../core/utils/object';
 import { generateRandomString, hex2b64 } from '../core/utils/string';
 import { asyncGet } from '../fetch/utils';
-import { Idp, IdpSettings } from './typings';
+import { Idp, IdpSettings, IdpType } from './typings';
 
 export const oauth2Keys = ['access_token', 'id_token', 'refresh_token', 'expires_in', 'expires_at', 'token_type'];
 
@@ -44,12 +44,16 @@ export function getIdp(settings: AppSettings, name?: string): Idp {
   return Object.assign({ name }, defaultIdpSettings[idp.type], idp);
 }
 
+export function idpForm(idpConfig: IdpSettings): Idp {
+  return Object.assign({ type: IdpType.Form }, defaultIdpSettings.form, idpConfig);
+}
+
 export function oidcServer(idpConfig: IdpSettings): Idp {
-  return Object.assign({}, defaultIdpSettings.oidc_server, idpConfig);
+  return Object.assign({ type: IdpType.OidcServer }, defaultIdpSettings.oidc_server, idpConfig);
 }
 
 export function oidcBrowser(idpConfig: IdpSettings): Idp {
-  return Object.assign({}, defaultIdpSettings.oidc_browser, idpConfig);
+  return Object.assign({ type: IdpType.OidcBrowser }, defaultIdpSettings.oidc_browser, idpConfig);
 }
 
 export function getIdpName(state: AnyState): string | undefined {

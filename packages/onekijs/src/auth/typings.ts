@@ -53,7 +53,7 @@ export enum IdpMethod {
 
 export interface IdpSettings extends AnonymousObject {
   authorizeEndpoint?: string | ((params: AnonymousObject, idp: Idp, context: AppContext) => string | Promise<string>);
-  callback?: string | ((response: any, idp: Idp, context: AppContext) => [any?, AnonymousObject?]);
+  callback?: 'token' | 'securityContext' | ((response: any, idp: Idp, context: AppContext) => [any?, AnonymousObject?]);
   clientAuth?: IdpClientAuth;
   clientId?: string;
   clientSecret?: string;
@@ -78,7 +78,7 @@ export interface IdpSettings extends AnonymousObject {
   passwordKey?: string;
   rememberMeKey?: string;
   usernameKey?: string;
-  persist?: IdpStorage;
+  persist?: 'localStorage' | 'sessionStorage' | 'cookie' | 'memory';
   pkce?: boolean;
   postLoginRedirectKey?: string;
   postLogoutRedirectKey?: string;
@@ -86,7 +86,7 @@ export interface IdpSettings extends AnonymousObject {
   responseType?: IdpResponseType;
   scope?: string;
   state?: boolean;
-  type?: IdpType;
+  type?: 'oidc_browser' | 'oidc_server' | 'form' | 'external' | 'oauth2_browser' | 'oauth2_server';
   tokenEndpoint?: string | ((grant_type: string, idp: Idp, context: AppContext) => string);
   userinfoEndpoint?: string | ((idp: Idp, context: AppContext) => string);
   validate?: boolean;

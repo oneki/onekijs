@@ -1,7 +1,8 @@
-import { JWK, JWT } from 'jose';
+import { JWK, JWKS, JWT } from 'jose';
 import { AnonymousObject } from '../../core/typings';
 
 export const key = JWK.generateSync('RSA', 2048, { use: 'sig' });
+export const jkws = new JWKS.KeyStore([key]).toJWKS();
 export const token = (payload: AnonymousObject): string => {
   return JWT.sign(payload, key, {
     audience: ['urn:test'],
@@ -10,6 +11,10 @@ export const token = (payload: AnonymousObject): string => {
     header: {
       typ: 'JWT',
     },
+    kid: true,
+    subject: 'john.doe',
+    jti: '12345',
+    algorithm: 'RS256',
   });
 };
 export const verifyToken = (token: string): AnonymousObject => {
@@ -27,5 +32,9 @@ export const clientId = 'mock_client_id';
 export const redirectUri = 'http://localhost/login/callback';
 export const authorizeEndpoint = 'https://mockidp.com/oauth2/auth';
 export const tokenEndpoint = 'http://localhost/oauth2/token';
+export const tokenWithPkceEndpoint = 'http://localhost/oauth2/token-with-pkce';
 export const userinfoEndpoint = 'http://localhost/oauth/userinfo';
-export const logoutEndpoint = 'http://localhost/oauth/logout';
+export const loginEndpoint = 'http://localhost/auth/login';
+export const logoutEndpoint = 'http://localhost/auth.logout';
+export const oauthLogoutEndpoint = 'http://localhost/oauth/logout';
+export const jwksEndpoint = 'http://localhost/.well-known/jwks.json';
