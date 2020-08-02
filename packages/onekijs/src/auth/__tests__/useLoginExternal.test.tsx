@@ -2,19 +2,35 @@ import '@testing-library/jest-dom/extend-expect';
 import qs from 'query-string';
 import * as React from 'react';
 import { AppSettings } from '../../app/typings';
+import NotificationWidget from '../../__tests__/components/NotificationWidget';
 import { render, TestAppProps } from '../../__tests__/customRenderer';
 import { asyncTimeout } from '../../__tests__/utils/timeout';
-import { IdpType } from '../typings';
+import { IdpType, LoginOptions } from '../typings';
 import { oidcBrowser, oidcServer } from '../utils';
+import LoginNotificationWidget from './components/LoginNotificationWidget';
 import UseLoginWidget from './components/UseLoginWidget';
-import NotificationWidget from '../../__tests__/components/NotificationWidget';
 
 type TestProps = {
   title: string;
   props?: TestAppProps;
+  options?: LoginOptions;
+  idpName?: string;
 };
 
-const tests: TestProps[] = [
+const { location } = window;
+
+beforeEach((): void => {
+  delete window.location;
+  (window as any).location = {
+    href: '',
+  };
+});
+
+afterEach((): void => {
+  window.location = location;
+});
+
+const oidcTests: TestProps[] = [
   {
     title: 'type = default oidc_server configuration',
     props: {
@@ -94,21 +110,8 @@ const tests: TestProps[] = [
   },
 ];
 
-const { location } = window;
-
-beforeAll((): void => {
-  delete window.location;
-  (window as any).location = {
-    href: '',
-  };
-});
-
-afterAll((): void => {
-  window.location = location;
-});
-
 describe('it builds OIDC authorization URL', () => {
-  tests.forEach((test) => {
+  oidcTests.forEach((test) => {
     it(`${test.title}`, async () => {
       render(
         <>
@@ -135,6 +138,54 @@ describe('it builds OIDC authorization URL', () => {
       expect(query.response_type).toBe('code');
       expect(query.scope).toBe(settings.idp.default.scope);
       expect(query.state).toBeDefined();
+    });
+  });
+});
+
+const oidcErrorTests: TestProps[] = [
+  {
+    title: 'invalid idpName',
+    props: {
+      settings: {
+        idp: {
+          default: oidcServer({
+            clientId: 'mock_client_id',
+            authorizeEndpoint: 'https://mockidp.com/oauth2/auth',
+            scope: 'openid email profile',
+            loginCallbackRoute: 'http://localhost/login/callback',
+          }),
+        },
+      },
+    },
+    options: {
+      onError: jest.fn(),
+    },
+    idpName: 'invalid',
+  },
+];
+
+describe('it handles error when building OIDC authorization URL', () => {
+  oidcErrorTests.forEach((test) => {
+    it(`${test.title}`, async () => {
+      const { findByTestId, getByTestId } = render(
+        <>
+          <UseLoginWidget idpName={test.idpName} options={test.options} />
+          <LoginNotificationWidget />
+        </>,
+        test.props,
+      );
+      // logout has been realized -> user is not logged in
+      await findByTestId('error-container', undefined, { timeout: 200 });
+      expect(getByTestId('error-container')).toBeDefined();
+
+      const href = window.location.href;
+      expect(href).toBeDefined();
+      expect(href).toBe('');
+      if (test.options?.onError) {
+        expect(test.options.onError).toHaveBeenCalled();
+      } else {
+        expect(getByTestId('notifications-error-container')).toBeDefined();
+      }
     });
   });
 });

@@ -235,7 +235,6 @@ export default class AuthService extends GlobalService {
       }
       return securityContext;
     } catch (e) {
-      console.error(e);
       if (process.env.NODE_ENV === 'development') {
         console.error('fetchSecurityContext error', e);
       }

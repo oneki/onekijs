@@ -23,7 +23,7 @@ const UseLoginFormWidget: FC<FormLoginProps> = ({ idpName, options }) => {
 
   return (
     <>
-      {error && <div data-test-id="error-container">{error.message || error.payload.message}</div>}
+      {error && <div data-testid="error-container">{error.message || error.payload.message}</div>}
       <div data-testid="logged-user">{email}</div>
       <Form>
         <div>

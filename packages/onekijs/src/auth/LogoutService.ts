@@ -140,7 +140,6 @@ export default class LogoutService extends LocalService<LogoutState> {
 
       // call the reducer to update the local state
       yield this.onSuccess();
-
       yield this.notificationService.clearTopic('logout-error');
 
       if (onSuccess) {

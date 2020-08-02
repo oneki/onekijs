@@ -10,7 +10,7 @@ type ExternalLoginProps = {
 const UseLoginWidget: FC<ExternalLoginProps> = ({ idpName, options }) => {
   const [error] = useLogin(idpName, options);
 
-  return <>{error && <div data-test-id="error-container">{error.payload.message}</div>}</>;
+  return <>{error && <div data-testid="error-container">{error.message || error.payload?.message}</div>}</>;
 };
 
 export default UseLoginWidget;

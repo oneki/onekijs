@@ -23,7 +23,7 @@ const UseLogoutWidget: FC<LogoutProps> = ({ options }) => {
 const LogoutWidget: FC<LogoutProps> = ({ options }) => {
   const [error] = useLogout(options);
 
-  return <>{error && <div data-test-id="error-container">{error.message || error.payload?.message}</div>}</>;
+  return <>{error && <div data-testid="error-container">{error.message || error.payload?.message}</div>}</>;
 };
 
 export default UseLogoutWidget;
