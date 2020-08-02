@@ -12,6 +12,7 @@ import {
   verifier,
   verifyToken,
 } from '../utils/auth';
+import { i18nEn, i18nFr } from '../utils/i18n';
 
 const successResponse = {
   result: 'success',
@@ -66,6 +67,20 @@ export const handlers = [
         message: 'this is the error message',
       }),
     );
+  }),
+
+  // I18N
+  rest.get('/locales/en/common.json', (_req, res, ctx) => {
+    return res(ctx.json(i18nEn.common));
+  }),
+  rest.get('/locales/en/users.json', (_req, res, ctx) => {
+    return res(ctx.json(i18nEn.users));
+  }),
+  rest.get('/locales/fr/common.json', (_req, res, ctx) => {
+    return res(ctx.json(i18nFr.common));
+  }),
+  rest.get('/locales/fr/users.json', (_req, res, ctx) => {
+    return res(ctx.json(i18nFr.users));
   }),
 
   // FORM BASED AUTH
