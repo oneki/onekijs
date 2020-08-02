@@ -1,8 +1,18 @@
 import { State, ErrorCallback, SuccessCallback, Collection } from '../core/typings';
 
-export interface CrudState extends State {
+export interface FetchState extends State {
   loading?: boolean;
   result?: any;
+}
+
+export type FetchMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+
+export enum HttpMethod {
+  Get = 'GET',
+  Post = 'POST',
+  Put = 'PUT',
+  Patch = 'PATCH',
+  Delete = 'DELETE',
 }
 
 export interface FetchOptions<T = any> extends RequestInit {

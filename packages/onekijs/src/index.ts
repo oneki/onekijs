@@ -87,6 +87,7 @@ export {
   diffArrays,
   toPayload,
   fromPayload,
+  omit,
 } from './core/utils/object';
 export {
   getItem,
@@ -98,7 +99,16 @@ export {
   removeItem,
   setItem,
 } from './core/utils/storage';
-export { hex2b64, generateRandomString, regexIndexOf, trimStart, trimEnd, trim } from './core/utils/string';
+export {
+  hex2b64,
+  generateRandomString,
+  lcfirst,
+  toKebabCase,
+  regexIndexOf,
+  trimStart,
+  trimEnd,
+  trim,
+} from './core/utils/string';
 export {
   isTrue,
   isFalse,
@@ -108,6 +118,7 @@ export {
   isFunctionOrPromise,
   isAsyncOrPromise,
   isInteger,
+  ensureType,
 } from './core/utils/type';
 export {
   urlBuilder,
@@ -138,17 +149,16 @@ export { default as GlobalService } from './core/GlobalService';
 export { default as HTTPError } from './core/HTTPError';
 export { default as LocalService } from './core/LocalService';
 export { default as Service } from './core/Service';
-export { default as ServiceType } from './core/ServiceType';
 export {
   AnonymousObject,
   AnyFunction,
   AnyState,
+  AppService,
   Class,
   Collection,
   ErrorCallback,
   SagaEffect,
   ServiceFactory,
-  ServiceTypeEnum,
   State,
   SuccessCallback,
 } from './core/typings';
@@ -158,8 +168,9 @@ export { useIsomorphicLayoutEffect } from './core/useIsomorphicLayoutEffect';
 export { default as useLazyRef } from './core/useLazyRef';
 export { default as useLocalService } from './core/useLocalService';
 export { default as useService } from './core/useService';
-export { default as CrudService } from './fetch/CrudService';
-export { CrudState, FetchOptions, GetOptions } from './fetch/typings';
+export { default as useAppService } from './core/useAppService';
+export { default as FetchService } from './fetch/FetchService';
+export { FetchState, FetchOptions, GetOptions, FetchMethod, HttpMethod } from './fetch/typings';
 export { default as useDelete } from './fetch/useDelete';
 export { default as useGet } from './fetch/useGet';
 export { default as usePatch } from './fetch/usePatch';

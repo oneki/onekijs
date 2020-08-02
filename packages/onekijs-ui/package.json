@@ -7,31 +7,37 @@
   "license": "MIT",
   "repository": "oneki/onekijs",
   "main": "dist/index.js",
-  "module": "dist/esm/index.js",
+  "typings": "dist/index.d.ts",
   "engines": {
-    "node": ">=8",
+    "node": ">=10",
     "npm": ">=5"
   },
   "scripts": {
-    "test": "cross-env CI=1 react-scripts test --env=jsdom",
-    "test:watch": "react-scripts test --env=jsdom",
-    "build": "babel --root-mode upward src -d dist/esm --source-maps",
-    "start": "babel --root-mode upward src -d dist/esm --watch --source-maps",
-    "prepare": "yarn build",
-    "predeploy": "cd example && npm install && yarn build",
-    "deploy": "gh-pages -d example/build",
-    "build:styles": "tailwind build src/styles/index.css -o src/styles/tailwind.css",
-    "prebuild": "yarn build:styles",
-    "prestart": "yarn build:styles"
+    "start": "tsdx watch",
+    "build": "tsdx build",
+    "test": "tsdx test --passWithNoTests",
+    "lint": "tsdx lint",
+    "prepare": "tsdx build"
   },
   "peerDependencies": {
     "react": "^15.0.0 || ^16.0.0",
     "react-dom": "^15.0.0 || ^16.0.0"
   },
   "dependencies": {
-    "onekijs-core": "^0.7.3",
-    "styled-components": "^5.1.1",
-    "tailwindcss": "^1.4.6"
+    "@popperjs/core": "^2.4.4",
+    "onekijs": "^0.4.2",
+    "react-popper": "^2.2.3",
+    "react-transition-group": "^4.4.1",
+    "react-virtual": "^2.2.1",
+    "react-virtualized-auto-sizer": "^1.0.2",
+    "react-window": "^1.8.5",
+    "react-window-infinite-loader": "^1.0.5",
+    "styled-components": "^5.1.1"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "devDependencies": {
+    "@types/react-transition-group": "^4.4.0",
+    "@types/react-virtualized-auto-sizer": "^1.0.0",
+    "@types/react-window": "^1.8.2"
+  }
 }

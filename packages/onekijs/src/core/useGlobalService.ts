@@ -1,9 +1,9 @@
-import Service from './Service';
-import { Class, State, ServiceTypeEnum } from './typings';
-import useService from './useService';
+import GlobalService from './GlobalService';
+import { Class, State } from './typings';
+import useAppService from './useAppService';
 
-const useGlobalService = <T extends Service<State>>(ctor: Class<T>): T => {
-  const service = useService(ServiceTypeEnum.Global, ctor);
+const useGlobalService = <T extends GlobalService<State>>(ctor: Class<T>): T => {
+  const service = useAppService(ctor);
   return service;
 };
 

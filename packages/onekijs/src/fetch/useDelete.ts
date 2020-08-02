@@ -1,20 +1,29 @@
-import { useCallback, useRef } from 'react';
-import useLocalService from '../core/useLocalService';
-import CrudService from './CrudService';
-import { FetchOptions, CrudState } from './typings';
+import { useCallback } from 'react';
+import useLazyRef from '../core/useLazyRef';
+import useNotificationService from '../notification/useNotificationService';
+import FetchService from './FetchService';
+import { FetchOptions, FetchState } from './typings';
+import useService from '../core/useService';
 
 const useDelete = (url: string, options: FetchOptions = {}): [(extraOptions?: FetchOptions) => void, boolean] => {
-  const optionsRef = useRef<FetchOptions>();
-  optionsRef.current = options;
+  const notificationService = useNotificationService();
+  const optionsRef = useLazyRef<FetchOptions>(() => {
+    if (!options.onError) {
+      options.onError = (e => {
+        notificationService.error(e);
+      })
+    }
+    return options;
+  });
 
-  const [state, service] = useLocalService(CrudService, {
+  const [state, service] = useService(FetchService, {
     loading: false,
-  } as CrudState);
+  } as FetchState);
 
   const executor = useCallback(
     (extraOptions = {}) => {
       extraOptions = Object.assign({}, optionsRef.current, extraOptions);
-      service.fetch(extraOptions.url || url, 'DELETE', null, extraOptions);
+      service.delete(extraOptions.url || url, extraOptions);
     },
     [service, url],
   );
