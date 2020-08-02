@@ -1,35 +1,33 @@
 import { call, cancel, delay, fork } from 'redux-saga/effects';
-import NotificationService from '../notification/NotificationService';
-import LocalService from '../core/LocalService';
-import { CrudState, FetchOptions } from './typings';
-import { asyncHttp } from './utils';
 import { reducer, saga } from '../core/annotations';
 import { SagaEffect } from '../core/typings';
+import { FetchOptions, FetchState, HttpMethod } from './typings';
+import { asyncHttp } from './utils';
+import Service from '../core/Service';
 
-export default class CrudService<T = any> extends LocalService<CrudState> {
-  protected notificationService: NotificationService;
-
-  constructor(notificationService: NotificationService) {
-    super();
-    this.notificationService = notificationService;
-  }
-
+export default class FetchService<T = any, S extends FetchState = FetchState> extends Service<S> {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   *delayLoading(delay_ms: number) {
     yield delay(delay_ms);
     yield this.setLoading(true);
   }
 
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  @saga(SagaEffect.Every)
+  *delete(url: string, options?: FetchOptions<T>) {
+    yield this.fetch(url, HttpMethod.Delete, undefined, options);
+  }   
+
   @reducer
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   fetchSuccess(result: any): void {
     this.state.result = result;
     this.state.loading = false;
-  }
+  }  
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
-  *fetch(url: string, method: string, body?: T, options: FetchOptions<T> = {}) {
+  *fetch(url: string, method: string, body?: Partial<T>, options: FetchOptions<T> = {}) {
     const { router } = this.context;
     let loadingTask = null;
     try {
@@ -60,10 +58,34 @@ export default class CrudService<T = any> extends LocalService<CrudState> {
           yield onError(e, this.context);
         }
       } else {
-        yield this.notificationService.error(e);
+        throw e;
       }
     }
   }
+
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  @saga(SagaEffect.Every)
+  *get(url: string, options?: FetchOptions<T>) {
+    yield this.fetch(url, HttpMethod.Get, undefined, options);
+  } 
+  
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  @saga(SagaEffect.Every)
+  *patch(url: string, body: Partial<T>, options?: FetchOptions<T>) {
+    yield this.fetch(url, HttpMethod.Patch, body, options);
+  } 
+  
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  @saga(SagaEffect.Every)
+  *post(url: string, body: T, options?: FetchOptions<T>) {
+    yield this.fetch(url, HttpMethod.Post, body, options);
+  } 
+  
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  @saga(SagaEffect.Every)
+  *put(url: string, body: T, options?: FetchOptions<T>) {
+    yield this.fetch(url, HttpMethod.Put, body, options);
+  }  
 
   @reducer
   setLoading(isLoading: boolean): void {

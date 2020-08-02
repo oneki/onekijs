@@ -117,6 +117,7 @@ export {
   isFunctionOrPromise,
   isAsyncOrPromise,
   isInteger,
+  ensureType,
 } from './lib/core/utils/type';
 export {
   urlBuilder,
@@ -147,17 +148,16 @@ export { default as GlobalService } from './lib/core/GlobalService';
 export { default as HTTPError } from './lib/core/HTTPError';
 export { default as LocalService } from './lib/core/LocalService';
 export { default as Service } from './lib/core/Service';
-export { default as ServiceType } from './lib/core/ServiceType';
 export {
   AnonymousObject,
   AnyFunction,
   AnyState,
+  AppService,
   Class,
   Collection,
   ErrorCallback,
   SagaEffect,
   ServiceFactory,
-  ServiceTypeEnum,
   State,
   SuccessCallback,
 } from './lib/core/typings';
@@ -167,8 +167,9 @@ export { useIsomorphicLayoutEffect } from './lib/core/useIsomorphicLayoutEffect'
 export { default as useLazyRef } from './lib/core/useLazyRef';
 export { default as useLocalService } from './lib/core/useLocalService';
 export { default as useService } from './lib/core/useService';
-export { default as CrudService } from './lib/fetch/CrudService';
-export { CrudState, FetchOptions, GetOptions } from './lib/fetch/typings';
+export { default as useAppService } from './lib/core/useAppService';
+export { default as FetchService } from './lib/fetch/FetchService';
+export { FetchState, FetchOptions, GetOptions, FetchMethod, HttpMethod } from './lib/fetch/typings';
 export { default as useDelete } from './lib/fetch/useDelete';
 export { default as useGet } from './lib/fetch/useGet';
 export { default as usePatch } from './lib/fetch/usePatch';

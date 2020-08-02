@@ -1,4 +1,4 @@
-import { LocalService, reducer, service } from 'onekijs';
+import { FetchService, reducer } from 'onekijs';
 import { defaultComparator, isQueryFilterCriteria, rootFilterId, visitFilter } from '../utils/query';
 import {
   QueryFilter,
@@ -7,11 +7,10 @@ import {
   QuerySort,
   QuerySortComparator,
   QuerySortDir,
-  QueryState,
+  QueryState
 } from './typings';
 
-@service
-export default class QueryService<T = any> extends LocalService<QueryState<T>> {
+export default abstract class QueryService<T = any, S extends QueryState<T> = QueryState<T>> extends FetchService<T, S> {
   @reducer
   addFilter(filterOrCriteria: QueryFilterOrCriteria, filterId: QueryFilterId = rootFilterId): void {
     visitFilter(this.filter, (filter) => {
@@ -22,6 +21,7 @@ export default class QueryService<T = any> extends LocalService<QueryState<T>> {
       return false;
     });
     this.state.filter = this.filter;
+    this.refresh();
   }
 
   @reducer
@@ -39,6 +39,7 @@ export default class QueryService<T = any> extends LocalService<QueryState<T>> {
       sort.push({ field, dir, comparator });
     }
     this.state.sort = sort;
+    this.refresh();
   }
 
   get filter(): QueryFilter {
@@ -86,6 +87,8 @@ export default class QueryService<T = any> extends LocalService<QueryState<T>> {
     return [currentSort];
   }
 
+  abstract refresh(): void;
+
   @reducer
   removeFilter(filterId: QueryFilterId): void {
     visitFilter(this.filter, (filter) => {
@@ -98,15 +101,18 @@ export default class QueryService<T = any> extends LocalService<QueryState<T>> {
       return false;
     });
     this.state.filter = this.filter;
+    this.refresh();
   }  
 
   @reducer
   removeSort(field: string): void {
     this.state.sort = this.sort.filter((sort) => sort.field !== field);
+    this.refresh();
   }
 
   @reducer
   setSort(field: string, dir: QuerySortDir = 'asc', comparator: QuerySortComparator = defaultComparator): void {
     this.state.sort = [{ field, dir, comparator }];
+    this.refresh();
   }
 }

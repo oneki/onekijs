@@ -1,40 +1,62 @@
 import produce from 'immer';
 import { apply, take } from 'redux-saga/effects';
-import AppContext from '../app/AppContext';
-import { AnyState, ID, State, AnyFunction } from './typings';
+import { AnyFunction, AnyState, ID, State } from './typings';
 import { fromPayload, toPayload } from './utils/object';
 import { isFunction } from './utils/type';
-import ServiceType from './ServiceType';
 
 export const reducers = Symbol('service.reducers');
 export const types = Symbol('service.types');
 export const sagas = Symbol('service.sagas');
 export const dispatch = Symbol('service.dispatch');
-const serviceType = Symbol('service.type');
 export const combinedReducers = Symbol('service.combinedReducers');
 export const inReducer = Symbol('service.reducer');
 const createReducer = Symbol('service.createReducer');
 const createSaga = Symbol('service.createSaga');
 export const run = Symbol('service.run');
-const stop = Symbol('service.stop');
+export const stop = Symbol('service.stop');
 export const serviceClass = Symbol('onekijs.serviceClass');
+
+export const handler = {
+  get: function <S extends State, T extends Service<S>>(target: T, prop: string | number | symbol, receiver?: T): any {
+    const alias = target[types][prop];
+    if (alias) {
+      if (alias.type === 'reducer') {
+        return function (...args: any[]) {
+          target[dispatch]({
+            type: alias.actionType,
+            payload: toPayload(args),
+          });
+        };
+      } else if (alias.type === 'saga') {
+        return function (...args: any[]) {
+          return new Promise((resolve, reject) => {
+            target[dispatch]({
+              type: alias.actionType,
+              payload: toPayload(args),
+              resolve,
+              reject,
+            });
+          });
+        };
+      }
+    } else {
+      return Reflect.get(target, prop, receiver);
+    }
+  },
+};
 
 export default class Service<S extends State = AnyState> {
   protected [reducers]: any;
   public [types]: any;
   protected [sagas]: any;
   public [dispatch]: any;
-  protected [serviceType]: ServiceType;
   public [combinedReducers]: (state: any, action: any) => any;
   public [inReducer]: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  public context: AppContext = null!;
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   public state: S = null!;
   [k: string]: any;
 
-  constructor(type: ServiceType) {
-    this[serviceType] = type;
+  constructor() {
     this[reducers] = {};
     this[types] = {};
     this[sagas] = {};
@@ -56,6 +78,10 @@ export default class Service<S extends State = AnyState> {
       }
     });
     properties.forEach((property) => create(property));
+  }
+
+  init() {
+    
   }
 
   private [createReducer](type: string, reducer: AnyFunction<void>): void {
@@ -133,41 +159,25 @@ export default class Service<S extends State = AnyState> {
   }
 
   [run](): void {
-    if (this[serviceType].isGlobal()) {
-      this[dispatch] = this.context.store.dispatch;
-      this.context.store.injectReducers(this, (this.constructor as any)[ID], this[reducers]);
-      Object.keys(this[sagas]).forEach((type) => {
-        this.context.store.runSaga((this.constructor as any)[ID], this[sagas][type], type);
-      });
-    } else {
-      this[combinedReducers] = (state: S, action: any) => {
-        this[inReducer] = true;
-        try {
-          const nextState = produce(state, (draftState: S) => {
-            this.state = draftState;
-            if (this[reducers][action.type]) {
-              //debugger;
-              this[reducers][action.type].apply(this, fromPayload(action.payload));
-            }
-          });
-          this.state = nextState;
-          return nextState;
-        } finally {
-          this[inReducer] = false;
-        }
-      };
-    }
+    this[combinedReducers] = (state: S, action: any) => {
+      this[inReducer] = true;
+      try {
+        const nextState = produce(state, (draftState: S) => {
+          this.state = draftState;
+          if (this[reducers][action.type]) {
+            //debugger;
+            this[reducers][action.type].apply(this, fromPayload(action.payload));
+          }
+        });
+        this.state = nextState;
+        return nextState;
+      } finally {
+        this[inReducer] = false;
+      }
+    };
   }
 
   [stop](): void {
-    if (this[serviceType].isGlobal()) {
-      this[dispatch] = null;
-      this.context.store.removeReducers((this.constructor as any)[ID], this[reducers]);
-      Object.keys(this[sagas]).forEach((type) => {
-        this.context.store.cancelSaga((this.constructor as any)[ID], type);
-      });
-    } else {
-      this[combinedReducers] = (state: any) => state;
-    }
+    this[combinedReducers] = (state: any) => state;
   }
 }

@@ -1,3 +1,5 @@
+import BasicError from '../BasicError';
+
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function isTrue(value: any): boolean {
   return value === 'true' || value === true;
@@ -37,4 +39,13 @@ export function isAsyncOrPromise(value: any): boolean {
 
 export function isInteger(str: string): boolean {
   return /^(0|[1-9]\d*)$/.test(str);
+}
+
+export function ensureType(value: any, type: string | string[]) {
+  if (!Array.isArray(type)) {
+    type = [type];
+  }
+  if (!type.includes(typeof value)) {
+    throw new BasicError(`Invalid type for value "${value}. Only supported types are ${type.join(',')}`);
+  }
 }

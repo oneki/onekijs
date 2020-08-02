@@ -1,26 +1,23 @@
-import { useContext } from 'react';
-import Service from './Service';
-import ServiceType from './ServiceType';
-import { Class, State, ServiceTypeEnum } from './typings';
-import useLazyRef from './useLazyRef';
-import useContainer from './useContainer';
+import produce from 'immer';
 import 'reflect-metadata';
-import { DefaultAppContext } from '../app/AppContext';
+import Service, { run, handler } from './Service';
+import { Class, State } from './typings';
+import useLazyRef from './useLazyRef';
+import useLocalReducer from './useLocalReducer';
 
 const useService = <S extends State, T extends Service<S>>(
-  type: ServiceTypeEnum,
   ctor: Class<T>,
   initialState?: S,
-): T => {
-  const appContext = useContext(DefaultAppContext);
-  const container = useContainer();
+): [S, T] => {
+  const initialStateRef = useLazyRef(initialState);
   const serviceRef = useLazyRef<T>(() => {
-    const service = container.createService(new ServiceType(type), ctor, appContext, initialState);
-    return service;
+    const service = new ctor();
+    service.state = produce(initialState || {}, (draftState: S) => draftState) as any;
+    service[run]();
+    service.init();
+    return new Proxy(service, handler) as T;
   });
-  serviceRef.current.context = appContext;
-
-  return serviceRef.current;
+  return useLocalReducer(serviceRef.current, initialStateRef);
 };
 
 export default useService;

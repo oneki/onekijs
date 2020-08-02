@@ -1,4 +1,4 @@
-import { State } from 'onekijs';
+import { FetchState } from 'onekijs';
 
 export type QueryFilterCriteriaOperator = 'eq' | 'like' | 'starts_with' | 'ends_with';
 
@@ -37,13 +37,23 @@ export interface QueryLimit {
   size: number;
 }
 
-export interface QueryState<T = any> extends State {
+export interface QueryState<T = any> extends FetchState {
   filter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[];
   sort?: string | QuerySort | QuerySort[];
-  data?: T[];
+  result?: T[];
+}
+
+export interface LocalQueryOptions {
+  initialFilter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[];
+  initialSort?: string | QuerySort | QuerySort[];
+}
+
+export interface LocalQueryState<T = any> extends QueryState<T> {
+  data: T[];
 }
 
 export interface RemoteQueryState<T = any> extends QueryState<T> {
   fields?: string[];
-  limit?: number | QueryLimit
+  limit?: number | QueryLimit;
+  url: string;
 }

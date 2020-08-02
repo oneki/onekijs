@@ -1,40 +1,12 @@
 import produce from 'immer';
-import Service, { run, serviceClass, types, dispatch } from './Service';
-import { Class, ID, State, ServiceFactory, SERVICE_TYPE_ID, ServiceTypeEnum } from './typings';
-import { isFunction } from './utils/type';
-import { toPayload } from './utils/object';
-import ServiceType from './ServiceType';
-import BasicError from './BasicError';
 import AppContext from '../app/AppContext';
+import BasicError from './BasicError';
+import GlobalService from './GlobalService';
+import Service, { handler, run, serviceClass } from './Service';
+import { AppService, Class, ID, ServiceFactory, State } from './typings';
+import { isFunction } from './utils/type';
 
-export const handler = {
-  get: function <S extends State, T extends Service<S>>(target: T, prop: string | number | symbol, receiver?: T): any {
-    const alias = target[types][prop];
-    if (alias) {
-      if (alias.type === 'reducer') {
-        return function (...args: any[]) {
-          target[dispatch]({
-            type: alias.actionType,
-            payload: toPayload(args),
-          });
-        };
-      } else if (alias.type === 'saga') {
-        return function (...args: any[]) {
-          return new Promise((resolve, reject) => {
-            target[dispatch]({
-              type: alias.actionType,
-              payload: toPayload(args),
-              resolve,
-              reject,
-            });
-          });
-        };
-      }
-    } else {
-      return Reflect.get(target, prop, receiver);
-    }
-  },
-};
+
 
 export default class Container implements ServiceFactory {
   private classRegistry: {
@@ -61,8 +33,7 @@ export default class Container implements ServiceFactory {
     return this.classRegistry[(ctor as any)[ID]] || ctor;
   }
 
-  createService<S extends State, T extends Service<S>>(
-    serviceType: ServiceType,
+  createService<S extends State, T extends AppService<S>>(
     ctor: Class<T>,
     context: AppContext,
     initialState?: S,
@@ -76,20 +47,16 @@ export default class Container implements ServiceFactory {
       if (!type[ID]) {
         throw new BasicError(`Cannot find a valid class for service ${type}`);
       }
-      if (type[ID] === SERVICE_TYPE_ID) {
-        return serviceType;
-      } else {
-        return (
-          this.instanceRegistry[type[ID]] || this.createService(new ServiceType(ServiceTypeEnum.Global), type, context)
-        );
-      }
+      return (
+        this.instanceRegistry[type[ID]] || this.createService(type, context)
+      );
     });
 
     const ActualClass = this.getServiceClass(ctor);
     const service = new ActualClass(...args);
     service.context = context;
 
-    if (serviceType.isGlobal()) {
+    if (service instanceof GlobalService) {
       service.state = produce(context.store.getState(), (draftState: S) => draftState) as any;
     } else {
       service.state = produce(initialState || {}, (draftState: S) => draftState) as any;
@@ -98,7 +65,6 @@ export default class Container implements ServiceFactory {
     Object.getOwnPropertyNames(service).forEach((property) => {
       if (service[property] && service[property][serviceClass]) {
         const dependency = this.createService(
-          new ServiceType(ServiceTypeEnum.Global),
           service[property][serviceClass],
           context,
         );
@@ -113,7 +79,7 @@ export default class Container implements ServiceFactory {
     }
 
     const proxy = new Proxy(service, handler);
-    if (serviceType.isGlobal()) {
+    if (service instanceof GlobalService) {
       this.instanceRegistry[(ctor as any)[ID]] = proxy;
     }
     return proxy as T;

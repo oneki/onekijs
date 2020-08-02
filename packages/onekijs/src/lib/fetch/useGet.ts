@@ -1,11 +1,20 @@
-import { useCallback, useEffect, useRef } from 'react';
-import useLocalService from '../core/useLocalService';
-import CrudService from './CrudService';
-import { CrudState, GetOptions } from './typings';
+import { useCallback, useEffect } from 'react';
+import FetchService from './FetchService';
+import { FetchState, GetOptions } from './typings';
+import useNotificationService from '../notification/useNotificationService';
+import useLazyRef from '../core/useLazyRef';
+import useService from '../core/useService';
 
 const useGet = <T = any>(url: string, options: GetOptions<T> = {}): [T, boolean, () => void] => {
-  const optionsRef = useRef<GetOptions<T>>(options);
-  optionsRef.current = options;
+  const notificationService = useNotificationService();
+  const optionsRef = useLazyRef<GetOptions<T>>(() => {
+    if (!options.onError) {
+      options.onError = (e => {
+        notificationService.error(e);
+      })
+    }
+    return options;
+  });
 
   // const CrudClass = useLazyRef<Class<CrudService>>(() => {
   //   let ctor = class extends CrudService {
@@ -47,14 +56,14 @@ const useGet = <T = any>(url: string, options: GetOptions<T> = {}): [T, boolean,
   //   return ctor;
   // });
 
-  const [state, service] = useLocalService(CrudService, {
+  const [state, service] = useService(FetchService, {
     loading: false,
     result: optionsRef.current.defaultValue,
-  } as CrudState);
+  } as FetchState);
 
   const refresh = useCallback(() => {
     if (url) {
-      service.fetch(url, 'GET', null, optionsRef.current);
+      service.get(url, optionsRef.current);
     }
   }, [url, service]);
 
