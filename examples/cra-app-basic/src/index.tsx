@@ -1,7 +1,7 @@
-import { App, Input } from 'onekijs';
+import { App } from 'onekijs-cra';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Route, Switch, Link } from 'react-router-dom';
+import { Link, Route, Switch } from 'react-router-dom';
 import { UserForm } from './components/UserForm';
 
 ReactDOM.render(
