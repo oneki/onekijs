@@ -1,13 +1,11 @@
 import '@testing-library/jest-dom/extend-expect';
-import qs from 'query-string';
 import * as React from 'react';
-import { AppSettings } from '../../app/typings';
 import NotificationWidget from '../../__tests__/components/NotificationWidget';
-import { render, TestAppProps } from '../../__tests__/customRenderer';
-import { asyncTimeout } from '../../__tests__/utils/timeout';
-import { IdpType, LoginOptions } from '../typings';
-import { oidcBrowser, oidcServer } from '../utils';
-import LoginNotificationWidget from './components/LoginNotificationWidget';
+import { act, render, TestAppProps } from '../../__tests__/customRenderer';
+import { externalLoginEndpoint } from '../../__tests__/utils/auth';
+import { wait } from '../../__tests__/utils/timeout';
+import { LoginOptions } from '../typings';
+import { external } from '../utils';
 import UseLoginWidget from './components/UseLoginWidget';
 
 type TestProps = {
@@ -30,128 +28,14 @@ afterEach((): void => {
   window.location = location;
 });
 
-const oidcTests: TestProps[] = [
+const externalTests: TestProps[] = [
   {
-    title: 'type = default oidc_server configuration',
+    title: 'redirect to external Login (onError not called)',
     props: {
       settings: {
         idp: {
-          default: oidcServer({
-            clientId: 'mock_client_id',
-            authorizeEndpoint: 'https://mockidp.com/oauth2/auth',
-            scope: 'openid email profile',
-            loginCallbackRoute: 'http://localhost/login/callback',
-          }),
-        },
-      },
-    },
-  },
-  {
-    title: 'type = default oidc_browser configuration',
-    props: {
-      settings: {
-        idp: {
-          default: oidcBrowser({
-            clientId: 'mock_client_id',
-            authorizeEndpoint: 'https://mockidp.com/oauth2/auth',
-            scope: 'openid email',
-            loginCallbackRoute: 'http://localhost/callback',
-          }),
-        },
-      },
-    },
-  },
-  {
-    title: 'authorization endpoint as a function in settings',
-    props: {
-      settings: {
-        idp: {
-          default: oidcServer({
-            type: IdpType.OidcServer,
-            clientId: 'mock_client_id',
-            authorizeEndpoint: (params, idp, _context) => {
-              const search = Object.keys(params).reduce((accumulator, key) => {
-                accumulator += accumulator.length > 1 ? '&' : '';
-                return `${accumulator}${key}=${params[key]}`;
-              }, '?');
-              return `${idp.authorizeUrl}${search}`;
-            },
-            scope: 'openid email profile',
-            loginCallbackRoute: 'http://localhost/login/callback',
-            authorizeUrl: 'https://mockidp.com/oauth2/auth',
-          }),
-        },
-      },
-    },
-  },
-  {
-    title: 'async authorization endpoint as a function in settings',
-    props: {
-      settings: {
-        idp: {
-          default: oidcServer({
-            type: IdpType.OidcServer,
-            clientId: 'mock_client_id',
-            authorizeEndpoint: async (params, idp, _context) => {
-              const search = Object.keys(params).reduce((accumulator, key) => {
-                accumulator += accumulator.length > 1 ? '&' : '';
-                return `${accumulator}${key}=${params[key]}`;
-              }, '?');
-              await asyncTimeout(1); // simulate 1ms delay
-              return `${idp.authorizeUrl}${search}`;
-            },
-            scope: 'openid email profile',
-            loginCallbackRoute: 'http://localhost/login/callback',
-            authorizeUrl: 'https://mockidp.com/oauth2/auth',
-          }),
-        },
-      },
-    },
-  },
-];
-
-describe('it builds OIDC authorization URL', () => {
-  oidcTests.forEach((test) => {
-    it(`${test.title}`, async () => {
-      render(
-        <>
-          <UseLoginWidget idpName="default" />
-          <NotificationWidget />
-        </>,
-        test.props,
-      );
-      await asyncTimeout(5);
-      const href = window.location.href;
-      const settings = test.props?.settings as AppSettings;
-      expect(href).toBeDefined();
-      const url = new URL(href);
-      const query = qs.parse(url.search);
-      if (typeof settings.idp.default.authorizeEndpoint === 'string') {
-        expect(`${url.origin}${url.pathname}`).toBe(settings.idp.default.authorizeEndpoint);
-      } else {
-        expect(`${url.origin}${url.pathname}`).toBe(settings.idp.default.authorizeUrl);
-      }
-      expect(query.client_id).toBe(settings.idp.default.clientId);
-      expect(query.code_challenge).toBeDefined();
-      expect(query.code_challenge_method).toBe('S256');
-      expect(query.redirect_uri).toBeDefined();
-      expect(query.response_type).toBe('code');
-      expect(query.scope).toBe(settings.idp.default.scope);
-      expect(query.state).toBeDefined();
-    });
-  });
-});
-
-const oidcErrorTests: TestProps[] = [
-  {
-    title: 'invalid idpName',
-    props: {
-      settings: {
-        idp: {
-          default: oidcServer({
-            clientId: 'mock_client_id',
-            authorizeEndpoint: 'https://mockidp.com/oauth2/auth',
-            scope: 'openid email profile',
+          default: external({
+            externalLoginEndpoint: externalLoginEndpoint,
             loginCallbackRoute: 'http://localhost/login/callback',
           }),
         },
@@ -160,32 +44,50 @@ const oidcErrorTests: TestProps[] = [
     options: {
       onError: jest.fn(),
     },
-    idpName: 'invalid',
+  },
+  {
+    title: 'redirect to external Login (no notification error)',
+    props: {
+      settings: {
+        idp: {
+          default: external({
+            externalLoginEndpoint: externalLoginEndpoint,
+            loginCallbackRoute: 'http://localhost/login/callback',
+          }),
+        },
+      },
+    },
   },
 ];
 
-describe('it handles error when building OIDC authorization URL', () => {
-  oidcErrorTests.forEach((test) => {
+describe('it builds external login URL', () => {
+  externalTests.forEach((test) => {
     it(`${test.title}`, async () => {
-      const { findByTestId, getByTestId } = render(
+      const { queryByTestId } = render(
         <>
-          <UseLoginWidget idpName={test.idpName} options={test.options} />
-          <LoginNotificationWidget />
+          <UseLoginWidget idpName="default" options={test.options} />
+          <NotificationWidget />
         </>,
         test.props,
       );
-      // logout has been realized -> user is not logged in
-      await findByTestId('error-container', undefined, { timeout: 200 });
-      expect(getByTestId('error-container')).toBeDefined();
-
-      const href = window.location.href;
-      expect(href).toBeDefined();
-      expect(href).toBe('');
-      if (test.options?.onError) {
-        expect(test.options.onError).toHaveBeenCalled();
-      } else {
-        expect(getByTestId('notifications-error-container')).toBeDefined();
-      }
+      await act(async () => {
+        await wait(() => {
+          return window.location.href !== '';
+        }, 500);
+        // const settings = test.props?.settings as AppSettings;
+        const href = window.location.href;
+        expect(href).toBeDefined();
+        expect(href).toBe(
+          `${
+            (test.props?.settings as any).idp.default.externalLoginEndpoint
+          }?redirect_uri=http://localhost/login/callback`,
+        );
+        if (test.options?.onError) {
+          expect(test.options.onError).not.toHaveBeenCalled();
+        } else {
+          expect(queryByTestId('notifications-error-container')).toBeNull();
+        }
+      });
     });
   });
 });

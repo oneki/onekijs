@@ -48,6 +48,10 @@ export function idpForm(idpConfig: IdpSettings): Idp {
   return Object.assign({ type: IdpType.Form }, defaultIdpSettings.form, idpConfig);
 }
 
+export function external(idpConfig: IdpSettings): Idp {
+  return Object.assign({ type: IdpType.External }, defaultIdpSettings.external, idpConfig);
+}
+
 export function oidcServer(idpConfig: IdpSettings): Idp {
   return Object.assign({ type: IdpType.OidcServer }, defaultIdpSettings.oidc_server, idpConfig);
 }

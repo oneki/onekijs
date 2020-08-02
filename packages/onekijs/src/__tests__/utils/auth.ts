@@ -37,6 +37,7 @@ export const userinfoEndpoint = 'http://localhost/oauth/userinfo';
 export const loginEndpoint = 'http://localhost/auth/login';
 export const loginTokenEndpoint = 'http://localhost/auth/login-token';
 export const loginCustomKeyEndpoint = 'http://localhost/auth/login-custom-key';
+export const externalLoginEndpoint = 'http://localhost/external/login';
 export const logoutEndpoint = 'http://localhost/auth/logout';
 export const logoutTokenEndpoint = 'http://localhost/auth/logout-token';
 export const oauthLogoutEndpoint = 'http://localhost/oauth/logout';

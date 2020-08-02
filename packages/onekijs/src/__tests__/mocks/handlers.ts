@@ -134,12 +134,22 @@ const oidcTokenHandler = (req: MockedRequest, res: ResponseComposition, ctx: any
     params = req.body;
   }
   const query = qs.parse(params);
-  expect(query.client_id).toBe(clientId);
-  expect(query.code).toBe(authorizationCode);
-  expect(query.grant_type).toBe('authorization_code');
-  expect(query.redirect_uri).toBe(redirectUri);
+  if (clientId !== query.client_id) {
+    return res(ctx.status(400), ctx.json({ message: 'token: invalid client_id' }));
+  }
+  if (authorizationCode !== query.code) {
+    return res(ctx.status(400), ctx.json({ message: 'token: invalid code' }));
+  }
+  if ('authorization_code' !== query.grant_type) {
+    return res(ctx.status(400), ctx.json({ message: 'token: invalid grant type (must be authorization_code)' }));
+  }
+  if (redirectUri !== query.redirect_uri) {
+    return res(ctx.status(400), ctx.json({ message: 'token: invalid redirect_uri' }));
+  }
   if (options.pkce) {
-    expect(query.code_verifier).toBe(verifier);
+    if (verifier !== query.code_verifier) {
+      return res(ctx.status(400), ctx.json({ message: 'token: invalid code_verifier' }));
+    }
   }
   return generateAndReturnTokens(res, ctx);
 };

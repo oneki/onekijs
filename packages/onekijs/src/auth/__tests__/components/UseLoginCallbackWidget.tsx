@@ -1,5 +1,4 @@
-import React, { FC, useState } from 'react';
-import BasicError from '../../../core/BasicError';
+import React, { FC } from 'react';
 import { LoginOptions } from '../../typings';
 import useLoginCallback from '../../useLoginCallback';
 
@@ -9,23 +8,10 @@ type ExternalLoginProps = {
   onError?: boolean;
 };
 
-const UseLoginCallbackWidget: FC<ExternalLoginProps> = ({ idpName, options, onError }) => {
-  const [errorFromOnError, setErrorFromOnError] = useState<BasicError>();
+const UseLoginCallbackWidget: FC<ExternalLoginProps> = ({ idpName, options }) => {
   const [error] = useLoginCallback(idpName, options);
 
-  if (onError) {
-    options = options || {};
-    options.onError = (error) => {
-      setErrorFromOnError(error);
-    };
-  }
-
-  return (
-    <>
-      {error && <div data-test-id="error-container">{error.payload?.message}</div>}
-      {errorFromOnError && <div data-test-id="on-error">{errorFromOnError.payload?.message}</div>}
-    </>
-  );
+  return <>{error && <div data-testid="error-container">{error.message || error.payload?.message}</div>}</>;
 };
 
 export default UseLoginCallbackWidget;
