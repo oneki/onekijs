@@ -5,7 +5,7 @@ import { flattenTranslations } from './utils';
 import { get, set, append } from '../core/utils/object';
 import { service, saga, reducer } from '../core/annotations';
 import GlobalService from '../core/GlobalService';
-import { SagaEffect, AnonymousObject, Collection } from '../core/typings';
+import { SagaEffect, AnonymousObject, Collection, AnyState } from '../core/typings';
 import { isFunction } from '../core/utils/type';
 import { AppSettings } from '../app/typings';
 
@@ -20,7 +20,8 @@ export default class I18nService extends GlobalService {
     this.notificationService = notificationService;
   }
 
-  init(): void {
+  init(initialState: AnyState): void {
+    super.init(initialState);
     const { settings } = this.context;
     this.modifiers = {
       locale: (value: string | number | Date, locale: string) => (value ? value.toLocaleString(locale) : value),

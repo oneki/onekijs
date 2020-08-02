@@ -80,8 +80,8 @@ export default class Service<S extends State = AnyState> {
     properties.forEach((property) => create(property));
   }
 
-  init() {
-    
+  init(initialState: S): void {
+    this.state = produce(initialState, (draftState: S) => draftState) as S;
   }
 
   private [createReducer](type: string, reducer: AnyFunction<void>): void {

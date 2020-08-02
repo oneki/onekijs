@@ -1,4 +1,4 @@
-import { FetchService, reducer } from 'onekijs';
+import { FetchService, reducer, get } from 'onekijs';
 import { defaultComparator, isQueryFilterCriteria, rootFilterId, visitFilter } from '../utils/query';
 import {
   QueryFilter,
@@ -7,7 +7,8 @@ import {
   QuerySort,
   QuerySortComparator,
   QuerySortDir,
-  QueryState
+  QueryState,
+  QueryFilterCriteria
 } from './typings';
 
 export default abstract class QueryService<T = any, S extends QueryState<T> = QueryState<T>> extends FetchService<T, S> {
@@ -43,48 +44,11 @@ export default abstract class QueryService<T = any, S extends QueryState<T> = Qu
   }
 
   get filter(): QueryFilter {
-    const currentFilter = this.state.filter;
-    if (!currentFilter) {
-      return {
-        id: rootFilterId,
-        operator: 'and',
-        criterias: [],
-      };
-    } else if (Array.isArray(currentFilter)) {
-      // current filter is a QueryFilterOrCriteria[]
-      return {
-        id: rootFilterId,
-        operator: 'and',
-        criterias: currentFilter,
-      };
-    } else if (isQueryFilterCriteria(currentFilter)) {
-      // current filter is a QueryFilterCriteria
-      return {
-        id: rootFilterId,
-        operator: 'and',
-        criterias: [currentFilter],
-      };
-    } else {
-      return Object.assign({ id: rootFilterId, operator: 'and', criterias: [] }, currentFilter);
-    }
+    return this._formatFilter(get<QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[]>(this.state, 'filter'));
   }
 
   get sort(): QuerySort[] {
-    const currentSort = this.state.sort;
-    if (Array.isArray(currentSort)) {
-      return currentSort;
-    }
-    if (!currentSort) {
-      return [];
-    }
-    if (typeof currentSort === 'string') {
-      return [
-        {
-          field: currentSort,
-        },
-      ];
-    }
-    return [currentSort];
+    return this._formatSort(get<string | QuerySort | QuerySort[]>(this.state, 'sort'));
   }
 
   abstract refresh(): void;
@@ -114,5 +78,48 @@ export default abstract class QueryService<T = any, S extends QueryState<T> = Qu
   setSort(field: string, dir: QuerySortDir = 'asc', comparator: QuerySortComparator = defaultComparator): void {
     this.state.sort = [{ field, dir, comparator }];
     this.refresh();
+  }
+
+  _formatFilter(filter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[]): QueryFilter {
+    if (!filter) {
+      return {
+        id: rootFilterId,
+        operator: 'and',
+        criterias: [],
+      };
+    } else if (Array.isArray(filter)) {
+      // current filter is a QueryFilterOrCriteria[]
+      return {
+        id: rootFilterId,
+        operator: 'and',
+        criterias: filter,
+      };
+    } else if (isQueryFilterCriteria(filter)) {
+      // current filter is a QueryFilterCriteria
+      return {
+        id: rootFilterId,
+        operator: 'and',
+        criterias: [filter],
+      };
+    } else {
+      return Object.assign({ id: rootFilterId, operator: 'and', criterias: [] }, filter);
+    }
+  }
+
+  _formatSort(sort?: string | QuerySort | QuerySort[]) {
+    if (Array.isArray(sort)) {
+      return sort;
+    }
+    if (!sort) {
+      return [];
+    }
+    if (typeof sort === 'string') {
+      return [
+        {
+          field: sort,
+        },
+      ];
+    }
+    return [sort];
   }
 }

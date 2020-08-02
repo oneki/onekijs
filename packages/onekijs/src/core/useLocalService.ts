@@ -9,8 +9,8 @@ const useLocalService = <S extends State, T extends LocalService<S>>(
   initialState?: S | (() => S),
 ): [S, T] => {
   const initialStateRef = useLazyRef(initialState);
-  const service = useAppService(ctor, initialStateRef.current);
-  return useLocalReducer(service, initialStateRef);
+  const appService = useAppService(ctor, initialStateRef.current);
+  return useLocalReducer(appService, initialStateRef);
 };
 
 export default useLocalService;

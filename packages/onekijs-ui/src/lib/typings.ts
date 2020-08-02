@@ -43,7 +43,7 @@ export interface QueryState<T = any> extends FetchState {
   result?: T[];
 }
 
-export interface LocalQueryOptions {
+export interface UseCollectionOptions {
   initialFilter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[];
   initialSort?: string | QuerySort | QuerySort[];
 }

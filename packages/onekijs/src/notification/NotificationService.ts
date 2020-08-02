@@ -4,13 +4,14 @@ import { get, set, append, isNull } from '../core/utils/object';
 import { AppSettings } from '../app/typings';
 import { service, reducer, saga } from '../core/annotations';
 import GlobalService from '../core/GlobalService';
-import { SagaEffect } from '../core/typings';
+import { SagaEffect, AnyState } from '../core/typings';
 
 let nextId = 1;
 
 @service
 export default class NotificationService extends GlobalService {
-  init(): void {
+  init(initialState: AnyState): void {
+    super.init(initialState);
     this.context.router.listen(this.onRouteChange);
   }
 

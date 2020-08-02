@@ -1,13 +1,17 @@
 import { get, reducer, service } from 'onekijs';
 import { defaultComparator, isQueryFilterCriteria } from '../utils/query';
 import QueryService from './QueryService';
-import { LocalQueryState, QueryFilter, QueryFilterCriteria, QuerySort } from './typings';
+import { LocalQueryState, QueryFilter, QueryFilterCriteria, QuerySort, QueryFilterOrCriteria } from './typings';
 
 @service
-export default class LocalQueryService<
-  T = any,
-  S extends LocalQueryState<T> = LocalQueryState<T>
-> extends QueryService<T, S> {
+export default class LocalQueryService<T = any, S extends LocalQueryState<T> = LocalQueryState<T>> extends QueryService<
+  T,
+  S
+> {
+  init(initialState: S): void {
+    initialState.result = this._execute(initialState.data, initialState.filter, initialState.sort);
+    super.init(initialState);
+  }
 
   protected _applyCriteria(item: T, criteria: QueryFilterCriteria): boolean {
     const operator = criteria.operator;
@@ -18,25 +22,13 @@ export default class LocalQueryService<
 
     switch (operator) {
       case 'ends_with':
-        if (typeof source === 'string' && typeof value === 'string') {
-          result = source.lastIndexOf(value) === source.length - value.length;
-        } else {
-          result = source === value;
-        }
+        result = String(source).endsWith(String(value));
         break;
       case 'like':
-        if (typeof source === 'string' && typeof value === 'string') {
-          result = source.toUpperCase().indexOf(value.toUpperCase()) > -1;
-        } else {
-          result = source === value;
-        }
+        result = String(source).toUpperCase().includes(String(value).toUpperCase());
         break;
       case 'starts_with':
-        if (typeof source === 'string' && typeof value === 'string') {
-          result = source.indexOf(value) === 0;
-        } else {
-          result = source === value;
-        }
+        result = String(source).startsWith(String(value));
         break;
       default:
         result = source === value;
@@ -82,13 +74,12 @@ export default class LocalQueryService<
     return data;
   }
 
-
   get data(): T[] {
-    return this.state.result || [];
+    return get<T[]>(this.state, 'result', []);
   }
 
   get initialData(): T[] {
-    return this.state.data;
+    return get<T[]>(this.state, 'data', []);
   }
 
   @reducer
@@ -106,5 +97,19 @@ export default class LocalQueryService<
     result = this._applySort(result, this.sort);
 
     this.state.result = result;
+  }
+
+  _execute(
+    data: T[],
+    filter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[],
+    sort?: string | QuerySort | QuerySort[],
+  ): T[] {
+    // apply filters to data
+    let result = data.filter((item) => this._applyFilter(item, this._formatFilter(filter)));
+
+    // apply sort
+    result = this._applySort(result, this._formatSort(sort));
+
+    return result;
   }
 }

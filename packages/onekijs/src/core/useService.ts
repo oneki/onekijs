@@ -1,6 +1,5 @@
-import produce from 'immer';
 import 'reflect-metadata';
-import Service, { run, handler } from './Service';
+import Service, { handler, run } from './Service';
 import { Class, State } from './typings';
 import useLazyRef from './useLazyRef';
 import useLocalReducer from './useLocalReducer';
@@ -12,12 +11,13 @@ const useService = <S extends State, T extends Service<S>>(
   const initialStateRef = useLazyRef(initialState);
   const serviceRef = useLazyRef<T>(() => {
     const service = new ctor();
-    service.state = produce(initialState || {}, (draftState: S) => draftState) as any;
     service[run]();
-    service.init();
+    service.init((initialStateRef.current || {}) as any);  
     return new Proxy(service, handler) as T;
   });
-  return useLocalReducer(serviceRef.current, initialStateRef);
+  const [state, service] = useLocalReducer(serviceRef.current, initialStateRef);
+
+  return [state, service];
 };
 
 export default useService;

@@ -87,12 +87,8 @@ export {
   diffArrays,
   toPayload,
   fromPayload,
-<<<<<<< HEAD
   omit,
-} from './lib/core/utils/object';
-=======
 } from './core/utils/object';
->>>>>>> tests
 export {
   getItem,
   onStorageChange,
@@ -102,8 +98,7 @@ export {
   getCookieExpireTime,
   removeItem,
   setItem,
-<<<<<<< HEAD
-} from './lib/core/utils/storage';
+} from './core/utils/storage';
 export {
   hex2b64,
   generateRandomString,
@@ -113,11 +108,7 @@ export {
   trimStart,
   trimEnd,
   trim,
-} from './lib/core/utils/string';
-=======
-} from './core/utils/storage';
-export { hex2b64, generateRandomString, regexIndexOf, trimStart, trimEnd, trim } from './core/utils/string';
->>>>>>> tests
+} from './core/utils/string';
 export {
   isTrue,
   isFalse,
@@ -127,12 +118,8 @@ export {
   isFunctionOrPromise,
   isAsyncOrPromise,
   isInteger,
-<<<<<<< HEAD
   ensureType,
-} from './lib/core/utils/type';
-=======
 } from './core/utils/type';
->>>>>>> tests
 export {
   urlBuilder,
   isAbsoluteUrl,
@@ -154,16 +141,6 @@ export {
   debounce,
   throttle,
   saga,
-<<<<<<< HEAD
-} from './lib/core/annotations';
-export { default as BasicError } from './lib/core/BasicError';
-export { default as Container } from './lib/core/Container';
-export { default as ContainerContext } from './lib/core/ContainerContext';
-export { default as GlobalService } from './lib/core/GlobalService';
-export { default as HTTPError } from './lib/core/HTTPError';
-export { default as LocalService } from './lib/core/LocalService';
-export { default as Service } from './lib/core/Service';
-=======
 } from './core/annotations';
 export { default as BasicError } from './core/BasicError';
 export { default as Container } from './core/Container';
@@ -172,8 +149,6 @@ export { default as GlobalService } from './core/GlobalService';
 export { default as HTTPError } from './core/HTTPError';
 export { default as LocalService } from './core/LocalService';
 export { default as Service } from './core/Service';
-export { default as ServiceType } from './core/ServiceType';
->>>>>>> tests
 export {
   AnonymousObject,
   AnyFunction,
@@ -186,30 +161,6 @@ export {
   ServiceFactory,
   State,
   SuccessCallback,
-<<<<<<< HEAD
-} from './lib/core/typings';
-export { default as useContainer } from './lib/core/useContainer';
-export { default as useGlobalService } from './lib/core/useGlobalService';
-export { useIsomorphicLayoutEffect } from './lib/core/useIsomorphicLayoutEffect';
-export { default as useLazyRef } from './lib/core/useLazyRef';
-export { default as useLocalService } from './lib/core/useLocalService';
-export { default as useService } from './lib/core/useService';
-export { default as useAppService } from './lib/core/useAppService';
-export { default as FetchService } from './lib/fetch/FetchService';
-export { FetchState, FetchOptions, GetOptions, FetchMethod, HttpMethod } from './lib/fetch/typings';
-export { default as useDelete } from './lib/fetch/useDelete';
-export { default as useGet } from './lib/fetch/useGet';
-export { default as usePatch } from './lib/fetch/usePatch';
-export { usePost } from './lib/fetch/usePost';
-export { default as usePostPutPatch } from './lib/fetch/usePostPutPatch';
-export { default as usePut } from './lib/fetch/usePut';
-export { default as useSecureDelete } from './lib/fetch/useSecureDelete';
-export { default as useSecureGet } from './lib/fetch/useSecureGet';
-export { default as useSecurePatch } from './lib/fetch/useSecurePatch';
-export { default as useSecurePost } from './lib/fetch/useSecurePost';
-export { default as useSecurePostPutPatch } from './lib/fetch/useSecurePostPutPatch';
-export { default as useSecurePut } from './lib/fetch/useSecurePut';
-=======
 } from './core/typings';
 export { default as useContainer } from './core/useContainer';
 export { default as useGlobalService } from './core/useGlobalService';
@@ -217,8 +168,9 @@ export { useIsomorphicLayoutEffect } from './core/useIsomorphicLayoutEffect';
 export { default as useLazyRef } from './core/useLazyRef';
 export { default as useLocalService } from './core/useLocalService';
 export { default as useService } from './core/useService';
-export { default as CrudService } from './fetch/CrudService';
-export { CrudState, FetchOptions, GetOptions } from './fetch/typings';
+export { default as useAppService } from './core/useAppService';
+export { default as FetchService } from './fetch/FetchService';
+export { FetchState, FetchOptions, GetOptions, FetchMethod, HttpMethod } from './fetch/typings';
 export { default as useDelete } from './fetch/useDelete';
 export { default as useGet } from './fetch/useGet';
 export { default as usePatch } from './fetch/usePatch';
@@ -231,7 +183,6 @@ export { default as useSecurePatch } from './fetch/useSecurePatch';
 export { default as useSecurePost } from './fetch/useSecurePost';
 export { default as useSecurePostPutPatch } from './fetch/useSecurePostPutPatch';
 export { default as useSecurePut } from './fetch/useSecurePut';
->>>>>>> tests
 export {
   encodeFormData,
   xhr,
