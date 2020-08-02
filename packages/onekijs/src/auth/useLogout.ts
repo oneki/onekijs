@@ -3,8 +3,9 @@ import useNotificationService from '../notification/useNotificationService';
 import LogoutService from './LogoutService';
 import { LogoutOptions, LogoutState } from './typings';
 import useLocalService from '../core/useLocalService';
+import BasicError from '../core/BasicError';
 
-const useLogout = (options: LogoutOptions = {}): LogoutState => {
+const useLogout = (options: LogoutOptions = {}): [BasicError | undefined, boolean] => {
   const [state, service] = useLocalService(LogoutService, {
     loading: true,
   } as LogoutState);
@@ -32,7 +33,7 @@ const useLogout = (options: LogoutOptions = {}): LogoutState => {
     }
   }, [service, onError, onSuccess, callback]);
 
-  return state;
+  return [state.error, state.loading || false];
 };
 
 // alias

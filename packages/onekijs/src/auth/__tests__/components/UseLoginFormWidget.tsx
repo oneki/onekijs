@@ -4,16 +4,16 @@ import useLogin from '../../useLogin';
 import useForm from '../../../form/useForm';
 import Input from '../../../form/components/Input';
 import SubmitButton from '../../../form/components/SubmitButton';
+import useSecurityContext from '../../useSecurityContext';
 
 type FormLoginProps = {
   idpName?: string;
   options?: LoginOptions;
 };
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const textDisplay = (data: any) => `RESULT=${JSON.stringify(data)}`;
 
 const UseLoginFormWidget: FC<FormLoginProps> = ({ idpName, options }) => {
   const [error, , submit] = useLogin(idpName, options);
+  const [email] = useSecurityContext('email', 'not logged');
   const { Form } = useForm(submit, {
     initialValues: {
       username: 'john.doe',
@@ -24,6 +24,7 @@ const UseLoginFormWidget: FC<FormLoginProps> = ({ idpName, options }) => {
   return (
     <>
       {error && <div data-test-id="error-container">{error.message || error.payload.message}</div>}
+      <div data-testid="logged-user">{email}</div>
       <Form>
         <div>
           <label htmlFor="username">Username</label>

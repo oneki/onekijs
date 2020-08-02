@@ -35,6 +35,16 @@ export const tokenEndpoint = 'http://localhost/oauth2/token';
 export const tokenWithPkceEndpoint = 'http://localhost/oauth2/token-with-pkce';
 export const userinfoEndpoint = 'http://localhost/oauth/userinfo';
 export const loginEndpoint = 'http://localhost/auth/login';
-export const logoutEndpoint = 'http://localhost/auth.logout';
+export const loginTokenEndpoint = 'http://localhost/auth/login-token';
+export const loginCustomKeyEndpoint = 'http://localhost/auth/login-custom-key';
+export const logoutEndpoint = 'http://localhost/auth/logout';
+export const logoutTokenEndpoint = 'http://localhost/auth/logout-token';
 export const oauthLogoutEndpoint = 'http://localhost/oauth/logout';
 export const jwksEndpoint = 'http://localhost/.well-known/jwks.json';
+export const idTokenClaims = {
+  mock_token_type: 'id',
+  name: 'Doe',
+  firstname: 'John',
+  email: 'john.doe@mock.com',
+  nonce: nonceSha,
+};

@@ -235,6 +235,10 @@ export default class AuthService extends GlobalService {
       }
       return securityContext;
     } catch (e) {
+      console.error(e);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('fetchSecurityContext error', e);
+      }
       if (onError) {
         yield onError(e, this.context);
       } else {
@@ -277,7 +281,6 @@ export default class AuthService extends GlobalService {
 
         const expires_at = parseInt(yield getItem('onekijs.expires_at', storage));
         const clockSkew = idp.clockSkew || 60;
-
         const access_token = yield getItem('onekijs.access_token', persist);
         const refresh_token = yield getItem('onekijs.refresh_token', persist);
         if (access_token && expires_at >= Date.now() + clockSkew * 1000) {

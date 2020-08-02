@@ -8,10 +8,11 @@ import { LogoutState } from './typings';
 import { getIdp, getIdpName, isOauth, isExternal } from './utils';
 import { get } from '../core/utils/object';
 import LocalService from '../core/LocalService';
-import { reducer, saga } from '../core/annotations';
+import { reducer, saga, service } from '../core/annotations';
 import BasicError from '../core/BasicError';
 import { absoluteUrl } from '../core/utils/url';
 
+@service
 export default class LogoutService extends LocalService<LogoutState> {
   notificationService: NotificationService;
   authService: AuthService;
@@ -139,6 +140,7 @@ export default class LogoutService extends LocalService<LogoutState> {
 
       // call the reducer to update the local state
       yield this.onSuccess();
+
       yield this.notificationService.clearTopic('logout-error');
 
       if (onSuccess) {
@@ -149,6 +151,9 @@ export default class LogoutService extends LocalService<LogoutState> {
         yield call([router, router.push], get(settings, 'routes.home', '/'));
       }
     } catch (e) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Form login error', e);
+      }
       yield this.onError(e);
       if (onError) {
         // the caller is not an async or generator function and manages error

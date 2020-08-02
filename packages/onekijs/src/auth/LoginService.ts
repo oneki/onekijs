@@ -1,7 +1,13 @@
 import { call } from 'redux-saga/effects';
-import NotificationService from '../notification/NotificationService';
-import { SuccessCallback, ErrorCallback, AnonymousObject, SagaEffect } from '../core/typings';
+import { reducer, saga, service } from '../core/annotations';
+import BasicError from '../core/BasicError';
+import LocalService from '../core/LocalService';
+import { AnonymousObject, ErrorCallback, SagaEffect, SuccessCallback } from '../core/typings';
+import { sha256 } from '../core/utils/crypt';
+import { get } from '../core/utils/object';
+import { absoluteUrl } from '../core/utils/url';
 import { asyncHttp, asyncPost } from '../fetch/utils';
+import NotificationService from '../notification/NotificationService';
 import AuthService from './AuthService';
 import { LoginState } from './typings';
 import {
@@ -10,18 +16,12 @@ import {
   generateNonce,
   generateState,
   getIdp,
-  parseJwt,
-  isOauth,
-  isExternal,
-  parseHashToken,
   getIdpStorage,
+  isExternal,
+  isOauth,
+  parseHashToken,
+  parseJwt,
 } from './utils';
-import { get } from '../core/utils/object';
-import { service, reducer, saga } from '../core/annotations';
-import LocalService from '../core/LocalService';
-import BasicError from '../core/BasicError';
-import { absoluteUrl } from '../core/utils/url';
-import { sha256 } from '../core/utils/crypt';
 
 @service
 export default class LoginService extends LocalService<LoginState> {

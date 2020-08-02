@@ -2,7 +2,16 @@ import { MockedRequest, rest } from 'msw';
 import { ResponseComposition } from 'msw/lib/types/response';
 import qs from 'query-string';
 import { AnonymousObject } from '../../core/typings';
-import { authorizationCode, clientId, redirectUri, token, verifier, verifyToken, nonceSha, jkws } from '../utils/auth';
+import {
+  authorizationCode,
+  clientId,
+  idTokenClaims,
+  jkws,
+  redirectUri,
+  token,
+  verifier,
+  verifyToken,
+} from '../utils/auth';
 
 const successResponse = {
   result: 'success',
@@ -60,15 +69,41 @@ export const handlers = [
   }),
 
   // FORM BASED AUTH
-  rest.post('/auth/login', (req, res, ctx) => {
+  rest.post('/auth/login-token', (req, res, ctx) => {
     const body = (req.body as Record<string, any>) || {};
     expect(body.username).toBe('john.doe');
     expect(body.password).toBe('secret');
     return generateAndReturnTokens(res, ctx);
   }),
+  rest.post('/auth/login', (req, res, ctx) => {
+    const body = (req.body as Record<string, any>) || {};
+    expect(body.username).toBe('john.doe');
+    expect(body.password).toBe('secret');
+    return res(ctx.delay(1), ctx.json(idTokenClaims));
+  }),
+  rest.post('/auth/login-custom-key', (req, res, ctx) => {
+    const body = (req.body as Record<string, any>) || {};
+    expect(body.surname).toBe('john.doe');
+    expect(body.pwd).toBe('secret');
+    return res(ctx.delay(1), ctx.json(idTokenClaims));
+  }),
+  rest.get('/auth/logout-token', (req, res, ctx) => {
+    const token = extractToken(req);
+    if (token) {
+      try {
+        verifyToken(token);
+        return res(ctx.delay(100), ctx.json({ message: 'success' })); // ctx.delay(100) is normal
+      } catch (e) {
+        return res(ctx.status(403), ctx.json({ message: 'userinfo: invalid access token' }));
+      }
+    } else {
+      return res(ctx.status(401), ctx.json({ message: 'userinfo: missing access token' }));
+    }
+  }),
 
-  // OIDC
+  // OIDC AUTH
   rest.post('/oauth2/token', (req, res, ctx) => {
+    //`access_token=${response.data.access_token}; path=/; HttpOnly; SameSite=Stric; Secure`
     return oidcTokenHandler(req, res, ctx, { pkce: false });
   }),
   rest.post('/oauth2/token-with-pkce', (req, res, ctx) => {
@@ -91,10 +126,6 @@ export const handlers = [
   rest.get('/.well-known/jwks.json', (_req, res, ctx) => {
     return res(ctx.json(jkws));
   }),
-
-  /*            tokenEndpoint: 'http://localhost/oauth2/token',
-            userinfoEndpoint: 'http://localhost/oauth/userinfo',
-            logoutEndpoint: 'http://localhost/oauth/logout',*/
 ];
 
 const oidcTokenHandler = (req: MockedRequest, res: ResponseComposition, ctx: any, options: AnonymousObject) => {
@@ -116,15 +147,10 @@ const oidcTokenHandler = (req: MockedRequest, res: ResponseComposition, ctx: any
 const generateAndReturnTokens = (res: ResponseComposition, ctx: any) => {
   const access_token = token({ mock_token_type: 'access' });
   const refresh_token = token({ mock_token_type: 'refresh' });
-  const id_token = token({
-    mock_token_type: 'id',
-    name: 'Doe',
-    firstname: 'John',
-    email: 'john.doe@mock.com',
-    nonce: nonceSha,
-  });
+  const id_token = token(idTokenClaims);
   return res(
     ctx.delay(1),
+    ctx.cookie('access_token', access_token),
     ctx.json({
       access_token,
       refresh_token,
