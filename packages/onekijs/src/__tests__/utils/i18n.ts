@@ -14,13 +14,15 @@ export const i18nEn = {
       'Hello <1><2>gentlemen</2> {{firstname}} {{lastname}} <3>male</3></1> <4>addresses</4>',
     'Hello <1><2>mister</2> {{firstname}} {{lastname}} <3>male</3></1> <4>address</4> <5>Welcome</5>':
       'Hello <1><2>mister</2> {{firstname}} {{lastname}} <3>male</3></1> <4>address</4> <5>Welcome</5>',
-    user: 'common user',
+    user: 'commonUser',
+    'plural::user': 'commonUsers',
   },
   users: {
     lastname: 'Last name',
     firstname: 'First name',
     user: 'user',
     'plural::user': 'users',
+    'common:user': 'user common:user',
   },
 };
 
@@ -40,12 +42,14 @@ export const i18nFr = {
       'Bonjour <1><2>messieurs</2> {{lastname}} {{firstname}} <3>masculin</3></1> <4>adresses</4>',
     'Hello <1><2>mister</2> {{firstname}} {{lastname}} <3>male</3></1> <4>address</4> <5>Welcome</5>':
       'Bonjour <1><2>monsieur</2> {{lastname}} {{firstname}} <3>masculin</3></1> <4>adresse</4> <5>Bienvenue</5>',
-    user: 'utilisateur commun',
+    user: 'utilisateurCommun',
+    'plural::user': 'utilisateursCommuns',
   },
   users: {
     lastname: 'Nom',
     firstname: 'Prénom',
     user: 'utilisateur',
     'plural::user': 'utilisateurs',
+    'common:user': 'utilisateur common:user',
   },
 };

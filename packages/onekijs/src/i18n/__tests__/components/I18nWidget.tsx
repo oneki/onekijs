@@ -6,11 +6,14 @@ export type I18nWidgetProps = {
   lastname?: string;
   firstname?: string;
   date?: Date;
+  ns?: string[];
 };
 
-const I18nWidget: FC<I18nWidgetProps> = ({ lastname, firstname, date }) => {
+const I18nWidget: FC<I18nWidgetProps> = ({ lastname, firstname, date, ns = [] }) => {
+  // const I18nWidget: FC<I18nWidgetProps> = () => {
   const i18nService = useI18nService();
-  const [T, t, , loading] = useTranslation();
+  // const [T, , , loading] = useTranslation('users');
+  const [T, t, , loading] = useTranslation(ns);
   if (loading) return null;
   return (
     <>
@@ -129,11 +132,27 @@ const I18nWidget: FC<I18nWidgetProps> = ({ lastname, firstname, date }) => {
             <b>address</b> <span title={t('Welcome')}>Welcome</span>
           </T>
         </div>
-        <div>
+        <div data-testid="test18">
+          <T alias="user">Dummy</T>
+        </div>
+        <div data-testid="test19">
+          <T alias="user" count={2}>
+            Dummy
+          </T>
+        </div>
+        <div data-testid="test20">
           <T alias="common:user">user</T>
         </div>
-        <div>
-          <T count={2}>user</T>
+        <div data-testid="test21">
+          <T alias="common:user" count={2}>
+            Dummy
+          </T>
+        </div>
+        <div data-testid="test22">
+          <T>common:user</T>
+        </div>
+        <div data-testid="test23">
+          <T alias="common:user">common:user</T>
         </div>
       </div>
     </>

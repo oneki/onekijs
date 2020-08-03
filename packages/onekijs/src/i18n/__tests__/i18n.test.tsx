@@ -22,6 +22,7 @@ type TestProps = {
     en: string;
     fr: string;
   };
+  ns?: string[];
 };
 
 const i18nWidgetProps: I18nWidgetProps = {
@@ -168,13 +169,76 @@ const i18nTests: TestProps[] = [
         'Bonjour <span><b>monsieur</b> Doe John <i>masculin</i></span> <b>adresse</b> <span title="Bienvenue">Bienvenue</span>',
     },
   },
+  {
+    title: 'namespace users',
+    testId: 'test18',
+    expected: {
+      en: 'user',
+      fr: 'utilisateur',
+    },
+    ns: ['users'],
+  },
+  {
+    title: 'namespace common has higher priority than namespace users',
+    testId: 'test18',
+    expected: {
+      en: 'commonUser',
+      fr: 'utilisateurCommun',
+    },
+    ns: ['common', 'users'],
+  },
+  {
+    title: 'namespace users (plural)',
+    testId: 'test19',
+    expected: {
+      en: 'users',
+      fr: 'utilisateurs',
+    },
+    ns: ['users'],
+  },
+  {
+    title: 'namespace common is present by default',
+    testId: 'test20',
+    expected: {
+      en: 'commonUser',
+      fr: 'utilisateurCommun',
+    },
+    ns: ['users'],
+  },
+  {
+    title: 'namespace common (plural)',
+    testId: 'test21',
+    expected: {
+      en: 'commonUsers',
+      fr: 'utilisateursCommuns',
+    },
+    ns: ['users'],
+  },
+  {
+    title: "T content containing ':'",
+    testId: 'test22',
+    expected: {
+      en: 'user common:user',
+      fr: 'utilisateur common:user',
+    },
+    ns: ['users'],
+  },
+  {
+    title: "T content containing ':' and alias containing a namespace",
+    testId: 'test23',
+    expected: {
+      en: 'commonUser',
+      fr: 'utilisateurCommun',
+    },
+    ns: ['users'],
+  },
 ];
 
 // const TestComponent: React.FC<Props> = ({ name }) => <>Welcome {{ name }}</>;
 describe('it retrieves locales remotely', () => {
   i18nTests.forEach((test) => {
     it(`${test.title}`, async () => {
-      const { findByTestId, getByTestId } = render(<I18nWidget {...i18nWidgetProps} />, appProps);
+      const { findByTestId, getByTestId } = render(<I18nWidget {...i18nWidgetProps} ns={test.ns} />, appProps);
       let T = await findByTestId(test.testId);
       expect(T).toContainHTML(test.expected.en);
       fireEvent.click(getByTestId('change-locale-fr'));
