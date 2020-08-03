@@ -1,5 +1,3 @@
-import { Address } from 'cluster';
-
 export interface TestAddress {
   street: string;
   postalCode: number;
@@ -15,11 +13,11 @@ export interface TestUser {
 }
 
 export type TestAction = {
-  method: string,
-  args: any[],
-}
+  method: string;
+  args: any[];
+};
 
 export type TestHandler = {
-  name: string,
-  actions: TestAction[],
-}
+  name: string;
+  actions: TestAction[];
+};

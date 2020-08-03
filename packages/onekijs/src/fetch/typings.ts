@@ -5,7 +5,7 @@ export interface FetchState extends State {
   result?: any;
 }
 
-export type FetchMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+export type FetchMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 export enum HttpMethod {
   Get = 'GET',

@@ -41,7 +41,8 @@ export function isInteger(str: string): boolean {
   return /^(0|[1-9]\d*)$/.test(str);
 }
 
-export function ensureType(value: any, type: string | string[]) {
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export function ensureType(value: any, type: string | string[]): void {
   if (!Array.isArray(type)) {
     type = [type];
   }
