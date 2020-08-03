@@ -1,73 +1,17 @@
 import React, { FC } from 'react';
 import useI18nService from '../../useI18nService';
-// import useTranslation from '../../useTranslation';
+import useTranslation from '../../useTranslation';
 
-// type LogoutProps = {
-//   Content?: ElementType;
-// };
+export type I18nWidgetProps = {
+  lastname?: string;
+  firstname?: string;
+  date?: Date;
+};
 
-// const UseLogoutWidget: FC = () => {
-//   const [T, t, locale, loading] = useTranslation();
-//   const firstname = 'Joe';
-//   return (
-//     <>
-//       <div>
-//         <T alias="hello">
-//           Hello{' '}
-//           <b>
-//             <i>mister</i> {{ firstname }} {{ lastname }} <i>male</i>
-//           </b>{' '}
-//           <u>address</u>
-//         </T>
-//       </div>
-//       <div>
-//         <T count={2}>
-//           Hello{' '}
-//           <b>
-//             <i>mister</i> {{ firstname }} {{ lastname }} <i>male</i>
-//           </b>{' '}
-//           <u>address</u>
-//         </T>
-//       </div>
-//       <div>
-//         <T>Welcome {{ lastname }} on Flora</T>
-//       </div>
-//       <div>
-//         <T>
-//           Welcome {{ lastname }} on Flora. Current date = {{ date }}
-//         </T>
-//       </div>
-//       <div title={t('Welcome')}>
-//         <T>Welcome</T>
-//       </div>
-
-//       <div>
-//         <T>
-//           Hello{' '}
-//           <b>
-//             <i>mister</i> {{ firstname }} {{ lastname }} <i>male</i>
-//           </b>{' '}
-//           <u>address</u> <span title={t('Welcome')}>Welcome</span>
-//         </T>
-//       </div>
-//       <div>
-//         <T alias="common:user">user</T>
-//       </div>
-//       <div>
-//         <T count={2}>user</T>
-//       </div>
-//     </>
-//   );
-// };
-
-// const LogoutWidget: FC<LogoutProps> = ({ options }) => {
-//   const [error] = useLogout(options);
-
-//   return <>{error && <div data-testid="error-container">{error.message || error.payload?.message}</div>}</>;
-// };
-
-const I18nWidget: FC = ({ children }) => {
+const I18nWidget: FC<I18nWidgetProps> = ({ lastname, firstname, date }) => {
   const i18nService = useI18nService();
+  const [T, t, , loading] = useTranslation();
+  if (loading) return null;
   return (
     <>
       <button data-testid="change-locale-en" onClick={() => i18nService.changeLocale('en')}>
@@ -76,7 +20,122 @@ const I18nWidget: FC = ({ children }) => {
       <button data-testid="change-locale-fr" onClick={() => i18nService.changeLocale('fr')}>
         fr
       </button>
-      <div>{children}</div>
+      <div>
+        <div data-testid="test1">
+          <T>Welcome</T>
+        </div>
+        <div data-testid="test2">
+          <T alias="welcome">Dummy text</T>
+        </div>
+        <div data-testid="test3">
+          <T>Welcome {{ lastname }} on my website</T>
+        </div>
+        <div data-testid="test4">
+          <T>
+            Welcome {{ lastname }} on my website. Current date = {{ date }}
+          </T>
+        </div>
+        <div data-testid="test5">
+          <T>
+            Welcome <b>{{ lastname }}</b> {{ firstname }}
+          </T>
+        </div>
+        <div data-testid="test6">
+          <T alias="hello">
+            Hello{' '}
+            <span>
+              <b>mister</b> {{ firstname }} {{ lastname }} <i>male</i>
+            </span>{' '}
+            <b>address</b>
+          </T>
+        </div>
+        <div data-testid="test7">
+          <T count={2} alias="hello">
+            Hello{' '}
+            <span>
+              <b>mister</b> {{ firstname }} {{ lastname }} <i>male</i>
+            </span>{' '}
+            <b>address</b>
+          </T>
+        </div>
+        <div data-testid="test8">
+          <T>
+            Hello{' '}
+            <span>
+              <b>mister</b> {{ firstname }} {{ lastname }} <i>male</i>
+            </span>{' '}
+            <b>address</b>
+          </T>
+        </div>
+        <div data-testid="test9">
+          <T count={2}>
+            Hello{' '}
+            <span>
+              <b>mister</b> {{ firstname }} {{ lastname }} <i>male</i>
+            </span>{' '}
+            <b>address</b>
+          </T>
+        </div>
+        <div data-testid="test10">
+          <T>
+            Hello{' '}
+            <span className="container">
+              <b>mister</b> {{ firstname }} {{ lastname }} <i>male</i>
+            </span>{' '}
+            <b>address</b>
+          </T>
+        </div>
+        <div data-testid="test11">{t('Welcome')}</div>
+        <div data-testid="test12">{t('Dummy', 'welcome')}</div>
+        <div data-testid="test13">{t(<>Welcome {{ lastname }} on my website</>)}</div>
+        <div data-testid="test14">
+          {t(
+            <>
+              Welcome {{ lastname }} on my website. Current date = {{ date }}
+            </>,
+          )}
+        </div>
+        <div data-testid="test15">
+          {t(
+            <>
+              Hello{' '}
+              <span>
+                <b>mister</b> {{ firstname }} {{ lastname }} <i>male</i>
+              </span>{' '}
+              <b>address</b>
+            </>,
+            'hello',
+          )}
+        </div>
+        <div data-testid="test16">
+          {t(
+            <>
+              Hello{' '}
+              <span>
+                <b>mister</b> {{ firstname }} {{ lastname }} <i>male</i>
+              </span>{' '}
+              <b>address</b>
+            </>,
+            'hello',
+            2,
+          )}
+        </div>
+        <div data-testid="test17">
+          <T>
+            Hello{' '}
+            <span>
+              <b>mister</b> {{ firstname }} {{ lastname }} <i>male</i>
+            </span>{' '}
+            <b>address</b> <span title={t('Welcome')}>Welcome</span>
+          </T>
+        </div>
+        <div>
+          <T alias="common:user">user</T>
+        </div>
+        <div>
+          <T count={2}>user</T>
+        </div>
+      </div>
     </>
   );
 };

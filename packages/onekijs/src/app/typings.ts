@@ -21,7 +21,13 @@ export interface AppProps {
   i18nNs?: string[];
 }
 
-export interface AppProviderProps extends AppProps {
+export interface AppStateProps extends AppProps {
+  router: AppRouter;
+}
+
+export interface AppProviderProps extends Omit<AppProps, 'initialState' | 'LoadingComponent'> {
+  settings: AppSettings;
+  store: AppStore;
   router: AppRouter;
 }
 

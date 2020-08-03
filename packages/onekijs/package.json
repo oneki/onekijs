@@ -13,7 +13,7 @@
     "scripts": {
       "start": "tsdx watch",
       "build": "tsdx build",
-      "test": "tsdx test --passWithNoTests",
+      "test": "NODE_ICU_DATA=../../node_modules/full-icu tsdx test --passWithNoTests",
       "lint": "tsdx lint",
       "prepare": "tsdx build"
     },

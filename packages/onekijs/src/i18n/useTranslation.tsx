@@ -60,6 +60,10 @@ const useTranslation = (
         if (!alias) {
           key = jsxKey;
         }
+      } else {
+        if (!alias) {
+          key = content;
+        }
       }
 
       if (count >= 1) {
