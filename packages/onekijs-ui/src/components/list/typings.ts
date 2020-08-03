@@ -1,10 +1,10 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 
 export interface ListProps<T = any> {
   className?: string;
   height?: number;
   itemHeight?: number | ((index: number) => number);
-  ItemComponent?: FC<ListItemProps<T>>
+  ItemComponent?: FC<ListItemProps<T>>;
   adapter?: ListItemAdapter<T>;
   items: T[];
 }

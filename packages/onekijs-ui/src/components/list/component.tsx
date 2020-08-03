@@ -5,14 +5,24 @@ import ListItemComponent from './components/item';
 import { defaultItemAdapter } from './utils';
 import { addClassname } from '../../utils/style';
 
-const ListComponent: FC<ListProps> = ({ className, items, height, itemHeight = 21, ItemComponent = ListItemComponent, adapter = defaultItemAdapter }) => {
+const ListComponent: FC<ListProps> = ({
+  className,
+  items,
+  height,
+  itemHeight = 21,
+  ItemComponent = ListItemComponent,
+  adapter = defaultItemAdapter,
+}) => {
   const parentRef = useRef(null);
-  const estimateSize = useCallback((index: number) => {
-    if (typeof itemHeight === 'function') {
-      return itemHeight(index);
-    }
-    return itemHeight;
-  }, [itemHeight]);
+  const estimateSize = useCallback(
+    (index: number) => {
+      if (typeof itemHeight === 'function') {
+        return itemHeight(index);
+      }
+      return itemHeight;
+    },
+    [itemHeight],
+  );
   const { totalSize, virtualItems } = useVirtual({
     size: items.length,
     estimateSize,
@@ -54,8 +64,8 @@ const ListComponent: FC<ListProps> = ({ className, items, height, itemHeight = 2
             >
               <ItemComponent index={index} item={item} adapter={adapter} />
             </div>
-          )}
-        )}
+          );
+        })}
       </div>
     </div>
   );

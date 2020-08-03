@@ -177,9 +177,9 @@ export const preflight = (): FlattenInterpolation<ThemeProps<any>> => {
   `;
 };
 
-export const addClassname = (classname: string, existing?: string, after: boolean = true): string => {
+export const addClassname = (classname: string, existing?: string, after = true): string => {
   if (existing) {
     return after ? `${existing} ${classname}` : `${classname} ${existing}`;
   }
   return classname;
-}
+};
