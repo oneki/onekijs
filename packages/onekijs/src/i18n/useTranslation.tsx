@@ -57,7 +57,7 @@ const useTranslation = (
         // check if alias contains a namespace
         const aliasTokens = alias.split(':');
         if (aliasTokens.length > 2) {
-          throw new BasicError(`The i18n alias '${alias}' is invalid. It can\'t contain the character ':'`);
+          throw new BasicError(`The i18n alias '${alias}' is invalid. It can't contain the character ':'`);
         } else if (aliasTokens.length === 2) {
           aliasNs = aliasTokens[0];
           if (!nsRequired.includes(aliasNs)) {
