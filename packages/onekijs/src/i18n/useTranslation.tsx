@@ -8,6 +8,7 @@ import useGlobalSelector from '../app/useGlobalSelector';
 import { DefaultAppContext } from '../app/AppContext';
 import { AnonymousObject } from '../core/typings';
 import { stringifyJsx } from '../core/utils/jsx';
+import BasicError from '../core/BasicError';
 
 const useTranslation = (
   namespaces: string | string[] = [],
@@ -50,6 +51,24 @@ const useTranslation = (
     (content: string | JSX.Element, alias?: string, count = 1) => {
       if (fetching) return null;
       let key = alias;
+
+      let aliasNs: string;
+      if (alias) {
+        // check if alias contains a namespace
+        const aliasTokens = alias.split(':');
+        if (aliasTokens.length > 2) {
+          throw new BasicError(`The i18n alias '${alias}' is invalid. It can\'t contain the character ':'`);
+        } else if (aliasTokens.length === 2) {
+          aliasNs = aliasTokens[0];
+          if (!nsRequired.includes(aliasNs)) {
+            throw new BasicError(
+              `The i18n alias '${alias}' is invalid. The namespace ${aliasNs} is not declared as a namespace by useTranslation`,
+            );
+          }
+          key = aliasTokens[1];
+        }
+      }
+
       const ctx = {};
       let jsx = null;
       const candidateKeys: string[] = [];
@@ -60,15 +79,28 @@ const useTranslation = (
         if (!alias) {
           key = jsxKey;
         }
+      } else {
+        if (!alias) {
+          key = content;
+        }
       }
 
       if (count >= 1) {
         const prefix = count > 1 ? 'plural' : 'singular';
-        candidateKeys.push(`${prefix}::${key}`);
-        nsRequired.forEach((ns) => candidateKeys.push(`${ns}:${prefix}::${key}`));
+        // candidateKeys.push(`${prefix}::${key}`);
+        nsRequired.forEach((ns) => {
+          if (!aliasNs || aliasNs === ns) {
+            candidateKeys.push(`${ns}:${prefix}::${key}`);
+          }
+        });
       }
-      candidateKeys.push(key as string);
-      nsRequired.forEach((ns) => candidateKeys.push(`${ns}:${key}`));
+      // candidateKeys.push(key as string);
+
+      nsRequired.forEach((ns) => {
+        if (!aliasNs || aliasNs === ns) {
+          candidateKeys.push(`${ns}:${key}`);
+        }
+      });
 
       for (const candidateKey of candidateKeys) {
         if (translations[candidateKey] !== undefined)

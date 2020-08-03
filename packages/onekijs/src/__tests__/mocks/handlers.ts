@@ -12,6 +12,7 @@ import {
   verifier,
   verifyToken,
 } from '../utils/auth';
+import { i18nEn, i18nFr } from '../utils/i18n';
 
 const successResponse = {
   result: 'success',
@@ -66,6 +67,20 @@ export const handlers = [
         message: 'this is the error message',
       }),
     );
+  }),
+
+  // I18N
+  rest.get('/locales/en/common.json', (_req, res, ctx) => {
+    return res(ctx.json(i18nEn.common));
+  }),
+  rest.get('/locales/en/users.json', (_req, res, ctx) => {
+    return res(ctx.json(i18nEn.users));
+  }),
+  rest.get('/locales/fr/common.json', (_req, res, ctx) => {
+    return res(ctx.json(i18nFr.common));
+  }),
+  rest.get('/locales/fr/users.json', (_req, res, ctx) => {
+    return res(ctx.json(i18nFr.users));
   }),
 
   // FORM BASED AUTH
@@ -134,12 +149,22 @@ const oidcTokenHandler = (req: MockedRequest, res: ResponseComposition, ctx: any
     params = req.body;
   }
   const query = qs.parse(params);
-  expect(query.client_id).toBe(clientId);
-  expect(query.code).toBe(authorizationCode);
-  expect(query.grant_type).toBe('authorization_code');
-  expect(query.redirect_uri).toBe(redirectUri);
+  if (clientId !== query.client_id) {
+    return res(ctx.status(400), ctx.json({ message: 'token: invalid client_id' }));
+  }
+  if (authorizationCode !== query.code) {
+    return res(ctx.status(400), ctx.json({ message: 'token: invalid code' }));
+  }
+  if ('authorization_code' !== query.grant_type) {
+    return res(ctx.status(400), ctx.json({ message: 'token: invalid grant type (must be authorization_code)' }));
+  }
+  if (redirectUri !== query.redirect_uri) {
+    return res(ctx.status(400), ctx.json({ message: 'token: invalid redirect_uri' }));
+  }
   if (options.pkce) {
-    expect(query.code_verifier).toBe(verifier);
+    if (verifier !== query.code_verifier) {
+      return res(ctx.status(400), ctx.json({ message: 'token: invalid code_verifier' }));
+    }
   }
   return generateAndReturnTokens(res, ctx);
 };

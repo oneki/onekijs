@@ -188,6 +188,9 @@ export default class LoginService extends LocalService<LoginState> {
       }
 
       if (isOauth(idp)) {
+        if (!idp.clientId) {
+          throw new BasicError(`Cannot find a valid client_id for IDP ${idp.name}`);
+        }
         const params: AnonymousObject = {
           client_id: idp.clientId,
           response_type: idp.responseType,

@@ -27,7 +27,6 @@ export const buildJsx = (
         if (m.index === regex.lastIndex) {
           regex.lastIndex++;
         }
-
         m.forEach((match) => {
           result.str = result.str.replace(
             match,
@@ -135,7 +134,7 @@ export const handleModifiers = (input: string, value: any, locale: string, i18nS
       }
       handleFilterArgs(filter, args);
       if (i18nService.modifiers[modifierNoArgs]) {
-        return i18nService.modifiers[modifierNoArgs](args);
+        return i18nService.modifiers[modifierNoArgs](...args);
       } else {
         throw new BasicError(`No filter named ${modifierNoArgs} found in settings`);
       }

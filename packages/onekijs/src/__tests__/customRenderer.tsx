@@ -2,11 +2,10 @@ import { render, RenderResult } from '@testing-library/react';
 import { createBrowserHistory, History, LocationState } from 'history';
 import React, { FC } from 'react';
 import { Route, Router, Switch } from 'react-router-dom';
-
-import { ReactRouter } from './ReactRouter';
+import AppState from '../app/AppState';
 import { AppProps } from '../app/typings';
 import useLazyRef from '../core/useLazyRef';
-import AppProvider from '../app/AppProvider';
+import { ReactRouter } from './ReactRouter';
 
 export interface TestAppProps extends AppProps {
   history?: History<LocationState>;
@@ -30,13 +29,13 @@ const customRender = (ui: React.ReactElement, props?: TestAppProps, options?: an
     });
 
     return (
-      <AppProvider {...props} router={routerRef.current}>
+      <AppState {...props} router={routerRef.current}>
         <Router history={appHistoryRef.current}>
           <Switch>
             <Route>{children}</Route>
           </Switch>
         </Router>
-      </AppProvider>
+      </AppState>
     );
   };
   return render(ui, { wrapper: TestApp, ...options });

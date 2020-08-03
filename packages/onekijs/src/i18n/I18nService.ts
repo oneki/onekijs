@@ -24,7 +24,9 @@ export default class I18nService extends GlobalService {
     super.init(initialState);
     const { settings } = this.context;
     this.modifiers = {
-      locale: (value: string | number | Date, locale: string) => (value ? value.toLocaleString(locale) : value),
+      locale: (value: string | number | Date, locale: string) => {
+        return value ? value.toLocaleString(locale) : value;
+      },
     };
     if (settings.i18n && settings.i18n.modifiers) {
       Object.assign(this.modifiers, settings.i18n.modifiers);
