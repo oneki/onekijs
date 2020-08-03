@@ -1,7 +1,7 @@
 import produce from 'immer';
 import { apply, take } from 'redux-saga/effects';
 import { AnyFunction, AnyState, ID, State } from './typings';
-import { fromPayload, toPayload } from './utils/object';
+import { fromPayload, toPayload, isGetterOrSetter } from './utils/object';
 import { isFunction } from './utils/type';
 
 export const reducers = Symbol('service.reducers');
@@ -70,18 +70,20 @@ export default class Service<S extends State = AnyState> {
       }
     };
 
-    const prototypeProperties = Object.getOwnPropertyNames(Object.getPrototypeOf(this));
-    const properties = Object.getOwnPropertyNames(this);
-    prototypeProperties.forEach((property) => {
-      if (!properties.includes(property)) {
-        create(property);
-      }
-    });
-    properties.forEach((property) => create(property));
-  }
-
-  init(initialState: S): void {
-    this.state = produce(initialState, (draftState: S) => draftState) as S;
+    const properties: string[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    let obj = this;
+    while (obj) {
+      const p = Object.getOwnPropertyNames(obj);
+      // eslint-disable-next-line no-loop-func
+      p.forEach((property) => {
+        if (!isGetterOrSetter(obj, property) && !properties.includes(property)) {
+          create(property);
+        }
+        properties.push(property);
+      });
+      obj = Object.getPrototypeOf(obj);
+    }
   }
 
   private [createReducer](type: string, reducer: AnyFunction<void>): void {

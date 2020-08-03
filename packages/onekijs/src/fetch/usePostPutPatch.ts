@@ -13,9 +13,9 @@ const usePostPutPatch = <T = any>(
   const notificationService = useNotificationService();
   const optionsRef = useLazyRef<FetchOptions<T>>(() => {
     if (!options.onError) {
-      options.onError = (e => {
+      options.onError = (e) => {
         notificationService.error(e);
-      })
+      };
     }
     return options;
   });
@@ -28,7 +28,7 @@ const usePostPutPatch = <T = any>(
       extraOptions = Object.assign({}, optionsRef.current, extraOptions);
       service.fetch(extraOptions.url || url, method, body, extraOptions);
     },
-    [service, url, method],
+    [service, url, method, optionsRef],
   );
 
   return [executor, state.loading || false];

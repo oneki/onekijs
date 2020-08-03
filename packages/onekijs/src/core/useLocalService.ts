@@ -6,11 +6,11 @@ import useLocalReducer from './useLocalReducer';
 
 const useLocalService = <S extends State, T extends LocalService<S>>(
   ctor: Class<T>,
-  initialState?: S | (() => S),
+  initialState: S | (() => S),
 ): [S, T] => {
   const initialStateRef = useLazyRef(initialState);
   const appService = useAppService(ctor, initialStateRef.current);
-  return useLocalReducer(appService, initialStateRef);
+  return useLocalReducer(appService, initialStateRef.current);
 };
 
 export default useLocalService;

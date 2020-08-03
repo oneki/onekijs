@@ -2,8 +2,11 @@ import 'reflect-metadata';
 import AppContext from '../app/AppContext';
 import BasicError from './BasicError';
 import GlobalService from './GlobalService';
-import Service, { handler, run, serviceClass } from './Service';
-import { AppService, Class, ID, ServiceFactory, State } from './typings';
+import Service, { handler, run, serviceClass, inReducer } from './Service';
+import { Class, ID, ServiceFactory, State } from './typings';
+import { isFunction } from 'util';
+import AppService from './AppService';
+import produce from 'immer';
 
 export default class Container implements ServiceFactory {
   private classRegistry: {
@@ -30,7 +33,7 @@ export default class Container implements ServiceFactory {
     return this.classRegistry[(ctor as any)[ID]] || ctor;
   }
 
-  createService<S extends State, T extends AppService<S>>(ctor: Class<T>, context: AppContext, initialState?: S): T {
+  createService<S extends State, T extends AppService<S>>(ctor: Class<T>, context: AppContext, initialState: S): T {
     const instance = this.instanceRegistry[(ctor as any)[ID]];
     if (instance) {
       return instance;
@@ -40,7 +43,7 @@ export default class Container implements ServiceFactory {
       if (!type[ID]) {
         throw new BasicError(`Cannot find a valid class for service ${type}`);
       }
-      return this.instanceRegistry[type[ID]] || this.createService(type, context);
+      return this.instanceRegistry[type[ID]] || this.createService(type, context, context.store.getState());
     });
 
     const ActualClass = this.getServiceClass(ctor);
@@ -55,14 +58,23 @@ export default class Container implements ServiceFactory {
 
     Object.getOwnPropertyNames(service).forEach((property) => {
       if (service[property] && service[property][serviceClass]) {
-        const dependency = this.createService(service[property][serviceClass], context);
+        const dependency = this.createService(service[property][serviceClass], context, context.store.getState());
         (service as any)[property] = dependency;
       }
     });
 
+    service.state = initialState;
+
     service[run]();
 
-    service.init(service instanceof GlobalService ? context.store.getState() : initialState || {});
+    if (isFunction(service.init)) {
+      service[inReducer] = true;
+      service.init();
+      service[inReducer] = false;
+    }
+
+    // freeze state
+    service.state = produce(service.state, (draftState: S) => draftState) as S;
 
     const proxy = new Proxy(service, handler);
     if (service instanceof GlobalService) {

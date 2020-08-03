@@ -3,11 +3,8 @@ import { runSaga, stdChannel } from 'redux-saga';
 import Service, { combinedReducers, dispatch, reducers, sagas } from './Service';
 import { State } from './typings';
 
-const useLocalReducer = <S extends State, T extends Service<S>>(
-  service: T,
-  initialStateRef: React.MutableRefObject<S|undefined>,
-): [S, T] => {
-  const [state, reactDispatch] = useReducer(service[combinedReducers], initialStateRef.current || {});
+const useLocalReducer = <S extends State, T extends Service<S>>(service: T, initialState: S): [S, T] => {
+  const [state, reactDispatch] = useReducer(service[combinedReducers], initialState);
   const env = useRef(state);
   env.current = state;
   const channelRef = useRef(stdChannel());

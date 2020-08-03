@@ -9,9 +9,9 @@ const useGet = <T = any>(url: string, options: GetOptions<T> = {}): [T, boolean,
   const notificationService = useNotificationService();
   const optionsRef = useLazyRef<GetOptions<T>>(() => {
     if (!options.onError) {
-      options.onError = (e => {
+      options.onError = (e) => {
         notificationService.error(e);
-      })
+      };
     }
     return options;
   });
@@ -65,7 +65,7 @@ const useGet = <T = any>(url: string, options: GetOptions<T> = {}): [T, boolean,
     if (url) {
       service.get(url, optionsRef.current);
     }
-  }, [url, service]);
+  }, [url, service, optionsRef]);
 
   useEffect(() => {
     refresh();

@@ -13,3 +13,13 @@ export interface TestUser {
   address: TestAddress;
   phones: string[];
 }
+
+export type TestAction = {
+  method: string,
+  args: any[],
+}
+
+export type TestHandler = {
+  name: string,
+  actions: TestAction[],
+}

@@ -2,7 +2,10 @@ import LocalQueryService from './LocalQueryService';
 import { LocalQueryState, UseCollectionOptions } from './typings';
 import { useService } from 'onekijs';
 
-const useCollection = <T>(initialData: T[], options: UseCollectionOptions = {}): LocalQueryService<T, LocalQueryState<T>> => {
+const useCollection = <T>(
+  initialData: T[],
+  options: UseCollectionOptions = {},
+): LocalQueryService<T, LocalQueryState<T>> => {
   const initialState = {
     data: initialData,
     filter: options.initialFilter,
@@ -13,6 +16,7 @@ const useCollection = <T>(initialData: T[], options: UseCollectionOptions = {}):
     LocalQueryService,
     initialState,
   );
+
   return service;
 };
 

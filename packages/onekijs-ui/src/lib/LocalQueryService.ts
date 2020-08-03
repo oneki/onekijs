@@ -1,16 +1,84 @@
 import { get, reducer, service } from 'onekijs';
-import { defaultComparator, isQueryFilterCriteria } from '../utils/query';
+import { defaultComparator, isQueryFilterCriteria, rootFilterId } from '../utils/query';
 import QueryService from './QueryService';
-import { LocalQueryState, QueryFilter, QueryFilterCriteria, QuerySort, QueryFilterOrCriteria } from './typings';
+import {
+  LocalQueryState,
+  QueryFilter,
+  QueryFilterCriteria,
+  QueryFilterId,
+  QueryFilterOrCriteria,
+  QuerySort,
+  QuerySortComparator,
+  QuerySortDir,
+} from './typings';
 
 @service
 export default class LocalQueryService<T = any, S extends LocalQueryState<T> = LocalQueryState<T>> extends QueryService<
   T,
   S
 > {
-  init(initialState: S): void {
-    initialState.result = this._execute(initialState.data, initialState.filter, initialState.sort);
-    super.init(initialState);
+  init(): void {
+    this.state.result = this._execute(this.state.data, this.state.filter, this.state.sort);
+  }
+
+  @reducer
+  addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId: QueryFilterId = rootFilterId): void {
+    this._addFilter(filterOrCriteria, parentFilterId);
+    this.refresh();
+  }
+
+  @reducer
+  addSort(
+    field: string,
+    dir: QuerySortDir = 'asc',
+    comparator: QuerySortComparator = defaultComparator,
+    prepend = true,
+  ): void {
+    this._addSort(field, dir, comparator, prepend);
+    this.refresh();
+  }
+
+  get data(): T[] {
+    return this.state.result || [];
+  }
+
+  get initialData(): T[] {
+    return this.state.data;
+  }
+
+  @reducer
+  refresh(): void {
+    this.state.result = this._execute(this.initialData, this.filter, this.sort);
+  }
+
+  @reducer
+  removeFilter(filterId: QueryFilterId): void {
+    this._removeFilter(filterId);
+    this.refresh();
+  }
+
+  @reducer
+  removeSort(field: string): void {
+    this._removeSort(field);
+    this.refresh();
+  }
+
+  @reducer
+  setData(data: T[]): void {
+    this.state.data = data;
+    this.refresh();
+  }
+
+  @reducer
+  setFilter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | null): void {
+    this._setFilter(filter);
+    this.refresh();
+  }
+
+  @reducer
+  setSort(field: string, dir: QuerySortDir = 'asc', comparator: QuerySortComparator = defaultComparator): void {
+    this._setSort(field, dir, comparator);
+    this.refresh();
   }
 
   protected _applyCriteria(item: T, criteria: QueryFilterCriteria): boolean {
@@ -42,7 +110,7 @@ export default class LocalQueryService<T = any, S extends LocalQueryState<T> = L
     const operator = filter.operator || 'and';
     let result = true;
 
-    for (let filterOrCriteria of filter.criterias) {
+    for (const filterOrCriteria of filter.criterias) {
       if (isQueryFilterCriteria(filterOrCriteria)) {
         result = this._applyCriteria(item, filterOrCriteria);
       } else {
@@ -60,7 +128,7 @@ export default class LocalQueryService<T = any, S extends LocalQueryState<T> = L
       const comparator = function () {
         return function (a: T, b: T): number {
           let result = 0;
-          for (let sort of sorts) {
+          for (const sort of sorts) {
             const comparator = sort.comparator || defaultComparator;
             const reverse = sort.dir === 'desc' ? -1 : 1;
             result = reverse * comparator(get(a, sort.field), get(b, sort.field));
@@ -74,32 +142,7 @@ export default class LocalQueryService<T = any, S extends LocalQueryState<T> = L
     return data;
   }
 
-  get data(): T[] {
-    return get<T[]>(this.state, 'result', []);
-  }
-
-  get initialData(): T[] {
-    return get<T[]>(this.state, 'data', []);
-  }
-
-  @reducer
-  setData(data: T[]): void {
-    this.state.data = data;
-    this.refresh();
-  }
-
-  @reducer
-  refresh(): void {
-    // apply filters to data
-    let result = this.state.data.filter((item) => this._applyFilter(item, this.filter));
-
-    // apply sort
-    result = this._applySort(result, this.sort);
-
-    this.state.result = result;
-  }
-
-  _execute(
+  protected _execute(
     data: T[],
     filter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[],
     sort?: string | QuerySort | QuerySort[],

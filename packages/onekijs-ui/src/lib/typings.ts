@@ -2,17 +2,17 @@ import { FetchState } from 'onekijs';
 
 export type QueryFilterCriteriaOperator = 'eq' | 'like' | 'starts_with' | 'ends_with';
 
-export type QueryFilterCriteriaValue = string | number | boolean | null | string[] | number[];
+export type QueryFilterCriteriaValue = string | number | boolean | null;
 
 export interface QueryFilterCriteria {
   id?: QueryFilterId;
   operator?: QueryFilterCriteriaOperator;
   field: string;
-  value: QueryFilterCriteriaValue;
+  value: QueryFilterCriteriaValue | QueryFilterCriteriaValue[];
   not?: boolean;
 }
 
-export type QueryFilterId = string | number | Symbol;
+export type QueryFilterId = string | number | symbol;
 
 export interface QueryFilter {
   id?: QueryFilterId;
@@ -22,6 +22,14 @@ export interface QueryFilter {
 
 export type QueryFilterOrCriteria = QueryFilter | QueryFilterCriteria;
 
+export type QuerySerializer = (
+  filter?: QueryFilter,
+  sort?: QuerySort[],
+  offset?: number,
+  size?: number,
+  fields?: string[],
+) => string;
+
 export type QuerySortDir = 'asc' | 'desc';
 
 export type QuerySortComparator = <T>(a: T | null | undefined, b: T | null | undefined) => number;
@@ -29,18 +37,12 @@ export type QuerySortComparator = <T>(a: T | null | undefined, b: T | null | und
 export interface QuerySort {
   comparator?: QuerySortComparator;
   field: string;
-  dir?: QuerySortDir
+  dir?: QuerySortDir;
 }
 
-export interface QueryLimit {
-  offset?: number;
-  size: number;
-}
-
-export interface QueryState<T = any> extends FetchState {
+export interface QueryState extends FetchState {
   filter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[];
   sort?: string | QuerySort | QuerySort[];
-  result?: T[];
 }
 
 export interface UseCollectionOptions {
@@ -48,12 +50,26 @@ export interface UseCollectionOptions {
   initialSort?: string | QuerySort | QuerySort[];
 }
 
-export interface LocalQueryState<T = any> extends QueryState<T> {
+export interface LocalQueryState<T = any> extends QueryState {
   data: T[];
+  result?: T[];
 }
 
-export interface RemoteQueryState<T = any> extends QueryState<T> {
+export type RemoteItem<T = any> = T | undefined | symbol;
+
+export interface RemoteQueryState<T = any> extends QueryState {
   fields?: string[];
-  limit?: number | QueryLimit;
+  offset?: number;
+  size?: number;
+  total?: number;
   url: string;
+  result?: RemoteItem<T>[];
+  serializer?: QuerySerializer;
+}
+
+export interface UseRemoteCollectionOptions extends UseCollectionOptions {
+  initialFields?: string[];
+  initialSize?: number;
+  initialOffset?: number;
+  serializer?: QuerySerializer;
 }

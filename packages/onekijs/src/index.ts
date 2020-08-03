@@ -147,13 +147,13 @@ export { default as Container } from './core/Container';
 export { default as ContainerContext } from './core/ContainerContext';
 export { default as GlobalService } from './core/GlobalService';
 export { default as HTTPError } from './core/HTTPError';
+export { default as AppService } from './core/AppService';
 export { default as LocalService } from './core/LocalService';
 export { default as Service } from './core/Service';
 export {
   AnonymousObject,
   AnyFunction,
   AnyState,
-  AppService,
   Class,
   Collection,
   ErrorCallback,

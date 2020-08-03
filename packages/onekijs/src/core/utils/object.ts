@@ -318,8 +318,27 @@ export const fromPayload = (payload: AnonymousObject): any[] => {
   return args;
 };
 
-export const omit = <T> (source: any, keys: string[]): T => {
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export const omit = <T>(source: any, keys: string[]): T => {
   const clone = Object.assign({}, source);
-  keys.forEach(key => delete clone[key]);
+  keys.forEach((key) => delete clone[key]);
   return clone as T;
-}
+};
+
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export const isGetter = (obj: any, property: string): boolean => {
+  const descriptor = Object.getOwnPropertyDescriptor(obj, property);
+  return descriptor !== undefined && descriptor.get !== undefined;
+};
+
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export const isSetter = (obj: any, property: string): boolean => {
+  const descriptor = Object.getOwnPropertyDescriptor(obj, property);
+  return descriptor !== undefined && descriptor.set !== undefined;
+};
+
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export const isGetterOrSetter = (obj: any, property: string): boolean => {
+  const descriptor = Object.getOwnPropertyDescriptor(obj, property);
+  return descriptor !== undefined && (descriptor.get !== undefined || descriptor.set !== undefined);
+};

@@ -9,9 +9,9 @@ const useDelete = (url: string, options: FetchOptions = {}): [(extraOptions?: Fe
   const notificationService = useNotificationService();
   const optionsRef = useLazyRef<FetchOptions>(() => {
     if (!options.onError) {
-      options.onError = (e => {
+      options.onError = (e) => {
         notificationService.error(e);
-      })
+      };
     }
     return options;
   });
@@ -25,7 +25,7 @@ const useDelete = (url: string, options: FetchOptions = {}): [(extraOptions?: Fe
       extraOptions = Object.assign({}, optionsRef.current, extraOptions);
       service.delete(extraOptions.url || url, extraOptions);
     },
-    [service, url],
+    [service, url, optionsRef],
   );
 
   return [executor, state.loading || false];
