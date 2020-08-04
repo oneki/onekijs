@@ -1,60 +1,27 @@
 import { useCallback, useEffect } from 'react';
-import FetchService from './FetchService';
-import { FetchState, GetOptions } from './typings';
-import useNotificationService from '../notification/useNotificationService';
+import useAppContext from '../app/useAppContext';
 import useLazyRef from '../core/useLazyRef';
 import useService from '../core/useService';
+import useNotificationService from '../notification/useNotificationService';
+import FetchService from './FetchService';
+import { FetchOptions, FetchState, UseGetOptions } from './typings';
 
-const useGet = <T = any>(url: string, options: GetOptions<T> = {}): [T, boolean, () => void] => {
+const useGet = <T = any>(url: string, options: UseGetOptions<T> = {}): [T, boolean, () => void] => {
   const notificationService = useNotificationService();
-  const optionsRef = useLazyRef<GetOptions<T>>(() => {
+  const appContext = useAppContext();
+  const optionsRef = useLazyRef<UseGetOptions<T>>(() => {
     if (!options.onError) {
       options.onError = (e) => {
         notificationService.error(e);
       };
+    } else {
+      const originalCallback = options.onError;
+      options.onError = (e) => {
+        originalCallback(e, appContext);
+      };
     }
     return options;
   });
-
-  // const CrudClass = useLazyRef<Class<CrudService>>(() => {
-  //   let ctor = class extends CrudService {
-  //     delayFetch = every(function* (
-  //       url: string,
-  //       method: string,
-  //       body: IObject | null = null,
-  //       options: IObject = {}
-  //     ) {
-  //       // @ts-ignore
-  //       return yield this.fetch(url, method, body, options);
-  //     });
-  //   };
-  //   if (options.throttle) {
-  //     ctor = class extends CrudService {
-  //       delayFetch = throttle(options.throttle, function* (
-  //         url: string,
-  //         method: string,
-  //         body: IObject | null = null,
-  //         options: IObject = {}
-  //       ) {
-  //         // @ts-ignore
-  //         return yield this.fetch(url, method, body, options);
-  //       });
-  //     };
-  //   } else if (options.debounce) {
-  //     ctor = class extends CrudService {
-  //       delayFetch = debounce(options.throttle, function* (
-  //         url: string,
-  //         method: string,
-  //         body: IObject | null = null,
-  //         options: IObject = {}
-  //       ) {
-  //         // @ts-ignore
-  //         return yield this.fetch(url, method, body, options);
-  //       });
-  //     };
-  //   }
-  //   return ctor;
-  // });
 
   const [state, service] = useService(FetchService, {
     loading: false,
@@ -63,7 +30,7 @@ const useGet = <T = any>(url: string, options: GetOptions<T> = {}): [T, boolean,
 
   const refresh = useCallback(() => {
     if (url) {
-      service.get(url, optionsRef.current);
+      service.get(url, optionsRef.current as FetchOptions);
     }
   }, [url, service, optionsRef]);
 

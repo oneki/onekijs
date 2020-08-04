@@ -1,27 +1,27 @@
-import React, { FC, useCallback, useContext, useEffect, useMemo } from 'react';
-import useLocale from './useLocale';
-import useI18nService from './useI18nService';
-import { TranslationProps } from './typings';
-import { buildJsx } from './utils';
-import { get } from '../core/utils/object';
+import React, { FC, useCallback, useEffect, useMemo } from 'react';
+import useAppContext from '../app/useAppContext';
 import useGlobalSelector from '../app/useGlobalSelector';
-import { DefaultAppContext } from '../app/AppContext';
+import BasicError from '../core/BasicError';
 import { AnonymousObject } from '../core/typings';
 import { stringifyJsx } from '../core/utils/jsx';
-import BasicError from '../core/BasicError';
+import { get } from '../core/utils/object';
+import { TranslationProps } from './typings';
+import useI18nService from './useI18nService';
+import useLocale from './useLocale';
+import { buildJsx } from './utils';
 
 const useTranslation = (
   namespaces: string | string[] = [],
 ): [FC<TranslationProps>, (content: string | JSX.Element, alias?: string, count?: number) => any, string, boolean] => {
   const locale: string = useLocale();
-  const appContextTranslations = get(useContext(DefaultAppContext), 'i18n.translations');
+  const appContextTranslations = get(useAppContext(), 'i18n.translations');
   const reduxTranslations = useGlobalSelector(`i18n.translations.${locale}`);
 
   const translations: AnonymousObject = useMemo(() => {
     return Object.assign({}, appContextTranslations, reduxTranslations);
   }, [appContextTranslations, reduxTranslations]);
 
-  const appContextNs = get(useContext(DefaultAppContext), 'i18n.ns');
+  const appContextNs = get(useAppContext(), 'i18n.ns');
   const reduxNs = useGlobalSelector(`i18n.ns.${locale}`);
 
   const nsLoaded = useMemo(() => {

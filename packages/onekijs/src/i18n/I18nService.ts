@@ -1,13 +1,13 @@
 import { all, call } from 'redux-saga/effects';
-import NotificationService from '../notification/NotificationService';
-import { asyncGet } from '../fetch/utils';
-import { flattenTranslations } from './utils';
-import { get, set, append } from '../core/utils/object';
-import { service, saga, reducer } from '../core/annotations';
-import GlobalService from '../core/GlobalService';
-import { SagaEffect, AnonymousObject, Collection, AnyState } from '../core/typings';
-import { isFunction } from '../core/utils/type';
 import { AppSettings } from '../app/typings';
+import { reducer, saga, service } from '../core/annotations';
+import GlobalService from '../core/GlobalService';
+import { AnonymousObject, Collection, SagaEffect } from '../core/typings';
+import { append, get, set } from '../core/utils/object';
+import { isFunction } from '../core/utils/type';
+import { asyncGet } from '../fetch/utils';
+import NotificationService from '../notification/NotificationService';
+import { flattenTranslations } from './utils';
 
 @service
 export default class I18nService extends GlobalService {
@@ -20,8 +20,7 @@ export default class I18nService extends GlobalService {
     this.notificationService = notificationService;
   }
 
-  init(initialState: AnyState): void {
-    super.init(initialState);
+  init(): void {
     const { settings } = this.context;
     this.modifiers = {
       locale: (value: string | number | Date, locale: string) => {

@@ -3,7 +3,7 @@ import { reducer, saga, service } from '../core/annotations';
 import BasicError from '../core/BasicError';
 import GlobalService from '../core/GlobalService';
 import HTTPError from '../core/HTTPError';
-import { AnonymousObject, ErrorCallback, SagaEffect, SuccessCallback } from '../core/typings';
+import { AnonymousObject, AppErrorCallback, SagaEffect, AppSuccessCallback } from '../core/typings';
 import { del, get, isNull, set } from '../core/utils/object';
 import { getItem, onStorageChange, removeItem, setItem } from '../core/utils/storage';
 import { absoluteUrl } from '../core/utils/url';
@@ -145,7 +145,7 @@ export default class AuthService extends GlobalService {
    */
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Latest)
-  *clear(onError?: ErrorCallback, onSuccess?: SuccessCallback) {
+  *clear(onError?: AppErrorCallback, onSuccess?: AppSuccessCallback) {
     try {
       yield this.setSecurityContext(null);
       yield this.setToken(null);
@@ -175,7 +175,7 @@ export default class AuthService extends GlobalService {
    */
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Leading)
-  *fetchSecurityContext(onError?: ErrorCallback, onSuccess?: SuccessCallback) {
+  *fetchSecurityContext(onError?: AppErrorCallback, onSuccess?: AppSuccessCallback) {
     const { store, settings } = this.context;
     try {
       const idpName = getIdpName(store.getState());
@@ -258,7 +258,7 @@ export default class AuthService extends GlobalService {
    */
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Latest)
-  *loadToken(onError?: ErrorCallback, onSuccess?: SuccessCallback) {
+  *loadToken(onError?: AppErrorCallback, onSuccess?: AppSuccessCallback) {
     const { store, settings } = this.context;
     try {
       let result = get(store.getState(), 'auth.token', null);
@@ -336,7 +336,7 @@ export default class AuthService extends GlobalService {
    *    - settings: the full settings object passed to the application
    */
   @saga(SagaEffect.Every)
-  *refreshToken(token: AnonymousObject, idp: Idp, force = false, onError?: ErrorCallback): AnonymousObject {
+  *refreshToken(token: AnonymousObject, idp: Idp, force = false, onError?: AppErrorCallback): AnonymousObject {
     const { store } = this.context;
     try {
       if (!force && !token.hasOwnProperty('expires_at')) {
@@ -431,7 +431,7 @@ export default class AuthService extends GlobalService {
    */
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Latest)
-  *saveToken(token: AnonymousObject | string, idp: Idp, onError?: ErrorCallback) {
+  *saveToken(token: AnonymousObject | string, idp: Idp, onError?: AppErrorCallback) {
     try {
       if (idp.validate) {
         if (!idp.jwksEndpoint) {

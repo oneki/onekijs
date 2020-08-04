@@ -1,7 +1,7 @@
 import { call } from 'redux-saga/effects';
 
 import NotificationService from '../notification/NotificationService';
-import { SuccessCallback, ErrorCallback, SagaEffect } from '../core/typings';
+import { AppSuccessCallback, AppErrorCallback, SagaEffect } from '../core/typings';
 import { asyncHttp } from '../fetch/utils';
 import AuthService from './AuthService';
 import { LogoutState } from './typings';
@@ -62,7 +62,7 @@ export default class LogoutService extends LocalService<LogoutState> {
    */
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Latest)
-  *logout(onError?: ErrorCallback, onSuccess?: SuccessCallback) {
+  *logout(onError?: AppErrorCallback, onSuccess?: AppSuccessCallback) {
     const { router, settings, store } = this.context;
     try {
       const idpName = getIdpName(store.getState());
@@ -132,7 +132,7 @@ export default class LogoutService extends LocalService<LogoutState> {
   }
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Latest)
-  *successLogout(onError?: ErrorCallback, onSuccess?: SuccessCallback) {
+  *successLogout(onError?: AppErrorCallback, onSuccess?: AppSuccessCallback) {
     const { router, settings } = this.context;
     try {
       // clear the token and the security context

@@ -1,4 +1,4 @@
-import { call, cancel, delay, fork } from 'redux-saga/effects';
+import { cancel, delay, fork } from 'redux-saga/effects';
 import { reducer, saga } from '../core/annotations';
 import Service from '../core/Service';
 import { SagaEffect } from '../core/typings';
@@ -28,7 +28,6 @@ export default class FetchService<T = any, S extends FetchState = FetchState> ex
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
   *fetch(url: string, method: string, body?: Partial<T>, options: FetchOptions<T> = {}) {
-    const { router } = this.context;
     let loadingTask = null;
     try {
       loadingTask = yield fork([this, this.delayLoading], options.delayLoading ?? 200);
@@ -38,12 +37,7 @@ export default class FetchService<T = any, S extends FetchState = FetchState> ex
       yield this.fetchSuccess(result); // to update the store and trigger a re-render.
       const onSuccess = options.onSuccess;
       if (onSuccess) {
-        if (typeof onSuccess === 'string') {
-          // onSuccess is a URL -> redirect to this one
-          yield call([router, router.push], onSuccess);
-        } else {
-          yield onSuccess(result, this.context);
-        }
+        yield onSuccess(result);
       }
     } catch (e) {
       if (process.env.NODE_ENV === 'development') {
@@ -55,12 +49,7 @@ export default class FetchService<T = any, S extends FetchState = FetchState> ex
       yield this.setLoading(false);
       const onError = options.onError;
       if (onError) {
-        if (typeof onError === 'string') {
-          // onError is a URL -> redirect to this one
-          yield call([router, router.push], onError);
-        } else {
-          yield onError(e, this.context);
-        }
+        yield onError(e);
       } else {
         throw e;
       }

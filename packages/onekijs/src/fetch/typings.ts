@@ -1,4 +1,11 @@
-import { State, ErrorCallback, SuccessCallback, Collection } from '../core/typings';
+import {
+  Collection,
+  ErrorCallback,
+  State,
+  SuccessCallback,
+  AppErrorCallback,
+  AppSuccessCallback,
+} from '../core/typings';
 
 export interface FetchState extends State {
   loading?: boolean;
@@ -27,6 +34,11 @@ export interface FetchOptions<T = any> extends RequestInit {
   query?: Collection<string>;
 }
 
-export interface GetOptions<T = any> extends FetchOptions<T> {
+export interface AppFetchOptions<T = any> extends Omit<FetchOptions<T>, 'onError' | 'onSuccess'> {
+  onError?: AppErrorCallback;
+  onSuccess?: AppSuccessCallback<T>;
+}
+
+export interface UseGetOptions<T = any> extends Omit<AppFetchOptions<T>, 'onSuccess'> {
   defaultValue?: T;
 }

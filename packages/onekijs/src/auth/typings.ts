@@ -1,4 +1,4 @@
-import { ErrorCallback, SuccessCallback, State, AnonymousObject } from '../core/typings';
+import { AppErrorCallback, AppSuccessCallback, State, AnonymousObject } from '../core/typings';
 import BasicError from '../core/BasicError';
 import { ComponentPropsWithoutRef, ElementType } from 'react';
 import AppContext from '../app/AppContext';
@@ -104,14 +104,14 @@ export interface Idp extends IdpSettings {
 }
 
 export interface LoginOptions {
-  onError?: ErrorCallback;
-  onSuccess?: SuccessCallback;
+  onError?: AppErrorCallback;
+  onSuccess?: AppSuccessCallback;
   callback?: boolean;
 }
 
 export interface LogoutOptions {
-  onError?: ErrorCallback;
-  onSuccess?: SuccessCallback;
+  onError?: AppErrorCallback;
+  onSuccess?: AppSuccessCallback;
   callback?: boolean;
 }
 

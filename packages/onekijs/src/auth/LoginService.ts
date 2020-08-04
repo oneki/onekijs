@@ -2,7 +2,7 @@ import { call } from 'redux-saga/effects';
 import { reducer, saga, service } from '../core/annotations';
 import BasicError from '../core/BasicError';
 import LocalService from '../core/LocalService';
-import { AnonymousObject, ErrorCallback, SagaEffect, SuccessCallback } from '../core/typings';
+import { AnonymousObject, AppErrorCallback, SagaEffect, AppSuccessCallback } from '../core/typings';
 import { sha256 } from '../core/utils/crypt';
 import { get } from '../core/utils/object';
 import { absoluteUrl } from '../core/utils/url';
@@ -83,7 +83,7 @@ export default class LoginService extends LocalService<LoginState> {
    */
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Latest)
-  *formLogin(data: AnonymousObject, idpName?: string, onError?: ErrorCallback, onSuccess?: SuccessCallback) {
+  *formLogin(data: AnonymousObject, idpName?: string, onError?: AppErrorCallback, onSuccess?: AppSuccessCallback) {
     const { settings } = this.context;
     try {
       // forward to reducer to set the loading flag to true
@@ -175,7 +175,7 @@ export default class LoginService extends LocalService<LoginState> {
    *    - settings: the full settings object passed to the application
    */
   @saga(SagaEffect.Latest)
-  *externalLogin(idpName?: string, onError?: ErrorCallback): Generator<string | void | Promise<string>, void, unknown> {
+  *externalLogin(idpName?: string, onError?: AppErrorCallback): Generator<string | void | Promise<string>, void, unknown> {
     const { router, settings } = this.context;
     try {
       // build the IDP configuration from the settings and some default values
@@ -293,7 +293,7 @@ export default class LoginService extends LocalService<LoginState> {
    */
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Latest)
-  *externalLoginCallback(idpName?: string, onError?: ErrorCallback, onSuccess?: SuccessCallback) {
+  *externalLoginCallback(idpName?: string, onError?: AppErrorCallback, onSuccess?: AppSuccessCallback) {
     const { router, settings } = this.context;
     try {
       // build the IDP configuration from the settings and some default values
@@ -445,8 +445,8 @@ export default class LoginService extends LocalService<LoginState> {
     token?: string | AnonymousObject,
     securityContext?: AnonymousObject,
     idpName?: string,
-    onError?: ErrorCallback,
-    onSuccess?: SuccessCallback,
+    onError?: AppErrorCallback,
+    onSuccess?: AppSuccessCallback,
   ) {
     const { settings, router } = this.context;
     try {
@@ -511,7 +511,7 @@ export default class LoginService extends LocalService<LoginState> {
    */
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Latest)
-  *login(idpName?: string, onError?: ErrorCallback, onSuccess?: SuccessCallback) {
+  *login(idpName?: string, onError?: AppErrorCallback, onSuccess?: AppSuccessCallback) {
     const { router, settings } = this.context;
     try {
       router.saveOrigin(false);

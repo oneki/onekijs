@@ -1,3 +1,4 @@
+export { default as useAppContext } from './app/useAppContext';
 export { default as AppContext, DefaultAppContext } from './app/AppContext';
 export { default as FieldValidation, defaultValidation } from './form/FieldValidation';
 export { default as AppProvider } from './app/AppProvider';
@@ -156,11 +157,11 @@ export {
   AnyState,
   Class,
   Collection,
-  ErrorCallback,
+  AppErrorCallback as ErrorCallback,
   SagaEffect,
   ServiceFactory,
   State,
-  SuccessCallback,
+  AppSuccessCallback as SuccessCallback,
 } from './core/typings';
 export { default as useContainer } from './core/useContainer';
 export { default as useGlobalService } from './core/useGlobalService';
@@ -170,7 +171,7 @@ export { default as useLocalService } from './core/useLocalService';
 export { default as useService } from './core/useService';
 export { default as useAppService } from './core/useAppService';
 export { default as FetchService } from './fetch/FetchService';
-export { FetchState, FetchOptions, GetOptions, FetchMethod, HttpMethod } from './fetch/typings';
+export { FetchState, FetchOptions, UseGetOptions as GetOptions, FetchMethod, HttpMethod } from './fetch/typings';
 export { default as useDelete } from './fetch/useDelete';
 export { default as useGet } from './fetch/useGet';
 export { default as usePatch } from './fetch/usePatch';

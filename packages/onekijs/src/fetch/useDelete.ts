@@ -1,31 +1,26 @@
-import { useCallback } from 'react';
-import useLazyRef from '../core/useLazyRef';
+import { useCallback, useRef } from 'react';
+import useAppContext from '../app/useAppContext';
+import useService from '../core/useService';
 import useNotificationService from '../notification/useNotificationService';
 import FetchService from './FetchService';
-import { FetchOptions, FetchState } from './typings';
-import useService from '../core/useService';
+import { AppFetchOptions, FetchState } from './typings';
+import { asFetchOptions } from './utils';
 
-const useDelete = (url: string, options: FetchOptions = {}): [(extraOptions?: FetchOptions) => void, boolean] => {
+const useDelete = (url: string, options: AppFetchOptions = {}): [(extraOptions?: AppFetchOptions) => void, boolean] => {
   const notificationService = useNotificationService();
-  const optionsRef = useLazyRef<FetchOptions>(() => {
-    if (!options.onError) {
-      options.onError = (e) => {
-        notificationService.error(e);
-      };
-    }
-    return options;
-  });
+  const appContext = useAppContext();
+  const optionsRef = useRef(options);
 
   const [state, service] = useService(FetchService, {
     loading: false,
   } as FetchState);
 
   const executor = useCallback(
-    (extraOptions = {}) => {
+    (extraOptions: AppFetchOptions = {}) => {
       extraOptions = Object.assign({}, optionsRef.current, extraOptions);
-      service.delete(extraOptions.url || url, extraOptions);
+      service.delete(extraOptions.url || url, asFetchOptions(extraOptions, notificationService, appContext));
     },
-    [service, url, optionsRef],
+    [service, url, optionsRef, appContext, notificationService],
   );
 
   return [executor, state.loading || false];

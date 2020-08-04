@@ -1,11 +1,11 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
-import { DefaultAppContext } from './AppContext';
-import { get } from '../core/utils/object';
+import { useCallback, useEffect, useState } from 'react';
 import { Collection } from '../core/typings';
+import { get } from '../core/utils/object';
+import useAppContext from './useAppContext';
 
 // change the state every time it changes
 const useParams = (): Collection<string> => {
-  const router = useContext(DefaultAppContext).router;
+  const router = useAppContext().router;
   const [params, setParams] = useState<Collection<string>>(get(router, 'location.params', {}));
   const listener = useCallback(
     (location) => {

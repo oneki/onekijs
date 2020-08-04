@@ -1,12 +1,12 @@
 import React, { FC } from 'react';
 import useSetting from '../../../app/useSetting';
-import { GetOptions } from '../../typings';
+import { UseGetOptions } from '../../typings';
 import useGet from '../../useGet';
 
 type UseGetWidgetProps = {
   path?: string;
   baseUrl?: string;
-  options?: GetOptions;
+  options?: UseGetOptions;
 };
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const textDisplay = (data: any) => `RESULT=${JSON.stringify(data)}`;

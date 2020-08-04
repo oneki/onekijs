@@ -1,9 +1,8 @@
-import { useContext } from 'react';
-import { DefaultAppContext } from './AppContext';
 import { AppSettings } from './typings';
+import useAppContext from './useAppContext';
 
 const useSettings = (): AppSettings => {
-  return useContext(DefaultAppContext).settings;
+  return useAppContext().settings;
 };
 
 export default useSettings;

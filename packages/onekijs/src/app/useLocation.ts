@@ -1,10 +1,10 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
-import { DefaultAppContext } from './AppContext';
+import { useCallback, useEffect, useState } from 'react';
 import { Location } from './typings';
+import useAppContext from './useAppContext';
 
 // change the state every time it changes
 const useLocation = (): Location => {
-  const router = useContext(DefaultAppContext).router;
+  const router = useAppContext().router;
   const [location, setLocation] = useState(router.location);
   const listener = useCallback(
     (location) => {

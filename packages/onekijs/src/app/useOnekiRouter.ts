@@ -1,10 +1,9 @@
-import { useContext } from 'react';
-import { DefaultAppContext } from './AppContext';
 import AppRouter from './AppRouter';
+import useAppContext from './useAppContext';
 
 // never change the state => no refresh
 const useOnekiRouter = (): AppRouter => {
-  return useContext(DefaultAppContext).router;
+  return useAppContext().router;
 };
 
 export default useOnekiRouter;

@@ -3,14 +3,14 @@ import * as React from 'react';
 import { render } from '../../__tests__/customRenderer';
 import { successResponse } from '../../__tests__/mocks/responses';
 import UseGetWidget, { textDisplay } from './components/UseGetWidget';
-import { GetOptions } from '../typings';
+import { UseGetOptions } from '../typings';
 import NotificationWidget from '../../__tests__/components/NotificationWidget';
 
 type useGetTestProps = {
   title: string;
   baseUrl?: string;
   path?: string;
-  options?: GetOptions;
+  options?: UseGetOptions;
   serverDelay?: number;
 };
 
