@@ -5,6 +5,7 @@ import useNotificationService from '../notification/useNotificationService';
 import FetchService from './FetchService';
 import { AppFetchOptions, FetchState } from './typings';
 import { asFetchOptions } from './utils';
+import useOnekiRouter from '../app/useOnekiRouter';
 
 const usePostPutPatch = <T = any>(
   url: string,
@@ -14,6 +15,7 @@ const usePostPutPatch = <T = any>(
   const notificationService = useNotificationService();
   const appContext = useAppContext();
   const optionsRef = useRef(options);
+  const router = useOnekiRouter();
 
   const [state, service] = useService(FetchService, {
     loading: false,
@@ -25,10 +27,10 @@ const usePostPutPatch = <T = any>(
         extraOptions.url || url,
         method,
         body,
-        asFetchOptions(extraOptions, notificationService, appContext),
+        asFetchOptions(extraOptions, notificationService, appContext, router),
       );
     },
-    [service, url, method, optionsRef, appContext, notificationService],
+    [service, url, method, optionsRef, appContext, notificationService, router],
   );
 
   return [executor, state.loading || false];

@@ -7,7 +7,16 @@ export { default as DefaultLoadingComponent } from './app/DefaultLoadingComponen
 export { default as GlobalStateService } from './app/GlobalStateService';
 export { default as LocalStateService } from './app/LocalStateService';
 export { defaultSettings, defaultIdpSettings } from './app/settings';
-export { AppProps, AppProviderProps, AppStore, AppSettings, Location, LocationChangeCallback } from './app/typings';
+export {
+  AppProps,
+  AppProviderProps,
+  AppStore,
+  AppSettings,
+  Location,
+  LocationChangeCallback,
+  AppErrorCallback,
+  AppSuccessCallback,
+} from './app/typings';
 export { default as useGlobalSelector, useReduxSelector } from './app/useGlobalSelector';
 export { default as useGlobalState } from './app/useGlobalState';
 export { default as useGlobalStateModifier } from './app/useGlobalStateModifier';
@@ -157,11 +166,9 @@ export {
   AnyState,
   Class,
   Collection,
-  AppErrorCallback as ErrorCallback,
   SagaEffect,
   ServiceFactory,
   State,
-  AppSuccessCallback as SuccessCallback,
 } from './core/typings';
 export { default as useContainer } from './core/useContainer';
 export { default as useGlobalService } from './core/useGlobalService';

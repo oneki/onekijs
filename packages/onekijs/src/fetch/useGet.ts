@@ -5,10 +5,13 @@ import useService from '../core/useService';
 import useNotificationService from '../notification/useNotificationService';
 import FetchService from './FetchService';
 import { FetchOptions, FetchState, UseGetOptions } from './typings';
+import useOnekiRouter from '../app/useOnekiRouter';
+import { asResultCallback } from '../app/utils';
 
 const useGet = <T = any>(url: string, options: UseGetOptions<T> = {}): [T, boolean, () => void] => {
   const notificationService = useNotificationService();
   const appContext = useAppContext();
+  const router = useOnekiRouter();
   const optionsRef = useLazyRef<UseGetOptions<T>>(() => {
     if (!options.onError) {
       options.onError = (e) => {
@@ -16,9 +19,7 @@ const useGet = <T = any>(url: string, options: UseGetOptions<T> = {}): [T, boole
       };
     } else {
       const originalCallback = options.onError;
-      options.onError = (e) => {
-        originalCallback(e, appContext);
-      };
+      options.onError = asResultCallback(originalCallback, router, appContext);
     }
     return options;
   });

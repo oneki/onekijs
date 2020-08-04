@@ -1,7 +1,8 @@
-import { AppErrorCallback, AppSuccessCallback, State, AnonymousObject } from '../core/typings';
+import { State, AnonymousObject } from '../core/typings';
 import BasicError from '../core/BasicError';
 import { ComponentPropsWithoutRef, ElementType } from 'react';
 import AppContext from '../app/AppContext';
+import { AppErrorCallback, AppSuccessCallback } from '../app/typings';
 
 export interface AuthErrorProps {
   error: { code: number };

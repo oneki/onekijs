@@ -1,11 +1,5 @@
-import {
-  Collection,
-  ErrorCallback,
-  State,
-  SuccessCallback,
-  AppErrorCallback,
-  AppSuccessCallback,
-} from '../core/typings';
+import { AppErrorCallback, AppSuccessCallback } from '../app/typings';
+import { Collection, ErrorCallback, State, SuccessCallback } from '../core/typings';
 
 export interface FetchState extends State {
   loading?: boolean;

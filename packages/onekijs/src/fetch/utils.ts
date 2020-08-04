@@ -1,11 +1,13 @@
 import produce from 'immer';
-import { FetchOptions, AppFetchOptions } from './typings';
-import { get } from '../core/utils/object';
-import { AnonymousObject } from '../core/typings';
-import { urlBuilder } from '../core/utils/url';
-import HTTPError from '../core/HTTPError';
-import NotificationService from '../notification/NotificationService';
 import AppContext from '../app/AppContext';
+import AppRouter from '../app/AppRouter';
+import { asResultCallback } from '../app/utils';
+import HTTPError from '../core/HTTPError';
+import { AnonymousObject } from '../core/typings';
+import { get } from '../core/utils/object';
+import { urlBuilder } from '../core/utils/url';
+import NotificationService from '../notification/NotificationService';
+import { AppFetchOptions, FetchOptions } from './typings';
 
 export const encodeFormData = (data: AnonymousObject): string => {
   return Object.keys(data)
@@ -120,22 +122,17 @@ export function asFetchOptions<T = any>(
   options: AppFetchOptions<T>,
   notificationService: NotificationService,
   appContext: AppContext,
+  router: AppRouter,
 ): FetchOptions<T> {
   if (!options.onError) {
     options.onError = (e) => {
       notificationService.error(e);
     };
   } else {
-    const originalCallback = options.onError;
-    options.onError = (e) => {
-      originalCallback(e, appContext);
-    };
+    options.onError = asResultCallback(options.onError, router, appContext);
   }
   if (options.onSuccess) {
-    const originalCallback = options.onSuccess;
-    options.onSuccess = (e) => {
-      originalCallback(e, appContext);
-    };
+    options.onSuccess = asResultCallback(options.onSuccess, router, appContext);
   }
   return options as FetchOptions;
 }

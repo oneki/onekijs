@@ -3,7 +3,7 @@ import { reducer, saga, service } from '../core/annotations';
 import BasicError from '../core/BasicError';
 import GlobalService from '../core/GlobalService';
 import HTTPError from '../core/HTTPError';
-import { AnonymousObject, AppErrorCallback, SagaEffect, AppSuccessCallback } from '../core/typings';
+import { AnonymousObject, ErrorCallback, SagaEffect, SuccessCallback } from '../core/typings';
 import { del, get, isNull, set } from '../core/utils/object';
 import { getItem, onStorageChange, removeItem, setItem } from '../core/utils/storage';
 import { absoluteUrl } from '../core/utils/url';
@@ -145,17 +145,17 @@ export default class AuthService extends GlobalService {
    */
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Latest)
-  *clear(onError?: AppErrorCallback, onSuccess?: AppSuccessCallback) {
+  *clear(onError?: ErrorCallback, onSuccess?: SuccessCallback) {
     try {
       yield this.setSecurityContext(null);
       yield this.setToken(null);
       yield this.setIdp();
       if (onSuccess) {
-        yield onSuccess({}, this.context);
+        yield onSuccess({});
       }
     } catch (e) {
       if (onError) {
-        yield onError(e, this.context);
+        yield onError(e);
       } else {
         throw e;
       }
@@ -175,7 +175,7 @@ export default class AuthService extends GlobalService {
    */
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Leading)
-  *fetchSecurityContext(onError?: AppErrorCallback, onSuccess?: AppSuccessCallback) {
+  *fetchSecurityContext(onError?: ErrorCallback, onSuccess?: SuccessCallback) {
     const { store, settings } = this.context;
     try {
       const idpName = getIdpName(store.getState());
@@ -231,7 +231,7 @@ export default class AuthService extends GlobalService {
 
       if (onSuccess) {
         // call the success callback
-        yield onSuccess(securityContext, this.context);
+        yield onSuccess(securityContext);
       }
       return securityContext;
     } catch (e) {
@@ -239,7 +239,7 @@ export default class AuthService extends GlobalService {
         console.error('fetchSecurityContext error', e);
       }
       if (onError) {
-        yield onError(e, this.context);
+        yield onError(e);
       } else {
         throw e;
       }
@@ -258,7 +258,7 @@ export default class AuthService extends GlobalService {
    */
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Latest)
-  *loadToken(onError?: AppErrorCallback, onSuccess?: AppSuccessCallback) {
+  *loadToken(onError?: ErrorCallback, onSuccess?: SuccessCallback) {
     const { store, settings } = this.context;
     try {
       let result = get(store.getState(), 'auth.token', null);
@@ -310,13 +310,13 @@ export default class AuthService extends GlobalService {
 
       if (onSuccess) {
         // call the success callback
-        yield onSuccess(result, this.context);
+        yield onSuccess(result);
       }
 
       return result;
     } catch (e) {
       if (onError) {
-        yield onError(e, this.context);
+        yield onError(e);
       } else {
         throw e;
       }
@@ -336,7 +336,7 @@ export default class AuthService extends GlobalService {
    *    - settings: the full settings object passed to the application
    */
   @saga(SagaEffect.Every)
-  *refreshToken(token: AnonymousObject, idp: Idp, force = false, onError?: AppErrorCallback): AnonymousObject {
+  *refreshToken(token: AnonymousObject, idp: Idp, force = false, onError?: ErrorCallback): AnonymousObject {
     const { store } = this.context;
     try {
       if (!force && !token.hasOwnProperty('expires_at')) {
@@ -413,7 +413,7 @@ export default class AuthService extends GlobalService {
       return yield this.saveToken(nextToken, idp);
     } catch (e) {
       if (onError) {
-        yield onError(e, this.context);
+        yield onError(e);
       } else {
         throw e;
       }
@@ -431,7 +431,7 @@ export default class AuthService extends GlobalService {
    */
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Latest)
-  *saveToken(token: AnonymousObject | string, idp: Idp, onError?: AppErrorCallback) {
+  *saveToken(token: AnonymousObject | string, idp: Idp, onError?: ErrorCallback) {
     try {
       if (idp.validate) {
         if (!idp.jwksEndpoint) {
@@ -469,7 +469,7 @@ export default class AuthService extends GlobalService {
       return token;
     } catch (e) {
       if (onError) {
-        yield onError(e, this.context);
+        yield onError(e);
         return null;
       } else {
         throw e;

@@ -4,6 +4,7 @@ import LogoutService from './LogoutService';
 import { LogoutOptions, LogoutState } from './typings';
 import useLocalService from '../core/useLocalService';
 import BasicError from '../core/BasicError';
+import { useErrorCallback, useSuccessCallback } from '../app/utils';
 
 const useLogout = (options: LogoutOptions = {}): [BasicError | undefined, boolean] => {
   const [state, service] = useLocalService(LogoutService, {
@@ -21,8 +22,8 @@ const useLogout = (options: LogoutOptions = {}): [BasicError | undefined, boolea
     },
     [notificationService],
   );
-  const onError = options.onError || defaultOnError;
-  const onSuccess = options.onSuccess;
+  const onError = useErrorCallback(options.onError) || defaultOnError;
+  const onSuccess = useSuccessCallback(options.onSuccess);
   const callback = options.callback;
 
   useEffect(() => {

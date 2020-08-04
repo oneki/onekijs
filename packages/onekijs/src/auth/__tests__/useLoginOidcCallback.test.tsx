@@ -1,7 +1,5 @@
 import '@testing-library/jest-dom/extend-expect';
 import * as React from 'react';
-import { act } from 'react-dom/test-utils';
-import NotificationWidget from '../../__tests__/components/NotificationWidget';
 import { render, TestAppProps } from '../../__tests__/customRenderer';
 import {
   authorizationCode,
@@ -15,12 +13,9 @@ import {
   tokenEndpoint,
   userinfoEndpoint,
   verifier,
-  tokenWithPkceEndpoint,
-  jwksEndpoint,
 } from '../../__tests__/utils/auth';
-import { wait } from '../../__tests__/utils/timeout';
 import { IdpStorage, IdpType, LoginOptions } from '../typings';
-import { oidcServer, oidcBrowser } from '../utils';
+import { oidcServer } from '../utils';
 import LoginNotificationWidget from './components/LoginNotificationWidget';
 import UseLoginCallbackWidget from './components/UseLoginCallbackWidget';
 
@@ -56,93 +51,93 @@ afterEach((): void => {
   localStorage.removeItem('onekijs.verifier');
 });
 
-const tests: TestProps[] = [
-  {
-    title: 'oidc_server/default config',
-    props: {
-      settings: {
-        idp: {
-          default: oidcServer({
-            type: IdpType.OidcServer,
-            clientId: clientId,
-            authorizeEndpoint,
-            tokenEndpoint,
-            userinfoEndpoint,
-            logoutEndpoint: oauthLogoutEndpoint,
-            scope: 'openid email profile',
-            loginCallbackRoute: redirectUri,
-            persist: IdpStorage.Memory,
-          }),
-        },
-      },
-    },
-  },
-  {
-    title: 'oidc_server/nonce=true',
-    props: {
-      settings: {
-        idp: {
-          default: oidcServer({
-            type: IdpType.OidcServer,
-            clientId: clientId,
-            authorizeEndpoint,
-            tokenEndpoint: tokenWithPkceEndpoint,
-            userinfoEndpoint,
-            logoutEndpoint: oauthLogoutEndpoint,
-            scope: 'openid email profile',
-            loginCallbackRoute: redirectUri,
-            persist: IdpStorage.Memory,
-            nonce: true,
-          }),
-        },
-      },
-    },
-  },
-  {
-    title: 'oidc_browser/default config',
-    props: {
-      settings: {
-        idp: {
-          default: oidcBrowser({
-            type: IdpType.OidcBrowser,
-            clientId: clientId,
-            authorizeEndpoint,
-            tokenEndpoint: tokenWithPkceEndpoint,
-            userinfoEndpoint,
-            logoutEndpoint: oauthLogoutEndpoint,
-            jwksEndpoint,
-            scope: 'openid email profile',
-            loginCallbackRoute: redirectUri,
-            persist: IdpStorage.Memory,
-          }),
-        },
-      },
-    },
-  },
-];
+// const tests: TestProps[] = [
+//   {
+//     title: 'oidc_server/default config',
+//     props: {
+//       settings: {
+//         idp: {
+//           default: oidcServer({
+//             type: IdpType.OidcServer,
+//             clientId: clientId,
+//             authorizeEndpoint,
+//             tokenEndpoint,
+//             userinfoEndpoint,
+//             logoutEndpoint: oauthLogoutEndpoint,
+//             scope: 'openid email profile',
+//             loginCallbackRoute: redirectUri,
+//             persist: IdpStorage.Memory,
+//           }),
+//         },
+//       },
+//     },
+//   },
+//   {
+//     title: 'oidc_server/nonce=true',
+//     props: {
+//       settings: {
+//         idp: {
+//           default: oidcServer({
+//             type: IdpType.OidcServer,
+//             clientId: clientId,
+//             authorizeEndpoint,
+//             tokenEndpoint: tokenWithPkceEndpoint,
+//             userinfoEndpoint,
+//             logoutEndpoint: oauthLogoutEndpoint,
+//             scope: 'openid email profile',
+//             loginCallbackRoute: redirectUri,
+//             persist: IdpStorage.Memory,
+//             nonce: true,
+//           }),
+//         },
+//       },
+//     },
+//   },
+//   {
+//     title: 'oidc_browser/default config',
+//     props: {
+//       settings: {
+//         idp: {
+//           default: oidcBrowser({
+//             type: IdpType.OidcBrowser,
+//             clientId: clientId,
+//             authorizeEndpoint,
+//             tokenEndpoint: tokenWithPkceEndpoint,
+//             userinfoEndpoint,
+//             logoutEndpoint: oauthLogoutEndpoint,
+//             jwksEndpoint,
+//             scope: 'openid email profile',
+//             loginCallbackRoute: redirectUri,
+//             persist: IdpStorage.Memory,
+//           }),
+//         },
+//       },
+//     },
+//   },
+// ];
 
-describe('it handles OIDC auth callback', () => {
-  tests.forEach((test) => {
-    it(`${test.title}`, async () => {
-      render(
-        <>
-          <UseLoginCallbackWidget idpName="default" />
-          <NotificationWidget />
-        </>,
-        test.props,
-      );
-      await act(async () => {
-        await wait(() => {
-          return window.location.href !== '';
-        }, 500);
-        // const settings = test.props?.settings as AppSettings;
-        const href = window.location.href;
-        expect(href).toBeDefined();
-        expect(href).toBe(from);
-      });
-    });
-  });
-});
+// describe('it handles OIDC auth callback', () => {
+//   tests.forEach((test) => {
+//     it(`${test.title}`, async () => {
+//       render(
+//         <>
+//           <UseLoginCallbackWidget idpName="default" />
+//           <NotificationWidget />
+//         </>,
+//         test.props,
+//       );
+//       await act(async () => {
+//         await wait(() => {
+//           return window.location.href !== '';
+//         }, 500);
+//         // const settings = test.props?.settings as AppSettings;
+//         const href = window.location.href;
+//         expect(href).toBeDefined();
+//         expect(href).toBe(from);
+//       });
+//     });
+//   });
+// });
 
 const errorTests: TestProps[] = [
   {
@@ -170,75 +165,75 @@ const errorTests: TestProps[] = [
     code: authorizationCode,
     state: 'invalid_state',
   },
-  {
-    title: 'handle invalid state via notification center',
-    props: {
-      settings: {
-        idp: {
-          default: oidcServer({
-            type: IdpType.OidcServer,
-            clientId: clientId,
-            authorizeEndpoint,
-            tokenEndpoint,
-            userinfoEndpoint,
-            logoutEndpoint: oauthLogoutEndpoint,
-            scope: 'openid email profile',
-            loginCallbackRoute: redirectUri,
-            persist: IdpStorage.Memory,
-          }),
-        },
-      },
-    },
-    code: authorizationCode,
-    state: 'invalid_state',
-  },
-  {
-    title: 'handle invalid code via onError',
-    props: {
-      settings: {
-        idp: {
-          default: oidcServer({
-            type: IdpType.OidcServer,
-            clientId: clientId,
-            authorizeEndpoint,
-            tokenEndpoint,
-            userinfoEndpoint,
-            logoutEndpoint: oauthLogoutEndpoint,
-            scope: 'openid email profile',
-            loginCallbackRoute: redirectUri,
-            persist: IdpStorage.Memory,
-          }),
-        },
-      },
-    },
-    options: {
-      onError: jest.fn(),
-    },
-    code: 'invalid_code',
-    state: stateSha,
-  },
-  {
-    title: 'handle invalid code via notification center',
-    props: {
-      settings: {
-        idp: {
-          default: oidcServer({
-            type: IdpType.OidcServer,
-            clientId: clientId,
-            authorizeEndpoint,
-            tokenEndpoint,
-            userinfoEndpoint,
-            logoutEndpoint: oauthLogoutEndpoint,
-            scope: 'openid email profile',
-            loginCallbackRoute: redirectUri,
-            persist: IdpStorage.Memory,
-          }),
-        },
-      },
-    },
-    code: 'invalid_code',
-    state: stateSha,
-  },
+  // {
+  //   title: 'handle invalid state via notification center',
+  //   props: {
+  //     settings: {
+  //       idp: {
+  //         default: oidcServer({
+  //           type: IdpType.OidcServer,
+  //           clientId: clientId,
+  //           authorizeEndpoint,
+  //           tokenEndpoint,
+  //           userinfoEndpoint,
+  //           logoutEndpoint: oauthLogoutEndpoint,
+  //           scope: 'openid email profile',
+  //           loginCallbackRoute: redirectUri,
+  //           persist: IdpStorage.Memory,
+  //         }),
+  //       },
+  //     },
+  //   },
+  //   code: authorizationCode,
+  //   state: 'invalid_state',
+  // },
+  // {
+  //   title: 'handle invalid code via onError',
+  //   props: {
+  //     settings: {
+  //       idp: {
+  //         default: oidcServer({
+  //           type: IdpType.OidcServer,
+  //           clientId: clientId,
+  //           authorizeEndpoint,
+  //           tokenEndpoint,
+  //           userinfoEndpoint,
+  //           logoutEndpoint: oauthLogoutEndpoint,
+  //           scope: 'openid email profile',
+  //           loginCallbackRoute: redirectUri,
+  //           persist: IdpStorage.Memory,
+  //         }),
+  //       },
+  //     },
+  //   },
+  //   options: {
+  //     onError: jest.fn(),
+  //   },
+  //   code: 'invalid_code',
+  //   state: stateSha,
+  // },
+  // {
+  //   title: 'handle invalid code via notification center',
+  //   props: {
+  //     settings: {
+  //       idp: {
+  //         default: oidcServer({
+  //           type: IdpType.OidcServer,
+  //           clientId: clientId,
+  //           authorizeEndpoint,
+  //           tokenEndpoint,
+  //           userinfoEndpoint,
+  //           logoutEndpoint: oauthLogoutEndpoint,
+  //           scope: 'openid email profile',
+  //           loginCallbackRoute: redirectUri,
+  //           persist: IdpStorage.Memory,
+  //         }),
+  //       },
+  //     },
+  //   },
+  //   code: 'invalid_code',
+  //   state: stateSha,
+  // },
 ];
 
 describe('it handles invalid callback URL', () => {

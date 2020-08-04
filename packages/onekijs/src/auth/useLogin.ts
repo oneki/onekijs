@@ -5,6 +5,7 @@ import useNotificationService from '../notification/useNotificationService';
 import { useCallback, useEffect } from 'react';
 import BasicError from '../core/BasicError';
 import useLocalService from '../core/useLocalService';
+import { useErrorCallback, useSuccessCallback } from '../app/utils';
 
 // manage the login
 const useLogin = (idpName = 'default', options: LoginOptions = {}): [BasicError | undefined, boolean, AnyFunction] => {
@@ -26,8 +27,8 @@ const useLogin = (idpName = 'default', options: LoginOptions = {}): [BasicError 
     },
     [notificationService],
   );
-  const onError = options.onError || defaultOnError;
-  const onSuccess = options.onSuccess;
+  const onError = useErrorCallback(options.onError) || defaultOnError;
+  const onSuccess = useSuccessCallback(options.onSuccess);
   const callback = options.callback;
 
   // build the submit method in case of a form login

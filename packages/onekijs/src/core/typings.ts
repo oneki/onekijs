@@ -21,8 +21,9 @@ export interface Collection<T> {
   [k: string]: T;
 }
 
-export type AppErrorCallback<T extends BasicError = BasicError> = (error: T, context: AppContext) => void;
-export type ErrorCallback<T extends BasicError = BasicError> = string | [string, string] | ((error: T) => void);
+export type ResultCallback<T = any> = (result: T) => void;
+
+export type ErrorCallback<T extends BasicError = BasicError> = ResultCallback<T>;
 
 export enum SagaEffect {
   Latest = 'latest',
@@ -40,5 +41,4 @@ export interface ServiceFactory {
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface State {}
 
-export type AppSuccessCallback<T = any> = string | [string, string] | ((result: T, context: AppContext) => void);
-export type SuccessCallback<T = any> = (result: T) => void;
+export type SuccessCallback<T = any> = ResultCallback<T>;

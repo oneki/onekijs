@@ -1,16 +1,15 @@
 import { call } from 'redux-saga/effects';
-
-import NotificationService from '../notification/NotificationService';
-import { AppSuccessCallback, AppErrorCallback, SagaEffect } from '../core/typings';
-import { asyncHttp } from '../fetch/utils';
-import AuthService from './AuthService';
-import { LogoutState } from './typings';
-import { getIdp, getIdpName, isOauth, isExternal } from './utils';
-import { get } from '../core/utils/object';
-import LocalService from '../core/LocalService';
 import { reducer, saga, service } from '../core/annotations';
 import BasicError from '../core/BasicError';
+import LocalService from '../core/LocalService';
+import { ErrorCallback, SagaEffect, SuccessCallback } from '../core/typings';
+import { get } from '../core/utils/object';
 import { absoluteUrl } from '../core/utils/url';
+import { asyncHttp } from '../fetch/utils';
+import NotificationService from '../notification/NotificationService';
+import AuthService from './AuthService';
+import { LogoutState } from './typings';
+import { getIdp, getIdpName, isExternal, isOauth } from './utils';
 
 @service
 export default class LogoutService extends LocalService<LogoutState> {
@@ -62,7 +61,7 @@ export default class LogoutService extends LocalService<LogoutState> {
    */
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Latest)
-  *logout(onError?: AppErrorCallback, onSuccess?: AppSuccessCallback) {
+  *logout(onError?: ErrorCallback, onSuccess?: SuccessCallback) {
     const { router, settings, store } = this.context;
     try {
       const idpName = getIdpName(store.getState());
@@ -122,7 +121,7 @@ export default class LogoutService extends LocalService<LogoutState> {
       if (onError) {
         // the caller is not an async or generator function and manages error
         // via a callback
-        yield onError(e, this.context);
+        yield onError(e);
       } else {
         // the caller is an async or generator function and manages error
         // via a try/catch
@@ -132,7 +131,7 @@ export default class LogoutService extends LocalService<LogoutState> {
   }
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Latest)
-  *successLogout(onError?: AppErrorCallback, onSuccess?: AppSuccessCallback) {
+  *successLogout(onError?: ErrorCallback, onSuccess?: SuccessCallback) {
     const { router, settings } = this.context;
     try {
       // clear the token and the security context
@@ -144,7 +143,7 @@ export default class LogoutService extends LocalService<LogoutState> {
 
       if (onSuccess) {
         // the caller manages the success logout
-        yield onSuccess({}, this.context);
+        yield onSuccess({});
       } else {
         // redirect to the home page
         yield call([router, router.push], get(settings, 'routes.home', '/'));
@@ -157,7 +156,7 @@ export default class LogoutService extends LocalService<LogoutState> {
       if (onError) {
         // the caller is not an async or generator function and manages error
         // via a callback
-        yield onError(e, this.context);
+        yield onError(e);
       } else {
         // the caller is an async or generator function and manages error
         // via a try/catch

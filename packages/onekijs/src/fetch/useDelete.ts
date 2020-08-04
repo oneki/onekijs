@@ -5,11 +5,13 @@ import useNotificationService from '../notification/useNotificationService';
 import FetchService from './FetchService';
 import { AppFetchOptions, FetchState } from './typings';
 import { asFetchOptions } from './utils';
+import useOnekiRouter from '../app/useOnekiRouter';
 
 const useDelete = (url: string, options: AppFetchOptions = {}): [(extraOptions?: AppFetchOptions) => void, boolean] => {
   const notificationService = useNotificationService();
   const appContext = useAppContext();
   const optionsRef = useRef(options);
+  const router = useOnekiRouter();
 
   const [state, service] = useService(FetchService, {
     loading: false,
@@ -18,9 +20,9 @@ const useDelete = (url: string, options: AppFetchOptions = {}): [(extraOptions?:
   const executor = useCallback(
     (extraOptions: AppFetchOptions = {}) => {
       extraOptions = Object.assign({}, optionsRef.current, extraOptions);
-      service.delete(extraOptions.url || url, asFetchOptions(extraOptions, notificationService, appContext));
+      service.delete(extraOptions.url || url, asFetchOptions(extraOptions, notificationService, appContext, router));
     },
-    [service, url, optionsRef, appContext, notificationService],
+    [service, url, optionsRef, appContext, notificationService, router],
   );
 
   return [executor, state.loading || false];

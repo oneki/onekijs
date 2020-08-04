@@ -2,7 +2,7 @@ import { call } from 'redux-saga/effects';
 import { reducer, saga, service } from '../core/annotations';
 import BasicError from '../core/BasicError';
 import LocalService from '../core/LocalService';
-import { AnonymousObject, AppErrorCallback, SagaEffect, AppSuccessCallback } from '../core/typings';
+import { AnonymousObject, ErrorCallback, SagaEffect, SuccessCallback } from '../core/typings';
 import { sha256 } from '../core/utils/crypt';
 import { get } from '../core/utils/object';
 import { absoluteUrl } from '../core/utils/url';
@@ -83,7 +83,7 @@ export default class LoginService extends LocalService<LoginState> {
    */
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Latest)
-  *formLogin(data: AnonymousObject, idpName?: string, onError?: AppErrorCallback, onSuccess?: AppSuccessCallback) {
+  *formLogin(data: AnonymousObject, idpName?: string, onError?: ErrorCallback, onSuccess?: SuccessCallback) {
     const { settings } = this.context;
     try {
       // forward to reducer to set the loading flag to true
@@ -155,7 +155,7 @@ export default class LoginService extends LocalService<LoginState> {
       if (onError) {
         // the caller is not an async or generator function and manages error
         // via a callback
-        yield onError(e, this.context);
+        yield onError(e);
       } else {
         // the caller is an async or generator function and manages error
         // via a try/catch
@@ -175,7 +175,7 @@ export default class LoginService extends LocalService<LoginState> {
    *    - settings: the full settings object passed to the application
    */
   @saga(SagaEffect.Latest)
-  *externalLogin(idpName?: string, onError?: AppErrorCallback): Generator<string | void | Promise<string>, void, unknown> {
+  *externalLogin(idpName?: string, onError?: ErrorCallback): Generator<string | void | Promise<string>, void, unknown> {
     const { router, settings } = this.context;
     try {
       // build the IDP configuration from the settings and some default values
@@ -271,7 +271,7 @@ export default class LoginService extends LocalService<LoginState> {
       if (onError) {
         // the caller is not an async or generator function and manages error
         // via a callback
-        yield onError(e, this.context);
+        yield onError(e);
       } else {
         // the caller is an async or generator function and manages error
         // via a try/catch
@@ -293,7 +293,7 @@ export default class LoginService extends LocalService<LoginState> {
    */
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Latest)
-  *externalLoginCallback(idpName?: string, onError?: AppErrorCallback, onSuccess?: AppSuccessCallback) {
+  *externalLoginCallback(idpName?: string, onError?: ErrorCallback, onSuccess?: SuccessCallback) {
     const { router, settings } = this.context;
     try {
       // build the IDP configuration from the settings and some default values
@@ -421,7 +421,7 @@ export default class LoginService extends LocalService<LoginState> {
       if (onError) {
         // the caller is not an async or generator function and manages error
         // via a callback
-        yield onError(e, this.context);
+        yield onError(e);
       } else {
         // the caller is an async or generator function and manages error
         // via a try/catch
@@ -445,8 +445,8 @@ export default class LoginService extends LocalService<LoginState> {
     token?: string | AnonymousObject,
     securityContext?: AnonymousObject,
     idpName?: string,
-    onError?: AppErrorCallback,
-    onSuccess?: AppSuccessCallback,
+    onError?: ErrorCallback,
+    onSuccess?: SuccessCallback,
   ) {
     const { settings, router } = this.context;
     try {
@@ -477,7 +477,7 @@ export default class LoginService extends LocalService<LoginState> {
 
       if (onSuccess) {
         // the caller manages the success login
-        yield onSuccess([token, securityContext], Object.assign({}, this.context, { from }));
+        yield onSuccess([token, securityContext, from]);
       } else {
         // redirect the user to the original route
         yield call([router, router.push], from);
@@ -491,7 +491,7 @@ export default class LoginService extends LocalService<LoginState> {
       if (onError) {
         // the caller is not an async or generator function and manages error
         // via a callback
-        yield onError(e, this.context);
+        yield onError(e);
       } else {
         // the caller is an async or generator function and manages error
         // via a try/catch
@@ -511,7 +511,7 @@ export default class LoginService extends LocalService<LoginState> {
    */
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Latest)
-  *login(idpName?: string, onError?: AppErrorCallback, onSuccess?: AppSuccessCallback) {
+  *login(idpName?: string, onError?: ErrorCallback, onSuccess?: SuccessCallback) {
     const { router, settings } = this.context;
     try {
       router.saveOrigin(false);
@@ -557,7 +557,7 @@ export default class LoginService extends LocalService<LoginState> {
       if (onError) {
         // the caller is not an async or generator function and manages error
         // via a callback
-        yield onError(e, this.context);
+        yield onError(e);
       } else {
         // the caller is an async or generator function and manages error
         // via a try/catch

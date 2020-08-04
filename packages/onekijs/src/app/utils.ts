@@ -1,11 +1,25 @@
-import { defaultSettings } from './settings';
-import { simpleMergeDeep, fromPayload, clone } from '../core/utils/object';
-import { AppSettings, AppStore, reducersSymbol, sagasSymbol } from './typings';
-import { AnonymousObject } from '../core/typings';
-import { Middleware, createStore, applyMiddleware, Store, AnyAction } from 'redux';
-import createSagaMiddleware, { SagaMiddleware } from 'redux-saga';
 import produce from 'immer';
+import { AnyAction, applyMiddleware, createStore, Middleware, Store } from 'redux';
+import createSagaMiddleware, { SagaMiddleware } from 'redux-saga';
+import BasicError from '../core/BasicError';
 import { inReducer } from '../core/Service';
+import { AnonymousObject, ErrorCallback, ResultCallback, SuccessCallback } from '../core/typings';
+import useLazyRef from '../core/useLazyRef';
+import { clone, fromPayload, simpleMergeDeep } from '../core/utils/object';
+import AppContext from './AppContext';
+import AppRouter from './AppRouter';
+import { defaultSettings } from './settings';
+import {
+  AppErrorCallback,
+  AppResultCallback,
+  AppSettings,
+  AppStore,
+  AppSuccessCallback,
+  reducersSymbol,
+  sagasSymbol,
+} from './typings';
+import useAppContext from './useAppContext';
+import useOnekiRouter from './useOnekiRouter';
 
 export const createReduxStore = (
   initialState: AnonymousObject = {},
@@ -92,3 +106,53 @@ export const formatSettings = (settings: AppSettings): AppSettings => {
   const cloneDefaultSettings = clone(defaultSettings);
   return simpleMergeDeep(cloneDefaultSettings, result);
 };
+
+export function asResultCallback<T = any>(
+  callback: AppResultCallback<T> | undefined,
+  router: AppRouter,
+  appContext: AppContext,
+): ResultCallback<T> | undefined {
+  if (!callback) return undefined;
+  if (typeof callback === 'string') {
+    return () => {
+      router.push(callback);
+    };
+  } else if (Array.isArray(callback)) {
+    // TODO handle correctly Next Router
+    return () => {
+      console.log('TODO handle correctly Next Router');
+    };
+  } else {
+    const originalCallback = callback;
+    return (result) => {
+      originalCallback(result, appContext);
+    };
+  }
+}
+
+function useResultCallback<T = any>(callback?: AppResultCallback<T>): ResultCallback<T> | undefined {
+  const router = useOnekiRouter();
+  const appContext = useAppContext();
+  const callbackRef = useLazyRef(() => {
+    return asResultCallback<T>(callback, router, appContext);
+  });
+  return callbackRef.current;
+}
+
+export function useErrorCallback<T extends BasicError = BasicError>(
+  callback?: AppErrorCallback<T>,
+  defaultCallback?: AppErrorCallback<T>,
+): ErrorCallback<T> | undefined {
+  const resultCallback = useResultCallback<T>(callback) as ErrorCallback<T> | undefined;
+  const defaultResultCallback = useResultCallback<T>(defaultCallback) as ErrorCallback<T> | undefined;
+  return resultCallback || defaultResultCallback;
+}
+
+export function useSuccessCallback<T = any>(
+  callback?: AppSuccessCallback<T>,
+  defaultCallback?: AppSuccessCallback<T>,
+): SuccessCallback<T> | undefined {
+  const resultCallback = useResultCallback<T>(callback) as SuccessCallback<T> | undefined;
+  const defaultResultCallback = useResultCallback<T>(defaultCallback) as SuccessCallback<T> | undefined;
+  return resultCallback || defaultResultCallback;
+}
