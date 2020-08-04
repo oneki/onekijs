@@ -1,6 +1,7 @@
 export { default as useAppContext } from './app/useAppContext';
 export { default as AppContext, DefaultAppContext } from './app/AppContext';
 export { default as FieldValidation, defaultValidation } from './form/FieldValidation';
+export { default as AppState } from './app/AppState';
 export { default as AppProvider } from './app/AppProvider';
 export { default as AppRouter } from './app/AppRouter';
 export { default as DefaultLoadingComponent } from './app/DefaultLoadingComponent';

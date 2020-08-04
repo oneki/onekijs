@@ -1,4 +1,4 @@
-import { FetchState } from 'onekijs';
+import { FetchOptions, FetchState } from 'onekijs';
 
 export type QueryFilterCriteriaOperator = 'eq' | 'like' | 'starts_with' | 'ends_with';
 
@@ -45,11 +45,6 @@ export interface QueryState extends FetchState {
   sort?: string | QuerySort | QuerySort[];
 }
 
-export interface UseCollectionOptions {
-  initialFilter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[];
-  initialSort?: string | QuerySort | QuerySort[];
-}
-
 export interface LocalQueryState<T = any> extends QueryState {
   data: T[];
   result?: T[];
@@ -65,9 +60,15 @@ export interface RemoteQueryState<T = any> extends QueryState {
   url: string;
   result?: RemoteItem<T>[];
   serializer?: QuerySerializer;
+  fetchOptions?: FetchOptions<T>;
 }
 
-export interface UseRemoteCollectionOptions extends UseCollectionOptions {
+export interface UseCollectionOptions {
+  initialFilter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[];
+  initialSort?: string | QuerySort | QuerySort[];
+}
+
+export interface UseRemoteCollectionOptions<T> extends UseCollectionOptions, FetchOptions<T> {
   initialFields?: string[];
   initialSize?: number;
   initialOffset?: number;
