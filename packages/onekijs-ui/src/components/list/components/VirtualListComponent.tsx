@@ -1,9 +1,9 @@
 import React, { FC, useCallback, useRef } from 'react';
 import { useVirtual } from 'react-virtual';
 import { addClassname } from '../../../utils/style';
-import { VirtualListProps } from '../typings';
-import { defaultItemAdapter } from '../utils';
-import ListItemComponent from './item';
+import { ListItem, VirtualListProps } from '../typings';
+import { adapt } from '../utils';
+import ListItemComponent from './ListItemComponent';
 
 const VirtualistComponent: FC<VirtualListProps> = ({
   className,
@@ -11,7 +11,7 @@ const VirtualistComponent: FC<VirtualListProps> = ({
   height,
   itemHeight = 21,
   ItemComponent = ListItemComponent,
-  adapter = defaultItemAdapter,
+  adapter,
 }) => {
   const parentRef = useRef(null);
   const estimateSize = useCallback(
@@ -47,22 +47,21 @@ const VirtualistComponent: FC<VirtualListProps> = ({
       >
         {virtualItems.map(({ index, measureRef, start }) => {
           const item = items[index];
-          const { id } = adapter(item);
+          const listItem: ListItem = adapt(item, adapter);
           return (
             <div
               className="o-list-virtual-item"
-              key={`virtual-item-${id}`}
+              key={`virtual-item-${index}`}
               ref={measureRef}
               style={{
                 position: 'absolute',
                 top: 0,
                 left: 0,
                 width: '100%',
-                //height: `${size}px`,
                 transform: `translateY(${start}px)`,
               }}
             >
-              <ItemComponent index={index} item={item} adapter={adapter} />
+              <ItemComponent key={`item-${index}`} index={index} {...listItem} />
             </div>
           );
         })}

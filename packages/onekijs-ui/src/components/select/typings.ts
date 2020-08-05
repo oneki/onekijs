@@ -1,34 +1,20 @@
 import { AnonymousObject, AnyFunction } from 'onekijs';
 import { FC } from 'react';
+import { ListItemAdapter, ListItemProps, ListProps } from '../list/typings';
 
 export interface SelectInputProps extends React.InputHTMLAttributes<HTMLSelectElement> {
   open: boolean;
   onIconClick: AnyFunction<void>;
 }
 
-export interface SelectProps<T> extends React.InputHTMLAttributes<HTMLSelectElement> {
+export interface SelectProps<T> extends Omit<React.InputHTMLAttributes<HTMLSelectElement>, 'height'>, ListProps<T> {
   InputComponent?: FC<SelectInputProps>;
-  options?: T[];
-  adapter?: SelectAdapter<T>;
-  OptionComponent?: FC<SelectOptionProps<T>>;
 }
 
-export interface SelectOptionsProps<T> {
-  options: T[];
-  adapter?: SelectAdapter<T>;
-  OptionComponent: FC<SelectOptionProps<T>>;
+export interface SelectOptionsProps<T> extends ListProps<T> {
+  search?: string;
 }
 
-export interface SelectOptionProps<T> {
-  option: T;
-  adapter?: SelectAdapter<T>;
-  index: number;
-  search: string;
-}
+export type SelectOptionProps<T> = ListItemProps<T>;
 
-export interface SelectOption extends AnonymousObject {
-  id: string | number;
-  text: string;
-}
-
-export type SelectAdapter<T> = (value: T) => SelectOption;
+export type SelectAdapter<T> = ListItemAdapter<T>;

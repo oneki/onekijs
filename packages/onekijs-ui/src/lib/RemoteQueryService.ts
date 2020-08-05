@@ -59,8 +59,7 @@ export default class RemoteQueryService<
   *refresh() {
     const query = this.serializeQuery();
     const url = query ? `${this.state.url}?${query}` : this.state.url;
-    const result = yield this.get(url);
-    yield this._setResult(result);
+    yield this.get(url, this.state.fetchOptions);
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types

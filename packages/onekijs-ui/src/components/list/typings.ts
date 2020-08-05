@@ -9,27 +9,21 @@ export interface ListProps<T = any> {
   items: T[];
 }
 
+export interface ListItem<T = any> {
+  id?: string | number;
+  text?: string;
+  loading: boolean;
+  item?: T;
+}
+
+export type ListItemAdapter<T = any> = (item: T | symbol | undefined) => ListItem<T>;
+
+export interface ListItemProps<T = any> extends ListItem<T> {
+  index: number;
+}
+
 export type StandardListProps<T = any> = Omit<ListProps<T>, 'height' | 'itemHeight'>;
 
 export type VirtualListProps<T = any> = ListProps<T> & {
   height: number;
 };
-
-export interface ListItemProps<T = any> {
-  item: T;
-  adapter: ListItemAdapter<T>;
-  index: number;
-  loading?: boolean;
-}
-
-export interface ListItem {
-  id: string | number;
-  text: string;
-}
-
-export type ListItemAdapter<T = any> = (item: T) => ListItem;
-
-export interface ListContextInterface<T = any> {
-  adapter?: ListItemAdapter<T>;
-  ItemComponent?: FC<ListItemProps<T>>;
-}

@@ -32,7 +32,6 @@ export default class FetchService<T = any, S extends FetchState = FetchState> ex
     try {
       loadingTask = yield fork([this, this.delayLoading], options.delayLoading ?? 200);
       const result = yield asyncHttp(url, method, body, options);
-
       yield cancel(loadingTask);
       yield this.fetchSuccess(result); // to update the store and trigger a re-render.
       const onSuccess = options.onSuccess;

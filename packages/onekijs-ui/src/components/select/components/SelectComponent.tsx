@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react';
-import Dropdown from '../dropdown';
-import SelectInputComponent from './components/input';
-import { SelectProps } from './typings';
+import Dropdown from '../../dropdown';
+import SelectInputComponent from './SelectInputComponent';
+import { SelectProps } from '../typings';
 
 const SelectComponent: FC<SelectProps<any>> = ({ className, placeholder, InputComponent = SelectInputComponent }) => {
   const [open, setOpen] = useState(false);

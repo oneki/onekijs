@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import React from 'react';
 import { Link, Route, Switch } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
-import { App } from 'onekijs';
+import { App } from 'onekijs-cra';
 import { ButtonPage } from './pages/button';
 import { SelectPage } from './pages/select';
 import { ListPage } from './pages/list';

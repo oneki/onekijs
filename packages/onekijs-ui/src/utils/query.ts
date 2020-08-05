@@ -46,7 +46,7 @@ export const isQueryFilterCriteria = (value: QueryFilterOrCriteria): value is Qu
 };
 
 export const serializeCriteria = (criteria: QueryFilterCriteria): string => {
-  const result = `${criteria.field} ${criteria.operator} ${serializeValue(criteria.value)}`;
+  const result = `${criteria.field} ${criteria.operator || 'eq'} ${serializeValue(criteria.value)}`;
   if (criteria.not) {
     return `not(${result})`;
   }
@@ -55,39 +55,48 @@ export const serializeCriteria = (criteria: QueryFilterCriteria): string => {
 
 export const serializeFields = (fields: string[] | undefined): string | void => {
   if (fields && fields.length > 0) {
-    return `fields=${fields.join(',')}`;
+    return `fields=${encodeURIComponent(fields.join(','))}`;
   }
+};
+
+export const serializeSubFilter = (filter: QueryFilter): string => {
+  let result = filter.criterias.length > 1 ? `${filter.operator || 'and'}(` : '';
+  result = `${result}${filter.criterias
+    .map((filterOrCriteria) => {
+      if (isQueryFilter(filterOrCriteria)) {
+        return serializeSubFilter(filterOrCriteria);
+      } else {
+        return serializeCriteria(filterOrCriteria);
+      }
+    })
+    .join(';')}`;
+  if (filter.criterias.length > 1) {
+    result = `${result})`;
+  }
+  return result;
 };
 
 export const serializeFilter = (filter: QueryFilter | undefined): string | void => {
   if (filter && filter.criterias.length > 0) {
-    return `filter=${filter.operator || 'and'}(${filter.criterias
-      .map((filterOrCriteria) => {
-        if (isQueryFilter(filterOrCriteria)) {
-          return serializeFilter(filterOrCriteria);
-        } else {
-          return serializeCriteria(filterOrCriteria);
-        }
-      })
-      .join(';')}`;
+    return `filter=${encodeURIComponent(serializeSubFilter(filter))}`;
   }
 };
 
 export const serializeOffset = (offset: number | undefined): string | void => {
   if (offset && offset > 0) {
-    return `offset=${offset}`;
+    return `offset=${encodeURIComponent(offset)}`;
   }
 };
 
 export const serializeSize = (size: number | undefined): string | void => {
   if (size && size > 0) {
-    return `size=${size}`;
+    return `size=${encodeURIComponent(size)}`;
   }
 };
 
 export const serializeSort = (sort: QuerySort[] | undefined): string | void => {
   if (sort && sort.length > 0) {
-    return `sortBy=${sort.map((s) => `${s.field},${s.dir || 'asc'}`).join(';')}`;
+    return `sortBy=${encodeURIComponent(sort.map((s) => `${s.field},${s.dir || 'asc'}`).join(';'))}`;
   }
 };
 
@@ -100,7 +109,7 @@ export const serializeValue = (value: QueryFilterCriteriaValue | QueryFilterCrit
 
 export const serializePrimitiveValue = (value: QueryFilterCriteriaValue): string => {
   if (typeof value === 'string') {
-    return value.replace("'", "\\'");
+    return `'${value.replace("'", "\\'")}'`;
   }
   return String(value);
 };

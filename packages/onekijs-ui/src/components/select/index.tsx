@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import SelectComponent from './component';
+import SelectComponent from './components/SelectComponent';
 import selectStyle from './style';
 
 const Select = styled(SelectComponent)`

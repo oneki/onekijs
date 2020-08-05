@@ -1,10 +1,10 @@
 import React, { FC, useState } from 'react';
-import { DropdownProps } from './typings';
-import { sameWidthPopperModifier } from '../../utils/popper';
+import { DropdownProps } from '../typings';
+import { sameWidthPopperModifier } from '../../../utils/popper';
 import { usePopper } from 'react-popper';
 import { CSSTransition } from 'react-transition-group';
 
-const DropdownComponent: FC<DropdownProps> = ({ className, refElement, open }) => {
+const DropdownComponent: FC<DropdownProps> = ({ className, refElement, open, children }) => {
   const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
   const { styles, attributes } = usePopper(refElement, popperElement, {
     modifiers: [sameWidthPopperModifier],
@@ -26,7 +26,7 @@ const DropdownComponent: FC<DropdownProps> = ({ className, refElement, open }) =
         key="dropdown-container"
         className={className}
       >
-        <div>content</div>
+        {children}
       </div>
     </CSSTransition>
   );

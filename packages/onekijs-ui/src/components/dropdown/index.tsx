@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import DropdownComponent from './component';
+import DropdownComponent from './components/DropdownComponent';
 import dropdownStyle from './style';
 
 const Dropdown = styled(DropdownComponent)`
