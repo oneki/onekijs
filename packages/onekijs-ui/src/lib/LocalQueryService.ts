@@ -1,24 +1,28 @@
-import { get, reducer, service } from 'onekijs';
+import { get, Primitive, reducer, service } from 'onekijs';
 import { defaultComparator, isQueryFilterCriteria, rootFilterId } from '../utils/query';
 import QueryService from './QueryService';
 import {
+  Collection,
+  LocalQuery,
   LocalQueryState,
+  QueryEngine,
   QueryFilter,
   QueryFilterCriteria,
+  QueryFilterCriteriaOperator,
+  QueryFilterCriteriaValue,
   QueryFilterId,
   QueryFilterOrCriteria,
-  QuerySort,
+  QuerySortBy,
   QuerySortComparator,
   QuerySortDir,
 } from './typings';
 
 @service
-export default class LocalQueryService<T = any, S extends LocalQueryState<T> = LocalQueryState<T>> extends QueryService<
-  T,
-  S
-> {
+export default class LocalQueryService<T = any, S extends LocalQueryState<T> = LocalQueryState<T>>
+  extends QueryService<S>
+  implements Collection<T> {
   init(): void {
-    this.state.result = this._execute(this.state.data, this.state.filter, this.state.sort);
+    this.refresh();
   }
 
   @reducer
@@ -28,13 +32,64 @@ export default class LocalQueryService<T = any, S extends LocalQueryState<T> = L
   }
 
   @reducer
-  addSort(
+  addFilterCriteria(
+    field: string,
+    operator: QueryFilterCriteriaOperator,
+    value: string | number | boolean | QueryFilterCriteriaValue[] | null,
+    not?: boolean | undefined,
+    id?: string | number | symbol | undefined,
+    parentFilterId?: string | number | symbol | undefined,
+  ): void {
+    this.addFilter(
+      {
+        field,
+        operator,
+        value,
+        not,
+        id,
+      },
+      parentFilterId,
+    );
+  }
+
+  @reducer
+  addSortBy(
     field: string,
     dir: QuerySortDir = 'asc',
     comparator: QuerySortComparator = defaultComparator,
     prepend = true,
   ): void {
-    this._addSort(field, dir, comparator, prepend);
+    this._addSortBy(field, dir, comparator, prepend);
+    this.refresh();
+  }
+
+  @reducer
+  clearFilter(): void {
+    this._clearFilter();
+    this.refresh();
+  }
+
+  @reducer
+  clearSearch(): void {
+    this._clearSearch();
+    this.refresh();
+  }
+
+  @reducer
+  clearSort(): void {
+    this._clearSort();
+    this.refresh();
+  }
+
+  @reducer
+  clearSortBy(): void {
+    this._clearSortBy();
+    this.refresh();
+  }
+
+  @reducer
+  filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[]): void {
+    this._setFilter(filter);
     this.refresh();
   }
 
@@ -46,9 +101,35 @@ export default class LocalQueryService<T = any, S extends LocalQueryState<T> = L
     return this.state.data;
   }
 
+  getSearch(): Primitive | undefined {
+    return this.state.search;
+  }
+
+  getSort(): QuerySortDir | undefined {
+    return this.state.sort;
+  }
+
+  @reducer
+  search(search: Primitive): void {
+    this.state.search = search;
+    this.refresh();
+  }
+
+  @reducer
+  sort(dir: QuerySortDir): void {
+    this.state.sort = dir;
+    this.refresh();
+  }
+
   @reducer
   refresh(): void {
-    this.state.result = this._execute(this.initialData, this.filter, this.sort);
+    const queryEngine: QueryEngine = this.state.queryEngine || this._execute.bind(this);
+    this.state.result = queryEngine(this.initialData, {
+      filter: this.getFilter(),
+      sortBy: this.getSortBy(),
+      search: this.getSearch(),
+      sort: this.getSort(),
+    });
   }
 
   @reducer
@@ -58,8 +139,8 @@ export default class LocalQueryService<T = any, S extends LocalQueryState<T> = L
   }
 
   @reducer
-  removeSort(field: string): void {
-    this._removeSort(field);
+  removeSortBy(field: string): void {
+    this._removeSortBy(field);
     this.refresh();
   }
 
@@ -70,14 +151,8 @@ export default class LocalQueryService<T = any, S extends LocalQueryState<T> = L
   }
 
   @reducer
-  setFilter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | null): void {
-    this._setFilter(filter);
-    this.refresh();
-  }
-
-  @reducer
-  setSort(field: string, dir: QuerySortDir = 'asc', comparator: QuerySortComparator = defaultComparator): void {
-    this._setSort(field, dir, comparator);
+  sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void {
+    this._setSortBy(sortBy);
     this.refresh();
   }
 
@@ -106,29 +181,49 @@ export default class LocalQueryService<T = any, S extends LocalQueryState<T> = L
     return not ? !result : result;
   }
 
-  protected _applyFilter(item: T, filter: QueryFilter): boolean {
-    const operator = filter.operator || 'and';
+  protected _applyFilter(item: T, filter?: QueryFilter): boolean {
     let result = true;
 
-    for (const filterOrCriteria of filter.criterias) {
-      if (isQueryFilterCriteria(filterOrCriteria)) {
-        result = this._applyCriteria(item, filterOrCriteria);
-      } else {
-        result = this._applyFilter(item, filterOrCriteria);
-      }
+    if (filter) {
+      const operator = filter.operator || 'and';
+      for (const filterOrCriteria of filter.criterias) {
+        if (isQueryFilterCriteria(filterOrCriteria)) {
+          result = this._applyCriteria(item, filterOrCriteria);
+        } else {
+          result = this._applyFilter(item, filterOrCriteria);
+        }
 
-      if (!result && operator === 'and') return false;
-      if (result && operator === 'or') return true;
+        if (!result && operator === 'and') return false;
+        if (result && operator === 'or') return true;
+      }
     }
     return result;
   }
 
-  protected _applySort(data: T[], sorts: QuerySort[]): T[] {
-    if (sorts.length > 0) {
+  protected _applySearch(item: T, search?: Primitive): boolean {
+    if (this.state.searcher) {
+      return this.state.searcher(item, search);
+    }
+    if (search) {
+      return String(item).toUpperCase().includes(String(search).toUpperCase());
+    }
+    return true;
+  }
+
+  protected _applySort(data: T[], dir?: QuerySortDir): T[] {
+    if (dir) {
+      const comparator = this.state.comparator || defaultComparator;
+      data = data.sort(comparator);
+    }
+    return data;
+  }
+
+  protected _applySortBy(data: T[], sortBy?: QuerySortBy[]): T[] {
+    if (sortBy && sortBy.length > 0) {
       const comparator = function () {
         return function (a: T, b: T): number {
           let result = 0;
-          for (const sort of sorts) {
+          for (const sort of sortBy) {
             const comparator = sort.comparator || defaultComparator;
             const reverse = sort.dir === 'desc' ? -1 : 1;
             result = reverse * comparator(get(a, sort.field), get(b, sort.field));
@@ -142,16 +237,23 @@ export default class LocalQueryService<T = any, S extends LocalQueryState<T> = L
     return data;
   }
 
-  protected _execute(
-    data: T[],
-    filter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[],
-    sort?: string | QuerySort | QuerySort[],
-  ): T[] {
+  protected _execute(data: T[], query: LocalQuery): T[] {
     // apply filters to data
-    let result = data.filter((item) => this._applyFilter(item, this._formatFilter(filter)));
+    let result = data;
+    if (query.filter) {
+      result = data.filter((item) => this._applyFilter(item, this._formatFilter(query.filter)));
+    } else if (query.search) {
+      result = data.filter((item) => this._applySearch(item, this.state.search));
+    } else {
+      result = Object.assign([], data);
+    }
 
     // apply sort
-    result = this._applySort(result, this._formatSort(sort));
+    if (query.sortBy) {
+      result = this._applySortBy(result, this._formatSortBy(query.sortBy));
+    } else if (query.sort) {
+      result = this._applySort(result, query.sort);
+    }
 
     return result;
   }

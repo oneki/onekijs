@@ -18,7 +18,13 @@ const useRestCollection = <T>(
   const initialState = {
     url,
     filter: options.initialFilter,
+    sortBy: options.initialSortBy,
+    search: options.initialSearch,
     sort: options.initialSort,
+    fields: options.initialFields,
+    offset: options.initialOffset,
+    size: options.initialSize,
+    serializer: options.serializer,
     fetchOptions,
   } as RemoteQueryState<T>;
 

@@ -1,10 +1,12 @@
+import { Primitive } from 'onekijs';
 import {
   QueryFilter,
   QueryFilterCriteria,
   QueryFilterCriteriaValue,
   QueryFilterOrCriteria,
   QuerySerializer,
-  QuerySort,
+  QuerySortBy,
+  QuerySortDir,
 } from '../lib/typings';
 
 let filterUid = 0;
@@ -17,16 +19,18 @@ export const defaultComparator = (a: any, b: any) => {
   return a < b ? -1 : 1;
 };
 
-export const defaultSerializer: QuerySerializer = (filter?, sort?, offset?, size?, fields?) => {
-  return [
-    serializeFilter(filter),
-    serializeSort(sort),
-    serializeOffset(offset),
-    serializeSize(size),
-    serializeFields(fields),
-  ]
-    .filter((x) => x !== undefined)
-    .join('&');
+export const defaultSerializer: QuerySerializer = (query) => {
+  const result = {
+    filter: serializeFilter(query.filter),
+    sortBy: serializeSortBy(query.sortBy),
+    offset: serializeOffset(query.offset),
+    size: serializeSize(query.size),
+    fields: serializeFields(query.fields),
+    search: serializeSearch(query.search),
+    sort: serializeSort(query.sort),
+  };
+
+  return Object.fromEntries(Object.entries(result).filter(([_k, v]) => v !== undefined));
 };
 
 export const generateFilterId = (): number => {
@@ -55,7 +59,19 @@ export const serializeCriteria = (criteria: QueryFilterCriteria): string => {
 
 export const serializeFields = (fields: string[] | undefined): string | void => {
   if (fields && fields.length > 0) {
-    return `fields=${encodeURIComponent(fields.join(','))}`;
+    return `${encodeURIComponent(fields.join(','))}`;
+  }
+};
+
+export const serializeSearch = (search: Primitive | undefined): string | void => {
+  if (search !== undefined && String(search) !== '') {
+    return `${search}`;
+  }
+};
+
+export const serializeSort = (sort: QuerySortDir | undefined): string | void => {
+  if (sort !== undefined) {
+    return `${sort}`;
   }
 };
 
@@ -78,25 +94,25 @@ export const serializeSubFilter = (filter: QueryFilter): string => {
 
 export const serializeFilter = (filter: QueryFilter | undefined): string | void => {
   if (filter && filter.criterias.length > 0) {
-    return `filter=${encodeURIComponent(serializeSubFilter(filter))}`;
+    return `${serializeSubFilter(filter)}`;
   }
 };
 
 export const serializeOffset = (offset: number | undefined): string | void => {
   if (offset && offset > 0) {
-    return `offset=${encodeURIComponent(offset)}`;
+    return `${offset}`;
   }
 };
 
 export const serializeSize = (size: number | undefined): string | void => {
   if (size && size > 0) {
-    return `size=${encodeURIComponent(size)}`;
+    return `${size}`;
   }
 };
 
-export const serializeSort = (sort: QuerySort[] | undefined): string | void => {
-  if (sort && sort.length > 0) {
-    return `sortBy=${encodeURIComponent(sort.map((s) => `${s.field},${s.dir || 'asc'}`).join(';'))}`;
+export const serializeSortBy = (sortBy: QuerySortBy[] | undefined): string | void => {
+  if (sortBy && sortBy.length > 0) {
+    return `${sortBy.map((s) => `${s.field},${s.dir || 'asc'}`).join(';')}`;
   }
 };
 

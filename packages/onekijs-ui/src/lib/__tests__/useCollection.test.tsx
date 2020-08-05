@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/extend-expect';
 import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
-import { UseCollectionOptions, QuerySort } from '../typings';
+import { UseCollectionOptions, QuerySortBy } from '../typings';
 import UseCollectionWidget from './components/UseCollectionWidget';
 import { basicUsers } from './data/userList';
 import { TestHandler, TestUser } from './typings';
@@ -17,7 +17,7 @@ type TestProps = {
 
 /// beforeEach((): void => {});
 // afterEach((): void => {});
-const sortBy = (sorts: QuerySort[]) => (a: any, b: any): number => {
+const sortBy = (sorts: QuerySortBy[]) => (a: any, b: any): number => {
   const sort = sorts[0];
   if (sort) {
     const fieldA = get(a, sort.field);
@@ -214,7 +214,7 @@ const tests: TestProps[] = [
     result: Object.assign([] as TestUser[], basicUsers).sort(sortBy([{ field: 'firstname' }])),
     title: 'filter firstname using a string',
     options: {
-      initialSort: 'firstname',
+      initialSortBy: 'firstname',
     },
   },
   {
@@ -222,7 +222,7 @@ const tests: TestProps[] = [
     result: Object.assign([] as TestUser[], basicUsers).sort(sortBy([{ field: 'firstname', dir: 'desc' }])),
     title: 'filter firstname using a sort QuerySort',
     options: {
-      initialSort: {
+      initialSortBy: {
         field: 'firstname',
         dir: 'desc',
       },
@@ -238,7 +238,7 @@ const tests: TestProps[] = [
     ),
     title: 'filter firstname using a sort QuerySort[]',
     options: {
-      initialSort: [
+      initialSortBy: [
         {
           field: 'firstname',
           dir: 'desc',
@@ -260,7 +260,7 @@ const tests: TestProps[] = [
         value: 'K',
         operator: 'starts_with',
       },
-      initialSort: {
+      initialSortBy: {
         field: 'firstname',
         dir: 'desc',
       },
@@ -304,10 +304,10 @@ const afterActionTests: TestProps[] = [
     result: Object.assign([] as TestUser[], basicUsers).sort(sortBy([{ field: 'firstname', dir: 'asc' }])),
     title: 'sort by firstname using a string',
     handler: {
-      name: 'setSort',
+      name: 'sortBy',
       actions: [
         {
-          method: 'setSort',
+          method: 'sortBy',
           args: ['firstname'],
         },
       ],

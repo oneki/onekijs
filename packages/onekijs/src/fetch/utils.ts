@@ -7,7 +7,7 @@ import { AnonymousObject } from '../core/typings';
 import { get } from '../core/utils/object';
 import { urlBuilder } from '../core/utils/url';
 import NotificationService from '../notification/NotificationService';
-import { AppFetchOptions, FetchOptions } from './typings';
+import { AppFetchOptions, FetchOptions, FetchMethod } from './typings';
 
 export const encodeFormData = (data: AnonymousObject): string => {
   return Object.keys(data)
@@ -91,7 +91,7 @@ export async function formatAsyncResponse(response: Response): Promise<any> {
 
 export async function asyncHttp(
   url: string,
-  method: string,
+  method: FetchMethod,
   body?: AnonymousObject,
   options: AnonymousObject = {},
 ): Promise<any> {

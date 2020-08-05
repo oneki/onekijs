@@ -2,10 +2,10 @@ import { cancel, delay, fork } from 'redux-saga/effects';
 import { reducer, saga } from '../core/annotations';
 import Service from '../core/Service';
 import { SagaEffect } from '../core/typings';
-import { FetchOptions, FetchState, HttpMethod } from './typings';
+import { FetchOptions, FetchState, HttpMethod, FetchMethod } from './typings';
 import { asyncHttp } from './utils';
 
-export default class FetchService<T = any, S extends FetchState = FetchState> extends Service<S> {
+export default class FetchService<S extends FetchState = FetchState> extends Service<S> {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   *delayLoading(delay_ms: number) {
     yield delay(delay_ms);
@@ -14,7 +14,7 @@ export default class FetchService<T = any, S extends FetchState = FetchState> ex
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
-  *delete(url: string, options?: FetchOptions<T>) {
+  *delete<R = any>(url: string, options?: FetchOptions<R, never>) {
     yield this.fetch(url, HttpMethod.Delete, undefined, options);
   }
 
@@ -27,11 +27,12 @@ export default class FetchService<T = any, S extends FetchState = FetchState> ex
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
-  *fetch(url: string, method: string, body?: Partial<T>, options: FetchOptions<T> = {}) {
+  *fetch<R = any, T = any>(url: string, method: FetchMethod, body?: T, options: FetchOptions<R, T> = {}) {
     let loadingTask = null;
     try {
       loadingTask = yield fork([this, this.delayLoading], options.delayLoading ?? 200);
-      const result = yield asyncHttp(url, method, body, options);
+      const fetcher = options.fetcher || asyncHttp;
+      const result = yield fetcher(url, method, body, options);
       yield cancel(loadingTask);
       yield this.fetchSuccess(result); // to update the store and trigger a re-render.
       const onSuccess = options.onSuccess;
@@ -57,25 +58,25 @@ export default class FetchService<T = any, S extends FetchState = FetchState> ex
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
-  *get(url: string, options?: FetchOptions<T>) {
+  *get<R = any>(url: string, options?: FetchOptions<R, never>) {
     yield this.fetch(url, HttpMethod.Get, undefined, options);
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
-  *patch(url: string, body: Partial<T>, options?: FetchOptions<T>) {
+  *patch<R = any, T = any>(url: string, body: T, options?: FetchOptions<R, T>) {
     yield this.fetch(url, HttpMethod.Patch, body, options);
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
-  *post(url: string, body: T, options?: FetchOptions<T>) {
+  *post<R = any, T = any>(url: string, body: T, options?: FetchOptions<R, T>) {
     yield this.fetch(url, HttpMethod.Post, body, options);
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
-  *put(url: string, body: T, options?: FetchOptions<T>) {
+  *put<R = any, T = any>(url: string, body: T, options?: FetchOptions<R, T>) {
     yield this.fetch(url, HttpMethod.Put, body, options);
   }
 

@@ -1,42 +1,27 @@
-import { FetchService, get, reducer } from 'onekijs';
+import { FetchService, get, reducer, Primitive } from 'onekijs';
 import { defaultComparator, isQueryFilterCriteria, rootFilterId, visitFilter } from '../utils/query';
 import {
   QueryFilter,
   QueryFilterCriteria,
   QueryFilterId,
   QueryFilterOrCriteria,
-  QuerySort,
+  QuerySortBy,
   QuerySortComparator,
   QuerySortDir,
   QueryState,
 } from './typings';
 
-export default abstract class QueryService<T = any, S extends QueryState = QueryState> extends FetchService<T, S> {
-  abstract addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId?: QueryFilterId): void;
-
-  abstract addSort(field: string, dir?: QuerySortDir, comparator?: QuerySortComparator, prepend?: boolean): void;
-
-  get filter(): QueryFilter {
+export default abstract class QueryService<S extends QueryState = QueryState> extends FetchService<S> {
+  getFilter(): QueryFilter | undefined {
     return this._formatFilter(get<QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[]>(this.state, 'filter'));
   }
-
-  get sort(): QuerySort[] {
-    return this._formatSort(get<string | QuerySort | QuerySort[]>(this.state, 'sort'));
+  getSortBy(): QuerySortBy[] | undefined {
+    return this._formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(this.state, 'sortBy'));
   }
-
-  abstract refresh(): void;
-
-  abstract removeFilter(filterId: QueryFilterId): void;
-
-  abstract removeSort(field: string): void;
-
-  abstract setFilter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | null): void;
-
-  abstract setSort(field: string, dir?: QuerySortDir, comparator?: QuerySortComparator): void;
 
   @reducer
   protected _addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId: QueryFilterId = rootFilterId): void {
-    const filter = this.filter;
+    const filter = this.getFilter() || { id: rootFilterId, operator: 'and', criterias: [] };
     visitFilter(filter, (filter) => {
       if (filter.id === parentFilterId) {
         filter.criterias.push(filterOrCriteria);
@@ -48,29 +33,47 @@ export default abstract class QueryService<T = any, S extends QueryState = Query
   }
 
   @reducer
-  protected _addSort(
+  protected _addSortBy(
     field: string,
     dir: QuerySortDir = 'asc',
     comparator: QuerySortComparator = defaultComparator,
     prepend = true,
   ): void {
-    this.removeSort(field);
-    const sort = this.sort;
+    this._removeSortBy(field);
+    const sortBy = this.getSortBy() || [];
     if (prepend) {
-      sort.unshift({ field, dir, comparator });
+      sortBy.unshift({ field, dir, comparator });
     } else {
-      sort.push({ field, dir, comparator });
+      sortBy.push({ field, dir, comparator });
     }
-    this.state.sort = sort;
+    this.state.sortBy = sortBy;
   }
 
-  protected _formatFilter(filter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | null): QueryFilter {
+  @reducer
+  protected _clearFilter(): void {
+    this.state.filter = undefined;
+  }
+
+  @reducer
+  protected _clearSearch(): void {
+    this.state.search = undefined;
+  }
+
+  @reducer
+  protected _clearSortBy(): void {
+    this.state.sortBy = undefined;
+  }
+
+  @reducer
+  protected _clearSort(): void {
+    this.state.sort = undefined;
+  }
+
+  protected _formatFilter(
+    filter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[],
+  ): QueryFilter | undefined {
     if (!filter) {
-      return {
-        id: rootFilterId,
-        operator: 'and',
-        criterias: [],
-      };
+      return;
     } else if (Array.isArray(filter)) {
       // current filter is a QueryFilterOrCriteria[]
       return {
@@ -90,54 +93,65 @@ export default abstract class QueryService<T = any, S extends QueryState = Query
     }
   }
 
-  protected _formatSort(sort?: string | QuerySort | QuerySort[]): QuerySort[] {
-    if (Array.isArray(sort)) {
-      return sort;
+  protected _formatSortBy(sortBy?: string | QuerySortBy | QuerySortBy[]): QuerySortBy[] | undefined {
+    if (Array.isArray(sortBy)) {
+      return sortBy;
     }
-    if (!sort) {
-      return [];
+    if (!sortBy) {
+      return;
     }
-    if (typeof sort === 'string') {
+    if (typeof sortBy === 'string') {
       return [
         {
-          field: sort,
+          field: sortBy,
         },
       ];
     }
-    return [sort];
+    return [sortBy];
   }
 
   @reducer
   protected _removeFilter(filterId: QueryFilterId): void {
-    const filter = this.filter;
-    visitFilter(filter, (filter) => {
-      for (const i in filter.criterias) {
-        if (filter.criterias[i].id === filterId) {
-          filter.criterias.splice(parseInt(i), 1);
-          return true;
+    const filter = this.getFilter();
+    if (filter) {
+      visitFilter(filter, (filter) => {
+        for (const i in filter.criterias) {
+          if (filter.criterias[i].id === filterId) {
+            filter.criterias.splice(parseInt(i), 1);
+            return true;
+          }
         }
-      }
-      return false;
-    });
-    this.state.filter = filter;
+        return false;
+      });
+      this.state.filter = filter;
+    }
   }
 
   @reducer
-  protected _removeSort(field: string): void {
-    this.state.sort = this.sort.filter((sort) => sort.field !== field);
+  protected _removeSortBy(field: string): void {
+    const sortBy = this.getSortBy();
+    if (sortBy) {
+      this.state.sortBy = sortBy.filter((sort) => sort.field !== field);
+    }
   }
 
   @reducer
-  protected _setFilter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | null): void {
+  protected _setFilter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[]): void {
     this.state.filter = this._formatFilter(filter);
   }
 
   @reducer
-  protected _setSort(
-    field: string,
-    dir: QuerySortDir = 'asc',
-    comparator: QuerySortComparator = defaultComparator,
-  ): void {
-    this.state.sort = [{ field, dir, comparator }];
+  protected _setSearch(search: Primitive): void {
+    this.state.search = search;
+  }
+
+  @reducer
+  protected _setSort(dir: QuerySortDir): void {
+    this.state.sort = dir;
+  }
+
+  @reducer
+  protected _setSortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void {
+    this.state.sortBy = this._formatSortBy(sortBy);
   }
 }

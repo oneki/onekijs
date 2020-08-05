@@ -21,9 +21,11 @@ export interface Collection<T> {
   [k: string]: T;
 }
 
-export type ResultCallback<T = any> = (result: T) => void;
-
 export type ErrorCallback<T extends BasicError = BasicError> = ResultCallback<T>;
+
+export type Primitive = string | number | boolean;
+
+export type ResultCallback<T = any> = (result: T) => void;
 
 export enum SagaEffect {
   Latest = 'latest',

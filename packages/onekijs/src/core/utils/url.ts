@@ -4,7 +4,7 @@ import { isNull } from './object';
 import { AnonymousObject } from '../typings';
 import { Location } from '../../app/typings';
 
-export function urlBuilder(path: string, params: AnonymousObject = {}, query = {}): string {
+export function urlBuilder(path: string, params: AnonymousObject = {}, query: AnonymousObject = {}): string {
   const esc = encodeURIComponent;
   Object.keys(params)
     .sort((a, b) => b.length - a.length)
@@ -13,8 +13,8 @@ export function urlBuilder(path: string, params: AnonymousObject = {}, query = {
     });
   const queryKeys = Object.keys(query);
   const separator = queryKeys.length > 0 ? '?' : '';
-  query = queryKeys.map((k) => esc(k) + '=' + esc(params[k])).join('&');
-  return `${path}${separator}${query}`;
+  const queryString = queryKeys.map((k) => esc(k) + '=' + esc(query[k])).join('&');
+  return `${path}${separator}${queryString}`;
 }
 
 export function isAbsoluteUrl(url: string): boolean {
