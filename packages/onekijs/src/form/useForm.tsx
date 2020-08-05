@@ -42,15 +42,12 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
   const [state, service] = useLocalService(
     FormService,
     (): FormState => {
-      const initialState: FormState = Object.assign(
-        {
-          touchOn: 'blur',
-          initialValues: {},
-          validations: {},
-          submitting: false,
-        },
-        formOptions,
-      );
+      formOptions.touchOn = formOptions.touchOn ?? TouchOn.Blur;
+      formOptions.initialValues = formOptions.initialValues ?? {};
+      const initialState: FormState = Object.assign({}, formOptions, {
+        validations: {},
+        submitting: false,
+      });
       initialState.values = initialState.initialValues;
       return initialState;
     },
