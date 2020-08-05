@@ -17,7 +17,7 @@ export interface Field extends FieldOptions {
   name: string;
   touched: boolean;
   validations: Collection<string>[];
-  touchOn: TouchOn;
+  touchOn: TouchOnType;
   validators: Validator[];
   onChange: (value: any) => void;
   onFocus: () => void;
@@ -40,7 +40,7 @@ export interface FieldProps {
 
 export interface FieldOptions {
   defaultValue?: any;
-  touchOn?: TouchOn;
+  touchOn?: TouchOnType;
 }
 
 export type FormErrorCallback = (fields: Field[], values: AnonymousObject) => void;
@@ -56,7 +56,7 @@ export interface FormListenerProps {
 export type FormListenerType = 'valueChange' | 'validationChange' | 'submittingChange';
 
 export interface FormOptions {
-  touchOn?: TouchOn;
+  touchOn?: TouchOnType;
   initialValues?: AnonymousObject;
   onError?: FormErrorCallback;
   onWarning?: FormWarningCallback;
@@ -115,7 +115,9 @@ export enum TouchOn {
   Load = 'load',
   Focus = 'focus',
   Change = 'change',
+  Submit = 'submit',
 }
+export type TouchOnType = 'blur' | 'load' | 'focus' | 'change' | 'submit';
 
 export type Ruler = (...args: any[]) => void;
 

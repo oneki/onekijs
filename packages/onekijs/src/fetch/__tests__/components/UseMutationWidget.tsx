@@ -1,16 +1,16 @@
 import React, { FC } from 'react';
 import useSetting from '../../../app/useSetting';
-import { FetchOptions } from '../../typings';
+import { AppFetchOptions } from '../../typings';
 import usePatch from '../../usePatch';
 import { usePost } from '../../usePost';
 import usePut from '../../usePut';
 
 type UseMutationWidgetProps = {
-  method: 'post' | 'put' | 'patch';
+  method: string;
   data: SubmitDataType;
   path?: string;
   baseUrl?: string;
-  options?: FetchOptions;
+  options?: AppFetchOptions;
 };
 
 export type SubmitDataType = {
