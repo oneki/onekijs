@@ -6,6 +6,11 @@ export interface AppFetchOptions<T = any> extends Omit<FetchOptions<T>, 'onError
   onSuccess?: AppSuccessCallback<T>;
 }
 
+export interface AppExtraFetchOptions<T = any> extends AppFetchOptions<T> {
+  url?: string;
+  method?: FetchMethod;
+}
+
 export type Fetcher<R = any, T = any> = (
   url: string,
   method: FetchMethod,

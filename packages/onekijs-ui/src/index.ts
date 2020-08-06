@@ -24,7 +24,7 @@ export {
   RemoteCollection,
   RemoteCollectionFetcher,
   RemoteCollectionFetcherResult,
-  RemoteItem,
+  Item as RemoteItem,
   RemoteQueryState,
   UseCollectionOptions,
   UseRemoteCollectionOptions,

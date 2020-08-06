@@ -2,7 +2,7 @@ import { get, Primitive, reducer, service } from 'onekijs';
 import { defaultComparator, isQueryFilterCriteria, rootFilterId } from '../utils/query';
 import QueryService from './QueryService';
 import {
-  Collection,
+  LocalCollection,
   LocalQuery,
   LocalQueryState,
   QueryEngine,
@@ -17,16 +17,19 @@ import {
   QuerySortDir,
 } from './typings';
 
+const defaultSearcher = 'i_like';
+
 @service
 export default class LocalQueryService<T = any, S extends LocalQueryState<T> = LocalQueryState<T>>
   extends QueryService<S>
-  implements Collection<T> {
+  implements LocalCollection<T> {
   init(): void {
     this.refresh();
   }
 
   @reducer
   addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId: QueryFilterId = rootFilterId): void {
+    this._clearOffset();
     this._addFilter(filterOrCriteria, parentFilterId);
     this.refresh();
   }
@@ -64,13 +67,21 @@ export default class LocalQueryService<T = any, S extends LocalQueryState<T> = L
   }
 
   @reducer
+  clearFields(): void {
+    this.state.fields = [];
+    this.refresh();
+  }
+
+  @reducer
   clearFilter(): void {
+    this._clearOffset();
     this._clearFilter();
     this.refresh();
   }
 
   @reducer
   clearSearch(): void {
+    this._clearOffset();
     this._clearSearch();
     this.refresh();
   }
@@ -89,6 +100,7 @@ export default class LocalQueryService<T = any, S extends LocalQueryState<T> = L
 
   @reducer
   filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[]): void {
+    this._clearOffset();
     this._setFilter(filter);
     this.refresh();
   }
@@ -97,20 +109,31 @@ export default class LocalQueryService<T = any, S extends LocalQueryState<T> = L
     return this.state.result || [];
   }
 
-  get initialData(): T[] {
-    return this.state.data;
+  get loading(): boolean {
+    return false;
   }
 
-  getSearch(): Primitive | undefined {
-    return this.state.search;
+  get paginatedData(): T[] {
+    return this.state.paginatedResult || this.data;
   }
 
-  getSort(): QuerySortDir | undefined {
-    return this.state.sort;
+  get total(): number | undefined {
+    if (this.state.result !== undefined) {
+      return this.state.result.length;
+    }
+    return undefined;
+  }
+
+  @reducer
+  load(size?: number, offset?: number): void {
+    this.state.size = size;
+    this.state.offset = offset;
+    this._setPaginatedResult(size, offset);
   }
 
   @reducer
   search(search: Primitive): void {
+    this._clearOffset();
     this.state.search = search;
     this.refresh();
   }
@@ -130,10 +153,12 @@ export default class LocalQueryService<T = any, S extends LocalQueryState<T> = L
       search: this.getSearch(),
       sort: this.getSort(),
     });
+    this._setPaginatedResult(this.state.size, this.state.offset);
   }
 
   @reducer
   removeFilter(filterId: QueryFilterId): void {
+    this._clearOffset();
     this._removeFilter(filterId);
     this.refresh();
   }
@@ -146,7 +171,14 @@ export default class LocalQueryService<T = any, S extends LocalQueryState<T> = L
 
   @reducer
   setData(data: T[]): void {
+    this._clearOffset();
     this.state.data = data;
+    this.refresh();
+  }
+
+  @reducer
+  setFields(fields: string[]): void {
+    this.state.fields = fields;
     this.refresh();
   }
 
@@ -157,28 +189,24 @@ export default class LocalQueryService<T = any, S extends LocalQueryState<T> = L
   }
 
   protected _applyCriteria(item: T, criteria: QueryFilterCriteria): boolean {
-    const operator = criteria.operator;
+    const operator = criteria.operator || 'eq';
     const value = criteria.value;
     const source = get(item, criteria.field);
     const not = criteria.not;
-    let result: boolean;
-
-    switch (operator) {
-      case 'ends_with':
-        result = String(source).endsWith(String(value));
-        break;
-      case 'like':
-        result = String(source).toUpperCase().includes(String(value).toUpperCase());
-        break;
-      case 'starts_with':
-        result = String(source).startsWith(String(value));
-        break;
-      default:
-        result = source === value;
-        break;
-    }
-
+    const result = this._applyOperator(operator, source, value);
     return not ? !result : result;
+  }
+
+  protected _applyFields(items: T[], fields?: string[]): T[] {
+    if (fields && fields.length > 0) {
+      return items.map((item) => {
+        return fields.reduce((accumulator, field) => {
+          accumulator[field] = (item as any)[field];
+          return accumulator;
+        }, {} as any) as T;
+      });
+    }
+    return items;
   }
 
   protected _applyFilter(item: T, filter?: QueryFilter): boolean {
@@ -200,14 +228,44 @@ export default class LocalQueryService<T = any, S extends LocalQueryState<T> = L
     return result;
   }
 
-  protected _applySearch(item: T, search?: Primitive): boolean {
-    if (this.state.searcher) {
-      return this.state.searcher(item, search);
+  protected _applyOperator(
+    operator: QueryFilterCriteriaOperator,
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+    item: any,
+    value?: QueryFilterCriteriaValue | QueryFilterCriteriaValue[],
+  ): boolean {
+    switch (operator) {
+      case 'ends_with':
+        return String(item).endsWith(String(value));
+      case 'i_ends_with':
+        return String(item).toUpperCase().endsWith(String(value).toUpperCase());
+      case 'like':
+        return String(item).includes(String(value));
+      case 'i_like':
+        return String(item).toUpperCase().includes(String(value).toUpperCase());
+      case 'starts_with':
+        return String(item).startsWith(String(value));
+      case 'i_starts_with':
+        return String(item).toUpperCase().startsWith(String(value).toUpperCase());
+      case 'eq':
+        return String(item).startsWith(String(value));
+      case 'i_eq':
+        return String(item).toUpperCase().startsWith(String(value).toUpperCase());
+      case 'regex':
+        return new RegExp(String(value)).test(String(item));
+      case 'i_regex':
+        return new RegExp(String(value), 'i').test(String(item));
+      default:
+        return true;
     }
-    if (search) {
-      return String(item).toUpperCase().includes(String(search).toUpperCase());
+  }
+
+  protected _applySearch(item: T, search?: QueryFilterCriteriaValue): boolean {
+    const searcher = this.state.searcher || defaultSearcher;
+    if (typeof searcher === 'function') {
+      return searcher(item, search);
     }
-    return true;
+    return this._applyOperator(searcher, item, search);
   }
 
   protected _applySort(data: T[], dir?: QuerySortDir): T[] {
@@ -237,6 +295,12 @@ export default class LocalQueryService<T = any, S extends LocalQueryState<T> = L
     return data;
   }
 
+  protected _clearOffset(): void {
+    if (this.state.offset !== undefined) {
+      this.state.offset = 0;
+    }
+  }
+
   protected _execute(data: T[], query: LocalQuery): T[] {
     // apply filters to data
     let result = data;
@@ -255,6 +319,23 @@ export default class LocalQueryService<T = any, S extends LocalQueryState<T> = L
       result = this._applySort(result, query.sort);
     }
 
+    // apply field subset
+    if (query.fields && query.fields.length > 0) {
+      result = this._applyFields(result, query.fields);
+    }
+
     return result;
+  }
+
+  protected _setPaginatedResult(size?: number, offset?: number): void {
+    if (this.state.result !== undefined) {
+      if (!size) {
+        size = this.state.result.length;
+      }
+      if (!offset) {
+        offset = 0;
+      }
+      this.state.paginatedResult = this.state.result.slice(offset, offset + size);
+    }
   }
 }

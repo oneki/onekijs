@@ -7,7 +7,7 @@ import ListItemComponent from './ListItemComponent';
 
 const VirtualistComponent: FC<VirtualListProps> = ({
   className,
-  items,
+  data,
   height,
   itemHeight = 21,
   ItemComponent = ListItemComponent,
@@ -24,7 +24,7 @@ const VirtualistComponent: FC<VirtualListProps> = ({
     [itemHeight],
   );
   const { totalSize, virtualItems } = useVirtual({
-    size: items.length,
+    size: data.length,
     estimateSize,
     parentRef,
   });
@@ -46,7 +46,7 @@ const VirtualistComponent: FC<VirtualListProps> = ({
         }}
       >
         {virtualItems.map(({ index, measureRef, start }) => {
-          const item = items[index];
+          const item = data[index];
           const listItem: ListItem = adapt(item, adapter);
           return (
             <div

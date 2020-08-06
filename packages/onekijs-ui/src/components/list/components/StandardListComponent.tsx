@@ -1,18 +1,13 @@
 import React, { FC } from 'react';
 import { addClassname } from '../../../utils/style';
-import { StandardListProps, ListItem } from '../typings';
-import ListItemComponent from './ListItemComponent';
+import { ListItem, ListProps } from '../typings';
 import { adapt } from '../utils';
+import ListItemComponent from './ListItemComponent';
 
-const StandardListComponent: FC<StandardListProps> = ({
-  className,
-  items,
-  ItemComponent = ListItemComponent,
-  adapter,
-}) => {
+const StandardListComponent: FC<ListProps> = ({ className, data, ItemComponent = ListItemComponent, adapter }) => {
   return (
     <div className={addClassname('o-list', className)}>
-      {items.map((item, index) => {
+      {data.map((item, index) => {
         const listItem: ListItem = adapt(item, adapter);
         return <ItemComponent key={`item-${index}`} index={index} {...listItem} />;
       })}

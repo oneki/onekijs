@@ -1,17 +1,21 @@
 import React from 'react';
-import { List } from 'onekijs-ui';
+import { List, useCollection } from 'onekijs-ui';
+import { users } from '../data/users';
+
+const adapter = (item: any) => {
+  return {
+    id: item.id,
+    text: `${item.firstname} ${item.lastname}`,
+    loading: false,
+  }
+}
 
 export const ListPage = () => {
-  const items = new Array(10000)
-    .fill(true)
-    .map((_n, index) => ({
-      id: index, 
-      text: `Item ${25 + Math.round(Math.random() * 100)}`,
-    }));
+  const collection = useCollection(users);
   return (
     <div style={{display: 'flex', justifyContent: 'center'}}>
       <div style={{width: '300px'}}>
-        <List height={200} items={items}>toto</List>
+        <List height={200} {...collection} adapter={adapter} />
       </div>
     </div>
   );
