@@ -1,8 +1,9 @@
-import { Primitive, reducer, saga, SagaEffect, service } from 'onekijs';
+import { HttpMethod, Primitive, reducer, saga, SagaEffect, service } from 'onekijs';
 import { defaultComparator, defaultSerializer, loading, rootFilterId } from '../utils/query';
 import QueryService from './QueryService';
 import {
   Item,
+  Query,
   QueryFilter,
   QueryFilterCriteria,
   QueryFilterCriteriaOperator,
@@ -118,31 +119,39 @@ export default class RemoteQueryService<T = any, S extends RemoteQueryState<T> =
   }
 
   get data(): Item<T>[] | undefined {
-    return this.state.result;
-  }
-
-  get paginatedData(): Item<T>[] | undefined {
-    return this.state.paginatedResult || this.data;
-  }
-
-  get loading(): boolean {
-    return this.state.loading || false;
-  }
-
-  get total(): number | undefined {
-    return this.state.total;
+    return this.state.data;
   }
 
   getFields(): string[] | undefined {
     return this.state.fields;
   }
 
+  get loading(): boolean {
+    return this.state.loading || false;
+  }
+
+  getOffset(): number | undefined {
+    return this.state.offset;
+  }
+
+  get paginatedData(): Item<T>[] | undefined {
+    return this.state.result;
+  }
+
   getSearch(): Primitive | undefined {
     return this.state.search;
   }
 
+  getSize(): number | undefined {
+    return this.state.size;
+  }
+
   getSort(): QuerySortDir | undefined {
     return this.state.sort;
+  }
+
+  get total(): number | undefined {
+    return this.state.total;
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -154,18 +163,33 @@ export default class RemoteQueryService<T = any, S extends RemoteQueryState<T> =
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Latest)
+  @saga(SagaEffect.Every)
   *load(size?: number, offset?: number) {
     yield this._setLoading(false, size, offset);
     yield this.refresh();
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Latest)
+  @saga(SagaEffect.Every)
   *refresh() {
-    const query = this.serializeQuery();
-    yield this.get(this.state.url, Object.assign({}, this.state.fetchOptions, { query }));
-    yield this._setPaginatedResult();
+    const size = this.getSize();
+    const query = {
+      filter: this.getFilter(),
+      sortBy: this.getSortBy(),
+      offset: this.getOffset(),
+      size: size === undefined ? size : size + 1,
+      fields: this.getFields(),
+      search: this.getSearch(),
+      sort: this.getSort(),
+    };
+
+    const method = this.state.method ?? HttpMethod.Get;
+    if (method === HttpMethod.Get) {
+      yield this.get(this.state.url, Object.assign({}, this.state.fetchOptions, { query: this.serializeQuery(query) }));
+    } else {
+      yield this.fetch(this.state.url, method, query, this.state.fetchOptions);
+    }
+    yield this._setResult(size, query.offset);
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -184,17 +208,9 @@ export default class RemoteQueryService<T = any, S extends RemoteQueryState<T> =
     yield this.refresh();
   }
 
-  serializeQuery(): QuerySerializerResult {
+  serializeQuery(query: Query): QuerySerializerResult {
     const serializer = this.state.serializer || defaultSerializer;
-    return serializer({
-      filter: this.getFilter(),
-      sortBy: this.getSortBy(),
-      offset: this.getOffset(),
-      size: this.getSize(),
-      fields: this.getFields(),
-      search: this.getSearch(),
-      sort: this.getSort(),
-    });
+    return serializer(query);
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -231,20 +247,30 @@ export default class RemoteQueryService<T = any, S extends RemoteQueryState<T> =
     }
     const offset = this.state.offset || defaultOffset;
     const size = this.state.size || this.state.total || defaultSize;
-    if (resetData || !this.state.result) {
-      this.state.result = [];
-      this.state.result = Array(offset + size).fill(loading, offset, offset + size);
+    if (resetData || !this.state.data) {
+      this.state.total = undefined;
+      this.state.data = Array(offset + size).fill(loading, offset, offset + size);
     } else {
-      this.state.result.splice(offset, size, ...Array(size).fill(loading));
+      this.state.data.splice(offset, size, ...Array(size).fill(loading));
     }
   }
 
   @reducer
-  protected _setPaginatedResult(): void {
-    if (this.state.result && this.state.size) {
-      this.state.paginatedResult = this.state.result.slice(this.state.offset || 0, this.state.size);
-    } else {
-      this.state.paginatedResult = this.state.result;
+  protected _setResult(size?: number, offset = 0): void {
+    if (this.state.result) {
+      if (size) {
+        const data = this.state.data || Array(size + offset);
+        data.splice(offset, size, ...this.state.result.slice(0, size));
+        this.state.data = data;
+        if (this.state.result.length <= size) {
+          this.state.total = this.state.data.length;
+        } else {
+          this.state.result = this.state.result.slice(0, size);
+        }
+      } else {
+        this.state.data = this.state.result;
+        this.state.total = this.state.data.length;
+      }
     }
   }
 }

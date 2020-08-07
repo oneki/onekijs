@@ -4,27 +4,32 @@ import RemoteQueryService from './RemoteQueryService';
 import { RemoteCollection, RemoteQueryState, UseRemoteCollectionOptions } from './typings';
 
 const useRestCollection = <T>(url: string, options: UseRemoteCollectionOptions<T> = {}): RemoteCollection<T> => {
-  const fetchOptions = omit<FetchOptions<T>>(options, [
-    'initialFilter',
-    'initialSortBy',
-    'initialSort',
-    'initialFields',
-    'serializer',
-  ]);
-  const initialState = {
-    url,
-    filter: options.initialFilter,
-    sortBy: options.initialSortBy,
-    search: options.initialSearch,
-    sort: options.initialSort,
-    fields: options.initialFields,
-    serializer: options.serializer,
-    fetchOptions,
-  } as RemoteQueryState<T>;
-
   const [state, service] = useService<RemoteQueryState<T>, RemoteQueryService<T, RemoteQueryState<T>>>(
     RemoteQueryService,
-    initialState,
+    () => {
+      const fetchOptions = Object.assign(
+        { delayLoading: 0 },
+        omit<FetchOptions<T>>(options, [
+          'initialFilter',
+          'initialSortBy',
+          'initialSort',
+          'initialFields',
+          'serializer',
+          'method',
+        ]),
+      );
+      return {
+        url,
+        filter: options.initialFilter,
+        sortBy: options.initialSortBy,
+        search: options.initialSearch,
+        sort: options.initialSort,
+        fields: options.initialFields,
+        serializer: options.serializer,
+        method: options.method,
+        fetchOptions,
+      } as RemoteQueryState<T>;
+    },
   );
 
   const methods = useMemo(() => {
@@ -59,12 +64,12 @@ const useRestCollection = <T>(url: string, options: UseRemoteCollectionOptions<T
 
   const collection = useMemo(() => {
     return Object.assign({}, methods, {
-      data: state.result,
+      data: state.data,
       loading: state.loading,
-      paginatedData: state.paginatedResult,
+      paginatedData: state.result,
       total: service.total,
     });
-  }, [methods, state.result, state.paginatedResult, state.loading, service.total]) as RemoteCollection<T>;
+  }, [methods, state.data, state.result, state.loading, service.total]) as RemoteCollection<T>;
 
   return collection;
 };

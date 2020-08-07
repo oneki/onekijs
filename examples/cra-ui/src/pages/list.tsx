@@ -15,7 +15,7 @@ export const ListPage = () => {
   return (
     <div style={{display: 'flex', justifyContent: 'center'}}>
       <div style={{width: '300px'}}>
-        <List height={200} {...collection} adapter={adapter} />
+        <List height={200} data={collection} adapter={adapter} />
       </div>
     </div>
   );

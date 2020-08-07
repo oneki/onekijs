@@ -1,4 +1,4 @@
-import { Fetcher, FetchOptions, FetchState, Primitive } from 'onekijs';
+import { Fetcher, FetchOptions, FetchState, HttpMethod, Primitive } from 'onekijs';
 
 export interface Collection<T = any> {
   addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId?: QueryFilterId): void;
@@ -157,13 +157,14 @@ export type RemoteCollectionFetcherResult<T> =
 export type Item<T = any> = T | undefined | symbol;
 
 export interface RemoteQueryState<T = any> extends QueryState {
-  total?: number;
-  url: string;
-  result?: Item<T>[];
-  paginatedResult?: Item<T>[];
-  serializer?: QuerySerializer;
+  data?: Item<T>[];
   fetchOptions?: FetchOptions<T>;
   loading?: boolean;
+  method?: HttpMethod;
+  result?: Item<T>[];
+  serializer?: QuerySerializer;
+  total?: number;
+  url: string;
 }
 
 export interface UseCollectionOptions<T = any> extends CollectionOptions {
@@ -177,4 +178,5 @@ export interface UseRemoteCollectionOptions<T = any>
     FetchOptions<RemoteCollectionFetcherResult<T>> {
   serializer?: QuerySerializer;
   fetcher?: RemoteCollectionFetcher<T>;
+  method?: HttpMethod;
 }

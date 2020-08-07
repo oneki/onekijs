@@ -147,7 +147,7 @@ export default class LocalQueryService<T = any, S extends LocalQueryState<T> = L
   @reducer
   refresh(): void {
     const queryEngine: QueryEngine = this.state.queryEngine || this._execute.bind(this);
-    this.state.result = queryEngine(this.initialData, {
+    this.state.result = queryEngine(this.state.data, {
       filter: this.getFilter(),
       sortBy: this.getSortBy(),
       search: this.getSearch(),

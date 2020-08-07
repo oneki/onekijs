@@ -7,7 +7,7 @@ export const SelectPage = () => {
   return (
     <div style={{display: 'flex', justifyContent: 'center'}}>
       <div style={{width: '300px'}}>
-        <Select placeholder="Search by position" {...collection} />
+        <Select placeholder="Search by position" data={collection} />
       </div>
     </div>
   );

@@ -100,9 +100,18 @@ export default class Service<S extends State = AnyState> {
     this[type] = function (...args: any[]) {
       if (!self[inReducer]) {
         // call from a saga -> dispatch
-        return self[dispatch]({
-          type: actionType,
-          payload: toPayload(args),
+        // return self[dispatch]({
+        //   type: actionType,
+        //   payload: toPayload(args),
+        // });
+
+        return new Promise((resolve, reject) => {
+          self[dispatch]({
+            type: actionType,
+            payload: toPayload(args),
+            resolve,
+            reject,
+          });
         });
       }
       return reducer.apply(self, args);
@@ -113,8 +122,8 @@ export default class Service<S extends State = AnyState> {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
     const actionType = (this.constructor as any)[ID] ? `${(this.constructor as any)[ID]}.${type}` : type;
-    const effect = saga.effect;
-    const delay = saga.delay;
+    const effect = saga.saga.effect;
+    const delay = saga.saga.delay;
 
     const wrapper: any = function* wrapper(action: any) {
       try {
@@ -167,12 +176,22 @@ export default class Service<S extends State = AnyState> {
         const nextState = produce(state, (draftState: S) => {
           this.state = draftState;
           if (this[reducers][action.type]) {
-            //debugger;
             this[reducers][action.type].apply(this, fromPayload(action.payload));
           }
         });
         this.state = nextState;
+        if (action.resove) {
+          setTimeout(() => {
+            action.resolve(nextState);
+          }, 0);
+        }
+
         return nextState;
+      } catch (e) {
+        if (action.reject) {
+          action.reject(e);
+        }
+        throw e;
       } finally {
         this[inReducer] = false;
       }

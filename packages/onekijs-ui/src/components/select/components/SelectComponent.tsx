@@ -7,7 +7,7 @@ import SelectOptionsComponent from './SelectOptionsComponent';
 const SelectComponent: FC<SelectProps<any>> = ({
   className,
   placeholder,
-  items,
+  data,
   InputComponent = SelectInputComponent,
 }) => {
   const [open, setOpen] = useState(false);
@@ -16,7 +16,7 @@ const SelectComponent: FC<SelectProps<any>> = ({
     <div className={className} ref={setRefElement}>
       <InputComponent placeholder={placeholder} onIconClick={() => setOpen(!open)} open={open} />
       <Dropdown refElement={refElement} open={open}>
-        <SelectOptionsComponent items={items} />
+        <SelectOptionsComponent data={data} />
       </Dropdown>
     </div>
   );

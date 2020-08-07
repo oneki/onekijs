@@ -1,33 +1,69 @@
-import React, { FC, useCallback, useRef } from 'react';
+import React, { FC, useCallback, useEffect, useRef } from 'react';
 import { useVirtual } from 'react-virtual';
+import { isCollection } from '../../../utils/collection';
+import { loading } from '../../../utils/query';
 import { addClassname } from '../../../utils/style';
-import { ListItem, VirtualListProps } from '../typings';
-import { adapt } from '../utils';
+import { ListItem, ListStatus, VirtualListProps } from '../typings';
+import { adapt, canFetchMore, getListStatus } from '../utils';
 import ListItemComponent from './ListItemComponent';
 
+const defaultHeight = 200;
+const defaultItemHeight = 21;
+const defaultPreload = 100;
+const defaultIncrement = 10;
+
 const VirtualistComponent: FC<VirtualListProps> = ({
+  adapter,
   className,
   data,
-  height,
-  itemHeight = 21,
+  height = defaultHeight,
   ItemComponent = ListItemComponent,
-  adapter,
+  itemHeight = defaultItemHeight,
+  preload = defaultPreload,
+  increment = defaultIncrement,
 }) => {
   const parentRef = useRef(null);
-  const estimateSize = useCallback(
+
+  const estimatedItemHeight = useCallback(
     (index: number) => {
       if (typeof itemHeight === 'function') {
-        return itemHeight(index);
+        return itemHeight(index) || defaultItemHeight;
       }
-      return itemHeight;
+      return defaultItemHeight;
     },
     [itemHeight],
   );
+
+  let items = isCollection(data) ? data.data : data;
+  if (items === undefined) {
+    items = Array(preload).fill(loading);
+  } else {
+    const firstLoadingItem = items.indexOf(loading);
+    if (firstLoadingItem > 0) {
+      items = items.slice(0, firstLoadingItem + 1);
+    }
+  }
   const { totalSize, virtualItems } = useVirtual({
-    size: data.length,
-    estimateSize,
+    size: items.length,
+    estimateSize: estimatedItemHeight,
     parentRef,
   });
+
+  useEffect(() => {
+    if (isCollection(data)) {
+      const status = getListStatus(data);
+      if (status === ListStatus.NotInitialized) {
+        data.load(preload);
+      } else if (canFetchMore(data)) {
+        const lastVirtualItem = virtualItems[virtualItems.length - 1];
+        const lastVirtualItemIndex = lastVirtualItem ? lastVirtualItem.index : 0;
+        if (lastVirtualItemIndex >= (items as any[]).length - preload / 2) {
+          data.load(increment, (data.data as any[]).length);
+        }
+      }
+    }
+  }, [data, preload, virtualItems, increment, items]);
+
   return (
     <div
       ref={parentRef}
@@ -46,7 +82,7 @@ const VirtualistComponent: FC<VirtualListProps> = ({
         }}
       >
         {virtualItems.map(({ index, measureRef, start }) => {
-          const item = data[index];
+          const item = (items as any[])[index];
           const listItem: ListItem = adapt(item, adapter);
           return (
             <div

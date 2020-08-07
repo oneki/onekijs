@@ -1,13 +1,34 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { addClassname } from '../../../utils/style';
-import { ListItem, ListProps } from '../typings';
-import { adapt } from '../utils';
+import { ListItem, ListProps, ListStatus } from '../typings';
+import { adapt, getListStatus } from '../utils';
 import ListItemComponent from './ListItemComponent';
+import { isCollection } from '../../../utils/collection';
+import { loading } from '../../../utils/query';
 
-const StandardListComponent: FC<ListProps> = ({ className, data, ItemComponent = ListItemComponent, adapter }) => {
+const defaultPreload = 5;
+
+const StandardListComponent: FC<ListProps> = ({
+  className,
+  data,
+  ItemComponent = ListItemComponent,
+  adapter,
+  preload = defaultPreload,
+}) => {
+  const items = (isCollection(data) ? data.data : data) ?? Array(preload).fill(loading);
+
+  useEffect(() => {
+    if (isCollection(data)) {
+      const status = getListStatus(data);
+      if (status === ListStatus.NotInitialized) {
+        return data.load();
+      }
+    }
+  }, [data]);
+
   return (
     <div className={addClassname('o-list', className)}>
-      {data.map((item, index) => {
+      {items.map((item, index) => {
         const listItem: ListItem = adapt(item, adapter);
         return <ItemComponent key={`item-${index}`} index={index} {...listItem} />;
       })}
