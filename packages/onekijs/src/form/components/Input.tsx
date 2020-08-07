@@ -7,7 +7,7 @@ const Input: FC<InputProps> = React.memo((props) => {
   const [validators, wrappedProps] = extractValidators(props);
   const { name, defaultValue, ...inputProps } = wrappedProps;
   const { value, onFocus, onBlur, onChange } = useField(name, validators, {
-    defaultValue: defaultValue === undefined ? '' : defaultValue,
+    defaultValue: defaultValue === undefined ? (props.type === 'checkbox' ? false : '') : defaultValue,
   });
 
   const onCheck = useCallback(

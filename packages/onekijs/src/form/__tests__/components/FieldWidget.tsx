@@ -8,6 +8,9 @@ export type FormData = {
   name?: string;
   firstname?: string;
   gender?: string;
+  address?: {
+    street?: string;
+  };
 };
 
 type FieldWidgetProps = {
@@ -38,6 +41,10 @@ const FieldWidget: FC<FieldWidgetProps> = ({ submit, initialValues }) => {
               ])}
             />
             {getValidation('firstname').status} : {getValidation('firstname').message}
+          </div>
+          <div>
+            <b>Street: </b>
+            <input data-testid="address.street" {...field('address.street')} />
           </div>
           <div>
             <b>Gender: </b>

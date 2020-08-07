@@ -80,6 +80,8 @@
     "immer": "^6.0.2",
     "intl": "^1.2.5",
     "isomorphic-fetch": "^2.2.1",
+    "jest": "^26.2.2",
+    "jest-environment-jsdom": "^26.2.0",
     "jose": "^1.27.2",
     "lerna": "^3.22.1",
     "lint-staged": "^10.2.10",

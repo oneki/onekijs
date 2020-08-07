@@ -7,6 +7,7 @@ import { waitCallback } from '../../__tests__/utils/timeout';
 import { FormOptions, FormSubmitCallback, ValidationCode } from '../typings';
 import FieldValidationWidget from './components/FieldValidationWidget';
 import FieldWidget, { FormData } from './components/FieldWidget';
+import { interact } from './utils/element';
 
 type fieldTestOptions = {
   title: string;
@@ -16,23 +17,13 @@ type fieldTestOptions = {
   fillData?: FormData;
 };
 
-const { location } = window;
-
-beforeEach((): void => {
-  delete window.location;
-  (window as any).location = {
-    href: '',
-  };
-});
-
-afterEach((): void => {
-  window.location = location;
-});
-
 const validValues = {
   name: 'Doe',
   firstname: 'John',
   gender: 'male',
+  address: {
+    street: 'qux',
+  },
 };
 
 const fieldTests: fieldTestOptions[] = [
@@ -44,10 +35,33 @@ const fieldTests: fieldTestOptions[] = [
       name: 'Doe',
       firstname: 'John',
       gender: 'male',
+      address: {
+        street: 'qux',
+      },
     },
   },
   {
-    title: 'initial values correctly set (with gender)',
+    title: 'initial values correctly set (with gender and street)',
+    submit: jest.fn(),
+    initialValues: {
+      name: 'Foo',
+      firstname: 'Bar',
+      gender: 'female',
+      address: {
+        street: 'baz',
+      },
+    },
+    expected: {
+      name: 'Foo',
+      firstname: 'Bar',
+      gender: 'female',
+      address: {
+        street: 'baz',
+      },
+    },
+  },
+  {
+    title: 'initial values with address undefined',
     submit: jest.fn(),
     initialValues: {
       name: 'Foo',
@@ -58,6 +72,9 @@ const fieldTests: fieldTestOptions[] = [
       name: 'Foo',
       firstname: 'Bar',
       gender: 'female',
+      address: {
+        street: '',
+      },
     },
   },
   {
@@ -67,11 +84,17 @@ const fieldTests: fieldTestOptions[] = [
       name: 'Foo',
       firstname: 'Bar',
       gender: 'female',
+      address: {
+        street: 'baz',
+      },
     },
     fillData: {
       name: 'Foo',
       firstname: 'Bar',
       gender: 'female',
+      address: {
+        street: 'baz',
+      },
     },
   },
   {
@@ -82,17 +105,20 @@ const fieldTests: fieldTestOptions[] = [
       name: 'Foo',
       firstname: 'Bar',
       gender: 'female',
+      address: {
+        street: 'baz',
+      },
     },
     fillData: {
       name: 'Foo',
       firstname: 'Bar',
       gender: 'female',
+      address: {
+        street: 'baz',
+      },
     },
   },
 ];
-
-/*          await waitCallback(onError as jest.Mock);
-          expect(onError).toHaveBeenCalled();*/
 
 describe('it tests the field helper', () => {
   fieldTests.forEach((test) => {
@@ -106,23 +132,26 @@ describe('it tests the field helper', () => {
       const nameElement = getByTestId('name');
       const firstnameElement = getByTestId('firstname');
       const genderElement = getByTestId('gender');
-
+      const streetElement = getByTestId('address.street');
       if (test.initialValues) {
-        expect(nameElement).toHaveValue(test.initialValues.name);
-        expect(firstnameElement).toHaveValue(test.initialValues.firstname);
+        expect(nameElement).toHaveDisplayValue(test.initialValues.name || '');
+        expect(firstnameElement).toHaveDisplayValue(test.initialValues.firstname || '');
         if (test.initialValues.gender) {
           expect(genderElement).toHaveValue(test.initialValues.gender);
         } else {
           expect(genderElement).toHaveValue('male');
         }
+        expect(streetElement).toHaveDisplayValue(test.initialValues.address?.street || '');
       }
 
       if (test.fillData) {
         userEvent.clear(nameElement);
         userEvent.clear(firstnameElement);
+        userEvent.clear(streetElement);
         if (test.fillData.name) userEvent.type(nameElement, test.fillData.name);
         if (test.fillData.firstname) userEvent.type(firstnameElement, test.fillData.firstname);
         if (test.fillData.gender) fireEvent.change(genderElement, { target: { value: test.fillData.gender } });
+        if (test.fillData.address?.street) userEvent.type(streetElement, test.fillData.address.street);
       }
 
       fireEvent.click(getByTestId('submit'));
@@ -328,16 +357,3 @@ describe('it tests validations when the field helper is used', () => {
     });
   });
 });
-
-const interact = (element: HTMLElement, submit: HTMLElement, test: fieldValidationOptions, value?: string): void => {
-  if (value !== undefined) {
-    userEvent.clear(element);
-    userEvent.type(element, value);
-  }
-  if (test.options?.touchOn === 'focus') {
-    element.focus();
-  } else if (test.options?.touchOn === 'blur') {
-    element.focus();
-    submit.focus();
-  }
-};
