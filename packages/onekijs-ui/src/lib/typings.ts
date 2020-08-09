@@ -1,4 +1,4 @@
-import { Fetcher, FetchOptions, FetchState, Primitive } from 'onekijs';
+import { Fetcher, FetchOptions, FetchState, HttpMethod, Primitive } from 'onekijs';
 
 export interface Collection<T = any> {
   addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId?: QueryFilterId): void;
@@ -11,29 +11,49 @@ export interface Collection<T = any> {
     parentFilterId?: QueryFilterId,
   ): void;
   addSortBy(field: string, dir?: QuerySortDir, comparator?: QuerySortComparator, prepend?: boolean): void;
+  clearFields(): void;
   clearFilter(): void;
   clearSearch(): void;
   clearSort(): void;
   clearSortBy(): void;
-  data: T[];
+  data?: Item<T>[];
   filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | null): void;
+  getFields(): string[] | undefined;
   getFilter(): QueryFilter | undefined;
   getSearch(): Primitive | undefined;
   getSort(): QuerySortDir | undefined;
   getSortBy(): QuerySortBy[] | undefined;
+  load(size?: number, offset?: number): void;
+  loading: boolean;
+  paginatedData?: Item<T>[];
   refresh(): void;
   removeFilter(filterId: QueryFilterId): void;
   removeSortBy(field: string): void;
   search(search: Primitive): void;
+  setFields(fields: string[]): void;
   sort(dir: QuerySortDir): void;
   sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void;
+  total?: number;
 }
 
-export type LocalQuery = Omit<Query, 'offset' | 'fields' | 'size'>;
+export interface CollectionOptions {
+  initialFields?: string[];
+  initialFilter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[];
+  initialSortBy?: string | QuerySortBy | QuerySortBy[];
+  initialSort?: QuerySortDir;
+  initialSearch?: Primitive;
+}
+
+export interface LocalCollection<T = any> extends Collection<T> {
+  setData(data: T[]): void;
+}
+
+export type LocalQuery = Omit<Query, 'offset' | 'size'>;
 
 export interface LocalQueryState<T = any> extends QueryState {
   data: T[];
   result?: T[];
+  paginatedResult?: T[];
   queryEngine?: QueryEngine;
   comparator?: QuerySortComparator;
   searcher?: QuerySearcher<T>;
@@ -65,7 +85,17 @@ export interface QueryFilterCriteria {
   not?: boolean;
 }
 
-export type QueryFilterCriteriaOperator = 'eq' | 'like' | 'starts_with' | 'ends_with';
+export type QueryFilterCriteriaOperator =
+  | 'eq'
+  | 'like'
+  | 'starts_with'
+  | 'ends_with'
+  | 'regex'
+  | 'i_eq'
+  | 'i_like'
+  | 'i_starts_with'
+  | 'i_ends_with'
+  | 'i_regex';
 
 export type QueryFilterCriteriaValue = Primitive | null;
 
@@ -78,7 +108,7 @@ export interface QueryLimit {
   size?: number;
 }
 
-export type QuerySearcher<T> = (item: T, search?: Primitive) => boolean;
+export type QuerySearcher<T> = QueryFilterCriteriaOperator | ((item: T, search?: QueryFilterCriteriaValue) => boolean);
 
 export type QuerySerializer = (query: Query) => QuerySerializerResult;
 
@@ -107,23 +137,12 @@ export interface QueryState extends FetchState {
   sortBy?: string | QuerySortBy | QuerySortBy[];
   sort?: QuerySortDir;
   search?: Primitive;
+  fields?: string[];
+  offset?: number;
+  size?: number;
 }
 
-export type RemoteCollection<T = any> = Omit<Collection<T>, 'data'> & {
-  clearFields(): void;
-  clearLimit(): void;
-  clearOffset(): void;
-  clearSize(): void;
-  data: RemoteItem<T>[];
-  getFields(): string[] | undefined;
-  getLimit(): QueryLimit;
-  getOffset(): number | undefined;
-  getSize(): number | undefined;
-  setFields(fields: string[]): void;
-  setLimit(offset: number, size: number): void;
-  setOffset(offset: number): void;
-  setSize(size: number): void;
-};
+export type RemoteCollection<T = any> = Collection<T>;
 
 export type RemoteCollectionFetcher<T> = Fetcher<RemoteCollectionFetcherResult<T>>;
 
@@ -135,35 +154,29 @@ export type RemoteCollectionFetcherResult<T> =
       data: T[];
     };
 
-export type RemoteItem<T = any> = T | undefined | symbol;
+export type Item<T = any> = T | undefined | symbol;
 
 export interface RemoteQueryState<T = any> extends QueryState {
-  fields?: string[];
-  offset?: number;
-  size?: number;
+  data?: Item<T>[];
+  fetchOptions?: FetchOptions<T>;
+  loading?: boolean;
+  method?: HttpMethod;
+  result?: Item<T>[];
+  serializer?: QuerySerializer;
   total?: number;
   url: string;
-  result?: RemoteItem<T>[];
-  serializer?: QuerySerializer;
-  fetchOptions?: FetchOptions<T>;
 }
 
-export interface UseCollectionOptions<T = any> {
-  initialFilter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[];
-  initialSortBy?: string | QuerySortBy | QuerySortBy[];
-  initialSort?: QuerySortDir;
-  initialSearch?: Primitive;
+export interface UseCollectionOptions<T = any> extends CollectionOptions {
   queryEngine?: QueryEngine;
   comparator?: QuerySortComparator;
   searcher?: QuerySearcher<T>;
 }
 
 export interface UseRemoteCollectionOptions<T = any>
-  extends UseCollectionOptions,
+  extends CollectionOptions,
     FetchOptions<RemoteCollectionFetcherResult<T>> {
-  initialFields?: string[];
-  initialSize?: number;
-  initialOffset?: number;
   serializer?: QuerySerializer;
   fetcher?: RemoteCollectionFetcher<T>;
+  method?: HttpMethod;
 }

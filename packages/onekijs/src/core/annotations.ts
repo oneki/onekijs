@@ -6,6 +6,7 @@ import {
   takeLatest,
   takeLeading,
   throttle as throttleSaga,
+  take,
 } from 'redux-saga/effects';
 import 'reflect-metadata';
 
@@ -89,18 +90,18 @@ export const throttle: (delay: number, saga: AnyFunction) => AnyFunction = funct
 };
 
 const effects: AnonymousObject = {
-  [SagaEffect.Debounce]: debounce,
-  [SagaEffect.Throttle]: throttle,
-  [SagaEffect.Every]: every,
-  [SagaEffect.Leading]: leading,
-  [SagaEffect.Latest]: latest,
-  [SagaEffect.Serial]: serial,
+  [SagaEffect.Debounce]: debounceSaga,
+  [SagaEffect.Throttle]: throttleSaga,
+  [SagaEffect.Every]: takeEvery,
+  [SagaEffect.Leading]: takeLeading,
+  [SagaEffect.Latest]: takeLatest,
+  [SagaEffect.Serial]: take,
 };
 export function saga(type?: SagaEffect, delay?: number) {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   return function (target: any, propertyKey: string) {
     target[propertyKey].saga = {
-      effect: type ? effects[type] : serial,
+      effect: type ? effects[type] : take,
       delay,
     };
   };

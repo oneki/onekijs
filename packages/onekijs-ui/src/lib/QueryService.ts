@@ -1,4 +1,4 @@
-import { FetchService, get, reducer, Primitive } from 'onekijs';
+import { FetchService, get, Primitive, reducer } from 'onekijs';
 import { defaultComparator, isQueryFilterCriteria, rootFilterId, visitFilter } from '../utils/query';
 import {
   QueryFilter,
@@ -12,9 +12,22 @@ import {
 } from './typings';
 
 export default abstract class QueryService<S extends QueryState = QueryState> extends FetchService<S> {
+  getFields(): string[] | undefined {
+    return this.state.fields;
+  }
+
   getFilter(): QueryFilter | undefined {
     return this._formatFilter(get<QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[]>(this.state, 'filter'));
   }
+
+  getSearch(): Primitive | undefined {
+    return this.state.search;
+  }
+
+  getSort(): QuerySortDir | undefined {
+    return this.state.sort;
+  }
+
   getSortBy(): QuerySortBy[] | undefined {
     return this._formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(this.state, 'sortBy'));
   }
@@ -47,6 +60,11 @@ export default abstract class QueryService<S extends QueryState = QueryState> ex
       sortBy.push({ field, dir, comparator });
     }
     this.state.sortBy = sortBy;
+  }
+
+  @reducer
+  protected _clearFields(): void {
+    this.state.fields = undefined;
   }
 
   @reducer
@@ -133,6 +151,11 @@ export default abstract class QueryService<S extends QueryState = QueryState> ex
     if (sortBy) {
       this.state.sortBy = sortBy.filter((sort) => sort.field !== field);
     }
+  }
+
+  @reducer
+  protected _setFIelds(fields: string[]): void {
+    this.state.fields = fields;
   }
 
   @reducer

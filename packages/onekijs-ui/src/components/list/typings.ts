@@ -1,12 +1,15 @@
 import { FC } from 'react';
+import { Collection } from '../../lib/typings';
 
 export interface ListProps<T = any> {
-  className?: string;
-  height?: number;
-  itemHeight?: number | ((index: number) => number);
-  ItemComponent?: FC<ListItemProps<T>>;
   adapter?: ListItemAdapter<T>;
-  items: T[];
+  className?: string;
+  data: T[] | Collection<T>;
+  height?: number;
+  ItemComponent?: FC<ListItemProps<T>>;
+  itemHeight?: number | ((index: number) => number);
+  preload?: number;
+  increment?: number;
 }
 
 export interface ListItem<T = any> {
@@ -22,8 +25,13 @@ export interface ListItemProps<T = any> extends ListItem<T> {
   index: number;
 }
 
+export enum ListStatus {
+  NotInitialized = 'not initialized',
+  NotLoaded = 'not loaded',
+  Loading = 'loading',
+  Loaded = 'loaded',
+}
+
 export type StandardListProps<T = any> = Omit<ListProps<T>, 'height' | 'itemHeight'>;
 
-export type VirtualListProps<T = any> = ListProps<T> & {
-  height: number;
-};
+export type VirtualListProps<T = any> = ListProps<T>;

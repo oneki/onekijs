@@ -1,10 +1,10 @@
-import { AppFetchOptions } from './typings';
+import { AppFetchOptions, AppExtraFetchOptions } from './typings';
 import useSecurePostPutPatch from './useSecurePostPutPatch';
 
 const useSecurePut = <T = any>(
   url: string,
   options: AppFetchOptions<T> = {},
-): [(body: T, extraOptions?: AppFetchOptions<T>) => void, boolean] => {
+): [(body: T, extraOptions?: AppExtraFetchOptions<T>) => void, boolean] => {
   return useSecurePostPutPatch(url, 'PUT', options);
 };
 

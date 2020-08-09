@@ -6,9 +6,9 @@ import VirtualistComponent from './VirtualListComponent';
 
 const ListComponent: FC<ListProps> = (props) => {
   if (props.height) {
-    return <VirtualistComponent {...props} height={props.height} />;
+    return <VirtualistComponent {...props} />;
   } else {
-    const standardProps: StandardListProps = omit(props, ['itemHeight', 'height']);
+    const standardProps: StandardListProps = omit(props, ['itemHeight', 'height', 'preload']);
     return <StandardListComponent {...standardProps} />;
   }
 };

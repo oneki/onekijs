@@ -3,15 +3,15 @@ import useAppContext from '../app/useAppContext';
 import useService from '../core/useService';
 import useNotificationService from '../notification/useNotificationService';
 import FetchService from './FetchService';
-import { AppFetchOptions, FetchState } from './typings';
+import { AppFetchOptions, FetchState, AppExtraFetchOptions, FetchMethod } from './typings';
 import { asFetchOptions } from './utils';
 import useOnekiRouter from '../app/useOnekiRouter';
 
 const usePostPutPatch = <T = any>(
   url: string,
-  method: string,
+  method: FetchMethod,
   options: AppFetchOptions<T> = {},
-): [(body: Partial<T>, extraOptions?: AppFetchOptions<T>) => void, boolean] => {
+): [(body: Partial<T>, extraOptions?: AppExtraFetchOptions<T>) => void, boolean] => {
   const notificationService = useNotificationService();
   const appContext = useAppContext();
   const optionsRef = useRef(options);
@@ -21,7 +21,7 @@ const usePostPutPatch = <T = any>(
     loading: false,
   } as FetchState);
   const executor = useCallback(
-    (body: Partial<T>, extraOptions: AppFetchOptions<T> = {}) => {
+    (body: Partial<T>, extraOptions: AppExtraFetchOptions<T> = {}) => {
       extraOptions = Object.assign({}, optionsRef.current, extraOptions);
       service.fetch(
         extraOptions.url || url,
