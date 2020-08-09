@@ -2,14 +2,17 @@ import { cancel, delay, fork } from 'redux-saga/effects';
 import { reducer, saga } from '../core/annotations';
 import Service from '../core/Service';
 import { SagaEffect } from '../core/typings';
-import { FetchOptions, FetchState, HttpMethod, FetchMethod } from './typings';
+import { FetchMethod, FetchOptions, FetchState, HttpMethod } from './typings';
 import { asyncHttp } from './utils';
 
 export default class FetchService<S extends FetchState = FetchState> extends Service<S> {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  *delayLoading(delay_ms: number) {
-    yield delay(delay_ms);
-    yield this.setLoading(true);
+  *delayLoading(delay_ms?: number) {
+    yield this.setLoading(delay_ms ? false : true, true);
+    if (delay_ms) {
+      yield delay(delay_ms);
+      yield this.setLoading(true, true);
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -20,9 +23,15 @@ export default class FetchService<S extends FetchState = FetchState> extends Ser
 
   @reducer
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  fetchError(e: any): void {
+    this.state.error = e;
+  }
+
+  @reducer
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   fetchSuccess(result: any): void {
+    this.state.error = undefined;
     this.state.result = result;
-    this.state.loading = false;
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -30,7 +39,7 @@ export default class FetchService<S extends FetchState = FetchState> extends Ser
   *fetch<R = any, T = any>(url: string, method: FetchMethod, body?: T, options: FetchOptions<R, T> = {}) {
     let loadingTask = null;
     try {
-      loadingTask = yield fork([this, this.delayLoading], options.delayLoading ?? 200);
+      loadingTask = yield fork([this, this.delayLoading], options.delayLoading);
       const fetcher = options.fetcher || asyncHttp;
       const result = yield fetcher(url, method, body, options);
       yield cancel(loadingTask);
@@ -46,7 +55,7 @@ export default class FetchService<S extends FetchState = FetchState> extends Ser
       if (loadingTask) {
         yield cancel(loadingTask);
       }
-      yield this.setLoading(false);
+      yield this.fetchError(e);
       const onError = options.onError;
       if (onError) {
         yield onError(e);
@@ -81,7 +90,8 @@ export default class FetchService<S extends FetchState = FetchState> extends Ser
   }
 
   @reducer
-  setLoading(isLoading: boolean): void {
-    this.state.loading = isLoading;
+  setLoading(loading: boolean, deprecated: boolean): void {
+    this.state.loading = loading;
+    this.state.deprecated = deprecated;
   }
 }

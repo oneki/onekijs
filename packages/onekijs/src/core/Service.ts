@@ -104,7 +104,6 @@ export default class Service<S extends State = AnyState> {
         //   type: actionType,
         //   payload: toPayload(args),
         // });
-
         return new Promise((resolve, reject) => {
           self[dispatch]({
             type: actionType,
@@ -180,7 +179,7 @@ export default class Service<S extends State = AnyState> {
           }
         });
         this.state = nextState;
-        if (action.resove) {
+        if (action.resolve) {
           setTimeout(() => {
             action.resolve(nextState);
           }, 0);

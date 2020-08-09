@@ -56,6 +56,7 @@ const useCollection = <T>(initialData: T[], options: UseCollectionOptions<T> = {
     return Object.assign({}, methods, {
       data: state.result,
       loading: false,
+      deprecated: false,
       paginatedData: state.paginatedResult,
       total: service.total,
     });

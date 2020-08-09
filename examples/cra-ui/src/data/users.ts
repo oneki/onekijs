@@ -1,4 +1,16 @@
-export const users = [
+export interface User {
+  id: number,
+  firstname: string,
+  lastname: string,
+  address: {
+    street: string,
+    postalCode: number,
+    city: string,
+  }
+  phones: string[],
+}
+
+export const users: User[] = [
   {
     id: 0,
     firstname: 'Burnett',

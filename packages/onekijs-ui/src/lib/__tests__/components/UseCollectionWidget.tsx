@@ -16,7 +16,7 @@ const UseCollectionWidget: FC<UseCollectionProps<TestUser>> = ({ data, options, 
   if (handler) {
     execute = () => {
       handler.actions.forEach((action) => {
-        collection[action.method](...action.args);
+        (collection as any)[action.method](...action.args);
       });
     };
   }

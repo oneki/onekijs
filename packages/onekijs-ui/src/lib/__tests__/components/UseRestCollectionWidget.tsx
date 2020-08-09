@@ -20,6 +20,7 @@ const UseRestCollectionWidget: FC<UseRestCollectionProps<TestUser>> = ({ url, op
       });
     };
   }
+
   return (
     <>
       <div data-testid="result">{JSON.stringify(collection.data)}</div>

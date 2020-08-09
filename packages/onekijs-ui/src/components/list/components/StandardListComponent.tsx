@@ -4,7 +4,7 @@ import { ListItem, ListProps, ListStatus } from '../typings';
 import { adapt, getListStatus } from '../utils';
 import ListItemComponent from './ListItemComponent';
 import { isCollection } from '../../../utils/collection';
-import { loading } from '../../../utils/query';
+import { loadingSymbol } from '../../../lib/typings';
 
 const defaultPreload = 5;
 
@@ -15,7 +15,7 @@ const StandardListComponent: FC<ListProps> = ({
   adapter,
   preload = defaultPreload,
 }) => {
-  const items = (isCollection(data) ? data.data : data) ?? Array(preload).fill(loading);
+  const items = (isCollection(data) ? data.data : data) ?? Array(preload).fill(loadingSymbol);
 
   useEffect(() => {
     if (isCollection(data)) {

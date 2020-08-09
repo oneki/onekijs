@@ -1,5 +1,6 @@
 import { AppErrorCallback, AppSuccessCallback } from '../app/typings';
 import { Collection, ErrorCallback, State, SuccessCallback } from '../core/typings';
+import BasicError from '../core/BasicError';
 
 export interface AppFetchOptions<T = any> extends Omit<FetchOptions<T>, 'onError' | 'onSuccess'> {
   onError?: AppErrorCallback;
@@ -33,7 +34,9 @@ export interface FetchOptions<R = any, T = any> extends RequestInit {
 
 export interface FetchState extends State {
   loading?: boolean;
+  deprecated?: boolean;
   result?: any;
+  error?: BasicError;
 }
 
 export enum HttpMethod {
