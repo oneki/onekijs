@@ -1,6 +1,6 @@
 import { Collection } from '../../lib/typings';
 import { isCollection } from '../../utils/collection';
-import { isLoading, loading } from '../../utils/query';
+import { isLoading } from '../../utils/query';
 import { ListItem, ListItemAdapter, ListStatus } from './typings';
 
 export const adapt = <T>(item: T | symbol | undefined, adapter?: ListItemAdapter<T>): ListItem<T> => {
@@ -32,31 +32,29 @@ export const adapt = <T>(item: T | symbol | undefined, adapter?: ListItemAdapter
 };
 
 export const canFetchMore = (data: any[] | Collection<any>): boolean => {
-  if (isCollection(data) && !(getListStatus(data) === ListStatus.Loading)) {
+  if (isCollection(data) && ![ListStatus.Loading, ListStatus.PartialLoading].includes(getListStatus(data))) {
     return data.total === undefined;
   }
   return false;
 };
 
-export const getListStatus = (data: any[] | Collection<any>, size?: number, offset?: number): ListStatus => {
+export const getListStatus = (data: any[] | Collection<any>): ListStatus => {
   if (isCollection(data)) {
-    let items = data.data;
+    const items = data.data;
+    const loading = data.loading;
     if (items === undefined) {
-      return ListStatus.NotInitialized;
+      return loading ? ListStatus.Loading : ListStatus.NotInitialized;
     }
-    size = size || items.length;
-    offset = offset || 0;
-
-    const limit = data.total === undefined ? offset + size : Math.min(offset + size, data.total);
-    items = Object.assign(Array(limit - offset), items.slice(offset, limit));
-
-    if (items.includes(loading)) {
-      return ListStatus.Loading;
+    if (!loading) {
+      return ListStatus.Loaded;
     }
 
-    if (items.includes(undefined)) {
-      return ListStatus.NotLoaded;
+    for (const item of items) {
+      if (!isLoading(item)) {
+        return ListStatus.PartialLoading;
+      }
     }
+    return ListStatus.Loading;
   }
   return ListStatus.Loaded;
 };

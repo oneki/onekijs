@@ -66,10 +66,11 @@ const useRestCollection = <T>(url: string, options: UseRemoteCollectionOptions<T
     return Object.assign({}, methods, {
       data: state.data,
       loading: state.loading,
+      deprecated: state.deprecated,
       paginatedData: state.result,
       total: service.total,
     });
-  }, [methods, state.data, state.result, state.loading, service.total]) as RemoteCollection<T>;
+  }, [methods, state.data, state.result, state.loading, state.deprecated, service.total]) as RemoteCollection<T>;
 
   return collection;
 };

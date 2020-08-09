@@ -7,13 +7,20 @@ export { default as RemoteQueryService } from './lib/RemoteQueryService';
 export { default as useCollection } from './lib/useCollection';
 export { default as useRestCollection } from './lib/useRestCollection';
 export {
+  Collection,
+  CollectionOptions,
+  LocalCollection,
+  LocalQuery,
   Query,
+  QueryEngine,
   QueryFilter,
   QueryFilterCriteria,
   QueryFilterCriteriaOperator,
   QueryFilterCriteriaValue,
   QueryFilterId,
   QueryFilterOrCriteria,
+  QueryLimit,
+  QuerySearcher,
   QuerySerializer,
   QuerySerializerResult,
   QuerySortBy,

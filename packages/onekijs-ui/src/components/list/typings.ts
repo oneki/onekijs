@@ -29,6 +29,7 @@ export enum ListStatus {
   NotInitialized = 'not initialized',
   NotLoaded = 'not loaded',
   Loading = 'loading',
+  PartialLoading = 'partial loading',
   Loaded = 'loaded',
 }
 

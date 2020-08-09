@@ -2,7 +2,7 @@ import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
 import { UseRemoteCollectionOptions } from '../typings';
 import { TestHandler, TestUser } from './typings';
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import UseRestCollectionWidget from './components/UseRestCollectionWidget';
 import { asyncTimeout } from '../../__tests__/utils/timeout';
 import { act } from 'react-dom/test-utils';
@@ -111,11 +111,24 @@ const tests: TestProps[] = [
   },
 ];
 
+const handler = {
+  name: 'load',
+  actions: [
+    {
+      method: 'load',
+      args: [],
+    },
+  ],
+};
+
 describe('it tests URLs', () => {
   tests.forEach((test) => {
     it(`${test.title}`, async () => {
-      const { getByTestId } = render(<UseRestCollectionWidget url={test.url} options={test.options} />);
+      const { getByTestId } = render(
+        <UseRestCollectionWidget url={test.url} options={test.options} handler={handler} />,
+      );
       await act(async () => {
+        fireEvent.click(getByTestId(handler.name));
         await asyncTimeout(50);
         const element = getByTestId('result');
         // user is logged

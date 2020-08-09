@@ -7,11 +7,11 @@ import {
   QuerySerializer,
   QuerySortBy,
   QuerySortDir,
+  loadingSymbol,
 } from '../lib/typings';
 
 let filterUid = 0;
 export const rootFilterId = Symbol();
-export const loading = Symbol();
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const defaultComparator = (a: any, b: any) => {
@@ -38,11 +38,11 @@ export const generateFilterId = (): number => {
 };
 
 export const isLoading = <T>(item: T | symbol): item is symbol => {
-  return item === loading;
+  return item === loadingSymbol;
 };
 
-export const isQueryFilter = (value: QueryFilterOrCriteria): value is QueryFilter => {
-  return Object.keys(value).includes('criterias');
+export const isQueryFilter = (value: QueryFilterOrCriteria | QueryFilterOrCriteria[]): value is QueryFilter => {
+  return !Array.isArray(value) && Object.keys(value).includes('criterias');
 };
 
 export const isQueryFilterCriteria = (value: QueryFilterOrCriteria): value is QueryFilterCriteria => {

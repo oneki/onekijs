@@ -15,6 +15,7 @@ import {
   QuerySortBy,
   QuerySortComparator,
   QuerySortDir,
+  Query,
 } from './typings';
 
 const defaultSearcher = 'i_like';
@@ -109,6 +110,10 @@ export default class LocalQueryService<T = any, S extends LocalQueryState<T> = L
     return this.state.result || [];
   }
 
+  get deprecated(): boolean {
+    return false;
+  }
+
   get loading(): boolean {
     return false;
   }
@@ -129,6 +134,15 @@ export default class LocalQueryService<T = any, S extends LocalQueryState<T> = L
     this.state.size = size;
     this.state.offset = offset;
     this._setPaginatedResult(size, offset);
+  }
+
+  @reducer
+  query(query: Query): void {
+    if (query.filter || query.search || query.sort || query.sortBy || query.fields) {
+      this._clearOffset();
+    }
+    this._setQuery(query);
+    this.refresh();
   }
 
   @reducer

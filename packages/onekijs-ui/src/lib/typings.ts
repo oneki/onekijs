@@ -1,5 +1,8 @@
 import { Fetcher, FetchOptions, FetchState, HttpMethod, Primitive } from 'onekijs';
 
+export const loadingSymbol = Symbol();
+export const deprecatedSymbol = Symbol();
+
 export interface Collection<T = any> {
   addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId?: QueryFilterId): void;
   addFilterCriteria(
@@ -25,7 +28,9 @@ export interface Collection<T = any> {
   getSortBy(): QuerySortBy[] | undefined;
   load(size?: number, offset?: number): void;
   loading: boolean;
+  deprecated: boolean;
   paginatedData?: Item<T>[];
+  query(query: Query): void;
   refresh(): void;
   removeFilter(filterId: QueryFilterId): void;
   removeSortBy(field: string): void;
@@ -154,7 +159,12 @@ export type RemoteCollectionFetcherResult<T> =
       data: T[];
     };
 
-export type Item<T = any> = T | undefined | symbol;
+export type Item<T = any> =
+  | (T & {
+      [loadingSymbol]?: boolean;
+      [deprecatedSymbol]?: boolean;
+    })
+  | undefined;
 
 export interface RemoteQueryState<T = any> extends QueryState {
   data?: Item<T>[];
