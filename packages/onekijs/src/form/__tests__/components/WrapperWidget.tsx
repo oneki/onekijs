@@ -1,22 +1,10 @@
 import React, { FC } from 'react';
 import Input from '../../components/Input';
 import Select from '../../components/Select';
-import { FormOptions, FormSubmitCallback } from '../../typings';
 import useForm from '../../useForm';
+import { FormProps } from '../utils/typings';
 
-export type FormData = {
-  username?: string;
-  password?: string;
-  gender?: string;
-  admin?: boolean;
-};
-
-type FieldWidgetProps = {
-  submit: FormSubmitCallback;
-  options?: FormOptions;
-};
-
-const WrapperWidget: FC<FieldWidgetProps> = ({ submit, options }) => {
+const WrapperWidget: FC<FormProps> = ({ submit, options }) => {
   const { Form, getValidation, reset } = useForm(submit, options);
 
   return (
@@ -25,7 +13,7 @@ const WrapperWidget: FC<FieldWidgetProps> = ({ submit, options }) => {
         <div>
           <div>
             <label htmlFor="username">username</label>
-            <Input id="username" name="username" required />
+            <Input id="username" name="username" required requiredMessage="This field is required" />
             <span data-testid="username-validation-code">{getValidation('username').code}</span>
             <span data-testid="username-validation-status">{getValidation('username').status}</span>
             <span data-testid="username-validation-message">{getValidation('username').message}</span>

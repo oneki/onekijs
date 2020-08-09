@@ -4,18 +4,11 @@ import * as React from 'react';
 import NotificationWidget from '../../__tests__/components/NotificationWidget';
 import { fireEvent, render } from '../../__tests__/customRenderer';
 import { waitCallback } from '../../__tests__/utils/timeout';
-import { FormOptions, FormSubmitCallback, ValidationCode } from '../typings';
+import { ValidationCode } from '../typings';
 import FieldValidationWidget from './components/FieldValidationWidget';
-import FieldWidget, { FormData } from './components/FieldWidget';
+import FieldWidget from './components/FieldWidget';
 import { interact } from './utils/element';
-
-type fieldTestOptions = {
-  title: string;
-  submit: FormSubmitCallback;
-  initialValues?: FormData;
-  expected?: FormData;
-  fillData?: FormData;
-};
+import { FieldTestOptions, FieldValidationOptions } from './utils/typings';
 
 const validValues = {
   name: 'Doe',
@@ -26,7 +19,7 @@ const validValues = {
   },
 };
 
-const fieldTests: fieldTestOptions[] = [
+const fieldTests: FieldTestOptions[] = [
   {
     title: 'initial values correctly set',
     submit: jest.fn(),
@@ -162,25 +155,7 @@ describe('it tests the field helper', () => {
   });
 });
 
-type FieldValidationExpected = {
-  status?: string;
-  message?: string;
-  code?: string;
-};
-
-type fieldValidationOptions = {
-  title: string;
-  submit: FormSubmitCallback;
-  options?: FormOptions;
-  expected?: {
-    name?: FieldValidationExpected;
-    firstname?: FieldValidationExpected;
-    gender?: FieldValidationExpected;
-  };
-  fillData?: FormData;
-};
-
-const fieldValidationTests: fieldValidationOptions[] = [
+const fieldValidationTests: FieldValidationOptions[] = [
   {
     title: 'validation on initial load (values are corrects)',
     submit: jest.fn(),
@@ -341,19 +316,6 @@ describe('it tests validations when the field helper is used', () => {
           }
         }
       });
-
-      // if (test.fillData) {
-      //   userEvent.clear(nameElement);
-      //   userEvent.clear(firstnameElement);
-      //   if (test.fillData.name) userEvent.type(nameElement, test.fillData.name);
-      //   if (test.fillData.firstname) userEvent.type(firstnameElement, test.fillData.firstname);
-      //   if (test.fillData.gender) fireEvent.change(genderElement, { target: { value: test.fillData.gender } });
-      // }
-
-      // fireEvent.click(getByTestId('submit'));
-      // await waitCallback(test.submit as jest.Mock);
-      // expect(test.submit).toHaveBeenCalled();
-      // expect((test.submit as jest.Mock).mock.calls[0][0]).toEqual(test.expected);
     });
   });
 });

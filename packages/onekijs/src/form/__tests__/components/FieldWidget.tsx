@@ -3,19 +3,11 @@ import { FormSubmitCallback } from '../../typings';
 import useForm from '../../useForm';
 import regex from '../../validators/regex';
 import required from '../../validators/required';
-
-export type FormData = {
-  name?: string;
-  firstname?: string;
-  gender?: string;
-  address?: {
-    street?: string;
-  };
-};
+import { FieldTestData } from '../utils/typings';
 
 type FieldWidgetProps = {
   submit: FormSubmitCallback;
-  initialValues?: FormData;
+  initialValues?: FieldTestData;
 };
 
 const FieldWidget: FC<FieldWidgetProps> = ({ submit, initialValues }) => {
