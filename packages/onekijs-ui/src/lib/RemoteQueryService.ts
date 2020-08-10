@@ -178,7 +178,7 @@ export default class RemoteQueryService<T = any, S extends RemoteQueryState<T> =
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Latest)
+  @saga(SagaEffect.Throttle, 'state.throttle', 200)
   *search(search: Primitive) {
     yield this._setSearch(search);
     yield this._refresh(true);
@@ -470,7 +470,6 @@ export default class RemoteQueryService<T = any, S extends RemoteQueryState<T> =
           setItemStatus(i);
         }
         this.state.status = `${resetData ? '' : 'partial_'}${options.status}` as CollectionStatus;
-        console.log('resetData', resetData, 'status', this.state.status);
       } else {
         for (const i in this.state.data) {
           setItemStatus(parseInt(i));

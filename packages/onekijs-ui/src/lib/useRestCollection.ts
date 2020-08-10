@@ -16,6 +16,7 @@ const useRestCollection = <T>(url: string, options: UseRemoteCollectionOptions<T
           'initialFields',
           'serializer',
           'method',
+          'throttle',
         ]),
       );
       return {
@@ -27,6 +28,7 @@ const useRestCollection = <T>(url: string, options: UseRemoteCollectionOptions<T
         fields: options.initialFields,
         serializer: options.serializer,
         method: options.method,
+        throttle: options.throttle,
         fetchOptions,
       } as RemoteQueryState<T>;
     },

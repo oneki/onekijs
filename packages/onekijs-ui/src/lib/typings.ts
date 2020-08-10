@@ -196,6 +196,7 @@ export interface RemoteQueryState<T = any> extends QueryState {
   method?: HttpMethod;
   serializer?: QuerySerializer;
   status?: CollectionStatus;
+  throttle?: number;
   total?: number;
   url: string;
 }
@@ -212,4 +213,5 @@ export interface UseRemoteCollectionOptions<T = any>
   serializer?: QuerySerializer;
   fetcher?: RemoteCollectionFetcher<T>;
   method?: HttpMethod;
+  throttle?: number;
 }

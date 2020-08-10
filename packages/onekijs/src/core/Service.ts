@@ -1,7 +1,8 @@
 import produce from 'immer';
 import { apply, take } from 'redux-saga/effects';
+import BasicError from './BasicError';
 import { AnyFunction, AnyState, ID, State } from './typings';
-import { fromPayload, toPayload, isGetterOrSetter } from './utils/object';
+import { fromPayload, get, isGetterOrSetter, toPayload } from './utils/object';
 import { isFunction } from './utils/type';
 
 export const reducers = Symbol('service.reducers');
@@ -15,6 +16,7 @@ const createSaga = Symbol('service.createSaga');
 export const run = Symbol('service.run');
 export const stop = Symbol('service.stop');
 export const serviceClass = Symbol('onekijs.serviceClass');
+export const create = Symbol('service.create');
 
 export const handler = {
   get: function <S extends State, T extends Service<S>>(target: T, prop: string | number | symbol, receiver?: T): any {
@@ -56,13 +58,14 @@ export default class Service<S extends State = AnyState> {
   public state: S = null!;
   [k: string]: any;
 
-  constructor() {
+  [create](initialState: S): void {
     this[reducers] = {};
     this[types] = {};
     this[sagas] = {};
     this[inReducer] = false;
+    this.state = initialState;
 
-    const create = (property: string) => {
+    const createProperty = (property: string) => {
       if (isFunction(this[property]) && this[property].reducer) {
         this[createReducer](property, this[property]);
       } else if (isFunction(this[property]) && this[property].saga) {
@@ -78,12 +81,21 @@ export default class Service<S extends State = AnyState> {
       // eslint-disable-next-line no-loop-func
       p.forEach((property) => {
         if (!isGetterOrSetter(obj, property) && !properties.includes(property)) {
-          create(property);
+          createProperty(property);
         }
         properties.push(property);
       });
       obj = Object.getPrototypeOf(obj);
     }
+
+    this[run]();
+    if (isFunction(this.init)) {
+      this[inReducer] = true;
+      this.init();
+      this[inReducer] = false;
+    }
+    // freeze state
+    this.state = produce(this.state, (draftState) => draftState) as S;
   }
 
   private [createReducer](type: string, reducer: AnyFunction<void>): void {
@@ -122,7 +134,24 @@ export default class Service<S extends State = AnyState> {
     const self = this;
     const actionType = (this.constructor as any)[ID] ? `${(this.constructor as any)[ID]}.${type}` : type;
     const effect = saga.saga.effect;
-    const delay = saga.saga.delay;
+    let delay = saga.saga.delay;
+    const defaultDelay = saga.saga.defaultDelay;
+
+    if (typeof delay === 'string') {
+      const sep = delay.indexOf('.');
+      const obj = delay.substring(0, sep);
+      if (sep === -1 || !['state', 'settings'].includes(obj)) {
+        throw new BasicError(
+          'A string delay for a saga of type throttle or debounce must starts with state.xxx or settings.xxx',
+        );
+      }
+
+      if (obj === 'state') {
+        delay = get(this.state, delay.substring(sep + 1), defaultDelay);
+      } else {
+        delay = get(this.context.settings, delay.substring(sep + 1), defaultDelay);
+      }
+    }
 
     const wrapper: any = function* wrapper(action: any) {
       try {

@@ -11,7 +11,7 @@ import ListItemComponent from './ListItemComponent';
 const defaultHeight = 200;
 const defaultItemHeight = 21;
 const defaultPreload = 100;
-const defaultIncrement = 10;
+const defaultIncrement = 100;
 
 const VirtualistComponent: FC<VirtualListProps> = ({
   adapter,
@@ -51,7 +51,6 @@ const VirtualistComponent: FC<VirtualListProps> = ({
       result.items = Array(maxIndex)
         .fill(undefined)
         .map((_v, index) => adapt(items[index], metas[index], adapter));
-      console.log('status', result.status);
       if (result.status === LoadingStatus.Loading || result.status === LoadingStatus.Deprecated) {
         result.items = result.items.slice(0, items.length);
       }

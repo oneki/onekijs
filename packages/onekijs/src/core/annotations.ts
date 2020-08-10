@@ -72,19 +72,29 @@ export const leading: (saga: AnyFunction) => AnyFunction = function (func) {
   return func;
 };
 
-export const debounce: (delay: number, saga: AnyFunction) => AnyFunction = function (delay, func) {
+export const debounce: (saga: AnyFunction, delay?: number | string, defaultDelay?: number) => AnyFunction = function (
+  func,
+  delay,
+  defaultDelay = 200,
+) {
   (func as any).saga = {
     effect: debounceSaga,
     delay,
+    defaultDelay,
   };
   return func;
 };
 
-export const throttle: (delay: number, saga: AnyFunction) => AnyFunction = function (delay, func) {
+export const throttle: (saga: AnyFunction, delay?: number | string, defaultDelay?: number) => AnyFunction = function (
+  func,
+  delay,
+  defaultDelay = 200,
+) {
   (func as any).saga = {
     effect: throttleSaga,
     func,
     delay,
+    defaultDelay,
   };
   return func;
 };
@@ -97,12 +107,13 @@ const effects: AnonymousObject = {
   [SagaEffect.Latest]: takeLatest,
   [SagaEffect.Serial]: take,
 };
-export function saga(type?: SagaEffect, delay?: number) {
+export function saga(type?: SagaEffect, delay?: number | string, defaultDelay = 0) {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   return function (target: any, propertyKey: string) {
     target[propertyKey].saga = {
       effect: type ? effects[type] : take,
       delay,
+      defaultDelay,
     };
   };
 }
