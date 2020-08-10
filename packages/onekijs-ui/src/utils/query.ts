@@ -7,7 +7,8 @@ import {
   QuerySerializer,
   QuerySortBy,
   QuerySortDir,
-  loadingSymbol,
+  ItemMeta,
+  LoadingStatus,
 } from '../lib/typings';
 
 let filterUid = 0;
@@ -37,8 +38,12 @@ export const generateFilterId = (): number => {
   return ++filterUid;
 };
 
-export const isLoading = <T>(item: T | symbol): item is symbol => {
-  return item === loadingSymbol;
+export const isLoading = (meta: ItemMeta): boolean => {
+  return !!(meta && meta.status === LoadingStatus.Loading);
+};
+
+export const isDeprecated = (meta: ItemMeta): boolean => {
+  return !!(meta && (meta.status === LoadingStatus.Loading || meta.status === LoadingStatus.Deprecated));
 };
 
 export const isQueryFilter = (value: QueryFilterOrCriteria | QueryFilterOrCriteria[]): value is QueryFilter => {

@@ -185,7 +185,7 @@ export function get(content: any, property?: any, defaultValue?: any): any {
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export function append<T>(content: T, property: string, value: any): T {
+export function append<T>(content: T, property: string | number, value: any): T {
   return update(content, property, (arr: any[]) => {
     if (isNull(arr)) {
       return [value];
@@ -198,10 +198,19 @@ export function append<T>(content: T, property: string, value: any): T {
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export function set<T>(content: T, property: string, value: any, force = true): T {
+export function set<T>(content: any, property: string | number, value: any, force = true): T {
   if (property === '') {
     return value;
   }
+  if (content === undefined && force) {
+    const parts = `${property}`.split('.');
+    if (!isNaN(Number(parts[0]))) {
+      content = [];
+    } else {
+      content = {};
+    }
+  }
+
   const [subContent, index] = find(content, property, true);
   if (!isNull(subContent)) {
     if (force || subContent[index] === undefined) {
@@ -211,7 +220,7 @@ export function set<T>(content: T, property: string, value: any, force = true): 
   return content;
 }
 
-export function update<T>(content: T, property: string, fn: { (arr: any[]): any[]; (arg0: any): any }): T {
+export function update<T>(content: T, property: string | number, fn: { (arr: any[]): any[]; (arg0: any): any }): T {
   const [subContent, index] = find(content, property, true);
   const value = fn(subContent[index]);
   subContent[index] = value;

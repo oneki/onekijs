@@ -1,7 +1,7 @@
 import { AnonymousObject, useService } from 'onekijs';
 import { useMemo } from 'react';
 import LocalQueryService from './LocalQueryService';
-import { LocalCollection, LocalQueryState, UseCollectionOptions } from './typings';
+import { LocalCollection, LocalQueryState, UseCollectionOptions, LoadingStatus } from './typings';
 
 const useCollection = <T>(initialData: T[], options: UseCollectionOptions<T> = {}): LocalCollection<T> => {
   const initialState = {
@@ -34,7 +34,9 @@ const useCollection = <T>(initialData: T[], options: UseCollectionOptions<T> = {
       'filter',
       'getFields',
       'getFilter',
+      'getOffset',
       'getSearch',
+      'getSize',
       'getSort',
       'getSortBy',
       'load',
@@ -55,12 +57,10 @@ const useCollection = <T>(initialData: T[], options: UseCollectionOptions<T> = {
   const collection = useMemo(() => {
     return Object.assign({}, methods, {
       data: state.result,
-      loading: false,
-      deprecated: false,
-      paginatedData: state.paginatedResult,
+      status: LoadingStatus.Loaded,
       total: service.total,
     });
-  }, [methods, state.result, state.paginatedResult, service.total]) as LocalCollection<T>;
+  }, [methods, state.result, service.total]) as LocalCollection<T>;
 
   return collection;
 };

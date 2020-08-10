@@ -1,13 +1,13 @@
 import { Fetcher, HttpMethod, useService } from 'onekijs';
-import { List, LocalQueryService, LocalQueryState, Query, useRestCollection, QuerySearcher } from 'onekijs-ui';
+import { List, LocalQueryService, LocalQueryState, Query, QuerySearcher, useRestCollection, Collection, LoadingStatus } from 'onekijs-ui';
 import React, { useCallback } from 'react';
-import { users, User } from '../data/users';
+import { User, users } from '../data/users';
+import Spinner from './spinner';
 
 const adapter = (item: User) => {
   return {
     id: item.id,
     text: `${item.firstname} ${item.lastname}`,
-    loading: false,
   };
 };
 
@@ -16,6 +16,10 @@ const searcher: QuerySearcher<User> = (item, search) => {
     return `${item.firstname} ${item.lastname}`.toUpperCase().includes(String(search).toUpperCase());
   }
   return true;
+};
+
+const isLoading = (collection: Collection): boolean => {
+  return collection.status === LoadingStatus.Loading || collection.status === LoadingStatus.PartialLoading;
 }
 
 export const AjaxListPage = () => {
@@ -23,9 +27,9 @@ export const AjaxListPage = () => {
 
   const fetcher: Fetcher = useCallback(
     async (url, method, body, options) => {
-      await new Promise((r) => setTimeout(r, 1000 + Math.floor(Math.random() * Math.floor(100))));
+      await new Promise((r) => setTimeout(r, 0 + Math.floor(Math.random() * Math.floor(300))));
       service.query(body as Query);
-      return service.paginatedData;
+      return service.data.slice(body.offset || 0, (body.offset || 0) + (body.size || service.data.length));
     },
     [service],
   );
@@ -33,20 +37,23 @@ export const AjaxListPage = () => {
   const collection = useRestCollection('http://localhost', {
     fetcher,
     method: HttpMethod.Post,
+    delayLoading: 200,
   });
-  
+
+
   const search = (e: React.ChangeEvent<HTMLInputElement>) => {
     collection.search(e.target.value);
-  }
-  
+  };
+
   return (
     <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', width: '100%' }}>
-      <input type="text" onChange={search} style={{ width: '300px', marginTop:'40px' }} />
-      <div style={{ width: '300px', border:'1px solid black', padding: '5px' }}>
+      <div style={{ display: 'flex', justifyContent: 'left' , flexDirection: 'row',  width: '300px', marginTop: '40px', marginBottom: '5px' }}>
+        <input type="text" onChange={search} style={{ width: '250px', marginRight: '5px' }} />
+        {isLoading(collection) && <Spinner />}
+      </div>
+      <div style={{ width: '300px', border: '1px solid black', padding: '5px' }}>
         <List height={200} data={collection} adapter={adapter} preload={100} increment={100} />
       </div>
-      
-      
     </div>
   );
 };

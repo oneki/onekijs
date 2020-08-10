@@ -16,6 +16,8 @@ import {
   QuerySortComparator,
   QuerySortDir,
   Query,
+  CollectionStatus,
+  LoadingStatus,
 } from './typings';
 
 const defaultSearcher = 'i_like';
@@ -110,16 +112,8 @@ export default class LocalQueryService<T = any, S extends LocalQueryState<T> = L
     return this.state.result || [];
   }
 
-  get deprecated(): boolean {
-    return false;
-  }
-
-  get loading(): boolean {
-    return false;
-  }
-
-  get paginatedData(): T[] {
-    return this.state.paginatedResult || this.data;
+  get status(): CollectionStatus {
+    return LoadingStatus.Loaded;
   }
 
   get total(): number | undefined {
@@ -167,7 +161,6 @@ export default class LocalQueryService<T = any, S extends LocalQueryState<T> = L
       search: this.getSearch(),
       sort: this.getSort(),
     });
-    this._setPaginatedResult(this.state.size, this.state.offset);
   }
 
   @reducer
@@ -339,17 +332,5 @@ export default class LocalQueryService<T = any, S extends LocalQueryState<T> = L
     }
 
     return result;
-  }
-
-  protected _setPaginatedResult(size?: number, offset?: number): void {
-    if (this.state.result !== undefined) {
-      if (!size) {
-        size = this.state.result.length;
-      }
-      if (!offset) {
-        offset = 0;
-      }
-      this.state.paginatedResult = this.state.result.slice(offset, offset + size);
-    }
   }
 }

@@ -16,10 +16,16 @@ export interface ListItem<T = any> {
   id?: string | number;
   text?: string;
   loading: boolean;
+  deprecated: boolean;
   item?: T;
 }
 
-export type ListItemAdapter<T = any> = (item: T | symbol | undefined) => ListItem<T>;
+export type ListItemAdapter<T = any> = (
+  item: T,
+) => {
+  id: string | number;
+  text: string;
+};
 
 export interface ListItemProps<T = any> extends ListItem<T> {
   index: number;
@@ -29,6 +35,8 @@ export enum ListStatus {
   NotInitialized = 'not initialized',
   NotLoaded = 'not loaded',
   Loading = 'loading',
+  Deprecated = 'deprecate',
+  PartialDeprecated = 'partial deprecated',
   PartialLoading = 'partial loading',
   Loaded = 'loaded',
 }
