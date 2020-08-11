@@ -9,8 +9,12 @@ export { default as useRestCollection } from './lib/useRestCollection';
 export {
   Collection,
   CollectionOptions,
+  CollectionStatus,
+  ItemMeta,
+  ItemStatus,
   LocalCollection,
   LocalQuery,
+  LoadingStatus,
   Query,
   QueryEngine,
   QueryFilter,

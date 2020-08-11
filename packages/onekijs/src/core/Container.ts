@@ -1,12 +1,10 @@
 import 'reflect-metadata';
 import AppContext from '../app/AppContext';
+import AppService from './AppService';
 import BasicError from './BasicError';
 import GlobalService from './GlobalService';
-import Service, { handler, run, serviceClass, inReducer } from './Service';
+import Service, { create, handler, serviceClass } from './Service';
 import { Class, ID, ServiceFactory, State } from './typings';
-import { isFunction } from 'util';
-import AppService from './AppService';
-import produce from 'immer';
 
 export default class Container implements ServiceFactory {
   private classRegistry: {
@@ -50,12 +48,6 @@ export default class Container implements ServiceFactory {
     const service = new ActualClass(...args);
     service.context = context;
 
-    // if (service instanceof GlobalService) {
-    //   service.state = produce(context.store.getState(), (draftState: S) => draftState) as any;
-    // } else {
-    //   service.state = produce(initialState || {}, (draftState: S) => draftState) as any;
-    // }
-
     Object.getOwnPropertyNames(service).forEach((property) => {
       if (service[property] && service[property][serviceClass]) {
         const dependency = this.createService(service[property][serviceClass], context, context.store.getState());
@@ -63,18 +55,7 @@ export default class Container implements ServiceFactory {
       }
     });
 
-    service.state = initialState;
-
-    service[run]();
-
-    if (isFunction(service.init)) {
-      service[inReducer] = true;
-      service.init();
-      service[inReducer] = false;
-    }
-
-    // freeze state
-    service.state = produce(service.state, (draftState: S) => draftState) as S;
+    service[create](initialState);
 
     const proxy = new Proxy(service, handler);
     if (service instanceof GlobalService) {

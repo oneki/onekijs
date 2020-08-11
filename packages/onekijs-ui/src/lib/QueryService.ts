@@ -186,55 +186,19 @@ export default abstract class QueryService<S extends QueryState = QueryState> ex
 
   @reducer
   protected _setLimit(size?: number, offset?: number): void {
-    if (size !== undefined) {
-      this._setSize(size);
-    } else {
-      this._clearSize();
-    }
-    if (offset !== undefined) {
-      this._setOffset(offset);
-    } else {
-      this._clearOffset();
-    }
+    this.state.size = size;
+    this.state.offset = offset;
   }
 
   @reducer
   protected _setQuery(query: Query): void {
-    if (query.filter) {
-      this._setFilter(query.filter);
-    } else {
-      this._clearFilter();
-    }
-    if (query.sort) {
-      this._setSort(query.sort);
-    } else {
-      this._clearSort();
-    }
-    if (query.sortBy) {
-      this._setSortBy(query.sortBy);
-    } else {
-      this._clearSortBy();
-    }
-    if (query.search) {
-      this._setSearch(query.search);
-    } else {
-      this._clearSearch();
-    }
-    if (query.fields) {
-      this._setFields(query.fields);
-    } else {
-      this._clearFields();
-    }
-    if (query.offset !== undefined) {
-      this._setOffset(query.offset);
-    } else {
-      this._clearOffset();
-    }
-    if (query.size !== undefined) {
-      this._setSize(query.size);
-    } else {
-      this._clearSize();
-    }
+    this.state.filter = this._formatFilter(query.filter);
+    this.state.sort = query.sort;
+    this.state.sortBy = this._formatSortBy(query.sortBy);
+    this.state.search = query.search;
+    this.state.fields = query.fields;
+    this.state.offset = query.offset;
+    this.state.size = query.size;
   }
 
   @reducer

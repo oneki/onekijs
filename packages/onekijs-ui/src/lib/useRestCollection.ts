@@ -4,7 +4,7 @@ import RemoteQueryService from './RemoteQueryService';
 import { RemoteCollection, RemoteQueryState, UseRemoteCollectionOptions } from './typings';
 
 const useRestCollection = <T>(url: string, options: UseRemoteCollectionOptions<T> = {}): RemoteCollection<T> => {
-  const [state, service] = useService<RemoteQueryState<T>, RemoteQueryService<T, RemoteQueryState<T>>>(
+  const [, service] = useService<RemoteQueryState<T>, RemoteQueryService<T, RemoteQueryState<T>>>(
     RemoteQueryService,
     () => {
       const fetchOptions = Object.assign(
@@ -16,6 +16,7 @@ const useRestCollection = <T>(url: string, options: UseRemoteCollectionOptions<T
           'initialFields',
           'serializer',
           'method',
+          'throttle',
         ]),
       );
       return {
@@ -27,6 +28,7 @@ const useRestCollection = <T>(url: string, options: UseRemoteCollectionOptions<T
         fields: options.initialFields,
         serializer: options.serializer,
         method: options.method,
+        throttle: options.throttle,
         fetchOptions,
       } as RemoteQueryState<T>;
     },
@@ -45,7 +47,9 @@ const useRestCollection = <T>(url: string, options: UseRemoteCollectionOptions<T
       'filter',
       'getFields',
       'getFilter',
+      'getOffset',
       'getSearch',
+      'getSize',
       'getSort',
       'getSortBy',
       'load',
@@ -64,13 +68,12 @@ const useRestCollection = <T>(url: string, options: UseRemoteCollectionOptions<T
 
   const collection = useMemo(() => {
     return Object.assign({}, methods, {
-      data: state.data,
-      loading: state.loading,
-      deprecated: state.deprecated,
-      paginatedData: state.result,
+      data: service.data,
+      meta: service.meta,
+      status: service.status,
       total: service.total,
     });
-  }, [methods, state.data, state.result, state.loading, state.deprecated, service.total]) as RemoteCollection<T>;
+  }, [methods, service.data, service.meta, service.status, service.total]) as RemoteCollection<T>;
 
   return collection;
 };

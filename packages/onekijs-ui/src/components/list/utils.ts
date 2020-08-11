@@ -1,60 +1,60 @@
-import { Collection } from '../../lib/typings';
+import { Collection, CollectionStatus, Item, ItemMeta, LoadingStatus } from '../../lib/typings';
 import { isCollection } from '../../utils/collection';
-import { isLoading } from '../../utils/query';
-import { ListItem, ListItemAdapter, ListStatus } from './typings';
+import { isDeprecated, isLoading } from '../../utils/query';
+import { ListItem, ListItemAdapter } from './typings';
 
-export const adapt = <T>(item: T | symbol | undefined, adapter?: ListItemAdapter<T>): ListItem<T> => {
-  if (isLoading(item)) {
-    return {
-      loading: true,
-    };
-  }
-  if (item === undefined) {
-    return {
-      loading: false,
-    };
-  }
+export const adapt = <T>(item: Item<T>, meta: ItemMeta, adapter?: ListItemAdapter<T>): ListItem<T> => {
+  const loading = isLoading(meta);
+  const deprecated = isDeprecated(meta);
+  const result: ListItem<T> = { loading, deprecated, item };
+
   let adaptee;
-  if (adapter) {
-    adaptee = adapter(item);
-  } else if (['string', 'number', 'boolean'].includes(typeof item)) {
-    adaptee = {
-      id: item,
-      text: String(item),
-    };
+  if (item !== undefined) {
+    if (adapter) {
+      adaptee = adapter(item);
+    } else if (['string', 'number', 'boolean'].includes(typeof item)) {
+      adaptee = {
+        id: item,
+        text: String(item),
+      };
+    } else {
+      adaptee = {
+        id: (item as any).id,
+        text: (item as any).text,
+      };
+    }
   } else {
     adaptee = {
-      id: (item as any).id,
-      text: (item as any).text,
+      id: '',
+      text: '',
     };
   }
-  return Object.assign({ loading: false, item }, adaptee);
+  Object.assign(result, adaptee);
+  return result;
 };
+
+// export const canFetchMore = (data: any[] | Collection<any>): boolean => {
+//   if (
+//     isCollection(data) &&
+//     ![ListStatus.Loading, ListStatus.PartialLoading, ListStatus.Deprecated, ListStatus.PartialDeprecated].includes(
+//       getListStatus(data),
+//     )
+//   ) {
+//     return data.total === undefined;
+//   }
+//   return false;
+// };
 
 export const canFetchMore = (data: any[] | Collection<any>): boolean => {
-  if (isCollection(data) && ![ListStatus.Loading, ListStatus.PartialLoading].includes(getListStatus(data))) {
-    return data.total === undefined;
-  }
-  return false;
+  return isCollection(data) && data.status === LoadingStatus.PartialLoaded;
 };
 
-export const getListStatus = (data: any[] | Collection<any>): ListStatus => {
+export const getListStatus = (data: any[] | Collection<any>): CollectionStatus => {
   if (isCollection(data)) {
-    const items = data.data;
-    const loading = data.loading;
-    if (items === undefined) {
-      return loading ? ListStatus.Loading : ListStatus.NotInitialized;
+    if (data === undefined) {
+      return LoadingStatus.NotInitialized;
     }
-    if (!loading) {
-      return ListStatus.Loaded;
-    }
-
-    for (const item of items) {
-      if (!isLoading(item)) {
-        return ListStatus.PartialLoading;
-      }
-    }
-    return ListStatus.Loading;
+    return data.status;
   }
-  return ListStatus.Loaded;
+  return LoadingStatus.Loaded;
 };

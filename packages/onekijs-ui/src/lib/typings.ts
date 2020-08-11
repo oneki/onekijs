@@ -1,7 +1,7 @@
 import { Fetcher, FetchOptions, FetchState, HttpMethod, Primitive } from 'onekijs';
 
-export const loadingSymbol = Symbol();
-export const deprecatedSymbol = Symbol();
+// export const loadingSymbol = Symbol('collection.item.loading');
+// export const deprecatedSymbol = Symbol('collection.item.deprecated');
 
 export interface Collection<T = any> {
   addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId?: QueryFilterId): void;
@@ -20,16 +20,16 @@ export interface Collection<T = any> {
   clearSort(): void;
   clearSortBy(): void;
   data?: Item<T>[];
+  meta?: ItemMeta[];
   filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | null): void;
   getFields(): string[] | undefined;
   getFilter(): QueryFilter | undefined;
+  getOffset(): number | undefined;
   getSearch(): Primitive | undefined;
+  getSize(): number | undefined;
   getSort(): QuerySortDir | undefined;
   getSortBy(): QuerySortBy[] | undefined;
   load(size?: number, offset?: number): void;
-  loading: boolean;
-  deprecated: boolean;
-  paginatedData?: Item<T>[];
   query(query: Query): void;
   refresh(): void;
   removeFilter(filterId: QueryFilterId): void;
@@ -38,6 +38,7 @@ export interface Collection<T = any> {
   setFields(fields: string[]): void;
   sort(dir: QuerySortDir): void;
   sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void;
+  status: CollectionStatus;
   total?: number;
 }
 
@@ -49,6 +50,35 @@ export interface CollectionOptions {
   initialSearch?: Primitive;
 }
 
+export type CollectionStatus =
+  | 'not_initialized'
+  | 'loading'
+  | 'deprecated'
+  | 'loaded'
+  | 'partial_loading'
+  | 'partial_deprecated'
+  | 'partial_loaded';
+
+export type Item<T = any> = T | undefined;
+
+export type ItemMeta =
+  | {
+      status: ItemStatus;
+    }
+  | undefined;
+
+export type ItemStatus = 'loading' | 'deprecated' | 'loaded';
+
+export enum LoadingStatus {
+  NotInitialized = 'not_initialized',
+  Loading = 'loading',
+  Deprecated = 'deprecated',
+  Loaded = 'loaded',
+  PartialLoading = 'partial_loading',
+  PartialDeprecated = 'partial_deprecated',
+  PartialLoaded = 'partial_loaded',
+}
+
 export interface LocalCollection<T = any> extends Collection<T> {
   setData(data: T[]): void;
 }
@@ -58,7 +88,6 @@ export type LocalQuery = Omit<Query, 'offset' | 'size'>;
 export interface LocalQueryState<T = any> extends QueryState {
   data: T[];
   result?: T[];
-  paginatedResult?: T[];
   queryEngine?: QueryEngine;
   comparator?: QuerySortComparator;
   searcher?: QuerySearcher<T>;
@@ -159,20 +188,15 @@ export type RemoteCollectionFetcherResult<T> =
       data: T[];
     };
 
-export type Item<T = any> =
-  | (T & {
-      [loadingSymbol]?: boolean;
-      [deprecatedSymbol]?: boolean;
-    })
-  | undefined;
-
 export interface RemoteQueryState<T = any> extends QueryState {
   data?: Item<T>[];
+  meta?: ItemMeta[];
   fetchOptions?: FetchOptions<T>;
   loading?: boolean;
   method?: HttpMethod;
-  result?: Item<T>[];
   serializer?: QuerySerializer;
+  status?: CollectionStatus;
+  throttle?: number;
   total?: number;
   url: string;
 }
@@ -189,4 +213,5 @@ export interface UseRemoteCollectionOptions<T = any>
   serializer?: QuerySerializer;
   fetcher?: RemoteCollectionFetcher<T>;
   method?: HttpMethod;
+  throttle?: number;
 }

@@ -1,21 +1,17 @@
 import { useIsomorphicLayoutEffect } from 'onekijs';
-import React, { FC, useCallback, useEffect, useRef, useMemo } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useVirtual } from 'react-virtual';
+import { CollectionStatus, LoadingStatus } from '../../../lib/typings';
 import { isCollection } from '../../../utils/collection';
 import { addClassname } from '../../../utils/style';
-import { ListItem, ListStatus, VirtualListProps } from '../typings';
+import { ListItem, VirtualListProps } from '../typings';
 import { adapt, canFetchMore, getListStatus } from '../utils';
 import ListItemComponent from './ListItemComponent';
-import { loadingSymbol } from '../../../lib/typings';
 
 const defaultHeight = 200;
 const defaultItemHeight = 21;
 const defaultPreload = 100;
-const defaultIncrement = 10;
-
-const perPageCount = (height: number, itemHeight: (index: number) => number) => {
-  return Math.ceil(height / itemHeight(0));
-};
+const defaultIncrement = 100;
 
 const VirtualistComponent: FC<VirtualListProps> = ({
   adapter,
@@ -28,7 +24,6 @@ const VirtualistComponent: FC<VirtualListProps> = ({
   increment = defaultIncrement,
 }) => {
   const parentRef = useRef(null);
-  const itemCountRef = useRef<number | undefined>();
 
   const estimatedItemHeight = useCallback(
     (index: number) => {
@@ -42,35 +37,37 @@ const VirtualistComponent: FC<VirtualListProps> = ({
 
   const memo = useMemo(() => {
     const result: {
-      items: any[];
-      scrollToTop: boolean;
-      status: ListStatus;
+      items: ListItem[];
+      status: CollectionStatus;
     } = {
       items: [],
-      scrollToTop: false,
       status: getListStatus(data),
     };
 
-    switch (result.status) {
-      case ListStatus.NotInitialized:
-      case ListStatus.Loading:
-        const count = itemCountRef.current || perPageCount(height, estimatedItemHeight);
-        result.items = Array(count).fill(loadingSymbol);
-        result.scrollToTop = true;
-        break;
-      default:
-        result.items = isCollection(data) ? data.data || [] : data;
-        break;
-    }
-    if (result.status === ListStatus.PartialLoading) {
-      const firstLoadingItem = result.items.indexOf(loadingSymbol);
-      if (firstLoadingItem > 0) {
-        result.items = result.items.slice(0, firstLoadingItem + 1);
+    if (isCollection(data)) {
+      const items = data.data || Array(preload);
+      const metas = data.meta || [];
+      const maxIndex = Math.max(items.length, metas.length);
+      result.items = Array(maxIndex)
+        .fill(undefined)
+        .map((_v, index) => adapt(items[index], metas[index], adapter));
+      if (result.status === LoadingStatus.Loading || result.status === LoadingStatus.Deprecated) {
+        result.items = result.items.slice(0, items.length);
       }
+    } else {
+      result.items = data.map((item) => adapt(item, undefined, adapter));
     }
-    itemCountRef.current = result.items.length;
+
+    // if (result.status === LoadingStatus.PartialLoading || result.status === LoadingStatus.PartialDeprecated) {
+    //   const firstNotLoadedItem = result.items.findIndex(
+    //     (item) => item.item === undefined && (item.deprecated || item.loading),
+    //   );
+    //   if (firstNotLoadedItem >= 0) {
+    //     result.items = result.items.slice(0, firstNotLoadedItem + 1);
+    //   }
+    // }
     return result;
-  }, [data, estimatedItemHeight, height]);
+  }, [data, preload, adapter]);
 
   const { totalSize, virtualItems, scrollToIndex } = useVirtual({
     size: memo.items.length,
@@ -78,16 +75,25 @@ const VirtualistComponent: FC<VirtualListProps> = ({
     parentRef,
   });
 
-  const filter = isCollection(data) ? data.getFilter() : undefined;
-
   useIsomorphicLayoutEffect(() => {
-    scrollToIndex(0);
-  }, [filter]);
+    if (isCollection(data)) {
+      const offset = data.getOffset() || 0;
+      const firstVirualItem = virtualItems[0];
+      const firstVirualItemIndex = firstVirualItem ? firstVirualItem.index : 0;
+      if (
+        data.status !== LoadingStatus.Loading &&
+        data.status !== LoadingStatus.Deprecated &&
+        offset === 0 &&
+        firstVirualItemIndex !== 0
+      ) {
+        scrollToIndex(0);
+      }
+    }
+  }, [data]);
 
   useEffect(() => {
     if (isCollection(data)) {
-      const status = getListStatus(data);
-      if (status === ListStatus.NotInitialized) {
+      if (data.status === LoadingStatus.NotInitialized) {
         data.load(preload);
       } else if (canFetchMore(data)) {
         const lastVirtualItem = virtualItems[virtualItems.length - 1];
@@ -117,8 +123,7 @@ const VirtualistComponent: FC<VirtualListProps> = ({
         }}
       >
         {virtualItems.map(({ index, measureRef, start }) => {
-          const item = memo.items[index];
-          const listItem: ListItem = adapt(item, adapter);
+          const listItem = memo.items[index];
           return (
             <div
               className="o-list-virtual-item"
@@ -129,6 +134,7 @@ const VirtualistComponent: FC<VirtualListProps> = ({
                 top: 0,
                 left: 0,
                 width: '100%',
+                minHeight: '20px',
                 transform: `translateY(${start}px)`,
               }}
             >
