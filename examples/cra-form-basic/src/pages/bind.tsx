@@ -38,6 +38,7 @@ export const BindPage = () => {
   // Once the async function will be resolved, the asyncBind will force a rerender and returns [stateList, false]
   const [states, statesLoading] = useAsyncBind(
     async (country: string) => {
+      console.log("useAsyncBind", country);
       // simulate a delay
       await new Promise(r => setTimeout(r, 100));
       if (country === 'usa') {
@@ -100,7 +101,7 @@ export const BindPage = () => {
     },
     [values?.country]
   );
-
+    console.log(states, statesLoading);
   return (
     <>
       {/* 

@@ -77,7 +77,7 @@ export type BindTestExpected = {
 
 export type BindTestAction = {
   fillData?: BindTestData;
-  expected?: BindTestExpected;
+  expected?: BindTestData;
 };
 
 export type BindTestOptions = {

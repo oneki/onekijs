@@ -1,6 +1,11 @@
 import { Task } from 'redux-saga';
 import { fork } from 'redux-saga/effects';
-import { Collection, AnonymousObject, SagaEffect } from '../core/typings';
+import { reducer, saga, service } from '../core/annotations';
+import LocalService from '../core/LocalService';
+import { AnonymousObject, Collection, SagaEffect } from '../core/typings';
+import { del, get, isObject, set } from '../core/utils/object';
+import ContainerValidation from './ContainerValidation';
+import FieldValidation, { defaultValidation } from './FieldValidation';
 import {
   Field,
   FormErrorCallback,
@@ -15,11 +20,6 @@ import {
   ValidationStatus,
   Validator,
 } from './typings';
-import FieldValidation, { defaultValidation } from './FieldValidation';
-import ContainerValidation from './ContainerValidation';
-import { get, set, del, isObject } from '../core/utils/object';
-import { service, reducer, saga } from '../core/annotations';
-import LocalService from '../core/LocalService';
 
 @service
 export default class FormService extends LocalService<FormState> {
@@ -317,7 +317,6 @@ export default class FormService extends LocalService<FormState> {
     const { code, fields } = yield this.getContainerFieldValidation(validations, this.fields, '', false);
     yield this.touchAll();
     yield this.setSubmitting(true);
-
     switch (code) {
       case ValidationCode.Loading:
         this.onValidationChange(() => resubmit(), '', true);
