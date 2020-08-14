@@ -1,8 +1,8 @@
-import { AnonymousObject, Collection } from './typings';
+import { AnonymousObject } from './typings';
 import BasicError from './BasicError';
 
 // https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
-const httpCodes: Collection<string> = {
+const httpCodes: AnonymousObject<string> = {
   '100': 'Continue',
   '101': 'Switching Protocol',
   '102': 'Processing',

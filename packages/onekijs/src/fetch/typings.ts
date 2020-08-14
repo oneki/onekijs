@@ -1,5 +1,5 @@
 import { AppErrorCallback, AppSuccessCallback } from '../app/typings';
-import { Collection, ErrorCallback, State, SuccessCallback } from '../core/typings';
+import { AnonymousObject, ErrorCallback, State, SuccessCallback } from '../core/typings';
 import BasicError from '../core/BasicError';
 
 export interface AppFetchOptions<T = any> extends Omit<FetchOptions<T>, 'onError' | 'onSuccess'> {
@@ -25,10 +25,10 @@ export interface FetchOptions<R = any, T = any> extends RequestInit {
   onError?: ErrorCallback;
   onSuccess?: SuccessCallback<R>;
   delayLoading?: number;
-  auth?: Collection<any>;
-  headers?: Collection<string>;
-  params?: Collection<string>;
-  query?: Collection<string>;
+  auth?: AnonymousObject<any>;
+  headers?: AnonymousObject<string>;
+  params?: AnonymousObject<string>;
+  query?: AnonymousObject<string>;
   fetcher?: Fetcher<R, T>;
 }
 

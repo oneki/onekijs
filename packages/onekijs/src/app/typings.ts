@@ -1,12 +1,12 @@
-import AppRouter from './AppRouter';
-import { Collection, Class, AnyState, AnonymousObject } from '../core/typings';
-import Service from '../core/Service';
+import qs from 'query-string';
 import { ElementType } from 'react';
 import { Action, AnyAction, Store } from 'redux';
 import { Saga } from 'redux-saga';
-import qs from 'query-string';
-import AppContext from './AppContext';
 import BasicError from '../core/BasicError';
+import Service from '../core/Service';
+import { AnonymousObject, AnyState, Class } from '../core/typings';
+import AppContext from './AppContext';
+import AppRouter from './AppRouter';
 
 export const CONTEXT_ID = Symbol();
 export const reducersSymbol = Symbol('onekijs.store.reducers');
@@ -19,7 +19,7 @@ export interface AppProps {
   services?: Class<Service>[];
   LoadingComponent?: ElementType;
   initialLocale?: string;
-  translations?: Collection<Collection<string>>;
+  translations?: AnonymousObject<AnonymousObject<string>>;
   i18nNs?: string[];
 }
 

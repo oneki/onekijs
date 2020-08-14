@@ -1,9 +1,9 @@
 import useGlobalSelector from '../app/useGlobalSelector';
 import { Notification } from './typings';
-import { Collection } from '../core/typings';
+import { AnonymousObject } from '../core/typings';
 
-const useAllNotifications = (): Collection<Notification[]> => {
-  return useGlobalSelector<Collection<Notification[]>>('notifications') || {};
+const useAllNotifications = (): AnonymousObject<Notification[]> => {
+  return useGlobalSelector<AnonymousObject<Notification[]>>('notifications') || {};
 };
 
 export default useAllNotifications;

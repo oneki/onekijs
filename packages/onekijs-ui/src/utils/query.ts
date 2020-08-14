@@ -39,11 +39,11 @@ export const generateFilterId = (): number => {
 };
 
 export const isLoading = (meta: ItemMeta): boolean => {
-  return !!(meta && meta.status === LoadingStatus.Loading);
+  return !!(meta && meta.loadingStatus === LoadingStatus.Loading);
 };
 
 export const isDeprecated = (meta: ItemMeta): boolean => {
-  return !!(meta && (meta.status === LoadingStatus.Loading || meta.status === LoadingStatus.Deprecated));
+  return !!(meta && (meta.loadingStatus === LoadingStatus.Loading || meta.loadingStatus === LoadingStatus.Deprecated));
 };
 
 export const isQueryFilter = (value: QueryFilterOrCriteria | QueryFilterOrCriteria[]): value is QueryFilter => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import I18nService from './I18nService';
-import { Collection, AnonymousObject } from '../core/typings';
+import { AnonymousObject } from '../core/typings';
 import { get, isNull } from '../core/utils/object';
 import { AppSettings, Location } from '../app/typings';
 import { parseJsx } from '../core/utils/jsx';
@@ -72,7 +72,9 @@ export function detectLocale(
   return get<string>(settings, 'i18n.defaultLocale');
 }
 
-export const flattenTranslations = (translations: Collection<Collection<string>>): Collection<string> => {
+export const flattenTranslations = (
+  translations: AnonymousObject<AnonymousObject<string>>,
+): AnonymousObject<string> => {
   /* Example:
   Input:
   {

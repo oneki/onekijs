@@ -1,4 +1,4 @@
-import { State, Collection, AnonymousObject } from '../core/typings';
+import { State, AnonymousObject } from '../core/typings';
 import { SyntheticEvent, MutableRefObject, FC } from 'react';
 import FieldValidation from './FieldValidation';
 import ContainerValidation from './ContainerValidation';
@@ -16,7 +16,7 @@ export type Binder<T> = (...args: any[]) => T;
 export interface Field extends FieldOptions {
   name: string;
   touched: boolean;
-  validations: Collection<string>[];
+  validations: AnonymousObject<string>[];
   touchOn: TouchOnType;
   validators: Validator[];
   onChange: (value: any) => void;
@@ -26,7 +26,7 @@ export interface Field extends FieldOptions {
 
 export interface FieldContainer {
   context: FormContext;
-  value: Collection<any>;
+  value: AnonymousObject<any>;
   validation: ContainerValidation;
 }
 
@@ -67,7 +67,7 @@ export type FormProps = Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onSubmi
 export type FormSubmitCallback = (values: AnonymousObject) => void;
 
 export interface FormState extends State, FormOptions {
-  validations?: Collection<FieldValidation>;
+  validations?: AnonymousObject<FieldValidation>;
   values?: AnonymousObject;
   submitting?: boolean;
 }
@@ -80,8 +80,8 @@ export interface FormContext {
   fields: any;
   init: (name: string, validators?: Validator[], fieldOptions?: FieldOptions) => FieldProps;
   getContainerFieldValidation: (
-    validations: Collection<FieldValidation>,
-    fields: Collection<Field>,
+    validations: AnonymousObject<FieldValidation>,
+    fields: AnonymousObject<Field>,
     prefix?: string,
     touchedOnly?: boolean,
   ) => ContainerValidation;
@@ -98,12 +98,12 @@ export interface FormContext {
   setPendingValidation: (fieldName: string, validatorName: string, pending?: any) => boolean;
   setValidation: (fieldName: string, validatorName: string, code: ValidationCode, message?: string) => void;
   setValue: (fieldName: string, value: any) => void;
-  setValues: (values: Collection<any>) => void;
+  setValues: (values: AnonymousObject<any>) => void;
   setWarning: (fieldName: string, validatorName: string, message?: string, match?: boolean) => boolean;
   submit: (e?: SyntheticEvent<Element, Event>) => void;
   submittingRef: MutableRefObject<boolean>;
   valuesRef: MutableRefObject<any>;
-  validationsRef: MutableRefObject<Collection<FieldValidation>>;
+  validationsRef: MutableRefObject<AnonymousObject<FieldValidation>>;
 }
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
@@ -143,13 +143,13 @@ export interface UseForm {
   setError: (fieldName: string, validatorName: string, message?: string, match?: boolean) => boolean;
   setValidation: (fieldName: string, validatorName: string, code: ValidationCode, message?: string) => void;
   setValue: (fieldName: string, value: any) => void;
-  setValues: (values: Collection<any>) => void;
+  setValues: (values: AnonymousObject<any>) => void;
   setOK: (fieldName: string, validatorName: string) => boolean;
   setWarning: (fieldName: string, validatorName: string, message?: string, match?: boolean) => boolean;
   setPendingValidation: (fieldName: string, validatorName: string, pending?: any) => boolean;
   submit: (e?: SyntheticEvent<Element, Event>) => void;
   submitting: boolean;
-  validations: Collection<FieldValidation>;
+  validations: AnonymousObject<FieldValidation>;
   values: any;
 }
 

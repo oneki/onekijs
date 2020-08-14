@@ -1,10 +1,10 @@
 import { get, Primitive, reducer, service } from 'onekijs';
 import { defaultComparator, isQueryFilterCriteria, rootFilterId } from '../utils/query';
-import QueryService from './QueryService';
+import QueryService from './CollectionService';
 import {
   LocalCollection,
   LocalQuery,
-  LocalQueryState,
+  LocalCollectionState,
   QueryEngine,
   QueryFilter,
   QueryFilterCriteria,
@@ -23,7 +23,7 @@ import {
 const defaultSearcher = 'i_like';
 
 @service
-export default class LocalQueryService<T = any, S extends LocalQueryState<T> = LocalQueryState<T>>
+export default class LocalQueryService<T = any, S extends LocalCollectionState<T> = LocalCollectionState<T>>
   extends QueryService<S>
   implements LocalCollection<T> {
   init(): void {

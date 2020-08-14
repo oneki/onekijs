@@ -1,7 +1,7 @@
 import { AnonymousObject, useService } from 'onekijs';
 import { useMemo } from 'react';
-import LocalQueryService from './LocalQueryService';
-import { LocalCollection, LocalQueryState, UseCollectionOptions, LoadingStatus } from './typings';
+import LocalQueryService from './LocalCollectionService';
+import { LocalCollection, LocalCollectionState, UseCollectionOptions, LoadingStatus } from './typings';
 
 const useCollection = <T>(initialData: T[], options: UseCollectionOptions<T> = {}): LocalCollection<T> => {
   const initialState = {
@@ -14,9 +14,9 @@ const useCollection = <T>(initialData: T[], options: UseCollectionOptions<T> = {
     queryEngine: options.queryEngine,
     comparator: options.comparator,
     searcher: options.searcher,
-  } as LocalQueryState<T>;
+  } as LocalCollectionState<T>;
 
-  const [state, service] = useService<LocalQueryState<T>, LocalQueryService<T, LocalQueryState<T>>>(
+  const [state, service] = useService<LocalCollectionState<T>, LocalQueryService<T, LocalCollectionState<T>>>(
     LocalQueryService,
     initialState,
   );

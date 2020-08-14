@@ -1,4 +1,4 @@
-import { Collection } from '../core/typings';
+import { AnonymousObject } from '../core/typings';
 import { useEffect, useReducer, useRef } from 'react';
 import useFormContext from './useFormContext';
 import { FormContext, FormListenerProps, ValidationStatus, ValidationCode, FieldContainer } from './typings';
@@ -9,13 +9,13 @@ import useLazyRef from '../core/useLazyRef';
 
 const useFieldContainer = (): FieldContainer => {
   const fieldsRef = useRef<string[]>([]);
-  const fieldValidationsRef = useRef<Collection<FieldValidation>>({});
+  const fieldValidationsRef = useRef<AnonymousObject<FieldValidation>>({});
   const validationRef = useRef<ContainerValidation>(
     new ContainerValidation('', ValidationStatus.None, ValidationCode.None, {}),
   );
-  const valueRef = useRef<Collection<any>>({});
-  const valueListenersRef = useRef<Collection<FormListenerProps>>({});
-  const validationListenersRef = useRef<Collection<FormListenerProps>>({});
+  const valueRef = useRef<AnonymousObject<any>>({});
+  const valueListenersRef = useRef<AnonymousObject<FormListenerProps>>({});
+  const validationListenersRef = useRef<AnonymousObject<FormListenerProps>>({});
   const context = useFormContext();
   const [, forceRender] = useReducer((s) => s + 1, 0);
 

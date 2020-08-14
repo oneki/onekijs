@@ -1,6 +1,6 @@
 import { Task } from 'redux-saga';
 import { fork } from 'redux-saga/effects';
-import { Collection, AnonymousObject, SagaEffect } from '../core/typings';
+import { AnonymousObject, SagaEffect } from '../core/typings';
 import {
   Field,
   FormErrorCallback,
@@ -23,9 +23,9 @@ import LocalService from '../core/LocalService';
 
 @service
 export default class FormService extends LocalService<FormState> {
-  public fields: Collection<Field>;
+  public fields: AnonymousObject<Field>;
   public listeners: {
-    [k in FormListenerType]: Collection<FormListenerProps[]>;
+    [k in FormListenerType]: AnonymousObject<FormListenerProps[]>;
   };
   public pendingDispatch: Set<string>;
   protected fieldIndex: {
@@ -81,8 +81,8 @@ export default class FormService extends LocalService<FormState> {
   }
 
   getContainerFieldValidation(
-    validations: Collection<FieldValidation>,
-    fields: Collection<Field>,
+    validations: AnonymousObject<FieldValidation>,
+    fields: AnonymousObject<Field>,
     prefix = '',
     touchedOnly = true,
   ): ContainerValidation {
@@ -267,7 +267,7 @@ export default class FormService extends LocalService<FormState> {
   }
 
   @reducer
-  private _setValues(values: AnonymousObject = {}, validations: Collection<FieldValidation> = {}): void {
+  private _setValues(values: AnonymousObject = {}, validations: AnonymousObject<FieldValidation> = {}): void {
     Object.keys(values).forEach((key) => {
       const field = this.fields[key];
       if (field && field.touchOn === 'change' && !field.touched) {
@@ -296,7 +296,7 @@ export default class FormService extends LocalService<FormState> {
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Latest)
-  *setValues(values: Collection<any>) {
+  *setValues(values: AnonymousObject<any>) {
     const async = yield this.validateAll(values);
     if (async.length > 0) {
       yield this.compileValidations(async);
@@ -307,7 +307,7 @@ export default class FormService extends LocalService<FormState> {
   @saga(SagaEffect.Leading)
   *submit(
     values: AnonymousObject,
-    validations: Collection<FieldValidation>,
+    validations: AnonymousObject<FieldValidation>,
     resubmit: () => void,
     onSuccess: FormSubmitCallback,
     onError?: FormErrorCallback,
@@ -377,10 +377,10 @@ export default class FormService extends LocalService<FormState> {
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  *validateAll(values: Collection<any>) {
+  *validateAll(values: AnonymousObject<any>) {
     // do all validations
-    const tasks: Collection<Task[]> = {};
-    const validations: Collection<FieldValidation> = {};
+    const tasks: AnonymousObject<Task[]> = {};
+    const validations: AnonymousObject<FieldValidation> = {};
     const keys = Object.keys(values);
     for (const key of keys) {
       // we need to find all sub fields (if any) and do the validations for these fields

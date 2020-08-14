@@ -166,7 +166,6 @@ export {
   AnyFunction,
   AnyState,
   Class,
-  Collection,
   ErrorCallback,
   Primitive,
   SagaEffect,

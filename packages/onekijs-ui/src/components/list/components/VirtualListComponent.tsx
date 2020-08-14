@@ -110,7 +110,7 @@ const VirtualistComponent: FC<VirtualListProps> = ({
       ref={parentRef}
       className={addClassname('o-list', className)}
       style={{
-        maxHeight: `${height}px`,
+        maxHeight: `${typeof height === 'string' ? height : `${height}px`}`,
         overflow: 'auto',
       }}
     >

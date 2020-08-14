@@ -8,7 +8,7 @@ const SelectOptionsComponent: FC<SelectOptionsProps<any>> = ({
   ItemComponent = SelectOptionComponent,
   ...listProps
 }) => {
-  return <ListComponent className="o-select-options" ItemComponent={ItemComponent} {...listProps} />;
+  return <ListComponent className="o-select-options" ItemComponent={ItemComponent} height="100%" {...listProps} />;
 };
 
 export default SelectOptionsComponent;
