@@ -1,5 +1,5 @@
 import { SyntheticEvent, useEffect, useState } from 'react';
-import { Collection } from '../core/typings';
+import { AnonymousObject } from '../core/typings';
 import useFormContext from './useFormContext';
 import { ValidationCode, ValidationStatus } from './typings';
 import useFormStatus from './useFormStatus';
@@ -9,7 +9,7 @@ const useSubmit = (): {
   submitting: boolean;
   status: ValidationStatus;
   code: ValidationCode;
-  fields: Collection<string>;
+  fields: AnonymousObject<string>;
 } => {
   const { status, code, fields } = useFormStatus();
   const { submittingRef, onSubmittingChange, offSubmittingChange, submit } = useFormContext();

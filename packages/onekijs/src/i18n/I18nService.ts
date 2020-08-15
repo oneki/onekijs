@@ -2,7 +2,7 @@ import { all, call } from 'redux-saga/effects';
 import { AppSettings } from '../app/typings';
 import { reducer, saga, service } from '../core/annotations';
 import GlobalService from '../core/GlobalService';
-import { AnonymousObject, Collection, SagaEffect } from '../core/typings';
+import { AnonymousObject, SagaEffect } from '../core/typings';
 import { append, get, set } from '../core/utils/object';
 import { isFunction } from '../core/utils/type';
 import { asyncGet } from '../fetch/utils';
@@ -12,7 +12,7 @@ import { flattenTranslations } from './utils';
 @service
 export default class I18nService extends GlobalService {
   notificationService: NotificationService;
-  modifiers: Collection<any>;
+  modifiers: AnonymousObject<any>;
 
   constructor(notificationService: NotificationService) {
     super();

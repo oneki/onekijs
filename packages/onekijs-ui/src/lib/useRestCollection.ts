@@ -1,10 +1,10 @@
 import { AnonymousObject, FetchOptions, omit, useService } from 'onekijs';
 import { useMemo } from 'react';
-import RemoteQueryService from './RemoteQueryService';
-import { RemoteCollection, RemoteQueryState, UseRemoteCollectionOptions } from './typings';
+import RemoteQueryService from './RemoteCollectionService';
+import { RemoteCollection, RemoteCollectionState, UseRemoteCollectionOptions } from './typings';
 
 const useRestCollection = <T>(url: string, options: UseRemoteCollectionOptions<T> = {}): RemoteCollection<T> => {
-  const [, service] = useService<RemoteQueryState<T>, RemoteQueryService<T, RemoteQueryState<T>>>(
+  const [, service] = useService<RemoteCollectionState<T>, RemoteQueryService<T, RemoteCollectionState<T>>>(
     RemoteQueryService,
     () => {
       const fetchOptions = Object.assign(
@@ -30,7 +30,7 @@ const useRestCollection = <T>(url: string, options: UseRemoteCollectionOptions<T
         method: options.method,
         throttle: options.throttle,
         fetchOptions,
-      } as RemoteQueryState<T>;
+      } as RemoteCollectionState<T>;
     },
   );
 

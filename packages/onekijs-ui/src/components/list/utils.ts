@@ -25,8 +25,8 @@ export const adapt = <T>(item: Item<T>, meta: ItemMeta, adapter?: ListItemAdapte
     }
   } else {
     adaptee = {
-      id: '',
-      text: '',
+      id: undefined,
+      text: undefined,
     };
   }
   Object.assign(result, adaptee);

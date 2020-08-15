@@ -1,12 +1,12 @@
-import { asyncHttp, HttpMethod, Primitive, reducer, saga, SagaEffect, service, set } from 'onekijs';
+import { asyncHttp, HttpMethod, Primitive, reducer, saga, SagaEffect, service, set, AnonymousObject } from 'onekijs';
 import { cancel, delay, fork } from 'redux-saga/effects';
 import { defaultComparator, defaultSerializer, rootFilterId } from '../utils/query';
-import QueryService from './QueryService';
+import QueryService from './CollectionService';
 import {
   CollectionStatus,
   Item,
   ItemMeta,
-  ItemStatus,
+  LoadingItemStatus,
   LoadingStatus,
   Query,
   QueryFilter,
@@ -20,13 +20,17 @@ import {
   QuerySortComparator,
   QuerySortDir,
   RemoteCollection,
-  RemoteQueryState,
+  RemoteCollectionState,
+  meta,
 } from './typings';
 
 @service
-export default class RemoteQueryService<T = any, S extends RemoteQueryState<T> = RemoteQueryState<T>>
-  extends QueryService<S>
-  implements RemoteCollection<T> {
+export default class RemoteQueryService<
+  T = any,
+  M extends ItemMeta = ItemMeta,
+  S extends RemoteCollectionState<T, M> = RemoteCollectionState<T, M>
+> extends QueryService<T, M, S> implements RemoteCollection<T> {
+  protected itemMeta: AnonymousObject<M> = {};
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
   *addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId: QueryFilterId = rootFilterId) {
@@ -108,10 +112,6 @@ export default class RemoteQueryService<T = any, S extends RemoteQueryState<T> =
     return this.state.data;
   }
 
-  get meta(): ItemMeta[] | undefined {
-    return this.state.meta;
-  }
-
   get status(): CollectionStatus {
     return this.state.status || LoadingStatus.NotInitialized;
   }
@@ -135,7 +135,7 @@ export default class RemoteQueryService<T = any, S extends RemoteQueryState<T> =
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Every)
+  @saga(SagaEffect.Throttle, 'state.throttle', 200)
   *query(query: Query) {
     let resetData = false;
     if (query.filter || query.search || query.sort || query.sortBy || query.fields) {
@@ -146,7 +146,7 @@ export default class RemoteQueryService<T = any, S extends RemoteQueryState<T> =
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Every)
+  @saga(SagaEffect.Throttle, 'state.throttle', 200)
   *refresh() {
     yield this._refresh(true);
   }
@@ -185,14 +185,14 @@ export default class RemoteQueryService<T = any, S extends RemoteQueryState<T> =
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Latest)
+  @saga(SagaEffect.Throttle, 'state.throttle', 200)
   *sort(dir: QuerySortDir) {
     yield this._setSort(dir);
     yield this._refresh(true);
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Every)
+  @saga(SagaEffect.Latest)
   *sortBy(sortBy: string | QuerySortBy | QuerySortBy[]) {
     yield this._setSortBy(sortBy);
     yield this._refresh(true);
@@ -328,7 +328,7 @@ export default class RemoteQueryService<T = any, S extends RemoteQueryState<T> =
 
   @reducer
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  protected _fetchSuccess(result: any[], resetData: boolean, query: Query): void {
+  protected _fetchSuccess(result: T[], resetData: boolean, query: Query): void {
     const size = query.size;
     const offset = query.offset || 0;
     const currentQuery = this._getQuery();
@@ -344,33 +344,36 @@ export default class RemoteQueryService<T = any, S extends RemoteQueryState<T> =
     this.state.error = undefined;
     this.state.total = undefined;
     if (same) {
+      // update metadata
+      for (const itemData of result) {
+        const id = this._getId(itemData);
+        set(this.itemMeta, `${id}.status`, LoadingStatus.Loaded);
+      }
+
       if (resetData) {
-        this.state.data = undefined;
-        this.state.meta = undefined;
+        this.state.data = [];
       }
 
       if (size) {
-        for (let i = offset; i < offset + (size - 1); i++) {
-          set(this.state.meta, `${i}.status`, LoadingStatus.Loaded);
-        }
         const data = this.state.data || Array(size + offset);
-        data.splice(offset, size, ...result.slice(0, size - 1));
+        data.splice(
+          offset,
+          size,
+          ...result.slice(0, size - 1).map((itemData) => ({
+            data: itemData,
+            [meta]: this.itemMeta[this._getId(itemData)],
+          })),
+        );
         this.state.data = data;
         if (result.length < size) {
           this.state.total = this.state.data.length;
-          if (this.state.meta && this.state.meta.length > this.state.data.length) {
-            this.state.meta = this.state.meta.slice(0, this.state.data.length);
-          }
         }
       } else {
-        for (let i = offset; i < offset + result.length; i++) {
-          set(this.state.meta, `${i}.status`, LoadingStatus.Loaded);
-        }
-        this.state.data = result;
+        this.state.data = result.map((itemData) => ({
+          data: itemData,
+          [meta]: this.itemMeta[this._getId(itemData)],
+        }));
         this.state.total = this.state.data.length;
-        if (this.state.meta && this.state.meta.length > this.state.data.length) {
-          this.state.meta = this.state.meta.slice(0, this.state.data.length);
-        }
       }
     }
 
@@ -380,9 +383,9 @@ export default class RemoteQueryService<T = any, S extends RemoteQueryState<T> =
       this.state.status = this.state.total === undefined ? LoadingStatus.PartialLoaded : LoadingStatus.Loaded;
     } else {
       // need to calculate the status as we cannot be sure that there is not another running request
-      if (this.state.meta && this.state.meta.find((item) => item && item.status === LoadingStatus.Loading)) {
+      if (Object.values(this.itemMeta).find((itemMeta) => itemMeta.loadingStatus === LoadingStatus.Loading)) {
         this.state.status = LoadingStatus.PartialLoading;
-      } else if (this.state.meta && this.state.meta.find((item) => item && item.status === LoadingStatus.Deprecated)) {
+      } else if (Object.values(this.itemMeta).find((itemMeta) => itemMeta.loadingStatus === LoadingStatus.Deprecated)) {
         this.state.status = LoadingStatus.PartialDeprecated;
       } else {
         this.state.status = this.state.total === undefined ? LoadingStatus.PartialLoaded : LoadingStatus.Loaded;
@@ -437,7 +440,7 @@ export default class RemoteQueryService<T = any, S extends RemoteQueryState<T> =
   @reducer
   protected _setLoading(
     options: {
-      status?: ItemStatus;
+      status?: LoadingItemStatus;
       size?: number;
       offset?: number;
       resetLimit?: boolean;
@@ -467,7 +470,15 @@ export default class RemoteQueryService<T = any, S extends RemoteQueryState<T> =
     if (this.state.data) {
       if (options.size) {
         for (let i = offset; i < options.size + offset; i++) {
-          setItemStatus(i);
+          if (!this.state.data[i]) {
+            this.state.data[i] = {
+              data: undefined,
+              [meta]: {
+                loadingStatus: options.status,
+              } as ItemMeta,
+            };
+          }
+          set(this.state.data, `${index}.status`, options.status);
         }
         this.state.status = `${resetData ? '' : 'partial_'}${options.status}` as CollectionStatus;
       } else {

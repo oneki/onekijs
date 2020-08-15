@@ -9,10 +9,14 @@ import {
   QuerySortBy,
   QuerySortComparator,
   QuerySortDir,
-  QueryState,
+  CollectionState,
 } from './typings';
 
-export default abstract class QueryService<S extends QueryState = QueryState> extends Service<S> {
+export default abstract class QueryService<
+  T = any,
+  M extends ItemMeta = ItemMeta,
+  S extends CollectionState = CollectionState
+> extends Service<S> {
   getFields(): string[] | undefined {
     return this.state.fields;
   }
@@ -147,6 +151,16 @@ export default abstract class QueryService<S extends QueryState = QueryState> ex
       ];
     }
     return [sortBy];
+  }
+
+  protected _getId(data: T): string {
+    if (this.state.adapter) {
+      return String(this.state.adapter(data).id);
+    }
+    if ((data as any).id) {
+      return String((data as any).id);
+    }
+    return String(data);
   }
 
   @reducer

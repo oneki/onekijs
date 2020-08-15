@@ -10,6 +10,13 @@ export interface User {
   phones: string[],
 }
 
+export const userAdapter = (item: User) => {
+  return {
+    id: item.id,
+    text: `${item.firstname} ${item.lastname}`,
+  };
+};
+
 export const users: User[] = [
   {
     id: 0,

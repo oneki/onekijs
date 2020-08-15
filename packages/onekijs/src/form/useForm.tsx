@@ -1,5 +1,5 @@
 import React, { FC, SyntheticEvent, useCallback, useEffect, useMemo, useRef } from 'react';
-import { Collection, AnonymousObject } from '../core/typings';
+import { AnonymousObject } from '../core/typings';
 import { DefaultFormContext } from './useFormContext';
 import FormService from './FormService';
 import {
@@ -199,7 +199,7 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
         return service.getContainerFieldValidation(validationsRef.current, service.fields, '', touchedOnly);
       }
       // else if (Array.isArray(fieldName)) {
-      //   const result: Collection<Validation> = {};
+      //   const result: AnonymousObject<Validation> = {};
       //   fieldName.forEach((n) => (result[n] = getFieldValidation(n)));
       //   return result;
       // }
@@ -375,7 +375,7 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
     (): FC<FormProps> => {
       const Form: FC<FormProps> = (props) => {
         const prevValuesRef = useRef({});
-        const prevValidationsRef = useRef<Collection<FieldValidation>>({});
+        const prevValidationsRef = useRef<AnonymousObject<FieldValidation>>({});
         const prevSubmittingRef = useRef(false);
 
         // eslint-disable-next-line

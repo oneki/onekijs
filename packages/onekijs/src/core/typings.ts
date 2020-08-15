@@ -5,8 +5,8 @@ import AppService from './AppService';
 export const ID = Symbol();
 export const SERVICE_TYPE_ID = Symbol();
 
-export interface AnonymousObject {
-  [propName: string]: any;
+export interface AnonymousObject<T = any> {
+  [propName: string]: T;
 }
 
 export type AnyFunction<T = any> = (...args: any[]) => T;
@@ -16,10 +16,6 @@ export interface AnyState extends State {
 }
 
 export type Class<T> = { new (...args: any[]): T };
-
-export interface Collection<T> {
-  [k: string]: T;
-}
 
 export type ErrorCallback<T extends BasicError = BasicError> = ResultCallback<T>;
 
