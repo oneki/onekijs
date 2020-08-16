@@ -113,6 +113,7 @@ export {
 export {
   hex2b64,
   generateRandomString,
+  generateUniqueId,
   lcfirst,
   toKebabCase,
   regexIndexOf,

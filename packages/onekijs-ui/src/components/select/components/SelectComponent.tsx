@@ -1,10 +1,9 @@
 import { AnonymousObject, get } from 'onekijs';
 import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
 import { LoadingStatus } from '../../../lib/typings';
-import { isCollection } from '../../../utils/collection';
+import { isCollection, toCollectionItem } from '../../../utils/collection';
 import { useClickOutside } from '../../../utils/event';
 import Dropdown from '../../dropdown';
-import { adapt } from '../../list/utils';
 import { SelectProps } from '../typings';
 import SelectInputComponent from './SelectInputComponent';
 import SelectOptionsComponent from './SelectOptionsComponent';
@@ -12,9 +11,8 @@ import SelectOptionsComponent from './SelectOptionsComponent';
 const SelectComponent: FC<SelectProps<any>> = ({
   className,
   placeholder,
-  data,
+  items: collection,
   InputComponent = SelectInputComponent,
-  adapter,
   autoFocus,
   value,
 }) => {
@@ -23,11 +21,11 @@ const SelectComponent: FC<SelectProps<any>> = ({
   const stateRef = useRef<AnonymousObject>({});
 
   const loading = useMemo(() => {
-    const loading = isCollection(data)
-      ? data.status === LoadingStatus.Loading || data.status === LoadingStatus.PartialLoading
+    const loading = isCollection(collection)
+      ? collection.status === LoadingStatus.Loading || collection.status === LoadingStatus.PartialLoading
       : false;
     return loading;
-  }, [data]);
+  }, [collection]);
 
   const delayOpen = useMemo(() => {
     return loading && !open;
@@ -50,29 +48,27 @@ const SelectComponent: FC<SelectProps<any>> = ({
     if (!open) {
       setOpen(true);
     }
-    if (isCollection(data)) {
-      data.search(e.target.value);
+    if (isCollection(collection)) {
+      collection.search(e.target.value);
     }
   };
 
   const selectedItem = useMemo(() => {
     if (!focus) {
-      if (isCollection(data) && (!data.data || data.data.length === 0)) {
-        return adapt(value, undefined, adapter);
+      if (isCollection(collection) && (!collection.items || collection.items.length === 0)) {
+        return toCollectionItem(value, collection.getAdapter());
       } else {
-        return adapt(undefined, undefined, adapter);
+        return value;
       }
     } else {
-      const search = isCollection(data) ? data.getSearch() : undefined;
+      const search = isCollection(collection) ? collection.getSearch() : undefined;
       if (search) {
-        const item = isCollection(data) ? get(data, 'data.0') : data[0];
-        const meta = isCollection(data) ? get(data, 'meta.0') : undefined;
-        return adapt(item, meta, adapter);
+        return isCollection(collection) ? get(collection, 'items.0') : collection[0];
       } else {
-        return adapt(value, undefined, adapter);
+        return isCollection(collection) ? toCollectionItem(value, collection.getAdapter()) : value;
       }
     }
-  }, [data, adapter, value, focus]);
+  }, [collection, value, focus]);
 
   return (
     <div
@@ -94,7 +90,7 @@ const SelectComponent: FC<SelectProps<any>> = ({
         onBlur={onBlur}
       />
       <Dropdown refElement={containerRef} open={open}>
-        <SelectOptionsComponent data={data} adapter={adapter} />
+        <SelectOptionsComponent items={collection} />
       </Dropdown>
     </div>
   );

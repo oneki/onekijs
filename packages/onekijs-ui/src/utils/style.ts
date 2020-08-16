@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { AnonymousObject, Collection, lcfirst, toKebabCase } from 'onekijs';
+import { AnonymousObject, lcfirst, toKebabCase } from 'onekijs';
 import { css, FlattenInterpolation, ThemeProps } from 'styled-components';
 import { CssProperty, Formatter, Theme } from '../styles/typings';
 import { themeFormatter } from './formatter';
@@ -91,7 +91,7 @@ export const toCss = <T>(
   property: string | null,
   formatter: Formatter<T> | undefined,
   value: T,
-  variants: Collection<any>,
+  variants: AnonymousObject,
 ): FlattenInterpolation<ThemeProps<any>> => {
   let result = css`
   ${property === null ? '' : property + ': '}${(props) => formatValue(value, props.theme, formatter)};
@@ -153,7 +153,7 @@ export const toCss = <T>(
 };
 
 export const cssProperty = <T>(property: string | null, formatter?: Formatter<T>): CssProperty<T> => {
-  return (value: T, variants: Collection<any> = {}): FlattenInterpolation<ThemeProps<any>> => {
+  return (value: T, variants: AnonymousObject = {}): FlattenInterpolation<ThemeProps<any>> => {
     return toCss(property, formatter, value, variants);
   };
 };

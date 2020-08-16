@@ -1,3 +1,5 @@
+import { ItemAdapter, ItemMeta, QuerySearcher } from 'onekijs-ui';
+
 export interface User {
   id: number,
   firstname: string,
@@ -10,11 +12,20 @@ export interface User {
   phones: string[],
 }
 
-export const userAdapter = (item: User) => {
+export const userAdapter: ItemAdapter<User, ItemMeta> = (data?: User) => {
   return {
-    id: item.id,
-    text: `${item.firstname} ${item.lastname}`,
+    id: data ? String(data.id) : undefined,
+    text: data ? `${data.firstname} ${data.lastname}` : '',
+    data,
+    meta: {},
   };
+};
+
+export const userSearcher: QuerySearcher<User> = (item, search) => {
+  if (search) {
+    return `${item.firstname} ${item.lastname}`.toUpperCase().startsWith(String(search).toUpperCase());
+  }
+  return true;
 };
 
 export const users: User[] = [

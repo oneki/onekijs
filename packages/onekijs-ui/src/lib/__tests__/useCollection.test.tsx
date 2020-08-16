@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/extend-expect';
 import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
-import { UseCollectionOptions, QuerySortBy } from '../typings';
+import { UseCollectionOptions, QuerySortBy, ItemMeta } from '../typings';
 import UseCollectionWidget from './components/UseCollectionWidget';
 import { basicUsers } from './data/userList';
 import { TestHandler, TestUser } from './typings';
@@ -9,7 +9,7 @@ import { get } from 'onekijs';
 
 type TestProps = {
   data: TestUser[];
-  options?: UseCollectionOptions;
+  options?: UseCollectionOptions<TestUser, ItemMeta>;
   handler?: TestHandler;
   result: TestUser[];
   title: string;

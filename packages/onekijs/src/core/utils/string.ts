@@ -1,5 +1,6 @@
 const b64map = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 const b64pad = '=';
+let index = 0;
 
 export function generateRandomString(
   length: number,
@@ -11,6 +12,10 @@ export function generateRandomString(
     result.push(characters.charAt(Math.floor(Math.random() * charactersLength)));
   }
   return result.join('');
+}
+
+export function generateUniqueId(): string {
+  return `uid-${++index}`;
 }
 
 // Copyright (c) 2010-2018 Kenji Urushima - jsrsasign

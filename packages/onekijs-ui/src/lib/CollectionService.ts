@@ -1,6 +1,10 @@
 import { get, Primitive, reducer, Service } from 'onekijs';
+import { toCollectionItem } from '../utils/collection';
 import { defaultComparator, isQueryFilterCriteria, rootFilterId, visitFilter } from '../utils/query';
 import {
+  CollectionState,
+  Item,
+  ItemMeta,
   Query,
   QueryFilter,
   QueryFilterCriteria,
@@ -9,14 +13,71 @@ import {
   QuerySortBy,
   QuerySortComparator,
   QuerySortDir,
-  CollectionState,
+  Collection,
+  CollectionStatus,
+  LoadingStatus,
+  ItemAdapter,
 } from './typings';
 
-export default abstract class QueryService<
+export default abstract class CollectionService<
   T = any,
   M extends ItemMeta = ItemMeta,
-  S extends CollectionState = CollectionState
-> extends Service<S> {
+  S extends CollectionState<T, M> = CollectionState<T, M>
+> extends Service<S> implements Collection<T, M> {
+  abstract addFilter(
+    filterOrCriteria: QueryFilterOrCriteria,
+    parentFilterId?: string | number | symbol | undefined,
+  ): void;
+  abstract addFilterCriteria(
+    field: string,
+    operator: import('./typings').QueryFilterCriteriaOperator,
+    value: string | number | boolean | import('./typings').QueryFilterCriteriaValue[] | null,
+    not?: boolean | undefined,
+    id?: string | number | symbol | undefined,
+    parentFilterId?: string | number | symbol | undefined,
+  ): void;
+  abstract addSortBy(
+    field: string,
+    dir?: 'asc' | 'desc' | undefined,
+    comparator?: QuerySortComparator | undefined,
+    prepend?: boolean | undefined,
+  ): void;
+  abstract clearFields(): void;
+  abstract clearFilter(): void;
+  abstract clearSearch(): void;
+  abstract clearSort(): void;
+  abstract clearSortBy(): void;
+  abstract filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | null): void;
+  abstract load(size?: number | undefined, offset?: number | undefined): void;
+  abstract query(query: Query): void;
+  abstract refresh(): void;
+  abstract removeFilter(filterId: string | number | symbol): void;
+  abstract removeSortBy(field: string): void;
+  abstract search(search: Primitive): void;
+  abstract setData(data: T[]): void;
+  abstract setFields(fields: string[]): void;
+  abstract setItems(items: Item<T, M>[]): void;
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  abstract setMeta(itemId: string | number, key: keyof M, value: any): void;
+  abstract sort(dir: QuerySortDir): void;
+  abstract sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void;
+
+  get items(): (Item<T, M> | undefined)[] | undefined {
+    return this.state.items;
+  }
+
+  get status(): CollectionStatus {
+    return this.state.status || LoadingStatus.Loaded;
+  }
+
+  get total(): number | undefined {
+    return this.state.items?.length;
+  }
+
+  getAdapter(): ItemAdapter<T, M> | undefined {
+    return this.state.adapter;
+  }
+
   getFields(): string[] | undefined {
     return this.state.fields;
   }
@@ -43,6 +104,10 @@ export default abstract class QueryService<
 
   getSortBy(): QuerySortBy[] | undefined {
     return this._formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(this.state, 'sortBy'));
+  }
+
+  protected _adapt(data: T | undefined): Item<T, M> {
+    return toCollectionItem(data, this.state.adapter);
   }
 
   @reducer
@@ -153,14 +218,8 @@ export default abstract class QueryService<
     return [sortBy];
   }
 
-  protected _getId(data: T): string {
-    if (this.state.adapter) {
-      return String(this.state.adapter(data).id);
-    }
-    if ((data as any).id) {
-      return String((data as any).id);
-    }
-    return String(data);
+  protected _getId(data: T): string | undefined {
+    return this._adapt(data).id;
   }
 
   @reducer

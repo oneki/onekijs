@@ -2,35 +2,24 @@ import React, { FC, useEffect } from 'react';
 import { LoadingStatus } from '../../../lib/typings';
 import { isCollection } from '../../../utils/collection';
 import { addClassname } from '../../../utils/style';
-import { ListItem, ListProps } from '../typings';
-import { adapt } from '../utils';
+import { StandardListProps } from '../typings';
 import ListItemComponent from './ListItemComponent';
 
-const defaultPreload = 5;
-
-const StandardListComponent: FC<ListProps> = ({
-  className,
-  data,
-  ItemComponent = ListItemComponent,
-  adapter,
-  preload = defaultPreload,
-}) => {
-  const items = (isCollection(data) ? data.data : data) ?? Array(preload);
+const StandardListComponent: FC<StandardListProps> = ({ className, collection, ItemComponent = ListItemComponent }) => {
+  const items = collection.items ?? [];
 
   useEffect(() => {
-    if (isCollection(data)) {
-      if (data.status === LoadingStatus.NotInitialized) {
-        return data.load();
+    if (isCollection(collection)) {
+      if (collection.status === LoadingStatus.NotInitialized) {
+        return collection.load();
       }
     }
-  }, [data]);
+  }, [collection]);
 
   return (
     <div className={addClassname('o-list', className)}>
       {items.map((item, index) => {
-        const meta = isCollection(data) && data.meta ? data.meta[index] : undefined;
-        const listItem: ListItem = adapt(item, meta, adapter);
-        return <ItemComponent key={`item-${index}`} index={index} {...listItem} />;
+        return <ItemComponent key={`item-${index}`} index={index} {...item} />;
       })}
     </div>
   );

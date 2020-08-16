@@ -1,37 +1,29 @@
 import { FC } from 'react';
-import { Collection } from '../../lib/typings';
+import { Collection, ItemMeta } from '../../lib/typings';
 
-export type ListData<T = any> = T[] | Collection<T>;
+export type ListItems<T = any, M extends ItemMeta = ItemMeta> = T[] | Collection<T, M>;
 
-export interface ListItem<T = any> {
+export interface ListItemProps<T = any, M extends ItemMeta = ItemMeta> {
+  index: number;
   id?: string | number;
   text?: string;
-  loading: boolean;
-  deprecated: boolean;
-  item?: T;
+  data?: T;
+  meta?: M;
 }
 
-export type ListItemAdapter<T = any> = (
-  item: T,
-) => {
-  id: string | number;
-  text: string;
-};
-
-export interface ListItemProps<T = any> extends ListItem<T> {
-  index: number;
-}
-
-export interface ListProps<T = any> {
-  adapter?: ListItemAdapter<T>;
+export interface ListProps<T = any, M extends ItemMeta = ItemMeta> {
   className?: string;
-  data: ListData<T>;
+  items: ListItems<T, M>;
   height?: number | string;
-  ItemComponent?: FC<ListItemProps<T>>;
+  ItemComponent?: FC<ListItemProps<T, M>>;
   itemHeight?: number | ((index: number) => number);
   preload?: number;
   increment?: number;
 }
+
+export type ListInternalProps<T = any, M extends ItemMeta = ItemMeta> = Omit<ListProps, 'items'> & {
+  collection: Collection<T, M>;
+};
 
 export enum ListStatus {
   NotInitialized = 'not initialized',
@@ -43,6 +35,9 @@ export enum ListStatus {
   Loaded = 'loaded',
 }
 
-export type StandardListProps<T = any> = Omit<ListProps<T>, 'height' | 'itemHeight'>;
+export type StandardListProps<T = any, M extends ItemMeta = ItemMeta> = Omit<
+  ListInternalProps<T, M>,
+  'height' | 'itemHeight'
+>;
 
-export type VirtualListProps<T = any> = ListProps<T>;
+export type VirtualListProps<T = any, M extends ItemMeta = ItemMeta> = ListInternalProps<T, M>;

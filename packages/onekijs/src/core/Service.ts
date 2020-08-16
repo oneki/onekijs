@@ -213,7 +213,6 @@ export default class Service<S extends State = AnyState> {
             action.resolve(nextState);
           }, 0);
         }
-
         return nextState;
       } catch (e) {
         if (action.reject) {
