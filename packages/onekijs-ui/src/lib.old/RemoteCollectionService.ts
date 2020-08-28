@@ -11,7 +11,7 @@ import {
   service,
 } from 'onekijs';
 import { cancel, delay, fork } from 'redux-saga/effects';
-import { defaultComparator, defaultSerializer, rootFilterId } from '../utils/query';
+import { defaultComparator, defaultSerializer, rootFilterId } from '../utils/query.ts.old';
 import CollectionService from './CollectionService';
 import {
   Collection,
@@ -211,17 +211,16 @@ export default class RemoteCollectionService<
 
   @reducer
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  setMeta(itemId: string | number, key: keyof M, value: any): void {
-    if (this.itemMeta) {
-      const meta = this.itemMeta[String(itemId)];
-      if (meta) {
-        meta[key] = value;
-      }
+  setMeta(item: Item<T, M>, key: keyof M, value: any): void {
+    if (item.id !== undefined) {
+      const meta = Object.assign({}, this.itemMeta[String(item.id)] ?? item.meta, { [key]: value });
+      this.itemMeta[String(item.id)] = meta;
+      item.meta = meta;
 
       if (this.state.items) {
-        const item = this.state.items.find((item) => item?.id === String(itemId));
-        if (item) {
-          item.meta = Object.assign({}, meta);
+        const stateItem = this.state.items.find((stateItem) => item.id === stateItem?.id);
+        if (stateItem) {
+          stateItem.meta = this.itemMeta[String(item.id)];
         }
       }
     }
@@ -394,11 +393,8 @@ export default class RemoteCollectionService<
         const item = this._adapt(itemData);
         const id = item.id;
         if (id !== undefined) {
-          const meta = this.itemMeta[id] ?? item.meta;
-          if (meta !== undefined) {
-            meta.loadingStatus = LoadingStatus.Loaded;
-          }
-          this.itemMeta[id] = Object.assign({}, meta);
+          const meta = Object.assign({}, this.itemMeta[id] ?? item.meta, { loadingStatus: LoadingStatus.Loaded });
+          this.itemMeta[id] = meta;
           item.meta = meta;
         }
         return item;
@@ -521,11 +517,11 @@ export default class RemoteCollectionService<
       }
 
       if (meta !== undefined) {
-        meta.loadingStatus = options.status;
+        meta = Object.assign({}, meta, { loadingStatus: options.status });
         if (item) {
           item.meta = meta;
           if (item.id) {
-            this.itemMeta[item.id] = Object.assign({}, meta);
+            this.itemMeta[item.id] = meta;
           }
         }
       }

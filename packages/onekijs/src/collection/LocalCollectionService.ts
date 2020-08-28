@@ -1,5 +1,4 @@
-import { get, Primitive, reducer, service } from 'onekijs';
-import { defaultComparator, isQueryFilterCriteria, rootFilterId } from '../utils/query';
+import { defaultComparator, isQueryFilterCriteria, rootFilterId } from './utils';
 import CollectionService from './CollectionService';
 import {
   Collection,
@@ -19,6 +18,9 @@ import {
   QuerySortComparator,
   QuerySortDir,
 } from './typings';
+import { service, reducer } from '../core/annotations';
+import { Primitive } from '../core/typings';
+import { get } from '../core/utils/object';
 
 const defaultSearcher = 'i_like';
 
@@ -185,11 +187,11 @@ export default class LocalCollectionService<
 
   @reducer
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  setMeta(itemId: string | number, key: keyof M, value: any): void {
-    if (this.state.items) {
-      const item = this.state.items.find((item) => item?.id === String(itemId));
-      if (item && item.meta) {
-        item.meta[key] = value;
+  setMeta(item: Item<T, M>, key: keyof M, value: any): void {
+    if (this.state.items && item.id !== undefined) {
+      const stateItem = this.state.items.find((stateItem) => item.id === stateItem?.id);
+      if (stateItem && item.meta) {
+        stateItem.meta = Object.assign({}, item.meta, { [key]: value });
       }
     }
   }

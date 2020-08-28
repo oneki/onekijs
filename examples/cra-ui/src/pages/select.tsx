@@ -1,16 +1,35 @@
-import React from 'react';
-import { Select, useCollection } from 'onekijs-ui';
-import { users, userAdapter, userSearcher } from '../data/users';
+import React, { useCallback, useState } from 'react';
+import { Select, useCollection, CollectionState, LocalCollectionService, toCollectionItem, Query, SelectOptionMeta } from 'onekijs-ui';
+import { users, userAdapter, userSearcher, User } from '../data/users';
+import { useService, Fetcher } from 'onekijs';
 
 export const SelectPage = () => {
-  const collection = useCollection(users, {
-    searcher: userSearcher,
+  const [, service] = useService<CollectionState<User, SelectOptionMeta>, LocalCollectionService<User, SelectOptionMeta, CollectionState<User, SelectOptionMeta>>>(LocalCollectionService, {
+    db: users.map(u => toCollectionItem(u)),
+    adapter: userAdapter, 
+    searcher: userSearcher
+  } as CollectionState<User, SelectOptionMeta>)
+
+  const fetcher: Fetcher = useCallback(
+    async (url, method, body, options) => {
+      await new Promise((r) => setTimeout(r, 1000 + Math.floor(Math.random() * Math.floor(300))));
+      service.query(body as Query);
+      return service.items ? service.items.slice(body.offset || 0, (body.offset || 0) + (body.size || service.items.length)).map(item => item?.data) : [];
+    },
+    [service],
+  );
+
+  const collection = useCollection<User, SelectOptionMeta>('http://localhost', {
     adapter: userAdapter,
+    fetcher 
   });
+
+  const [value, setValue] = useState(users[1]);
+
   return (
     <div style={{display: 'flex', justifyContent: 'center'}}>
       <div style={{width: '300px'}}>
-        <Select placeholder="Search by position" items={collection} value={users[1]} />
+        <Select placeholder="Search by position" items={collection} value={value} onChange={(nextValue: User) => setValue(nextValue)}  />
       </div>
     </div>
   );

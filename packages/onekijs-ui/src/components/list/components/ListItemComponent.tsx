@@ -2,10 +2,10 @@ import React, { FC } from 'react';
 import { ListItemProps } from '../typings';
 import { LoadingStatus } from '../../../lib/typings';
 
-const ListItemComponent: FC<ListItemProps> = React.memo(({ data, text, meta }) => {
+const ListItemComponent: FC<ListItemProps> = React.memo(({ item }) => {
   return (
     <div className="o-list-item">
-      {data === undefined && meta?.loadingStatus === LoadingStatus.Loading ? 'loading' : text}
+      {item.data === undefined && item.meta?.loadingStatus === LoadingStatus.Loading ? 'loading' : item.text}
     </div>
   );
 });

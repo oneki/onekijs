@@ -1,4 +1,4 @@
-import { Collection, CollectionStatus, ItemMeta, LoadingStatus } from '../../lib/typings';
+import { Collection, CollectionStatus, ItemMeta, LoadingStatus, Item, typeOfCollectionItem } from '../../lib/typings';
 import { isCollection } from '../../utils/collection';
 
 // export const adapt = <T, M extends ItemMeta>(
@@ -46,6 +46,10 @@ import { isCollection } from '../../utils/collection';
 //   }
 //   return false;
 // };
+
+export const emptyListItem: Item<any, ItemMeta> = {
+  type: typeOfCollectionItem,
+};
 
 export const canFetchMore = (collection: any[] | Collection<unknown, ItemMeta>): boolean => {
   return isCollection(collection) && collection.status === LoadingStatus.PartialLoaded;

@@ -5,7 +5,7 @@ import { CollectionStatus, Item, ItemMeta, LoadingStatus } from '../../../lib/ty
 import { toCollectionItem } from '../../../utils/collection';
 import { addClassname } from '../../../utils/style';
 import { VirtualListProps } from '../typings';
-import { canFetchMore, getListStatus } from '../utils';
+import { canFetchMore, getListStatus, emptyListItem } from '../utils';
 import ListItemComponent from './ListItemComponent';
 
 const defaultHeight = 200;
@@ -21,6 +21,8 @@ const VirtualistComponent: FC<VirtualListProps> = ({
   itemHeight = defaultItemHeight,
   preload = defaultPreload,
   increment = defaultIncrement,
+  onItemClick,
+  onItemMouseOver,
 }) => {
   const parentRef = useRef(null);
 
@@ -116,7 +118,13 @@ const VirtualistComponent: FC<VirtualListProps> = ({
                 transform: `translateY(${start}px)`,
               }}
             >
-              <ItemComponent key={`item-${index}`} index={index} {...listItem} />
+              <ItemComponent
+                key={`item-${index}`}
+                index={index}
+                item={listItem || emptyListItem}
+                onClick={onItemClick}
+                onMouseOver={onItemMouseOver}
+              />
             </div>
           );
         })}

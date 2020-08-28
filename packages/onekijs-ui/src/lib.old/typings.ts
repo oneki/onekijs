@@ -1,8 +1,8 @@
 import { Fetcher, FetchOptions, FetchState, HttpMethod, Primitive } from 'onekijs';
 
-// export const loadingSymbol = Symbol('collection.item.loading');
-// export const deprecatedSymbol = Symbol('collection.item.deprecated');
 export const typeOfCollectionItem = Symbol('typeof.collection.item');
+
+export type ChangeHandler<T> = (value: T) => void;
 
 export interface Collection<T, M extends ItemMeta> {
   addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId?: QueryFilterId): void;
@@ -39,7 +39,7 @@ export interface Collection<T, M extends ItemMeta> {
   setData(data: T[]): void;
   setFields(fields: string[]): void;
   setItems(items: Item<T, M>[]): void;
-  setMeta(itemId: string | number, key: keyof M, value: any): void;
+  setMeta(item: Item<T, M>, key: keyof M, value: any): void;
   sort(dir: QuerySortDir): void;
   sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void;
   status: CollectionStatus;

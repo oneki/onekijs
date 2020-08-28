@@ -279,3 +279,37 @@ export { NotificationContent, Notification, NotificationLevel } from './notifica
 export { default as useAllNotifications } from './notification/useAllNotifications';
 export { default as useNotifications } from './notification/useNotifications';
 export { default as useNotificationService } from './notification/useNotificationService';
+export { default as LocalCollectionService } from './collection/LocalCollectionService';
+export { default as CollectionService } from './collection/CollectionService';
+export { default as RemoteCollectionService } from './collection/RemoteCollectionService';
+export { default as useCollection } from './collection/useCollection';
+export {
+  Collection,
+  CollectionOptions,
+  CollectionStatus,
+  ItemMeta,
+  LoadingItemStatus,
+  LocalQuery,
+  LoadingStatus,
+  Query,
+  QueryEngine,
+  QueryFilter,
+  QueryFilterCriteria,
+  QueryFilterCriteriaOperator,
+  QueryFilterCriteriaValue,
+  QueryFilterId,
+  QueryFilterOrCriteria,
+  QueryLimit,
+  QuerySearcher,
+  QuerySerializer,
+  QuerySerializerResult,
+  QuerySortBy,
+  QuerySortComparator,
+  QuerySortDir,
+  CollectionState,
+  CollectionFetcher,
+  CollectionFetcherResult,
+  Item,
+  UseCollectionOptions,
+  ItemAdapter,
+} from './collection/typings';

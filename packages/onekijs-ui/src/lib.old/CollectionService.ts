@@ -1,6 +1,6 @@
 import { get, Primitive, reducer, Service } from 'onekijs';
 import { toCollectionItem } from '../utils/collection';
-import { defaultComparator, isQueryFilterCriteria, rootFilterId, visitFilter } from '../utils/query';
+import { defaultComparator, isQueryFilterCriteria, rootFilterId, visitFilter } from '../utils/query.ts.old';
 import {
   CollectionState,
   Item,
@@ -58,7 +58,7 @@ export default abstract class CollectionService<
   abstract setFields(fields: string[]): void;
   abstract setItems(items: Item<T, M>[]): void;
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  abstract setMeta(itemId: string | number, key: keyof M, value: any): void;
+  abstract setMeta(item: Item<T, M>, key: keyof M, value: any): void;
   abstract sort(dir: QuerySortDir): void;
   abstract sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void;
 

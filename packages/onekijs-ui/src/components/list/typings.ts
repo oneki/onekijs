@@ -1,14 +1,15 @@
 import { FC } from 'react';
-import { Collection, ItemMeta } from '../../lib/typings';
+import { Collection, ItemMeta, Item } from '../../lib/typings';
 
 export type ListItems<T = any, M extends ItemMeta = ItemMeta> = T[] | Collection<T, M>;
 
+export type ListItemHandler<T = any, M extends ItemMeta = ItemMeta> = (item: Item<T, M>, index: number) => void;
+
 export interface ListItemProps<T = any, M extends ItemMeta = ItemMeta> {
   index: number;
-  id?: string | number;
-  text?: string;
-  data?: T;
-  meta?: M;
+  item: Item<T, M>;
+  onClick?: ListItemHandler<T, M>;
+  onMouseOver?: ListItemHandler<T, M>;
 }
 
 export interface ListProps<T = any, M extends ItemMeta = ItemMeta> {
@@ -19,6 +20,8 @@ export interface ListProps<T = any, M extends ItemMeta = ItemMeta> {
   itemHeight?: number | ((index: number) => number);
   preload?: number;
   increment?: number;
+  onItemClick?: ListItemHandler<T, M>;
+  onItemMouseOver?: ListItemHandler<T, M>;
 }
 
 export type ListInternalProps<T = any, M extends ItemMeta = ItemMeta> = Omit<ListProps, 'items'> & {

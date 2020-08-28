@@ -1,13 +1,12 @@
-import produce from 'immer';
 import AppContext from '../app/AppContext';
 import AppRouter from '../app/AppRouter';
 import { asResultCallback } from '../app/utils';
 import HTTPError from '../core/HTTPError';
 import { AnonymousObject } from '../core/typings';
-import { get } from '../core/utils/object';
+import { get, set } from '../core/utils/object';
 import { urlBuilder } from '../core/utils/url';
 import NotificationService from '../notification/NotificationService';
-import { AppFetchOptions, FetchOptions, FetchMethod } from './typings';
+import { AppFetchOptions, FetchMethod, FetchOptions } from './typings';
 
 export const encodeFormData = (data: AnonymousObject): string => {
   return Object.keys(data)
@@ -22,51 +21,56 @@ export async function xhr(
   options: FetchOptions = {},
 ): Promise<Response> {
   url = urlBuilder(url, options.params || {}, options.query || {});
-  options = produce(options, (o) => {
-    o.headers = o.headers || {};
-    o.headers['Accept'] = o.headers['Accept'] || 'application/json';
-    o.method = method;
-    if (['POST', 'PUT', 'PATCH'].includes(method)) {
-      o.headers['Content-Type'] = o.headers['Content-Type'] || 'application/json';
-      if (body) {
-        if (o.headers['Content-Type'] === 'application/json') {
-          o.body = JSON.stringify(body);
-        } else if (o.headers['Content-Type'] === 'application/x-www-form-urlencoded') {
-          o.body = encodeFormData(body);
-        } else {
-          throw Error(`Unsupported content-type ${o.headers['Content-Type']}`);
-        }
+  const fetchOptions: RequestInit = {
+    method,
+  };
+  const headers = Object.assign(
+    {
+      Accept: 'application/json',
+    },
+    options.headers,
+  ) as AnonymousObject;
+  if (['POST', 'PUT', 'PATCH'].includes(method)) {
+    headers['Content-Type'] = 'application/json';
+    if (body) {
+      if (headers['Content-Type'] === 'application/json') {
+        fetchOptions.body = JSON.stringify(body);
+      } else if (headers['Content-Type'] === 'application/x-www-form-urlencoded') {
+        fetchOptions.body = encodeFormData(body);
+      } else {
+        throw Error(`Unsupported content-type ${headers['Content-Type']}`);
       }
     }
-    if (o.auth) {
-      if (get(o, 'auth.token.access_token')) {
-        o.headers.Authorization = `Bearer ${o.auth.token.access_token}`;
-      } else if (get(o, 'auth.token')) {
-        o.headers.Authorization = `Bearer ${o.auth.token}`;
-      } else if (o.auth.basic) {
-        o.headers.Authorization = `Basic ${btoa(o.auth.basic.user + ':' + o.auth.basic.password)}`;
-      }
+  }
+  if (options.auth) {
+    if (get(options, 'auth.token.access_token')) {
+      headers.Authorization = `Bearer ${options.auth.token.access_token}`;
+    } else if (get(options, 'auth.token')) {
+      headers.Authorization = `Bearer ${options.auth.token}`;
+    } else if (options.auth.basic) {
+      headers.Authorization = `Basic ${btoa(options.auth.basic.user + ':' + options.auth.basic.password)}`;
     }
-    // sanitize options
-    const validOptions = [
-      'method',
-      'headers',
-      'body',
-      'mode',
-      'credentials',
-      'cache',
-      'redirect',
-      'referrer',
-      'referrerPolicy',
-      'integrity',
-      'keepalive',
-      'signal',
-    ];
-    Object.keys(o).forEach((k) => {
-      if (!validOptions.includes(k)) {
-        delete (o as any)[k];
-      }
-    });
+  }
+  fetchOptions.headers = headers;
+  // sanitize options
+  const validOptions = [
+    'method',
+    'headers',
+    'body',
+    'mode',
+    'credentials',
+    'cache',
+    'redirect',
+    'referrer',
+    'referrerPolicy',
+    'integrity',
+    'keepalive',
+    'signal',
+  ];
+  Object.keys(options).forEach((k) => {
+    if (validOptions.includes(k)) {
+      set(fetchOptions, k, get(options, k));
+    }
   });
   return await fetch(url, options);
 }
