@@ -1,34 +1,38 @@
 {
-    "version": "0.4.2",
-    "license": "MIT",
-    "main": "dist/index.js",
-    "typings": "dist/index.d.ts",
-    "files": [
-      "dist",
-      "src"
-    ],
-    "engines": {
-      "node": ">=10"
-    },
-    "scripts": {
-      "start": "tsdx watch",
-      "build": "tsdx build",
-      "test": "NODE_ICU_DATA=../../node_modules/full-icu tsdx test --passWithNoTests",
-      "lint": "tsdx lint",
-      "prepare": "tsdx build"
-    },
-    "peerDependencies": {
-      "react": ">=16"
-    },
-    "dependencies": {
-      "reflect-metadata": "^0.1.13"
-    },
-    "husky": {
-      "hooks": {
-        "pre-commit": "tsdx lint"
-      }
-    },
-    "name": "onekijs",
-    "author": "Bruno Franki",
-    "module": "dist/onekijs.esm.js"
-  }
+  "name": "onekijs",
+  "version": "0.8.0",
+  "description": "Opiniated React framework built on top of Redux and React Router",
+  "author": "oneki",
+  "license": "MIT",
+  "repository": "oneki/onekijs",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=10"
+  },
+  "scripts": {
+    "start": "tsdx watch",
+    "build": "tsdx build",
+    "test": "tsdx test --passWithNoTests",
+    "lint": "tsdx lint",
+    "prepare": "tsdx build"
+  },
+  "peerDependencies": {
+    "react": ">=16"
+  },
+  "dependencies": {
+    "onekijs-core": "^0.8.0",
+    "react-router-dom": "^5.1.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsdx lint"
+    }
+  },
+  "sideEffects": false,
+  "module": "dist/onekijs.esm.js"
+}

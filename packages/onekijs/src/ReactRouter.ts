@@ -1,6 +1,6 @@
 import { History, Location as ReactRouterLocation, LocationListener, LocationState } from 'history';
 import produce from 'immer';
-import { AppRouter, toLocation, toUrl, Location, LocationChangeCallback } from 'onekijs';
+import { AppRouter, toLocation, toUrl, Location, LocationChangeCallback } from 'onekijs-core';
 // import AppRouter from '../lib/app/AppRouter';
 // import { Location, LocationChangeCallback } from '../lib/app/typings';
 // import { toLocation, toUrl } from '../lib/core/utils/url';

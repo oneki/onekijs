@@ -1,0 +1,42 @@
+{
+    "version": "0.8.0",
+    "license": "MIT",
+    "main": "dist/index.js",
+    "typings": "dist/index.d.ts",
+    "files": [
+      "dist",
+      "src"
+    ],
+    "engines": {
+      "node": ">=10"
+    },
+    "scripts": {
+      "start": "tsdx watch",
+      "build": "tsdx build",
+      "test": "NODE_ICU_DATA=../../node_modules/full-icu tsdx test --passWithNoTests",
+      "lint": "tsdx lint",
+      "prepare": "tsdx build"
+    },
+    "peerDependencies": {
+      "react": ">=16",
+      "react-dom": ">=16"
+    },
+    "dependencies": {
+      "reflect-metadata": "^0.1.13",
+      "immer": "^6.0.2",
+      "query-string": "^6.11.1",
+      "react-redux": "^7.2.0",
+      "redux": "^4.0.5",
+      "redux-saga": "^1.1.3",
+      "rfc4648": "^1.3.0",
+      "text-encoding-shim": "^1.0.5"      
+    },
+    "husky": {
+      "hooks": {
+        "pre-commit": "tsdx lint"
+      }
+    },
+    "name": "onekijs-core",
+    "author": "Oneki",
+    "module": "dist/onekijs-core.esm.js"
+  }

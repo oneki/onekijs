@@ -1,12 +1,12 @@
 {
   "name": "onekijs-next",
-  "version": "0.5.8",
+  "version": "0.8.0",
   "description": "Opiniated React framework built on top of Next.js",
-  "author": "oneki",
+  "author": "Oneki",
   "license": "MIT",
   "repository": "oneki/onekijs",
   "main": "dist/index.js",
-  "module": "dist/esm/index.js",
+  "module": "dist/onekijs-next.esm.js",
   "engines": {
     "node": ">=8",
     "npm": ">=5"
@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "immer": "^6.0.2",
-    "onekijs-core": "^0.7.3",
+    "onekijs-core": "^0.8.0",
     "query-string": "^6.11.1",
     "redux": "^4.0.5",
     "redux-saga": "^1.1.3",
