@@ -1,37 +1,32 @@
 import { FC } from 'react';
-import { Collection } from '../../lib/typings';
+import { Collection, ItemMeta, Item } from '../../lib/typings';
 
-export type ListData<T = any> = T[] | Collection<T>;
+export type ListItems<T = any, M extends ItemMeta = ItemMeta> = T[] | Collection<T, M>;
 
-export interface ListItem<T = any> {
-  id?: string | number;
-  text?: string;
-  loading: boolean;
-  deprecated: boolean;
-  item?: T;
-}
+export type ListItemHandler<T = any, M extends ItemMeta = ItemMeta> = (item: Item<T, M>, index: number) => void;
 
-export type ListItemAdapter<T = any> = (
-  item: T,
-) => {
-  id: string | number;
-  text: string;
-};
-
-export interface ListItemProps<T = any> extends ListItem<T> {
+export interface ListItemProps<T = any, M extends ItemMeta = ItemMeta> {
   index: number;
+  item: Item<T, M>;
+  onClick?: ListItemHandler<T, M>;
+  onMouseOver?: ListItemHandler<T, M>;
 }
 
-export interface ListProps<T = any> {
-  adapter?: ListItemAdapter<T>;
+export interface ListProps<T = any, M extends ItemMeta = ItemMeta> {
   className?: string;
-  data: ListData<T>;
+  items: ListItems<T, M>;
   height?: number | string;
-  ItemComponent?: FC<ListItemProps<T>>;
+  ItemComponent?: FC<ListItemProps<T, M>>;
   itemHeight?: number | ((index: number) => number);
   preload?: number;
   increment?: number;
+  onItemClick?: ListItemHandler<T, M>;
+  onItemMouseOver?: ListItemHandler<T, M>;
 }
+
+export type ListInternalProps<T = any, M extends ItemMeta = ItemMeta> = Omit<ListProps, 'items'> & {
+  collection: Collection<T, M>;
+};
 
 export enum ListStatus {
   NotInitialized = 'not initialized',
@@ -43,6 +38,9 @@ export enum ListStatus {
   Loaded = 'loaded',
 }
 
-export type StandardListProps<T = any> = Omit<ListProps<T>, 'height' | 'itemHeight'>;
+export type StandardListProps<T = any, M extends ItemMeta = ItemMeta> = Omit<
+  ListInternalProps<T, M>,
+  'height' | 'itemHeight'
+>;
 
-export type VirtualListProps<T = any> = ListProps<T>;
+export type VirtualListProps<T = any, M extends ItemMeta = ItemMeta> = ListInternalProps<T, M>;

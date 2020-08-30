@@ -1,8 +1,9 @@
 import { AnyFunction } from 'onekijs';
 import { FC } from 'react';
-import { ListItemAdapter, ListItemProps, ListProps } from '../list/typings';
+import { ListItemProps, ListProps, ListItemHandler } from '../list/typings';
+import { ItemAdapter, ItemMeta, Collection, ChangeHandler } from '../../lib/typings';
 
-export type SelectAdapter<T> = ListItemAdapter<T>;
+export type SelectAdapter<T, M extends SelectOptionMeta = SelectOptionMeta> = ItemAdapter<T, M>;
 
 export interface SelectIconProps {
   open: boolean;
@@ -15,20 +16,31 @@ export interface SelectInputProps extends React.InputHTMLAttributes<HTMLInputEle
   focus?: boolean;
 }
 
-export type SelectOptionProps<T = any> = ListItemProps<T>;
+export type SelectInternalProps<T = any, M extends ItemMeta = SelectOptionMeta> = Omit<SelectProps, 'items'> & {
+  collection: Collection<T, M>;
+};
 
-export interface SelectOptionsProps<T> extends ListProps<T> {
+export type SelectOptionHandler<T = any, M extends ItemMeta = SelectOptionMeta> = ListItemHandler<T, M>;
+
+export interface SelectOptionMeta extends ItemMeta {
+  selected?: boolean;
+  highlighted?: boolean;
+}
+
+export type SelectOptionProps<T = any, M extends SelectOptionMeta = SelectOptionMeta> = ListItemProps<T, M>;
+
+export interface SelectOptionsProps<T = any, M extends SelectOptionMeta = SelectOptionMeta> extends ListProps<T, M> {
   search?: string;
 }
 
-export interface SelectProps<T>
-  extends Omit<React.InputHTMLAttributes<HTMLSelectElement>, 'height' | 'value'>,
-    ListProps<T> {
+export interface SelectProps<T = any, M extends SelectOptionMeta = SelectOptionMeta> extends ListProps<T, M> {
   InputComponent?: FC<SelectInputProps>;
   IconComponent?: FC<SelectIconProps>;
   placeholder?: string;
   value?: T | null;
+  onChange?: ChangeHandler<T>;
   autoFocus?: boolean;
+  className?: string;
 }
 
 export interface ClickOutsideHandler {

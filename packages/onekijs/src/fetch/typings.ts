@@ -21,7 +21,7 @@ export type Fetcher<R = any, T = any> = (
 
 export type FetchMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
-export interface FetchOptions<R = any, T = any> extends RequestInit {
+export interface FetchOptions<R = any, T = any> extends Omit<RequestInit, 'method' | 'url'> {
   onError?: ErrorCallback;
   onSuccess?: SuccessCallback<R>;
   delayLoading?: number;

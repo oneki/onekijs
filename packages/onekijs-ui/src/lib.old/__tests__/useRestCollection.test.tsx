@@ -1,17 +1,17 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
-import { UseRemoteCollectionOptions } from '../typings';
 import { TestHandler, TestUser } from './typings';
 import { render, fireEvent } from '@testing-library/react';
 import UseRestCollectionWidget from './components/UseRestCollectionWidget';
 import { asyncTimeout } from '../../__tests__/utils/timeout';
 import { act } from 'react-dom/test-utils';
+import { UseCollectionOptions, ItemMeta } from '../typings';
 
 const url = 'http://localhost/echo';
 
 type TestProps = {
   url: string;
-  options?: UseRemoteCollectionOptions<TestUser>;
+  options?: UseCollectionOptions<TestUser, ItemMeta>;
   handler?: TestHandler;
   result: string;
   title: string;

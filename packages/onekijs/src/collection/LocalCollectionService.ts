@@ -1,10 +1,12 @@
-import { get, Primitive, reducer, service } from 'onekijs';
-import { defaultComparator, isQueryFilterCriteria, rootFilterId } from '../utils/query';
-import QueryService from './CollectionService';
+import { defaultComparator, isQueryFilterCriteria, rootFilterId } from './utils';
+import CollectionService from './CollectionService';
 import {
-  LocalCollection,
+  Collection,
+  CollectionState,
+  Item,
+  ItemMeta,
   LocalQuery,
-  LocalCollectionState,
+  Query,
   QueryEngine,
   QueryFilter,
   QueryFilterCriteria,
@@ -15,17 +17,19 @@ import {
   QuerySortBy,
   QuerySortComparator,
   QuerySortDir,
-  Query,
-  CollectionStatus,
-  LoadingStatus,
 } from './typings';
+import { service, reducer } from '../core/annotations';
+import { Primitive } from '../core/typings';
+import { get } from '../core/utils/object';
 
 const defaultSearcher = 'i_like';
 
 @service
-export default class LocalQueryService<T = any, S extends LocalCollectionState<T> = LocalCollectionState<T>>
-  extends QueryService<S>
-  implements LocalCollection<T> {
+export default class LocalCollectionService<
+  T = any,
+  M extends ItemMeta = ItemMeta,
+  S extends CollectionState<T, M> = CollectionState<T, M>
+> extends CollectionService<T, M, S> implements Collection<T, M> {
   init(): void {
     this.refresh();
   }
@@ -108,21 +112,6 @@ export default class LocalQueryService<T = any, S extends LocalCollectionState<T
     this.refresh();
   }
 
-  get data(): T[] {
-    return this.state.result || [];
-  }
-
-  get status(): CollectionStatus {
-    return LoadingStatus.Loaded;
-  }
-
-  get total(): number | undefined {
-    if (this.state.result !== undefined) {
-      return this.state.result.length;
-    }
-    return undefined;
-  }
-
   @reducer
   load(size?: number, offset?: number): void {
     this.state.size = size;
@@ -154,8 +143,8 @@ export default class LocalQueryService<T = any, S extends LocalCollectionState<T
 
   @reducer
   refresh(): void {
-    const queryEngine: QueryEngine = this.state.queryEngine || this._execute.bind(this);
-    this.state.result = queryEngine(this.state.data, {
+    const queryEngine: QueryEngine<T, M> = this.state.queryEngine || this._execute.bind(this);
+    this.state.items = queryEngine(this.state.db || [], {
       filter: this.getFilter(),
       sortBy: this.getSortBy(),
       search: this.getSearch(),
@@ -179,7 +168,7 @@ export default class LocalQueryService<T = any, S extends LocalCollectionState<T
   @reducer
   setData(data: T[]): void {
     this._clearOffset();
-    this.state.data = data;
+    this.state.db = data.map((d) => this._adapt(d));
     this.refresh();
   }
 
@@ -190,12 +179,30 @@ export default class LocalQueryService<T = any, S extends LocalCollectionState<T
   }
 
   @reducer
+  setItems(items: Item<T, M>[]): void {
+    this._clearOffset();
+    this.state.db = items;
+    this.refresh();
+  }
+
+  @reducer
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  setMeta(item: Item<T, M>, key: keyof M, value: any): void {
+    if (this.state.items && item.id !== undefined) {
+      const stateItem = this.state.items.find((stateItem) => item.id === stateItem?.id);
+      if (stateItem && item.meta) {
+        stateItem.meta = Object.assign({}, item.meta, { [key]: value });
+      }
+    }
+  }
+
+  @reducer
   sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void {
     this._setSortBy(sortBy);
     this.refresh();
   }
 
-  protected _applyCriteria(item: T, criteria: QueryFilterCriteria): boolean {
+  protected _applyCriteria(item: Item<T, M>, criteria: QueryFilterCriteria): boolean {
     const operator = criteria.operator || 'eq';
     const value = criteria.value;
     const source = get(item, criteria.field);
@@ -204,19 +211,24 @@ export default class LocalQueryService<T = any, S extends LocalCollectionState<T
     return not ? !result : result;
   }
 
-  protected _applyFields(items: T[], fields?: string[]): T[] {
+  protected _applyFields(items: Item<T, M>[], fields?: string[]): Item<T, M>[] {
     if (fields && fields.length > 0) {
       return items.map((item) => {
-        return fields.reduce((accumulator, field) => {
-          accumulator[field] = (item as any)[field];
-          return accumulator;
-        }, {} as any) as T;
+        const { data, ...nextItem } = item;
+        if (data) {
+          return fields.reduce((accumulator, field) => {
+            accumulator.data = accumulator.data || {};
+            accumulator.data[field] = (item as any).data[field];
+            return accumulator;
+          }, nextItem as any) as Item<T, M>;
+        }
+        return item;
       });
     }
     return items;
   }
 
-  protected _applyFilter(item: T, filter?: QueryFilter): boolean {
+  protected _applyFilter(item: Item<T, M>, filter?: QueryFilter): boolean {
     let result = true;
 
     if (filter) {
@@ -238,68 +250,76 @@ export default class LocalQueryService<T = any, S extends LocalCollectionState<T
   protected _applyOperator(
     operator: QueryFilterCriteriaOperator,
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    item: any,
-    value?: QueryFilterCriteriaValue | QueryFilterCriteriaValue[],
+    left: any,
+    right?: QueryFilterCriteriaValue | QueryFilterCriteriaValue[],
   ): boolean {
     switch (operator) {
       case 'ends_with':
-        return String(item).endsWith(String(value));
+        return String(left).endsWith(String(right));
       case 'i_ends_with':
-        return String(item).toUpperCase().endsWith(String(value).toUpperCase());
+        return String(left).toUpperCase().endsWith(String(right).toUpperCase());
       case 'like':
-        return String(item).includes(String(value));
+        return String(left).includes(String(right));
       case 'i_like':
-        return String(item).toUpperCase().includes(String(value).toUpperCase());
+        return String(left).toUpperCase().includes(String(right).toUpperCase());
       case 'starts_with':
-        return String(item).startsWith(String(value));
+        return String(left).startsWith(String(right));
       case 'i_starts_with':
-        return String(item).toUpperCase().startsWith(String(value).toUpperCase());
+        return String(left).toUpperCase().startsWith(String(right).toUpperCase());
       case 'eq':
-        return String(item).startsWith(String(value));
+        return String(left).startsWith(String(right));
       case 'i_eq':
-        return String(item).toUpperCase().startsWith(String(value).toUpperCase());
+        return String(left).toUpperCase().startsWith(String(right).toUpperCase());
       case 'regex':
-        return new RegExp(String(value)).test(String(item));
+        return new RegExp(String(right)).test(String(left));
       case 'i_regex':
-        return new RegExp(String(value), 'i').test(String(item));
+        return new RegExp(String(right), 'i').test(String(left));
       default:
         return true;
     }
   }
 
-  protected _applySearch(item: T, search?: QueryFilterCriteriaValue): boolean {
+  protected _applySearch(item: Item<T, M>, search?: QueryFilterCriteriaValue): boolean {
     const searcher = this.state.searcher || defaultSearcher;
+    if (item.data === undefined) {
+      return false;
+    }
     if (typeof searcher === 'function') {
-      return searcher(item, search);
+      return searcher(item.data, search);
     }
     return this._applyOperator(searcher, item, search);
   }
 
-  protected _applySort(data: T[], dir?: QuerySortDir): T[] {
+  protected _applySort(items: Item<T, M>[], dir?: QuerySortDir): Item<T, M>[] {
     if (dir) {
       const comparator = this.state.comparator || defaultComparator;
-      data = data.sort(comparator);
+      const itemComparator = function (a: Item<T, M>, b: Item<T, M>): number {
+        const reverse = dir === 'desc' ? -1 : 1;
+        return reverse * comparator(a.data, b.data);
+      };
+
+      items = items.sort(itemComparator);
     }
-    return data;
+    return items;
   }
 
-  protected _applySortBy(data: T[], sortBy?: QuerySortBy[]): T[] {
+  protected _applySortBy(items: Item<T, M>[], sortBy?: QuerySortBy[]): Item<T, M>[] {
     if (sortBy && sortBy.length > 0) {
       const comparator = function () {
-        return function (a: T, b: T): number {
+        return function (a: Item<T, M>, b: Item<T, M>): number {
           let result = 0;
           for (const sort of sortBy) {
             const comparator = sort.comparator || defaultComparator;
             const reverse = sort.dir === 'desc' ? -1 : 1;
-            result = reverse * comparator(get(a, sort.field), get(b, sort.field));
+            result = reverse * comparator(get(a.data, sort.field), get(b.data, sort.field));
             if (result !== 0) break;
           }
           return result;
         };
       };
-      data = data.sort(comparator());
+      items = items.sort(comparator());
     }
-    return data;
+    return items;
   }
 
   protected _clearOffset(): void {
@@ -308,15 +328,15 @@ export default class LocalQueryService<T = any, S extends LocalCollectionState<T
     }
   }
 
-  protected _execute(data: T[], query: LocalQuery): T[] {
+  protected _execute(items: Item<T, M>[], query: LocalQuery): Item<T, M>[] {
     // apply filters to data
-    let result = data;
+    let result = items;
     if (query.filter) {
-      result = data.filter((item) => this._applyFilter(item, this._formatFilter(query.filter)));
+      result = items.filter((item) => this._applyFilter(item, this._formatFilter(query.filter)));
     } else if (query.search) {
-      result = data.filter((item) => this._applySearch(item, this.state.search));
+      result = items.filter((item) => this._applySearch(item, this.state.search));
     } else {
-      result = Object.assign([], data);
+      result = Object.assign([], items);
     }
 
     // apply sort

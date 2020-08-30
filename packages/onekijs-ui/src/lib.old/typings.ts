@@ -1,10 +1,10 @@
 import { Fetcher, FetchOptions, FetchState, HttpMethod, Primitive } from 'onekijs';
 
-// export const loadingSymbol = Symbol('collection.item.loading');
-// export const deprecatedSymbol = Symbol('collection.item.deprecated');
 export const typeOfCollectionItem = Symbol('typeof.collection.item');
 
-export interface Collection<T = any, M extends ItemMeta = ItemMeta> {
+export type ChangeHandler<T> = (value: T) => void;
+
+export interface Collection<T, M extends ItemMeta> {
   addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId?: QueryFilterId): void;
   addFilterCriteria(
     field: string,
@@ -20,8 +20,9 @@ export interface Collection<T = any, M extends ItemMeta = ItemMeta> {
   clearSearch(): void;
   clearSort(): void;
   clearSortBy(): void;
-  data?: Item<T, M>[];
+  items?: (Item<T, M> | undefined)[];
   filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | null): void;
+  getAdapter(): ItemAdapter<T, M> | undefined;
   getFields(): string[] | undefined;
   getFilter(): QueryFilter | undefined;
   getOffset(): number | undefined;
@@ -35,19 +36,64 @@ export interface Collection<T = any, M extends ItemMeta = ItemMeta> {
   removeFilter(filterId: QueryFilterId): void;
   removeSortBy(field: string): void;
   search(search: Primitive): void;
+  setData(data: T[]): void;
   setFields(fields: string[]): void;
+  setItems(items: Item<T, M>[]): void;
+  setMeta(item: Item<T, M>, key: keyof M, value: any): void;
   sort(dir: QuerySortDir): void;
   sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void;
   status: CollectionStatus;
   total?: number;
 }
 
-export interface CollectionOptions {
+export type CollectionFetcher<T> = Fetcher<CollectionFetcherResult<T>, Query | undefined>;
+
+export type CollectionFetcherResult<T> =
+  | T[]
+  | {
+      [k: string]: any;
+      total?: number;
+      result: T[];
+    };
+
+export interface CollectionOptions<T, M extends ItemMeta> {
+  adapter?: ItemAdapter<T, M>;
+  comparator?: QuerySortComparator;
+  fetcher?: CollectionFetcher<T>;
+  fetchOnce?: boolean;
   initialFields?: string[];
   initialFilter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[];
-  initialSortBy?: string | QuerySortBy | QuerySortBy[];
-  initialSort?: QuerySortDir;
   initialSearch?: Primitive;
+  initialSort?: QuerySortDir;
+  initialSortBy?: string | QuerySortBy | QuerySortBy[];
+  method?: HttpMethod;
+  queryEngine?: QueryEngine<T, M>;
+  searcher?: QuerySearcher<T>;
+  serializer?: QuerySerializer;
+  throttle?: number;
+}
+
+export interface CollectionState<T, M extends ItemMeta> extends FetchState {
+  adapter?: ItemAdapter<T, M>;
+  comparator?: QuerySortComparator;
+  db?: Item<T, M>[];
+  fetchOptions?: FetchOptions<CollectionFetcherResult<T>, Query | undefined>;
+  fields?: string[];
+  filter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[];
+  items?: (Item<T, M> | undefined)[];
+  offset?: number;
+  method?: HttpMethod;
+  queryEngine?: QueryEngine<T, M>;
+  search?: Primitive;
+  searcher?: QuerySearcher<T>;
+  serializer?: QuerySerializer;
+  size?: number;
+  sort?: QuerySortDir;
+  sortBy?: string | QuerySortBy | QuerySortBy[];
+  status?: CollectionStatus;
+  throttle?: number;
+  total?: number;
+  url?: string;
 }
 
 export type CollectionStatus =
@@ -59,14 +105,15 @@ export type CollectionStatus =
   | 'partial_deprecated'
   | 'partial_loaded';
 
-export type Item<T = any, M extends ItemMeta = ItemMeta> = {
+export type Item<T, M extends ItemMeta> = {
   data?: T;
-  meta: M;
-  id?: string | number;
+  meta?: M;
+  id?: string;
+  text?: string;
   type: symbol;
 };
 
-export type ItemAdapter<T = any, M extends ItemMeta = ItemMeta> = (data: T) => Omit<Item<T, M>, 'type'>;
+export type ItemAdapter<T, M extends ItemMeta> = (data: T | undefined) => Partial<Item<T, M>>;
 
 export type ItemMeta = {
   loadingStatus?: LoadingItemStatus;
@@ -84,18 +131,7 @@ export enum LoadingStatus {
   PartialLoaded = 'partial_loaded',
 }
 
-export interface LocalCollection<T = any> extends Collection<T> {
-  setData(data: T[]): void;
-}
-
 export type LocalQuery = Omit<Query, 'offset' | 'size'>;
-
-export interface LocalCollectionState<T = any, M extends ItemMeta = ItemMeta> extends CollectionState<T, M> {
-  result?: T[];
-  queryEngine?: QueryEngine;
-  comparator?: QuerySortComparator;
-  searcher?: QuerySearcher<T>;
-}
 
 export interface Query {
   filter?: QueryFilter;
@@ -107,7 +143,7 @@ export interface Query {
   sort?: QuerySortDir;
 }
 
-export type QueryEngine<T = any> = (data: T[], query: LocalQuery) => T[];
+export type QueryEngine<T, M extends ItemMeta> = (items: Item<T, M>[], query: LocalQuery) => Item<T, M>[];
 
 export interface QueryFilter {
   id?: QueryFilterId;
@@ -170,52 +206,6 @@ export type QuerySortComparator = <T>(a: T | null | undefined, b: T | null | und
 
 export type QuerySortDir = 'asc' | 'desc';
 
-export interface CollectionState<T = any, M extends ItemMeta = ItemMeta> extends FetchState {
-  adapter?: ItemAdapter<T>;
-  data?: Item<T, M>[];
-  filter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[];
-  sortBy?: string | QuerySortBy | QuerySortBy[];
-  sort?: QuerySortDir;
-  search?: Primitive;
-  fields?: string[];
-  offset?: number;
-  size?: number;
-}
-
-export type RemoteCollection<T = any> = Collection<T>;
-
-export type RemoteCollectionFetcher<T> = Fetcher<RemoteCollectionFetcherResult<T>>;
-
-export type RemoteCollectionFetcherResult<T> =
-  | T[]
-  | {
-      [k: string]: any;
-      total?: number;
-      data: T[];
-    };
-
-export interface RemoteCollectionState<T = any, M extends ItemMeta = ItemMeta> extends CollectionState<T, M> {
-  fetchOptions?: FetchOptions<T>;
-  loading?: boolean;
-  method?: HttpMethod;
-  serializer?: QuerySerializer;
-  status?: CollectionStatus;
-  throttle?: number;
-  total?: number;
-  url: string;
-}
-
-export interface UseCollectionOptions<T = any> extends CollectionOptions {
-  queryEngine?: QueryEngine;
-  comparator?: QuerySortComparator;
-  searcher?: QuerySearcher<T>;
-}
-
-export interface UseRemoteCollectionOptions<T = any>
-  extends CollectionOptions,
-    FetchOptions<RemoteCollectionFetcherResult<T>> {
-  serializer?: QuerySerializer;
-  fetcher?: RemoteCollectionFetcher<T>;
-  method?: HttpMethod;
-  throttle?: number;
-}
+export interface UseCollectionOptions<T, M extends ItemMeta>
+  extends CollectionOptions<T, M>,
+    FetchOptions<CollectionFetcherResult<T>, Query | undefined> {}

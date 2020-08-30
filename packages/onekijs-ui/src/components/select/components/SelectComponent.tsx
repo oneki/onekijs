@@ -1,33 +1,46 @@
 import { AnonymousObject, get } from 'onekijs';
-import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
-import { LoadingStatus } from '../../../lib/typings';
-import { isCollection } from '../../../utils/collection';
+import React, { FC, useCallback, useMemo, useRef, useState, useEffect } from 'react';
+import { LoadingStatus, Item } from '../../../lib/typings';
+import useCollection from '../../../lib/useCollection';
+import { toCollectionItem } from '../../../utils/collection';
 import { useClickOutside } from '../../../utils/event';
 import Dropdown from '../../dropdown';
-import { adapt } from '../../list/utils';
-import { SelectProps } from '../typings';
+import { SelectInternalProps, SelectOptionMeta, SelectOptionHandler, SelectProps } from '../typings';
 import SelectInputComponent from './SelectInputComponent';
 import SelectOptionsComponent from './SelectOptionsComponent';
 
-const SelectComponent: FC<SelectProps<any>> = ({
+const SelectComponent: FC<SelectProps<any>> = (props) => {
+  const { items, ...selectInternalProps } = props;
+  if (Array.isArray(items)) {
+    return <SelectDataComponent {...selectInternalProps} items={items} />;
+  } else {
+    return <SelectInternalComponent {...selectInternalProps} collection={items} />;
+  }
+};
+
+const SelectDataComponent: FC<Omit<SelectProps, 'items'> & { items: any[] }> = (props) => {
+  const { items, ...selectInternalProps } = props;
+  const collection = useCollection(items);
+  return <SelectInternalComponent {...selectInternalProps} collection={collection} />;
+};
+
+const SelectInternalComponent: FC<SelectInternalProps> = ({
   className,
   placeholder,
-  data,
+  collection,
   InputComponent = SelectInputComponent,
-  adapter,
   autoFocus,
   value,
+  onChange,
 }) => {
   const [open, setOpen] = useState(false);
   const [focus, setFocus] = useState(!!autoFocus);
   const stateRef = useRef<AnonymousObject>({});
+  const previousValueRef = useRef<Item<any, SelectOptionMeta>>();
 
   const loading = useMemo(() => {
-    const loading = isCollection(data)
-      ? data.status === LoadingStatus.Loading || data.status === LoadingStatus.PartialLoading
-      : false;
-    return loading;
-  }, [data]);
+    return collection.status === LoadingStatus.Loading || collection.status === LoadingStatus.PartialLoading;
+  }, [collection]);
 
   const delayOpen = useMemo(() => {
     return loading && !open;
@@ -50,29 +63,41 @@ const SelectComponent: FC<SelectProps<any>> = ({
     if (!open) {
       setOpen(true);
     }
-    if (isCollection(data)) {
-      data.search(e.target.value);
-    }
+    collection.search(e.target.value);
   };
 
   const selectedItem = useMemo(() => {
     if (!focus) {
-      if (isCollection(data) && (!data.data || data.data.length === 0)) {
-        return adapt(value, undefined, adapter);
-      } else {
-        return adapt(undefined, undefined, adapter);
-      }
+      return toCollectionItem(value, collection.getAdapter());
     } else {
-      const search = isCollection(data) ? data.getSearch() : undefined;
-      if (search) {
-        const item = isCollection(data) ? get(data, 'data.0') : data[0];
-        const meta = isCollection(data) ? get(data, 'meta.0') : undefined;
-        return adapt(item, meta, adapter);
+      if (collection.getSearch()) {
+        return get(collection, 'items.0');
       } else {
-        return adapt(value, undefined, adapter);
+        return toCollectionItem(value, collection.getAdapter());
       }
     }
-  }, [data, adapter, value, focus]);
+  }, [collection, value, focus]);
+
+  const onSelect: SelectOptionHandler = useCallback(
+    (item) => {
+      if (onChange) {
+        onChange(item.data);
+      }
+      setOpen(false);
+      collection.clearSearch();
+    },
+    [onChange, collection],
+  );
+
+  useEffect(() => {
+    if (value !== previousValueRef.current) {
+      const item = toCollectionItem(value, collection.getAdapter());
+      const previousItem = toCollectionItem(previousValueRef.current, collection.getAdapter());
+      collection.setMeta(previousItem, 'selected', false);
+      collection.setMeta(item, 'selected', true);
+    }
+    previousValueRef.current = value;
+  }, [value, collection]);
 
   return (
     <div
@@ -94,7 +119,7 @@ const SelectComponent: FC<SelectProps<any>> = ({
         onBlur={onBlur}
       />
       <Dropdown refElement={containerRef} open={open}>
-        <SelectOptionsComponent data={data} adapter={adapter} />
+        <SelectOptionsComponent items={collection} onItemClick={onSelect} />
       </Dropdown>
     </div>
   );

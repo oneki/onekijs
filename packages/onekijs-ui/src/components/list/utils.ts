@@ -1,37 +1,39 @@
-import { Collection, CollectionStatus, Item, ItemMeta, LoadingStatus } from '../../lib/typings';
+import { Collection, CollectionStatus, ItemMeta, LoadingStatus, Item, typeOfCollectionItem } from '../../lib/typings';
 import { isCollection } from '../../utils/collection';
-import { isDeprecated, isLoading } from '../../utils/query';
-import { ListItem, ListItemAdapter } from './typings';
 
-export const adapt = <T>(item: Item<T>, meta: ItemMeta, adapter?: ListItemAdapter<T>): ListItem<T> => {
-  const loading = isLoading(meta);
-  const deprecated = isDeprecated(meta);
-  const result: ListItem<T> = { loading, deprecated, item };
+// export const adapt = <T, M extends ItemMeta>(
+//   item: Item<T, M>,
+//   meta: ItemMeta,
+//   adapter?: ListItemAdapter<T, M>,
+// ): ListItem<T, M> => {
+//   const loading = isLoading(meta);
+//   const deprecated = isDeprecated(meta);
+//   const result: ListItem<T> = { loading, deprecated, item };
 
-  let adaptee;
-  if (item !== undefined) {
-    if (adapter) {
-      adaptee = adapter(item);
-    } else if (['string', 'number', 'boolean'].includes(typeof item)) {
-      adaptee = {
-        id: item,
-        text: String(item),
-      };
-    } else {
-      adaptee = {
-        id: (item as any).id,
-        text: (item as any).text,
-      };
-    }
-  } else {
-    adaptee = {
-      id: undefined,
-      text: undefined,
-    };
-  }
-  Object.assign(result, adaptee);
-  return result;
-};
+//   let adaptee;
+//   if (item !== undefined) {
+//     if (adapter) {
+//       adaptee = adapter(item);
+//     } else if (['string', 'number', 'boolean'].includes(typeof item)) {
+//       adaptee = {
+//         id: item,
+//         text: String(item),
+//       };
+//     } else {
+//       adaptee = {
+//         id: (item as any).id,
+//         text: (item as any).text,
+//       };
+//     }
+//   } else {
+//     adaptee = {
+//       id: undefined,
+//       text: undefined,
+//     };
+//   }
+//   Object.assign(result, adaptee);
+//   return result;
+// };
 
 // export const canFetchMore = (data: any[] | Collection<any>): boolean => {
 //   if (
@@ -45,16 +47,17 @@ export const adapt = <T>(item: Item<T>, meta: ItemMeta, adapter?: ListItemAdapte
 //   return false;
 // };
 
-export const canFetchMore = (data: any[] | Collection<any>): boolean => {
-  return isCollection(data) && data.status === LoadingStatus.PartialLoaded;
+export const emptyListItem: Item<any, ItemMeta> = {
+  type: typeOfCollectionItem,
 };
 
-export const getListStatus = (data: any[] | Collection<any>): CollectionStatus => {
-  if (isCollection(data)) {
-    if (data === undefined) {
-      return LoadingStatus.NotInitialized;
-    }
-    return data.status;
+export const canFetchMore = (collection: any[] | Collection<unknown, ItemMeta>): boolean => {
+  return isCollection(collection) && collection.status === LoadingStatus.PartialLoaded;
+};
+
+export const getListStatus = (collection: any[] | Collection<unknown, ItemMeta>): CollectionStatus => {
+  if (isCollection(collection)) {
+    return collection.status;
   }
   return LoadingStatus.Loaded;
 };

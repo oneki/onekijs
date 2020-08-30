@@ -1,4 +1,3 @@
-import { SelectProps } from 'onekijs';
 import { css } from 'styled-components';
 import { alignItems } from '../../styles/alignment';
 import { backgroundColor } from '../../styles/background';
@@ -12,6 +11,7 @@ import { transitionDuration, transitionProperty, transitionTimingFunction } from
 import { ComponentStyle } from '../../styles/typings';
 import { color } from '../../styles/typography';
 import { preflight } from '../../utils/style';
+import { SelectProps } from './typings';
 
 const selectStyle: ComponentStyle<SelectProps> = () => {
   return css`
@@ -65,12 +65,16 @@ const selectStyle: ComponentStyle<SelectProps> = () => {
       ${transitionProperty('all')}
       ${transitionTimingFunction('ease-in-out')}
     }
-    .o-select-option-container {
-      ${cursor('pointer')}
+    .o-select-option {
       ${width('full')}
       ${borderColor('gray-100')}
       ${borderBottomWidth(1)}
-      ${backgroundColor('transparent', { hover: 'teal-100' })}
+      &.o-select-option-clickable {
+        ${cursor('pointer')}
+      }
+      &.o-select-option-hoverable {
+        ${backgroundColor('transparent', { hover: 'teal-100' })}
+      }      
     }
   `;
 };

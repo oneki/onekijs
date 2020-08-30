@@ -1,40 +1,33 @@
 import { Fetcher, HttpMethod, useService } from 'onekijs';
-import { List, LocalQueryService, LocalQueryState, Query, QuerySearcher, useRestCollection, Collection, LoadingStatus } from 'onekijs-ui';
+import { Collection, CollectionState, ItemMeta, List, LoadingStatus, Query, useCollection, LocalCollectionService, toCollectionItem } from 'onekijs-ui';
 import React, { useCallback } from 'react';
-import { User, users } from '../data/users';
+import { User, userAdapter, users, userSearcher } from '../data/users';
 import Spinner from './spinner';
 
-const adapter = (item: User) => {
-  return {
-    id: item.id,
-    text: `${item.firstname} ${item.lastname}`,
-  };
-};
 
-const searcher: QuerySearcher<User> = (item, search) => {
-  if (search) {
-    return `${item.firstname} ${item.lastname}`.toUpperCase().includes(String(search).toUpperCase());
-  }
-  return true;
-};
 
-const isLoading = (collection: Collection): boolean => {
+const isLoading = (collection: Collection<User, ItemMeta>): boolean => {
   return collection.status === LoadingStatus.Loading || collection.status === LoadingStatus.PartialLoading;
 }
 
 export const AjaxListPage = () => {
-  const [, service] = useService(LocalQueryService, { data: users, searcher } as LocalQueryState);
+  const [, service] = useService<CollectionState<User, ItemMeta>, LocalCollectionService<User, ItemMeta, CollectionState<User, ItemMeta>>>(LocalCollectionService, {
+    db: users.map(u => toCollectionItem(u)),
+    adapter: userAdapter, 
+    searcher: userSearcher
+  } as CollectionState<User, ItemMeta>)
 
   const fetcher: Fetcher = useCallback(
     async (url, method, body, options) => {
-      await new Promise((r) => setTimeout(r, 0 + Math.floor(Math.random() * Math.floor(300))));
+      await new Promise((r) => setTimeout(r, 1000 + Math.floor(Math.random() * Math.floor(300))));
       service.query(body as Query);
-      return service.data.slice(body.offset || 0, (body.offset || 0) + (body.size || service.data.length));
+      return service.items ? service.items.slice(body.offset || 0, (body.offset || 0) + (body.size || service.items.length)).map(item => item?.data) : [];
     },
     [service],
   );
 
-  const collection = useRestCollection('http://localhost', {
+  const remoteCollection = useCollection<User>('http://localhost', {
+    adapter: userAdapter,
     fetcher,
     method: HttpMethod.Post,
     delayLoading: 200,
@@ -42,17 +35,17 @@ export const AjaxListPage = () => {
 
 
   const search = (e: React.ChangeEvent<HTMLInputElement>) => {
-    collection.search(e.target.value);
+    remoteCollection.search(e.target.value);
   };
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', width: '100%' }}>
       <div style={{ display: 'flex', justifyContent: 'left' , flexDirection: 'row',  width: '300px', marginTop: '40px', marginBottom: '5px' }}>
         <input type="text" onChange={search} style={{ width: '250px', marginRight: '5px' }} />
-        {isLoading(collection) && <Spinner />}
+        {isLoading(remoteCollection) && <Spinner />}
       </div>
       <div style={{ width: '300px', border: '1px solid black', padding: '5px' }}>
-        <List height={200} data={collection} adapter={adapter} preload={100} increment={100} />
+        <List height={200} items={remoteCollection} preload={100} increment={100} />
       </div>
     </div>
   );
