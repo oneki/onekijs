@@ -8,8 +8,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-* fix package.json in cra-form-basic to reference onekijs ([b31ad89](https://github.com/oneki/onekijs/commit/b31ad891ba1de2afe20c21236fe9247348f339c9))
-* fix package.json to reference onekijs ([14cf998](https://github.com/oneki/onekijs/commit/14cf9989839edc1f20005291f7c7d99b361a83c2))
 * **onekijs-core:** fix binding when injecting a service ([b02ba56](https://github.com/oneki/onekijs/commit/b02ba56e34d5566dd2ff8dc0b96e5503c8c3b199))
 * **onekijs-core:** fix crud methods not taking into account mutability of options ([284e3d1](https://github.com/oneki/onekijs/commit/284e3d1b08fb8e0518c12cf14c9f70fb3e21ea91))
 * **onekijs-core:** force a payload when calling a saga ([62b9f41](https://github.com/oneki/onekijs/commit/62b9f4117b4ab48b275e4e33ba6a54f9fc72db3f))
@@ -30,11 +28,3 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### BREAKING CHANGES
 
 * **onekijs:** Rename some classes
-
-
-
-
-
-# [0.5.0](https://github.com/oneki/onekijs/compare/v0.4.1...v0.5.0) (2020-06-14)
-
-**Note:** Version bump only for package root

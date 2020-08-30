@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/oneki/onekijs/compare/v0.5.0...v0.8.0) (2020-08-30)
+
+
+### Code Refactoring
+
+* **onekijs:** convert project to Typescript ([a47fc98](https://github.com/oneki/onekijs/commit/a47fc9815fbb51271c12505a65cd8b38a1ab04e3))
+
+
+### BREAKING CHANGES
+
+* **onekijs:** Rename some classes
+
+
+
+
+
 ## [0.1.8](https://github.com/oneki/onekijs/compare/next-app-layout@0.1.7...next-app-layout@0.1.8) (2020-07-11)
 
 **Note:** Version bump only for package next-app-layout
