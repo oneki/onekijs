@@ -19,8 +19,8 @@ import {
   QuerySortDir,
 } from './typings';
 import { service, reducer } from '../core/annotations';
-import { Primitive } from '../core/typings';
-import { get } from '../core/utils/object';
+import { Primitive, AnonymousObject } from '../core/typings';
+import { get, set } from '../core/utils/object';
 
 const defaultSearcher = 'i_like';
 
@@ -31,6 +31,7 @@ export default class LocalCollectionService<
   S extends CollectionState<T, M> = CollectionState<T, M>
 > extends CollectionService<T, M, S> implements Collection<T, M> {
   init(): void {
+    super.init();
     this.refresh();
   }
 
@@ -83,6 +84,18 @@ export default class LocalCollectionService<
   clearFilter(): void {
     this._clearOffset();
     this._clearFilter();
+    this.refresh();
+  }
+
+  @reducer
+  clearParam(key: string): void {
+    this._clearParam(key);
+    this.refresh();
+  }
+
+  @reducer
+  clearParams(): void {
+    this._clearParams();
     this.refresh();
   }
 
@@ -153,6 +166,12 @@ export default class LocalCollectionService<
   }
 
   @reducer
+  reset(): void {
+    this.state = this.initialState;
+    this.refresh();
+  }
+
+  @reducer
   removeFilter(filterId: QueryFilterId): void {
     this._clearOffset();
     this._removeFilter(filterId);
@@ -197,6 +216,19 @@ export default class LocalCollectionService<
   }
 
   @reducer
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  setParam(key: string, value: any): void {
+    set(this.state.params, key, value);
+    this.refresh();
+  }
+
+  @reducer
+  setParams(params: AnonymousObject): void {
+    this.state.params = params;
+    this.refresh();
+  }
+
+  @reducer
   sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void {
     this._setSortBy(sortBy);
     this.refresh();
@@ -205,7 +237,7 @@ export default class LocalCollectionService<
   protected _applyCriteria(item: Item<T, M>, criteria: QueryFilterCriteria): boolean {
     const operator = criteria.operator || 'eq';
     const value = criteria.value;
-    const source = get(item, criteria.field);
+    const source = get(item.data, criteria.field);
     const not = criteria.not;
     const result = this._applyOperator(operator, source, value);
     return not ? !result : result;

@@ -1,4 +1,11 @@
+import { Primitive, AnonymousObject } from '../core/typings';
+import { isNull } from '../core/utils/object';
 import {
+  Collection,
+  CollectionItemAdapter,
+  Item,
+  ItemMeta,
+  LoadingStatus,
   QueryFilter,
   QueryFilterCriteria,
   QueryFilterCriteriaValue,
@@ -6,15 +13,9 @@ import {
   QuerySerializer,
   QuerySortBy,
   QuerySortDir,
-  ItemMeta,
-  LoadingStatus,
-  Collection,
-  ItemAdapter,
-  Item,
   typeOfCollectionItem,
+  QuerySerializerResult,
 } from './typings';
-import { Primitive } from '../core/typings';
-import { isNull } from '../core/utils/object';
 
 let filterUid = 0;
 export const rootFilterId = Symbol();
@@ -26,7 +27,7 @@ export const defaultComparator = (a: any, b: any) => {
 };
 
 export const defaultSerializer: QuerySerializer = (query) => {
-  const result = {
+  const result: AnonymousObject = {
     filter: serializeFilter(query.filter),
     sortBy: serializeSortBy(query.sortBy),
     offset: serializeOffset(query.offset),
@@ -36,7 +37,14 @@ export const defaultSerializer: QuerySerializer = (query) => {
     sort: serializeSort(query.sort),
   };
 
-  return Object.fromEntries(Object.entries(result).filter(([_k, v]) => v !== undefined));
+  const params = query.params;
+  if (params) {
+    Object.keys(params).forEach((key) => {
+      result[key] = `${encodeURIComponent(String(params[key]))}}`;
+    });
+  }
+
+  return Object.fromEntries(Object.entries(result).filter(([_k, v]) => v !== undefined)) as QuerySerializerResult;
 };
 
 export const generateFilterId = (): number => {
@@ -70,6 +78,16 @@ export const serializeCriteria = (criteria: QueryFilterCriteria): string => {
 export const serializeFields = (fields: string[] | undefined): string | void => {
   if (fields && fields.length > 0) {
     return `${encodeURIComponent(fields.join(','))}`;
+  }
+};
+
+export const serializeParams = (params: AnonymousObject | undefined): AnonymousObject<string> | void => {
+  if (params && params.length > 0) {
+    const result: AnonymousObject<string> = {};
+    Object.keys(params).forEach((key) => {
+      result[key] = `${encodeURIComponent(String(params[key]))}}`;
+    });
+    return result;
   }
 };
 
@@ -156,7 +174,7 @@ export const isCollection = <T, M extends ItemMeta>(data: T[] | Collection<T, M>
   return !Array.isArray(data);
 };
 
-export const toCollectionItem = <T, M>(data?: T, adapter?: ItemAdapter<T, M>): Item<T, M> => {
+export const toCollectionItem = <T, M>(data?: T, adapter?: CollectionItemAdapter<T, M>): Item<T, M> => {
   const getId = (data: any) => {
     if (isNull(data)) {
       return undefined;
@@ -179,7 +197,7 @@ export const toCollectionItem = <T, M>(data?: T, adapter?: ItemAdapter<T, M>): I
   };
   if (adapter) {
     const adaptee = adapter(data);
-    return Object.assign({}, adaptee, {
+    return Object.assign({ data }, adaptee, {
       type: typeOfCollectionItem,
       id: adaptee.id === undefined ? getId(data) : String(adaptee.id),
     });

@@ -11,6 +11,8 @@ import {
   Query,
   UseCollectionOptions,
   ItemMeta,
+  CollectionItemAdapter,
+  Item,
 } from './typings';
 import useService from '../core/useService';
 import { FetchOptions, Fetcher, HttpMethod } from '../fetch/typings';
@@ -45,14 +47,32 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
         ]),
       );
 
+      let adapter: CollectionItemAdapter<T, M> | undefined;
+      const optionAdapter = options.adapter;
+      if (optionAdapter !== undefined) {
+        adapter = (data) => {
+          if (data !== undefined) {
+            const result = optionAdapter(data);
+            result.id = result.id !== undefined ? String(result.id) : undefined;
+            return result as Partial<Item<T, M>>;
+          } else {
+            return {
+              meta: {},
+            } as Partial<Item<T, M>>;
+          }
+        };
+      }
+
       return {
-        adapter: options.adapter,
+        adapter,
         comparator: options.comparator,
-        db: Array.isArray(dataOrUrl) ? dataOrUrl.map((data) => toCollectionItem(data, options.adapter)) : undefined,
+        db: Array.isArray(dataOrUrl) ? dataOrUrl.map((data) => toCollectionItem(data, adapter)) : undefined,
         fetchOptions,
         fields: options.initialFields,
         filter: options.initialFilter,
         method: options.method,
+        offset: options.initialOffset,
+        params: options.initialParams,
         queryEngine: options.queryEngine,
         status: Array.isArray(dataOrUrl)
           ? LoadingStatus.Loaded
@@ -62,6 +82,7 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
         search: options.initialSearch,
         searcher: options.searcher,
         serializer: options.serializer,
+        size: options.initialSize,
         sort: options.initialSort,
         sortBy: options.initialSortBy,
         throttle: options.throttle,
@@ -94,6 +115,7 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
       'refresh',
       'removeFilter',
       'removeSortBy',
+      'reset',
       'search',
       'setData',
       'setFields',
@@ -109,11 +131,13 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
 
   const collection = useMemo(() => {
     return Object.assign({}, methods, {
+      data: service.data,
       items: service.items,
       status: service.status,
       total: service.total,
     });
-  }, [methods, service.status, service.items, service.total]) as Collection<T, M>;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [methods, service.items, service.status, service.total]) as Collection<T, M>;
 
   useEffect(() => {
     if (typeof dataOrUrl === 'string' && options.fetchOnce) {
@@ -125,6 +149,13 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
           service.setData(result.result);
         }
       });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (options.autoload) {
+      collection.load(options.initialSize, options.initialOffset);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

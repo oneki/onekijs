@@ -1,4 +1,4 @@
-import { Primitive } from '../core/typings';
+import { Primitive, AnonymousObject } from '../core/typings';
 import { Fetcher, HttpMethod, FetchState, FetchOptions } from '../fetch/typings';
 
 export const typeOfCollectionItem = Symbol('typeof.collection.item');
@@ -18,15 +18,19 @@ export interface Collection<T, M extends ItemMeta> {
   addSortBy(field: string, dir?: QuerySortDir, comparator?: QuerySortComparator, prepend?: boolean): void;
   clearFields(): void;
   clearFilter(): void;
+  clearParams(): void;
+  clearParam(key: string): void;
   clearSearch(): void;
   clearSort(): void;
   clearSortBy(): void;
+  data?: (T | undefined)[];
   items?: (Item<T, M> | undefined)[];
   filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | null): void;
   getAdapter(): ItemAdapter<T, M> | undefined;
   getFields(): string[] | undefined;
   getFilter(): QueryFilter | undefined;
   getOffset(): number | undefined;
+  getParams(): AnonymousObject | undefined;
   getSearch(): Primitive | undefined;
   getSize(): number | undefined;
   getSort(): QuerySortDir | undefined;
@@ -36,11 +40,14 @@ export interface Collection<T, M extends ItemMeta> {
   refresh(): void;
   removeFilter(filterId: QueryFilterId): void;
   removeSortBy(field: string): void;
+  reset(): void;
   search(search: Primitive): void;
   setData(data: T[]): void;
   setFields(fields: string[]): void;
   setItems(items: Item<T, M>[]): void;
   setMeta(item: Item<T, M>, key: keyof M, value: any): void;
+  setParam(key: string, value: any): void;
+  setParams(params: AnonymousObject): void;
   sort(dir: QuerySortDir): void;
   sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void;
   status: CollectionStatus;
@@ -57,14 +64,20 @@ export type CollectionFetcherResult<T> =
       result: T[];
     };
 
+export type CollectionItemAdapter<T, M extends ItemMeta> = (data: T | undefined) => Partial<Item<T, M>>;
+
 export interface CollectionOptions<T, M extends ItemMeta> {
   adapter?: ItemAdapter<T, M>;
+  autoload?: boolean;
   comparator?: QuerySortComparator;
   fetcher?: CollectionFetcher<T>;
   fetchOnce?: boolean;
   initialFields?: string[];
   initialFilter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[];
+  initialOffset?: number;
+  initialParams?: AnonymousObject;
   initialSearch?: Primitive;
+  initialSize?: number;
   initialSort?: QuerySortDir;
   initialSortBy?: string | QuerySortBy | QuerySortBy[];
   method?: HttpMethod;
@@ -75,15 +88,16 @@ export interface CollectionOptions<T, M extends ItemMeta> {
 }
 
 export interface CollectionState<T, M extends ItemMeta> extends FetchState {
-  adapter?: ItemAdapter<T, M>;
+  adapter?: CollectionItemAdapter<T, M>;
   comparator?: QuerySortComparator;
   db?: Item<T, M>[];
   fetchOptions?: FetchOptions<CollectionFetcherResult<T>, Query | undefined>;
   fields?: string[];
   filter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[];
   items?: (Item<T, M> | undefined)[];
-  offset?: number;
   method?: HttpMethod;
+  offset?: number;
+  params?: AnonymousObject;
   queryEngine?: QueryEngine<T, M>;
   search?: Primitive;
   searcher?: QuerySearcher<T>;
@@ -114,7 +128,13 @@ export type Item<T, M extends ItemMeta> = {
   type: symbol;
 };
 
-export type ItemAdapter<T, M extends ItemMeta> = (data: T | undefined) => Partial<Item<T, M>>;
+export type ItemAdapter<T, M extends ItemMeta> = (
+  data: T,
+) => {
+  id?: string | number;
+  meta?: M;
+  text?: string;
+};
 
 export type ItemMeta = {
   loadingStatus?: LoadingItemStatus;
@@ -138,6 +158,7 @@ export interface Query {
   filter?: QueryFilter;
   sortBy?: QuerySortBy[];
   offset?: number;
+  params?: AnonymousObject;
   size?: number;
   fields?: string[];
   search?: Primitive;
@@ -187,15 +208,7 @@ export type QuerySearcher<T> = QueryFilterCriteriaOperator | ((item: T, search?:
 
 export type QuerySerializer = (query: Query) => QuerySerializerResult;
 
-export type QuerySerializerResult = {
-  filter?: string;
-  sortBy?: string;
-  offset?: string;
-  size?: string;
-  fields?: string;
-  search?: string;
-  sort?: QuerySortDir;
-};
+export type QuerySerializerResult = AnonymousObject<string>;
 
 export interface QuerySortBy {
   comparator?: QuerySortComparator;

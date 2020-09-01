@@ -39,6 +39,19 @@ const mutationMethod = (rest: any, path: string, handler: any) => {
 
 export const handlers = [
   // ECHO
+  rest.get('/collection', (req, res, ctx) => {
+    //${location.protocol}://${location.host}
+    let url = `${req.url.protocol}//${req.url.host}${req.url.pathname}`;
+    const params: string[] = [];
+    req.url.searchParams.forEach((v, k) => {
+      params.push(`${k}=${v}`);
+    });
+    if (params.length > 0) {
+      url = `${url}?${params.join('&')}`;
+    }
+    return res(ctx.json({ result: [url] }));
+  }),
+
   rest.get('/echo**', (req, res, ctx) => {
     return res(ctx.json({ result: req.url.href }));
   }),

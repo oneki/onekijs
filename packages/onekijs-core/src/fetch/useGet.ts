@@ -8,7 +8,7 @@ import { FetchOptions, FetchState, UseGetOptions } from './typings';
 import useOnekiRouter from '../app/useOnekiRouter';
 import { asResultCallback } from '../app/utils';
 
-const useGet = <T = any>(url: string, options: UseGetOptions<T> = {}): [T, boolean, () => void] => {
+const useGet = <T = any>(url?: string | null, options: UseGetOptions<T> = {}): [T, boolean, () => void] => {
   const notificationService = useNotificationService();
   const appContext = useAppContext();
   const router = useOnekiRouter();

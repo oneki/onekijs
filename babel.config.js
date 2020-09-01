@@ -1,6 +1,6 @@
 const { LIBRARY_OUTPUT } = process.env;
 
-module.exports = api => {
+module.exports = (api) => {
   /* 
     alternatively, you can utilize api.env() to get the current NODE_ENV:
     const inProduction = api.env("production");
@@ -21,10 +21,7 @@ module.exports = api => {
         ],
         '@babel/preset-react',
       ],
-      plugins: [
-        '@babel/plugin-proposal-class-properties',
-        '@babel/plugin-transform-runtime',
-      ],
+      plugins: ['@babel/plugin-proposal-class-properties', '@babel/plugin-transform-runtime'],
     };
   } else {
     return {
@@ -38,10 +35,7 @@ module.exports = api => {
         ],
         '@babel/preset-react',
       ],
-      plugins: [
-        '@babel/plugin-proposal-class-properties',
-        '@babel/plugin-transform-runtime',
-      ],
+      plugins: ['@babel/plugin-proposal-class-properties', '@babel/plugin-transform-runtime'],
     };
   }
 };

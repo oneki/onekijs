@@ -1,12 +1,19 @@
 import React, { FC } from 'react';
-import { UseCollectionOptions } from '../../typings';
+import { UseCollectionOptions, ItemMeta, Item } from '../../typings';
 import useCollection from '../../useCollection';
 import { TestUser, TestHandler } from '../typings';
 
 type UseCollectionProps<T> = {
   data: T[];
-  options?: UseCollectionOptions;
+  options?: UseCollectionOptions<T, ItemMeta>;
   handler?: TestHandler;
+};
+
+const toData = (items?: (Item<TestUser, ItemMeta> | undefined)[]) => {
+  if (items) {
+    return items.map((item) => item?.data);
+  }
+  return undefined;
 };
 
 const UseCollectionWidget: FC<UseCollectionProps<TestUser>> = ({ data, options, handler }) => {
@@ -23,7 +30,7 @@ const UseCollectionWidget: FC<UseCollectionProps<TestUser>> = ({ data, options, 
 
   return (
     <>
-      <div data-testid="result">{JSON.stringify(collection.data)}</div>
+      <div data-testid="result">{JSON.stringify(toData(collection.items))}</div>
       {handler && <button data-testid={handler.name} onClick={execute}></button>}
     </>
   );

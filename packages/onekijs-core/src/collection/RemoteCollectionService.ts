@@ -1,5 +1,10 @@
 import { cancel, delay, fork } from 'redux-saga/effects';
-import { defaultComparator, defaultSerializer, rootFilterId } from './utils';
+import { reducer, saga, service } from '../core/annotations';
+import BasicError from '../core/BasicError';
+import { AnonymousObject, Primitive, SagaEffect } from '../core/typings';
+import { set } from '../core/utils/object';
+import { Fetcher, HttpMethod } from '../fetch/typings';
+import { asyncHttp } from '../fetch/utils';
 import CollectionService from './CollectionService';
 import {
   Collection,
@@ -22,11 +27,7 @@ import {
   QuerySortComparator,
   QuerySortDir,
 } from './typings';
-import { AnonymousObject, SagaEffect, Primitive } from '../core/typings';
-import { saga, service, reducer } from '../core/annotations';
-import BasicError from '../core/BasicError';
-import { Fetcher, HttpMethod } from '../fetch/typings';
-import { asyncHttp } from '../fetch/utils';
+import { defaultComparator, defaultSerializer, rootFilterId } from './utils';
 
 @service
 export default class RemoteCollectionService<
@@ -88,6 +89,20 @@ export default class RemoteCollectionService<
   @saga(SagaEffect.Latest)
   *clearFilter() {
     yield this._clearFilter();
+    yield this._refresh(true);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  @saga(SagaEffect.Every)
+  *clearParam(key: string) {
+    yield this._clearParam(key);
+    yield this._refresh(true);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  @saga(SagaEffect.Latest)
+  *clearParams() {
+    yield this._clearParams();
     yield this._refresh(true);
   }
 
@@ -159,6 +174,11 @@ export default class RemoteCollectionService<
     yield this._refresh(true);
   }
 
+  @reducer
+  reset(): void {
+    this.state = this.initialState;
+  }
+
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
   *removeFilter(filterId: QueryFilterId) {
@@ -217,6 +237,21 @@ export default class RemoteCollectionService<
         }
       }
     }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  @saga(SagaEffect.Every)
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  *setParam(key: string, value: any) {
+    yield this._setParam(key, value);
+    yield this._refresh(true);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  @saga(SagaEffect.Latest)
+  *setParams(params: AnonymousObject) {
+    yield this._setParams(params);
+    yield this._refresh(true);
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -325,9 +360,7 @@ export default class RemoteCollectionService<
       const method = this.state.method ?? HttpMethod.Get;
       const body = this.state.method === HttpMethod.Get ? undefined : query;
       const fetchOptions =
-        this.state.method === HttpMethod.Get
-          ? Object.assign({}, options, { query: this.serializeQuery(query) })
-          : options;
+        method === HttpMethod.Get ? Object.assign({}, options, { query: this.serializeQuery(query) }) : options;
       const result = yield fetcher(this.url, method, body, fetchOptions);
       if (loadingTask !== null) {
         yield cancel(loadingTask);
@@ -376,10 +409,12 @@ export default class RemoteCollectionService<
       query.sortBy === currentQuery.sortBy &&
       query.fields === currentQuery.fields &&
       query.search === currentQuery.search &&
-      query.sort === currentQuery.sort;
+      query.sort === currentQuery.sort &&
+      query.params === currentQuery.params;
 
     this.state.error = undefined;
     this.state.total = undefined;
+
     if (same) {
       // update metadata
       const itemResult: Item<T, M>[] = data.map((itemData) => {
@@ -570,6 +605,20 @@ export default class RemoteCollectionService<
   protected _setOffset(offset: number): void {
     this._setLoading({ size: this.state.size, offset, resetData: false });
     super._setOffset(offset);
+  }
+
+  @reducer
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  protected _setParam(key: string, value: any): void {
+    this._setLoading({ size: this.state.size, offset: 0 });
+    set(this.state.params, key, value);
+  }
+
+  @reducer
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  protected _setParams(params: AnonymousObject): void {
+    this._setLoading({ size: this.state.size, offset: 0 });
+    this.state.params = params;
   }
 
   @reducer

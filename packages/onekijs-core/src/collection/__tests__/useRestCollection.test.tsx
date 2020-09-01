@@ -7,7 +7,7 @@ import { asyncTimeout } from '../../__tests__/utils/timeout';
 import { act } from 'react-dom/test-utils';
 import { UseCollectionOptions, ItemMeta } from '../typings';
 
-const url = 'http://localhost/echo';
+const url = 'http://localhost/collection';
 
 type TestProps = {
   url: string;
@@ -132,7 +132,7 @@ describe('it tests URLs', () => {
         await asyncTimeout(50);
         const element = getByTestId('result');
         // user is logged
-        expect(element).toHaveTextContent(JSON.stringify({ result: test.result }));
+        expect(element).toHaveTextContent(JSON.stringify(test.result));
       });
     });
   });

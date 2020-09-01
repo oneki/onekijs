@@ -17,7 +17,7 @@ import {
   ItemAdapter,
 } from './typings';
 import Service from '../core/Service';
-import { Primitive } from '../core/typings';
+import { Primitive, AnonymousObject } from '../core/typings';
 import { get } from '../core/utils/object';
 import { reducer } from '../core/annotations';
 
@@ -26,6 +26,8 @@ export default abstract class CollectionService<
   M extends ItemMeta = ItemMeta,
   S extends CollectionState<T, M> = CollectionState<T, M>
 > extends Service<S> implements Collection<T, M> {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  initialState: S = null!;
   abstract addFilter(
     filterOrCriteria: QueryFilterOrCriteria,
     parentFilterId?: string | number | symbol | undefined,
@@ -46,6 +48,8 @@ export default abstract class CollectionService<
   ): void;
   abstract clearFields(): void;
   abstract clearFilter(): void;
+  abstract clearParam(key: string): void;
+  abstract clearParams(): void;
   abstract clearSearch(): void;
   abstract clearSort(): void;
   abstract clearSortBy(): void;
@@ -55,14 +59,33 @@ export default abstract class CollectionService<
   abstract refresh(): void;
   abstract removeFilter(filterId: string | number | symbol): void;
   abstract removeSortBy(field: string): void;
+  abstract reset(): void;
   abstract search(search: Primitive): void;
   abstract setData(data: T[]): void;
   abstract setFields(fields: string[]): void;
   abstract setItems(items: Item<T, M>[]): void;
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   abstract setMeta(item: Item<T, M>, key: keyof M, value: any): void;
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  abstract setParam(key: string, value: any): void;
+  abstract setParams(params: AnonymousObject): void;
   abstract sort(dir: QuerySortDir): void;
   abstract sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void;
+
+  init(): void {
+    this.initialState = this.state;
+    if (this.state.filter) {
+      this.state.filter = this._formatFilter(this.state.filter);
+    }
+  }
+
+  get data(): (T | undefined)[] | undefined {
+    const items = this.state.items;
+    if (items !== undefined) {
+      return items.map((item) => item?.data);
+    }
+    return undefined;
+  }
 
   get items(): (Item<T, M> | undefined)[] | undefined {
     return this.state.items;
@@ -90,6 +113,10 @@ export default abstract class CollectionService<
 
   getOffset(): number | undefined {
     return this.state.offset;
+  }
+
+  getParams(): AnonymousObject | undefined {
+    return this.state.params;
   }
 
   getSearch(): Primitive | undefined {
@@ -155,6 +182,18 @@ export default abstract class CollectionService<
   @reducer
   protected _clearOffset(): void {
     this.state.offset = undefined;
+  }
+
+  @reducer
+  protected _clearParam(key: string): void {
+    if (this.state.params) {
+      delete this.state.params[key];
+    }
+  }
+
+  @reducer
+  protected _clearParams(): void {
+    this.state.params = undefined;
   }
 
   @reducer

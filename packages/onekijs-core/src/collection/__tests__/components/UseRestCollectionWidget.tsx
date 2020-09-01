@@ -1,16 +1,17 @@
 import React, { FC } from 'react';
-import { UseRemoteCollectionOptions } from '../../typings';
-import useRestCollection from '../../useRestCollection';
+import { UseCollectionOptions, ItemMeta } from '../../typings';
+import useCollection from '../../useCollection';
 import { TestHandler, TestUser } from '../typings';
+import { get } from '../../../core/utils/object';
 
 type UseRestCollectionProps<T> = {
   url: string;
-  options?: UseRemoteCollectionOptions<T>;
+  options?: UseCollectionOptions<T, ItemMeta>;
   handler?: TestHandler;
 };
 
 const UseRestCollectionWidget: FC<UseRestCollectionProps<TestUser>> = ({ url, options, handler }) => {
-  const collection = useRestCollection(url, options);
+  const collection = useCollection(url, options);
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   let execute = () => {};
   if (handler) {
@@ -23,7 +24,7 @@ const UseRestCollectionWidget: FC<UseRestCollectionProps<TestUser>> = ({ url, op
 
   return (
     <>
-      <div data-testid="result">{JSON.stringify(collection.data)}</div>
+      <div data-testid="result">{JSON.stringify(get(collection.items, '0.data'))}</div>
       {handler && <button data-testid={handler.name} onClick={execute}></button>}
     </>
   );

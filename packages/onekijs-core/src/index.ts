@@ -315,3 +315,18 @@ export {
   UseCollectionOptions,
   ItemAdapter,
 } from './collection/typings';
+export {
+  defaultComparator,
+  defaultSerializer,
+  isQueryFilter,
+  isQueryFilterCriteria,
+  serializeCriteria,
+  serializeFields,
+  serializeFilter,
+  serializeOffset,
+  serializeSearch,
+  serializeSize,
+  serializeSort,
+  serializeSortBy,
+  toCollectionItem,
+} from './collection/utils';
