@@ -1,3 +1,4 @@
+export { default as useGlobalProp } from './app/useGlobalProp';
 export { default as useAppContext } from './app/useAppContext';
 export { default as AppContext, DefaultAppContext } from './app/AppContext';
 export { default as FieldValidation, defaultValidation } from './form/FieldValidation';
@@ -50,6 +51,7 @@ export {
   LoginState,
   LogoutState,
   SecureRouteProps,
+  Idp,
 } from './auth/typings';
 export { default as useAuthService } from './auth/useAuthService';
 export { default as useLogin, useLoginService } from './auth/useLogin';
