@@ -15,6 +15,7 @@ import {
   QuerySortDir,
   typeOfCollectionItem,
   QuerySerializerResult,
+  Query,
 } from './typings';
 
 let filterUid = 0;
@@ -65,6 +66,59 @@ export const isQueryFilter = (value: QueryFilterOrCriteria | QueryFilterOrCriter
 
 export const isQueryFilterCriteria = (value: QueryFilterOrCriteria): value is QueryFilterCriteria => {
   return !isQueryFilter(value);
+};
+
+export const isSameFilterCriteriaValue = (
+  v1: QueryFilterCriteriaValue | QueryFilterCriteriaValue[],
+  v2: QueryFilterCriteriaValue | QueryFilterCriteriaValue[],
+): boolean => {
+  if (Array.isArray(v1) && Array.isArray(v2)) {
+    if (v1.length !== v2.length) return false;
+    let result = true;
+    for (let i = 0; i < v1.length; i++) {
+      result = result && isSameFilterCriteriaValue(v1[i], v2[i]);
+    }
+    return result;
+  } else {
+    return v1 === v2;
+  }
+};
+
+export const isSameFilter = (f1?: QueryFilterOrCriteria, f2?: QueryFilterOrCriteria): boolean => {
+  if (f1 === f2) return true;
+  if (f1 === undefined || f2 === undefined) return false;
+  if (isQueryFilter(f1) && isQueryFilter(f2)) {
+    let result = true;
+    for (let i = 0; i < f1.criterias.length; i++) {
+      if (!f2.criterias[i]) return false;
+      result = result && isSameFilter(f1.criterias[i], f2.criterias[i]);
+    }
+    return result && (f1.operator || 'and') === (f2.operator || 'and');
+  }
+  if (isQueryFilterCriteria(f1) && isQueryFilterCriteria(f2)) {
+    return (
+      (f1.operator || 'eq') === (f2.operator || 'eq') &&
+      f1.field === f2.field &&
+      (f1.not || false) === (f2.not || false) &&
+      isSameFilterCriteriaValue(f1.value, f2.value)
+    );
+  }
+  return false;
+};
+
+export const isSameQuery = (q1: Query, q2: Query): boolean => {
+  const s1 = defaultSerializer(q1);
+  const s2 = defaultSerializer(q2);
+  const k1 = Object.keys(s1);
+  const k2 = Object.keys(s2);
+  if (k1.length !== k2.length) return false;
+  for (let i = 0; i < k1.length; i++) {
+    const key = k1[i];
+    if (s1[key] !== s2[key]) {
+      return false;
+    }
+  }
+  return true;
 };
 
 export const serializeCriteria = (criteria: QueryFilterCriteria): string => {

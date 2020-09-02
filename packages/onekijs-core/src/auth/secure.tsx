@@ -8,7 +8,7 @@ import { useReduxSelector } from '../app/useGlobalSelector';
 
 export const secure = (
   Component: ElementType,
-  validator: (securityContext: any) => boolean,
+  validator?: (securityContext: any) => boolean,
   options: { ErrorComponent?: ElementType } = {},
 ): FC<ComponentPropsWithoutRef<typeof Component>> | FC<AuthErrorProps> | null => {
   const SecureComponent: FC<ComponentPropsWithoutRef<typeof Component>> = memo((props) => {

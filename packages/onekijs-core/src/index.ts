@@ -57,7 +57,7 @@ export { default as useAuthService } from './auth/useAuthService';
 export { default as useLogin, useLoginService } from './auth/useLogin';
 export { default as useLoginCallback, useLoginCallbackService } from './auth/useLoginCallback';
 export { default as useLoginError } from './auth/useLoginError';
-export { default as useLogout } from './auth/useLogout';
+export { default as useLogout, useLogoutService } from './auth/useLogout';
 export { default as useLogoutCallback, useLogoutCallbackService } from './auth/useLogoutCallback';
 export { default as useLogoutError } from './auth/useLogoutError';
 export { default as useSecurityContext } from './auth/useSecurityContext';

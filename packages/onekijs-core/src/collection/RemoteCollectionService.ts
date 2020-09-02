@@ -27,7 +27,7 @@ import {
   QuerySortComparator,
   QuerySortDir,
 } from './typings';
-import { defaultComparator, defaultSerializer, rootFilterId } from './utils';
+import { defaultComparator, defaultSerializer, rootFilterId, isSameQuery } from './utils';
 
 @service
 export default class RemoteCollectionService<
@@ -404,13 +404,7 @@ export default class RemoteCollectionService<
     const total = Array.isArray(result) ? undefined : result.total;
 
     // check if current query is still equals to the query used for fetching
-    let same =
-      query.filter === currentQuery.filter &&
-      query.sortBy === currentQuery.sortBy &&
-      query.fields === currentQuery.fields &&
-      query.search === currentQuery.search &&
-      query.sort === currentQuery.sort &&
-      query.params === currentQuery.params;
+    let same = isSameQuery(query, currentQuery);
 
     this.state.error = undefined;
     this.state.total = undefined;
