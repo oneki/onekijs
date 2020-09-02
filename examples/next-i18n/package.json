@@ -1,6 +1,6 @@
 {
   "name": "next-i18n",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "private": true,
   "scripts": {
     "dev": "next",
@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "next": "9.3.6",
-    "onekijs-next": "^0.8.1",
+    "onekijs-next": "^0.8.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   }

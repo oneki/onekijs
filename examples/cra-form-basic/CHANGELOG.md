@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.8.2 (2020-09-02)
+
+
+### Code Refactoring
+
+* **onekijs:** convert project to Typescript ([a47fc98](https://github.com/oneki/onekijs/commit/a47fc9815fbb51271c12505a65cd8b38a1ab04e3))
+
+
+### Features
+
+* **onekijs-core:** support input type="checkbox" ([2bebdbe](https://github.com/oneki/onekijs/commit/2bebdbe94be9d4d32a4294450094347e7b04372d))
+* form ([0221bfd](https://github.com/oneki/onekijs/commit/0221bfd3bc22c5cadfa5ac0cd8fbe070cc04cf50))
+
+
+### BREAKING CHANGES
+
+* **onekijs:** Rename some classes
+
+
+
+
+
 ## [0.8.1](https://github.com/oneki/onekijs/compare/v0.8.0...v0.8.1) (2020-09-01)
 
 **Note:** Version bump only for package cra-form-basic
