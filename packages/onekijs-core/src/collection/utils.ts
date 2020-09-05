@@ -1,4 +1,5 @@
-import { Primitive, AnonymousObject } from '../core/typings';
+import { BasicError } from '..';
+import { AnonymousObject, Primitive } from '../core/typings';
 import { isNull } from '../core/utils/object';
 import {
   Collection,
@@ -6,20 +7,24 @@ import {
   Item,
   ItemMeta,
   LoadingStatus,
+  Query,
   QueryFilter,
   QueryFilterCriteria,
+  QueryFilterCriteriaOperator,
   QueryFilterCriteriaValue,
   QueryFilterOrCriteria,
   QuerySerializer,
+  QuerySerializerResult,
   QuerySortBy,
   QuerySortDir,
   typeOfCollectionItem,
-  QuerySerializerResult,
-  Query,
 } from './typings';
 
 let filterUid = 0;
 export const rootFilterId = Symbol();
+export const filterRegex = /^\s*(and|or)?\s*\((.*)\)\s*$/g;
+const filterOrCriteriaRegex = /\s*((?:(?:[a-zA-Z$_][a-zA-Z0-9$_]*)\s+(?:eq|starts_with)\s+(?:'(?:[^\\']|\\.)*'|"(?:[^\\"]|\\.)*"|(?:[^\s"';]+)))|(?:(?:and|or)?\s*\(.*\)))\s*;?/g;
+const filterCriteriaRegex = /^\s*([a-zA-Z$_][a-zA-Z0-9$_]*)\s+(eq|starts_with)\s+('(?:[^\\']|\\.)*'|"(?:[^\\"]|\\.)*"|(?:[^\s"';]+))\s*$/g;
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const defaultComparator = (a: any, b: any) => {
@@ -62,6 +67,77 @@ export const isDeprecated = (meta: ItemMeta): boolean => {
 
 export const isQueryFilter = (value: QueryFilterOrCriteria | QueryFilterOrCriteria[]): value is QueryFilter => {
   return !Array.isArray(value) && Object.keys(value).includes('criterias');
+};
+
+export const isQueryFilterString = (filter: string): boolean => {
+  const match = filterRegex.exec(filter);
+  return match !== null;
+};
+
+export const getQueryFilter = (filter: string): QueryFilter | undefined => {
+  const match = filterRegex.exec(filter);
+  if (match === null) return;
+
+  const result: QueryFilter = {
+    operator: 'and',
+    criterias: [],
+  };
+  const operator = match[1].toLowerCase();
+  if (operator === 'or') {
+    result.operator = operator;
+  }
+  if (match.length > 2) {
+    result.criterias = getQueryFilterOrCriterias(match[2]);
+  }
+  return result;
+};
+
+export const getQueryFilterCriteriaValue = (value: string): QueryFilterCriteriaValue => {
+  // const trimQuote = (str: string, quote: string): string => {
+  //   return str.substring(1, str.length - 1).replace(`\\${quote}`, quote);
+  // };
+
+  const firstChar = value.charAt(0);
+  const lastChar = value.charAt(value.length - 1);
+  if (firstChar === "'" || firstChar === '"') {
+    if (lastChar !== firstChar) {
+      throw new BasicError(`Invalid query criteria value ${value}`);
+    }
+    //value = trimQuote(value, firstChar);
+  }
+  return JSON.parse(value);
+};
+
+export const getQueryFilterCriteria = (filterCriteria: string): QueryFilterCriteria | undefined => {
+  const match = filterCriteriaRegex.exec(filterCriteria);
+  if (match === null) return;
+  return {
+    operator: match[2] as QueryFilterCriteriaOperator,
+    field: match[1].toLocaleLowerCase(),
+    value: getQueryFilterCriteriaValue(match[3]),
+  };
+};
+
+export const getQueryFilterOrCriterias = (filterOrCriterias: string): QueryFilterOrCriteria[] => {
+  let match = filterOrCriteriaRegex.exec(filterOrCriterias);
+  if (match === null) return [];
+
+  const result: QueryFilterOrCriteria[] = [];
+  while (match !== null) {
+    if (isQueryFilterString(match[0])) {
+      result.push({
+        operator: match[1].toLowerCase() === 'or' ? 'or' : 'and',
+        criterias: getQueryFilterOrCriterias(match[2]),
+      });
+    } else {
+      const filterCriteria = getQueryFilterCriteria(match[1]);
+      if (filterCriteria !== undefined) {
+        result.push(filterCriteria);
+      }
+    }
+    match = filterOrCriteriaRegex.exec(filterOrCriterias);
+  }
+  return result;
 };
 
 export const isQueryFilterCriteria = (value: QueryFilterOrCriteria): value is QueryFilterCriteria => {
@@ -121,6 +197,61 @@ export const isSameQuery = (q1: Query, q2: Query): boolean => {
   return true;
 };
 
+export const parseQuery = (query: URLSearchParams): Query => {
+  const result: Query = {};
+  query.forEach((value, key) => {
+    switch (key.toLowerCase()) {
+      case 'filter':
+        result.filter = parseQueryFilter(value);
+        break;
+      case 'sortBy':
+        result.sortBy = parseSortBy(value);
+        break;
+      case 'offset':
+        result.offset = parseInt(value);
+        break;
+      case 'size':
+        result.size = parseInt(value);
+        break;
+      case 'fields':
+        result.fields = value.split(',');
+        break;
+      case 'search':
+        result.search = value;
+        break;
+      case 'sort':
+        result.sort = value.toLowerCase() === 'desc' ? 'desc' : 'asc';
+        break;
+      default:
+        result.params = result.params || {};
+        result.params[key] = value;
+    }
+  });
+
+  return result;
+};
+
+export const parseQueryFilter = (filter: string): QueryFilter => {
+  const result = getQueryFilter(filter);
+  if (result === undefined) {
+    return {
+      operator: 'and',
+      criterias: getQueryFilterOrCriterias(filter),
+    };
+  }
+  return result;
+};
+
+export const parseSortBy = (sortBy: string): QuerySortBy[] => {
+  const result: QuerySortBy[] = [];
+  sortBy.split(';').forEach((sort) => {
+    const [field, order] = sort.split(',');
+    const dir = order.toLowerCase() === 'desc' ? 'desc' : 'asc';
+    result.push({ field, dir });
+  });
+  return result;
+};
+
 export const serializeCriteria = (criteria: QueryFilterCriteria): string => {
   const result = `${criteria.field} ${criteria.operator || 'eq'} ${serializeValue(criteria.value)}`;
   if (criteria.not) {
@@ -151,9 +282,33 @@ export const serializeSearch = (search: Primitive | undefined): string | void =>
   }
 };
 
+export const serializeFilter = (filter: QueryFilter | undefined): string | void => {
+  if (filter && filter.criterias.length > 0) {
+    return `${serializeSubFilter(filter)}`;
+  }
+};
+
+export const serializeOffset = (offset: number | undefined): string | void => {
+  if (offset && offset > 0) {
+    return `${offset}`;
+  }
+};
+
+export const serializeSize = (size: number | undefined): string | void => {
+  if (size && size > 0) {
+    return `${size}`;
+  }
+};
+
 export const serializeSort = (sort: QuerySortDir | undefined): string | void => {
   if (sort !== undefined) {
     return `${sort}`;
+  }
+};
+
+export const serializeSortBy = (sortBy: QuerySortBy[] | undefined): string | void => {
+  if (sortBy && sortBy.length > 0) {
+    return `${sortBy.map((s) => `${s.field},${s.dir || 'asc'}`).join(';')}`;
   }
 };
 
@@ -174,30 +329,6 @@ export const serializeSubFilter = (filter: QueryFilter): string => {
   return result;
 };
 
-export const serializeFilter = (filter: QueryFilter | undefined): string | void => {
-  if (filter && filter.criterias.length > 0) {
-    return `${serializeSubFilter(filter)}`;
-  }
-};
-
-export const serializeOffset = (offset: number | undefined): string | void => {
-  if (offset && offset > 0) {
-    return `${offset}`;
-  }
-};
-
-export const serializeSize = (size: number | undefined): string | void => {
-  if (size && size > 0) {
-    return `${size}`;
-  }
-};
-
-export const serializeSortBy = (sortBy: QuerySortBy[] | undefined): string | void => {
-  if (sortBy && sortBy.length > 0) {
-    return `${sortBy.map((s) => `${s.field},${s.dir || 'asc'}`).join(';')}`;
-  }
-};
-
 export const serializeValue = (value: QueryFilterCriteriaValue | QueryFilterCriteriaValue[]): string => {
   if (Array.isArray(value)) {
     return `[${value.map((v) => serializePrimitiveValue(v)).join(',')}]`;
@@ -207,7 +338,7 @@ export const serializeValue = (value: QueryFilterCriteriaValue | QueryFilterCrit
 
 export const serializePrimitiveValue = (value: QueryFilterCriteriaValue): string => {
   if (typeof value === 'string') {
-    return `'${value.replace("'", "\\'")}'`;
+    return `"${value.replace('"', '\\"')}"`;
   }
   return String(value);
 };

@@ -8,9 +8,10 @@ type UseRestCollectionProps<T> = {
   url: string;
   options?: UseCollectionOptions<T, ItemMeta>;
   handler?: TestHandler;
+  type: 'url' | 'query';
 };
 
-const UseRestCollectionWidget: FC<UseRestCollectionProps<TestUser>> = ({ url, options, handler }) => {
+const UseRestCollectionWidget: FC<UseRestCollectionProps<TestUser>> = ({ url, options, handler, type }) => {
   const collection = useCollection(url, options);
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   let execute = () => {};
@@ -24,7 +25,7 @@ const UseRestCollectionWidget: FC<UseRestCollectionProps<TestUser>> = ({ url, op
 
   return (
     <>
-      <div data-testid="result">{JSON.stringify(get(collection.items, '0.data'))}</div>
+      <div data-testid="result">{JSON.stringify(type === 'url' ? get(collection.items, '0.data') : collection)}</div>
       {handler && <button data-testid={handler.name} onClick={execute}></button>}
     </>
   );

@@ -1,15 +1,16 @@
-import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
-import { TestHandler, TestUser } from './typings';
-import { render, fireEvent } from '@testing-library/react';
-import UseRestCollectionWidget from './components/UseRestCollectionWidget';
-import { asyncTimeout } from '../../__tests__/utils/timeout';
+import { fireEvent, render } from '@testing-library/react';
+import React from 'react';
 import { act } from 'react-dom/test-utils';
-import { UseCollectionOptions, ItemMeta } from '../typings';
+import { asyncTimeout } from '../../__tests__/utils/timeout';
+import { ItemMeta, UseCollectionOptions } from '../typings';
+import UseRestCollectionWidget from './components/UseRestCollectionWidget';
+import { TestHandler, TestUser } from './typings';
+import { basicUsers } from './data/userList';
 
-const url = 'http://localhost/collection';
+let url = 'http://localhost/collection-url';
 
-type TestProps = {
+type UrlTestProps = {
   url: string;
   options?: UseCollectionOptions<TestUser, ItemMeta>;
   handler?: TestHandler;
@@ -17,7 +18,7 @@ type TestProps = {
   title: string;
 };
 
-const tests: TestProps[] = [
+const urlTests: UrlTestProps[] = [
   {
     url,
     result: url,
@@ -25,7 +26,7 @@ const tests: TestProps[] = [
   },
   {
     url,
-    result: `${url}?filter=firstname eq 'john'`,
+    result: `${url}?filter=firstname eq "john"`,
     title: 'test one filter',
     options: {
       initialFilter: {
@@ -40,7 +41,7 @@ const tests: TestProps[] = [
   },
   {
     url,
-    result: `${url}?filter=and(firstname eq 'john';lastname like 'doe')`,
+    result: `${url}?filter=and(firstname eq "john";lastname like "doe")`,
     title: 'test two filters (no operator)',
     options: {
       initialFilter: {
@@ -60,7 +61,7 @@ const tests: TestProps[] = [
   },
   {
     url,
-    result: `${url}?filter=or(firstname eq 'john';lastname like 'doe')`,
+    result: `${url}?filter=or(firstname eq "john";lastname like "doe")`,
     title: 'test two filters (or operator)',
     options: {
       initialFilter: {
@@ -81,7 +82,7 @@ const tests: TestProps[] = [
   },
   {
     url,
-    result: `${url}?filter=and(firstname eq 'john';or(lastname like 'doe';lastname starts_with 'michael'))`,
+    result: `${url}?filter=and(firstname eq "john";or(lastname like "doe";lastname starts_with "michael"))`,
     title: 'test sub filter',
     options: {
       initialFilter: {
@@ -122,10 +123,54 @@ const handler = {
 };
 
 describe('it tests URLs', () => {
-  tests.forEach((test) => {
+  urlTests.forEach((test) => {
     it(`${test.title}`, async () => {
       const { getByTestId } = render(
-        <UseRestCollectionWidget url={test.url} options={test.options} handler={handler} />,
+        <UseRestCollectionWidget url={test.url} options={test.options} handler={handler} type="url" />,
+      );
+      await act(async () => {
+        fireEvent.click(getByTestId(handler.name));
+        await asyncTimeout(50);
+        const element = getByTestId('result');
+        // user is logged
+        expect(element).toHaveTextContent(JSON.stringify(test.result));
+      });
+    });
+  });
+});
+
+type QueryTestProps = {
+  url: string;
+  options?: UseCollectionOptions<TestUser, ItemMeta>;
+  handler?: TestHandler;
+  result: TestUser[];
+  title: string;
+};
+
+url = 'http://localhost/collection';
+const queryTests: QueryTestProps[] = [
+  {
+    url,
+    result: basicUsers.filter((u) => u.firstname === basicUsers[0].firstname),
+    title: 'filter firstname using a criteria',
+    options: {
+      initialFilter: {
+        criterias: [
+          {
+            field: 'firstname',
+            value: basicUsers[0].firstname,
+          },
+        ],
+      },
+    },
+  },
+];
+
+describe('it tests queries', () => {
+  queryTests.forEach((test) => {
+    it(`${test.title}`, async () => {
+      const { getByTestId } = render(
+        <UseRestCollectionWidget url={test.url} options={test.options} handler={handler} type="query" />,
       );
       await act(async () => {
         fireEvent.click(getByTestId(handler.name));
