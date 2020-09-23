@@ -38,5 +38,6 @@
   },
   "name": "onekijs-core",
   "author": "Oneki",
-  "module": "dist/onekijs-core.esm.js"
+  "module": "dist/onekijs-core.esm.js",
+  "gitHead": "0cd0bf1700bb2ed374972fad7fe6bd6d87a0456e"
 }

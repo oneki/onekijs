@@ -34,5 +34,6 @@
     }
   },
   "sideEffects": false,
-  "module": "dist/onekijs.esm.js"
+  "module": "dist/onekijs.esm.js",
+  "gitHead": "0cd0bf1700bb2ed374972fad7fe6bd6d87a0456e"
 }
