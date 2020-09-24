@@ -45,6 +45,16 @@ export const createReduxStore = (
               reducers[k].bind[inReducer] = true;
               reducers[k].bind.state = draftState;
               reducers[k].func.apply(reducers[k].bind, fromPayload(action.payload));
+              if (action.resolve) {
+                setTimeout(() => {
+                  action.resolve(nextState);
+                }, 0);
+              }
+            } catch (e) {
+              if (action.reject) {
+                action.reject(e);
+              }
+              throw e;
             } finally {
               reducers[k].bind[inReducer] = false;
             }

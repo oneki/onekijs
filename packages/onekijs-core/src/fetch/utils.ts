@@ -31,7 +31,7 @@ export async function xhr(
     options.headers,
   ) as AnonymousObject;
   if (['POST', 'PUT', 'PATCH'].includes(method)) {
-    headers['Content-Type'] = 'application/json';
+    headers['Content-Type'] = headers['Content-Type'] || 'application/json';
     if (body) {
       if (headers['Content-Type'] === 'application/json') {
         fetchOptions.body = JSON.stringify(body);
@@ -72,7 +72,7 @@ export async function xhr(
       set(fetchOptions, k, get(options, k));
     }
   });
-  return await fetch(url, options);
+  return await fetch(url, fetchOptions);
 }
 
 export async function formatAsyncResponse(response: Response): Promise<any> {
