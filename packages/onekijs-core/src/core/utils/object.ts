@@ -178,7 +178,7 @@ export function get(content: any, property?: any, defaultValue?: any): any {
     if (isNull(subContent) || !(index in subContent)) {
       return defaultValue;
     }
-    return subContent[index] ?? defaultValue;
+    return subContent[index] === undefined ? defaultValue : subContent[index];
   } catch (e) {
     return defaultValue;
   }

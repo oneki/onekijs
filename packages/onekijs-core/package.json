@@ -1,5 +1,5 @@
 {
-  "version": "0.8.2",
+  "version": "0.8.4",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -38,5 +38,6 @@
   },
   "name": "onekijs-core",
   "author": "Oneki",
-  "module": "dist/onekijs-core.esm.js"
+  "module": "dist/onekijs-core.esm.js",
+  "gitHead": "0cd0bf1700bb2ed374972fad7fe6bd6d87a0456e"
 }

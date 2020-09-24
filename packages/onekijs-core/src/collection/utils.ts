@@ -1,4 +1,4 @@
-import { BasicError } from '..';
+import BasicError from '../core/BasicError';
 import { AnonymousObject, Primitive } from '../core/typings';
 import { isNull } from '../core/utils/object';
 import {

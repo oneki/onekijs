@@ -1,16 +1,15 @@
 import React, { ComponentPropsWithoutRef, ElementType, FC, memo, useCallback, useEffect, useState } from 'react';
-import HTTPError from '../core/HTTPError';
-import useAuthService from './useAuthService';
-import DefaultAuthErrorComponent from './DefaultAuthErrorComponent';
-import { AnonymousObject } from '../core/typings';
-import { AuthErrorProps } from './typings';
 import { useReduxSelector } from '../app/useGlobalSelector';
+import HTTPError from '../core/HTTPError';
+import { AnonymousObject } from '../core/typings';
+import DefaultAuthErrorComponent from './DefaultAuthErrorComponent';
+import useAuthService from './useAuthService';
 
 export const secure = (
   Component: ElementType,
   validator?: (securityContext: any) => boolean,
   options: { ErrorComponent?: ElementType } = {},
-): FC<ComponentPropsWithoutRef<typeof Component>> | FC<AuthErrorProps> | null => {
+): FC<ComponentPropsWithoutRef<typeof Component>> => {
   const SecureComponent: FC<ComponentPropsWithoutRef<typeof Component>> = memo((props) => {
     const authService = useAuthService();
     const securityContext = useReduxSelector('auth.securityContext', null);

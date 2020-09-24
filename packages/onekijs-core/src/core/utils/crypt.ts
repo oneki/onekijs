@@ -119,7 +119,6 @@ export async function verify(
     | DhImportKeyParams
     | AesKeyAlgorithm,
 ): Promise<boolean> {
-  // eslint-disable-next-line
   try {
     switch (alg) {
       case 'HS256':
@@ -166,11 +165,10 @@ export async function verify(
         break;
       default:
         alg = { name: 'RSASSA-PKCS1-v1_5', hash: { name: 'SHA-256' } };
-        break;
     }
-
     const jwsSigningInput = token.split('.').slice(0, 2).join('.');
     const jwsSignature = token.split('.')[2];
+
     const key = await window.crypto.subtle.importKey('jwk', jwKey, alg, false, ['verify']);
     return await window.crypto.subtle.verify(
       alg,

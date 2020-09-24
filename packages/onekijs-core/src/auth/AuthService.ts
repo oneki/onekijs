@@ -95,7 +95,6 @@ export default class AuthService extends GlobalService {
   setIdp(idp?: Idp): void {
     const { router, settings } = this.context;
     const nextIdp = idp;
-
     if (isNull(idp)) {
       // if it's a removal, we need to check in which storage the idp name was saved
       // get the current idpName from the redux store
@@ -109,7 +108,6 @@ export default class AuthService extends GlobalService {
     // get the persistence storage specified by the IDP (null means that
     // nothing related to authentication is persisted on the client side)
     const persist = get(idp, 'persist', null);
-
     // the idpName is always persisted (in the localStorage except if persist is sessionStorage)
     // This allows a user to refresh the tab (always) and open a new tab (if persist is not sessionStorage)
     const storage = persist === 'sessionStorage' ? 'sessionStorage' : 'localStorage';
@@ -430,7 +428,7 @@ export default class AuthService extends GlobalService {
    *    - onError: callback for any error
    */
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Latest)
+  @saga(SagaEffect.Every)
   *saveToken(token: AnonymousObject | string, idp: Idp, onError?: ErrorCallback) {
     try {
       if (idp.validate) {
@@ -459,7 +457,6 @@ export default class AuthService extends GlobalService {
           }
         }
       }
-
       yield this.setIdp(idp);
       yield this.setToken(token);
 
@@ -468,6 +465,7 @@ export default class AuthService extends GlobalService {
       }
       return token;
     } catch (e) {
+      console.error(e);
       if (onError) {
         yield onError(e);
         return null;

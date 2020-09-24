@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.4](https://github.com/oneki/onekijs/compare/v0.8.3...v0.8.4) (2020-09-23)
+
+**Note:** Version bump only for package next-i18n
+
+
+
+
+
+## [0.8.3](https://github.com/oneki/onekijs/compare/v0.8.1...v0.8.3) (2020-09-23)
+
+**Note:** Version bump only for package next-i18n
+
+
+
+
+
+
+
+**Note:** Version bump only for package next-i18n
+
+
+
+
+
+## [0.8.3](https://github.com/oneki/onekijs/compare/v0.8.1...v0.8.3) (2020-09-23)
+
+**Note:** Version bump only for package next-i18n
+
+
+
+
+
 ## 0.8.2 (2020-09-02)
 
 
