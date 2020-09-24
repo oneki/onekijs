@@ -22,10 +22,11 @@ const UseRestCollectionWidget: FC<UseRestCollectionProps<TestUser>> = ({ url, op
       });
     };
   }
-
   return (
     <>
-      <div data-testid="result">{JSON.stringify(type === 'url' ? get(collection.items, '0.data') : collection)}</div>
+      <div data-testid="result">
+        {JSON.stringify(type === 'url' ? get(collection.items, '0.data') : collection.data)}
+      </div>
       {handler && <button data-testid={handler.name} onClick={execute}></button>}
     </>
   );

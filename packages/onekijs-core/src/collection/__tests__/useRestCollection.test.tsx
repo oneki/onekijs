@@ -151,9 +151,26 @@ url = 'http://localhost/collection';
 const queryTests: QueryTestProps[] = [
   {
     url,
+    handler,
     result: basicUsers.filter((u) => u.firstname === basicUsers[0].firstname),
     title: 'filter firstname using a criteria',
     options: {
+      initialFilter: {
+        criterias: [
+          {
+            field: 'firstname',
+            value: basicUsers[0].firstname,
+          },
+        ],
+      },
+    },
+  },
+  {
+    url,
+    result: basicUsers.filter((u) => u.firstname === basicUsers[0].firstname),
+    title: 'filter firstname using a criteria',
+    options: {
+      autoload: true,
       initialFilter: {
         criterias: [
           {
@@ -170,13 +187,14 @@ describe('it tests queries', () => {
   queryTests.forEach((test) => {
     it(`${test.title}`, async () => {
       const { getByTestId } = render(
-        <UseRestCollectionWidget url={test.url} options={test.options} handler={handler} type="query" />,
+        <UseRestCollectionWidget url={test.url} options={test.options} handler={test.handler} type="query" />,
       );
       await act(async () => {
-        fireEvent.click(getByTestId(handler.name));
+        if (test.handler) {
+          fireEvent.click(getByTestId(handler.name));
+        }
         await asyncTimeout(50);
         const element = getByTestId('result');
-        // user is logged
         expect(element).toHaveTextContent(JSON.stringify(test.result));
       });
     });

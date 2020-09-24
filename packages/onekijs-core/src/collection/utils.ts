@@ -22,9 +22,6 @@ import {
 
 let filterUid = 0;
 export const rootFilterId = Symbol();
-export const filterRegex = /^\s*(and|or)?\s*\((.*)\)\s*$/g;
-const filterOrCriteriaRegex = /\s*((?:(?:[a-zA-Z$_][a-zA-Z0-9$_]*)\s+(?:eq|starts_with)\s+(?:'(?:[^\\']|\\.)*'|"(?:[^\\"]|\\.)*"|(?:[^\s"';]+)))|(?:(?:and|or)?\s*\(.*\)))\s*;?/g;
-const filterCriteriaRegex = /^\s*([a-zA-Z$_][a-zA-Z0-9$_]*)\s+(eq|starts_with)\s+('(?:[^\\']|\\.)*'|"(?:[^\\"]|\\.)*"|(?:[^\s"';]+))\s*$/g;
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const defaultComparator = (a: any, b: any) => {
@@ -70,11 +67,13 @@ export const isQueryFilter = (value: QueryFilterOrCriteria | QueryFilterOrCriter
 };
 
 export const isQueryFilterString = (filter: string): boolean => {
+  const filterRegex = /^\s*(and|or)?\s*\((.*)\)\s*$/g;
   const match = filterRegex.exec(filter);
   return match !== null;
 };
 
 export const getQueryFilter = (filter: string): QueryFilter | undefined => {
+  const filterRegex = /^\s*(and|or)?\s*\((.*)\)\s*$/g;
   const match = filterRegex.exec(filter);
   if (match === null) return;
 
@@ -109,6 +108,7 @@ export const getQueryFilterCriteriaValue = (value: string): QueryFilterCriteriaV
 };
 
 export const getQueryFilterCriteria = (filterCriteria: string): QueryFilterCriteria | undefined => {
+  const filterCriteriaRegex = /^\s*([a-zA-Z$_][a-zA-Z0-9$_]*)\s+(eq|starts_with)\s+('(?:[^\\']|\\.)*'|"(?:[^\\"]|\\.)*"|(?:[^\s"';]+))\s*$/g;
   const match = filterCriteriaRegex.exec(filterCriteria);
   if (match === null) return;
   return {
@@ -119,6 +119,7 @@ export const getQueryFilterCriteria = (filterCriteria: string): QueryFilterCrite
 };
 
 export const getQueryFilterOrCriterias = (filterOrCriterias: string): QueryFilterOrCriteria[] => {
+  const filterOrCriteriaRegex = /\s*((?:(?:[a-zA-Z$_][a-zA-Z0-9$_]*)\s+(?:eq|starts_with)\s+(?:'(?:[^\\']|\\.)*'|"(?:[^\\"]|\\.)*"|(?:[^\s"';]+)))|(?:(?:and|or)?\s*\(.*\)))\s*;?/g;
   let match = filterOrCriteriaRegex.exec(filterOrCriterias);
   if (match === null) return [];
 

@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { toCollectionItem } from './utils';
 import CollectionService from './CollectionService';
 import LocalCollectionService from './LocalCollectionService';
@@ -24,6 +24,7 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
   dataOrUrl: T[] | string,
   options: UseCollectionOptions<T, M> = {},
 ): Collection<T, M> => {
+  const initializedRef = useRef(false);
   const ctor = Array.isArray(dataOrUrl) || options.fetchOnce ? LocalCollectionService : RemoteCollectionService;
   const [state, service] = useService<CollectionState<T, M>, CollectionService<T, M, CollectionState<T, M>>>(
     ctor,
@@ -154,11 +155,12 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
   }, []);
 
   useEffect(() => {
-    if (options.autoload) {
+    if (options.autoload && !initializedRef.current) {
+      initializedRef.current = true;
       collection.load(options.initialSize, options.initialOffset);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [collection]);
 
   return collection;
 };
