@@ -226,7 +226,6 @@ export default class AuthService extends GlobalService {
 
       // save the security context in the store
       yield this.setSecurityContext(securityContext);
-
       if (onSuccess) {
         // call the success callback
         yield onSuccess(securityContext);

@@ -32,6 +32,7 @@ export default class FetchService<S extends FetchState = FetchState> extends Ser
   fetchSuccess(result: any): void {
     this.state.error = undefined;
     this.state.result = result;
+    this.setLoading(false, false);
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
