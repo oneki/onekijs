@@ -1,5 +1,4 @@
-import { Collection, CollectionStatus, ItemMeta, LoadingStatus, Item, typeOfCollectionItem } from '../../lib/typings';
-import { isCollection } from '../../utils/collection';
+import { Collection, CollectionStatus, ItemMeta, LoadingStatus, Item, isCollection } from 'onekijs';
 
 // export const adapt = <T, M extends ItemMeta>(
 //   item: Item<T, M>,
@@ -48,16 +47,18 @@ import { isCollection } from '../../utils/collection';
 // };
 
 export const emptyListItem: Item<any, ItemMeta> = {
-  type: typeOfCollectionItem,
+  type: Symbol(),
 };
 
 export const canFetchMore = (collection: any[] | Collection<unknown, ItemMeta>): boolean => {
-  return isCollection(collection) && collection.status === LoadingStatus.PartialLoaded;
+  return (
+    isCollection(collection) && (collection as Collection<unknown, ItemMeta>).status === LoadingStatus.PartialLoaded
+  );
 };
 
 export const getListStatus = (collection: any[] | Collection<unknown, ItemMeta>): CollectionStatus => {
   if (isCollection(collection)) {
-    return collection.status;
+    return (collection as Collection<unknown, ItemMeta>).status;
   }
   return LoadingStatus.Loaded;
 };

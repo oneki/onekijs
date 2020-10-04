@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Collection, ItemMeta, Item } from '../../lib/typings';
+import { Collection, ItemMeta, Item } from 'onekijs';
 
 export type ListItems<T = any, M extends ItemMeta = ItemMeta> = T[] | Collection<T, M>;
 

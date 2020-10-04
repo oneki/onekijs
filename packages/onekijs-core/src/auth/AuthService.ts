@@ -33,7 +33,6 @@ export default class AuthService extends GlobalService {
     const idpName = getIdpName(this.state);
     const idp = getIdp(this.context.settings, idpName);
     const persist: string | null = get(idp, 'persist', null);
-
     let toCookie: string | null = null;
     // we only persist in the cookie the refresh token and if not specified, the access token
     if (persist === 'cookie') {
@@ -66,20 +65,27 @@ export default class AuthService extends GlobalService {
       set(this.state, 'auth.token', token);
     } else if (typeof token === 'string') {
       // it's not a oauth2 token but a simple "string" token. Persist as it is
-      setItem('onekijs.token', token, storage('token'));
+      setItem('onekijs.token', token, storage('token'), idp.cookieCrypt, idp.cookieTTL, idp.cookiePath);
       // persist the token in the redux state. It can be added as a bearer to any ajax request.
       set(this.state, 'auth.token', token);
     } else {
       // it's an oauth2 token, persist all keys
       oauth2Keys.forEach((k) => {
         if (token[k]) {
-          setItem(`onekijs.${k}`, `${token[k]}`, storage(k));
+          setItem(`onekijs.${k}`, `${token[k]}`, storage(k), idp.cookieCrypt, idp.cookieTTL, idp.cookiePath);
         }
       });
       // create a expirtes_at key for convenience
       if (token.expires_in && !token.expires_at) {
         token.expires_at = Date.now() + parseInt(token.expires_in) * 1000;
-        setItem('onekijs.expires_at', `${token.expires_at}`, storage('expires_at'));
+        setItem(
+          'onekijs.expires_at',
+          `${token.expires_at}`,
+          storage('expires_at'),
+          idp.cookieCrypt,
+          idp.cookieTTL,
+          idp.cookiePath,
+        );
       }
       // persist the token in the redux state. It can be added as a bearer to any ajax request.
       set(this.state, 'auth.token', token);

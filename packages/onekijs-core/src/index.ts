@@ -314,6 +314,9 @@ export {
   Item,
   UseCollectionOptions,
   ItemAdapter,
+  ChangeHandler,
+  CollectionItemAdapter,
+  typeOfCollectionItem,
 } from './collection/typings';
 export {
   defaultComparator,
@@ -329,4 +332,5 @@ export {
   serializeSort,
   serializeSortBy,
   toCollectionItem,
+  isCollection,
 } from './collection/utils';

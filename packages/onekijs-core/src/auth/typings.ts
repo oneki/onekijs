@@ -60,6 +60,8 @@ export interface IdpSettings extends AnonymousObject {
   clientSecret?: string;
   clockSkew?: number;
   codeChallengeMethod?: IdpCodeChallengeMethod;
+  cookiePath?: string;
+  cookieSecure?: boolean;
   cookieTTL?: number;
   external?: boolean;
   externalLoginEndpoint?: string | ((idp: Idp, context: AppContext) => string);

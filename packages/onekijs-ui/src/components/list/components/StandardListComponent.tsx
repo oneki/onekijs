@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from 'react';
-import { LoadingStatus } from '../../../lib/typings';
+import { LoadingStatus } from 'onekijs';
 import { addClassname } from '../../../utils/style';
 import { StandardListProps } from '../typings';
 import ListItemComponent from './ListItemComponent';
@@ -22,7 +22,7 @@ const StandardListComponent: FC<StandardListProps> = ({
 
   return (
     <div className={addClassname('o-list', className)}>
-      {items.map((item, index) => {
+      {items.map((item: any, index: number) => {
         return (
           <ItemComponent
             key={`item-${index}`}

@@ -6,15 +6,15 @@ import { isNull } from './object';
  *
  * @param {string} name : name of the cookie
  * @param {string} value : value of the cookie
- * @param {boolean} secure : encrypt the cookie (not usable by the server)
+ * @param {boolean} crypt : encrypt the cookie (not usable by the server)
  * @param {integer} ttl : time to live of the cookie (in seconds)
  * @param {string} path : scope of the cookie
  */
-export async function addCookie(name: string, value?: string, secure = true, ttl?: number, path = '/'): Promise<void> {
-  if (secure) {
+export async function addCookie(name: string, value?: string, crypt = true, ttl?: number, path = '/'): Promise<void> {
+  if (crypt) {
     value = await encrypt(value);
   }
-  let cookie = `onekijs.${name}=${value};path=${path};SameSite=Strict;Secure;`;
+  let cookie = `${name}=${value};path=${path};SameSite=Strict;Secure`;
   if (ttl) {
     cookie += `expires=${getCookieExpireTime(ttl)};`;
   }
@@ -29,7 +29,6 @@ export async function addCookie(name: string, value?: string, secure = true, ttl
  * @param {boolean} secure : decrypt the cookie
  */
 export async function getCookie(name: string, secure = true): Promise<any> {
-  name = `onekijs.${name}`;
   function escape(s: string) {
     // eslint-disable-next-line
     return s.replace(/([.*+?\^${}()|\[\]\/\\])/g, '\\$1');
@@ -140,7 +139,7 @@ export function removeItem(key: string, storage?: string | null): void {
  * @param {*} key : key of the item
  * @param {*} value : value of the item
  * @param {*} storage : localStorage, sessionStorage or cookie
- * @param {*} secure : encrypt the value (only if cookie). Defaults to true
+ * @param {*} crypt : encrypt the value (only if cookie). Defaults to true
  * @param {*} ttl : time to live of the cookie (in seconds). If null, the cookie is removed when the browser is closed
  * @param {*} path : scope of the cookie. Defaults to /
  */
@@ -148,7 +147,7 @@ export async function setItem(
   key: string,
   value: string,
   storage: string | null | undefined,
-  secure = true,
+  crypt = true,
   ttl?: number,
   path = '/',
 ): Promise<void> {
@@ -157,6 +156,6 @@ export async function setItem(
   } else if (storage === 'sessionStorage') {
     sessionStorage.setItem(key, value);
   } else if (storage === 'cookie') {
-    await addCookie(key, value, secure, ttl, path);
+    await addCookie(key, value, crypt, ttl, path);
   }
 }

@@ -1,9 +1,8 @@
-import { omit } from 'onekijs';
+import { omit, useCollection } from 'onekijs';
 import React, { FC } from 'react';
 import { ListProps, StandardListProps, ListInternalProps } from '../typings';
 import StandardListComponent from './StandardListComponent';
 import VirtualistComponent from './VirtualListComponent';
-import useCollection from '../../../lib/useCollection';
 
 const ListComponent: FC<ListProps> = (props) => {
   const { items, ...listInternalProps } = props;

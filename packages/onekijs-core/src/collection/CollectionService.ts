@@ -1,8 +1,15 @@
-import { defaultComparator, isQueryFilterCriteria, rootFilterId, visitFilter, toCollectionItem } from './utils';
+import { reducer } from '../core/annotations';
+import Service from '../core/Service';
+import { AnonymousObject, Primitive } from '../core/typings';
+import { get } from '../core/utils/object';
 import {
+  Collection,
+  CollectionItemAdapter,
   CollectionState,
+  CollectionStatus,
   Item,
   ItemMeta,
+  LoadingStatus,
   Query,
   QueryFilter,
   QueryFilterCriteria,
@@ -11,15 +18,8 @@ import {
   QuerySortBy,
   QuerySortComparator,
   QuerySortDir,
-  Collection,
-  CollectionStatus,
-  LoadingStatus,
-  ItemAdapter,
 } from './typings';
-import Service from '../core/Service';
-import { Primitive, AnonymousObject } from '../core/typings';
-import { get } from '../core/utils/object';
-import { reducer } from '../core/annotations';
+import { defaultComparator, isQueryFilterCriteria, rootFilterId, toCollectionItem, visitFilter } from './utils';
 
 export default abstract class CollectionService<
   T = any,
@@ -99,7 +99,7 @@ export default abstract class CollectionService<
     return this.state.items?.length;
   }
 
-  getAdapter(): ItemAdapter<T, M> | undefined {
+  getAdapter(): CollectionItemAdapter<T, M> | undefined {
     return this.state.adapter;
   }
 

@@ -26,7 +26,7 @@ export interface Collection<T, M extends ItemMeta> {
   data?: (T | undefined)[];
   items?: (Item<T, M> | undefined)[];
   filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | null): void;
-  getAdapter(): ItemAdapter<T, M> | undefined;
+  getAdapter(): CollectionItemAdapter<T, M> | undefined;
   getFields(): string[] | undefined;
   getFilter(): QueryFilter | undefined;
   getOffset(): number | undefined;
@@ -67,7 +67,7 @@ export type CollectionFetcherResult<T> =
 export type CollectionItemAdapter<T, M extends ItemMeta> = (data: T | undefined) => Partial<Item<T, M>>;
 
 export interface CollectionOptions<T, M extends ItemMeta> {
-  adapter?: ItemAdapter<T, M>;
+  adapter?: CollectionItemAdapter<T, M>;
   autoload?: boolean;
   comparator?: QuerySortComparator;
   fetcher?: CollectionFetcher<T>;

@@ -1,8 +1,6 @@
 import { AnonymousObject, get } from 'onekijs';
 import React, { FC, useCallback, useMemo, useRef, useState, useEffect } from 'react';
-import { LoadingStatus, Item } from '../../../lib/typings';
-import useCollection from '../../../lib/useCollection';
-import { toCollectionItem } from '../../../utils/collection';
+import { LoadingStatus, Item, useCollection, toCollectionItem } from 'onekijs';
 import { useClickOutside } from '../../../utils/event';
 import Dropdown from '../../dropdown';
 import { SelectInternalProps, SelectOptionMeta, SelectOptionHandler, SelectProps } from '../typings';

@@ -13,5 +13,4 @@ export {
   SelectOptionHandler,
 } from './components/select/typings';
 
-export { toCollectionItem, isCollection } from './utils/collection';
 export { theme } from './styles/theme';

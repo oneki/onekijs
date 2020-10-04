@@ -1,7 +1,6 @@
-import { AnyFunction } from 'onekijs';
+import { AnyFunction, ChangeHandler, Collection, ItemAdapter, ItemMeta } from 'onekijs';
 import { FC } from 'react';
-import { ListItemProps, ListProps, ListItemHandler } from '../list/typings';
-import { ItemAdapter, ItemMeta, Collection, ChangeHandler } from '../../lib/typings';
+import { ListItemHandler, ListItemProps, ListProps } from '../list/typings';
 
 export type SelectAdapter<T, M extends SelectOptionMeta = SelectOptionMeta> = ItemAdapter<T, M>;
 
