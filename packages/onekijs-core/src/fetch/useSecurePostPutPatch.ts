@@ -6,7 +6,7 @@ const useSecurePostPutPatch = <T = any>(
   url: string,
   method: FetchMethod,
   options: AppFetchOptions<T> = {},
-): [(body: T, extraOptions?: AppExtraFetchOptions<T>) => void, boolean] => {
+): [(body: T, extraOptions?: AppExtraFetchOptions<T>) => Promise<void>, boolean] => {
   const authKey = useGlobalSelector('settings.auth.key') || 'auth';
   const auth = useGlobalSelector(authKey);
   options.auth = auth;

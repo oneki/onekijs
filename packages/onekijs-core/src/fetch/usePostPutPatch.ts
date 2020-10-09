@@ -11,7 +11,7 @@ const usePostPutPatch = <T = any>(
   url: string,
   method: FetchMethod,
   options: AppFetchOptions<T> = {},
-): [(body: Partial<T>, extraOptions?: AppExtraFetchOptions<T>) => void, boolean] => {
+): [(body: Partial<T>, extraOptions?: AppExtraFetchOptions<T>) => Promise<void>, boolean] => {
   const notificationService = useNotificationService();
   const appContext = useAppContext();
   const optionsRef = useRef(options);
@@ -21,9 +21,9 @@ const usePostPutPatch = <T = any>(
     loading: false,
   } as FetchState);
   const executor = useCallback(
-    (body: Partial<T>, extraOptions: AppExtraFetchOptions<T> = {}) => {
+    async (body: Partial<T>, extraOptions: AppExtraFetchOptions<T> = {}) => {
       extraOptions = Object.assign({}, optionsRef.current, extraOptions);
-      service.fetch(
+      await service.fetch(
         extraOptions.url || url,
         method,
         body,

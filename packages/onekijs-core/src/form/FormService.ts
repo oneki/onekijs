@@ -254,6 +254,7 @@ export default class FormService extends LocalService<FormState> {
   @reducer
   setSubmitting(submitting: boolean): void {
     this.state.submitting = submitting;
+    this.pendingDispatch.add('__submit__');
   }
 
   @reducer
