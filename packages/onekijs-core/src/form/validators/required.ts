@@ -22,7 +22,7 @@ const required = (message?: string | boolean): Validator => {
     if (!message || isTrue(message) || isFalse(message)) {
       message = 'This field is required';
     } else {
-      message = '';
+      message = message as string;
     }
 
     return {
