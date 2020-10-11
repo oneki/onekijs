@@ -29,13 +29,13 @@ export interface Collection<T, M extends ItemMeta> {
   getAdapter(): CollectionItemAdapter<T, M> | undefined;
   getFields(): string[] | undefined;
   getFilter(): QueryFilter | undefined;
+  getLimit(): number | undefined;
   getOffset(): number | undefined;
   getParams(): AnonymousObject | undefined;
   getSearch(): Primitive | undefined;
-  getSize(): number | undefined;
   getSort(): QuerySortDir | undefined;
   getSortBy(): QuerySortBy[] | undefined;
-  load(size?: number, offset?: number): void;
+  load(limit?: number, offset?: number): void;
   query(query: Query): void;
   refresh(): void;
   removeFilter(filterId: QueryFilterId): void;
@@ -74,10 +74,10 @@ export interface CollectionOptions<T, M extends ItemMeta> {
   fetchOnce?: boolean;
   initialFields?: string[];
   initialFilter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[];
+  initialLimit?: number;
   initialOffset?: number;
   initialParams?: AnonymousObject;
   initialSearch?: Primitive;
-  initialSize?: number;
   initialSort?: QuerySortDir;
   initialSortBy?: string | QuerySortBy | QuerySortBy[];
   method?: HttpMethod;
@@ -96,13 +96,13 @@ export interface CollectionState<T, M extends ItemMeta> extends FetchState {
   filter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[];
   items?: (Item<T, M> | undefined)[];
   method?: HttpMethod;
+  limit?: number;
   offset?: number;
   params?: AnonymousObject;
   queryEngine?: QueryEngine<T, M>;
   search?: Primitive;
   searcher?: QuerySearcher<T>;
   serializer?: QuerySerializer;
-  size?: number;
   sort?: QuerySortDir;
   sortBy?: string | QuerySortBy | QuerySortBy[];
   status?: CollectionStatus;
@@ -152,14 +152,14 @@ export enum LoadingStatus {
   PartialLoaded = 'partial_loaded',
 }
 
-export type LocalQuery = Omit<Query, 'offset' | 'size'>;
+export type LocalQuery = Omit<Query, 'offset' | 'limit'>;
 
 export interface Query {
   filter?: QueryFilter;
   sortBy?: QuerySortBy[];
+  limit?: number;
   offset?: number;
   params?: AnonymousObject;
-  size?: number;
   fields?: string[];
   search?: Primitive;
   sort?: QuerySortDir;
@@ -198,11 +198,6 @@ export type QueryFilterCriteriaValue = Primitive | null;
 export type QueryFilterId = string | number | symbol;
 
 export type QueryFilterOrCriteria = QueryFilter | QueryFilterCriteria;
-
-export interface QueryLimit {
-  offset?: number;
-  size?: number;
-}
 
 export type QuerySearcher<T> = QueryFilterCriteriaOperator | ((item: T, search?: QueryFilterCriteriaValue) => boolean);
 

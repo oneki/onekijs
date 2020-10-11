@@ -83,7 +83,7 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
         search: options.initialSearch,
         searcher: options.searcher,
         serializer: options.serializer,
-        size: options.initialSize,
+        limit: options.initialLimit,
         sort: options.initialSort,
         sortBy: options.initialSortBy,
         throttle: options.throttle,
@@ -108,7 +108,7 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
       'getFilter',
       'getOffset',
       'getSearch',
-      'getSize',
+      'getLimit',
       'getSort',
       'getSortBy',
       'load',
@@ -157,7 +157,7 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
   useEffect(() => {
     if (options.autoload && !initializedRef.current) {
       initializedRef.current = true;
-      collection.load(options.initialSize, options.initialOffset);
+      collection.load(options.initialLimit, options.initialOffset);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collection]);

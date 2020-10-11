@@ -151,9 +151,9 @@ export default class RemoteCollectionService<
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
-  *load(size?: number, offset?: number) {
+  *load(limit?: number, offset?: number) {
     const resetData = this.state.items ? false : true;
-    yield this._setLimit(size, offset);
+    yield this._setLimitOffset(limit, offset);
     yield this._refresh(resetData);
   }
 
@@ -270,7 +270,7 @@ export default class RemoteCollectionService<
 
   @reducer
   protected _addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId: QueryFilterId = rootFilterId): void {
-    this._setLoading({ size: this.state.size, offset: 0 });
+    this._setLoading({ limit: this.state.limit, offset: 0 });
     super._addFilter(filterOrCriteria, parentFilterId);
   }
 
@@ -281,56 +281,56 @@ export default class RemoteCollectionService<
     comparator: QuerySortComparator = defaultComparator,
     prepend = true,
   ): void {
-    this._setLoading({ size: this.state.size, offset: 0 });
+    this._setLoading({ limit: this.state.limit, offset: 0 });
     super._addSortBy(field, dir, comparator, prepend);
   }
 
   @reducer
   protected _clearFields(): void {
-    this._setLoading({ size: this.state.size, offset: 0 });
+    this._setLoading({ limit: this.state.limit, offset: 0 });
     super._clearFields();
   }
 
   @reducer
   protected _clearFilter(): void {
-    this._setLoading({ size: this.state.size, offset: 0 });
+    this._setLoading({ limit: this.state.limit, offset: 0 });
     super._clearFields();
   }
 
   @reducer
   protected _clearOffset(): void {
-    this._setLoading({ size: this.state.size, resetData: false });
+    this._setLoading({ limit: this.state.limit, resetData: false });
     super._clearOffset();
   }
 
   @reducer
   protected _clearSearch(): void {
-    this._setLoading({ size: this.state.size, offset: 0 });
+    this._setLoading({ limit: this.state.limit, offset: 0 });
     super._clearSearch();
   }
 
   @reducer
-  protected _clearSize(): void {
+  protected _clearLimit(): void {
     this._setLoading({ offset: this.state.offset, resetData: false });
-    super._clearSize();
+    super._clearLimit();
   }
 
   @reducer
   protected _clearSortBy(): void {
-    this._setLoading({ size: this.state.size, offset: 0 });
+    this._setLoading({ limit: this.state.limit, offset: 0 });
     super._clearSortBy();
   }
 
   @reducer
   protected _clearSort(): void {
-    this._setLoading({ size: this.state.size, offset: 0 });
+    this._setLoading({ limit: this.state.limit, offset: 0 });
     super._clearSort();
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  protected *_delayLoading(delay_ms: number, size?: number | string, offset?: number | string, resetData?: boolean) {
-    if (typeof size === 'string') {
-      size = parseInt(size);
+  protected *_delayLoading(delay_ms: number, limit?: number | string, offset?: number | string, resetData?: boolean) {
+    if (typeof limit === 'string') {
+      limit = parseInt(limit);
     }
     if (typeof offset === 'string') {
       offset = parseInt(offset);
@@ -338,7 +338,7 @@ export default class RemoteCollectionService<
     yield delay(delay_ms);
     yield this._setLoading({
       status: LoadingStatus.Loading,
-      size,
+      limit,
       offset,
       resetLimit: false,
       resetData,
@@ -352,7 +352,13 @@ export default class RemoteCollectionService<
     const options = this.state.fetchOptions || {};
     try {
       if (options.delayLoading) {
-        loadingTask = yield fork([this, this._delayLoading], options.delayLoading, query.size, query.offset, resetData);
+        loadingTask = yield fork(
+          [this, this._delayLoading],
+          options.delayLoading,
+          query.limit,
+          query.offset,
+          resetData,
+        );
       }
 
       const fetcher: Fetcher<CollectionFetcherResult<T>, Query | undefined> = options.fetcher || asyncHttp;
@@ -397,7 +403,7 @@ export default class RemoteCollectionService<
   @reducer
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   protected _fetchSuccess(result: CollectionFetcherResult<T>, resetData: boolean, query: Query): void {
-    const size = query.size;
+    const limit = query.limit;
     const offset = query.offset || 0;
     const currentQuery = this._getQuery();
     const data = Array.isArray(result) ? result : result.result;
@@ -426,11 +432,11 @@ export default class RemoteCollectionService<
         this.state.items = [];
       }
 
-      if (size) {
-        const items = this.state.items || Array(size + offset);
-        items.splice(offset, size, ...itemResult.slice(0, size - 1));
+      if (limit) {
+        const items = this.state.items || Array(limit + offset);
+        items.splice(offset, limit, ...itemResult.slice(0, limit - 1));
         this.state.items = items;
-        if (data.length < size) {
+        if (data.length < limit) {
           this.state.total = this.state.items.length;
         }
       } else {
@@ -443,7 +449,7 @@ export default class RemoteCollectionService<
       }
     }
 
-    same = same && query.size === currentQuery.size && query.offset === currentQuery.offset;
+    same = same && query.limit === currentQuery.limit && query.offset === currentQuery.offset;
 
     if (same && resetData) {
       this.state.status = this.state.total === undefined ? LoadingStatus.PartialLoaded : LoadingStatus.Loaded;
@@ -464,12 +470,12 @@ export default class RemoteCollectionService<
   }
 
   protected _getQuery(): Query {
-    const size = this.getSize();
+    const limit = this.getLimit();
     return {
       filter: this.getFilter(),
       sortBy: this.getSortBy(),
       offset: this.getOffset(),
-      size: size === undefined ? size : size + 1,
+      limit: limit === undefined ? limit : limit + 1,
       fields: this.getFields(),
       search: this.getSearch(),
       sort: this.getSort(),
@@ -485,25 +491,25 @@ export default class RemoteCollectionService<
 
   @reducer
   protected _removeFilter(filterId: QueryFilterId): void {
-    this._setLoading({ size: this.state.size, offset: 0 });
+    this._setLoading({ limit: this.state.limit, offset: 0 });
     super._removeFilter(filterId);
   }
 
   @reducer
   protected _removeSortBy(field: string): void {
-    this._setLoading({ size: this.state.size, offset: 0 });
+    this._setLoading({ limit: this.state.limit, offset: 0 });
     super._removeSortBy(field);
   }
 
   @reducer
   protected _setFields(fields: string[]): void {
-    this._setLoading({ size: this.state.size, offset: 0 });
+    this._setLoading({ limit: this.state.limit, offset: 0 });
     super._setFields(fields);
   }
 
   @reducer
   protected _setFilter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[]): void {
-    this._setLoading({ size: this.state.size, offset: 0 });
+    this._setLoading({ limit: this.state.limit, offset: 0 });
     super._setFilter(filter);
   }
 
@@ -511,7 +517,7 @@ export default class RemoteCollectionService<
   protected _setLoading(
     options: {
       status?: LoadingItemStatus;
-      size?: number;
+      limit?: number;
       offset?: number;
       resetLimit?: boolean;
       resetData?: boolean;
@@ -551,14 +557,14 @@ export default class RemoteCollectionService<
     };
 
     if (resetLimit) {
-      this.state.size = options.size;
+      this.state.limit = options.limit;
       this.state.offset = options.offset;
     }
 
     const offset = options.offset || 0;
     if (this.state.items) {
-      if (options.size && !resetData) {
-        for (let i = offset; i < options.size + offset; i++) {
+      if (options.limit && !resetData) {
+        for (let i = offset; i < options.limit + offset; i++) {
           this.state.items[i] = setItemStatus(this.state.items[i]);
         }
         this.state.status = `${resetData ? '' : 'partial_'}${options.status}` as CollectionStatus;
@@ -569,9 +575,9 @@ export default class RemoteCollectionService<
         this.state.status = options.status;
       }
     } else {
-      if (options.size) {
-        this.state.items = Array(offset + options.size);
-        for (let i = offset; i < offset + options.size; i++) {
+      if (options.limit) {
+        this.state.items = Array(offset + options.limit);
+        for (let i = offset; i < offset + options.limit; i++) {
           this.state.items[i] = setItemStatus(undefined);
         }
         this.state.status = `${resetData ? '' : 'partial_'}${options.status}` as CollectionStatus;
@@ -583,59 +589,59 @@ export default class RemoteCollectionService<
   }
 
   @reducer
-  protected _setLimit(size?: number, offset?: number): void {
+  protected _setLimitOffset(limit?: number, offset?: number): void {
     const resetData = this.state.items ? false : true;
-    this._setLoading({ size, offset, resetData });
-    super._setLimit(size, offset);
+    this._setLoading({ limit, offset, resetData });
+    super._setLimitOffset(limit, offset);
   }
 
   @reducer
   protected _setQuery(query: Query, resetData?: boolean): void {
-    this._setLoading({ size: query.size, offset: query.offset, resetData });
+    this._setLoading({ limit: query.limit, offset: query.offset, resetData });
     super._setQuery(query);
   }
 
   @reducer
   protected _setOffset(offset: number): void {
-    this._setLoading({ size: this.state.size, offset, resetData: false });
+    this._setLoading({ limit: this.state.limit, offset, resetData: false });
     super._setOffset(offset);
   }
 
   @reducer
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   protected _setParam(key: string, value: any): void {
-    this._setLoading({ size: this.state.size, offset: 0 });
+    this._setLoading({ limit: this.state.limit, offset: 0 });
     set(this.state.params, key, value);
   }
 
   @reducer
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   protected _setParams(params: AnonymousObject): void {
-    this._setLoading({ size: this.state.size, offset: 0 });
+    this._setLoading({ limit: this.state.limit, offset: 0 });
     this.state.params = params;
   }
 
   @reducer
   protected _setSearch(search: Primitive): void {
-    this._setLoading({ size: this.state.size, offset: 0 });
+    this._setLoading({ limit: this.state.limit, offset: 0 });
     super._setSearch(search);
   }
 
   @reducer
-  protected _setSize(size: number): void {
-    this._setLoading({ size, offset: this.state.offset, resetData: false });
-    super._setSize(size);
+  protected _setLimit(limit: number): void {
+    this._setLoading({ limit, offset: this.state.offset, resetData: false });
+    super._setLimit(limit);
   }
 
   @reducer
   protected _setSort(dir: QuerySortDir): void {
-    this._setLoading({ size: this.state.size, offset: 0 });
+    this._setLoading({ limit: this.state.limit, offset: 0 });
     super._setSort(dir);
   }
 
   @reducer
   protected _setSortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void {
-    this._setLoading({ size: this.state.size, offset: 0 });
+    this._setLoading({ limit: this.state.limit, offset: 0 });
     super._setSortBy(sortBy);
   }
 }

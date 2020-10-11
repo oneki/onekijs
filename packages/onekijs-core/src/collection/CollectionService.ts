@@ -54,7 +54,7 @@ export default abstract class CollectionService<
   abstract clearSort(): void;
   abstract clearSortBy(): void;
   abstract filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | null): void;
-  abstract load(size?: number | undefined, offset?: number | undefined): void;
+  abstract load(limit?: number | undefined, offset?: number | undefined): void;
   abstract query(query: Query): void;
   abstract refresh(): void;
   abstract removeFilter(filterId: string | number | symbol): void;
@@ -123,8 +123,8 @@ export default abstract class CollectionService<
     return this.state.search;
   }
 
-  getSize(): number | undefined {
-    return this.state.size;
+  getLimit(): number | undefined {
+    return this.state.limit;
   }
 
   getSort(): QuerySortDir | undefined {
@@ -202,8 +202,8 @@ export default abstract class CollectionService<
   }
 
   @reducer
-  protected _clearSize(): void {
-    this.state.size = undefined;
+  protected _clearLimit(): void {
+    this.state.limit = undefined;
   }
 
   @reducer
@@ -299,8 +299,13 @@ export default abstract class CollectionService<
   }
 
   @reducer
-  protected _setLimit(size?: number, offset?: number): void {
-    this.state.size = size;
+  protected _setLimit(limit: number): void {
+    this.state.limit = limit;
+  }
+
+  @reducer
+  protected _setLimitOffset(limit?: number, offset?: number): void {
+    this.state.limit = limit;
     this.state.offset = offset;
   }
 
@@ -312,7 +317,7 @@ export default abstract class CollectionService<
     this.state.search = query.search;
     this.state.fields = query.fields;
     this.state.offset = query.offset;
-    this.state.size = query.size;
+    this.state.limit = query.limit;
   }
 
   @reducer
@@ -323,11 +328,6 @@ export default abstract class CollectionService<
   @reducer
   protected _setSearch(search: Primitive): void {
     this.state.search = search;
-  }
-
-  @reducer
-  protected _setSize(size: number): void {
-    this.state.size = size;
   }
 
   @reducer

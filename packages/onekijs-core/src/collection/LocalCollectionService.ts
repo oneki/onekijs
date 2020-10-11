@@ -126,10 +126,10 @@ export default class LocalCollectionService<
   }
 
   @reducer
-  load(size?: number, offset?: number): void {
-    this.state.size = size;
+  load(limit?: number, offset?: number): void {
+    this.state.limit = limit;
     this.state.offset = offset;
-    this._setPaginatedResult(size, offset);
+    this._setPaginatedResult(limit, offset);
   }
 
   @reducer

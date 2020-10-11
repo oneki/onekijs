@@ -34,7 +34,7 @@ export const defaultSerializer: QuerySerializer = (query) => {
     filter: serializeFilter(query.filter),
     sortBy: serializeSortBy(query.sortBy),
     offset: serializeOffset(query.offset),
-    size: serializeSize(query.size),
+    limit: serializeLimit(query.limit),
     fields: serializeFields(query.fields),
     search: serializeSearch(query.search),
     sort: serializeSort(query.sort),
@@ -211,8 +211,8 @@ export const parseQuery = (query: URLSearchParams): Query => {
       case 'offset':
         result.offset = parseInt(value);
         break;
-      case 'size':
-        result.size = parseInt(value);
+      case 'limit':
+        result.limit = parseInt(value);
         break;
       case 'fields':
         result.fields = value.split(',');
@@ -295,9 +295,9 @@ export const serializeOffset = (offset: number | undefined): string | void => {
   }
 };
 
-export const serializeSize = (size: number | undefined): string | void => {
-  if (size && size > 0) {
-    return `${size}`;
+export const serializeLimit = (limit: number | undefined): string | void => {
+  if (limit && limit > 0) {
+    return `${limit}`;
   }
 };
 

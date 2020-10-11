@@ -145,7 +145,6 @@ export default class LoginService extends LocalService<LoginState> {
         // security context
         securityContext = response;
       }
-
       yield this.successLogin(token, securityContext, idpName, onError, onSuccess);
     } catch (e) {
       if (process.env.NODE_ENV === 'development') {
