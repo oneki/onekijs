@@ -17,7 +17,6 @@ const useSubmit = (): {
 
   useEffect((): (() => void) => {
     const listener = (submitting: boolean) => {
-      console.log('submitting', submitting);
       setSubmitting(submitting);
     };
     onSubmittingChange(listener);

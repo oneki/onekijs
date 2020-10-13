@@ -54,7 +54,6 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
   );
 
   const { values = {}, validations = {}, submitting = false } = state;
-  console.log('validation', validations);
   const defaultValuesRef = useRef<AnonymousObject>({});
 
   // we put values in a ref object. For some features, we don't need to force a rerender if a value is changed
@@ -120,7 +119,6 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
             },
           }),
         );
-        console.log('service.field', service.fields);
         defaultValuesRef.current[name] = get(valuesRef.current, name, fieldOptions.defaultValue);
       }
       const field = service.fields[name];
