@@ -44,6 +44,7 @@ const useValidation = (name = '', touchedOnly = true): FieldValidation | Contain
       if (isNullOrEmpty(name)) {
         setValidation(getContainerFieldValidation(validationsRef.current, fields, '', touchedOnly));
       } else {
+        console.log('useValidation', name, fields[name]);
         if (!touchedOnly || fields[name].touched) {
           setValidation(nextValidation);
         }

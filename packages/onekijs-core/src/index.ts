@@ -285,6 +285,7 @@ export { default as LocalCollectionService } from './collection/LocalCollectionS
 export { default as CollectionService } from './collection/CollectionService';
 export { default as RemoteCollectionService } from './collection/RemoteCollectionService';
 export { default as useCollection } from './collection/useCollection';
+export { default as useList } from './collection/useList';
 export {
   Collection,
   CollectionOptions,

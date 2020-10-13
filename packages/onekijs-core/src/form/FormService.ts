@@ -223,7 +223,10 @@ export default class FormService extends LocalService<FormState> {
 
   @reducer
   reset(): void {
-    this.fields = {};
+    const props = Object.getOwnPropertyNames(this.fields);
+    for (let i = 0; i < props.length; i++) {
+      delete this.fields[props[i]];
+    }
     this.listeners = {
       valueChange: {},
       validationChange: {},
@@ -234,6 +237,12 @@ export default class FormService extends LocalService<FormState> {
     this.watchIndex = {};
     this.state.values = this.state.initialValues;
     this.state.validations = {};
+    this.setResetting(true);
+  }
+
+  @reducer
+  setResetting(resetting: boolean): void {
+    this.state.resetting = resetting;
   }
 
   serializeValidationCode(code: ValidationCode): ValidationStatus {

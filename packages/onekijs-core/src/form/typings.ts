@@ -70,6 +70,7 @@ export interface FormState extends State, FormOptions {
   validations?: AnonymousObject<FieldValidation>;
   values?: AnonymousObject;
   submitting?: boolean;
+  resetting?: boolean;
 }
 
 export type FormWarningCallback = (fields: Field[], values: AnonymousObject) => void;
