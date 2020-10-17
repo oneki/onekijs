@@ -6,7 +6,7 @@ import BasicError from '../core/BasicError';
 import Service from '../core/Service';
 import { AnonymousObject, AnyState, Class } from '../core/typings';
 import AppContext from './AppContext';
-import AppRouter from './AppRouter';
+import Router from './Router';
 
 export const CONTEXT_ID = Symbol();
 export const reducersSymbol = Symbol('onekijs.store.reducers');
@@ -24,13 +24,13 @@ export interface AppProps {
 }
 
 export interface AppStateProps extends AppProps {
-  router: AppRouter;
+  router: Router;
 }
 
 export interface AppProviderProps extends Omit<AppProps, 'initialState' | 'LoadingComponent'> {
   settings: AppSettings;
   store: AppStore;
-  router: AppRouter;
+  router: Router;
 }
 
 export interface AppStore<S = any, A extends Action = AnyAction> extends Store<S, A> {

@@ -1,30 +1,36 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { toCollectionItem } from './utils';
+import LocalRouter from '../app/LocalRouter';
+import useOnekiRouter from '../app/useOnekiRouter';
+import { AnonymousObject } from '../core/typings';
+import useService from '../core/useService';
+import { omit } from '../core/utils/object';
+import { Fetcher, FetchOptions, HttpMethod } from '../fetch/typings';
+import { asyncHttp } from '../fetch/utils';
 import CollectionService from './CollectionService';
 import LocalCollectionService from './LocalCollectionService';
 import RemoteCollectionService from './RemoteCollectionService';
 import {
   Collection,
   CollectionFetcherResult,
+  CollectionItemAdapter,
   CollectionState,
+  Item,
+  ItemMeta,
   LoadingStatus,
   Query,
   UseCollectionOptions,
-  ItemMeta,
-  CollectionItemAdapter,
-  Item,
 } from './typings';
-import useService from '../core/useService';
-import { FetchOptions, Fetcher, HttpMethod } from '../fetch/typings';
-import { omit } from '../core/utils/object';
-import { AnonymousObject } from '../core/typings';
-import { asyncHttp } from '../fetch/utils';
+import { toCollectionItem } from './utils';
 
 const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
   dataOrUrl: T[] | string,
   options: UseCollectionOptions<T, M> = {},
 ): Collection<T, M> => {
   const initializedRef = useRef(false);
+  let router = useOnekiRouter();
+  if (!options.mutateUrl) {
+    router = new LocalRouter();
+  }
   const ctor = Array.isArray(dataOrUrl) || options.fetchOnce ? LocalCollectionService : RemoteCollectionService;
   const [state, service] = useService<CollectionState<T, M>, CollectionService<T, M, CollectionState<T, M>>>(
     ctor,
@@ -75,6 +81,7 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
         offset: options.initialOffset,
         params: options.initialParams,
         queryEngine: options.queryEngine,
+        router,
         status: Array.isArray(dataOrUrl)
           ? LoadingStatus.Loaded
           : options.fetchOnce

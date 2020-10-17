@@ -1,16 +1,16 @@
 import { ID } from '../core/typings';
 import React from 'react';
-import AppRouter from './AppRouter';
+import Router from './Router';
 import { CONTEXT_ID, AppSettings, AppStore } from './typings';
 import { I18n } from '../i18n/typings';
 
 export default class AppContext {
   static [ID] = CONTEXT_ID;
-  router: AppRouter;
+  router: Router;
   settings: AppSettings;
   store: AppStore;
   i18n: I18n;
-  constructor(router: AppRouter, settings: AppSettings, store: AppStore, i18n: I18n) {
+  constructor(router: Router, settings: AppSettings, store: AppStore, i18n: I18n) {
     this.router = router;
     this.settings = settings;
     this.store = store;

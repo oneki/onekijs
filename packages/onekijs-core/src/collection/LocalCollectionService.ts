@@ -5,6 +5,7 @@ import {
   CollectionState,
   Item,
   ItemMeta,
+  LoadingItemStatus,
   LocalQuery,
   Query,
   QueryEngine,
@@ -21,6 +22,7 @@ import {
 import { service, reducer } from '../core/annotations';
 import { Primitive, AnonymousObject } from '../core/typings';
 import { get, set } from '../core/utils/object';
+import { Location } from '../app/typings';
 
 const defaultSearcher = 'i_like';
 
@@ -234,6 +236,12 @@ export default class LocalCollectionService<
     this.refresh();
   }
 
+  @reducer
+  protected _onLocationChange(location: Location): void {
+    this._setQuery(this._parseLocation(location));
+    this.refresh();
+  }
+
   protected _applyCriteria(item: Item<T, M>, criteria: QueryFilterCriteria): boolean {
     const operator = criteria.operator || 'eq';
     const value = criteria.value;
@@ -384,5 +392,19 @@ export default class LocalCollectionService<
     }
 
     return result;
+  }
+
+  @reducer
+  protected _setLoading(
+    options: {
+      status?: LoadingItemStatus;
+      limit?: number;
+      offset?: number;
+      resetLimit?: boolean;
+      resetData?: boolean;
+    } = {},
+  ): void {
+    this.state.limit = options.limit;
+    this.state.offset = options.offset;
   }
 }

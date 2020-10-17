@@ -1,6 +1,6 @@
 import BasicError from '../core/BasicError';
 import { AnonymousObject, Primitive } from '../core/typings';
-import { isNull } from '../core/utils/object';
+import { isNull, shallowEqual } from '../core/utils/object';
 import {
   Collection,
   CollectionItemAdapter,
@@ -145,6 +145,18 @@ export const isQueryFilterCriteria = (value: QueryFilterOrCriteria): value is Qu
   return !isQueryFilter(value);
 };
 
+export const isSameArray = (a1: any[] | undefined, a2: any[] | undefined): boolean => {
+  if (a1 === undefined && a2 === undefined) return true;
+  if (a1 === undefined || a2 === undefined) return false;
+  if (a1.length !== a2.length) return false;
+  for (let i = 0; i < a1.length; i++) {
+    if (a1[i] !== a2[i]) {
+      return false;
+    }
+  }
+  return true;
+};
+
 export const isSameFilterCriteriaValue = (
   v1: QueryFilterCriteriaValue | QueryFilterCriteriaValue[],
   v2: QueryFilterCriteriaValue | QueryFilterCriteriaValue[],
@@ -198,38 +210,69 @@ export const isSameQuery = (q1: Query, q2: Query): boolean => {
   return true;
 };
 
-export const parseQuery = (query: URLSearchParams): Query => {
-  const result: Query = {};
-  query.forEach((value, key) => {
-    switch (key.toLowerCase()) {
-      case 'filter':
-        result.filter = parseQueryFilter(value);
-        break;
-      case 'sortBy':
-        result.sortBy = parseSortBy(value);
-        break;
-      case 'offset':
-        result.offset = parseInt(value);
-        break;
-      case 'limit':
-        result.limit = parseInt(value);
-        break;
-      case 'fields':
-        result.fields = value.split(',');
-        break;
-      case 'search':
-        result.search = value;
-        break;
-      case 'sort':
-        result.sort = value.toLowerCase() === 'desc' ? 'desc' : 'asc';
-        break;
-      default:
-        result.params = result.params || {};
-        result.params[key] = value;
+export const isSameSortBy = (s1?: QuerySortBy[], s2?: QuerySortBy[]): boolean => {
+  if (s1 === undefined && s2 === undefined) return true;
+  if (s1 === undefined || s2 === undefined) return false;
+  if (s1.length !== s2.length) return false;
+  for (let i = 0; i < s1.length; i++) {
+    if (s1[i].field !== s2[i].field) {
+      return false;
     }
-  });
+    if (s1[i].dir !== s2[i].dir) {
+      return false;
+    }
+  }
+  return true;
+};
+
+export const parseQuery = (query: URLSearchParams | AnonymousObject): Query => {
+  const result: Query = {};
+  if (query instanceof URLSearchParams) {
+    query.forEach((value, key) => handleQueryEntry(key, value, result));
+  } else {
+    Object.keys(query).forEach((key) => handleQueryEntry(key, query[key], result));
+  }
 
   return result;
+};
+
+export const shouldResetData = (query: Query, nextQuery: Query): boolean => {
+  if (!isSameFilter(query.filter, nextQuery.filter)) return true;
+  if (!isSameSortBy(query.sortBy, nextQuery.sortBy)) return true;
+  if (query.sort !== nextQuery.sort) return true;
+  if (!isSameArray(query.fields, nextQuery.fields)) return true;
+  if (!shallowEqual(query.params || null, nextQuery.params || null)) return true;
+  if (query.search !== nextQuery.search) return true;
+  return false;
+};
+
+const handleQueryEntry = (key: string, value: string, result: Query): void => {
+  switch (key.toLowerCase()) {
+    case 'filter':
+      result.filter = parseQueryFilter(value);
+      break;
+    case 'sortBy':
+      result.sortBy = parseSortBy(value);
+      break;
+    case 'offset':
+      result.offset = parseInt(value);
+      break;
+    case 'limit':
+      result.limit = parseInt(value);
+      break;
+    case 'fields':
+      result.fields = value.split(',');
+      break;
+    case 'search':
+      result.search = value;
+      break;
+    case 'sort':
+      result.sort = value.toLowerCase() === 'desc' ? 'desc' : 'asc';
+      break;
+    default:
+      result.params = result.params || {};
+      result.params[key] = value;
+  }
 };
 
 export const parseQueryFilter = (filter: string): QueryFilter => {

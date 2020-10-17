@@ -1,8 +1,8 @@
-import AppRouter from './AppRouter';
+import Router from './Router';
 import useAppContext from './useAppContext';
 
 // never change the state => no refresh
-const useOnekiRouter = (): AppRouter => {
+const useOnekiRouter = (): Router => {
   return useAppContext().router;
 };
 

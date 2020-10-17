@@ -1,6 +1,7 @@
 import React from 'react';
-import { List, useCollection } from 'onekijs-ui';
+import { List } from 'onekijs-ui';
 import { users, userAdapter } from '../data/users';
+import { useCollection } from 'onekijs';
 
 export const ListPage = () => {
   const collection = useCollection(users, {

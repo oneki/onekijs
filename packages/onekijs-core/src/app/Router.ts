@@ -1,9 +1,10 @@
+import produce from 'immer';
 import { ParsedQuery } from 'query-string';
 import { get } from '../core/utils/object';
 import { I18n } from '../i18n/typings';
 import { AppSettings, Location, LocationChangeCallback } from './typings';
 
-export default abstract class AppRouter {
+export default abstract class Router {
   settings: AppSettings = {};
   i18n: I18n = {};
   history: Location[];
@@ -93,4 +94,16 @@ export default abstract class AppRouter {
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   abstract unlisten(handler: any): void;
+
+  _pushLocation(location: Location, replace = false): void {
+    this.history = produce(this.history, (draft) => {
+      if (replace) {
+        draft[0] = location;
+      } else {
+        draft.unshift(location);
+        // keep max 20 items
+        draft.splice(20, draft.length);
+      }
+    });
+  }
 }

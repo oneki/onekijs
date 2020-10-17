@@ -7,7 +7,7 @@ import { AnonymousObject, ErrorCallback, ResultCallback, SuccessCallback } from 
 import useLazyRef from '../core/useLazyRef';
 import { clone, fromPayload, simpleMergeDeep } from '../core/utils/object';
 import AppContext from './AppContext';
-import AppRouter from './AppRouter';
+import Router from './Router';
 import { defaultSettings } from './settings';
 import {
   AppErrorCallback,
@@ -119,7 +119,7 @@ export const formatSettings = (settings: AppSettings): AppSettings => {
 
 export function asResultCallback<T = any>(
   callback: AppResultCallback<T> | undefined,
-  router: AppRouter,
+  router: Router,
   appContext: AppContext,
 ): ResultCallback<T> | undefined {
   if (!callback) return undefined;

@@ -1,4 +1,5 @@
 import { cancel, delay, fork } from 'redux-saga/effects';
+import { Location } from '../app/typings';
 import { reducer, saga, service } from '../core/annotations';
 import BasicError from '../core/BasicError';
 import { AnonymousObject, Primitive, SagaEffect } from '../core/typings';
@@ -27,7 +28,7 @@ import {
   QuerySortComparator,
   QuerySortDir,
 } from './typings';
-import { defaultComparator, defaultSerializer, rootFilterId, isSameQuery } from './utils';
+import { defaultComparator, defaultSerializer, rootFilterId, isSameQuery, shouldResetData } from './utils';
 
 @service
 export default class RemoteCollectionService<
@@ -586,6 +587,15 @@ export default class RemoteCollectionService<
         this.state.status = options.status;
       }
     }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  @saga(SagaEffect.Latest)
+  protected *_onLocationChange(location: Location) {
+    const nextQuery = this._parseLocation(location);
+    const resetData = this.state.items ? false : shouldResetData(this._getQuery(), nextQuery);
+    this._setQuery(nextQuery);
+    yield this._refresh(resetData);
   }
 
   @reducer

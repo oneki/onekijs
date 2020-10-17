@@ -1,6 +1,6 @@
 import { History, Location as ReactRouterLocation, LocationListener, LocationState } from 'history';
 import produce from 'immer';
-import AppRouter from '../app/AppRouter';
+import Router from '../app/Router';
 import { Location, LocationChangeCallback } from '../app/typings';
 import { toUrl, toLocation } from '../core/utils/url';
 
@@ -8,7 +8,7 @@ import { toUrl, toLocation } from '../core/utils/url';
 // import { Location, LocationChangeCallback } from '../lib/app/typings';
 // import { toLocation, toUrl } from '../lib/core/utils/url';
 
-export class ReactRouter extends AppRouter {
+export class ReactRouter extends Router {
   protected reactRouterHistory?: History<LocationState>;
 
   constructor(history?: History<LocationState>) {

@@ -1,5 +1,5 @@
 import AppContext from '../app/AppContext';
-import AppRouter from '../app/AppRouter';
+import Router from '../app/Router';
 import { asResultCallback } from '../app/utils';
 import HTTPError from '../core/HTTPError';
 import { AnonymousObject } from '../core/typings';
@@ -126,7 +126,7 @@ export function asFetchOptions<T = any>(
   options: AppFetchOptions<T>,
   notificationService: NotificationService,
   appContext: AppContext,
-  router: AppRouter,
+  router: Router,
 ): FetchOptions<T> {
   if (!options.onError) {
     options.onError = (e) => {

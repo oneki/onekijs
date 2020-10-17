@@ -1,3 +1,4 @@
+import Router from '../app/Router';
 import { Primitive, AnonymousObject } from '../core/typings';
 import { Fetcher, HttpMethod, FetchState, FetchOptions } from '../fetch/typings';
 
@@ -81,6 +82,7 @@ export interface CollectionOptions<T, M extends ItemMeta> {
   initialSort?: QuerySortDir;
   initialSortBy?: string | QuerySortBy | QuerySortBy[];
   method?: HttpMethod;
+  mutateUrl?: boolean;
   queryEngine?: QueryEngine<T, M>;
   searcher?: QuerySearcher<T>;
   serializer?: QuerySerializer;
@@ -100,6 +102,7 @@ export interface CollectionState<T, M extends ItemMeta> extends FetchState {
   offset?: number;
   params?: AnonymousObject;
   queryEngine?: QueryEngine<T, M>;
+  router: Router;
   search?: Primitive;
   searcher?: QuerySearcher<T>;
   serializer?: QuerySerializer;
