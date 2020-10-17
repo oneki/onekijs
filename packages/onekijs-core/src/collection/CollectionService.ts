@@ -30,7 +30,6 @@ import {
   defaultSerializer,
   isQueryFilterCriteria,
   parseQuery,
-  parseQueryFilter,
   rootFilterId,
   toCollectionItem,
   visitFilter,
@@ -45,6 +44,20 @@ export default abstract class CollectionService<
   initialState: S = null!;
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   router: Router = null!;
+
+  abstract setData(data: T[]): void;
+  abstract setItems(items: Item<T, M>[]): void;
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  abstract setMeta(item: Item<T, M>, key: keyof M, value: any): void;
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  protected abstract _onLocationChange(location: Location): void;
+  protected abstract _setLoading(options: {
+    status?: LoadingItemStatus;
+    limit?: number;
+    offset?: number;
+    resetLimit?: boolean;
+    resetData?: boolean;
+  }): void;
 
   @reducer
   addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId: QueryFilterId = rootFilterId): void {
@@ -213,26 +226,49 @@ export default abstract class CollectionService<
     this._setLoading({ limit: this.state.limit, offset: this.state.offset });
     this.refresh();
   }
-  
-  abstract search(search: Primitive): void;
-  abstract setData(data: T[]): void;
-  abstract setFields(fields: string[]): void;
-  abstract setItems(items: Item<T, M>[]): void;
+
+  @reducer
+  search(search: Primitive): void {
+    this._setLoading({ limit: this.state.limit, offset: 0 });
+    this._setSearch(search);
+    this.refresh();
+  }
+
+  @reducer
+  setFields(fields: string[]): void {
+    this._setLoading({ limit: this.state.limit, offset: 0 });
+    this._setFields(fields);
+    this.refresh();
+  }
+
+  @reducer
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  abstract setMeta(item: Item<T, M>, key: keyof M, value: any): void;
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  abstract setParam(key: string, value: any): void;
-  abstract setParams(params: AnonymousObject): void;
-  abstract sort(dir: QuerySortDir): void;
-  abstract sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void;
-  protected abstract _onLocationChange(location: Location): void;
-  protected abstract _setLoading(options: {
-    status?: LoadingItemStatus;
-    limit?: number;
-    offset?: number;
-    resetLimit?: boolean;
-    resetData?: boolean;
-  }): void;
+  setParam(key: string, value: any): void {
+    this._setLoading({ limit: this.state.limit, offset: 0 });
+    this._setParam(key, value);
+    this.refresh();
+  }
+
+  @reducer
+  setParams(params: AnonymousObject): void {
+    this._setLoading({ limit: this.state.limit, offset: 0 });
+    this._setParams(params);
+    this.refresh();
+  }
+
+  @reducer
+  sort(dir: QuerySortDir): void {
+    this._setLoading({ limit: this.state.limit, offset: 0 });
+    this._setSort(dir);
+    this.refresh();
+  }
+
+  @reducer
+  sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void {
+    this._setLoading({ limit: this.state.limit, offset: 0 });
+    this._setSortBy(sortBy);
+    this.refresh();
+  }
 
   init(): void {
     this.initialState = this.state;

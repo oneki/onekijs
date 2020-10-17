@@ -1,4 +1,6 @@
-import { defaultComparator, isQueryFilterCriteria, rootFilterId } from './utils';
+import { Location } from '../app/typings';
+import { reducer, service } from '../core/annotations';
+import { get } from '../core/utils/object';
 import CollectionService from './CollectionService';
 import {
   Collection,
@@ -7,22 +9,15 @@ import {
   ItemMeta,
   LoadingItemStatus,
   LocalQuery,
-  Query,
   QueryEngine,
   QueryFilter,
   QueryFilterCriteria,
   QueryFilterCriteriaOperator,
   QueryFilterCriteriaValue,
-  QueryFilterId,
-  QueryFilterOrCriteria,
   QuerySortBy,
-  QuerySortComparator,
   QuerySortDir,
 } from './typings';
-import { service, reducer } from '../core/annotations';
-import { Primitive, AnonymousObject } from '../core/typings';
-import { get, set } from '../core/utils/object';
-import { Location } from '../app/typings';
+import { defaultComparator, isQueryFilterCriteria } from './utils';
 
 const defaultSearcher = 'i_like';
 
@@ -38,164 +33,9 @@ export default class LocalCollectionService<
   }
 
   @reducer
-  addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId: QueryFilterId = rootFilterId): void {
-    this._clearOffset();
-    this._addFilter(filterOrCriteria, parentFilterId);
-    this.refresh();
-  }
-
-  @reducer
-  addFilterCriteria(
-    field: string,
-    operator: QueryFilterCriteriaOperator,
-    value: string | number | boolean | QueryFilterCriteriaValue[] | null,
-    not?: boolean | undefined,
-    id?: string | number | symbol | undefined,
-    parentFilterId?: string | number | symbol | undefined,
-  ): void {
-    this.addFilter(
-      {
-        field,
-        operator,
-        value,
-        not,
-        id,
-      },
-      parentFilterId,
-    );
-  }
-
-  @reducer
-  addSortBy(
-    field: string,
-    dir: QuerySortDir = 'asc',
-    comparator: QuerySortComparator = defaultComparator,
-    prepend = true,
-  ): void {
-    this._addSortBy(field, dir, comparator, prepend);
-    this.refresh();
-  }
-
-  @reducer
-  clearFields(): void {
-    this.state.fields = [];
-    this.refresh();
-  }
-
-  @reducer
-  clearFilter(): void {
-    this._clearOffset();
-    this._clearFilter();
-    this.refresh();
-  }
-
-  @reducer
-  clearParam(key: string): void {
-    this._clearParam(key);
-    this.refresh();
-  }
-
-  @reducer
-  clearParams(): void {
-    this._clearParams();
-    this.refresh();
-  }
-
-  @reducer
-  clearSearch(): void {
-    this._clearOffset();
-    this._clearSearch();
-    this.refresh();
-  }
-
-  @reducer
-  clearSort(): void {
-    this._clearSort();
-    this.refresh();
-  }
-
-  @reducer
-  clearSortBy(): void {
-    this._clearSortBy();
-    this.refresh();
-  }
-
-  @reducer
-  filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[]): void {
-    this._clearOffset();
-    this._setFilter(filter);
-    this.refresh();
-  }
-
-  @reducer
-  load(limit?: number, offset?: number): void {
-    this.state.limit = limit;
-    this.state.offset = offset;
-    this._setPaginatedResult(limit, offset);
-  }
-
-  @reducer
-  query(query: Query): void {
-    if (query.filter || query.search || query.sort || query.sortBy || query.fields) {
-      this._clearOffset();
-    }
-    this._setQuery(query);
-    this.refresh();
-  }
-
-  @reducer
-  search(search: Primitive): void {
-    this._clearOffset();
-    this.state.search = search;
-    this.refresh();
-  }
-
-  @reducer
-  sort(dir: QuerySortDir): void {
-    this.state.sort = dir;
-    this.refresh();
-  }
-
-  @reducer
-  refresh(): void {
-    const queryEngine: QueryEngine<T, M> = this.state.queryEngine || this._execute.bind(this);
-    this.state.items = queryEngine(this.state.db || [], {
-      filter: this.getFilter(),
-      sortBy: this.getSortBy(),
-      search: this.getSearch(),
-      sort: this.getSort(),
-    });
-  }
-
-  @reducer
-  reset(): void {
-    this.state = this.initialState;
-    this.refresh();
-  }
-
-  @reducer
-  removeFilter(filterId: QueryFilterId): void {
-    this._clearOffset();
-    this._removeFilter(filterId);
-    this.refresh();
-  }
-
-  @reducer
-  removeSortBy(field: string): void {
-    this._removeSortBy(field);
-    this.refresh();
-  }
-
-  @reducer
   setData(data: T[]): void {
     this._clearOffset();
     this.state.db = data.map((d) => this._adapt(d));
-    this.refresh();
-  }
-
-  @reducer
-  setFields(fields: string[]): void {
-    this.state.fields = fields;
     this.refresh();
   }
 
@@ -218,28 +58,11 @@ export default class LocalCollectionService<
   }
 
   @reducer
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  setParam(key: string, value: any): void {
-    set(this.state.params, key, value);
-    this.refresh();
-  }
-
-  @reducer
-  setParams(params: AnonymousObject): void {
-    this.state.params = params;
-    this.refresh();
-  }
-
-  @reducer
-  sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void {
-    this._setSortBy(sortBy);
-    this.refresh();
-  }
-
-  @reducer
   protected _onLocationChange(location: Location): void {
-    this._setQuery(this._parseLocation(location));
-    this.refresh();
+    const nextQuery = this._parseLocation(location);
+    this._setQuery(nextQuery);
+    const queryEngine: QueryEngine<T, M> = this.state.queryEngine || this._execute.bind(this);
+    this.state.items = queryEngine(this.state.db || [], nextQuery);
   }
 
   protected _applyCriteria(item: Item<T, M>, criteria: QueryFilterCriteria): boolean {
@@ -360,12 +183,6 @@ export default class LocalCollectionService<
       items = items.sort(comparator());
     }
     return items;
-  }
-
-  protected _clearOffset(): void {
-    if (this.state.offset !== undefined) {
-      this.state.offset = 0;
-    }
   }
 
   protected _execute(items: Item<T, M>[], query: LocalQuery): Item<T, M>[] {

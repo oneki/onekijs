@@ -2,8 +2,7 @@ import { cancel, delay, fork } from 'redux-saga/effects';
 import { Location } from '../app/typings';
 import { reducer, saga, service } from '../core/annotations';
 import BasicError from '../core/BasicError';
-import { AnonymousObject, Primitive, SagaEffect } from '../core/typings';
-import { set } from '../core/utils/object';
+import { AnonymousObject, SagaEffect } from '../core/typings';
 import { Fetcher, HttpMethod } from '../fetch/typings';
 import { asyncHttp } from '../fetch/utils';
 import CollectionService from './CollectionService';
@@ -17,18 +16,9 @@ import {
   LoadingItemStatus,
   LoadingStatus,
   Query,
-  QueryFilter,
-  QueryFilterCriteria,
-  QueryFilterCriteriaOperator,
-  QueryFilterCriteriaValue,
-  QueryFilterId,
-  QueryFilterOrCriteria,
   QuerySerializerResult,
-  QuerySortBy,
-  QuerySortComparator,
-  QuerySortDir,
 } from './typings';
-import { defaultComparator, defaultSerializer, rootFilterId, isSameQuery, shouldResetData } from './utils';
+import { defaultSerializer, isSameQuery, shouldResetData } from './utils';
 
 @service
 export default class RemoteCollectionService<
@@ -37,96 +27,6 @@ export default class RemoteCollectionService<
   S extends CollectionState<T, M> = CollectionState<T, M>
 > extends CollectionService<T, M, S> implements Collection<T, M> {
   protected itemMeta: AnonymousObject<M | undefined> = {};
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Every)
-  *addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId: QueryFilterId = rootFilterId) {
-    yield this._addFilter(filterOrCriteria, parentFilterId);
-    yield this._refresh(true);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Every)
-  *addFilterCriteria(
-    field: string,
-    operator: QueryFilterCriteriaOperator,
-    value: string | number | boolean | QueryFilterCriteriaValue[] | null,
-    not?: boolean | undefined,
-    id?: string | number | symbol | undefined,
-    parentFilterId?: string | number | symbol | undefined,
-  ) {
-    yield this._addFilter(
-      {
-        field,
-        operator,
-        value,
-        not,
-        id,
-      },
-      parentFilterId,
-    );
-    yield this._refresh(true);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Every)
-  *addSortBy(
-    field: string,
-    dir: QuerySortDir = 'asc',
-    comparator: QuerySortComparator = defaultComparator,
-    prepend = true,
-  ) {
-    yield this._addSortBy(field, dir, comparator, prepend);
-    yield this._refresh(true);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Latest)
-  *clearFields() {
-    yield this._clearFields();
-    yield this._refresh(true);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Latest)
-  *clearFilter() {
-    yield this._clearFilter();
-    yield this._refresh(true);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Every)
-  *clearParam(key: string) {
-    yield this._clearParam(key);
-    yield this._refresh(true);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Latest)
-  *clearParams() {
-    yield this._clearParams();
-    yield this._refresh(true);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Latest)
-  *clearSearch() {
-    yield this._clearFilter();
-    yield this._refresh(true);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Latest)
-  *clearSort() {
-    yield this._clearSort();
-    yield this._refresh(true);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Latest)
-  *clearSortBy() {
-    yield this._clearSortBy();
-    yield this._refresh(true);
-  }
 
   get status(): CollectionStatus {
     return this.state.status || LoadingStatus.NotInitialized;
@@ -143,74 +43,9 @@ export default class RemoteCollectionService<
     return this.state.url;
   }
 
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Latest)
-  *filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[]) {
-    yield this._setFilter(filter);
-    yield this._refresh(true);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Every)
-  *load(limit?: number, offset?: number) {
-    const resetData = this.state.items ? false : true;
-    yield this._setLimitOffset(limit, offset);
-    yield this._refresh(resetData);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Throttle, 'state.throttle', 200)
-  *query(query: Query) {
-    let resetData = false;
-    if (query.filter || query.search || query.sort || query.sortBy || query.fields) {
-      resetData = true;
-    }
-    yield this._setQuery(query, resetData);
-    yield this._refresh(resetData);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Throttle, 'state.throttle', 200)
-  *refresh() {
-    yield this._refresh(true);
-  }
-
-  @reducer
-  reset(): void {
-    this.state = this.initialState;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Every)
-  *removeFilter(filterId: QueryFilterId) {
-    yield this._removeFilter(filterId);
-    yield this._refresh(true);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Every)
-  *removeSortBy(field: string) {
-    yield this._removeSortBy(field);
-    yield this._refresh(true);
-  }
-
   serializeQuery(query: Query): QuerySerializerResult {
     const serializer = this.state.serializer || defaultSerializer;
     return serializer(query);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Latest)
-  *setFields(fields: string[]) {
-    yield this._setFields(fields);
-    yield this._refresh(true);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Throttle, 'state.throttle', 200)
-  *search(search: Primitive) {
-    yield this._setSearch(search);
-    yield this._refresh(true);
   }
 
   @reducer
@@ -238,94 +73,6 @@ export default class RemoteCollectionService<
         }
       }
     }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Every)
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  *setParam(key: string, value: any) {
-    yield this._setParam(key, value);
-    yield this._refresh(true);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Latest)
-  *setParams(params: AnonymousObject) {
-    yield this._setParams(params);
-    yield this._refresh(true);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Throttle, 'state.throttle', 200)
-  *sort(dir: QuerySortDir) {
-    yield this._setSort(dir);
-    yield this._refresh(true);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Latest)
-  *sortBy(sortBy: string | QuerySortBy | QuerySortBy[]) {
-    yield this._setSortBy(sortBy);
-    yield this._refresh(true);
-  }
-
-  @reducer
-  protected _addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId: QueryFilterId = rootFilterId): void {
-    this._setLoading({ limit: this.state.limit, offset: 0 });
-    super._addFilter(filterOrCriteria, parentFilterId);
-  }
-
-  @reducer
-  protected _addSortBy(
-    field: string,
-    dir: QuerySortDir = 'asc',
-    comparator: QuerySortComparator = defaultComparator,
-    prepend = true,
-  ): void {
-    this._setLoading({ limit: this.state.limit, offset: 0 });
-    super._addSortBy(field, dir, comparator, prepend);
-  }
-
-  @reducer
-  protected _clearFields(): void {
-    this._setLoading({ limit: this.state.limit, offset: 0 });
-    super._clearFields();
-  }
-
-  @reducer
-  protected _clearFilter(): void {
-    this._setLoading({ limit: this.state.limit, offset: 0 });
-    super._clearFields();
-  }
-
-  @reducer
-  protected _clearOffset(): void {
-    this._setLoading({ limit: this.state.limit, resetData: false });
-    super._clearOffset();
-  }
-
-  @reducer
-  protected _clearSearch(): void {
-    this._setLoading({ limit: this.state.limit, offset: 0 });
-    super._clearSearch();
-  }
-
-  @reducer
-  protected _clearLimit(): void {
-    this._setLoading({ offset: this.state.offset, resetData: false });
-    super._clearLimit();
-  }
-
-  @reducer
-  protected _clearSortBy(): void {
-    this._setLoading({ limit: this.state.limit, offset: 0 });
-    super._clearSortBy();
-  }
-
-  @reducer
-  protected _clearSort(): void {
-    this._setLoading({ limit: this.state.limit, offset: 0 });
-    super._clearSort();
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -406,7 +153,7 @@ export default class RemoteCollectionService<
   protected _fetchSuccess(result: CollectionFetcherResult<T>, resetData: boolean, query: Query): void {
     const limit = query.limit;
     const offset = query.offset || 0;
-    const currentQuery = this._getQuery();
+    const currentQuery = this.getQuery();
     const data = Array.isArray(result) ? result : result.result;
     const total = Array.isArray(result) ? undefined : result.total;
 
@@ -468,50 +215,6 @@ export default class RemoteCollectionService<
         this.state.status = this.state.total === undefined ? LoadingStatus.PartialLoaded : LoadingStatus.Loaded;
       }
     }
-  }
-
-  protected _getQuery(): Query {
-    const limit = this.getLimit();
-    return {
-      filter: this.getFilter(),
-      sortBy: this.getSortBy(),
-      offset: this.getOffset(),
-      limit: limit === undefined ? limit : limit + 1,
-      fields: this.getFields(),
-      search: this.getSearch(),
-      sort: this.getSort(),
-    };
-  }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Every)
-  *_refresh(resetData = true) {
-    const query = this._getQuery();
-    yield this._fetch(query, resetData);
-  }
-
-  @reducer
-  protected _removeFilter(filterId: QueryFilterId): void {
-    this._setLoading({ limit: this.state.limit, offset: 0 });
-    super._removeFilter(filterId);
-  }
-
-  @reducer
-  protected _removeSortBy(field: string): void {
-    this._setLoading({ limit: this.state.limit, offset: 0 });
-    super._removeSortBy(field);
-  }
-
-  @reducer
-  protected _setFields(fields: string[]): void {
-    this._setLoading({ limit: this.state.limit, offset: 0 });
-    super._setFields(fields);
-  }
-
-  @reducer
-  protected _setFilter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[]): void {
-    this._setLoading({ limit: this.state.limit, offset: 0 });
-    super._setFilter(filter);
   }
 
   @reducer
@@ -593,65 +296,8 @@ export default class RemoteCollectionService<
   @saga(SagaEffect.Latest)
   protected *_onLocationChange(location: Location) {
     const nextQuery = this._parseLocation(location);
-    const resetData = this.state.items ? false : shouldResetData(this._getQuery(), nextQuery);
+    const resetData = this.state.items ? false : shouldResetData(this.getQuery(), nextQuery);
     this._setQuery(nextQuery);
-    yield this._refresh(resetData);
-  }
-
-  @reducer
-  protected _setLimitOffset(limit?: number, offset?: number): void {
-    const resetData = this.state.items ? false : true;
-    this._setLoading({ limit, offset, resetData });
-    super._setLimitOffset(limit, offset);
-  }
-
-  @reducer
-  protected _setQuery(query: Query, resetData?: boolean): void {
-    this._setLoading({ limit: query.limit, offset: query.offset, resetData });
-    super._setQuery(query);
-  }
-
-  @reducer
-  protected _setOffset(offset: number): void {
-    this._setLoading({ limit: this.state.limit, offset, resetData: false });
-    super._setOffset(offset);
-  }
-
-  @reducer
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  protected _setParam(key: string, value: any): void {
-    this._setLoading({ limit: this.state.limit, offset: 0 });
-    set(this.state.params, key, value);
-  }
-
-  @reducer
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  protected _setParams(params: AnonymousObject): void {
-    this._setLoading({ limit: this.state.limit, offset: 0 });
-    this.state.params = params;
-  }
-
-  @reducer
-  protected _setSearch(search: Primitive): void {
-    this._setLoading({ limit: this.state.limit, offset: 0 });
-    super._setSearch(search);
-  }
-
-  @reducer
-  protected _setLimit(limit: number): void {
-    this._setLoading({ limit, offset: this.state.offset, resetData: false });
-    super._setLimit(limit);
-  }
-
-  @reducer
-  protected _setSort(dir: QuerySortDir): void {
-    this._setLoading({ limit: this.state.limit, offset: 0 });
-    super._setSort(dir);
-  }
-
-  @reducer
-  protected _setSortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void {
-    this._setLoading({ limit: this.state.limit, offset: 0 });
-    super._setSortBy(sortBy);
+    yield this._fetch(nextQuery, resetData);
   }
 }
