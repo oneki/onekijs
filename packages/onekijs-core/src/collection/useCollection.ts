@@ -73,10 +73,12 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
       return {
         adapter,
         comparator: options.comparator,
+        dataKey: options.dataKey || 'data',
         db: Array.isArray(dataOrUrl) ? dataOrUrl.map((data) => toCollectionItem(data, adapter)) : undefined,
         fetchOptions,
         fields: options.initialFields,
         filter: options.initialFilter,
+        hasMoreKey: options.hasMoreKey || 'has_more',
         method: options.method,
         offset: options.initialOffset,
         params: options.initialParams,
@@ -94,6 +96,7 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
         sort: options.initialSort,
         sortBy: options.initialSortBy,
         throttle: options.throttle,
+        totalKey: options.totalKey || 'total',
         url: Array.isArray(dataOrUrl) ? undefined : dataOrUrl,
       } as CollectionState<T, M>;
     },
@@ -140,6 +143,7 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
   const collection = useMemo(() => {
     return Object.assign({}, methods, {
       data: service.data,
+      hasMore: service.hasMore,
       items: service.items,
       status: service.status,
       total: service.total,

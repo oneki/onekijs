@@ -54,11 +54,17 @@ export const generateFilterId = (): number => {
   return ++filterUid;
 };
 
-export const isLoading = (meta: ItemMeta): boolean => {
+export const isCollectionLoading = <T, M>(collection: Collection<T, M>): boolean => {
+  return !!(
+    collection && ['partial_deprecated', 'partial_loading', 'loading', 'deprecated'].includes(collection.status)
+  );
+};
+
+export const isItemLoading = (meta: ItemMeta): boolean => {
   return !!(meta && meta.loadingStatus === LoadingStatus.Loading);
 };
 
-export const isDeprecated = (meta: ItemMeta): boolean => {
+export const isItemDeprecated = (meta: ItemMeta): boolean => {
   return !!(meta && (meta.loadingStatus === LoadingStatus.Loading || meta.loadingStatus === LoadingStatus.Deprecated));
 };
 

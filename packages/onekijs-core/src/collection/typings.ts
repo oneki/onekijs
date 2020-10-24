@@ -36,6 +36,7 @@ export interface Collection<T, M extends ItemMeta> {
   getSearch(): Primitive | undefined;
   getSort(): QuerySortDir | undefined;
   getSortBy(): QuerySortBy[] | undefined;
+  hasMore: boolean;
   load(limit?: number, offset?: number): void;
   query(query: Query): void;
   refresh(): void;
@@ -57,13 +58,7 @@ export interface Collection<T, M extends ItemMeta> {
 
 export type CollectionFetcher<T> = Fetcher<CollectionFetcherResult<T>, Query | undefined>;
 
-export type CollectionFetcherResult<T> =
-  | T[]
-  | {
-      [k: string]: any;
-      total?: number;
-      result: T[];
-    };
+export type CollectionFetcherResult<T> = T[] | AnonymousObject;
 
 export type CollectionItemAdapter<T, M extends ItemMeta> = (data: T | undefined) => Partial<Item<T, M>>;
 
@@ -71,8 +66,10 @@ export interface CollectionOptions<T, M extends ItemMeta> {
   adapter?: CollectionItemAdapter<T, M>;
   autoload?: boolean;
   comparator?: QuerySortComparator;
+  dataKey?: string;
   fetcher?: CollectionFetcher<T>;
   fetchOnce?: boolean;
+  hasMoreKey?: string;
   initialFields?: string[];
   initialFilter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[];
   initialLimit?: number;
@@ -87,15 +84,19 @@ export interface CollectionOptions<T, M extends ItemMeta> {
   searcher?: QuerySearcher<T>;
   serializer?: QuerySerializer;
   throttle?: number;
+  totalKey?: string;
 }
 
 export interface CollectionState<T, M extends ItemMeta> extends FetchState {
   adapter?: CollectionItemAdapter<T, M>;
   comparator?: QuerySortComparator;
+  dataKey: string;
   db?: Item<T, M>[];
   fetchOptions?: FetchOptions<CollectionFetcherResult<T>, Query | undefined>;
   fields?: string[];
   filter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[];
+  hasMore?: boolean;
+  hasMoreKey: string;
   items?: (Item<T, M> | undefined)[];
   method?: HttpMethod;
   limit?: number;
@@ -111,6 +112,7 @@ export interface CollectionState<T, M extends ItemMeta> extends FetchState {
   status?: CollectionStatus;
   throttle?: number;
   total?: number;
+  totalKey: string;
   url?: string;
 }
 

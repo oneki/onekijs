@@ -1,3 +1,4 @@
+import { original } from 'immer';
 import Router from '../app/Router';
 import { Location } from '../app/typings';
 import { reducer } from '../core/annotations';
@@ -169,12 +170,11 @@ export default abstract class CollectionService<
   }
 
   getQuery(): Query {
-    const limit = this.getLimit();
     return {
       filter: this.getFilter(),
       sortBy: this.getSortBy(),
       offset: this.getOffset(),
-      limit: limit === undefined ? limit : limit + 1,
+      limit: this.getLimit(),
       fields: this.getFields(),
       search: this.getSearch(),
       sort: this.getSort(),
@@ -289,6 +289,10 @@ export default abstract class CollectionService<
     return undefined;
   }
 
+  get hasMore(): boolean {
+    return this.state.hasMore || false;
+  }
+
   get items(): (Item<T, M> | undefined)[] | undefined {
     return this.state.items;
   }
@@ -344,13 +348,31 @@ export default abstract class CollectionService<
   @reducer
   protected _addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId: QueryFilterId = rootFilterId): void {
     const filter = this.getFilter() || { id: rootFilterId, operator: 'and', criterias: [] };
+    console.log("before filter", original(filter));
     visitFilter(filter, (filter) => {
+      console.log(
+        'filter',
+        filter.id,
+        parentFilterId,
+        filterOrCriteria.id,
+        filter.criterias.map((f) => f.id),
+      );
       if (filter.id === parentFilterId) {
-        filter.criterias.push(filterOrCriteria);
+        let index = -1;
+        if (filterOrCriteria.id !== undefined) {
+          index = filter.criterias.findIndex((entry) => filterOrCriteria.id === entry.id);
+        }
+        console.log('index', index);
+        if (index === -1) {
+          filter.criterias.push(filterOrCriteria);
+        } else {
+          filter.criterias[index] = filterOrCriteria;
+        }
         return true;
       }
       return false;
     });
+    console.log("after filter", filter);
     this.state.filter = filter;
   }
 
@@ -466,7 +488,7 @@ export default abstract class CollectionService<
   }
 
   protected _parseLocation(location: Location): Query {
-    return parseQuery(location.params || {});
+    return parseQuery(location.query || {});
   }
 
   @reducer

@@ -2,7 +2,9 @@ import { cancel, delay, fork } from 'redux-saga/effects';
 import { Location } from '../app/typings';
 import { reducer, saga, service } from '../core/annotations';
 import BasicError from '../core/BasicError';
+import { dispatch, types } from '../core/Service';
 import { AnonymousObject, SagaEffect } from '../core/typings';
+import { toPayload } from '../core/utils/object';
 import { Fetcher, HttpMethod } from '../fetch/typings';
 import { asyncHttp } from '../fetch/utils';
 import CollectionService from './CollectionService';
@@ -98,6 +100,7 @@ export default class RemoteCollectionService<
   protected *_fetch(query: Query, resetData: boolean) {
     let loadingTask = null;
     const options = this.state.fetchOptions || {};
+    const { onSuccess, onError } = options;
     try {
       if (options.delayLoading) {
         loadingTask = yield fork(
@@ -115,13 +118,13 @@ export default class RemoteCollectionService<
       const body = this.state.method === HttpMethod.Get ? undefined : query;
       const fetchOptions =
         method === HttpMethod.Get ? Object.assign({}, options, { query: this.serializeQuery(query) }) : options;
+      console.log('fetchOptions', fetchOptions);
       const result = yield fetcher(this.url, method, body, fetchOptions);
       if (loadingTask !== null) {
         yield cancel(loadingTask);
       }
 
       yield this._fetchSuccess(result, resetData, query); // to update the store and trigger a re-render.
-      const onSuccess = options.onSuccess;
       if (onSuccess) {
         yield onSuccess(result);
       }
@@ -133,7 +136,7 @@ export default class RemoteCollectionService<
         yield cancel(loadingTask);
       }
       yield this._fetchError(e);
-      const onError = options.onError;
+
       if (onError) {
         yield onError(e);
       } else {
@@ -154,15 +157,30 @@ export default class RemoteCollectionService<
     const limit = query.limit;
     const offset = query.offset || 0;
     const currentQuery = this.getQuery();
-    const data = Array.isArray(result) ? result : result.result;
-    const total = Array.isArray(result) ? undefined : result.total;
-
+    const data: T[] = Array.isArray(result) ? result : result[this.state.dataKey];
+    const total = Array.isArray(result) ? undefined : result[this.state.totalKey];
+    let hasMore = true;
+    if (Array.isArray(result)) {
+      if (!limit || result.length <= limit) {
+        hasMore = false;
+      }
+    } else {
+      if (result[this.state.hasMoreKey] === true) {
+        hasMore = true;
+      } else if (
+        result[this.state.hasMoreKey] === false ||
+        !limit ||
+        data.length <= limit ||
+        (total && total <= limit + offset)
+      ) {
+        hasMore = false;
+      }
+    }
     // check if current query is still equals to the query used for fetching
     let same = isSameQuery(query, currentQuery);
 
     this.state.error = undefined;
     this.state.total = undefined;
-
     if (same) {
       // update metadata
       const itemResult: Item<T, M>[] = data.map((itemData) => {
@@ -182,7 +200,8 @@ export default class RemoteCollectionService<
 
       if (limit) {
         const items = this.state.items || Array(limit + offset);
-        items.splice(offset, limit, ...itemResult.slice(0, limit - 1));
+        items.splice(offset, limit, ...itemResult.slice(0, limit));
+
         this.state.items = items;
         if (data.length < limit) {
           this.state.total = this.state.items.length;
@@ -191,7 +210,11 @@ export default class RemoteCollectionService<
         this.state.items = itemResult;
         this.state.total = this.state.items.length;
       }
-
+      console.log('HAS MORE', hasMore);
+      this.state.hasMore = hasMore;
+      if (!hasMore) {
+        this.state.total = this.state.items.length;
+      }
       if (total !== undefined) {
         this.state.total = total;
       }
@@ -293,11 +316,16 @@ export default class RemoteCollectionService<
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Latest)
-  protected *_onLocationChange(location: Location) {
+  @reducer
+  protected _onLocationChange(location: Location) {
+    console.log('onLocationChange', this.state);
     const nextQuery = this._parseLocation(location);
     const resetData = this.state.items ? false : shouldResetData(this.getQuery(), nextQuery);
     this._setQuery(nextQuery);
-    yield this._fetch(nextQuery, resetData);
+    console.log('this[type]', nextQuery, this[types]._fetch.actionType);
+    this[dispatch]({
+      type: this[types]._fetch.actionType,
+      payload: toPayload([nextQuery, resetData]),
+    });
   }
 }
