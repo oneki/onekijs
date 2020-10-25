@@ -1,4 +1,3 @@
-import { original } from 'immer';
 import Router from '../app/Router';
 import { Location } from '../app/typings';
 import { reducer } from '../core/annotations';
@@ -28,11 +27,11 @@ import {
 } from './typings';
 import {
   defaultComparator,
-  defaultSerializer,
   isQueryFilterCriteria,
   parseQuery,
   rootFilterId,
   toCollectionItem,
+  urlSerializer,
   visitFilter,
 } from './utils';
 
@@ -202,7 +201,7 @@ export default abstract class CollectionService<
   @reducer
   refresh(): void {
     const path = this.state.router.location.pathname;
-    const query = defaultSerializer(this.getQuery());
+    const query = urlSerializer(this.getQuery());
     this.state.router.push(urlBuilder(path, {}, query));
   }
 
@@ -348,21 +347,12 @@ export default abstract class CollectionService<
   @reducer
   protected _addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId: QueryFilterId = rootFilterId): void {
     const filter = this.getFilter() || { id: rootFilterId, operator: 'and', criterias: [] };
-    console.log("before filter", original(filter));
     visitFilter(filter, (filter) => {
-      console.log(
-        'filter',
-        filter.id,
-        parentFilterId,
-        filterOrCriteria.id,
-        filter.criterias.map((f) => f.id),
-      );
       if (filter.id === parentFilterId) {
         let index = -1;
         if (filterOrCriteria.id !== undefined) {
           index = filter.criterias.findIndex((entry) => filterOrCriteria.id === entry.id);
         }
-        console.log('index', index);
         if (index === -1) {
           filter.criterias.push(filterOrCriteria);
         } else {
@@ -372,7 +362,6 @@ export default abstract class CollectionService<
       }
       return false;
     });
-    console.log("after filter", filter);
     this.state.filter = filter;
   }
 

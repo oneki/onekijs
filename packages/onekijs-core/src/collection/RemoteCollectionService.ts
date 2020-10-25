@@ -118,7 +118,6 @@ export default class RemoteCollectionService<
       const body = this.state.method === HttpMethod.Get ? undefined : query;
       const fetchOptions =
         method === HttpMethod.Get ? Object.assign({}, options, { query: this.serializeQuery(query) }) : options;
-      console.log('fetchOptions', fetchOptions);
       const result = yield fetcher(this.url, method, body, fetchOptions);
       if (loadingTask !== null) {
         yield cancel(loadingTask);
@@ -210,7 +209,6 @@ export default class RemoteCollectionService<
         this.state.items = itemResult;
         this.state.total = this.state.items.length;
       }
-      console.log('HAS MORE', hasMore);
       this.state.hasMore = hasMore;
       if (!hasMore) {
         this.state.total = this.state.items.length;
@@ -318,11 +316,9 @@ export default class RemoteCollectionService<
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @reducer
   protected _onLocationChange(location: Location) {
-    console.log('onLocationChange', this.state);
     const nextQuery = this._parseLocation(location);
     const resetData = this.state.items ? false : shouldResetData(this.getQuery(), nextQuery);
     this._setQuery(nextQuery);
-    console.log('this[type]', nextQuery, this[types]._fetch.actionType);
     this[dispatch]({
       type: this[types]._fetch.actionType,
       payload: toPayload([nextQuery, resetData]),

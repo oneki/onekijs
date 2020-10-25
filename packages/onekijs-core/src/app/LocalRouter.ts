@@ -38,10 +38,8 @@ export default class LocalRouter extends Router {
     } else {
       location = urlOrLocation;
     }
-    console.log("push", location, this.listeners);
     this._pushLocation(location, replace);
     Object.values(this.listeners).forEach((listener) => {
-      console.log("lister location", listener);
       listener(location);
     });
   }

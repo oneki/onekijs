@@ -30,8 +30,16 @@ export const defaultComparator = (a: any, b: any) => {
 };
 
 export const defaultSerializer: QuerySerializer = (query) => {
+  return _serializer(query, false);
+};
+
+export const urlSerializer: QuerySerializer = (query) => {
+  return _serializer(query, true);
+};
+
+const _serializer = (query: Query, url: boolean) => {
   const result: AnonymousObject = {
-    filter: serializeFilter(query.filter),
+    filter: url ? (query.filter ? btoa(JSON.stringify(query.filter)) : undefined) : serializeFilter(query.filter),
     sortBy: serializeSortBy(query.sortBy),
     offset: serializeOffset(query.offset),
     limit: serializeLimit(query.limit),
@@ -282,14 +290,16 @@ const handleQueryEntry = (key: string, value: string, result: Query): void => {
 };
 
 export const parseQueryFilter = (filter: string): QueryFilter => {
-  const result = getQueryFilter(filter);
-  if (result === undefined) {
-    return {
-      operator: 'and',
-      criterias: getQueryFilterOrCriterias(filter),
-    };
-  }
-  return result;
+  // const result = getQueryFilter(filter);
+  // if (result === undefined) {
+  //   return {
+  //     operator: 'and',
+  //     criterias: getQueryFilterOrCriterias(filter),
+  //   };
+  // }
+  // return result;
+  console.log('filter in base64 = ', filter);
+  return JSON.parse(atob(filter));
 };
 
 export const parseSortBy = (sortBy: string): QuerySortBy[] => {
