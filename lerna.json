@@ -17,7 +17,8 @@
   },
   "packages": [
     "packages/*",
-    "examples/*"
+    "examples/*",
+    "getting-started/*"
   ],
   "useWorkspaces": true
 }

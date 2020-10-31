@@ -16,7 +16,8 @@
   },
   "workspaces": [
     "packages/*",
-    "examples/*"
+    "examples/*",
+    "getting-started/*"
   ],
   "devDependencies": {
     "@babel/cli": "^7.10.1",
