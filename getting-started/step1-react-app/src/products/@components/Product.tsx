@@ -1,7 +1,5 @@
 import React, { FC } from 'react';
-import { Link } from 'react-router-dom';
-import Button from '../../../components/Button';
-import { ProductType } from '../../../data/product';
+import { ProductType } from '../index';
 
 type ProductOptions = {
   product: ProductType;
@@ -13,13 +11,13 @@ const Product: FC<ProductOptions> = ({ product, onClick, onNotify }) => {
   return (
     <div>
       <h3>
-        <Link to="/">{product.name}</Link>
+        <a href="/">{product.name}</a>
       </h3>
       {product.description && <p>Description: {product.description}</p>}
-      <Button onClick={onClick}>Share</Button>
+      <button onClick={onClick}>Share</button>
       {product.price > 700 && (
         <p>
-          <Button onClick={onNotify}>Notify me</Button>
+          <button onClick={onNotify}>Notify me</button>
         </p>
       )}
     </div>
