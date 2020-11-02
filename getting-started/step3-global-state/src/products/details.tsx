@@ -14,7 +14,15 @@ const ProductDetailsPage: FC = () => {
   const [cart, setCart] = useGlobalProp<ProductType[]>('cart', []); // TODO update to useGlobalState
 
   const product = products[+id];
-  return <ProductDetails product={product} onBuy={() => setCart(cart.concat(product))} />;
+  return (
+    <ProductDetails
+      product={product}
+      onBuy={() => {
+        setCart(cart.concat(product));
+        window.alert('Your product has been added to the cart!');
+      }}
+    />
+  );
 };
 
 export default ProductDetailsPage;

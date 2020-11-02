@@ -2,10 +2,6 @@ import React, { FC } from 'react';
 import { currency } from '../../@utils/format';
 import { ProductType } from '../../products/@components/Product';
 
-type CartOptions = {
-  cart: ProductType[];
-};
-
 const Cart: FC<CartOptions> = ({ cart }) => {
   return (
     <div>
@@ -19,6 +15,10 @@ const Cart: FC<CartOptions> = ({ cart }) => {
       ))}
     </div>
   );
+};
+
+type CartOptions = {
+  cart: ProductType[];
 };
 
 export default Cart;
