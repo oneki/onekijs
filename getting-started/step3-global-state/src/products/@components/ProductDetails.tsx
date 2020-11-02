@@ -4,9 +4,10 @@ import { ProductType } from './Product';
 
 type ProductDetailsOptions = {
   product: ProductType;
+  onBuy: () => void;
 };
 
-const ProductDetails: FC<ProductDetailsOptions> = ({ product }) => {
+const ProductDetails: FC<ProductDetailsOptions> = ({ product, onBuy }) => {
   return (
     <div>
       <h2>Product Details</h2>
@@ -15,6 +16,8 @@ const ProductDetails: FC<ProductDetailsOptions> = ({ product }) => {
         <h3>{product.name}</h3>
         <h4>{currency(product.price)}</h4>
         <p>{product.description}</p>
+
+        <button onClick={onBuy}>Buy</button>
       </div>
     </div>
   );
