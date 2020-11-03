@@ -181,6 +181,7 @@ export default class LoginService extends LocalService<LoginState> {
       const idp = getIdp(settings, idpName);
 
       // get the loginCallback route the settings
+      console.log('router path name', `${router.pathname}/callback`);
       const redirectUri = absoluteUrl(idp.loginCallbackRoute || `${router.pathname}/callback`);
       if (!isExternal(idp)) {
         throw Error(`IDP type ${idp.type} is not valid for an external authentication`);

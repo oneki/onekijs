@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { useParams } from 'react-router-dom';
 import ProductDetails from './@components/ProductDetails';
-import { products } from './list';
+import { products } from '.';
 
 type ProductDetailsParams = {
   id: string;

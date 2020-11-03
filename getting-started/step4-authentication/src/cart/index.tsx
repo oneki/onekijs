@@ -1,4 +1,4 @@
-import { useGlobalSelector } from 'onekijs';
+import { secure, useGlobalSelector } from 'onekijs';
 import React, { FC } from 'react';
 import { ProductType } from '../products/@components/Product';
 import Cart from './@components/Cart';
@@ -10,4 +10,4 @@ const CartPage: FC = () => {
   return <Cart cart={cart} />;
 };
 
-export default CartPage;
+export default secure(CartPage);
