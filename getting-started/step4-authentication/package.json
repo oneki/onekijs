@@ -32,5 +32,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "https://code.oneki.org:4000"
+  "proxy": "http://code.oneki.org:4000"
 }
