@@ -115,6 +115,11 @@
     color: white;
     margin-right: 10px;
   }
+
+  .app-top-bar-right .logout {
+    margin-left: 4px;
+    color: white;
+  }
   
   /* Top Bar */
   

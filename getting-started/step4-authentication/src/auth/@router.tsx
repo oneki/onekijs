@@ -1,14 +1,14 @@
 import React from 'react';
 import { useRouteMatch, Switch, Route } from 'react-router-dom';
 import AuthPage from '.';
-import AuthCallbackPage from './callback';
+import AuthLogoutPage from './logout';
 const AuthRouter = (): JSX.Element => {
   const match = useRouteMatch();
   console.log('match', match);
   return (
     <Switch>
-      <Route path={`${match.path}/callback`}>
-        <AuthCallbackPage />
+      <Route path={`${match.path}/logout`}>
+        <AuthLogoutPage />
       </Route>
       <Route path={match.path}>
         <AuthPage />
