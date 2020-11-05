@@ -5,6 +5,9 @@ import AppLayout from './@layouts/AppLayout';
 import MainRouter from './@router';
 import './style.css';
 import settings from './settings';
+import { worker } from './__server__';
+
+worker.start();
 
 ReactDOM.render(
   <App settings={settings}>

@@ -11,6 +11,9 @@
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1"
   },
+  "devDependencies": {
+    "msw": "^0.21.3"
+  },
   "peerDependencies": {
     "tslib": "^2.0.3"
   },
@@ -31,6 +34,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "proxy": "https://code.oneki.org:4000"
+  }
 }
