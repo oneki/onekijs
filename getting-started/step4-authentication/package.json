@@ -9,9 +9,7 @@
     "onekijs": "^0.8.7",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.1"
-  },
-  "devDependencies": {
+    "react-scripts": "3.4.1",
     "msw": "^0.21.3"
   },
   "peerDependencies": {
