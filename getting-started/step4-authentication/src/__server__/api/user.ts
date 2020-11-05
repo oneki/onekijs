@@ -12,7 +12,7 @@ const userInfoHandler = rest.get<UserInfoResponse>('/userinfo', (req, res, ctx) 
   }
   return res(
     ctx.json({
-      user,
+      username: user,
     }),
   );
 });

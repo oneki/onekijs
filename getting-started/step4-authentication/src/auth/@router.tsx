@@ -4,7 +4,6 @@ import AuthPage from '.';
 import AuthLogoutPage from './logout';
 const AuthRouter = (): JSX.Element => {
   const match = useRouteMatch();
-  console.log('match', match);
   return (
     <Switch>
       <Route path={`${match.path}/logout`}>
