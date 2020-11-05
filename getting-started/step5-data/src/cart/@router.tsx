@@ -1,0 +1,16 @@
+import React from 'react';
+import { useRouteMatch, Switch, Route } from 'react-router-dom';
+import CartPage from '.';
+
+const CartRouter = (): JSX.Element => {
+  const match = useRouteMatch();
+  return (
+    <Switch>
+      <Route path={match.path}>
+        <CartPage />
+      </Route>
+    </Switch>
+  );
+};
+
+export default CartRouter;
