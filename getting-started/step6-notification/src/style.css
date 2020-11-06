@@ -177,7 +177,53 @@
   .success {
     color: green;
   }
-  
+
+  /* Snackbar / Toast taken from https://www.w3schools.com/howto/howto_js_snackbar.asp */
+  .snackbar {
+    visibility: visible;
+    min-width: 250px;
+    margin-left: -125px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 2px;
+    padding: 16px;
+    padding-right: 25px;
+    padding-top: 20px;
+    position: fixed;
+    z-index: 1;
+    left: 50%;
+  }
+
+  .snackbar .close {
+    position: absolute;
+    top: 0px;
+    right: 3px;
+    cursor: pointer;
+    padding: 5px
+  }
+
+  .snackbar.error {
+    background-color: #FFBABA;
+  }
+  .snackbar.error span {
+    color: #D8000C;
+  }  
+  .snackbar.error .close:hover {
+    background-color: #fca9a9;
+  }
+
+  .snackbar.success {
+    background-color: #DFF2BF;
+  }
+  .snackbar.success span {
+    color: #4F8A10;
+  }  
+  .snackbar.success .close:hover {
+    background-color: #c2dd93;
+  }
+
+
   
   /*
   Copyright Google LLC. All Rights Reserved.
