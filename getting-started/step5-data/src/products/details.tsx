@@ -1,9 +1,9 @@
-import { useDelete, useGlobalProp, usePost } from 'onekijs';
-import React, { FC, useState } from 'react';
+import { usePost } from 'onekijs';
+import React, { FC } from 'react';
 import { useParams } from 'react-router-dom';
-import ProductDetails from './@components/ProductDetails';
 import { products } from '.';
 import { ProductType } from '../__server__/api/dto/product';
+import ProductDetails from './@components/ProductDetails';
 
 type ProductDetailsParams = {
   id: string;
@@ -11,7 +11,7 @@ type ProductDetailsParams = {
 
 const ProductDetailsPage: FC = () => {
   const { id } = useParams<ProductDetailsParams>();
-  const [submit, loading] = usePost<ProductType>('/cart/products', {
+  const [submit] = usePost<ProductType>('/cart/products', {
     onSuccess: () => {
       window.alert('Product added succesfully to the cart!');
     },

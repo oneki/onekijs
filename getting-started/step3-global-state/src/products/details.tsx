@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { ProductType } from './@components/Product';
 import ProductDetails from './@components/ProductDetails';
 import { products } from '.';
+import { STATE_CART } from '../@utils/constants';
 
 type ProductDetailsParams = {
   id: string;
@@ -11,7 +12,7 @@ type ProductDetailsParams = {
 
 const ProductDetailsPage: FC = () => {
   const { id } = useParams<ProductDetailsParams>();
-  const [cart, setCart] = useGlobalProp<ProductType[]>('cart', []); // TODO update to useGlobalState
+  const [cart, setCart] = useGlobalProp<ProductType[]>(STATE_CART, []); // TODO update to useGlobalState
 
   const product = products[+id];
   return (
