@@ -1,8 +1,7 @@
 import React from 'react';
-import { useRouteMatch, Route } from 'react-router-dom';
+import { useRouteMatch, Switch, Route } from 'react-router-dom';
 import ProductDetailsPage from './details';
 import ProductsPage from '.';
-import { Switch } from 'onekijs';
 
 const ProductsRouter = (): JSX.Element => {
   const match = useRouteMatch();

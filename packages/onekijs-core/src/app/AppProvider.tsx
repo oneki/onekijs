@@ -4,6 +4,7 @@ import ContainerContext from '../core/ContainerContext';
 import useLazyRef from '../core/useLazyRef';
 import { detectLocale } from '../i18n/utils';
 import AppContext, { DefaultAppContext } from './AppContext';
+import AppErrorBoundary from './AppErrorBoundary';
 import { AppProviderProps } from './typings';
 import useGlobalSelector from './useGlobalSelector';
 
@@ -16,6 +17,7 @@ const AppProvider: FC<AppProviderProps> = ({
   services,
   children,
   store,
+  ErrorBoundaryComponent,
 }) => {
   const reduxLocale = useGlobalSelector('i18n.locale');
   const container = useLazyRef<Container>(() => {
@@ -48,7 +50,12 @@ const AppProvider: FC<AppProviderProps> = ({
 
   return (
     <ContainerContext.Provider value={container.current}>
-      <DefaultAppContext.Provider value={appContext}>{children}</DefaultAppContext.Provider>
+      <DefaultAppContext.Provider value={appContext}>
+        {ErrorBoundaryComponent && (
+          <AppErrorBoundary ErrorBoundaryComponent={ErrorBoundaryComponent}>{children}</AppErrorBoundary>
+        )}
+        {!ErrorBoundaryComponent && children}
+      </DefaultAppContext.Provider>
     </ContainerContext.Provider>
   );
 };

@@ -18,6 +18,7 @@ export {
   LocationChangeCallback,
   AppErrorCallback,
   AppSuccessCallback,
+  ErrorBoundaryComponentProps,
 } from './app/typings';
 export { default as useGlobalSelector, useReduxSelector } from './app/useGlobalSelector';
 export { default as useGlobalState } from './app/useGlobalState';

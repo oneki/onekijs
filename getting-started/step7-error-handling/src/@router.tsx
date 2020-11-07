@@ -1,6 +1,5 @@
-import { Switch } from 'onekijs';
 import React from 'react';
-import { Redirect, Route } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import AuthRouter from './auth/@router';
 import CartRouter from './cart/@router';
 import ProductsRouter from './products/@router';
