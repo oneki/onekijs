@@ -3,9 +3,8 @@ import React, { FC } from 'react';
 import { Link } from 'react-router-dom';
 
 const Navbar: FC = () => {
-  const [T] = useTranslation();
+  const [T, , locale] = useTranslation();
   const [loggedUser] = useSecurityContext('username');
-  const i18nService = useI18nService();
   return (
     <div className="app-top-bar">
       <Link to="/">
@@ -27,17 +26,25 @@ const Navbar: FC = () => {
           <T>Checkout</T>
         </Link>
         <div className="lg">
-          <button className="link" onClick={() => i18nService.changeLocale('en')}>
-            en
-          </button>
-          |
-          <button className="link" onClick={() => i18nService.changeLocale('fr')}>
-            fr
-          </button>
+          <LocaleLink locale="en" selected={locale === 'en'} />|<LocaleLink locale="fr" selected={locale === 'fr'} />
         </div>
       </div>
     </div>
   );
+};
+
+const LocaleLink: FC<LocaleLinkOptions> = ({ locale, selected }) => {
+  const i18nService = useI18nService();
+  return (
+    <button className={`link ${selected ? 'selected' : ''}`} onClick={() => i18nService.changeLocale(locale)}>
+      {locale}
+    </button>
+  );
+};
+
+type LocaleLinkOptions = {
+  locale: string;
+  selected: boolean;
 };
 
 export default Navbar;

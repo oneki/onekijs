@@ -5,6 +5,7 @@ import { currency } from '../../@utils/format';
 import { CartType } from '../../__server__/api/dto/cart';
 
 const Cart: FC<CartOptions> = ({ cart }) => {
+  const nbItems = cart.products.length;
   const [T] = useTranslation();
   return (
     <div>
@@ -22,9 +23,18 @@ const Cart: FC<CartOptions> = ({ cart }) => {
           </span>
         </div>
       ))}
-      {cart.products.length === 0 && (
+      {nbItems === 0 && (
         <h4>
-          <T>There is no item in the shopping cart !</T>
+          <T>
+            There is <u>no item</u> in the shopping cart !
+          </T>
+        </h4>
+      )}
+      {nbItems > 0 && (
+        <h4>
+          <T count={nbItems}>
+            There is <u>{{ nbItems }} item</u> in the shopping cart !
+          </T>
         </h4>
       )}
       <p>
