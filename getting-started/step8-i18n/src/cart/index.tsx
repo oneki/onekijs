@@ -1,26 +1,30 @@
-import { secure, useDelete, useGet } from 'onekijs';
+import { secure, useDelete, useGet, useTranslation } from 'onekijs';
 import React, { FC } from 'react';
 import { URL_CART } from '../@utils/constants';
 import { CartResponse } from '../__server__/api/dto/cart';
 import Cart from './@components/Cart';
 
 const CartPage: FC = () => {
-  // retrieve the content of the cart from the server
+  const [T, t] = useTranslation();
   const [cart, loading, refresh] = useGet<CartResponse>(URL_CART);
   const [deleleCart] = useDelete(URL_CART, {
     onSuccess: () => {
       refresh();
     },
     onError: (error) => {
-      window.alert(`An error occured while cleaning the cart: ${error.message}`);
+      window.alert(`${t('An error occured while cleaning the cart')}: ${error.message}`);
     },
   });
   return (
     <div>
-      {loading && <p>Loading ...</p>}
+      {loading && (
+        <p>
+          <T>Loading</T> ...
+        </p>
+      )}
       <div>
         <button className="button" onClick={() => deleleCart()}>
-          Empty the cart
+          <T>Empty the cart</T>
         </button>
       </div>
       {cart && <Cart cart={cart} />}

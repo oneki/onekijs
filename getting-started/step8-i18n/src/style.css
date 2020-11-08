@@ -1,0 +1,265 @@
+/* Global Styles */
+
+* {
+    font-family: 'Roboto', Arial, sans-serif;
+    color: #616161;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  body {
+    margin: 0;
+  }
+  
+  .container {
+    display: flex;
+    flex-direction: row;
+    padding: 0 16px;
+  }
+  
+  router-outlet + *  {
+    padding: 0 16px;
+  }
+  
+  /* Text */
+  
+  h1 {
+    font-size: 32px;
+  }
+  
+  h2 {
+    font-size: 20px;
+  }
+  
+  h1, h2 {
+    font-weight: lighter;
+  }
+  
+  p {
+    font-size: 14px;
+  }
+  
+  /* Hyperlink */
+  
+  a {
+    cursor: pointer;
+    color: #1976d2;
+    text-decoration: none;
+  }
+  
+  a:hover {
+    opacity: 0.8;
+  }
+  
+  /* Input */
+  
+  input {
+    font-size: 14px;
+    border-radius: 2px;
+    padding: 8px;
+    margin-bottom: 16px;
+    border: 1px solid #BDBDBD;
+  }
+  
+  label {
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    display: block;
+    text-transform: uppercase;
+  }
+  
+  /* Button */
+  .button, button {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    border-radius: 2px;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: #1976d2;
+    color: white;
+    border: none;
+  }
+  
+  .button:hover, button:hover {
+    opacity: 0.8;
+    font-weight: normal;
+  }
+  
+  .button:disabled, button:disabled {
+    opacity: 0.5;
+    cursor: auto;
+  }
+  
+  /* Fancy Button */
+  
+  .app-top-bar-right {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .fancy-button {
+    background-color: white;
+    color: #1976d2;
+  }
+  
+  .fancy-button i.material-icons {
+    color: #1976d2;
+    padding-right: 4px;
+  }
+
+  .app-top-bar-right .user {
+    color: white;
+    margin-right: 10px;
+  }
+
+  .app-top-bar-right .logout {
+    margin-left: 4px;
+    color: white;
+  }
+  
+  /* Top Bar */
+  
+  .app-top-bar {
+    width: 100%;
+    height: 68px;
+    background-color: #1976d2;
+    padding: 16px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .app-top-bar h1 {
+    color: white;
+    margin: 0;
+  }
+  
+  /* Checkout Cart, Shipping Prices */
+  
+  .cart-item, .shipping-item {
+    width: 100%;
+    min-width: 400px;
+    max-width: 450px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 16px 32px;
+    margin-bottom: 8px;
+    border-radius: 2px;
+    background-color: #EEEEEE;
+  }
+
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+  }
+
+  .login-form {
+    width: 400px;
+  }
+
+  .login-form input {
+    width: 100%;
+  }
+
+  .error {
+    color: red;
+  }
+
+  .success {
+    color: green;
+  }
+
+  /* Snackbar / Toast taken from https://www.w3schools.com/howto/howto_js_snackbar.asp */
+  .snackbar {
+    visibility: visible;
+    min-width: 250px;
+    margin-left: -125px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 2px;
+    padding: 16px;
+    padding-right: 25px;
+    padding-top: 20px;
+    position: fixed;
+    z-index: 1;
+    left: 50%;
+  }
+
+  .snackbar .close {
+    position: absolute;
+    top: 0px;
+    right: 3px;
+    cursor: pointer;
+    padding: 5px
+  }
+
+  .snackbar.error {
+    background-color: #FFBABA;
+  }
+  .snackbar.error span {
+    color: #D8000C;
+  }  
+  .snackbar.error .close:hover {
+    background-color: #fca9a9;
+  }
+
+  .snackbar.success {
+    background-color: #DFF2BF;
+  }
+  .snackbar.success span {
+    color: #4F8A10;
+  }  
+  .snackbar.success .close:hover {
+    background-color: #c2dd93;
+  }
+
+  .error-boundary-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    
+  }
+
+  .error-boundary-container div.error {
+    background-color: #FFBABA;
+    padding: 10px;
+    margin-bottom: 20px;
+    width: 400px;
+  }
+
+  button.link {
+    background: none!important;
+    border: none;
+    padding: 0!important;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .app-top-bar-right button.link {
+    color: white;
+    margin: 0 5px;
+  }
+
+  .app-top-bar-right .lg {
+    margin-left: 10px;
+    color: white;
+  }
+
+  
+  /*
+  Copyright Google LLC. All Rights Reserved.
+  Use of this source code is governed by an MIT-style license that
+  can be found in the LICENSE file at http://angular.io/license
+  */
