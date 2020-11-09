@@ -118,6 +118,7 @@ export {
   generateRandomString,
   generateUniqueId,
   lcfirst,
+  mergeString,
   toKebabCase,
   regexIndexOf,
   trimStart,

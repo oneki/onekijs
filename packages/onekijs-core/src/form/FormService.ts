@@ -293,7 +293,7 @@ export default class FormService extends LocalService<FormState> {
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Latest)
+  @saga(SagaEffect.Every)
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   *setValue(fieldName: string, value: any) {
     const async = yield this.validateAll({

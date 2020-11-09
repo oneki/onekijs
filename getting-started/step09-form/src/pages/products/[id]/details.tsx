@@ -1,7 +1,7 @@
 import { useNotificationService, usePost, useTranslation } from 'onekijs';
 import React, { FC } from 'react';
 import { useParams } from 'react-router-dom';
-import { products } from '..';
+import { products } from '../../products';
 import { URL_ADD_PRODUCT } from '../../@libs/constants';
 import { ProductType } from '../../../__server__/api/dto/product';
 import ProductDetails from '../@components/ProductDetails';
