@@ -1,22 +1,17 @@
 import { App } from 'onekijs';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import AppLayout from './@layouts/AppLayout';
-import MainRouter from './@router';
-import './style.css';
+import ErrorBoundary from './pages/@components/ErrorBoundary';
+import RootRouter from './pages/@router';
 import settings from './settings';
+import './style.css';
 import { worker } from './__server__';
-import ErrorBoundary from './@components/ErrorBoundary';
 
 worker.start();
 
 ReactDOM.render(
   <App settings={settings} ErrorBoundaryComponent={ErrorBoundary}>
-    {/* AppLayout is a layout common to all pages */}
-    <AppLayout>
-      {/* The routes are defined in the file src/@router.tsx */}
-      <MainRouter />
-    </AppLayout>
+    <RootRouter />
   </App>,
   document.getElementById('root'),
 );

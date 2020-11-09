@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Navbar from './@components/Navbar';
-import ProductsPage from './products';
+import Navbar from './pages/@components/Navbar';
+import ProductsPage from './pages/products';
 import './style.css';
 
 ReactDOM.render(

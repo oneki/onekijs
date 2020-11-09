@@ -1,29 +1,34 @@
 import React, { FC } from 'react';
 import { Link } from 'react-router-dom';
-import Button from '../../../components/Button';
-import { ProductType } from '../../../data/product';
 
 interface ProductProps {
   product: ProductType;
+  id: number;
   onClick: () => void;
   onNotify: () => void;
 }
 
-const Product: FC<ProductProps> = ({ product, onClick, onNotify }) => {
+const Product: FC<ProductProps> = ({ product, id, onClick, onNotify }) => {
   return (
     <div>
       <h3>
-        <Link to="/">{product.name}</Link>
+        <Link to={`/products/${id}`}>{product.name}</Link>
       </h3>
       {product.description && <p>Description: {product.description}</p>}
-      <Button onClick={onClick}>Share</Button>
+      <button onClick={onClick}>Share</button>
       {product.price > 700 && (
         <p>
-          <Button onClick={onNotify}>Notify me</Button>
+          <button onClick={onNotify}>Notify me</button>
         </p>
       )}
     </div>
   );
 };
+
+export interface ProductType {
+  name: string;
+  price: number;
+  description?: string;
+}
 
 export default Product;

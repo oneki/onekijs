@@ -1,21 +1,16 @@
 import { App } from 'onekijs';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import AppLayout from './@layouts/AppLayout';
-import MainRouter from './@router';
-import './style.css';
+import RootRouter from './pages/@router';
 import settings from './settings';
+import './style.css';
 import { worker } from './__server__';
 
 worker.start();
 
 ReactDOM.render(
   <App settings={settings}>
-    {/* AppLayout is a layout common to all pages */}
-    <AppLayout>
-      {/* The routes are defined in the file src/@router.tsx */}
-      <MainRouter />
-    </AppLayout>
+    <RootRouter />
   </App>,
   document.getElementById('root'),
 );
