@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useMemo } from 'react';
 import useAppContext from '../app/useAppContext';
-import useGlobalSelector from '../app/useGlobalSelector';
+import useGlobalProp from '../app/useGlobalProp';
 import BasicError from '../core/BasicError';
 import { AnonymousObject } from '../core/typings';
 import { stringifyJsx } from '../core/utils/jsx';
@@ -15,14 +15,14 @@ const useTranslation = (
 ): [FC<TranslationProps>, (content: string | JSX.Element, alias?: string, count?: number) => any, string, boolean] => {
   const locale: string = useLocale();
   const appContextTranslations = get(useAppContext(), 'i18n.translations');
-  const reduxTranslations = useGlobalSelector(`i18n.translations.${locale}`);
+  const reduxTranslations = useGlobalProp(`i18n.translations.${locale}`);
 
   const translations: AnonymousObject = useMemo(() => {
     return Object.assign({}, appContextTranslations, reduxTranslations);
   }, [appContextTranslations, reduxTranslations]);
 
   const appContextNs = get(useAppContext(), 'i18n.ns');
-  const reduxNs = useGlobalSelector(`i18n.ns.${locale}`);
+  const reduxNs = useGlobalProp(`i18n.ns.${locale}`);
 
   const nsLoaded = useMemo(() => {
     return [...new Set([...(appContextNs || []), ...(reduxNs || [])])];
@@ -45,7 +45,7 @@ const useTranslation = (
     return nsRequired.filter((ns) => !nsLoaded.includes(ns));
   }, [nsRequired, nsLoaded]);
 
-  const fetching: boolean = useGlobalSelector('i18.fetching') || false;
+  const fetching: boolean = useGlobalProp('i18.fetching') || false;
 
   const t = useCallback(
     (content: string | JSX.Element, alias?: string, count = 1) => {

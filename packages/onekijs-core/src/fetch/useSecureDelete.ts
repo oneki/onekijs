@@ -1,4 +1,4 @@
-import useGlobalSelector from '../app/useGlobalSelector';
+import useGlobalProp from '../app/useGlobalProp';
 import { AppFetchOptions, AppExtraFetchOptions } from './typings';
 import useDelete from './useDelete';
 
@@ -6,8 +6,8 @@ const useSecureDelete = (
   url: string,
   options: AppFetchOptions = {},
 ): [(extraOptions?: AppExtraFetchOptions) => void, boolean] => {
-  const authKey = useGlobalSelector('settings.auth.key') || 'auth';
-  const auth = useGlobalSelector(authKey);
+  const authKey = useGlobalProp('settings.auth.key') || 'auth';
+  const auth = useGlobalProp(authKey);
   options.auth = auth;
   return useDelete(url, options);
 };

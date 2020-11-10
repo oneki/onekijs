@@ -1,4 +1,4 @@
-import useGlobalSelector from '../app/useGlobalSelector';
+import useGlobalProp from '../app/useGlobalProp';
 import { AppFetchOptions, AppExtraFetchOptions, FetchMethod } from './typings';
 import usePostPutPatch from './usePostPutPatch';
 
@@ -7,8 +7,8 @@ const useSecurePostPutPatch = <T = any>(
   method: FetchMethod,
   options: AppFetchOptions<T> = {},
 ): [(body: T, extraOptions?: AppExtraFetchOptions<T>) => Promise<void>, boolean] => {
-  const authKey = useGlobalSelector('settings.auth.key') || 'auth';
-  const auth = useGlobalSelector(authKey);
+  const authKey = useGlobalProp('settings.auth.key') || 'auth';
+  const auth = useGlobalProp(authKey);
   options.auth = auth;
   return usePostPutPatch(url, method, options);
 };

@@ -6,7 +6,7 @@ import { detectLocale } from '../i18n/utils';
 import AppContext, { DefaultAppContext } from './AppContext';
 import AppErrorBoundary from './AppErrorBoundary';
 import { AppProviderProps } from './typings';
-import useGlobalSelector from './useGlobalSelector';
+import useGlobalProp from './useGlobalProp';
 
 const AppProvider: FC<AppProviderProps> = ({
   settings,
@@ -19,7 +19,7 @@ const AppProvider: FC<AppProviderProps> = ({
   store,
   ErrorBoundaryComponent,
 }) => {
-  const reduxLocale = useGlobalSelector('i18n.locale');
+  const reduxLocale = useGlobalProp('i18n.locale');
   const container = useLazyRef<Container>(() => {
     const container = new Container();
     if (services) {

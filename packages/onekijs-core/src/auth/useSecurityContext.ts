@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import useGlobalSelector from '../app/useGlobalSelector';
+import useGlobalProp from '../app/useGlobalProp';
 import useAuthService from './useAuthService';
 import { get } from '../core/utils/object';
 
@@ -11,7 +11,7 @@ function useSecurityContext<T = any>(selector: string, defaultValue: T): [T, boo
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 function useSecurityContext(selector?: string, defaultValue?: any): [any, boolean] {
   const [loading, setLoading] = useState(false);
-  const securityContext = useGlobalSelector('auth.securityContext');
+  const securityContext = useGlobalProp('auth.securityContext');
   const authService = useAuthService();
 
   useEffect(() => {

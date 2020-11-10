@@ -1,5 +1,5 @@
 import React, { ComponentPropsWithoutRef, ElementType, FC, memo } from 'react';
-import useGlobalSelector from '../app/useGlobalSelector';
+import useGlobalProp from '../app/useGlobalProp';
 import DefaultAuthErrorComponent from './DefaultAuthErrorComponent';
 import useSecurityContext from './useSecurityContext';
 
@@ -10,7 +10,7 @@ export const secure = (
 ): FC<ComponentPropsWithoutRef<typeof Component>> => {
   const SecureComponent: FC<ComponentPropsWithoutRef<typeof Component>> = memo((props) => {
     const [securityContext, loading] = useSecurityContext();
-    const auth = useGlobalSelector('auth');
+    const auth = useGlobalProp('auth');
     // const [error, setError] = useState(null);
     const ErrorComponent = options.ErrorComponent || DefaultAuthErrorComponent;
     const error = {
