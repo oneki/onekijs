@@ -1,16 +1,20 @@
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import AppLayout from './@layouts/AppLayout';
-import AuthRouter from './auth/@router';
-import CartRouter from './cart/@router';
 import ProductsRouter from './products/@router';
+import CartPage from './cart';
+import LoginPage from './login';
+import LogoutPage from './logout';
 import SignupPage from './signup';
 
 const RootRouter = (): JSX.Element => {
   return (
     <Switch>
-      <Route path="/auth">
-        <AuthRouter />
+      <Route path="/login">
+        <LoginPage />
+      </Route>
+      <Route path="/logout">
+        <LogoutPage />
       </Route>
       <Route>
         <AppLayout>
@@ -22,7 +26,7 @@ const RootRouter = (): JSX.Element => {
               <ProductsRouter />
             </Route>
             <Route path="/cart">
-              <CartRouter />
+              <CartPage />
             </Route>
             <Route>
               <Redirect to="/products" />

@@ -7,7 +7,7 @@ export default {
     url: '/locales', // the URL to retrieves the JSON files with the translations
   },
   routes: {
-    login: '/auth',
+    login: '/login',
   },
   idp: {
     default: {

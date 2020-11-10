@@ -16,7 +16,7 @@ const Navbar: FC = () => {
         {loggedUser && (
           <div className="user">
             {loggedUser}{' '}
-            <Link className="logout" to="/auth/logout">
+            <Link className="logout" to="/logout">
               [<T>Log out</T>]
             </Link>
           </div>

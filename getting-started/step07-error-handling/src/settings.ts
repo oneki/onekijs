@@ -4,7 +4,7 @@ export default {
   routes: {
     // redirect to /auth if non authenticated user
     // tries to access a secured page
-    login: '/auth',
+    login: '/login',
   },
   idp: {
     default: {

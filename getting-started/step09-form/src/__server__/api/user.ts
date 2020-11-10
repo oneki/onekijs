@@ -6,7 +6,6 @@ interface UserInfoResponse {
 }
 
 const userInfoHandler = rest.get<UserInfoResponse>('/userinfo', (req, res, ctx) => {
-  console.log("inside user info");
   const { username } = req.cookies;
   const user = username || sessionStorage.getItem(SESSION_STORAGE_USERNAME_KEY); // Specific code to work on CodeSandbox
   if (!user) {
