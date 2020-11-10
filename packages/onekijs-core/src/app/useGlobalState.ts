@@ -1,24 +1,26 @@
 import { useCallback } from 'react';
-import { DefaultRootState, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { get } from '../core/utils/object';
 import useGlobalService from '../core/useGlobalService';
 import GlobalStateService from './GlobalStateService';
+import { SetGlobalStateFunction } from './typings';
 
-const defaultSelector = (state: unknown) => state;
-
-const useGlobalState = (
-  selector: (state: DefaultRootState) => unknown,
-  defaultValue: unknown,
-): [unknown, (k: string, value: unknown) => void] => {
-  let state = useSelector(selector || defaultSelector);
-  state = state === undefined ? defaultValue : state;
+function useGlobalState<T = any>(key: string): [T | undefined, SetGlobalStateFunction<T>];
+function useGlobalState<T = any>(key: string, defaultValue: undefined): [T | undefined, SetGlobalStateFunction<T>];
+function useGlobalState<T = any>(key: string, defaultValue: null): [T | null, SetGlobalStateFunction<T>];
+function useGlobalState<T = any>(key: string, defaultValue: T): [T, SetGlobalStateFunction<T>];
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+function useGlobalState(key: string, defaultValue?: any): [any, (value?: any) => void] {
+  let value = useSelector((state) => get(state, key));
+  value = value === undefined ? defaultValue : value;
   const service = useGlobalService(GlobalStateService);
-  const setState = useCallback(
-    (key: string, value: unknown) => {
+  const setValue = useCallback(
+    (value) => {
       service.setState(key, value);
     },
-    [service],
+    [service, key],
   );
-  return [state, setState];
-};
+  return [value, setValue];
+}
 
 export default useGlobalState;

@@ -19,9 +19,9 @@ export {
 } from './app/typings';
 export { default as useAppContext } from './app/useAppContext';
 export { default as useGlobalProp } from './app/useGlobalProp';
-export { default as useGlobalSelector, useReduxSelector } from './app/useGlobalSelector';
+export { default as useGlobalSelector } from './app/useGlobalSelector';
 export { default as useGlobalState } from './app/useGlobalState';
-export { default as useGlobalStateModifier } from './app/useGlobalStateModifier';
+export { default as useGlobalModifier } from './app/useGlobalModifier';
 export { default as useHistory } from './app/useHistory';
 export { useLocalState } from './app/useLocalState';
 export { default as useLocation } from './app/useLocation';

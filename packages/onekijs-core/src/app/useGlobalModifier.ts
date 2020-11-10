@@ -1,8 +1,9 @@
 import { useCallback } from 'react';
 import useGlobalService from '../core/useGlobalService';
 import GlobalStateService from './GlobalStateService';
+import { GlobalModifierFunction } from './typings';
 
-const useGlobalStateModifier = (): ((key: string, value: unknown) => void) => {
+const useGlobalModifier = (): GlobalModifierFunction => {
   const service = useGlobalService(GlobalStateService);
   const setState = useCallback(
     (key: string, value: unknown) => {
@@ -13,4 +14,4 @@ const useGlobalStateModifier = (): ((key: string, value: unknown) => void) => {
   return setState;
 };
 
-export default useGlobalStateModifier;
+export default useGlobalModifier;

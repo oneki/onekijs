@@ -1,26 +1,14 @@
-import { useCallback } from 'react';
-import { DefaultRootState, useSelector } from 'react-redux';
-import { get } from '../core/utils/object';
+import { useSelector } from 'react-redux';
+import { GlobalSelectorFunction } from './typings';
 
-function useGlobalSelector<T = any>(selector: string | ((state: DefaultRootState) => unknown)): T | undefined;
-function useGlobalSelector<T = any>(
-  selector: string | ((state: DefaultRootState) => unknown),
-  defaultValue: undefined,
-): T | undefined;
-function useGlobalSelector<T = any>(
-  selector: string | ((state: DefaultRootState) => unknown),
-  defaultValue: null,
-): T | null;
-function useGlobalSelector<T = any>(selector: string | ((state: DefaultRootState) => unknown), defaultValue: T): T;
+function useGlobalSelector<T = any>(selector: GlobalSelectorFunction): T | undefined;
+function useGlobalSelector<T = any>(selector: GlobalSelectorFunction, defaultValue: undefined): T | undefined;
+function useGlobalSelector<T = any>(selector: GlobalSelectorFunction, defaultValue: null): T | null;
+function useGlobalSelector<T = any>(selector: GlobalSelectorFunction, defaultValue: T): T;
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-function useGlobalSelector(selector: string | ((state: DefaultRootState) => unknown), defaultValue?: any): any {
-  const selectorFunction = useCallback(() => {
-    return typeof selector === 'string' ? (state: DefaultRootState) => get(state, selector) : selector;
-  }, [selector]);
-
-  const value = useSelector(selectorFunction());
+function useGlobalSelector(selector: GlobalSelectorFunction, defaultValue?: any): any {
+  const value = useSelector(selector);
   return value === undefined ? defaultValue : value;
 }
 
 export default useGlobalSelector;
-export const useReduxSelector = useGlobalSelector; // alias

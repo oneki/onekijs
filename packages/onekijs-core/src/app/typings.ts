@@ -1,5 +1,6 @@
 import qs from 'query-string';
 import { ComponentType, ElementType, ErrorInfo } from 'react';
+import { DefaultRootState } from 'react-redux';
 import { Action, AnyAction, Store } from 'redux';
 import { Saga } from 'redux-saga';
 import BasicError from '../core/BasicError';
@@ -72,3 +73,7 @@ export type LocationChangeCallback = (location: Location) => void;
 export type AppResultCallback<T = any> = string | [string, string] | ((result: T, context: AppContext) => void);
 export type AppErrorCallback<T extends BasicError = BasicError> = AppResultCallback<T>;
 export type AppSuccessCallback<T = any> = AppResultCallback<T>;
+
+export type SetGlobalStateFunction<T> = (value?: T | null | undefined) => void;
+export type GlobalModifierFunction = (key: string, value: unknown) => void;
+export type GlobalSelectorFunction = (state: DefaultRootState) => unknown;
