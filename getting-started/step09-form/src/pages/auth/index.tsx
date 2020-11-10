@@ -1,4 +1,4 @@
-import { Input, SubmitButton, useForm, useLogin, useTranslation } from 'onekijs';
+import { Input, Link, SubmitButton, useForm, useLogin, useTranslation } from 'onekijs';
 import React, { FC } from 'react';
 
 const AuthPage: FC = () => {
@@ -10,6 +10,12 @@ const AuthPage: FC = () => {
     <div className="login-container">
       <Form className="login-form">
         {error && <div className="error">Error: {error.message}</div>}
+        <div className="no-account">
+          <T>Dont have an account yet ?</T>
+          <Link to="/signup">
+            <T>Sign up here!</T>
+          </Link>
+        </div>
         <div>
           <label>
             <T>Username</T>

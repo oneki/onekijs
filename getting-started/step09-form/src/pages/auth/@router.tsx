@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRouteMatch, Switch, Route } from 'react-router-dom';
+import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import AuthPage from '.';
 import AuthLogoutPage from './logout';
 const AuthRouter = (): JSX.Element => {

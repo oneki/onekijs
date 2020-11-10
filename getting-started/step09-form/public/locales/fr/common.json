@@ -32,5 +32,9 @@
   "Checkout": "Panier",
   "Username is mandatory": "L'identifiant est obligatoire",
   "Password is mandatory": "Le mot de passe est obligatoire",
-  "Username must contain only alphanumeric chars (max 20)": "L'identifiant ne doit contenir que des caractères alphanumériques (max 20)"
+  "Username must contain only alphanumeric chars (max 20)": "L'identifiant ne doit contenir que des caractères alphanumériques (max 20)",
+  "User created successfully !": "L'utilisateur a été créé avec succès !",
+  "Dont have an account yet ?": "Pas encore de compte ?",
+  "Sign up here!": "Créer un compte ici!",
+  "Username already exists": "L'identifiant existe déjà"
 }

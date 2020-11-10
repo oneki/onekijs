@@ -276,6 +276,10 @@ input.o-input-error {
   border-color: red;
 }
 
+.signup-container {
+  padding: 20px;
+}
+
 /*
   Copyright Google LLC. All Rights Reserved.
   Use of this source code is governed by an MIT-style license that

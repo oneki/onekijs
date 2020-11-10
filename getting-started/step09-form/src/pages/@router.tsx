@@ -4,6 +4,7 @@ import AppLayout from './@layouts/AppLayout';
 import AuthRouter from './auth/@router';
 import CartRouter from './cart/@router';
 import ProductsRouter from './products/@router';
+import SignupPage from './signup';
 
 const RootRouter = (): JSX.Element => {
   return (
@@ -14,6 +15,9 @@ const RootRouter = (): JSX.Element => {
       <Route>
         <AppLayout>
           <Switch>
+            <Route path="/signup">
+              <SignupPage />
+            </Route>
             <Route path="/products">
               <ProductsRouter />
             </Route>

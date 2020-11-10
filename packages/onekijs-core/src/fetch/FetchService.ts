@@ -1,4 +1,4 @@
-import { cancel, delay, fork } from 'redux-saga/effects';
+import { call, cancel, delay, fork } from 'redux-saga/effects';
 import { reducer, saga } from '../core/annotations';
 import Service from '../core/Service';
 import { SagaEffect } from '../core/typings';
@@ -47,7 +47,7 @@ export default class FetchService<S extends FetchState = FetchState> extends Ser
       yield this.fetchSuccess(result); // to update the store and trigger a re-render.
       const onSuccess = options.onSuccess;
       if (onSuccess) {
-        yield onSuccess(result);
+        yield call(onSuccess, result);
       }
     } catch (e) {
       if (process.env.NODE_ENV === 'development') {
@@ -59,7 +59,7 @@ export default class FetchService<S extends FetchState = FetchState> extends Ser
       yield this.fetchError(e);
       const onError = options.onError;
       if (onError) {
-        yield onError(e);
+        yield call(onError, e);
       } else {
         throw e;
       }
