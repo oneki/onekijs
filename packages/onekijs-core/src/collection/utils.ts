@@ -1,3 +1,4 @@
+import { __metadata } from 'tslib';
 import BasicError from '../core/BasicError';
 import { AnonymousObject, Primitive } from '../core/typings';
 import { isNull, shallowEqual } from '../core/utils/object';
@@ -17,7 +18,6 @@ import {
   QuerySerializerResult,
   QuerySortBy,
   QuerySortDir,
-  typeOfCollectionItem,
 } from './typings';
 
 let filterUid = 0;
@@ -51,7 +51,7 @@ const _serializer = (query: Query, url: boolean) => {
   const params = query.params;
   if (params) {
     Object.keys(params).forEach((key) => {
-      result[key] = `${encodeURIComponent(String(params[key]))}}`;
+      result[key] = `${encodeURIComponent(String(params[key]))}`;
     });
   }
 
@@ -68,12 +68,34 @@ export const isCollectionLoading = <T, M>(collection: Collection<T, M>): boolean
   );
 };
 
-export const isItemLoading = (meta: ItemMeta): boolean => {
-  return !!(meta && meta.loadingStatus === LoadingStatus.Loading);
+export const isItem = <T, M extends ItemMeta>(itemOrMeta: Item<T, M> | M): itemOrMeta is Item<T, M> => {
+  return (itemOrMeta as any).meta !== undefined;
 };
 
-export const isItemDeprecated = (meta: ItemMeta): boolean => {
-  return !!(meta && (meta.loadingStatus === LoadingStatus.Loading || meta.loadingStatus === LoadingStatus.Deprecated));
+export const isItemLoading = <T, M extends ItemMeta>(itemOrMeta?: Item<T, M> | M): boolean => {
+  if (itemOrMeta === undefined) {
+    return false;
+  }
+  if (isItem(itemOrMeta)) {
+    return !!(itemOrMeta.meta && itemOrMeta.meta.loadingStatus === LoadingStatus.Loading);
+  } else {
+    return itemOrMeta.loadingStatus === LoadingStatus.Loading;
+  }
+};
+
+export const isItemDeprecated = <T, M extends ItemMeta>(itemOrMeta?: Item<T, M> | M): boolean => {
+  if (itemOrMeta === undefined) {
+    return false;
+  }
+  if (isItem(itemOrMeta)) {
+    return !!(
+      itemOrMeta.meta &&
+      (itemOrMeta.meta.loadingStatus === LoadingStatus.Loading ||
+        itemOrMeta.meta.loadingStatus === LoadingStatus.Deprecated)
+    );
+  } else {
+    return itemOrMeta.loadingStatus === LoadingStatus.Loading || itemOrMeta.loadingStatus === LoadingStatus.Deprecated;
+  }
 };
 
 export const isQueryFilter = (value: QueryFilterOrCriteria | QueryFilterOrCriteria[]): value is QueryFilter => {
@@ -265,7 +287,7 @@ const handleQueryEntry = (key: string, value: string, result: Query): void => {
     case 'filter':
       result.filter = parseQueryFilter(value);
       break;
-    case 'sortBy':
+    case 'sortby':
       result.sortBy = parseSortBy(value);
       break;
     case 'offset':
@@ -298,7 +320,6 @@ export const parseQueryFilter = (filter: string): QueryFilter => {
   //   };
   // }
   // return result;
-  console.log('filter in base64 = ', filter);
   return JSON.parse(atob(filter));
 };
 
@@ -415,8 +436,10 @@ export const visitFilter = (filter: QueryFilter, visitor: (filter: QueryFilter) 
   return stop;
 };
 
-export const isCollection = <T, M extends ItemMeta>(data: T[] | Collection<T, M>): data is Collection<T, M> => {
-  return !Array.isArray(data);
+export const isCollection = <T, M extends ItemMeta>(
+  data: T[] | Collection<T, M> | string,
+): data is Collection<T, M> => {
+  return !Array.isArray(data) && !(typeof data === 'string');
 };
 
 export const toCollectionItem = <T, M>(data?: T, adapter?: CollectionItemAdapter<T, M>): Item<T, M> => {
@@ -436,6 +459,8 @@ export const toCollectionItem = <T, M>(data?: T, adapter?: CollectionItemAdapter
     }
     if (!isNull(data.text)) {
       return String(data.text);
+    } else if (typeof data === 'string') {
+      return data;
     } else {
       return undefined;
     }
@@ -443,7 +468,6 @@ export const toCollectionItem = <T, M>(data?: T, adapter?: CollectionItemAdapter
   if (adapter) {
     const adaptee = adapter(data);
     return Object.assign({ data }, adaptee, {
-      type: typeOfCollectionItem,
       id: adaptee.id === undefined ? getId(data) : String(adaptee.id),
     });
   }
@@ -453,6 +477,5 @@ export const toCollectionItem = <T, M>(data?: T, adapter?: CollectionItemAdapter
     meta: undefined,
     id: getId(data),
     text: getText(data),
-    type: typeOfCollectionItem,
   };
 };

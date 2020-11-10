@@ -177,6 +177,7 @@ export default abstract class CollectionService<
       fields: this.getFields(),
       search: this.getSearch(),
       sort: this.getSort(),
+      params: this.getParams(),
     };
   }
 
@@ -316,8 +317,33 @@ export default abstract class CollectionService<
     return this._formatFilter(this.state.filter);
   }
 
+  getFilterById(id: QueryFilterId): QueryFilterOrCriteria | undefined {
+    let result: QueryFilter | QueryFilterCriteria | undefined = undefined;
+    const filter = this._formatFilter(this.state.filter);
+    if (filter !== undefined) {
+      visitFilter(filter, (filter) => {
+        if (filter.id === id) {
+          result = filter;
+          return true;
+        }
+        for (const filterOrCriteria of filter.criterias) {
+          if (isQueryFilterCriteria(filterOrCriteria) && filter.id === id) {
+            result = filterOrCriteria;
+            return true;
+          }
+        }
+        return false;
+      });
+    }
+    return result;
+  }
+
   getOffset(): number | undefined {
     return this.state.offset;
+  }
+
+  getParam(key: string): any | undefined {
+    return get(this.state.params, key);
   }
 
   getParams(): AnonymousObject | undefined {
@@ -338,6 +364,14 @@ export default abstract class CollectionService<
 
   getSortBy(): QuerySortBy[] | undefined {
     return this._formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(this.state, 'sortBy'));
+  }
+
+  getSortByField(field: string): QuerySortBy | undefined {
+    const sorts = this.getSortBy();
+    if (sorts) {
+      return sorts.find((sort) => sort.field === field);
+    }
+    return undefined;
   }
 
   protected _adapt(data: T | undefined): Item<T, M> {
@@ -542,6 +576,11 @@ export default abstract class CollectionService<
   @reducer
   protected _setOffset(offset: number): void {
     this.state.offset = offset;
+  }
+
+  @reducer
+  protected _setParams(params: AnonymousObject): void {
+    this.state.params = params;
   }
 
   @reducer

@@ -164,14 +164,7 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
    */
   const submit = useCallback(
     (e?: SyntheticEvent): void => {
-      service.submit(
-        valuesRef.current,
-        validationsRef.current,
-        submit,
-        onSubmitRef.current,
-        formOptionsRef.current.onError,
-        formOptionsRef.current.onWarning,
-      );
+      service.setSubmitting(true);
       if (e) {
         e.preventDefault();
       }
@@ -506,6 +499,30 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
     }
   });
 
+  useEffect((): (() => void) => {
+    const submit = () => {
+      service.submit(
+        valuesRef.current,
+        validationsRef.current,
+        submit,
+        onSubmitRef.current,
+        formOptionsRef.current.onError,
+        formOptionsRef.current.onWarning,
+      );
+    };
+
+    const listener = (submitting: boolean) => {
+      if (submitting) {
+        submit();
+      }
+    };
+
+    service.onSubmittingChange(listener);
+
+    return (): void => {
+      service.offSubmittingChange(listener);
+    };
+  }, [service]);
   return result;
 };
 

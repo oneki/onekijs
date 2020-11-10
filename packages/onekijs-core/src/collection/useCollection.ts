@@ -20,16 +20,24 @@ import {
   Query,
   UseCollectionOptions,
 } from './typings';
-import { toCollectionItem } from './utils';
+import { isCollection, toCollectionItem } from './utils';
 
 const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
-  dataOrUrl: T[] | string,
+  dataSource: T[] | string | Collection<T, M>,
   options: UseCollectionOptions<T, M> = {},
 ): Collection<T, M> => {
   const initializedRef = useRef(false);
   let router = useOnekiRouter();
   if (!options.mutateUrl) {
     router = new LocalRouter();
+  }
+  let dataOrUrl: T[] | string;
+  if (isCollection(dataSource)) {
+    // we are going to create a fake collection (because hooks cannot be conditionals)
+    dataOrUrl = [];
+    options = {};
+  } else {
+    dataOrUrl = dataSource;
   }
   const ctor = Array.isArray(dataOrUrl) || options.fetchOnce ? LocalCollectionService : RemoteCollectionService;
   const [state, service] = useService<CollectionState<T, M>, CollectionService<T, M, CollectionState<T, M>>>(
@@ -74,7 +82,7 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
         adapter,
         comparator: options.comparator,
         dataKey: options.dataKey || 'data',
-        db: Array.isArray(dataOrUrl) ? dataOrUrl.map((data) => toCollectionItem(data, adapter)) : undefined,
+        db: Array.isArray(dataOrUrl) ? dataOrUrl.map((entry) => toCollectionItem(entry, adapter)) : undefined,
         fetchOptions,
         fields: options.initialFields,
         filter: options.initialFilter,
@@ -116,11 +124,15 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
       'getAdapter',
       'getFields',
       'getFilter',
+      'getFilterById',
       'getOffset',
+      'getParam',
+      'getParams',
       'getSearch',
       'getLimit',
       'getSort',
       'getSortBy',
+      'getSortByField',
       'load',
       'query',
       'refresh',
@@ -132,6 +144,7 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
       'setFields',
       'setItems',
       'setMeta',
+      'setParams',
       'sort',
       'sortBy',
     ].reduce((accumulator, method) => {
@@ -173,7 +186,7 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collection]);
 
-  return collection;
+  return isCollection(dataSource) ? dataSource : collection;
 };
 
 export default useCollection;

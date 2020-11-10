@@ -180,7 +180,16 @@ export default class RemoteCollectionService<
 
     this.state.error = undefined;
     this.state.total = undefined;
+
     if (same) {
+      // we have marked old items as loading. We need to mark them as loaded (even if they are not more in the list)
+      this._setLoading({
+        resetLimit: false,
+        resetData,
+        limit: query.limit,
+        offset: query.offset,
+        status: LoadingStatus.Loaded,
+      });
       // update metadata
       const itemResult: Item<T, M>[] = data.map((itemData) => {
         const item = this._adapt(itemData);

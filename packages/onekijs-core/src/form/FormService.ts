@@ -326,7 +326,9 @@ export default class FormService extends LocalService<FormState> {
     // compile the validations to get the status
     const { code, fields } = yield this.getContainerFieldValidation(validations, this.fields, '', false);
     yield this.touchAll();
-    yield this.setSubmitting(true);
+    if (!this.state.submitting) {
+      yield this.setSubmitting(true);
+    }
     switch (code) {
       case ValidationCode.Loading:
         this.onValidationChange(() => resubmit(), '', true);

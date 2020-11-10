@@ -1,4 +1,5 @@
 import React, { ComponentPropsWithoutRef, ElementType, FC, memo } from 'react';
+import useGlobalSelector from '../app/useGlobalSelector';
 import DefaultAuthErrorComponent from './DefaultAuthErrorComponent';
 import useSecurityContext from './useSecurityContext';
 
@@ -9,6 +10,7 @@ export const secure = (
 ): FC<ComponentPropsWithoutRef<typeof Component>> => {
   const SecureComponent: FC<ComponentPropsWithoutRef<typeof Component>> = memo((props) => {
     const [securityContext, loading] = useSecurityContext();
+    const auth = useGlobalSelector('auth');
     // const [error, setError] = useState(null);
     const ErrorComponent = options.ErrorComponent || DefaultAuthErrorComponent;
     const error = {
@@ -37,7 +39,7 @@ export const secure = (
           // Example: user doesn't have the required role
           return <ErrorComponent error={error} />;
         } else {
-          return <Component {...props} />;
+          return <Component {...props} securityContext={securityContext} auth={auth} />;
         }
       } else {
         return <ErrorComponent error={error} />;

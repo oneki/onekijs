@@ -1,11 +1,11 @@
-import { ItemMeta, UseCollectionOptions, Collection } from './typings';
+import { ItemMeta, UseCollectionOptions, Collection, List } from './typings';
 import useCollection from './useCollection';
 
 const useList = <T = any>(
-  dataOrUrl: T[] | string,
+  dataSource: T[] | string | List<T>,
   options: UseCollectionOptions<T, ItemMeta> = {},
 ): Collection<T, ItemMeta> => {
-  return useCollection<T, ItemMeta>(dataOrUrl, options);
+  return useCollection<T, ItemMeta>(dataSource, options);
 };
 
 export default useList;

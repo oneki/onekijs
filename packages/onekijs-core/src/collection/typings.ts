@@ -2,11 +2,9 @@ import Router from '../app/Router';
 import { Primitive, AnonymousObject } from '../core/typings';
 import { Fetcher, HttpMethod, FetchState, FetchOptions } from '../fetch/typings';
 
-export const typeOfCollectionItem = Symbol('typeof.collection.item');
-
 export type ChangeHandler<T> = (value: T) => void;
 
-export interface Collection<T, M extends ItemMeta> {
+export type Collection<T, M extends ItemMeta> = {
   addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId?: QueryFilterId): void;
   addFilterCriteria(
     field: string,
@@ -30,12 +28,15 @@ export interface Collection<T, M extends ItemMeta> {
   getAdapter(): CollectionItemAdapter<T, M> | undefined;
   getFields(): string[] | undefined;
   getFilter(): QueryFilter | undefined;
+  getFilterById(id: QueryFilterId): QueryFilterOrCriteria | undefined;
   getLimit(): number | undefined;
   getOffset(): number | undefined;
+  getParam(key: string): any;
   getParams(): AnonymousObject | undefined;
   getSearch(): Primitive | undefined;
   getSort(): QuerySortDir | undefined;
   getSortBy(): QuerySortBy[] | undefined;
+  getSortByField(field: string): QuerySortBy | undefined;
   hasMore: boolean;
   load(limit?: number, offset?: number): void;
   query(query: Query): void;
@@ -54,7 +55,7 @@ export interface Collection<T, M extends ItemMeta> {
   sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void;
   status: CollectionStatus;
   total?: number;
-}
+};
 
 export type CollectionFetcher<T> = Fetcher<CollectionFetcherResult<T>, Query | undefined>;
 
@@ -130,7 +131,6 @@ export type Item<T, M extends ItemMeta> = {
   meta?: M;
   id?: string;
   text?: string;
-  type: symbol;
 };
 
 export type ItemAdapter<T, M extends ItemMeta> = (
@@ -144,6 +144,8 @@ export type ItemAdapter<T, M extends ItemMeta> = (
 export type ItemMeta = {
   loadingStatus?: LoadingItemStatus;
 };
+
+export type List<T, M extends ItemMeta = ItemMeta> = Collection<T, M>;
 
 export type LoadingItemStatus = 'loading' | 'deprecated' | 'loaded';
 
@@ -196,7 +198,11 @@ export type QueryFilterCriteriaOperator =
   | 'i_like'
   | 'i_starts_with'
   | 'i_ends_with'
-  | 'i_regex';
+  | 'i_regex'
+  | 'gt'
+  | 'lt'
+  | 'gte'
+  | 'lte';
 
 export type QueryFilterCriteriaValue = Primitive | null;
 
