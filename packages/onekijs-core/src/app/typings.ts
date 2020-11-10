@@ -1,5 +1,5 @@
 import qs from 'query-string';
-import { ElementType } from 'react';
+import { ComponentType, ElementType, ErrorInfo } from 'react';
 import { Action, AnyAction, Store } from 'redux';
 import { Saga } from 'redux-saga';
 import BasicError from '../core/BasicError';
@@ -21,7 +21,13 @@ export interface AppProps {
   initialLocale?: string;
   translations?: AnonymousObject<AnonymousObject<string>>;
   i18nNs?: string[];
+  ErrorBoundaryComponent?: ComponentType<ErrorBoundaryComponentProps>;
 }
+
+export type ErrorBoundaryComponentProps = {
+  error?: Error;
+  errorInfo?: ErrorInfo;
+};
 
 export interface AppStateProps extends AppProps {
   router: Router;

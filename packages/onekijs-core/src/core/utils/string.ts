@@ -48,6 +48,10 @@ export function lcfirst(str?: string | null): string | undefined | null {
   return str;
 }
 
+export function mergeString(separator: string, ...str: (string | undefined | null)[]): string {
+  return str.filter((s) => !!s).join(separator);
+}
+
 export const regexIndexOf = (str: string, regex: RegExp, startpos = 0): number => {
   const indexOf = str.substring(startpos).search(regex);
   return indexOf >= 0 ? indexOf + startpos : indexOf;

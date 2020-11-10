@@ -15,6 +15,7 @@ export {
   AppSuccessCallback,
   Location,
   LocationChangeCallback,
+  ErrorBoundaryComponentProps,
 } from './app/typings';
 export { default as useAppContext } from './app/useAppContext';
 export { default as useGlobalProp } from './app/useGlobalProp';
@@ -237,8 +238,9 @@ export {
   generateUniqueId,
   hex2b64,
   lcfirst,
-  regexIndexOf,
+  mergeString,
   toKebabCase,
+  regexIndexOf,
   trim,
   trimEnd,
   trimStart,

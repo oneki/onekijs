@@ -17,6 +17,7 @@ const AppState: FC<AppStateProps> = ({
   services,
   LoadingComponent = DefaultLoadingComponent,
   children,
+  ErrorBoundaryComponent,
 }) => {
   const [loading, setLoading] = useState(isPromise(initialState) || isPromise(settings));
   const [appSettings, setAppSettings] = useState(isPromise(settings) ? null : settings);
@@ -78,6 +79,7 @@ const AppState: FC<AppStateProps> = ({
         translations={translations}
         i18nNs={i18nNs}
         services={services}
+        ErrorBoundaryComponent={ErrorBoundaryComponent}
       >
         {children}
       </AppProvider>

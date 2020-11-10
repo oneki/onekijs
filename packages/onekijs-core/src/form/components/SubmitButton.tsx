@@ -9,7 +9,7 @@ const SubmitButton: FC<SubmitButtonProps> = React.memo((props) => {
   const alt = [];
   if (code <= ValidationCode.Error) {
     alt.push([`Some fields are ${code === ValidationCode.Error ? 'in error' : 'loading'}`]);
-    disabled = true;
+    // disabled = true;
     Object.keys(fields).forEach((fieldName) => {
       alt.push(`<${fieldName}>: ${fields[fieldName]}`);
     });
@@ -22,7 +22,7 @@ const SubmitButton: FC<SubmitButtonProps> = React.memo((props) => {
   }
 
   return (
-    <button title={alt.join('\n')} {...props} disabled={disabled} type="submit">
+    <button title={alt.join('\n')} disabled={disabled} {...props} type="submit">
       {children}
     </button>
   );
