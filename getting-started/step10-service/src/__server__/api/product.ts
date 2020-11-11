@@ -7,6 +7,15 @@ const productAvailabilityHandler = rest.get<AvailabilityResponse>(
   '/products/:productId/availability',
   async (req, res, ctx) => {
     const { productId } = req.params;
+    if (productId === '2') {
+      return res(
+        ctx.delay(500),
+        ctx.status(500),
+        ctx.json({
+          message: 'SQL exception while retrieving the availability of the product',
+        } as any),
+      );
+    }
     const available = productId === '1' ? false : true;
     return res(
       ctx.delay(500),

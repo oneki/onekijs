@@ -28,10 +28,11 @@ export const asReducer: (reducer: AnyFunction<void>) => AnyFunction<void> = func
   return func;
 };
 
-export const doInject = <S extends State, T extends Service<S>>(ctor: Class<T>): { [serviceClass]: Class<T> } => {
-  return {
+export const inject = <S extends State, T extends Service<S>>(ctor: Class<T>): T => {
+  const result: unknown = {
     [serviceClass]: ctor,
   };
+  return result as T;
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types

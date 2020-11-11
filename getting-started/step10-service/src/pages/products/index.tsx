@@ -54,6 +54,7 @@ export const products: ProductType[] = [
     id: 2,
     name: 'Phone Invalid',
     price: 299,
+    description: '',
   },
 ];
 

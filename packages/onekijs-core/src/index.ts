@@ -161,7 +161,7 @@ export {
 export {
   asReducer,
   debounce,
-  doInject,
+  inject,
   every,
   latest,
   leading,

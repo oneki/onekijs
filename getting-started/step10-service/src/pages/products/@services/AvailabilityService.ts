@@ -1,4 +1,4 @@
-import { asyncGet, LocalService, reducer, saga, SagaEffect, service } from 'onekijs';
+import { asyncGet, inject, LocalService, NotificationService, reducer, saga, SagaEffect, service } from 'onekijs';
 
 export interface AvailabilityState {
   // a flag to indicate if a request is in flight
@@ -16,6 +16,13 @@ interface AvailabilityResponse {
 
 @service
 export default class AvailabilityService extends LocalService<AvailabilityState> {
+  notificationService = inject(NotificationService);
+
+  // constructor(notificationService: NotificationService) {
+  //   super();
+  //   // this.notificationService = notificationService;
+  // }
+
   @reducer
   setLoading(loading: boolean): void {
     // the state is immutable
@@ -33,8 +40,12 @@ export default class AvailabilityService extends LocalService<AvailabilityState>
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Latest)
   *checkAvailability(productId: number) {
-    yield this.setLoading(true);
-    const data: AvailabilityResponse = yield asyncGet(`/products/${productId}/availability`);
-    yield this.setData(data);
+    try {
+      yield this.setLoading(true);
+      const data: AvailabilityResponse = yield asyncGet(`/products/${productId}/availability`);
+      yield this.setData(data);
+    } catch (error) {
+      this.notificationService.error(error);
+    }
   }
 }
