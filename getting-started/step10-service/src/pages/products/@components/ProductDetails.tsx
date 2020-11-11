@@ -1,6 +1,7 @@
-import { useTranslation } from 'onekijs';
+import { useLocalService, useTranslation } from 'onekijs';
 import React, { FC } from 'react';
 import { currency } from '../../@libs/format';
+import AvailabilityService, { AvailabilityState } from '../@services/AvailabilityService';
 import { ProductType } from './Product';
 
 interface ProductDetailsProps {
@@ -8,8 +9,13 @@ interface ProductDetailsProps {
   onBuy: () => void;
 }
 
+const initialAvailabilityState: AvailabilityState = {
+  loading: false,
+};
+
 const ProductDetails: FC<ProductDetailsProps> = ({ product, onBuy }) => {
   const [T] = useTranslation();
+  const [availability, availabilityService] = useLocalService(AvailabilityService, initialAvailabilityState);
   return (
     <div>
       <h2>
@@ -26,10 +32,33 @@ const ProductDetails: FC<ProductDetailsProps> = ({ product, onBuy }) => {
         <p>
           <T>{product.description}</T>
         </p>
-
-        <button onClick={onBuy}>
-          <T>Buy</T>
-        </button>
+        <p>
+          <button onClick={onBuy}>
+            <T>Buy</T>
+          </button>
+        </p>
+        <p>
+          <button onClick={() => availabilityService.checkAvailability(product.id)}>
+            <T>Check availability</T>
+          </button>
+          <span className="availability">
+            {availability.loading && (
+              <span>
+                <T>Loading</T> ...
+              </span>
+            )}
+            {!availability.loading && availability.available === true && (
+              <span className="available">
+                <T>The product is available</T>
+              </span>
+            )}
+            {!availability.loading && availability.available === false && (
+              <span className="not-available">
+                <T>The product is not available</T>
+              </span>
+            )}
+          </span>
+        </p>
       </div>
     </div>
   );

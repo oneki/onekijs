@@ -36,5 +36,8 @@
   "User created successfully !": "User created successfully !",
   "Dont have an account yet ?": "Dont have an account yet ?",
   "Sign up here!": "Sign up here!",
-  "Username already exists": "Username already exists"
+  "Username already exists": "Username already exists",
+  "Check availability": "Check availability",
+  "The product is available": "The product is available",
+  "The product is not available": "The product is not available"
 }

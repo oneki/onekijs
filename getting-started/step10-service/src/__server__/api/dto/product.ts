@@ -9,3 +9,7 @@ export interface ProductType {
 
 export interface AddProductRequest extends ProductType {}
 export interface AddProductResponse extends CartType {}
+
+export interface AvailabilityResponse {
+  available: boolean;
+}

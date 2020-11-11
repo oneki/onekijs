@@ -36,5 +36,8 @@
   "User created successfully !": "L'utilisateur a été créé avec succès !",
   "Dont have an account yet ?": "Pas encore de compte ?",
   "Sign up here!": "Créer un compte ici!",
-  "Username already exists": "L'identifiant existe déjà"
+  "Username already exists": "L'identifiant existe déjà",
+  "Check availability": "Vérfier la disponibilité",
+  "The product is available": "Le produit est disponible",
+  "The product is not available": "Le produit n'est pas disponible"
 }
