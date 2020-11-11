@@ -1,16 +1,16 @@
 {
   "name": "step08-i18n",
-  "version": "0.8.7",
+  "version": "0.8.8",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
-    "onekijs": "^0.8.7",
+    "msw": "^0.21.3",
+    "onekijs": "^0.8.8",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.1",
-    "msw": "^0.21.3"
+    "react-scripts": "3.4.1"
   },
   "peerDependencies": {
     "tslib": "^2.0.3"

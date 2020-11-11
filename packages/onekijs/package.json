@@ -1,6 +1,6 @@
 {
   "name": "onekijs",
-  "version": "0.8.7",
+  "version": "0.8.8",
   "description": "Opiniated React framework built on top of Redux and React Router",
   "author": "oneki",
   "license": "MIT",
@@ -25,7 +25,7 @@
     "react": ">=16"
   },
   "dependencies": {
-    "onekijs-core": "^0.8.7",
+    "onekijs-core": "^0.8.8",
     "react-router-dom": "^5.1.2"
   },
   "husky": {

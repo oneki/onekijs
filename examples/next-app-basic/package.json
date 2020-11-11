@@ -1,6 +1,6 @@
 {
   "name": "next-app-basic",
-  "version": "0.8.7",
+  "version": "0.8.8",
   "private": true,
   "scripts": {
     "dev": "next",
@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "next": "9.3.6",
-    "onekijs-next": "^0.8.7",
+    "onekijs-next": "^0.8.8",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   }
