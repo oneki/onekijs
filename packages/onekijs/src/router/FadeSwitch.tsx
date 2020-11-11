@@ -5,16 +5,19 @@ import { TransitionStatus } from 'react-transition-group/Transition';
 
 type FadeSwitchProps = {
   duration?: number;
+  fadeOn?: 'pathnameChange' | 'urlChange';
 };
 
-const defaultDuration = 300;
+const defaultDuration = 150; //TODO get that via useSetting
+const defaultFadeOn = 'pathnameChange'; //TODO get that via useSetting
 
-const FadeSwitch: FC<FadeSwitchProps> = ({ duration, children }) => {
+const FadeSwitch: FC<FadeSwitchProps> = ({ duration = defaultDuration, children, fadeOn = defaultFadeOn }) => {
   const location = useLocation();
-  if (duration === undefined) duration = defaultDuration;
+  const key = fadeOn === 'pathnameChange' ? location.pathname : `${location.pathname}${location.search}`;
+
   return (
     <SwitchTransition>
-      <Transition key={location.key} appear={true} timeout={duration}>
+      <Transition key={key} appear={true} timeout={duration}>
         {(state) => (
           <div style={transitionStyles(state, duration)}>
             <RouterSwitch location={location}>{children}</RouterSwitch>
@@ -39,7 +42,7 @@ const transitionStyles = (state: TransitionStatus, duration = defaultDuration) =
     case 'exiting':
       return {
         opacity: 0,
-        transition: `opacity 0ms ease-out`,
+        transition: `opacity ${duration}ms ease-out`,
       };
     case 'exited':
       return {
