@@ -3,8 +3,8 @@ import React, { FC } from 'react';
 import { useParams } from 'react-router-dom';
 import { products } from '..';
 import { ProductType } from '../../../__server__/api/dto/product';
-import { URL_ADD_PRODUCT } from '../../@utils/constants';
-import ProductDetails from '../@components/ProductDetails';
+import { URL_ADD_PRODUCT } from '../../../modules/core/libs/constants';
+import ProductDetails from '../../../modules/products/components/ProductDetails';
 
 type ProductDetailsParams = {
   productId: string;

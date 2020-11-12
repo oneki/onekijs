@@ -2,9 +2,9 @@ import { useGlobalState } from 'onekijs';
 import React, { FC } from 'react';
 import { useParams } from 'react-router-dom';
 import { products } from '..';
-import { STATE_CART } from '../../@libs/constants';
-import { ProductType } from '../@components/Product';
-import ProductDetails from '../@components/ProductDetails';
+import { STATE_CART } from '../../../modules/core/libs/constants';
+import { ProductType } from '../../../modules/products/components/Product';
+import ProductDetails from '../../../modules/products/components/ProductDetails';
 
 type ProductDetailsParams = {
   productId: string;

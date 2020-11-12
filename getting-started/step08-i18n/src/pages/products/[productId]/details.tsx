@@ -2,9 +2,9 @@ import { useNotificationService, usePost, useTranslation } from 'onekijs';
 import React, { FC } from 'react';
 import { useParams } from 'react-router-dom';
 import { products } from '..';
-import { URL_ADD_PRODUCT } from '../../@libs/constants';
+import { URL_ADD_PRODUCT } from '../../../modules/core/libs/constants';
+import ProductDetails from '../../../modules/products/components/ProductDetails';
 import { ProductType } from '../../../__server__/api/dto/product';
-import ProductDetails from '../@components/ProductDetails';
 
 type ProductDetailsParams = {
   productId: string;

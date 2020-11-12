@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
-import Product, { ProductType } from './@components/Product';
+import Product from '../../modules/products/components/Product';
+import { ProductType } from '../../__server__/api/dto/product';
 
 const ProductsPage: FC = () => {
   return (

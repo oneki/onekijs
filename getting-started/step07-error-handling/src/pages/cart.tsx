@@ -1,8 +1,8 @@
 import { secure, useDelete, useGet } from 'onekijs';
 import React, { FC } from 'react';
-import { URL_CART } from './@libs/constants';
+import { URL_CART } from '../modules/core/libs/constants';
 import { CartResponse } from '../__server__/api/dto/cart';
-import Cart from './@components/Cart';
+import Cart from '../modules/core/components/Cart';
 
 const CartPage: FC = () => {
   // retrieve the content of the cart from the server
