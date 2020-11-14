@@ -4,7 +4,7 @@ import BasicError from '../core/BasicError';
 import LocalService from '../core/LocalService';
 import { ErrorCallback, SagaEffect, SuccessCallback } from '../core/typings';
 import { get } from '../core/utils/object';
-import { absoluteUrl } from '../core/utils/url';
+import { absoluteUrl } from '../router/utils';
 import { asyncHttp } from '../fetch/utils';
 import NotificationService from '../notification/NotificationService';
 import AuthService from './AuthService';

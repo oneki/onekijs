@@ -1,13 +1,14 @@
 import React from 'react';
-import I18nService from './I18nService';
-import { AnonymousObject } from '../core/typings';
-import { get, isNull } from '../core/utils/object';
-import { AppSettings, Location } from '../app/typings';
-import { parseJsx } from '../core/utils/jsx';
-import { isBrowser } from '../core/utils/browser';
+import { AppSettings } from '../app/typings';
 import BasicError from '../core/BasicError';
-import AppContext from '../app/AppContext';
-import { toLocation } from '../core/utils/url';
+import { AnonymousObject } from '../core/typings';
+import { isBrowser } from '../core/utils/browser';
+import { parseJsx } from '../core/utils/jsx';
+import { get, isNull } from '../core/utils/object';
+import { toLocation } from '../router/utils';
+import { Location } from '../router/typings';
+import I18nService from './I18nService';
+import { I18n } from './typings';
 
 export const buildJsx = (
   str: string,
@@ -145,7 +146,10 @@ export const handleModifiers = (input: string, value: any, locale: string, i18nS
   return value;
 };
 
-export const toI18nLocation = (urlOrLocation: string | Location, { i18n, settings }: AppContext): Location => {
+export const toI18nLocation = (
+  urlOrLocation: string | Location,
+  { settings, i18n }: { settings: AppSettings; i18n: I18n },
+): Location => {
   // TODO
   let location: Location;
   if (typeof urlOrLocation === 'string') {

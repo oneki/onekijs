@@ -1,6 +1,6 @@
 import React, { FC, useEffect } from 'react';
 import { AuthErrorProps } from './typings';
-import useOnekiRouter from '../app/useOnekiRouter';
+import useOnekiRouter from '../router/useOnekiRouter';
 import useSetting from '../app/useSetting';
 
 const DefaultAuthErrorComponent: FC<AuthErrorProps> = ({ error }) => {

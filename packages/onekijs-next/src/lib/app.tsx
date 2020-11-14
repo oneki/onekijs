@@ -1,36 +1,25 @@
-import { getRouteMatcher } from 'next/dist/next-server/lib/router/utils/route-matcher';
-import { getRouteRegex } from 'next/dist/next-server/lib/router/utils/route-regex';
+// import { getRouteMatcher } from 'next/dist/next-server/lib/router/utils/route-matcher';
+// import { getRouteRegex } from 'next/dist/next-server/lib/router/utils/route-regex';
 import Error from 'next/error';
-import Router, { useRouter } from 'next/router';
 import {
   AppProvider,
   createReduxStore,
   DefaultLoadingComponent,
-  flattenTranslations,
   formatSettings,
   isPromise,
-  toRelativeUrl,
+  simpleMergeDeep,
+  toLocation,
+  useLazyRef,
 } from 'onekijs-core';
 import PropTypes from 'prop-types';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { Provider } from 'react-redux';
-import NextRouter from './router';
-
-const useNextRouter = useRouter || (() => null);
-
-const useRouterSync = (onekiRouter) => {
-  const nextRouter = useNextRouter();
-  if (typeof window !== 'undefined') {
-    onekiRouter.sync(nextRouter);
-  }
-
-  useEffect(() => {
-    onekiRouter.onLocationChange();
-  }, [nextRouter, onekiRouter]);
-};
+import { AppProps } from '../typings';
+import NextRouter from './router/NextRouter';
+import { useRouterSync } from './router/useRouterSync';
 
 let init = false;
-export const App = React.memo(
+export const App: FC<AppProps> = React.memo(
   ({
     settings = {},
     store,
@@ -44,8 +33,8 @@ export const App = React.memo(
     translations,
     i18nNs,
   }) => {
-    const router = useMemo(() => new NextRouter(), []);
-    useRouterSync(router);
+    const routerRef = useLazyRef(() => new NextRouter([]));
+    useRouterSync(routerRef.current);
 
     const [loading, setLoading] = useState(isPromise(initialState) || isPromise(settings));
     const [appSettings, setAppSettings] = useState(isPromise(settings) ? null : settings);
@@ -60,16 +49,16 @@ export const App = React.memo(
     const formattedSettings = useMemo(() => {
       return formatSettings(appSettings);
     }, [appSettings]);
-    router.settings = formattedSettings;
+    routerRef.current.settings = formattedSettings;
 
-    const route = useMemo(() => {
-      if (pageProps.routes && nextRouter.route === '/404') {
-        return pageProps.routes.find((route) => {
-          const routeRegex = getRouteRegex(route);
-          return getRouteMatcher(routeRegex)(nextRouter.asPath);
-        });
-      }
-    }, [pageProps.routes, nextRouter.route, nextRouter.asPath]);
+    // const route = useMemo(() => {
+    //   if (pageProps.routes && nextRouter.route === '/404') {
+    //     return pageProps.routes.find((route) => {
+    //       const routeRegex = getRouteRegex(route);
+    //       return getRouteMatcher(routeRegex)(nextRouter.asPath);
+    //     });
+    //   }
+    // }, [pageProps.routes, nextRouter.route, nextRouter.asPath]);
 
     useEffect(() => {
       if (!init) {
@@ -95,24 +84,22 @@ export const App = React.memo(
     }, [settings, initialState]);
 
     useEffect(() => {
-      if (route) {
-        Router.replace(route, toRelativeUrl(router.location, { hash: false }), {
+      if (pageProps.is404) {
+        routerRef.current.replace(toLocation(window.location.href), {
           shallow: true,
         });
       }
-    }, [router, route]);
-
-    translations = useMemo(() => {
-      const result = flattenTranslations(pageProps.translations || {});
-      if (translations) Object.assign(result, flattenTranslations(translations));
-      return result;
-    }, [pageProps.translations, translations]);
+    }, [routerRef, pageProps.is404]);
 
     i18nNs = useMemo(() => {
-      const ns = Object.keys(pageProps.translations || {});
-      if (i18nNs) ns.push(i18nNs);
-      return ns;
-    }, [pageProps.translations, i18nNs]);
+      return Object.keys(pageProps.translations || {})
+        .concat(Object.keys(translations || {}))
+        .concat(i18nNs || []);
+    }, [pageProps.translations, translations, i18nNs]);
+
+    translations = useMemo(() => {
+      return simpleMergeDeep(Object.assign({}, pageProps.translations), translations);
+    }, [pageProps.translations, translations]);
 
     initialLocale = useMemo(() => {
       if (pageProps.locale) return pageProps.locale;
@@ -124,7 +111,7 @@ export const App = React.memo(
     }
 
     if (nextRouter.route === '/404') {
-      if (route || !router.location) return null;
+      if (route || !routerRef.location) return null;
       return <Error code={404} />;
     }
 
@@ -135,7 +122,7 @@ export const App = React.memo(
     return (
       <Provider store={appStore}>
         <AppProvider
-          router={router}
+          router={routerRef}
           settings={formattedSettings}
           initialLocale={initialLocale}
           translations={translations}

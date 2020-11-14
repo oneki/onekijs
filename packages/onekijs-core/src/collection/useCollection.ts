@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
-import LocalRouter from '../app/LocalRouter';
-import useOnekiRouter from '../app/useOnekiRouter';
+import LocalRouter from '../router/LocalRouter';
+import useOnekiRouter from '../router/useOnekiRouter';
 import { AnonymousObject } from '../core/typings';
 import useService from '../core/useService';
 import { omit } from '../core/utils/object';

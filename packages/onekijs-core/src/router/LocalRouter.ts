@@ -1,6 +1,6 @@
-import { toLocation } from '../core/utils/url';
+import { toLocation } from './utils';
 import Router from './Router';
-import { Location, LocationChangeCallback } from './typings';
+import { Location, LocationChangeCallback, UnregisterCallback } from './typings';
 
 let uid = 0;
 export default class LocalRouter extends Router {
@@ -13,6 +13,10 @@ export default class LocalRouter extends Router {
     this.replace({ pathname: '' });
   }
 
+  getLinkComponent(): JSX.Element {
+    throw new Error('Method not implemented.');
+  }
+
   push(urlOrLocation: string | Location): void {
     this._pushOrReplace(urlOrLocation, false);
   }
@@ -21,14 +25,10 @@ export default class LocalRouter extends Router {
     this._pushOrReplace(urlOrLocation, true);
   }
 
-  listen(callback: LocationChangeCallback): string {
+  listen(callback: LocationChangeCallback): UnregisterCallback {
     const id = `listener-${++uid}`;
     this.listeners[id] = callback;
-    return id;
-  }
-
-  unlisten(id: string): void {
-    delete this.listeners[id];
+    return () => delete this.listeners[id];
   }
 
   _pushOrReplace(urlOrLocation: string | Location, replace: boolean): void {

@@ -1,8 +1,8 @@
 import { ID } from '../core/typings';
 import React from 'react';
-import Router from './Router';
 import { CONTEXT_ID, AppSettings, AppStore } from './typings';
 import { I18n } from '../i18n/typings';
+import Router from '../router/Router';
 
 export default class AppContext {
   static [ID] = CONTEXT_ID;

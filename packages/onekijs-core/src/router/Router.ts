@@ -1,13 +1,17 @@
 import produce from 'immer';
 import { ParsedQuery } from 'query-string';
+import { AppSettings } from '../app/typings';
+import { AnonymousObject } from '../core/typings';
 import { get } from '../core/utils/object';
 import { I18n } from '../i18n/typings';
-import { AppSettings, Location, LocationChangeCallback } from './typings';
+import { LinkProps, Location, RouterPushOptions, UnregisterCallback, LocationChangeCallback } from './typings';
 
 export default abstract class Router {
   settings: AppSettings = {};
   i18n: I18n = {};
   history: Location[];
+  params: AnonymousObject = {};
+  route?: string;
 
   constructor() {
     this.history = [];
@@ -41,42 +45,19 @@ export default abstract class Router {
     return this.location ? this.location.state : null;
   }
 
+  abstract back(delta?: number): void;
+
   deleteOrigin(): void {
     localStorage.removeItem('onekijs.from');
   }
 
+  abstract forward(delta?: number): void;
+
+  abstract getLinkComponent(props: LinkProps): JSX.Element;
+
   getOrigin(): { from: string } {
     const from = localStorage.getItem('onekijs.from') || get<string>(this.settings, 'routes.home', '/');
     return { from };
-  }
-
-  /**
-   * url can be a string or a location.
-   * If location, the format is the following
-   * {
-   *   url: string, // example: /users/1?test=1&test2#h=3&h2
-   *   route: string, // example: /users/[id]
-   *   pathname: string, // example: /users/1
-   *   query: obj, // example: {test:1,test2:null}
-   *   hash: obj // example: {h:3, h2:null}
-   *   state: obj // example: {key1: 'value1'}
-   * }
-   */
-  abstract push(urlOrLocation: string | Location): void;
-
-  abstract replace(urlOrLocation: string | Location): void;
-
-  saveOrigin(force = true): void {
-    const currentValue = localStorage.getItem('onekijs.from');
-    if (!force && currentValue) return;
-
-    let from = get(this.settings, 'routes.home', '/');
-    const previous = this.previousLocation;
-    if (previous && previous.relativeurl) {
-      from = previous.relativeurl;
-    }
-
-    localStorage.setItem('onekijs.from', from);
   }
 
   /**
@@ -90,10 +71,36 @@ export default abstract class Router {
    *   state: obj // example: {key1: 'value1'}
    * }
    */
-  abstract listen(callback: LocationChangeCallback): any;
+  abstract listen(callback: LocationChangeCallback): UnregisterCallback;
 
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  abstract unlisten(handler: any): void;
+  /**
+   * url can be a string or a location.
+   * If location, the format is the following
+   * {
+   *   url: string, // example: /users/1?test=1&test2#h=3&h2
+   *   route: string, // example: /users/[id]
+   *   pathname: string, // example: /users/1
+   *   query: obj, // example: {test:1,test2:null}
+   *   hash: obj // example: {h:3, h2:null}
+   *   state: obj // example: {key1: 'value1'}
+   * }
+   */
+  abstract push(urlOrLocation: string | Location, options?: RouterPushOptions): void;
+
+  abstract replace(urlOrLocation: string | Location, options?: RouterPushOptions): void;
+
+  saveOrigin(force = true): void {
+    const currentValue = localStorage.getItem('onekijs.from');
+    if (!force && currentValue) return;
+
+    let from = get(this.settings, 'routes.home', '/');
+    const previous = this.previousLocation;
+    if (previous && previous.relativeurl) {
+      from = previous.relativeurl;
+    }
+
+    localStorage.setItem('onekijs.from', from);
+  }
 
   _pushLocation(location: Location, replace = false): void {
     this.history = produce(this.history, (draft) => {

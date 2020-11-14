@@ -1,8 +1,8 @@
-import { trimEnd, trimStart } from './string';
+import { trimEnd, trimStart } from '../core/utils/string';
 import qs from 'query-string';
-import { isNull } from './object';
-import { AnonymousObject } from '../typings';
-import { Location } from '../../app/typings';
+import { isNull } from '../core/utils/object';
+import { AnonymousObject } from '../core/typings';
+import { Location } from './typings';
 
 export function urlBuilder(path: string, params: AnonymousObject = {}, query: AnonymousObject = {}): string {
   const esc = encodeURIComponent;

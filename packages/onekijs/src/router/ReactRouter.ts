@@ -1,6 +1,13 @@
 import { History, Location as ReactRouterLocation, LocationListener, LocationState } from 'history';
-import produce from 'immer';
-import { AppRouter, toLocation, toUrl, Location, LocationChangeCallback } from 'onekijs-core';
+import {
+  AppRouter,
+  LinkProps,
+  Location,
+  LocationChangeCallback,
+  toLocation,
+  toUrl,
+  UnregisterCallback,
+} from 'onekijs-core';
 // import AppRouter from '../lib/app/AppRouter';
 // import { Location, LocationChangeCallback } from '../lib/app/typings';
 // import { toLocation, toUrl } from '../lib/core/utils/url';
@@ -17,6 +24,22 @@ export class ReactRouter extends AppRouter {
         this.pushLocation(reactRouterLocation);
       });
     }
+  }
+
+  back(delta = 1): void {
+    if (this.reactRouterHistory) {
+      this.reactRouterHistory.go(-delta);
+    }
+  }
+
+  forward(delta = 1): void {
+    if (this.reactRouterHistory) {
+      this.reactRouterHistory.go(delta);
+    }
+  }
+
+  getLinkComponent(props: LinkProps): JSX.Element {
+    throw new Error('Method not implemented.' + props);
   }
 
   /**
@@ -56,22 +79,17 @@ export class ReactRouter extends AppRouter {
    *   state: obj // example: {key1: 'value1'}
    * }
    */
-  listen(callback: LocationChangeCallback): LocationListener {
+  listen(callback: LocationChangeCallback): UnregisterCallback {
     const handler: LocationListener = (reactRouterLocation) => {
       callback(this.convertLocation(reactRouterLocation));
     };
     if (this.reactRouterHistory) {
-      this.reactRouterHistory.listen(handler);
+      return this.reactRouterHistory.listen(handler);
     }
 
-    return handler;
-  }
-
-  unlisten(handler: LocationListener): void {
-    if (this.reactRouterHistory) {
-      // this.reactRouterHistory.unlisten(handler);
-      console.log('TODO unlisten handler', handler);
-    }
+    return () => {
+      return;
+    };
   }
 
   private convertLocation(reactRouterLocation: ReactRouterLocation<LocationState>): Location {
@@ -80,10 +98,7 @@ export class ReactRouter extends AppRouter {
 
   private pushLocation(reactRouterLocation: any): void {
     const location = this.convertLocation(reactRouterLocation);
-    this.history = produce(this.history, (draft: any[]) => {
-      draft.unshift(location);
-      // keep max 20 items
-      draft.splice(20, draft.length);
-    });
+    this.history.unshift(location);
+    this.history.splice(20, this.history.length);
   }
 }

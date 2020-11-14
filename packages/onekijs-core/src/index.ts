@@ -4,29 +4,22 @@ export { default as AppState } from './app/AppState';
 export { default as DefaultLoadingComponent } from './app/DefaultLoadingComponent';
 export { default as GlobalStateService } from './app/GlobalStateService';
 export { default as LocalStateService } from './app/LocalStateService';
-export { default as AppRouter } from './app/Router';
 export { defaultIdpSettings, defaultSettings } from './app/settings';
 export {
   AppErrorCallback,
-  AppProps,
+  AppProps as CoreAppProps,
   AppProviderProps,
   AppSettings,
   AppStore,
   AppSuccessCallback,
-  Location,
-  LocationChangeCallback,
   ErrorBoundaryComponentProps,
 } from './app/typings';
 export { default as useAppContext } from './app/useAppContext';
+export { default as useGlobalModifier } from './app/useGlobalModifier';
 export { default as useGlobalProp } from './app/useGlobalProp';
 export { default as useGlobalSelector } from './app/useGlobalSelector';
 export { default as useGlobalState } from './app/useGlobalState';
-export { default as useGlobalModifier } from './app/useGlobalModifier';
-export { default as useHistory } from './app/useHistory';
 export { useLocalState } from './app/useLocalState';
-export { default as useLocation } from './app/useLocation';
-export { default as useOnekiRouter } from './app/useOnekiRouter';
-export { default as useParams } from './app/useParams';
 export { default as useSetting } from './app/useSetting';
 export { default as useSettings } from './app/useSettings';
 export { asResultCallback, createReduxStore, formatSettings, useErrorCallback, useSuccessCallback } from './app/utils';
@@ -54,8 +47,8 @@ export {
   LogoutOptions,
   LogoutState,
   OidcToken,
-  SecureRouteProps,
   SecurePageProps,
+  SecureRouteProps,
 } from './auth/typings';
 export { default as useAuthService } from './auth/useAuthService';
 export { default as useLogin, useLoginService } from './auth/useLogin';
@@ -161,8 +154,8 @@ export {
 export {
   asReducer,
   debounce,
-  inject,
   every,
+  inject,
   latest,
   leading,
   reducer,
@@ -239,8 +232,8 @@ export {
   hex2b64,
   lcfirst,
   mergeString,
-  toKebabCase,
   regexIndexOf,
+  toKebabCase,
   trim,
   trimEnd,
   trimStart,
@@ -256,15 +249,6 @@ export {
   isPromise,
   isTrue,
 } from './core/utils/type';
-export {
-  absoluteUrl,
-  extractState,
-  isAbsoluteUrl,
-  toLocation,
-  toRelativeUrl,
-  toUrl,
-  urlBuilder,
-} from './core/utils/url';
 export { default as FetchService } from './fetch/FetchService';
 export {
   AppExtraFetchOptions,
@@ -366,3 +350,10 @@ export { Notification, NotificationContent, NotificationLevel } from './notifica
 export { default as useAllNotifications } from './notification/useAllNotifications';
 export { default as useNotifications } from './notification/useNotifications';
 export { default as useNotificationService } from './notification/useNotificationService';
+export { default as AppRouter } from './router/Router';
+export { LinkProps, Location, LocationChangeCallback, RouterPushOptions, UnregisterCallback } from './router/typings';
+export { default as useHistory } from './router/useHistory';
+export { default as useLocation } from './router/useLocation';
+export { default as useOnekiRouter } from './router/useOnekiRouter';
+export { default as useParams } from './router/useParams';
+export { absoluteUrl, extractState, isAbsoluteUrl, toLocation, toRelativeUrl, toUrl, urlBuilder } from './router/utils';

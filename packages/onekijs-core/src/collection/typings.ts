@@ -1,4 +1,4 @@
-import Router from '../app/Router';
+import Router from '../router/Router';
 import { Primitive, AnonymousObject } from '../core/typings';
 import { Fetcher, HttpMethod, FetchState, FetchOptions } from '../fetch/typings';
 

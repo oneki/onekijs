@@ -72,7 +72,7 @@
 
 export * from 'onekijs-core';
 
-export { App } from './lib/app';
-export { default as NextRouter } from './lib/router';
-export { get404StaticProps } from './lib/404';
-export { getI18nStaticProps, getI18nTranslations, withI18nPaths } from './lib/i18n';
+export { App } from 'onekijs-next/src/lib/app';
+export { default as NextRouter } from 'onekijs-next/src/lib/router';
+export { get404StaticProps } from 'onekijs-next/src/lib/404';
+export { getI18nStaticProps, getI18nTranslations, withI18nPaths } from 'onekijs-next/src/lib/i18n';

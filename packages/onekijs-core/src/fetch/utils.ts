@@ -1,10 +1,10 @@
 import AppContext from '../app/AppContext';
-import Router from '../app/Router';
+import Router from '../router/Router';
 import { asResultCallback } from '../app/utils';
 import HTTPError from '../core/HTTPError';
 import { AnonymousObject } from '../core/typings';
 import { get, set } from '../core/utils/object';
-import { urlBuilder } from '../core/utils/url';
+import { urlBuilder } from '../router/utils';
 import NotificationService from '../notification/NotificationService';
 import { AppFetchOptions, FetchMethod, FetchOptions } from './typings';
 

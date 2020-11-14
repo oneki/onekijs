@@ -1,5 +1,6 @@
 import React from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Route } from 'onekijs';
+import { Redirect, Switch } from 'react-router-dom';
 import AppLayout from '../modules/core/layouts/AppLayout';
 import ProductsRouter from './products/_router';
 

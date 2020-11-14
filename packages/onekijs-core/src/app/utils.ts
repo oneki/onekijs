@@ -6,8 +6,9 @@ import { inReducer } from '../core/Service';
 import { AnonymousObject, ErrorCallback, ResultCallback, SuccessCallback } from '../core/typings';
 import useLazyRef from '../core/useLazyRef';
 import { clone, fromPayload, simpleMergeDeep } from '../core/utils/object';
+import Router from '../router/Router';
+import useOnekiRouter from '../router/useOnekiRouter';
 import AppContext from './AppContext';
-import Router from './Router';
 import { defaultSettings } from './settings';
 import {
   AppErrorCallback,
@@ -19,7 +20,6 @@ import {
   sagasSymbol,
 } from './typings';
 import useAppContext from './useAppContext';
-import useOnekiRouter from './useOnekiRouter';
 
 export const createReduxStore = (
   initialState: AnonymousObject = {},

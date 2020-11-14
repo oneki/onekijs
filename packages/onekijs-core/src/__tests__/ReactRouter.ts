@@ -1,14 +1,29 @@
 import { History, Location as ReactRouterLocation, LocationListener, LocationState } from 'history';
 import produce from 'immer';
-import Router from '../app/Router';
-import { Location, LocationChangeCallback } from '../app/typings';
-import { toUrl, toLocation } from '../core/utils/url';
+import Router from '../router/Router';
+import { Location, LocationChangeCallback, UnregisterCallback } from '../router/typings';
+import { toLocation, toUrl } from '../router/utils';
 
 // import AppRouter from '../lib/app/AppRouter';
 // import { Location, LocationChangeCallback } from '../lib/app/typings';
 // import { toLocation, toUrl } from '../lib/core/utils/url';
 
 export class ReactRouter extends Router {
+  back(delta = 1): void {
+    if (this.reactRouterHistory) {
+      this.reactRouterHistory.go(-delta);
+    }
+  }
+
+  forward(delta = 1): void {
+    if (this.reactRouterHistory) {
+      this.reactRouterHistory.go(delta);
+    }
+  }
+
+  getLinkComponent(): JSX.Element {
+    throw new Error('Method not implemented.');
+  }
   protected reactRouterHistory?: History<LocationState>;
 
   constructor(history?: History<LocationState>) {
@@ -61,22 +76,17 @@ export class ReactRouter extends Router {
    *   state: obj // example: {key1: 'value1'}
    * }
    */
-  listen(callback: LocationChangeCallback): LocationListener {
+  listen(callback: LocationChangeCallback): UnregisterCallback {
     const handler: LocationListener = (reactRouterLocation) => {
       callback(this.convertLocation(reactRouterLocation));
     };
     if (this.reactRouterHistory) {
-      this.reactRouterHistory.listen(handler);
+      return this.reactRouterHistory.listen(handler);
     }
 
-    return handler;
-  }
-
-  unlisten(handler: LocationListener): void {
-    if (this.reactRouterHistory) {
-      // this.reactRouterHistory.unlisten(handler);
-      console.log('TODO unlisten handler', handler);
-    }
+    return () => {
+      return;
+    };
   }
 
   private convertLocation(reactRouterLocation: ReactRouterLocation<LocationState>): Location {

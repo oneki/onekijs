@@ -6,7 +6,7 @@ import HTTPError from '../core/HTTPError';
 import { AnonymousObject, ErrorCallback, SagaEffect, SuccessCallback } from '../core/typings';
 import { del, get, isNull, set } from '../core/utils/object';
 import { getItem, onStorageChange, removeItem, setItem } from '../core/utils/storage';
-import { absoluteUrl } from '../core/utils/url';
+import { absoluteUrl } from '../router/utils';
 import { asyncGet, asyncPost } from '../fetch/utils';
 import { Idp } from './typings';
 import { getIdp, getIdpName, oauth2Keys, parseJwt, validateToken } from './utils';

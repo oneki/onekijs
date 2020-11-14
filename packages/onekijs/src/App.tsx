@@ -2,10 +2,10 @@ import { createBrowserHistory } from 'history';
 import { useLazyRef, AppState, DefaultLoadingComponent } from 'onekijs-core';
 import React, { FC, Suspense } from 'react';
 import { Router } from 'react-router-dom';
-import { ReactRouter } from './ReactRouter';
-import { CraAppProps } from './typings';
+import { ReactRouter } from './router/ReactRouter';
+import { AppProps } from './typings';
 
-export const App: FC<CraAppProps> = React.memo(({ history, ...appProps }) => {
+export const App: FC<AppProps> = React.memo(({ history, LoadingComponent = DefaultLoadingComponent, ...appProps }) => {
   const appHistoryRef = useLazyRef(() => {
     if (!history) {
       history = createBrowserHistory();
@@ -16,10 +16,8 @@ export const App: FC<CraAppProps> = React.memo(({ history, ...appProps }) => {
     return new ReactRouter(appHistoryRef.current);
   });
 
-  const LoadingComponent = appProps.LoadingComponent || DefaultLoadingComponent;
-
   return (
-    <AppState {...appProps} router={routerRef.current}>
+    <AppState {...appProps} LoadingComponent={LoadingComponent} router={routerRef.current}>
       <Router history={appHistoryRef.current}>
         <Suspense fallback={<LoadingComponent />}>{appProps.children}</Suspense>
       </Router>

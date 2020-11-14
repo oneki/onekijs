@@ -2,7 +2,7 @@ import React, { FC, useMemo } from 'react';
 import Container from '../core/Container';
 import ContainerContext from '../core/ContainerContext';
 import useLazyRef from '../core/useLazyRef';
-import { detectLocale } from '../i18n/utils';
+import { detectLocale, flattenTranslations } from '../i18n/utils';
 import AppContext, { DefaultAppContext } from './AppContext';
 import AppErrorBoundary from './AppErrorBoundary';
 import { AppProviderProps } from './typings';
@@ -30,20 +30,24 @@ const AppProvider: FC<AppProviderProps> = ({
     return container;
   });
 
+  const formattedTranslations = useMemo(() => {
+    return flattenTranslations(translations || {});
+  }, [translations]);
+
   const locale = useMemo(() => {
     return detectLocale(router.location, reduxLocale, settings, initialLocale);
   }, [router.location, reduxLocale, settings, initialLocale]);
 
   const appContext: AppContext = useMemo(() => {
     return new AppContext(router, settings, store, {
-      translations,
+      translations: formattedTranslations,
       ns: i18nNs,
       locale,
     });
-  }, [router, settings, translations, i18nNs, locale, store]);
+  }, [router, settings, formattedTranslations, i18nNs, locale, store]);
 
   router.i18n = {
-    translations,
+    translations: formattedTranslations,
     ns: i18nNs,
     locale,
   };

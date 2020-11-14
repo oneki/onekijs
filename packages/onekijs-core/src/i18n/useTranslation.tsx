@@ -45,7 +45,7 @@ const useTranslation = (
     return nsRequired.filter((ns) => !nsLoaded.includes(ns));
   }, [nsRequired, nsLoaded]);
 
-  const fetching: boolean = useGlobalProp('i18.fetching') || false;
+  const fetching: boolean = useGlobalProp('i18n.fetching') || false;
 
   const t = useCallback(
     (content: string | JSX.Element, alias?: string, count = 1) => {

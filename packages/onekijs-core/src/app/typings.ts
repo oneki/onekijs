@@ -1,4 +1,3 @@
-import qs from 'query-string';
 import { ComponentType, ElementType, ErrorInfo } from 'react';
 import { DefaultRootState } from 'react-redux';
 import { Action, AnyAction, Store } from 'redux';
@@ -6,13 +5,13 @@ import { Saga } from 'redux-saga';
 import BasicError from '../core/BasicError';
 import Service from '../core/Service';
 import { AnonymousObject, AnyState, Class } from '../core/typings';
+import Router from '../router/Router';
 import AppContext from './AppContext';
-import Router from './Router';
 
 export const CONTEXT_ID = Symbol();
 export const reducersSymbol = Symbol('onekijs.store.reducers');
 export const sagasSymbol = Symbol('onekijs.store.sagas');
-
+export type AppErrorCallback<T extends BasicError = BasicError> = AppResultCallback<T>;
 export interface AppProps {
   settings?: AppSettings | Promise<AppSettings>;
   store?: AppStore;
@@ -24,22 +23,18 @@ export interface AppProps {
   i18nNs?: string[];
   ErrorBoundaryComponent?: ComponentType<ErrorBoundaryComponentProps>;
 }
-
-export type ErrorBoundaryComponentProps = {
-  error?: Error;
-  errorInfo?: ErrorInfo;
-};
-
-export interface AppStateProps extends AppProps {
-  router: Router;
-}
-
 export interface AppProviderProps extends Omit<AppProps, 'initialState' | 'LoadingComponent'> {
   settings: AppSettings;
   store: AppStore;
   router: Router;
 }
-
+export type AppResultCallback<T = any> = string | [string, string] | ((result: T, context: AppContext) => void);
+export interface AppSettings {
+  [propName: string]: any;
+}
+export interface AppStateProps extends AppProps {
+  router: Router;
+}
 export interface AppStore<S = any, A extends Action = AnyAction> extends Store<S, A> {
   [reducersSymbol]: AnonymousObject;
   [sagasSymbol]: AnonymousObject;
@@ -48,32 +43,11 @@ export interface AppStore<S = any, A extends Action = AnyAction> extends Store<S
   injectReducers: (bind: Service, namespace: string, reducers: AnonymousObject) => void;
   removeReducers: (namespace: string, reducers: AnonymousObject) => void;
 }
-
-export interface AppSettings {
-  [propName: string]: any;
-}
-
-export interface Location {
-  protocol?: string | null;
-  hostname?: string;
-  port?: string;
-  pathname: string;
-  query?: qs.ParsedQuery<string>;
-  hash?: qs.ParsedQuery<string>;
-  host?: string;
-  href?: string;
-  relativeurl?: string;
-  baseurl?: string;
-  state?: string;
-  route?: string;
-  params?: AnonymousObject;
-}
-
-export type LocationChangeCallback = (location: Location) => void;
-export type AppResultCallback<T = any> = string | [string, string] | ((result: T, context: AppContext) => void);
-export type AppErrorCallback<T extends BasicError = BasicError> = AppResultCallback<T>;
 export type AppSuccessCallback<T = any> = AppResultCallback<T>;
-
-export type SetGlobalStateFunction<T> = (value?: T | null | undefined) => void;
+export type ErrorBoundaryComponentProps = {
+  error?: Error;
+  errorInfo?: ErrorInfo;
+};
 export type GlobalModifierFunction = (key: string, value: unknown) => void;
 export type GlobalSelectorFunction = (state: DefaultRootState) => unknown;
+export type SetGlobalStateFunction<T> = (value?: T | null | undefined) => void;

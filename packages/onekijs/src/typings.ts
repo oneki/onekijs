@@ -1,6 +1,6 @@
 import { History, LocationState } from 'history';
-import { AppProps } from 'onekijs-core';
+import { CoreAppProps } from 'onekijs-core';
 
-export interface CraAppProps extends AppProps {
+export interface AppProps extends CoreAppProps {
   history?: History<LocationState>;
 }

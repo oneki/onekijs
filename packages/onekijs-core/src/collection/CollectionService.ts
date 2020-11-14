@@ -1,10 +1,10 @@
-import Router from '../app/Router';
-import { Location } from '../app/typings';
+import Router from '../router/Router';
+import { Location } from '../router/typings';
 import { reducer } from '../core/annotations';
 import Service from '../core/Service';
 import { AnonymousObject, Primitive } from '../core/typings';
 import { get } from '../core/utils/object';
-import { urlBuilder } from '../core/utils/url';
+import { urlBuilder } from '../router/utils';
 import {
   Collection,
   CollectionItemAdapter,

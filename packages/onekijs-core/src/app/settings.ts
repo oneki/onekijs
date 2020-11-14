@@ -1,7 +1,8 @@
-import { toRelativeUrl } from '../core/utils/url';
+import { toRelativeUrl } from '../router/utils';
 import { AnonymousObject } from '../core/typings';
-import { AppSettings, Location } from './typings';
+import { AppSettings } from './typings';
 import AppContext from './AppContext';
+import { Location } from '../router/typings';
 
 export const defaultSettings = {
   contextPath: '/',

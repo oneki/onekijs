@@ -1,4 +1,11 @@
-export async function getAllFiles(fs, path, basePath, relativePath, arrayOfFiles = []) {
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+export const getAllFiles = (
+  fs: any,
+  path: any,
+  basePath: string,
+  relativePath: string,
+  arrayOfFiles: string[] = [],
+): string[] => {
   const dirPath = path.join(basePath, relativePath);
   const files = fs.readdirSync(dirPath);
 
@@ -22,12 +29,18 @@ export async function getAllFiles(fs, path, basePath, relativePath, arrayOfFiles
   }
 
   return arrayOfFiles;
+};
+
+export interface Get404StaticProps {
+  props: {
+    routes: string[];
+  };
 }
 
-export async function get404StaticProps(fs, path) {
+export const get404StaticProps = (fs: any, path: any): Get404StaticProps => {
   // eslint-disable-next-line
-  const routes = await getAllFiles(fs, path, path.join(process.cwd(), '/src/pages'), '');
+  const routes = getAllFiles(fs, path, path.join(process.cwd(), '/src/pages'), '');
   return {
     props: { routes },
   };
-}
+};

@@ -1,5 +1,5 @@
 import { cancel, delay, fork } from 'redux-saga/effects';
-import { Location } from '../app/typings';
+import { Location } from '../router/typings';
 import { reducer, saga, service } from '../core/annotations';
 import BasicError from '../core/BasicError';
 import { dispatch, types } from '../core/Service';

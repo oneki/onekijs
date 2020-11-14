@@ -5,7 +5,7 @@ import LocalService from '../core/LocalService';
 import { AnonymousObject, ErrorCallback, SagaEffect, SuccessCallback } from '../core/typings';
 import { sha256 } from '../core/utils/crypt';
 import { get } from '../core/utils/object';
-import { absoluteUrl } from '../core/utils/url';
+import { absoluteUrl } from '../router/utils';
 import { asyncHttp, asyncPost } from '../fetch/utils';
 import NotificationService from '../notification/NotificationService';
 import AuthService from './AuthService';

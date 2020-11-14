@@ -1,4 +1,5 @@
-export function getI18nStaticProps(fs, path, lang, namespaces = []) {
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+export const getI18nStaticProps = (fs: any, path: any, lang: string, namespaces: string[] = []): any => {
   return {
     props: {
       translations: getI18nTranslations(fs, path, lang, namespaces),
