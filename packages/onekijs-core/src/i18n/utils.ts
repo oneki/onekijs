@@ -149,6 +149,7 @@ export const handleModifiers = (input: string, value: any, locale: string, i18nS
 export const toI18nLocation = (
   urlOrLocation: string | Location,
   { settings, i18n }: { settings: AppSettings; i18n: I18n },
+  locale: string | false | undefined,
 ): Location => {
   // TODO
   let location: Location;
@@ -157,8 +158,10 @@ export const toI18nLocation = (
   } else {
     location = urlOrLocation;
   }
-  if (settings && i18n.locale) {
-    location = settings.i18n.addLocaleToLocation(i18n.locale, location, settings);
+
+  if (locale === false) return location;
+  if (settings && (locale || i18n.locale)) {
+    location = settings.i18n.addLocaleToLocation(locale || i18n.locale, location, settings);
   }
   return location;
 };

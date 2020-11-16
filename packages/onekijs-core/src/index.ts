@@ -350,8 +350,16 @@ export { Notification, NotificationContent, NotificationLevel } from './notifica
 export { default as useAllNotifications } from './notification/useAllNotifications';
 export { default as useNotifications } from './notification/useNotifications';
 export { default as useNotificationService } from './notification/useNotificationService';
+export { default as Link } from './router/Link';
 export { default as AppRouter } from './router/Router';
-export { LinkProps, Location, LocationChangeCallback, RouterPushOptions, UnregisterCallback } from './router/typings';
+export {
+  LinkComponentProps,
+  LinkProps,
+  Location,
+  LocationChangeCallback,
+  RouterPushOptions,
+  UnregisterCallback,
+} from './router/typings';
 export { default as useHistory } from './router/useHistory';
 export { default as useLocation } from './router/useLocation';
 export { default as useOnekiRouter } from './router/useOnekiRouter';

@@ -1,4 +1,4 @@
-import { LinkProps } from 'onekijs-core/dist/app/typings';
+import { LinkProps } from 'onekijs-core';
 import React, { FC } from 'react';
 import NextLink from 'next/link';
 import { toUrl } from 'onekijs-core';

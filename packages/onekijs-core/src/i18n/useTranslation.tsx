@@ -25,7 +25,7 @@ const useTranslation = (
   const reduxNs = useGlobalProp(`i18n.ns.${locale}`);
 
   const nsLoaded = useMemo(() => {
-    return [...new Set([...(appContextNs || []), ...(reduxNs || [])])];
+    return Array.from(new Set([...(appContextNs || []), ...(reduxNs || [])]));
   }, [appContextNs, reduxNs]);
 
   const i18nService = useI18nService();
@@ -117,7 +117,6 @@ const useTranslation = (
     },
     [t],
   );
-
   useEffect(() => {
     if (nsNotLoaded.length > 0 && !fetching) {
       i18nService.fetchTranslations(locale, nsNotLoaded);

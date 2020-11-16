@@ -1,4 +1,4 @@
-import { useNotificationService, usePost, useTranslation } from 'onekijs';
+import { Link, useNotificationService, usePost, useTranslation } from 'onekijs';
 import React, { FC } from 'react';
 import { useParams } from 'react-router-dom';
 import { products } from '..';
@@ -39,9 +39,13 @@ const ProductDetailsPage: FC = () => {
     product = products[9999];
   }
   return (
-    <div>
-      <ProductDetails product={product} onBuy={() => submit(product)} />
-    </div>
+    <>
+      <div>
+        <ProductDetails product={product} onBuy={() => submit(product)} />
+      </div>
+      <Link href="/products/0">Product 0</Link>
+      <Link href="/products/1">Product 1</Link>
+    </>
   );
 };
 

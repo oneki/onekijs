@@ -1,13 +1,17 @@
+import React from 'react';
 import { History, Location as ReactRouterLocation, LocationListener, LocationState } from 'history';
 import {
   AppRouter,
   LinkProps,
   Location,
   LocationChangeCallback,
+  toI18nLocation,
   toLocation,
   toUrl,
   UnregisterCallback,
 } from 'onekijs-core';
+import { MutableRefObject } from 'react';
+import Link from '../components/Link';
 // import AppRouter from '../lib/app/AppRouter';
 // import { Location, LocationChangeCallback } from '../lib/app/typings';
 // import { toLocation, toUrl } from '../lib/core/utils/url';
@@ -38,8 +42,20 @@ export class ReactRouter extends AppRouter {
     }
   }
 
-  getLinkComponent(props: LinkProps): JSX.Element {
-    throw new Error('Method not implemented.' + props);
+  getLinkComponent(
+    props: LinkProps,
+    ref: ((instance: HTMLAnchorElement | null) => void) | MutableRefObject<HTMLAnchorElement | null> | null,
+  ): JSX.Element {
+    const href = toI18nLocation(
+      props.href,
+      {
+        settings: this.settings,
+        i18n: this.i18n,
+      },
+      props.locale,
+    );
+
+    return <Link {...props} href={href} ref={ref} />;
   }
 
   /**

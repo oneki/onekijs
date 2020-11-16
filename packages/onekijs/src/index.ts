@@ -19,7 +19,6 @@ export {
   Router,
   RouterChildContext,
   StaticRouter,
-  Switch,
   SwitchProps,
   generatePath,
   match,
@@ -29,3 +28,4 @@ export {
 } from 'react-router-dom';
 export * from 'onekijs-core';
 export { default as Route } from './router/Route';
+export { default as Switch } from './router/Switch';

@@ -40,7 +40,7 @@ export default class I18nService extends GlobalService {
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Latest)
+  @saga(SagaEffect.Every)
   *fetchTranslations(locale: string, namespaces: string[], options: { onError?: any } = {}) {
     // TODO description options
     const { settings } = this.context;

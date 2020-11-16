@@ -12,7 +12,7 @@ const LoginPage: FC = () => {
         {error && <div className="error">Error: {error.message}</div>}
         <div className="no-account">
           <T>Dont have an account yet ?</T>
-          <Link to="/signup">
+          <Link href="/signup">
             <T>Sign up here!</T>
           </Link>
         </div>

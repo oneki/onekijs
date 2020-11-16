@@ -1,38 +1,37 @@
-import { toRelativeUrl } from '../router/utils';
 import { AnonymousObject } from '../core/typings';
-import { AppSettings } from './typings';
-import AppContext from './AppContext';
 import { Location } from '../router/typings';
+import AppContext from './AppContext';
+import { AppSettings } from './typings';
 
 export const defaultSettings = {
   contextPath: '/',
   i18n: {
     locales: [],
-    defaultLocale: null,
+    defaultLocale: undefined,
     url: '/locales',
     slug: '[lang]',
-    localeFromLocation: (location: Location, settings: AppSettings): string | null => {
+    localeFromLocation: (location: Location, settings: AppSettings): string | undefined => {
       const { contextPath, i18n } = settings;
       const length = contextPath.endsWith('/') ? contextPath.length : contextPath.length + 1;
       const locale = location.pathname.substring(length).split('/')[0];
       if (i18n.locales.includes(locale)) return locale;
-      return null;
+      return undefined;
     },
     addLocaleToLocation: (locale: string, location: Location, settings: AppSettings): Location => {
       const pathname = location.pathname;
-      const relativeUrl = toRelativeUrl(location);
+      // const relativeUrl = toRelativeUrl(location);
       const hasLocale = settings.i18n.locales.find((l: any) => pathname.startsWith(`/${l}`));
       if (!hasLocale) {
         location.pathname = `/${locale}${pathname}`;
         if (location.pathname.endsWith('/')) location.pathname = location.pathname.slice(0, -1);
       }
-      if (Object.keys(location).includes('route')) {
-        const route = location.route || relativeUrl;
-        if (route && !route.startsWith(`/${settings.i18n.slug}`)) {
-          location.route = `/${settings.i18n.slug}${route}`;
-          if (location.route.endsWith('/')) location.route = location.route.slice(0, -1);
-        }
-      }
+      // if (Object.keys(location).includes('route')) {
+      //   const route = location.route || relativeUrl;
+      //   if (route && !route.startsWith(`/${settings.i18n.slug}`)) {
+      //     location.route = `/${settings.i18n.slug}${route}`;
+      //     if (location.route.endsWith('/')) location.route = location.route.slice(0, -1);
+      //   }
+      // }
       return location;
     },
     changeLocale: (locale: string, { router, settings, i18n }: AppContext): void => {

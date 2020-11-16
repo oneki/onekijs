@@ -1,10 +1,11 @@
+import { Route, Switch } from 'onekijs';
 import React from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import AppLayout from '../modules/core/layouts/AppLayout';
-import ProductsRouter from './products/_router';
 import CartPage from './cart';
 import LoginPage from './login';
 import LogoutPage from './logout';
+import ProductsRouter from './products/_router';
 
 const RootRouter = (): JSX.Element => {
   return (

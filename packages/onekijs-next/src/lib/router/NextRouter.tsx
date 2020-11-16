@@ -118,8 +118,8 @@ export default class NextRouter extends AppRouter {
 
     if (!pathname.includes('[') || pathname !== asPath) {
       const location = toLocation(asPath);
-      location.route = Router.router.route;
-      location.params = Router.router.query;
+      this.route = Router.router.route;
+      this.params = Router.router.query;
       this._pushLocation(location);
     }
   }

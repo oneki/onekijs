@@ -1,10 +1,11 @@
 import produce from 'immer';
 import { ParsedQuery } from 'query-string';
+import { MutableRefObject } from 'react';
 import { AppSettings } from '../app/typings';
 import { AnonymousObject } from '../core/typings';
 import { get } from '../core/utils/object';
 import { I18n } from '../i18n/typings';
-import { LinkProps, Location, RouterPushOptions, UnregisterCallback, LocationChangeCallback } from './typings';
+import { LinkProps, Location, LocationChangeCallback, RouterPushOptions, UnregisterCallback } from './typings';
 
 export default abstract class Router {
   settings: AppSettings = {};
@@ -41,7 +42,7 @@ export default abstract class Router {
     return this.location ? this.location.pathname : null;
   }
 
-  get state(): string | null | undefined {
+  get state(): AnonymousObject | null | undefined {
     return this.location ? this.location.state : null;
   }
 
@@ -53,7 +54,10 @@ export default abstract class Router {
 
   abstract forward(delta?: number): void;
 
-  abstract getLinkComponent(props: LinkProps): JSX.Element;
+  abstract getLinkComponent(
+    props: LinkProps,
+    ref: ((instance: HTMLAnchorElement | null) => void) | MutableRefObject<HTMLAnchorElement | null> | null,
+  ): JSX.Element;
 
   getOrigin(): { from: string } {
     const from = localStorage.getItem('onekijs.from') || get<string>(this.settings, 'routes.home', '/');

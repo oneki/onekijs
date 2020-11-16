@@ -13,6 +13,13 @@ export default class LocalRouter extends Router {
     this.replace({ pathname: '' });
   }
 
+  back(): void {
+    throw new Error('Method not implemented.');
+  }
+  forward(): void {
+    throw new Error('Method not implemented.');
+  }
+
   getLinkComponent(): JSX.Element {
     throw new Error('Method not implemented.');
   }
