@@ -5,6 +5,7 @@ import {
   LinkProps,
   Location,
   LocationChangeCallback,
+  RouterPushOptions,
   toI18nLocation,
   toLocation,
   toUrl,
@@ -70,18 +71,12 @@ export class ReactRouter extends AppRouter {
    *   state: obj // example: {key1: 'value1'}
    * }
    */
-  push(urlOrLocation: string | Location): void {
-    if (this.reactRouterHistory) {
-      const url: string = typeof urlOrLocation === 'string' ? urlOrLocation : toUrl(urlOrLocation);
-      this.reactRouterHistory.push(url);
-    }
+  push(urlOrLocation: string | Location, options?: RouterPushOptions): void {
+    this.goTo(urlOrLocation, 'push');
   }
 
-  replace(urlOrLocation: string | Location): void {
-    if (this.reactRouterHistory) {
-      const url: string = typeof urlOrLocation === 'string' ? urlOrLocation : toUrl(urlOrLocation);
-      this.reactRouterHistory.replace(url);
-    }
+  replace(urlOrLocation: string | Location, options?: RouterPushOptions): void {
+    this.goTo(urlOrLocation, 'replace');
   }
 
   /**
@@ -116,5 +111,26 @@ export class ReactRouter extends AppRouter {
     const location = this.convertLocation(reactRouterLocation);
     this.history.unshift(location);
     this.history.splice(20, this.history.length);
+  }
+
+  private goTo(urlOrLocation: string | Location, type: 'push' | 'replace', options?: RouterPushOptions): void {
+    if (this.reactRouterHistory) {
+      let url = '';
+      if (options?.locale === false) {
+        if (typeof urlOrLocation === 'string') url = urlOrLocation;
+        else url = toUrl(urlOrLocation);
+      } else {
+        const i18nLocation = toI18nLocation(
+          urlOrLocation,
+          {
+            settings: this.settings,
+            i18n: this.i18n,
+          },
+          options?.locale || this.i18n.locale,
+        );
+        url = toUrl(i18nLocation);
+      }
+      type === 'push' ? this.reactRouterHistory.push(url) : this.reactRouterHistory.replace(url);
+    }
   }
 }

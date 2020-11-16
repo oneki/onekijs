@@ -8,7 +8,51 @@ import { get, isNull } from '../core/utils/object';
 import { toLocation } from '../router/utils';
 import { Location } from '../router/typings';
 import I18nService from './I18nService';
-import { I18n } from './typings';
+import { I18n, I18nLocale, I18nLocaleDomain, I18nLocalePath } from './typings';
+import { wrap } from '../core/utils/string';
+
+export const addLocaleToLocation = (locale: string, location: Location, settings: AppSettings): Location => {
+  let { contextPath = '' } = settings;
+  const pathname = location.pathname;
+  const localeSettings = get<(I18nLocalePath | I18nLocaleDomain)[]>(settings, 'i18n.locales', []).find(
+    (l: I18nLocale) => l.locale === locale,
+  );
+
+  if (!localeSettings) return location;
+
+  if (isLocaleDomain(localeSettings)) {
+    location.hostname = localeSettings.domain;
+  } else {
+    const contextPathWrapped = wrap(contextPath, '/');
+    const pathnameWrapped = wrap(pathname, '/');
+    if (pathnameWrapped === '/') {
+      location.pathname = localeSettings.path || '/';
+    }
+    let pos = 0;
+    if (pathnameWrapped.startsWith(contextPathWrapped)) {
+
+    }
+    if (!contextPath.endsWith('/')) {
+      contextPath += '/';
+    }
+    if (location.pathname) const length = contextPath.endsWith('/') ? contextPath.length : contextPath.length + 1;
+  }
+
+  // const relativeUrl = toRelativeUrl(location);
+  const hasLocale = settings.i18n.locales.find((l: I18nLocale) => pathname.startsWith(`/${l.locale}`));
+  if (!hasLocale) {
+    location.pathname = `/${locale}${pathname}`;
+    if (location.pathname.endsWith('/')) location.pathname = location.pathname.slice(0, -1);
+  }
+  // if (Object.keys(location).includes('route')) {
+  //   const route = location.route || relativeUrl;
+  //   if (route && !route.startsWith(`/${settings.i18n.slug}`)) {
+  //     location.route = `/${settings.i18n.slug}${route}`;
+  //     if (location.route.endsWith('/')) location.route = location.route.slice(0, -1);
+  //   }
+  // }
+  return location;
+};
 
 export const buildJsx = (
   str: string,
@@ -146,6 +190,27 @@ export const handleModifiers = (input: string, value: any, locale: string, i18nS
   return value;
 };
 
+export const localeFromLocation = (location: Location, settings: AppSettings): string | undefined => {
+  const { contextPath } = settings;
+  const length = contextPath.endsWith('/') ? contextPath.length : contextPath.length + 1;
+  const urlLocale = location.pathname.substring(length).split('/')[0];
+  let defaultLocale: I18nLocalePath | I18nLocaleDomain | undefined;
+  let detectedLocale: I18nLocalePath | I18nLocaleDomain | undefined = get(settings, 'i18n.locales', []).find(
+    (locale: I18nLocalePath | I18nLocaleDomain) => {
+      if ((locale as I18nLocaleDomain).domain === location.hostname) return true;
+      if ((locale as I18nLocalePath).path === `/${urlLocale}`) return true;
+      if ((locale as I18nLocalePath).path === '') defaultLocale = locale;
+      return false;
+    },
+  );
+  if (!detectedLocale) detectedLocale = defaultLocale;
+  return detectedLocale?.locale;
+};
+
+export const isLocaleDomain = (locale: I18nLocalePath | I18nLocaleDomain | undefined): locale is I18nLocaleDomain => {
+  return (locale as any)?.domain !== undefined;
+};
+
 export const toI18nLocation = (
   urlOrLocation: string | Location,
   { settings, i18n }: { settings: AppSettings; i18n: I18n },
@@ -160,6 +225,7 @@ export const toI18nLocation = (
   }
 
   if (locale === false) return location;
+  if (location.hostname !== window.location.hostname) return location;
   if (settings && (locale || i18n.locale)) {
     location = settings.i18n.addLocaleToLocation(locale || i18n.locale, location, settings);
   }

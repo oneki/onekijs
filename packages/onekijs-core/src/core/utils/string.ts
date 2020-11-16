@@ -90,3 +90,9 @@ export function trim(string: string, charToRemove: string): string {
   string = trimStart(string, charToRemove);
   return trimEnd(string, charToRemove);
 }
+
+export function wrap(string: string, wrapChar: string): string {
+  string += string.endsWith(wrapChar) ? '' : wrapChar;
+  string = string.startsWith(wrapChar) ? string : `${wrapChar}${string}`;
+  return string;
+}
