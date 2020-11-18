@@ -64,6 +64,10 @@ export default abstract class Router {
     return { from };
   }
 
+  init(settings: AppSettings): void {
+    this.settings = settings;
+  }
+
   /**
    * callback(url) where url is:
    * {

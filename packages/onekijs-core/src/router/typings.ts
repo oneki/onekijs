@@ -20,6 +20,9 @@ export interface Location {
   hostname?: string;
   port?: string;
   pathname: string;
+  pathroute?: string;
+  pathlocale?: string;
+  pathcontext?: string;
   query?: qs.ParsedQuery<string>;
   hash?: qs.ParsedQuery<string>;
   host?: string;

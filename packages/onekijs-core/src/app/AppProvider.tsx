@@ -30,6 +30,8 @@ const AppProvider: FC<AppProviderProps> = ({
     return container;
   });
 
+  useMemo(() => router.init(settings), [router, settings]);
+
   const formattedTranslations = useMemo(() => {
     return flattenTranslations(translations || {});
   }, [translations]);

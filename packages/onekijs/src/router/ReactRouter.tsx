@@ -13,6 +13,7 @@ import {
 } from 'onekijs-core';
 import { MutableRefObject } from 'react';
 import Link from '../components/Link';
+import { AppSettings } from 'onekijs-core';
 // import AppRouter from '../lib/app/AppRouter';
 // import { Location, LocationChangeCallback } from '../lib/app/typings';
 // import { toLocation, toUrl } from '../lib/core/utils/url';
@@ -24,8 +25,7 @@ export class ReactRouter extends AppRouter {
     super();
     if (history) {
       this.reactRouterHistory = history;
-      this.pushLocation(history.location);
-      history.listen((reactRouterLocation: any) => {
+      this.reactRouterHistory.listen((reactRouterLocation: any) => {
         this.pushLocation(reactRouterLocation);
       });
     }
@@ -59,6 +59,13 @@ export class ReactRouter extends AppRouter {
     return <Link {...props} href={href} ref={ref} />;
   }
 
+  init(settings: AppSettings): void {
+    super.init(settings);
+    if (this.reactRouterHistory && this.history.length === 0) {
+      this.pushLocation(this.reactRouterHistory.location);
+    }
+  }
+
   /**
    * url can be a string or an object.
    * If object, the format is the following
@@ -72,11 +79,11 @@ export class ReactRouter extends AppRouter {
    * }
    */
   push(urlOrLocation: string | Location, options?: RouterPushOptions): void {
-    this.goTo(urlOrLocation, 'push');
+    this.goTo(urlOrLocation, 'push', options);
   }
 
   replace(urlOrLocation: string | Location, options?: RouterPushOptions): void {
-    this.goTo(urlOrLocation, 'replace');
+    this.goTo(urlOrLocation, 'replace', options);
   }
 
   /**
@@ -104,7 +111,10 @@ export class ReactRouter extends AppRouter {
   }
 
   private convertLocation(reactRouterLocation: ReactRouterLocation<LocationState>): Location {
-    return toLocation(`${reactRouterLocation.pathname}${reactRouterLocation.search}${reactRouterLocation.hash}`);
+    return toLocation(
+      `${reactRouterLocation.pathname}${reactRouterLocation.search}${reactRouterLocation.hash}`,
+      this.settings,
+    );
   }
 
   private pushLocation(reactRouterLocation: any): void {

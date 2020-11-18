@@ -1,7 +1,9 @@
-import { trimEnd, trimStart } from '../core/utils/string';
 import qs from 'query-string';
-import { isNull } from '../core/utils/object';
+import { getLocaleSettingsByPath } from '../app/settings';
+import { AppSettings } from '../app/typings';
 import { AnonymousObject } from '../core/typings';
+import { isNull } from '../core/utils/object';
+import { trimEnd, trimStart } from '../core/utils/string';
 import { Location } from './typings';
 
 export function urlBuilder(path: string, params: AnonymousObject = {}, query: AnonymousObject = {}): string {
@@ -35,7 +37,7 @@ export function absoluteUrl(url: string, baseUrl?: string): string {
 
 export const URL_STATE = '__STATE__';
 
-export function toLocation(url: string): Location {
+export function toLocation(url: string, settings: AppSettings): Location {
   const base = typeof window !== 'undefined' && window.origin ? window.origin : 'http://localhost';
   const parser = new URL(url, base);
   const location: Location = {
@@ -51,12 +53,50 @@ export function toLocation(url: string): Location {
     baseurl: `${parser.protocol}//${parser.host}`,
   };
 
+  // extract pathcontext
+  if (location.pathname !== '/') {
+    let pathname = location.pathname;
+    const contextPath = trimEnd(settings.contextPath, '/');
+    if (contextPath !== '' && (pathname === contextPath || pathname.startsWith(`${contextPath}/`))) {
+      location.pathcontext = contextPath;
+      pathname = pathname.substring(contextPath.length);
+    }
+    const tokens = pathname.split('/');
+    const locale = tokens[1];
+    if (locale) {
+      const localeSettings = getLocaleSettingsByPath(`/${locale}`, settings);
+      if (localeSettings) {
+        location.pathlocale = `/${locale}`;
+        pathname = pathname.substring(location.pathlocale.length);
+      }
+    }
+    location.pathroute = pathname;
+  } else {
+    location.pathroute = '/';
+  }
+
   if (location.query && location.query[URL_STATE]) {
     location.state = JSON.parse(atob(location.query[URL_STATE] as string));
     delete location.query[URL_STATE];
   }
   return location;
 }
+
+/*  if (location.pathname !== '/') {
+    const tokens = location.pathname.split('/');
+    let idx = 1;
+    if (tokens[idx] && tokens[idx] === trim(settings.contextPath, '/')) {
+      location.pathcontext = trimEnd(settings.contextPath, '/');
+      idx++;
+    }
+
+    if (tokens[idx]) {
+      const localeSettings = getLocaleSettings(tokens[idx], settings);
+      if (localeSettings && !isLocaleDomain(localeSettings) && localeSettings.path) {
+        location.pathlocale = trimEnd(localeSettings.path, '/');
+      }
+    }
+  }*/
 
 export function toUrl(location: Location, options = {}): string {
   let url = '';

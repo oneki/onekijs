@@ -1,7 +1,7 @@
 import { MockedRequest, MockedResponse } from 'msw/lib/types';
 import { ResponseComposition } from 'msw/lib/types/response';
-import { Query } from '../../../collection/typings';
-import { parseQuery } from '../../../collection/utils';
+// import { Query } from '../../../collection/typings';
+// import { parseQuery } from '../../../collection/utils';
 import { LocalCollectionService } from '../../..';
 import { basicUsers } from '../../../collection/__tests__/data/userList';
 
@@ -20,10 +20,10 @@ export const collectionUrlHandler = (req: MockedRequest, res: ResponseCompositio
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const collectionQueryHandler = (req: MockedRequest, res: ResponseComposition, ctx: any): MockedResponse => {
-  const query: Query = parseQuery(req.url.searchParams);
+export const collectionQueryHandler = (_: MockedRequest, res: ResponseComposition, ctx: any): MockedResponse => {
+  // const query: Query = parseQuery(req.url.searchParams);
   const service = new LocalCollectionService();
-  service.state = query;
+  // service.state = query;
   service.setData(basicUsers);
   return res(ctx.json({ result: service.data }));
 };

@@ -41,7 +41,7 @@ export default class LocalRouter extends Router {
   _pushOrReplace(urlOrLocation: string | Location, replace: boolean): void {
     let location: Location;
     if (typeof urlOrLocation === 'string') {
-      location = toLocation(urlOrLocation);
+      location = toLocation(urlOrLocation, this.settings);
     } else {
       location = urlOrLocation;
     }

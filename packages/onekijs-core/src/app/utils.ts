@@ -9,7 +9,7 @@ import { clone, fromPayload, simpleMergeDeep } from '../core/utils/object';
 import Router from '../router/Router';
 import useOnekiRouter from '../router/useOnekiRouter';
 import AppContext from './AppContext';
-import { defaultSettings } from './settings';
+import { defaultSettings, indexLocales } from './settings';
 import {
   AppErrorCallback,
   AppResultCallback,
@@ -114,7 +114,8 @@ export const formatSettings = (settings: AppSettings): AppSettings => {
     }
   }
   const cloneDefaultSettings = clone(defaultSettings);
-  return simpleMergeDeep(cloneDefaultSettings, result);
+  const formattedSettings = simpleMergeDeep(cloneDefaultSettings, result);
+  return indexLocales(formattedSettings);
 };
 
 export function asResultCallback<T = any>(

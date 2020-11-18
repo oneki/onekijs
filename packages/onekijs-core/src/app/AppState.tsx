@@ -37,9 +37,9 @@ const AppState: FC<AppStateProps> = ({
     return;
   }, [appSettings]);
 
-  if (formattedSettings) {
-    router.settings = formattedSettings;
-  }
+  // if (formattedSettings) {
+  //   router.settings = formattedSettings;
+  // }
 
   const initRef = useRef(false);
 

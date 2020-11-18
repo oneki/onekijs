@@ -1,4 +1,7 @@
 import { AnonymousObject } from '../core/typings';
+import { get } from '../core/utils/object';
+import { trimEnd } from '../core/utils/string';
+import { I18nLocale, I18nLocaleDomain, I18nLocalePath } from '../i18n/typings';
 import { Location } from '../router/typings';
 import AppContext from './AppContext';
 import { AppSettings } from './typings';
@@ -177,3 +180,79 @@ export const defaultIdpSettings: AnonymousObject = {
     validate: false,
   },
 };
+
+export const indexedLocalesSymbol = Symbol();
+export const localesModeSymbol = Symbol();
+export const defaultLocaleSymbol = Symbol();
+export const localeNoPathSymbol = Symbol();
+
+export const indexLocales = (settings: AppSettings): AppSettings => {
+  const locales: any[] = settings.i18n?.locales;
+  const index: any = {
+    [defaultLocaleSymbol]: settings.i18n?.defaultLocale,
+  };
+  if (locales && locales[0]) {
+    if (typeof locales[0] === 'string') {
+      index[localesModeSymbol] = 'simple';
+      locales.forEach((locale) => (index[locale] = locale));
+    } else if (locales[0].domain) {
+      index[localesModeSymbol] = 'domain';
+      locales.forEach((locale) => {
+        index[locale.locale] = locale.domain;
+        index[locale.domain] = locale.locale;
+      });
+    } else {
+      index[localesModeSymbol] = 'path';
+      locales.forEach((locale) => {
+        if (locale.path) {
+          index[locale.locale] = locale.path;
+          index[locale.path] = locale.locale;
+        } else {
+          index[locale.locale] = localeNoPathSymbol;
+          index[localeNoPathSymbol] = locale.locale;
+        }
+      });
+    }
+  }
+  settings.i18n[indexedLocalesSymbol] = index;
+  return settings;
+};
+
+export const isLocalePath = (settings: AppSettings): boolean => {
+  return settings.i18n[indexedLocalesSymbol][localesModeSymbol] === 'path';
+};
+
+export const isLocaleSimple = (settings: AppSettings): boolean => {
+  return settings.i18n[indexedLocalesSymbol][localesModeSymbol] === 'simple';
+};
+
+export const isLocaleDomain = (settings: AppSettings): boolean => {
+  return settings.i18n[indexedLocalesSymbol][localesModeSymbol] === 'domain';
+};
+
+export const indexedLocales = (settings: AppSettings): any => {
+  return settings.i18n[indexedLocalesSymbol];
+};
+
+// export const getLocaleSettings = (
+//   locale: string,
+//   settings: AppSettings,
+// ): I18nLocalePath | I18nLocaleDomain | undefined => {
+//   return get<(I18nLocalePath | I18nLocaleDomain)[]>(settings, 'i18n.locales', []).find(
+//     (l: I18nLocale) => l.locale === locale,
+//   );
+// };
+
+// export const getLocaleSettingsByPath = (
+//   path: string,
+//   settings: AppSettings,
+// ): I18nLocalePath | I18nLocaleDomain | undefined => {
+//   return get<(I18nLocalePath | I18nLocaleDomain)[]>(settings, 'i18n.locales', []).find(
+//     (l: I18nLocalePath | I18nLocaleDomain) =>
+//       !isLocaleDomain(l) && l.path && trimEnd(l.path, '/') === trimEnd(path, '/'),
+//   );
+// };
+
+// export const isLocaleDomain = (locale: I18nLocalePath | I18nLocaleDomain | undefined): locale is I18nLocaleDomain => {
+//   return (locale as any)?.domain !== undefined;
+// };

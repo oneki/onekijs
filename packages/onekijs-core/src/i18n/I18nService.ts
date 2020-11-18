@@ -1,4 +1,5 @@
 import { all, call } from 'redux-saga/effects';
+import { getLocaleSettings, isLocaleDomain } from '../app/settings';
 import { AppSettings } from '../app/typings';
 import { reducer, saga, service } from '../core/annotations';
 import GlobalService from '../core/GlobalService';
@@ -35,8 +36,27 @@ export default class I18nService extends GlobalService {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Latest)
   *changeLocale(locale: string) {
-    yield this.setLocale(locale);
-    yield this.context.settings.i18n.changeLocale(locale, this.context);
+    const { router, settings } = this.context;
+    const location = router.location;
+    const localeSettings = getLocaleSettings(locale, settings);
+    if (!localeSettings) {
+      // TODO throw exception or use default locale ?
+    } else {
+      const nextLocation = Object.assign({}, location, {});
+      if (isLocaleDomain(localeSettings)) {
+        nextLocation.pathlocale = undefined;
+        nextLocation.hostname = localeSettings.domain;
+      } else {
+        nextLocation.pathlocale = localeSettings.path;
+      }
+      nextLocation.pathname = `${nextLocation.pathcontext || ''}${nextLocation.pathlocale || ''}${
+        nextLocation.pathroute
+      }`;
+      yield this.setLocale(locale);
+      yield router.push(nextLocation, {
+        locale: false,
+      });
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
