@@ -1,5 +1,5 @@
 import qs from 'query-string';
-import { getLocaleSettingsByPath } from '../app/settings';
+import { indexedLocales, isLocalePath, localeNoPathSymbol } from '../app/settings';
 import { AppSettings } from '../app/typings';
 import { AnonymousObject } from '../core/typings';
 import { isNull } from '../core/utils/object';
@@ -56,17 +56,18 @@ export function toLocation(url: string, settings: AppSettings): Location {
   // extract pathcontext
   if (location.pathname !== '/') {
     let pathname = location.pathname;
-    const contextPath = trimEnd(settings.contextPath, '/');
-    if (contextPath !== '' && (pathname === contextPath || pathname.startsWith(`${contextPath}/`))) {
+    const contextPath = settings.contextPath;
+    if (contextPath !== '/' && (pathname === contextPath || pathname.startsWith(`${contextPath}/`))) {
       location.pathcontext = contextPath;
       pathname = pathname.substring(contextPath.length);
     }
     const tokens = pathname.split('/');
     const locale = tokens[1];
-    if (locale) {
-      const localeSettings = getLocaleSettingsByPath(`/${locale}`, settings);
-      if (localeSettings) {
-        location.pathlocale = `/${locale}`;
+    if (locale && isLocalePath(settings)) {
+      if (indexedLocales(settings)[locale] !== localeNoPathSymbol) {
+        location.pathlocale = indexedLocales(settings)[locale];
+      }
+      if (location.pathlocale) {
         pathname = pathname.substring(location.pathlocale.length);
       }
     }
@@ -137,4 +138,12 @@ export function toRelativeUrl(location: Location, options: AnonymousObject = {})
 export function extractState(query: AnonymousObject): string | null {
   if (!query || !query[URL_STATE]) return null;
   return atob(JSON.stringify(query[URL_STATE]));
+}
+
+export function rebuildLocation(location: Location): void {
+  location.host = location.hostname
+    ? `${location.hostname}${location.port ? `:${location.port}` : undefined}`
+    : undefined;
+  location.pathname = `${location.pathcontext || ''}${location.pathlocale || ''}${location.pathroute || '/'}`;
+  location.href = toUrl(location);
 }

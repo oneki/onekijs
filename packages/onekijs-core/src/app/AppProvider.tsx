@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import Container from '../core/Container';
 import ContainerContext from '../core/ContainerContext';
 import useLazyRef from '../core/useLazyRef';
@@ -20,6 +20,9 @@ const AppProvider: FC<AppProviderProps> = ({
   ErrorBoundaryComponent,
 }) => {
   const reduxLocale = useGlobalProp('i18n.locale');
+  const [locale, setLocale] = useState<string | undefined>(
+    detectLocale(router.location, reduxLocale, settings, initialLocale),
+  );
   const container = useLazyRef<Container>(() => {
     const container = new Container();
     if (services) {
@@ -36,10 +39,6 @@ const AppProvider: FC<AppProviderProps> = ({
     return flattenTranslations(translations || {});
   }, [translations]);
 
-  const locale = useMemo(() => {
-    return detectLocale(router.location, reduxLocale, settings, initialLocale);
-  }, [router.location, reduxLocale, settings, initialLocale]);
-
   const appContext: AppContext = useMemo(() => {
     return new AppContext(router, settings, store, {
       translations: formattedTranslations,
@@ -53,6 +52,16 @@ const AppProvider: FC<AppProviderProps> = ({
     ns: i18nNs,
     locale,
   };
+
+  useEffect(() => {
+    setLocale(detectLocale(router.location, reduxLocale, settings, initialLocale));
+    const unregister = router.listen((location, { settings }) => {
+      setLocale(detectLocale(location, reduxLocale, settings, initialLocale));
+    });
+    return () => {
+      unregister();
+    };
+  }, [router, reduxLocale, initialLocale, settings]);
 
   return (
     <ContainerContext.Provider value={container.current}>

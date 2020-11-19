@@ -10,7 +10,6 @@ const Switch: FC = ({ children }) => {
   const switchLocation = Object.assign({}, location, {
     pathname: onekiLocation.pathroute || '/',
   });
-  console.log(location, switchLocation);
   // const locales = useSetting<string[]>('i18n.locales', []);
   // for (const locale of locales) {
   //   if (location.pathname.startsWith(`/${locale}/`) || location.pathname === `/${locale}`) {

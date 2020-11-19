@@ -2,15 +2,16 @@ import { AppSettings } from 'onekijs';
 
 export default {
   i18n: {
-    locales: [
-      {
-        locale: 'fr',
-        path: '/fr',
-      },
-      {
-        locale: 'en',
-      },
-    ], // supported locales
+    locales: ['en', 'fr'],
+    // locales: [
+    //   {
+    //     locale: 'fr',
+    //     path: '/fr',
+    //   },
+    //   {
+    //     locale: 'en',
+    //   },
+    // ], // supported locales
     defaultLocale: 'en',
     url: '/locales', // the URL to retrieves the JSON files with the translations
   },

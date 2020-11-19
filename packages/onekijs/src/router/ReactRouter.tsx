@@ -8,6 +8,7 @@ import {
   RouterPushOptions,
   toI18nLocation,
   toLocation,
+  toRelativeUrl,
   toUrl,
   UnregisterCallback,
 } from 'onekijs-core';
@@ -47,15 +48,7 @@ export class ReactRouter extends AppRouter {
     props: LinkProps,
     ref: ((instance: HTMLAnchorElement | null) => void) | MutableRefObject<HTMLAnchorElement | null> | null,
   ): JSX.Element {
-    const href = toI18nLocation(
-      props.href,
-      {
-        settings: this.settings,
-        i18n: this.i18n,
-      },
-      props.locale,
-    );
-
+    const href = toI18nLocation(props.href, this.settings, this.i18n, props.locale);
     return <Link {...props} href={href} ref={ref} />;
   }
 
@@ -99,7 +92,10 @@ export class ReactRouter extends AppRouter {
    */
   listen(callback: LocationChangeCallback): UnregisterCallback {
     const handler: LocationListener = (reactRouterLocation) => {
-      callback(this.convertLocation(reactRouterLocation));
+      callback(this.convertLocation(reactRouterLocation), {
+        settings: this.settings,
+        i18n: this.i18n,
+      });
     };
     if (this.reactRouterHistory) {
       return this.reactRouterHistory.listen(handler);
@@ -124,23 +120,15 @@ export class ReactRouter extends AppRouter {
   }
 
   private goTo(urlOrLocation: string | Location, type: 'push' | 'replace', options?: RouterPushOptions): void {
-    if (this.reactRouterHistory) {
-      let url = '';
-      if (options?.locale === false) {
-        if (typeof urlOrLocation === 'string') url = urlOrLocation;
-        else url = toUrl(urlOrLocation);
-      } else {
-        const i18nLocation = toI18nLocation(
-          urlOrLocation,
-          {
-            settings: this.settings,
-            i18n: this.i18n,
-          },
-          options?.locale || this.i18n.locale,
-        );
-        url = toUrl(i18nLocation);
-      }
-      type === 'push' ? this.reactRouterHistory.push(url) : this.reactRouterHistory.replace(url);
+    const nextLocation = toI18nLocation(urlOrLocation, this.settings, this.i18n, options?.locale);
+    // check if hostname is different.
+    // If it's the case, use window.location and not react router
+    if (nextLocation && this.location && nextLocation.hostname !== this.location.hostname) {
+      const nextUrl = toUrl(nextLocation);
+      type === 'push' ? window.location.assign(nextUrl) : window.location.replace(nextUrl);
+    } else if (this.reactRouterHistory) {
+      const nextUrl = toRelativeUrl(nextLocation);
+      type === 'push' ? this.reactRouterHistory.push(nextUrl) : this.reactRouterHistory.replace(nextUrl);
     }
   }
 }

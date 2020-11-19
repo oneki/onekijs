@@ -1,5 +1,7 @@
 import qs from 'query-string';
+import { AppSettings } from '../app/typings';
 import { AnonymousObject } from '../core/typings';
+import { I18n } from '../i18n/typings';
 
 export type LinkComponentProps = Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>;
 export type LinkProps = Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> &
@@ -31,7 +33,7 @@ export interface Location {
   baseurl?: string;
   state?: AnonymousObject;
 }
-export type LocationChangeCallback = (location: Location) => void;
+export type LocationChangeCallback = (location: Location, context: { settings: AppSettings; i18n: I18n }) => void;
 export interface RouterPushOptions {
   shallow?: boolean;
   locale?: string | false;

@@ -1,5 +1,5 @@
 import { createBrowserHistory } from 'history';
-import { useLazyRef, AppState, DefaultLoadingComponent } from 'onekijs-core';
+import { AppState, DefaultLoadingComponent, useLazyRef } from 'onekijs-core';
 import React, { FC, Suspense } from 'react';
 import { Router } from 'react-router-dom';
 import { ReactRouter } from './router/ReactRouter';

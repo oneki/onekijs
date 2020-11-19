@@ -1,7 +1,4 @@
 import { AnonymousObject } from '../core/typings';
-import { get } from '../core/utils/object';
-import { trimEnd } from '../core/utils/string';
-import { I18nLocale, I18nLocaleDomain, I18nLocalePath } from '../i18n/typings';
 import { Location } from '../router/typings';
 import AppContext from './AppContext';
 import { AppSettings } from './typings';
