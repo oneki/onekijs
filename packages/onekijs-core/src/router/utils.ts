@@ -122,16 +122,16 @@ export function toRelativeUrl(location: Location, options: AnonymousObject = {})
   if (location.pathname) {
     url += location.pathname;
   }
-  const query = location.query || {};
-  if (location.state) {
-    query[URL_STATE] = atob(JSON.stringify(location.state));
+  url += serializeQuery(location, options);
+  return url;
+}
+
+export function toRouteUrl(location: Location, options: AnonymousObject = {}): string {
+  let url = '';
+  if (location.pathroute) {
+    url += location.pathroute;
   }
-  if (query && Object.keys(query).length > 0 && options.query !== false) {
-    url += `?${qs.stringify(location.query as AnonymousObject)}`;
-  }
-  if (!isNull(location.hash) && Object.keys(location.hash as AnonymousObject).length > 0 && options.hash !== false) {
-    url += `#${qs.stringify(location.hash as AnonymousObject)}`;
-  }
+  url += serializeQuery(location, options);
   return url;
 }
 
@@ -141,9 +141,23 @@ export function extractState(query: AnonymousObject): string | null {
 }
 
 export function rebuildLocation(location: Location): void {
-  location.host = location.hostname
-    ? `${location.hostname}${location.port ? `:${location.port}` : undefined}`
-    : undefined;
+  location.host = location.hostname ? `${location.hostname}${location.port ? `:${location.port}` : ''}` : undefined;
+  location.baseurl = `${location.protocol || 'http'}://${location.host}`;
   location.pathname = `${location.pathcontext || ''}${location.pathlocale || ''}${location.pathroute || '/'}`;
   location.href = toUrl(location);
+}
+
+function serializeQuery(location: Location, options: AnonymousObject = {}): string {
+  const query = location.query || {};
+  let result = '';
+  if (location.state) {
+    query[URL_STATE] = atob(JSON.stringify(location.state));
+  }
+  if (query && Object.keys(query).length > 0 && options.query !== false) {
+    result += `?${qs.stringify(location.query as AnonymousObject)}`;
+  }
+  if (!isNull(location.hash) && Object.keys(location.hash as AnonymousObject).length > 0 && options.hash !== false) {
+    result += `#${qs.stringify(location.hash as AnonymousObject)}`;
+  }
+  return result;
 }

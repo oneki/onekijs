@@ -5,7 +5,7 @@ import useNotificationService from '../notification/useNotificationService';
 import FetchService from './FetchService';
 import { AppFetchOptions, FetchState, AppExtraFetchOptions } from './typings';
 import { asFetchOptions } from './utils';
-import useOnekiRouter from '../router/useOnekiRouter';
+import useRouter from '../router/useRouter';
 
 const useDelete = (
   url: string,
@@ -14,7 +14,7 @@ const useDelete = (
   const notificationService = useNotificationService();
   const appContext = useAppContext();
   const optionsRef = useRef(options);
-  const router = useOnekiRouter();
+  const router = useRouter();
 
   const [state, service] = useService(FetchService, {
     loading: false,

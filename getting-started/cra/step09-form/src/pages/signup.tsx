@@ -4,7 +4,7 @@ import {
   SubmitButton,
   useAuthService,
   useForm,
-  useOnekiRouter,
+  useRouter,
   usePost,
   useRule,
   useTranslation,
@@ -14,7 +14,7 @@ import React, { FC } from 'react';
 const SignupPage: FC = () => {
   const [T, t] = useTranslation();
   const authService = useAuthService();
-  const router = useOnekiRouter();
+  const router = useRouter();
   const [submit] = usePost('/auth/signup', {
     onSuccess: (user) => {
       // the API returns the user in the response

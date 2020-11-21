@@ -5,7 +5,7 @@ import useNotificationService from '../notification/useNotificationService';
 import FetchService from './FetchService';
 import { AppFetchOptions, FetchState, AppExtraFetchOptions, FetchMethod } from './typings';
 import { asFetchOptions } from './utils';
-import useOnekiRouter from '../router/useOnekiRouter';
+import useRouter from '../router/useRouter';
 
 const usePostPutPatch = <T = any>(
   url: string,
@@ -15,7 +15,7 @@ const usePostPutPatch = <T = any>(
   const notificationService = useNotificationService();
   const appContext = useAppContext();
   const optionsRef = useRef(options);
-  const router = useOnekiRouter();
+  const router = useRouter();
 
   const [state, service] = useService(FetchService, {
     loading: false,

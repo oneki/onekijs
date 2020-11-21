@@ -44,9 +44,8 @@ const useTranslation = (
   const nsNotLoaded = useMemo(() => {
     return nsRequired.filter((ns) => !nsLoaded.includes(ns));
   }, [nsRequired, nsLoaded]);
-
-  const fetching: boolean = useGlobalProp('i18n.fetching') || false;
-
+  const nsFetching: AnonymousObject = useGlobalProp(`i18n.fetching.${locale}`, {});
+  const fetching = !!Object.keys(nsFetching).find((ns) => nsFetching[ns] && nsNotLoaded.includes(ns));
   const t = useCallback(
     (content: string | JSX.Element, alias?: string, count = 1) => {
       if (fetching) return null;

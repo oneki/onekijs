@@ -1,4 +1,4 @@
-import { useLoginCallbackService, useOnekiRouter, getI18nStaticProps, withI18nPaths } from 'onekijs-next';
+import { useLoginCallbackService, useRouter, getI18nStaticProps, withI18nPaths } from 'onekijs-next';
 import React from 'react';
 import { useEffect } from 'react';
 import fs from 'fs';
@@ -17,7 +17,7 @@ export async function getStaticPaths() {
 
 const ItsmeCallbackPage = React.memo(() => {
   const [error] = useLoginCallbackService('itsme');
-  const router = useOnekiRouter();
+  const router = useRouter();
 
   // Redirect to login page if there is an error
   useEffect(() => {

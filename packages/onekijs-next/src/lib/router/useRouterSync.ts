@@ -6,9 +6,7 @@ const useNextRouter = useRouter || (() => null);
 
 export const useRouterSync = (onekiRouter: OnekiRouter): void => {
   const nextRouter = useNextRouter();
-  if (typeof window !== 'undefined') {
-    onekiRouter.sync(nextRouter);
-  }
+  onekiRouter.sync(nextRouter);
 
   useEffect(() => {
     onekiRouter.onLocationChange();

@@ -28,7 +28,7 @@ export interface AppProviderProps extends Omit<AppProps, 'initialState' | 'Loadi
   store: AppStore;
   router: Router;
 }
-export type AppResultCallback<T = any> = string | [string, string] | ((result: T, context: AppContext) => void);
+export type AppResultCallback<T = any> = string | ((result: T, context: AppContext) => void);
 export interface AppSettings {
   [propName: string]: any;
 }

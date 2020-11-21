@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 import LocalRouter from '../router/LocalRouter';
-import useOnekiRouter from '../router/useOnekiRouter';
+import useRouter from '../router/useRouter';
 import { AnonymousObject } from '../core/typings';
 import useService from '../core/useService';
 import { omit } from '../core/utils/object';
@@ -27,7 +27,7 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
   options: UseCollectionOptions<T, M> = {},
 ): Collection<T, M> => {
   const initializedRef = useRef(false);
-  let router = useOnekiRouter();
+  let router = useRouter();
   if (!options.mutateUrl) {
     router = new LocalRouter();
   }

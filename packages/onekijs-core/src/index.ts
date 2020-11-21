@@ -362,6 +362,15 @@ export {
 } from './router/typings';
 export { default as useHistory } from './router/useHistory';
 export { default as useLocation } from './router/useLocation';
-export { default as useOnekiRouter } from './router/useOnekiRouter';
+export { default as useRouter } from './router/useRouter';
 export { default as useParams } from './router/useParams';
-export { absoluteUrl, extractState, isAbsoluteUrl, toLocation, toRelativeUrl, toUrl, urlBuilder } from './router/utils';
+export {
+  absoluteUrl,
+  extractState,
+  isAbsoluteUrl,
+  toLocation,
+  toRelativeUrl,
+  toRouteUrl,
+  toUrl,
+  urlBuilder,
+} from './router/utils';

@@ -1,10 +1,10 @@
 import React, { FC, useEffect } from 'react';
 import { AuthErrorProps } from './typings';
-import useOnekiRouter from '../router/useOnekiRouter';
+import useRouter from '../router/useRouter';
 import useSetting from '../app/useSetting';
 
 const DefaultAuthErrorComponent: FC<AuthErrorProps> = ({ error }) => {
-  const router = useOnekiRouter();
+  const router = useRouter();
   const loginRoute = useSetting('routes.login', '/login');
 
   useEffect(() => {

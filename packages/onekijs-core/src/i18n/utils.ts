@@ -107,10 +107,9 @@ export function detectLocale(
   settings?: AppSettings,
   initialLocale?: string,
 ): string | undefined {
-  debugger;
   // 1. return the initialLocale if present
-  let locale = initialLocale;
-
+  if (initialLocale) return initialLocale;
+  let locale: string | undefined;
   // 2. Detect locale via the URL
   if (!locale && location && settings) {
     const locales = indexedLocales(settings);

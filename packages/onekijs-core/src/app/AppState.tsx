@@ -68,7 +68,6 @@ const AppState: FC<AppStateProps> = ({
   if (loading) {
     return <LoadingComponent />;
   }
-
   return (
     <Provider store={appStore as AppStore}>
       <AppProvider

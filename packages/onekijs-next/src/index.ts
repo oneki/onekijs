@@ -59,7 +59,7 @@
 //   useLogoutCallbackService,
 //   useLogoutError,
 //   authService, useAuthService, useSecurityContext,
-//   useOnekiRouter, useLocation, useHistory, useParams, useSetting, useSettings, AppContext,
+//   useRouter, useLocation, useHistory, useParams, useSetting, useSettings, AppContext,
 //   layout, withLayout,
 //   useI18nService, i18nService, useTranslation, useLocale, useI18n, I18nLink,
 //   useGlobalState, useGlobalProp, useLocalState, useGlobalStateModifier,
@@ -72,7 +72,7 @@
 
 export * from 'onekijs-core';
 
-export { App } from 'onekijs-next/src/lib/app';
-export { default as NextRouter } from 'onekijs-next/src/lib/router';
-export { get404StaticProps } from 'onekijs-next/src/lib/404';
-export { getI18nStaticProps, getI18nTranslations, withI18nPaths } from 'onekijs-next/src/lib/i18n';
+export { App } from './lib/app';
+export { default as NextRouter } from './lib/router/NextRouter';
+export { get404StaticProps } from './lib/404';
+// export { getI18nStaticProps, getI18nTranslations, withI18nPaths } from './lib/i18n';

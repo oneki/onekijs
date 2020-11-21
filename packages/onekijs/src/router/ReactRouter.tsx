@@ -48,8 +48,7 @@ export class ReactRouter extends AppRouter {
     props: LinkProps,
     ref: ((instance: HTMLAnchorElement | null) => void) | MutableRefObject<HTMLAnchorElement | null> | null,
   ): JSX.Element {
-    const href = toI18nLocation(props.href, this.settings, this.i18n, props.locale);
-    return <Link {...props} href={href} ref={ref} />;
+    return <Link {...props} ref={ref} />;
   }
 
   init(settings: AppSettings): void {
@@ -123,7 +122,7 @@ export class ReactRouter extends AppRouter {
     const nextLocation = toI18nLocation(urlOrLocation, this.settings, this.i18n, options?.locale);
     // check if hostname is different.
     // If it's the case, use window.location and not react router
-    if (nextLocation && this.location && nextLocation.hostname !== this.location.hostname) {
+    if (nextLocation && this.location && nextLocation.baseurl !== this.location.baseurl) {
       const nextUrl = toUrl(nextLocation);
       type === 'push' ? window.location.assign(nextUrl) : window.location.replace(nextUrl);
     } else if (this.reactRouterHistory) {

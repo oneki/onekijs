@@ -5,19 +5,23 @@ import {
   Location,
   LocationChangeCallback,
   RouterPushOptions,
-  toLocation,
-  toRelativeUrl,
+  toI18nLocation,
+  toRouteUrl,
+  toUrl,
   UnregisterCallback,
 } from 'onekijs-core';
 import React from 'react';
 import Link from '../../components/Link';
 
 export default class NextRouter extends AppRouter {
-  constructor(protected listeners: LocationChangeCallback[]) {
+  listeners: LocationChangeCallback[];
+
+  constructor(listeners: LocationChangeCallback[]) {
     super();
+    this.listeners = listeners;
   }
 
-  get native(): NextRouterType {
+  get native(): NextRouterType | null {
     return Router.router;
   }
 
@@ -56,11 +60,11 @@ export default class NextRouter extends AppRouter {
    * }
    */
   push(urlOrLocation: string | Location, options: RouterPushOptions = {}): void {
-    this._goto('push', urlOrLocation, options);
+    this.goto('push', urlOrLocation, options);
   }
 
   replace(urlOrLocation: string | Location, options: RouterPushOptions = {}): void {
-    this._goto('replace', urlOrLocation, options);
+    this.goto('replace', urlOrLocation, options);
   }
 
   /**
@@ -93,7 +97,10 @@ export default class NextRouter extends AppRouter {
 
   onLocationChange(): void {
     this.listeners.forEach((listener) => {
-      listener(this.location);
+      listener(this.location, {
+        settings: this.settings,
+        i18n: this.i18n,
+      });
     });
   }
 
@@ -113,15 +120,11 @@ export default class NextRouter extends AppRouter {
   // }
 
   sync(nextRouter: NextRouterType): void {
-    const pathname = nextRouter.pathname;
     const asPath = nextRouter.asPath;
-
-    if (!pathname.includes('[') || pathname !== asPath) {
-      const location = toLocation(asPath);
-      this.route = Router.router.route;
-      this.params = Router.router.query;
-      this._pushLocation(location);
-    }
+    const location = toI18nLocation(asPath, this.settings, this.i18n, undefined);
+    this.route = nextRouter.route;
+    this.params = nextRouter.query || {};
+    this._pushLocation(location);
   }
 
   getLinkComponent(props: LinkProps): JSX.Element {
@@ -142,24 +145,23 @@ export default class NextRouter extends AppRouter {
   //   return <Link {...props} as={i18nAs} href={i18nHref} />;
   // }
 
-  _goto(type: 'push' | 'replace', urlOrLocation: string | Location, options: RouterPushOptions): void {
+  private goto(type: 'push' | 'replace', urlOrLocation: string | Location, options: RouterPushOptions): void {
     // const location = toI18nLocation(urlOrLocation, {
     //   settings: this.settings,
     //   i18n: this.i18n,
     // });
-    let location: Location;
-    if (typeof urlOrLocation === 'string') {
-      location = toLocation(urlOrLocation);
-    } else {
-      location = urlOrLocation;
+    const nextLocation = toI18nLocation(urlOrLocation, this.settings, this.i18n, options?.locale);
+    // check if hostname is different.
+    // If it's the case, use window.location and not next router
+    if (nextLocation && this.location && nextLocation.baseurl !== this.location.baseurl) {
+      const nextUrl = toUrl(nextLocation);
+      type === 'push' ? window.location.assign(nextUrl) : window.location.replace(nextUrl);
+    } else if (Router.router) {
+      const nextUrl = toRouteUrl(nextLocation);
+      type === 'push'
+        ? Router.router.push(nextUrl, undefined, { locale: options?.locale })
+        : Router.router.replace(nextUrl, undefined, { locale: options?.locale });
     }
-
-    const relativeUrl = toRelativeUrl(location);
-    // if (location.route) {
-    //   return Router.router[type](location.route, relativeUrl, options);
-    // } else {
-    Router.router[type](relativeUrl, relativeUrl, options);
-    // }
   }
 
   // _toLocation(url) {

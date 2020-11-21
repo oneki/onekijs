@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import fs from 'fs';
-import { getI18nStaticProps, I18nLink, useLoginError, useOnekiRouter, withI18nPaths } from 'onekijs-next';
+import { getI18nStaticProps, I18nLink, useLoginError, useRouter, withI18nPaths } from 'onekijs-next';
 import path from 'path';
 import React from 'react';
 import { useForm } from 'react-hook-form';
@@ -20,7 +20,7 @@ export async function getStaticPaths() {
 }
 
 const LoginPage = () => {
-  const router = useOnekiRouter();
+  const router = useRouter();
   const error = useLoginError();
   if (typeof window !== 'undefined') {
     router.saveOrigin();

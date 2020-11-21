@@ -7,7 +7,7 @@ import { AnonymousObject, ErrorCallback, ResultCallback, SuccessCallback } from 
 import useLazyRef from '../core/useLazyRef';
 import { clone, fromPayload, simpleMergeDeep } from '../core/utils/object';
 import Router from '../router/Router';
-import useOnekiRouter from '../router/useOnekiRouter';
+import useRouter from '../router/useRouter';
 import AppContext from './AppContext';
 import { defaultSettings, indexLocales } from './settings';
 import {
@@ -128,11 +128,6 @@ export function asResultCallback<T = any>(
     return () => {
       router.push(callback);
     };
-  } else if (Array.isArray(callback)) {
-    // TODO handle correctly Next Router
-    return () => {
-      console.log('TODO handle correctly Next Router');
-    };
   } else {
     const originalCallback = callback;
     return (result) => {
@@ -142,7 +137,7 @@ export function asResultCallback<T = any>(
 }
 
 function useResultCallback<T = any>(callback?: AppResultCallback<T>): ResultCallback<T> | undefined {
-  const router = useOnekiRouter();
+  const router = useRouter();
   const appContext = useAppContext();
   const callbackRef = useLazyRef(() => {
     return asResultCallback<T>(callback, router, appContext);

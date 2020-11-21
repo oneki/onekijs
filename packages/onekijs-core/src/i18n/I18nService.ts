@@ -18,6 +18,7 @@ export default class I18nService extends GlobalService {
   constructor(notificationService: NotificationService) {
     super();
     this.modifiers = {};
+    this.fetching = {};
     this.notificationService = notificationService;
   }
 
@@ -50,19 +51,20 @@ export default class I18nService extends GlobalService {
   *fetchTranslations(locale: string, namespaces: string[], options: { onError?: any } = {}) {
     // TODO description options
     const { settings } = this.context;
+    const nsToFetch = namespaces.filter((ns) => !get<boolean>(this.state, `i18n.fetching.${locale}.${ns}`, false));
     try {
-      yield this.setFetchingTranslations(true);
+      yield this.setFetchingTranslations(true, locale, nsToFetch);
       const results = yield all(
-        namespaces.map((ns) => {
+        nsToFetch.map((ns) => {
           return call(asyncGet, this.getLocaleUrl(locale, ns, settings), options);
         }),
       );
       const translations: AnonymousObject = {};
-      namespaces.forEach((ns, i) => (translations[ns] = results[i]));
+      nsToFetch.forEach((ns, i) => (translations[ns] = results[i]));
       yield this.setTranslations(translations, locale); // to update the store and trigger a re-render.
-      yield this.setFetchingTranslations(false);
+      yield this.setFetchingTranslations(false, locale, nsToFetch);
     } catch (e) {
-      yield this.setFetchingTranslations(false);
+      yield this.setFetchingTranslations(false, locale, nsToFetch);
       const onError = options.onError;
       if (onError) {
         yield onError(e);
@@ -80,8 +82,8 @@ export default class I18nService extends GlobalService {
   }
 
   @reducer
-  setFetchingTranslations(fetching: boolean): void {
-    set(this.state, 'i18n.fetching', fetching);
+  setFetchingTranslations(fetching: boolean, locale: string, namespaces: string[]): void {
+    namespaces.forEach((ns) => set(this.state, `i18n.fetching.${locale}.${ns}`, fetching));
   }
 
   @reducer

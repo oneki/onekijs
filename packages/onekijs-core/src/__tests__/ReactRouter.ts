@@ -78,7 +78,10 @@ export class ReactRouter extends Router {
    */
   listen(callback: LocationChangeCallback): UnregisterCallback {
     const handler: LocationListener = (reactRouterLocation) => {
-      callback(this.convertLocation(reactRouterLocation));
+      callback(this.convertLocation(reactRouterLocation), {
+        settings: this.settings,
+        i18n: this.i18n,
+      });
     };
     if (this.reactRouterHistory) {
       return this.reactRouterHistory.listen(handler);
@@ -90,7 +93,10 @@ export class ReactRouter extends Router {
   }
 
   private convertLocation(reactRouterLocation: ReactRouterLocation<LocationState>): Location {
-    return toLocation(`${reactRouterLocation.pathname}${reactRouterLocation.search}${reactRouterLocation.hash}`);
+    return toLocation(`${reactRouterLocation.pathname}${reactRouterLocation.search}${reactRouterLocation.hash}`, {
+      settings: this.settings,
+      i18n: this.i18n,
+    });
   }
 
   private pushLocation(reactRouterLocation: any): void {

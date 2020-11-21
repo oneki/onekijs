@@ -1,9 +1,9 @@
-import { useLocale, useOnekiRouter } from 'onekijs-next';
+import { useLocale, useRouter } from 'onekijs-next';
 import { useEffect } from 'react';
 
 const IndexPage = () => {
   const locale = useLocale();
-  const router = useOnekiRouter();
+  const router = useRouter();
 
   useEffect(() => {
     router.push('/');

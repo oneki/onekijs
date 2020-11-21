@@ -1,6 +1,6 @@
 import fs from 'fs';
 import Head from 'next/head';
-import { getI18nStaticProps, I18nLink, useOnekiRouter, useParams, withI18nPaths, withLayout } from 'onekijs-next';
+import { getI18nStaticProps, I18nLink, useRouter, useParams, withI18nPaths, withLayout } from 'onekijs-next';
 import path from 'path';
 import React from 'react';
 import SiteLayout from '../../layout/siteLayout';
@@ -19,7 +19,7 @@ export async function getStaticPaths() {
 
 const IndexPage = () => {
   const params = useParams();
-  const router = useOnekiRouter();
+  const router = useRouter();
   return (
     <>
       <Head>

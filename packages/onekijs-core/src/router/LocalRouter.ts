@@ -47,7 +47,10 @@ export default class LocalRouter extends Router {
     }
     this._pushLocation(location, replace);
     Object.values(this.listeners).forEach((listener) => {
-      listener(location);
+      listener(location, {
+        settings: this.settings,
+        i18n: this.i18n,
+      });
     });
   }
 }

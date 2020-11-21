@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { withLayout, secure, useSetting, useOnekiRouter } from 'onekijs-next';
+import { withLayout, secure, useSetting, useRouter } from 'onekijs-next';
 import React, { useEffect } from 'react';
 import MainLayout from '../layout/mainLayout/MainLayout';
 import PropTypes from 'prop-types';
@@ -19,7 +19,7 @@ const validator = (securityContext) => {
 };
 
 const ErrorComponent = ({ error }) => {
-  const router = useOnekiRouter();
+  const router = useRouter();
   const loginRoute = useSetting('routes.login', '/login');
 
   useEffect(() => {

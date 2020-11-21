@@ -1,9 +1,9 @@
 import React from 'react';
 import { LinkProps } from './typings';
-import useOnekiRouter from './useOnekiRouter';
+import useRouter from './useRouter';
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
-  const router = useOnekiRouter();
+  const router = useRouter();
   return router.getLinkComponent(props, ref);
 });
 
