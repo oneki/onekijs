@@ -3,7 +3,6 @@
   "version": "0.8.8",
   "description": "Opiniated React framework built on top of Next.js",
   "author": "Oneki",
-  "private": true,
   "license": "MIT",
   "repository": "oneki/onekijs",
   "main": "dist/index.js",
