@@ -3,7 +3,8 @@ import { deriveColor } from '../utils/color';
 import { Theme } from './typings';
 
 export const theme = (customTheme = {}): Theme => {
-  const theme: Theme = Object.assign(
+  //const theme: Theme = Object.assign(
+  const theme: any = Object.assign(
     {
       dark: false,
       breakpoints: {

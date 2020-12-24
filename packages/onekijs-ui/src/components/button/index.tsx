@@ -1,8 +1,9 @@
+import { Button as AntdButton } from 'antd';
+import { CompoundedComponent } from 'onekijs-ui/src/components/button/typings';
 import styled from 'styled-components';
-import ButtonComponent from './component';
 import buttonStyle from './style';
 
-const Button = styled(ButtonComponent)`
+const Button: CompoundedComponent = styled(AntdButton)`
   ${buttonStyle}
 `;
 

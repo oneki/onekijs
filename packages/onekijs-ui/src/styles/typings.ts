@@ -5,7 +5,6 @@ import { FlattenInterpolation, ThemedStyledProps, ThemeProps } from 'styled-comp
 export type CssProperty<T> = (value: T, variants?: AnonymousObject) => FlattenInterpolation<ThemeProps<any>>;
 export type Formatter<T> = (value: T, theme: Theme) => string;
 export type Media = 'all' | 'sm' | 'md' | 'lg' | 'xl';
-export type Theme = AnonymousObject;
 export type TLength = string | 0;
 export type SizeProperty =
   | Globals
@@ -116,3 +115,9 @@ export type KindTheme = 'primary' | 'danger' | 'success' | 'info' | 'warning' | 
 export type ComponentStyle<P, T extends Theme = Theme> = (
   propsWithTheme: ThemedStyledProps<P, T>,
 ) => FlattenInterpolation<ThemeProps<T>>;
+
+export type Theme = {
+  dark?: boolean;
+  palette: any;
+  [x: string]: any;
+};
