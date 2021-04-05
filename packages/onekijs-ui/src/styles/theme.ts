@@ -1,4 +1,4 @@
-import { get } from 'onekijs';
+import { get } from 'onekijs-core';
 import { deriveColor } from '../utils/color';
 import { Theme } from './typings';
 

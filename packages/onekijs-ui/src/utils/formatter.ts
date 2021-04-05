@@ -1,4 +1,4 @@
-import { AnonymousObject, get } from 'onekijs';
+import { AnonymousObject, get } from 'onekijs-core';
 import { Formatter } from '../styles/typings';
 import { hexToRgb } from './color';
 

@@ -1,7 +1,8 @@
 import React, { useCallback, useState } from 'react';
-import { Select, useCollection, CollectionState, LocalCollectionService, toCollectionItem, Query, SelectOptionMeta } from 'onekijs-ui';
+import { useCollection, CollectionState, LocalCollectionService, toCollectionItem, Query } from 'onekijs';
 import { users, userAdapter, userSearcher, User } from '../data/users';
 import { useService, Fetcher } from 'onekijs';
+import { Select, SelectOptionMeta } from 'onekijs-ui';
 
 export const SelectPage = () => {
   const [, service] = useService<CollectionState<User, SelectOptionMeta>, LocalCollectionService<User, SelectOptionMeta, CollectionState<User, SelectOptionMeta>>>(LocalCollectionService, {

@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import { SelectOptionProps } from '../typings';
-import { LoadingStatus } from 'onekijs';
+import { LoadingStatus } from 'onekijs-core';
 
 const SelectOptionComponent: FC<SelectOptionProps> = React.memo(({ item, index, onClick, onMouseOver }) => {
   const { data, text, meta } = item;

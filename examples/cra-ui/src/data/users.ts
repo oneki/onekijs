@@ -1,4 +1,4 @@
-import { ItemAdapter, ItemMeta, QuerySearcher } from 'onekijs-ui';
+import { CollectionItemAdapter, ItemAdapter, ItemMeta, QuerySearcher } from 'onekijs';
 
 export interface User {
   id: number,
@@ -12,7 +12,7 @@ export interface User {
   phones: string[],
 }
 
-export const userAdapter: ItemAdapter<User, ItemMeta> = (data?: User) => {
+export const userAdapter: CollectionItemAdapter<User, ItemMeta> = (data?: User) => {
   return {
     id: data ? String(data.id) : undefined,
     text: data ? `${data.firstname} ${data.lastname}` : '',

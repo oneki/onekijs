@@ -34,6 +34,7 @@ import {
   urlSerializer,
   visitFilter,
 } from './utils';
+import LocalRouter from '../router/LocalRouter';
 
 export default abstract class CollectionService<
   T = any,
@@ -274,6 +275,9 @@ export default abstract class CollectionService<
     this.initialState = this.state;
     if (this.state.filter) {
       this.state.filter = this._formatFilter(this.state.filter);
+    }
+    if (!this.state.router) {
+      this.state.router = new LocalRouter();
     }
     // listen on location change and adapt filters, sort, ... with these values
     this.state.router.listen((location) => this._onLocationChange(location));

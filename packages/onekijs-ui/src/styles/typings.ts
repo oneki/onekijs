@@ -1,5 +1,5 @@
 import { Globals } from 'csstype';
-import { AnonymousObject } from 'onekijs';
+import { AnonymousObject } from 'onekijs-core';
 import { FlattenInterpolation, ThemedStyledProps, ThemeProps } from 'styled-components';
 
 export type CssProperty<T> = (value: T, variants?: AnonymousObject) => FlattenInterpolation<ThemeProps<any>>;

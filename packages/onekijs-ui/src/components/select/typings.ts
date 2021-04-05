@@ -1,4 +1,4 @@
-import { AnyFunction, ChangeHandler, Collection, ItemAdapter, ItemMeta } from 'onekijs';
+import { AnyFunction, ChangeHandler, Collection, ItemAdapter, ItemMeta } from 'onekijs-core';
 import { FC } from 'react';
 import { ListItemHandler, ListItemProps, ListProps } from '../list/typings';
 

@@ -1,4 +1,4 @@
-import { Primitive } from 'onekijs';
+import { Primitive } from 'onekijs-core';
 import {
   QueryFilter,
   QueryFilterCriteria,
