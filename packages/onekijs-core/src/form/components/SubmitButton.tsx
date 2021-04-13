@@ -2,12 +2,12 @@ import React, { FC } from 'react';
 import useSubmit from '../useSubmit';
 import { SubmitButtonProps, ValidationCode } from '../typings';
 
-const SubmitButton: FC<SubmitButtonProps> = React.memo((props) => {
+const SubmitButton: FC<SubmitButtonProps> = React.memo((opts) => {
   const { submitting, code, fields } = useSubmit();
-
+  const { showErrors, ...props } = opts;
   let disabled = false;
   const alt = [];
-  if (code <= ValidationCode.Error) {
+  if (code <= ValidationCode.Error && showErrors) {
     alt.push([`Some fields are ${code === ValidationCode.Error ? 'in error' : 'loading'}`]);
     // disabled = true;
     Object.keys(fields).forEach((fieldName) => {

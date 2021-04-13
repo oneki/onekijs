@@ -46,9 +46,7 @@ import { Collection, CollectionStatus, ItemMeta, LoadingStatus, Item, isCollecti
 //   return false;
 // };
 
-export const emptyListItem: Item<any, ItemMeta> = {
-  type: Symbol(),
-};
+export const emptyListItem: Item<any, ItemMeta> = {};
 
 export const canFetchMore = (collection: any[] | Collection<unknown, ItemMeta>): boolean => {
   return (

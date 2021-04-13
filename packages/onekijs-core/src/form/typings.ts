@@ -124,7 +124,7 @@ export type Ruler = (...args: any[]) => void;
 
 export type SelectProps = React.InputHTMLAttributes<HTMLInputElement> & ValidatorsType;
 
-export type SubmitButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
+export type SubmitButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & { showErrors?: boolean };
 
 export type TextareaProps = React.InputHTMLAttributes<HTMLInputElement> & ValidatorsType;
 

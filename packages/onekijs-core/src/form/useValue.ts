@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import useFormContext from './useFormContext';
-import { isNullOrEmpty } from '../core/utils/object';
+import { get, isNullOrEmpty } from '../core/utils/object';
 
 const useValue = (fieldName: string): any => {
   const { onValueChange, offValueChange, valuesRef } = useFormContext();
@@ -9,7 +9,7 @@ const useValue = (fieldName: string): any => {
     if (isNullOrEmpty(nameRef.current)) {
       return valuesRef.current;
     }
-    return valuesRef.current[nameRef.current];
+    return get(valuesRef.current, nameRef.current);
   });
 
   useEffect((): (() => void) => {
