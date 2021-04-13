@@ -14,8 +14,18 @@ export const SelectPage = () => {
   const fetcher: Fetcher = useCallback(
     async (url, method, body, options) => {
       await new Promise((r) => setTimeout(r, 1000 + Math.floor(Math.random() * Math.floor(300))));
-      service.query(body as Query);
-      return service.items ? service.items.slice(body.offset || 0, (body.offset || 0) + (body.size || service.items.length)).map(item => item?.data) : [];
+      const query = body as Query;
+      if (service.getSearch() !== body.search) {
+        query.search = body.search || '';
+        query.offset = 0;
+      }
+      service.query(query);
+      const items = service.items ? service.items.slice(query.offset || 0, (query.offset || 0) + (query.limit || service.items.length)).map(item => item?.data) : [];
+      
+      return {
+        'data': items,
+        'total': service.items ? service.items.length : 0,
+      };
     },
     [service],
   );

@@ -4,25 +4,34 @@ import { SelectInputProps } from '../typings';
 import SelectIconComponent from './SelectIconComponent';
 
 const SelectInputComponent: FC<SelectInputProps> = ({
-  onIconClick,
+  setOpen,
   open,
   placeholder,
   loading,
+  fetching,
   IconComponent = SelectIconComponent,
-  onFocus,
-  onBlur,
+  onFocus: forwardFocus,
+  onBlur: forwardBlur,
   onChange,
   value,
   focus,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const partialValueRef = useRef('');
-  const proxifyRef = useRef(true);
+  // partialValue is the part of the selected item entered by the user
+  const partialValueRef = useRef<string | undefined>(undefined);
+  // replace the input value by the selected item (the first item of the list)
+  const showSelectedRef = useRef(true);
+
+  const partialValue = partialValueRef.current ?? (value ?? '')
+
+  // value that is actually shown in the input. 
+  // This value is set to the partial value (that is the unselected part of the value) if the value is pending loading or we don't 
+  const showPartialValue = value === undefined || fetching || loading || !showSelectedRef.current || !value.toString().toLowerCase().startsWith(partialValue.toLowerCase())
   const proxyValue =
-    value === undefined || !proxifyRef.current ? (focus ? partialValueRef.current : '') : String(value);
+    showPartialValue ? (focus || loading || fetching ? value !== undefined && showSelectedRef.current && value.toString().toLowerCase().startsWith(partialValue.toLowerCase()) ? value : partialValue : '') : value;
 
   const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    () => {
       const input = inputRef.current;
       if (input) {
         const currentSelectionStart = input.selectionStart;
@@ -33,10 +42,7 @@ const SelectInputComponent: FC<SelectInputProps> = ({
           partialValueRef.current = input.value;
         }
       }
-      if (onChange) {
-        e.target.value = partialValueRef.current;
-        onChange(e);
-      }
+      onChange(partialValueRef.current || '');
     },
     [onChange],
   );
@@ -44,22 +50,31 @@ const SelectInputComponent: FC<SelectInputProps> = ({
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     const input = inputRef.current;
     if (!input) return;
-    if (e.keyCode === 8 || e.keyCode === 46) {
-      proxifyRef.current = false;
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+      showSelectedRef.current = false;
     } else {
       const currentSelectionStart = input.selectionStart;
       const currentSelectionEnd = input.selectionEnd;
       if (currentSelectionStart === currentSelectionEnd && currentSelectionStart === input.value.length) {
-        proxifyRef.current = true;
+        showSelectedRef.current = true;
       }
     }
   }, []);
 
+  const handleKeyPress = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    const input = inputRef.current;
+    if (!input) return;
+    if (proxyValue === partialValueRef.current + e.key) {
+      partialValueRef.current = proxyValue;
+      onChange(proxyValue)
+    }
+  }, [proxyValue, onChange]);  
+
   useIsomorphicLayoutEffect(() => {
     const input = inputRef.current;
     if (input && focus) {
-      if (value !== undefined && String(value).startsWith(partialValueRef.current) && proxifyRef.current) {
-        input.setSelectionRange(partialValueRef.current.length, String(value).length);
+      if (value !== undefined && value != partialValueRef.current && value.toLowerCase().startsWith((partialValueRef.current || '').toLowerCase()) && showSelectedRef.current) {
+        input.setSelectionRange((partialValueRef.current || '').length, value.length);
       }
     }
   });
@@ -72,6 +87,31 @@ const SelectInputComponent: FC<SelectInputProps> = ({
     return result.join(' ');
   }, [focus]);
 
+  const onClick = useCallback(() => {
+    if (!open) {
+      setOpen(true)
+    }
+  }, [open])
+
+  const onFocus = useCallback((e) => {
+    inputRef.current && inputRef.current.select();
+    forwardFocus && forwardFocus(e);
+  }, [forwardFocus])
+
+  const onBlur = useCallback((e) => {
+    partialValueRef.current = undefined;
+    showSelectedRef.current = true;
+    forwardBlur && forwardBlur(e);
+  }, [forwardBlur])
+
+  const onIconClick = useCallback((e) => {
+    if (!open) {
+      inputRef.current && inputRef.current.select();
+    }
+    forwardFocus && forwardFocus(e);
+    setOpen(!open);
+  }, [open, forwardFocus])
+
   return (
     <div className={className}>
       <div className="o-select-input-marker" />
@@ -83,9 +123,11 @@ const SelectInputComponent: FC<SelectInputProps> = ({
         onBlur={onBlur}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
+        onKeyPress={handleKeyPress}
         value={proxyValue}
+        onClick={onClick}
       />
-      <IconComponent onIconClick={onIconClick} open={open} loading={loading} />
+      <IconComponent onClick={onIconClick} open={open} loading={loading} fetching={fetching} />
     </div>
   );
 };

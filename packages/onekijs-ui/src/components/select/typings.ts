@@ -7,12 +7,19 @@ export type SelectAdapter<T, M extends SelectOptionMeta = SelectOptionMeta> = It
 export interface SelectIconProps {
   open: boolean;
   loading: boolean;
-  onIconClick: AnyFunction<void>;
+  fetching: boolean;
+  onClick: AnyFunction<void>;
 }
 
-export interface SelectInputProps extends React.InputHTMLAttributes<HTMLInputElement>, SelectIconProps {
+export interface SelectInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> {
   IconComponent?: FC<SelectIconProps>;
-  focus?: boolean;
+  focus: boolean;
+  value?: string;
+  open: boolean;
+  loading: boolean;
+  fetching: boolean;  
+  setOpen: (open: boolean) => void;
+  onChange: (nextValue: string) => void;
 }
 
 export type SelectInternalProps<T = any, M extends ItemMeta = SelectOptionMeta> = Omit<SelectProps, 'items'> & {

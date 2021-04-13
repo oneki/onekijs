@@ -1,4 +1,4 @@
-import { CollectionItemAdapter, ItemAdapter, ItemMeta, QuerySearcher } from 'onekijs';
+import { CollectionItemAdapter, ItemMeta, QuerySearcher } from 'onekijs';
 
 export interface User {
   id: number,
@@ -23,7 +23,7 @@ export const userAdapter: CollectionItemAdapter<User, ItemMeta> = (data?: User) 
 
 export const userSearcher: QuerySearcher<User> = (item, search) => {
   if (search) {
-    return `${item.firstname} ${item.lastname}`.toUpperCase().startsWith(String(search).toUpperCase());
+    return `${item.firstname} ${item.lastname}`.toUpperCase().includes(String(search).toUpperCase());
   }
   return true;
 };

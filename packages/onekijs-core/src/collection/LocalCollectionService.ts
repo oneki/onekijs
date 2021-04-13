@@ -34,16 +34,18 @@ export default class LocalCollectionService<
 
   @reducer
   setData(data: T[]): void {
-    this._clearOffset();
+    const query = this.getQuery();
+    this._clearOffset(query);
     this.state.db = data.map((d) => this._adapt(d));
-    this.refresh();
+    this.refresh(query);
   }
 
   @reducer
   setItems(items: Item<T, M>[]): void {
-    this._clearOffset();
+    const query = this.getQuery();
+    this._clearOffset(query);
     this.state.db = items;
-    this.refresh();
+    this.refresh(query);
   }
 
   @reducer
@@ -191,7 +193,7 @@ export default class LocalCollectionService<
     if (query.filter) {
       result = items.filter((item) => this._applyFilter(item, this._formatFilter(query.filter)));
     } else if (query.search) {
-      result = items.filter((item) => this._applySearch(item, this.state.search));
+      result = items.filter((item) => this._applySearch(item, query.search));
     } else {
       result = Object.assign([], items);
     }

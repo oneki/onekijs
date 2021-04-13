@@ -40,7 +40,7 @@ export type Collection<T, M extends ItemMeta> = {
   hasMore: boolean;
   load(limit?: number, offset?: number): void;
   query(query: Query): void;
-  refresh(): void;
+  refresh(query?: Query): void;
   removeFilter(filterId: QueryFilterId): void;
   removeSortBy(field: string): void;
   reset(): void;
@@ -120,10 +120,10 @@ export interface CollectionState<T, M extends ItemMeta> extends FetchState {
 export type CollectionStatus =
   | 'not_initialized'
   | 'loading'
-  | 'deprecated'
+  | 'fetching'
   | 'loaded'
   | 'partial_loading'
-  | 'partial_deprecated'
+  | 'partial_fetching'
   | 'partial_loaded';
 
 export type Item<T, M extends ItemMeta> = {
@@ -147,15 +147,15 @@ export type ItemMeta = {
 
 export type List<T, M extends ItemMeta = ItemMeta> = Collection<T, M>;
 
-export type LoadingItemStatus = 'loading' | 'deprecated' | 'loaded';
+export type LoadingItemStatus = 'loading' | 'fetching' | 'loaded';
 
 export enum LoadingStatus {
   NotInitialized = 'not_initialized',
   Loading = 'loading',
-  Deprecated = 'deprecated',
+  Fetching = 'fetching',
   Loaded = 'loaded',
   PartialLoading = 'partial_loading',
-  PartialDeprecated = 'partial_deprecated',
+  PartialFetching = 'partial_fetching',
   PartialLoaded = 'partial_loaded',
 }
 

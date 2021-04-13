@@ -34,7 +34,7 @@ export interface FetchOptions<R = any, T = any> extends Omit<RequestInit, 'metho
 
 export interface FetchState extends State {
   loading?: boolean;
-  deprecated?: boolean;
+  fetching?: boolean;
   result?: any;
   error?: BasicError;
 }

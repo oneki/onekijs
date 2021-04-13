@@ -21,8 +21,14 @@ const VirtualistComponent: FC<VirtualListProps> = ({
   increment = defaultIncrement,
   onItemClick,
   onItemMouseOver,
+  parentRef,
 }) => {
-  const parentRef = useRef(null);
+  const localParentRef = useRef(null);
+  let overflow = 'none';
+  if (parentRef === undefined) {
+    parentRef = localParentRef;
+    overflow = 'auto';
+  }
 
   const estimatedItemHeight = useCallback(
     (index: number) => {
@@ -63,7 +69,7 @@ const VirtualistComponent: FC<VirtualListProps> = ({
     const firstVirualItemIndex = firstVirualItem ? firstVirualItem.index : 0;
     if (
       collection.status !== LoadingStatus.Loading &&
-      collection.status !== LoadingStatus.Deprecated &&
+      collection.status !== LoadingStatus.Fetching &&
       offset === 0 &&
       firstVirualItemIndex !== 0
     ) {
@@ -89,7 +95,7 @@ const VirtualistComponent: FC<VirtualListProps> = ({
       className={addClassname('o-list', className)}
       style={{
         maxHeight: `${typeof height === 'string' ? height : `${height}px`}`,
-        overflow: 'auto',
+        overflow: overflow,
       }}
     >
       <div

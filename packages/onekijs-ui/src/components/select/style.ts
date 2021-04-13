@@ -25,9 +25,15 @@ const selectStyle: ComponentStyle<SelectProps> = () => {
       ${borderWidth(1)}
       ${borderColor('gray-200')}
       ${borderRadius('default')}
+      ${cursor('pointer')}
       &.o-select-input-focus {
         ${borderColor('primary')}
         ${borderWidth(2)}
+      }
+    }
+    &.o-select-close {
+      .o-select-input{
+        ${cursor('pointer')}
       }
     }
     .o-select-input {
@@ -37,6 +43,7 @@ const selectStyle: ComponentStyle<SelectProps> = () => {
       ${outline('none')}
       ${width('full')}
       ${color('gray-800', { placeholder: 'gray-400' })}
+      
     }
     .o-select-icon-container {
       ${color('primary')}
@@ -65,17 +72,20 @@ const selectStyle: ComponentStyle<SelectProps> = () => {
       ${transitionProperty('all')}
       ${transitionTimingFunction('ease-in-out')}
     }
-    .o-select-option {
-      ${width('full')}
-      ${borderColor('gray-100')}
-      ${borderBottomWidth(1)}
-      &.o-select-option-clickable {
-        ${cursor('pointer')}
+    .o-select-options {
+      .o-select-option {
+        ${width('full')}
+        ${borderColor('gray-100')}
+        ${borderBottomWidth(1)}
+        &.o-select-option-clickable {
+          ${cursor('pointer')}
+        }
+        &.o-select-option-hoverable {
+          ${backgroundColor('transparent', { hover: 'teal-100' })}
+        }      
       }
-      &.o-select-option-hoverable {
-        ${backgroundColor('transparent', { hover: 'teal-100' })}
-      }      
     }
+
   `;
 };
 
