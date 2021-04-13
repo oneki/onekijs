@@ -166,7 +166,7 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
 
   useEffect(() => {
     if (typeof dataOrUrl === 'string' && options.fetchOnce) {
-      const fetcher: Fetcher<CollectionFetcherResult<T>, T> = options.fetcher || asyncHttp;
+      const fetcher: Fetcher<CollectionFetcherResult<T>, Query | undefined> = options.fetcher || asyncHttp;
       fetcher(dataOrUrl, options.method || HttpMethod.Get, undefined, state.fetchOptions).then((result) => {
         if (Array.isArray(result)) {
           service.setData(result);

@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useVirtual } from 'react-virtual';
-import { CollectionStatus, Item, ItemMeta, LoadingStatus, useIsomorphicLayoutEffect, toCollectionItem } from 'onekijs';
+import { CollectionStatus, Item, ItemMeta, LoadingStatus, useIsomorphicLayoutEffect, toCollectionItem } from 'onekijs-core';
 import { addClassname } from '../../../utils/style';
 import { VirtualListProps } from '../typings';
 import { canFetchMore, getListStatus, emptyListItem } from '../utils';

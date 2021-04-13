@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from 'react';
-import { LoadingStatus } from 'onekijs';
+import { LoadingStatus } from 'onekijs-core';
 import { addClassname } from '../../../utils/style';
 import { StandardListProps } from '../typings';
 import ListItemComponent from './ListItemComponent';

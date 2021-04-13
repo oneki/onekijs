@@ -1,4 +1,4 @@
-import { omit, useCollection } from 'onekijs';
+import { omit, useCollection } from 'onekijs-core';
 import React, { FC } from 'react';
 import { ListProps, StandardListProps, ListInternalProps } from '../typings';
 import StandardListComponent from './StandardListComponent';

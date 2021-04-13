@@ -1,5 +1,6 @@
 import { Fetcher, HttpMethod, useService } from 'onekijs';
-import { Collection, CollectionState, ItemMeta, List, LoadingStatus, Query, useCollection, LocalCollectionService, toCollectionItem } from 'onekijs-ui';
+import { Collection, CollectionState, ItemMeta, LoadingStatus, Query, useCollection, LocalCollectionService, toCollectionItem } from 'onekijs';
+import { List } from 'onekijs-ui';
 import React, { useCallback } from 'react';
 import { User, userAdapter, users, userSearcher } from '../data/users';
 import Spinner from './spinner';

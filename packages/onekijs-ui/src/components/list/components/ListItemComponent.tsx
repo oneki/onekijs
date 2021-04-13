@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { ListItemProps } from '../typings';
-import { LoadingStatus } from 'onekijs';
+import { LoadingStatus } from 'onekijs-core';
 
 const ListItemComponent: FC<ListItemProps> = React.memo(({ item }) => {
   return (

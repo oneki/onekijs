@@ -1,4 +1,4 @@
-import { useIsomorphicLayoutEffect } from 'onekijs';
+import { useIsomorphicLayoutEffect } from 'onekijs-core';
 import React, { FC, useCallback, useRef, useMemo } from 'react';
 import { SelectInputProps } from '../typings';
 import SelectIconComponent from './SelectIconComponent';

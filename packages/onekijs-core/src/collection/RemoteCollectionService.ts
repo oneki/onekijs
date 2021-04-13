@@ -112,7 +112,7 @@ export default class RemoteCollectionService<
         );
       }
 
-      const fetcher: Fetcher<CollectionFetcherResult<T>, Query | undefined> = options.fetcher || asyncHttp;
+      const fetcher: Fetcher<CollectionFetcherResult<T>, T | Query | undefined> = options.fetcher || asyncHttp;
 
       const method = this.state.method ?? HttpMethod.Get;
       const body = this.state.method === HttpMethod.Get ? undefined : query;
