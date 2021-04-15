@@ -6,25 +6,25 @@ const SelectOptionComponent: FC<SelectOptionProps> = React.memo(({ item, index, 
   const { data, text, meta } = item;
   let content = '';
   let clickable = !!onClick;
-  let hoverable = !!onMouseOver;
+  let hoverable = true;
   if (data === undefined && meta?.loadingStatus === LoadingStatus.Loading) {
     content = 'loading';
     clickable = false;
     hoverable = false;
   } else {
     content = text || '';
-    if (meta?.selected) {
-      content += ' *';
-    }
   }
   const classNames = useMemo(() => {
     const classNames = ['o-select-option'];
     if (clickable) {
       classNames.push('o-select-option-clickable');
     }
-    if (hoverable) {
+    if (hoverable && !meta?.selected) {
       classNames.push('o-select-option-hoverable');
     }
+    if (meta?.selected) {
+      classNames.push('o-select-option-selected');
+    }    
     return classNames.join(' ');
   }, [clickable, hoverable]);
 

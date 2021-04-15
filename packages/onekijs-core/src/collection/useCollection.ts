@@ -32,6 +32,7 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
     router = new LocalRouter();
   }
   let dataOrUrl: T[] | string;
+  
   if (isCollection(dataSource)) {
     // we are going to create a fake collection (because hooks cannot be conditionals)
     dataOrUrl = [];
@@ -179,7 +180,7 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
   }, []);
 
   useEffect(() => {
-    if (options.autoload && !initializedRef.current) {
+    if (!isCollection(dataSource) && options.autoload && !initializedRef.current) {
       initializedRef.current = true;
       collection.load(options.initialLimit, options.initialOffset);
     }

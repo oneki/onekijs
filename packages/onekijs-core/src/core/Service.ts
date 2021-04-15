@@ -168,7 +168,7 @@ export default class Service<S extends State = AnyState> {
         }
       }
     };
-
+    
     if (effect) {
       if (delay) {
         this[sagas][actionType] = function* () {

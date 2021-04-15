@@ -101,6 +101,7 @@ export default class RemoteCollectionService<
     let loadingTask:any = null;
     const options = this.state.fetchOptions || {};
     const { onSuccess, onError } = options;
+    
     try {
       if (options.delayLoading) {
         loadingTask = yield fork(
@@ -111,7 +112,7 @@ export default class RemoteCollectionService<
           resetData,
         );
       }
-
+      
       const fetcher: Fetcher<CollectionFetcherResult<T>, T | Query | undefined> = options.fetcher || asyncHttp;
 
       const method = this.state.method ?? HttpMethod.Get;

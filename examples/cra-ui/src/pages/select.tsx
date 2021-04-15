@@ -19,6 +19,7 @@ export const SelectPage = () => {
         query.search = body.search || '';
         query.offset = 0;
       }
+      
       service.query(query);
       const items = service.items ? service.items.slice(query.offset || 0, (query.offset || 0) + (query.limit || service.items.length)).map(item => item?.data) : [];
       

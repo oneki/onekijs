@@ -1,10 +1,11 @@
-import { AnonymousObject, Collection, get, isCollectionFetching, isCollectionLoading, Item, toCollectionItem, useCollection } from 'onekijs-core';
+import useListView from '../../list/hooks/useListView';
+import { AnonymousObject, Collection, get, isCollectionFetching, isCollectionLoading, Item, LoadingStatus, toCollectionItem, useCollection, useIsomorphicLayoutEffect } from 'onekijs-core';
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useClickOutside } from '../../../utils/event';
 import Dropdown from '../../dropdown';
-import { SelectInternalProps, SelectOptionHandler, SelectOptionMeta, SelectProps } from '../typings';
+import { SelectOptionHandler, SelectOptionMeta, SelectProps } from '../typings';
 import SelectInputComponent from './SelectInputComponent';
-import SelectOptionsComponent from './SelectOptionsComponent';
+import SelectOptionComponent from './SelectOptionComponent';
 
 const selectItem = (collection: Collection<any, SelectOptionMeta>, pattern: string): any => {
   if (collection.items === undefined) {
@@ -21,30 +22,33 @@ const selectItem = (collection: Collection<any, SelectOptionMeta>, pattern: stri
   })
 }
 
-const SelectComponent: FC<SelectProps<any>> = (props) => {
-  const { items, ...selectInternalProps } = props;
-  if (Array.isArray(items)) {
-    return <SelectDataComponent {...selectInternalProps} items={items} />;
-  } else {
-    return <SelectInternalComponent {...selectInternalProps} collection={items} />;
+const findItemIndex = (collection: Collection<any, SelectOptionMeta>, item: Item<any, SelectOptionMeta>): number|undefined => {
+  if (collection.items === undefined) {
+    return undefined;
   }
+  return collection.items.findIndex(i => {
+    if (i === undefined) {
+      return false
+    }
+    if (i.id === undefined) {
+      return false;
+    }
+    return i.id === item.id
+  })
 };
 
-const SelectDataComponent: FC<Omit<SelectProps, 'items'> & { items: any[] }> = (props) => {
-  const { items, ...selectInternalProps } = props;
-  const collection = useCollection(items);
-  return <SelectInternalComponent {...selectInternalProps} collection={collection} />;
-};
-
-const SelectInternalComponent: FC<SelectInternalProps> = ({
+const SelectComponent: FC<SelectProps<any>> = ({
   className = '',
   placeholder,
-  collection,
+  items,
   InputComponent = SelectInputComponent,
+  ItemComponent = SelectOptionComponent,
   autoFocus,
   value,
   onChange,
+  height = '220px',
 }) => {
+  const collection = useCollection(items);
   const [open, _setOpen] = useState(false);
   const [focus, setFocus] = useState(!!autoFocus);
   const stateRef = useRef<AnonymousObject>({});
@@ -135,6 +139,30 @@ const SelectInternalComponent: FC<SelectInternalProps> = ({
   
   const classNames = [className, `o-select-${open ? 'open' : 'close'}`].join(' ')
 
+  const { view: listView, scrollToIndex } = useListView({ItemComponent, onItemClick: onSelect, collection, height, className: 'o-select-options'});
+  
+  useIsomorphicLayoutEffect(() => {
+    if (open && scrollToIndex) {
+      let index: number|undefined = undefined;
+      if (true) {
+        index = findItemIndex(collection, selectedItem);
+      } else {
+        const offset = collection.getOffset() || 0;
+        if (
+          collection.status !== LoadingStatus.Loading &&
+          collection.status !== LoadingStatus.Fetching &&
+          offset === 0
+        ) {
+          index = 0;
+        }
+      }
+      if (index !== undefined && index >= 0) {
+        scrollToIndex(index, {'align': 'center'});
+      }
+    }
+
+  }, [collection, selectedItem, scrollToIndex, open]);
+
   return (
     <div
       className={classNames}
@@ -155,7 +183,7 @@ const SelectInternalComponent: FC<SelectInternalProps> = ({
         onBlur={onBlur}
       />
       <Dropdown refElement={containerRef} open={open}>
-        <SelectOptionsComponent items={collection} onItemClick={onSelect} />
+        {listView}
       </Dropdown>
     </div>
   );

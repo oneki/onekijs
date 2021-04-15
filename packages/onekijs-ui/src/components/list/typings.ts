@@ -23,6 +23,7 @@ export interface ListProps<T = any, M extends ItemMeta = ItemMeta> {
   onItemClick?: ListItemHandler<T, M>;
   onItemMouseOver?: ListItemHandler<T, M>;
   parentRef?: MutableRefObject<null>;
+  virtual?: boolean;
 }
 
 export type ListInternalProps<T = any, M extends ItemMeta = ItemMeta> = Omit<ListProps, 'items'> & {

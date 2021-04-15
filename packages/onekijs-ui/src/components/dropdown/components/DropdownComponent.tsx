@@ -13,7 +13,7 @@ const DropdownComponent: FC<DropdownProps> = ({ className, refElement, open, chi
   return (
     <CSSTransition
       in={open}
-      timeout={500}
+      timeout={300}
       classNames="o-dropdown"
       mountOnEnter={true}
       appear={true}

@@ -1,7 +1,7 @@
 import { css } from 'styled-components';
 import { alignItems } from '../../styles/alignment';
 import { backgroundColor } from '../../styles/background';
-import { borderBottomWidth, borderColor, borderRadius, borderWidth } from '../../styles/border';
+import { borderColor, borderRadius, borderWidth } from '../../styles/border';
 import { display } from '../../styles/display';
 import { appearance, cursor, outline } from '../../styles/interactivity';
 import { height, width } from '../../styles/size';
@@ -73,16 +73,32 @@ const selectStyle: ComponentStyle<SelectProps> = () => {
       ${transitionTimingFunction('ease-in-out')}
     }
     .o-select-options {
+      scrollbar-width: thin;
+      scrollbar-color: ${(props) => props.theme.colors[props.theme.kind.primary]} ${(props) => props.theme.colors['gray-200']};
+      &::-webkit-scrollbar {
+        width: 12px;
+      }
+      &::-webkit-scrollbar-track {
+        background: ${(props) => props.theme.colors['gray-200']};
+      }
+      &::-webkit-scrollbar-thumb {
+        background-color: ${(props) => props.theme.colors[props.theme.kind.primary]};
+        border: 3px solid ${(props) => props.theme.colors['gray-200']};
+      }        
       .o-select-option {
         ${width('full')}
-        ${borderColor('gray-100')}
-        ${borderBottomWidth(1)}
+        ${paddingX(4)}
+        ${paddingY(2)}
         &.o-select-option-clickable {
           ${cursor('pointer')}
         }
         &.o-select-option-hoverable {
-          ${backgroundColor('transparent', { hover: 'teal-100' })}
-        }      
+          ${backgroundColor('transparent', { hover: 'gray-200' })}
+        } 
+        &.o-select-option-selected {
+          ${backgroundColor('primary')}
+          ${color('white')}
+        }              
       }
     }
 
