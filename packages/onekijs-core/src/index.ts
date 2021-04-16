@@ -188,6 +188,7 @@ export {
 export { default as useAppService } from './core/useAppService';
 export { default as useContainer } from './core/useContainer';
 export { default as useGlobalService } from './core/useGlobalService';
+export { default as useEventListener } from './core/useEventListener';
 export { useIsomorphicLayoutEffect } from './core/useIsomorphicLayoutEffect';
 export { default as useLazyRef } from './core/useLazyRef';
 export { default as useLocalService } from './core/useLocalService';

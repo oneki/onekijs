@@ -26,10 +26,12 @@ export type Collection<T, M extends ItemMeta> = {
   items?: (Item<T, M> | undefined)[];
   filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | null): void;
   getAdapter(): CollectionItemAdapter<T, M> | undefined;
+  getItem(id: string|number): Item<T,M>|undefined;
   getFields(): string[] | undefined;
   getFilter(): QueryFilter | undefined;
   getFilterById(id: QueryFilterId): QueryFilterOrCriteria | undefined;
   getLimit(): number | undefined;
+  getMeta(id: string|number): M|undefined;
   getOffset(): number | undefined;
   getParam(key: string): any;
   getParams(): AnonymousObject | undefined;

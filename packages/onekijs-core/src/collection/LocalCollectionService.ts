@@ -32,6 +32,21 @@ export default class LocalCollectionService<
     this.refresh();
   }
 
+  getItem(id: string|number): Item<T,M>|undefined {
+    if (this.state.items) {
+      return this.state.items.find((stateItem) => id === stateItem?.id)
+    }
+    return undefined;
+  }
+
+  getMeta(id: string|number): M|undefined {
+    const item = this.getItem(id);
+    if (item !== undefined) {
+      return item.meta;
+    }
+    return undefined;
+  }
+
   @reducer
   setData(data: T[]): void {
     const query = this.getQuery();

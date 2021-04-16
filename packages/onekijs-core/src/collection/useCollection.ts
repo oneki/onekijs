@@ -126,6 +126,8 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
       'getFields',
       'getFilter',
       'getFilterById',
+      'getItem',
+      'getMeta',
       'getOffset',
       'getParam',
       'getParams',

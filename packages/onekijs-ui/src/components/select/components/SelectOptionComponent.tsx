@@ -1,6 +1,6 @@
+import { LoadingStatus } from 'onekijs-core';
 import React, { FC, useMemo } from 'react';
 import { SelectOptionProps } from '../typings';
-import { LoadingStatus } from 'onekijs-core';
 
 const SelectOptionComponent: FC<SelectOptionProps> = React.memo(({ item, index, onClick, onMouseOver }) => {
   const { data, text, meta } = item;
@@ -14,6 +14,7 @@ const SelectOptionComponent: FC<SelectOptionProps> = React.memo(({ item, index, 
   } else {
     content = text || '';
   }
+
   const classNames = useMemo(() => {
     const classNames = ['o-select-option'];
     if (clickable) {
@@ -26,7 +27,7 @@ const SelectOptionComponent: FC<SelectOptionProps> = React.memo(({ item, index, 
       classNames.push('o-select-option-selected');
     }    
     return classNames.join(' ');
-  }, [clickable, hoverable]);
+  }, [meta, clickable, hoverable]);
 
   return (
     <div

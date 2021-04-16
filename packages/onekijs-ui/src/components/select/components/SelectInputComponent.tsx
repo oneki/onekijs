@@ -19,7 +19,7 @@ const SelectInputComponent: FC<SelectInputProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   // partialValue is the part of the selected item entered by the user
   const partialValueRef = useRef<string | undefined>(undefined);
-  // replace the input value by the selected item (the first item of the list)
+  // replace the input value by the selected item
   const showSelectedRef = useRef(true);
 
   const partialValue = partialValueRef.current ?? (value ?? '')
@@ -52,7 +52,11 @@ const SelectInputComponent: FC<SelectInputProps> = ({
     if (!input) return;
     if (e.key === 'Delete' || e.key === 'Backspace') {
       showSelectedRef.current = false;
-    } else {
+    } 
+    else if (['ArrowDown', 'ArrowUp', 'Enter'].includes(e.key)) {
+      inputRef.current && inputRef.current.blur()
+    }
+    else {
       const currentSelectionStart = input.selectionStart;
       const currentSelectionEnd = input.selectionEnd;
       if (currentSelectionStart === currentSelectionEnd && currentSelectionStart === input.value.length) {
@@ -61,7 +65,7 @@ const SelectInputComponent: FC<SelectInputProps> = ({
     }
   }, []);
 
-  const handleKeyPress = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyUp = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     const input = inputRef.current;
     if (!input) return;
     if (proxyValue === partialValueRef.current + e.key) {
@@ -123,7 +127,7 @@ const SelectInputComponent: FC<SelectInputProps> = ({
         onBlur={onBlur}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        onKeyPress={handleKeyPress}
+        onKeyUp={handleKeyUp}
         value={proxyValue}
         onClick={onClick}
       />

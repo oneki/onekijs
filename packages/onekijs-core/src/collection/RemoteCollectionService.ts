@@ -1,5 +1,4 @@
 import { cancel, delay, fork } from 'redux-saga/effects';
-import { Location } from '../router/typings';
 import { reducer, saga, service } from '../core/annotations';
 import BasicError from '../core/BasicError';
 import { dispatch, types } from '../core/Service';
@@ -7,6 +6,7 @@ import { AnonymousObject, SagaEffect } from '../core/typings';
 import { toPayload } from '../core/utils/object';
 import { Fetcher, HttpMethod } from '../fetch/typings';
 import { asyncHttp } from '../fetch/utils';
+import { Location } from '../router/typings';
 import CollectionService from './CollectionService';
 import {
   Collection,
@@ -18,7 +18,7 @@ import {
   LoadingItemStatus,
   LoadingStatus,
   Query,
-  QuerySerializerResult,
+  QuerySerializerResult
 } from './typings';
 import { defaultSerializer, isSameQuery, shouldResetData } from './utils';
 
@@ -45,6 +45,17 @@ export default class RemoteCollectionService<
     return this.state.url;
   }
 
+  getItem(id: string|number): Item<T,M>|undefined {
+    if (this.state.items) {
+      return this.state.items.find((stateItem) => id === stateItem?.id)
+    }
+    return undefined;
+  }
+
+  getMeta(id: string|number): M|undefined {
+    return this.itemMeta[String(id)]
+  }
+
   serializeQuery(query: Query): QuerySerializerResult {
     const serializer = this.state.serializer || defaultSerializer;
     return serializer(query);
@@ -66,7 +77,8 @@ export default class RemoteCollectionService<
     if (item.id !== undefined) {
       const meta = Object.assign({}, this.itemMeta[String(item.id)] ?? item.meta, { [key]: value });
       this.itemMeta[String(item.id)] = meta;
-      item.meta = meta;
+      
+      //item.meta = meta;
 
       if (this.state.items) {
         const stateItem = this.state.items.find((stateItem) => item.id === stateItem?.id);

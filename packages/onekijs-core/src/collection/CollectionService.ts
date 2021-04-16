@@ -45,7 +45,8 @@ export default abstract class CollectionService<
   initialState: S = null!;
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   router: Router = null!;
-
+  abstract getItem(id: string|number): Item<T,M>|undefined;
+  abstract getMeta(id: string|number): M|undefined;
   abstract setData(data: T[]): void;
   abstract setItems(items: Item<T, M>[]): void;
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
