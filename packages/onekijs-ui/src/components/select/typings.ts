@@ -1,8 +1,9 @@
-import { AnyFunction, ChangeHandler, Collection, ItemAdapter, ItemMeta } from 'onekijs-core';
+import { AnyFunction, ChangeHandler, Collection, Item, ItemAdapter, ItemMeta } from 'onekijs-core';
 import { FC } from 'react';
 import { ListItemHandler, ListItemProps, ListProps } from '../list/typings';
 
 export type SelectAdapter<T, M extends SelectOptionMeta = SelectOptionMeta> = ItemAdapter<T, M>;
+export type SelectItem<T = any, M extends SelectOptionMeta = SelectOptionMeta> = Item<T, M>;
 
 export interface SelectIconProps {
   open: boolean;
@@ -15,16 +16,30 @@ export interface SelectInputProps extends Omit<React.InputHTMLAttributes<HTMLInp
   IconComponent?: FC<SelectIconProps>;
   focus: boolean;
   value?: string;
+  tokens?: SelectItem[];
   open: boolean;
   loading: boolean;
   fetching: boolean;  
   setOpen: (open: boolean) => void;
   onChange: (nextValue: string) => void;
+  multiple: boolean;
+  onRemove: SelectOptionHandler;
 }
 
-export type SelectInternalProps<T = any, M extends ItemMeta = SelectOptionMeta> = Omit<SelectProps, 'items'> & {
-  collection: Collection<T, M>;
-};
+export interface SelectTokensProps {
+  tokens?: SelectItem[];
+  onRemove: SelectOptionHandler;
+}
+
+export interface SelectTokenProps {
+  token: SelectItem;
+  onRemove: SelectOptionHandler;
+  index: number;
+}
+
+// export type SelectInternalProps<T = any, M extends ItemMeta = SelectOptionMeta> = Omit<SelectProps, 'items'> & {
+//   collection: Collection<T, M>;
+// };
 
 export type SelectOptionHandler<T = any, M extends ItemMeta = SelectOptionMeta> = ListItemHandler<T, M>;
 
@@ -33,7 +48,9 @@ export interface SelectOptionMeta extends ItemMeta {
   highlighted?: boolean;
 }
 
-export type SelectOptionProps<T = any, M extends SelectOptionMeta = SelectOptionMeta> = ListItemProps<T, M>;
+export type SelectOptionProps<T = any, M extends SelectOptionMeta = SelectOptionMeta> = ListItemProps<T, M> & {
+  multiple?: boolean;
+};
 
 export interface SelectOptionsProps<T = any, M extends SelectOptionMeta = SelectOptionMeta> extends ListProps<T, M> {
   search?: string;
@@ -43,10 +60,11 @@ export interface SelectProps<T = any, M extends SelectOptionMeta = SelectOptionM
   InputComponent?: FC<SelectInputProps>;
   IconComponent?: FC<SelectIconProps>;
   placeholder?: string;
-  value?: T | null;
+  value?: T | T[] | null;
   onChange?: ChangeHandler<T>;
   autoFocus?: boolean;
   className?: string;
+  multiple?: boolean;
 }
 
 export interface ClickOutsideHandler {

@@ -10,6 +10,9 @@ export interface ListItemProps<T = any, M extends ItemMeta = ItemMeta> {
   item: Item<T, M>;
   onClick?: ListItemHandler<T, M>;
   onMouseOver?: ListItemHandler<T, M>;
+  onMouseOut?: ListItemHandler<T, M>;
+  onMouseEnter?: ListItemHandler<T, M>;
+  onMouseLeave?: ListItemHandler<T, M>;
 }
 
 export interface ListProps<T = any, M extends ItemMeta = ItemMeta> {
@@ -22,6 +25,9 @@ export interface ListProps<T = any, M extends ItemMeta = ItemMeta> {
   increment?: number;
   onItemClick?: ListItemHandler<T, M>;
   onItemMouseOver?: ListItemHandler<T, M>;
+  onItemMouseOut?: ListItemHandler<T, M>;
+  onItemMouseEnter?: ListItemHandler<T, M>;
+  onItemMouseLeave?: ListItemHandler<T, M>;
   parentRef?: MutableRefObject<null>;
   virtual?: boolean;
 }

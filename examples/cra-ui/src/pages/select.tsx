@@ -36,12 +36,19 @@ export const SelectPage = () => {
     fetcher 
   });
 
+  const collection2 = useCollection<User, SelectOptionMeta>('http://localhost', {
+    adapter: userAdapter,
+    fetcher 
+  });  
+
   const [value, setValue] = useState(users[1]);
+  const [value2, setValue2] = useState([users[2],users[1]]);
 
   return (
     <div style={{display: 'flex', justifyContent: 'center'}}>
-      <div style={{width: '300px'}}>
-        <Select placeholder="Search by position" items={collection} value={value} onChange={(nextValue: User) => setValue(nextValue)}  />
+      <div style={{width: '500px'}}>
+        <Select placeholder="Search by position" items={collection} value={value} onChange={(nextValue: User) => setValue(nextValue)}  /><br/>
+        <Select multiple={true} placeholder="Search..." items={collection2} value={value2} onChange={(nextValue: User[]) => setValue2(nextValue)}  />
       </div>
     </div>
   );

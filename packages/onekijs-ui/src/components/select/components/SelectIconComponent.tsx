@@ -6,7 +6,7 @@ const SelectIconComponent: FC<SelectIconProps> = ({ onClick, open, loading }) =>
   if (!loading) {
     return (
       <div className="o-select-icon-container" onClick={onClick}>
-        <button className="o-select-icon">
+        <button tabIndex={-1} className="o-select-icon">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="100%"

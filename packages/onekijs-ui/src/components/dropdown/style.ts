@@ -1,5 +1,4 @@
 import { css } from 'styled-components';
-import { marginTop } from '../../styles/spacing';
 import { borderRadius, boxShadow } from '../../styles/border';
 import { opacity } from '../../styles/effects';
 import { overflowY } from '../../styles/overflow';
@@ -8,6 +7,7 @@ import { ComponentStyle } from '../../styles/typings';
 import { preflight } from '../../utils/style';
 import { DropdownProps } from './typings';
 import { width } from '../../styles/size';
+import { zIndex } from '../../styles/position';
 
 const dropdownStyle: ComponentStyle<DropdownProps> = () => {
   return css`
@@ -16,7 +16,7 @@ const dropdownStyle: ComponentStyle<DropdownProps> = () => {
     ${borderRadius('default')}
     ${boxShadow('lg')}
     ${overflowY('auto')}
-    ${marginTop(1)}
+    ${zIndex(1000)}
 
     &.o-dropdown-enter {
       ${opacity(0)}

@@ -1,7 +1,8 @@
 import { useIsomorphicLayoutEffect } from 'onekijs-core';
-import React, { FC, useCallback, useRef, useMemo } from 'react';
+import React, { FC, useCallback, useMemo, useRef } from 'react';
 import { SelectInputProps } from '../typings';
 import SelectIconComponent from './SelectIconComponent';
+import SelectTokensComponent from './SelectTokensComponent';
 
 const SelectInputComponent: FC<SelectInputProps> = ({
   setOpen,
@@ -13,10 +14,14 @@ const SelectInputComponent: FC<SelectInputProps> = ({
   onFocus: forwardFocus,
   onBlur: forwardBlur,
   onChange,
+  onRemove,
   value,
   focus,
+  multiple,
+  tokens,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const autoSizeRef = useRef<HTMLSpanElement>(null);
   // partialValue is the part of the selected item entered by the user
   const partialValueRef = useRef<string | undefined>(undefined);
   // replace the input value by the selected item
@@ -54,7 +59,15 @@ const SelectInputComponent: FC<SelectInputProps> = ({
       showSelectedRef.current = false;
     } 
     else if (['ArrowDown', 'ArrowUp', 'Enter'].includes(e.key)) {
-      inputRef.current && inputRef.current.blur()
+      if (multiple) {
+        partialValueRef.current = undefined;
+        showSelectedRef.current = true;
+      } else {
+        inputRef.current && inputRef.current.blur()
+      }
+      if (!open) {
+        setOpen(true);
+      }
     }
     else {
       const currentSelectionStart = input.selectionStart;
@@ -63,7 +76,7 @@ const SelectInputComponent: FC<SelectInputProps> = ({
         showSelectedRef.current = true;
       }
     }
-  }, []);
+  }, [open, multiple]);
 
   const handleKeyUp = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     const input = inputRef.current;
@@ -76,11 +89,16 @@ const SelectInputComponent: FC<SelectInputProps> = ({
 
   useIsomorphicLayoutEffect(() => {
     const input = inputRef.current;
+    const autoSizer = autoSizeRef.current;
     if (input && focus) {
       if (value !== undefined && value != partialValueRef.current && value.toLowerCase().startsWith((partialValueRef.current || '').toLowerCase()) && showSelectedRef.current) {
         input.setSelectionRange((partialValueRef.current || '').length, value.length);
       }
     }
+    if (input && autoSizer) {
+      autoSizer.innerText = input.value;
+    }
+    
   });
 
   const className = useMemo(() => {
@@ -118,19 +136,27 @@ const SelectInputComponent: FC<SelectInputProps> = ({
 
   return (
     <div className={className}>
-      <div className="o-select-input-marker" />
-      <input
-        ref={inputRef}
-        placeholder={placeholder}
-        className="o-select-input"
-        onFocus={onFocus}
-        onBlur={onBlur}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        onKeyUp={handleKeyUp}
-        value={proxyValue}
-        onClick={onClick}
-      />
+      <div className="o-select-input-data">
+        {multiple && <SelectTokensComponent tokens={tokens} onRemove={onRemove} />}
+        <div className="o-select-input-wrapper">
+          <span ref={autoSizeRef} className="o-select-input-auto-sizer" />      
+          <input
+            ref={inputRef}
+            placeholder={placeholder}
+            className="o-select-input"
+            onFocus={onFocus}
+            onBlur={onBlur}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            onKeyUp={handleKeyUp}
+            value={proxyValue}
+            onClick={onClick}
+            autoCapitalize="none" 
+            autoComplete="off" 
+            autoCorrect="off"
+          />
+        </div>
+      </div>
       <IconComponent onClick={onIconClick} open={open} loading={loading} fetching={fetching} />
     </div>
   );

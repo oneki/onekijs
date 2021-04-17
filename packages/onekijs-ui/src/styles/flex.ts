@@ -1,5 +1,5 @@
 import { FlexBasisProperty, FlexDirectionProperty, FlexProperty, FlexWrapProperty, Globals } from 'csstype';
-import { booleanFormatter, enumFormatter } from '../utils/formatter';
+import { enumFormatter } from '../utils/formatter';
 import { cssProperty } from '../utils/style';
 import { TLength } from './typings';
 
@@ -20,10 +20,10 @@ export const flexBasis = cssProperty<FlexBasisProperty<TLength>>('flex-basic');
 export const flexDirection = cssProperty<FlexDirectionProperty>('flex-direction');
 
 // true; false
-export const flexGrow = cssProperty<boolean>('flex-grow', booleanFormatter);
+export const flexGrow = cssProperty<number>('flex-grow');
 
 // true; false
-export const flexShrink = cssProperty<boolean>('flex-shrink', booleanFormatter);
+export const flexShrink = cssProperty<number>('flex-shrink');
 
 // nowrap; wrap; wrap-reverse;
 export const flexWrap = cssProperty<FlexWrapProperty>('flex-wrap');
