@@ -1,3 +1,4 @@
+import Checkbox from '../../checkbox';
 import { LoadingStatus } from 'onekijs-core';
 import React, { FC, useMemo } from 'react';
 import { SelectOptionProps } from '../typings';
@@ -36,14 +37,19 @@ const SelectOptionComponent: FC<SelectOptionProps> = React.memo(({ item, index, 
   return (
     <div
       className={classNames}
-      onClick={() => clickable && onClick && onClick(item, index)}
       onMouseOver={() => hoverable && onMouseOver && onMouseOver(item, index)}
       onMouseEnter={() => hoverable && onMouseEnter && onMouseEnter(item, index)}
       onMouseLeave={() => hoverable && onMouseLeave && onMouseLeave(item, index)}
       onMouseOut={() => hoverable && onMouseOut && onMouseOut(item, index)}
+      onClick={() => clickable && onClick && onClick(item, index)}
     > 
-      {multiple && <div className="o-select-option-icon">{meta?.selected? <>&#10003;</>:<></>}</div> }
-      <div className="o-select-option-data">{data === undefined && meta?.loadingStatus === LoadingStatus.Loading ? 'loading' : content}</div>
+      {/* {multiple && <div className="o-select-option-icon">{meta?.selected? <>&#10003;</>:<></>}</div> } */}
+      {multiple && <Checkbox checked={meta?.selected ? true : false} onChange={() => {}} color={meta?.highlighted ? 'white' : undefined}></Checkbox> }
+      <div 
+        className="o-select-option-data"   
+      >
+        {data === undefined && meta?.loadingStatus === LoadingStatus.Loading ? 'loading' : content}
+      </div>
       
     </div>
   );

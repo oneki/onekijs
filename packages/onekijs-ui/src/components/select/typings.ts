@@ -42,6 +42,7 @@ export interface SelectTokenProps {
 // };
 
 export type SelectOptionHandler<T = any, M extends ItemMeta = SelectOptionMeta> = ListItemHandler<T, M>;
+export type SelectOptionSelectionHandler<T = any, M extends ItemMeta = SelectOptionMeta> = (item: Item<T, M>, index: number, close?: boolean) => void;
 
 export interface SelectOptionMeta extends ItemMeta {
   selected?: boolean;

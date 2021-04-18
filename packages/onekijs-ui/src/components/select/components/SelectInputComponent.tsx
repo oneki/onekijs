@@ -57,6 +57,9 @@ const SelectInputComponent: FC<SelectInputProps> = ({
     if (!input) return;
     if (e.key === 'Delete' || e.key === 'Backspace') {
       showSelectedRef.current = false;
+      if (e.key === 'Backspace' && proxyValue === '' && multiple && tokens && tokens.length > 0) {
+        onRemove(tokens[tokens.length -1], tokens.length-1);
+      }
     } 
     else if (['ArrowDown', 'ArrowUp', 'Enter'].includes(e.key)) {
       if (multiple) {
@@ -69,6 +72,10 @@ const SelectInputComponent: FC<SelectInputProps> = ({
         setOpen(true);
       }
     }
+    else if (['Escape'].includes(e.key)) {
+      partialValueRef.current = undefined;
+      showSelectedRef.current = true;
+    }    
     else {
       const currentSelectionStart = input.selectionStart;
       const currentSelectionEnd = input.selectionEnd;
@@ -76,7 +83,7 @@ const SelectInputComponent: FC<SelectInputProps> = ({
         showSelectedRef.current = true;
       }
     }
-  }, [open, multiple]);
+  }, [open, multiple, proxyValue, tokens]);
 
   const handleKeyUp = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     const input = inputRef.current;

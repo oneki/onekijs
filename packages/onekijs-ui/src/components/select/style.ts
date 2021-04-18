@@ -1,22 +1,23 @@
 import { css } from 'styled-components';
-import { left, position, right, top, bottom } from '../../styles/position';
 import { alignItems } from '../../styles/alignment';
 import { backgroundColor } from '../../styles/background';
 import { borderColor, borderRadius, borderWidth } from '../../styles/border';
 import { display, visibility } from '../../styles/display';
+import { opacity } from '../../styles/effects';
+import { flexGrow, flexWrap } from '../../styles/flex';
 import { appearance, cursor, outline } from '../../styles/interactivity';
-import { height, minWidth, width } from '../../styles/size';
+import { bottom, left, position, right, top } from '../../styles/position';
+import { height, maxWidth, minWidth, width } from '../../styles/size';
 import { margin, marginRight, marginY, padding, paddingLeft, paddingX, paddingY } from '../../styles/spacing';
 import { verticalAlign } from '../../styles/table';
 import { transitionDuration, transitionProperty, transitionTimingFunction } from '../../styles/transition';
 import { ComponentStyle } from '../../styles/typings';
 import { color, fontFamily, fontSize, fontWeight, whiteSpace } from '../../styles/typography';
+import { deriveColor } from '../../utils/color';
 import { preflight } from '../../utils/style';
 import { SelectProps } from './typings';
-import { flexGrow, flexWrap } from '../../styles/flex';
-import { deriveColor } from '../../utils/color';
 
-const selectStyle: ComponentStyle<SelectProps> = () => {
+const selectStyle: ComponentStyle<SelectProps> = ({multiple}) => {
   return css`
     ${preflight()}
     ${width('100%')}
@@ -71,6 +72,31 @@ const selectStyle: ComponentStyle<SelectProps> = () => {
           ${color('gray-800', { placeholder: 'gray-400' })}
         }      
       }   
+
+      .o-select-token-animation-enter {
+        ${opacity(0)}
+        ${maxWidth(0)}
+      }
+
+      .o-select-token-animation-enter-active {
+        ${transitionDuration('0.3s')}
+        ${transitionProperty('max-width opacity')}
+        ${transitionTimingFunction('ease-in-out')}
+        ${opacity(1)}
+        ${maxWidth('100%')}
+      }  
+
+      .o-select-token-animation-exit {
+        ${maxWidth('100%')}
+      } 
+
+      .o-select-token-animation-exit-active {
+        ${transitionDuration('0.3s')}
+        ${transitionProperty('max-width opacity')}
+        ${transitionTimingFunction('ease-in-out')}
+        ${opacity(0)}
+        ${maxWidth(0)}
+      }       
       
       .o-select-token {
         ${cursor('default')}
@@ -78,7 +104,6 @@ const selectStyle: ComponentStyle<SelectProps> = () => {
         ${backgroundColor('primary')}
         ${color('white')}
         ${marginRight(2)}
-        ${paddingX(2)}
         ${paddingY(1)}
         ${marginY(1)}
         ${borderRadius('default')}
@@ -86,12 +111,13 @@ const selectStyle: ComponentStyle<SelectProps> = () => {
         ${display('flex')}
         .o-select-token-text {
           ${flexGrow(1)}
+          ${paddingLeft(2)}
         }
         .o-select-token-remove {
           ${cursor('pointer')}
           ${color('white', {'hover': 'danger'})}
           ${fontFamily('Arial')}
-          ${paddingLeft(2)}
+          ${paddingX(2)}
         }
       }
     }
@@ -148,11 +174,12 @@ const selectStyle: ComponentStyle<SelectProps> = () => {
           ${cursor('pointer')}
         }
         &.o-select-option-highlighted {
-          ${backgroundColor('gray-200')}
+          ${backgroundColor(multiple ? 'primary' : 'gray-200')}
+          ${color(multiple ? 'white': 'inherits')}
         } 
         &.o-select-option-selected {
-          ${backgroundColor('primary')}
-          ${color('white')}
+          ${backgroundColor(multiple ? 'gray-200': 'primary')}
+          ${color(multiple ? 'inherits': 'white')}
         }   
 
         &.o-select-option-selected.o-select-option-highlighted {

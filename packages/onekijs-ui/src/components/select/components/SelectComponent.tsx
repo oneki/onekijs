@@ -3,7 +3,7 @@ import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 're
 import { useClickOutside, useFocusOutside } from '../../../utils/event';
 import Dropdown from '../../dropdown';
 import useListView from '../../list/hooks/useListView';
-import { SelectOptionHandler, SelectOptionMeta, SelectProps } from '../typings';
+import { SelectOptionHandler, SelectOptionMeta, SelectOptionSelectionHandler, SelectProps } from '../typings';
 import SelectInputComponent from './SelectInputComponent';
 import SelectOptionComponent, { MultiSelectOptionComponent } from './SelectOptionComponent';
 
@@ -98,7 +98,7 @@ const SelectComponent: FC<SelectProps<any>> = ({
   const previousScrollIndex = useRef<number|undefined>();
   const scrollToRef = useRef<{ index: number, align: 'start' | 'center' | 'end' | 'auto' } | undefined>();
   const [keyboardItem, setKeyboardItem] = useState<Item<any, SelectOptionMeta>|undefined>()
-  //const initialValueRef = useRef(value);
+  const arrowItemRef = useRef<Item<any, SelectOptionMeta>|undefined>()
 
   const loading = isCollectionLoading(collection);
   const fetching = isCollectionFetching(collection);
@@ -111,12 +111,55 @@ const SelectComponent: FC<SelectProps<any>> = ({
 
   const previousTokensRef = useRef<Item<any, SelectOptionMeta>[] | undefined>();
 
+  const proxyItem = useMemo(() => {
+    const search = collection.getSearch();
+    
+    if (keyboardItem !== undefined) {
+      return keyboardItem;
+    }
+    if (focus && search) {
+      let item = findItem(collection, search.toString());
+      if (item === undefined && !isCollectionFetching(collection)) {
+        return get(collection, 'items.0');
+      }
+      return item;
+    } else if (!multiple) {
+      return toCollectionItem(value, collection.getAdapter());
+    }
+  }, [focus, collection, value, keyboardItem, multiple]);
+
+
+  const setOpen = useCallback((open) => {
+    if (open) {
+      arrowItemRef.current = undefined;      
+      const index = findItemIndex(collection, proxyItem);
+      if (index !== undefined) {
+        scrollToRef.current = {
+          index,
+          align: 'center',
+        }
+      }     
+    } else {
+      previousScrollItem.current = undefined;
+    }
+    _setOpen(open)
+  }, [collection, proxyItem])  
+
   const onBlur = useCallback(() => {
     if (!stateRef.current.keepFocus) {
+
+      if (collection.getSearch()) {
+        collection.clearSearch();
+      }      
+      if (keyboardItem !== undefined) {
+        setKeyboardItem(undefined);
+      }
+      if (open) {
+        setOpen(false);
+      }
       setFocus(false);
-      setOpen(false);
     }
-  }, []);
+  }, [open, keyboardItem, collection]);
 
   useClickOutside(containerRef, () => {
     onBlur();
@@ -136,40 +179,7 @@ const SelectComponent: FC<SelectProps<any>> = ({
       index: 0,
       align: 'start',
     }    
-  };
-
-  const proxyItem = useMemo(() => {
-    const search = collection.getSearch();
-    
-    if (keyboardItem !== undefined) {
-      return keyboardItem;
-    }
-    if (search) {
-      let item = findItem(collection, search.toString());
-      if (item === undefined && !isCollectionFetching(collection)) {
-        return get(collection, 'items.0');
-      }
-      return item;
-    } else if (!multiple) {
-      return toCollectionItem(value, collection.getAdapter());
-    }
-  }, [collection, value, keyboardItem, multiple]);
-
-
-  const setOpen = useCallback((open) => {
-    if (open) {
-      const index = findItemIndex(collection, proxyItem);
-      if (index !== undefined) {
-        scrollToRef.current = {
-          index,
-          align: 'center',
-        }
-      }     
-    } else {
-      previousScrollItem.current = undefined;
-    }
-    _setOpen(open)
-  }, [collection, proxyItem])  
+  };  
 
   const onRemoveToken: SelectOptionHandler = useCallback((item) => {
     if (onChange) {
@@ -179,11 +189,20 @@ const SelectComponent: FC<SelectProps<any>> = ({
 
   }, [tokens])  
 
-  const onSelect: SelectOptionHandler = useCallback(
-    (item, index) => {
-      setOpen(false);
+  const onSelect: SelectOptionSelectionHandler = useCallback(
+    (item, index, close) => {
+      if (close === undefined) {
+        close = !(multiple && !collection.getSearch())
+      }
+      if (close) {
+        setOpen(false);
+      }
       if (keyboardItem !== undefined) {
+        if (!close) {
+          arrowItemRef.current = keyboardItem;
+        }        
         setKeyboardItem(undefined);
+
       }
       if (collection.getSearch()) {
         collection.clearSearch();
@@ -193,6 +212,7 @@ const SelectComponent: FC<SelectProps<any>> = ({
           if (item.meta?.selected) {
             onRemoveToken(item, index);
           } else {
+            
             const nextValue = (Array.isArray(value)) ? value.concat([item.data]) : [item.data]
             onChange(nextValue);
           }
@@ -220,14 +240,13 @@ const SelectComponent: FC<SelectProps<any>> = ({
 
 
   const onKeyDownCapture = useCallback((e:KeyboardEvent) => {	
-    if (['ArrowDown', 'ArrowUp', 'Enter'].includes(e.key)) {
+    if (['ArrowDown', 'ArrowUp', 'Enter', 'Escape'].includes(e.key)) {
       stateRef.current.keepFocus = true;
     }
-    
   }, [])
 
   const onKeyDown = useCallback((e:KeyboardEvent) => {
-    const currentIndex = findItemIndex(collection, proxyItem);
+    const currentIndex = keyboardItem === undefined && arrowItemRef.current ? findItemIndex(collection, arrowItemRef.current) : findItemIndex(collection, proxyItem);
     let nextIndex: number|undefined;
     let nextItem: Item<any,SelectOptionMeta>|undefined;
     switch(e.key) {
@@ -262,15 +281,30 @@ const SelectComponent: FC<SelectProps<any>> = ({
         if (open && currentIndex !== -1) {
           nextItem = get(collection.items, currentIndex.toString());
           if (nextItem !== undefined) {
-            onSelect(nextItem, currentIndex);
+            onSelect(nextItem, currentIndex, !(multiple && !collection.getSearch()));
           }
         } else if (!open && focus) {
           setOpen(true);
         }
         stateRef.current.keepFocus = false;
-        break;               
+        break;
+
+      case 'Escape':
+        if (focus) {
+          if (open) {
+            setOpen(false);
+          }
+          setKeyboardItem(undefined);
+          if (collection.getSearch()) {
+            collection.clearSearch();
+          }
+        }
+
+        stateRef.current.keepFocus = false;
+        break;        
+        
     }
-  }, [collection, proxyItem, onSelect, open, setOpen, focus])
+  }, [collection, proxyItem, keyboardItem, onSelect, open, setOpen, focus, multiple])
 
 
 
@@ -316,11 +350,11 @@ const SelectComponent: FC<SelectProps<any>> = ({
   });
 
   const onDropDownUpdate = useCallback(() => {
-    const index = findItemIndex(collection, previousProxyItem.current);
-    if (open && scrollToIndex && index >= 0) {
-      const align = keyboardItem ? 'auto': 'center';
-      scrollToIndex(index, { 'align': align });
-    }
+    // const index = findItemIndex(collection, previousProxyItem.current);
+    // if (open && scrollToIndex && index >= 0) {
+    //   const align = keyboardItem ? 'auto': 'center';
+    //   scrollToIndex(index, { 'align': align });
+    // }
   }, [open, scrollToIndex, collection, proxyItem])  
   
   useIsomorphicLayoutEffect(() => {
