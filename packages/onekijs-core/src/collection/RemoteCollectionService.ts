@@ -1,3 +1,4 @@
+import { Task } from '@redux-saga/types';
 import { cancel, delay, fork } from 'redux-saga/effects';
 import { reducer, saga, service } from '../core/annotations';
 import BasicError from '../core/BasicError';
@@ -110,32 +111,38 @@ export default class RemoteCollectionService<
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
   protected *_fetch(query: Query, resetData: boolean) {
-    let loadingTask:any = null;
+    let loadingTask:Task|null = null;
     const options = this.state.fetchOptions || {};
     const { onSuccess, onError } = options;
     
     try {
-      if (options.delayLoading) {
-        loadingTask = yield fork(
-          [this, this._delayLoading],
-          options.delayLoading,
-          query.limit,
-          query.offset,
-          resetData,
-        );
+      const oQuery = this.serializeQuery(query);
+      const sQuery = Object.keys(oQuery).map((k) => `${k}=${oQuery[k]}`).join('&')      
+      let result: Fetcher<CollectionFetcherResult<T>, T | Query | undefined>;
+      if (this.cache[sQuery]) {
+        result = this.cache[sQuery];
+      } else {
+        if (options.delayLoading) {
+          loadingTask = yield fork(
+            [this, this._delayLoading],
+            options.delayLoading,
+            query.limit,
+            query.offset,
+            resetData,
+          );
+        }
+        const fetcher: Fetcher<CollectionFetcherResult<T>, T | Query | undefined> = options.fetcher || asyncHttp;
+        const method = this.state.method ?? HttpMethod.Get;
+        const body = this.state.method === HttpMethod.Get ? undefined : Object.assign({}, query);
+        
+        const fetchOptions =
+          method === HttpMethod.Get ? Object.assign({}, options, { query: oQuery }) : options;
+        result = yield fetcher(this.url, method, body, fetchOptions);
+        this.cache[sQuery] = result;
+        if (loadingTask !== null) {
+          yield cancel(loadingTask);
+        }        
       }
-      
-      const fetcher: Fetcher<CollectionFetcherResult<T>, T | Query | undefined> = options.fetcher || asyncHttp;
-
-      const method = this.state.method ?? HttpMethod.Get;
-      const body = this.state.method === HttpMethod.Get ? undefined : Object.assign({}, query);
-      const fetchOptions =
-        method === HttpMethod.Get ? Object.assign({}, options, { query: this.serializeQuery(query) }) : options;
-      const result = yield fetcher(this.url, method, body, fetchOptions);
-      if (loadingTask !== null) {
-        yield cancel(loadingTask);
-      }
-
       yield this._fetchSuccess(result, resetData, query); // to update the store and trigger a re-render.
       if (onSuccess) {
         yield onSuccess(result);

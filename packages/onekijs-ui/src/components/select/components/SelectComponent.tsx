@@ -92,10 +92,10 @@ const SelectComponent: FC<SelectProps<any>> = ({
   const [open, _setOpen] = useState(false);
   const [focus, setFocus] = useState(!!autoFocus);
   const stateRef = useRef<AnonymousObject>({});
-  const previousProxyItem = useRef<Item<any, SelectOptionMeta>|undefined>();
+  const currentProxyItem = useRef<Item<any, SelectOptionMeta>|undefined>();
 
-  const previousScrollItem = useRef<Item<any, SelectOptionMeta>|undefined>();
-  const previousScrollIndex = useRef<number|undefined>();
+  const currentScrollItem = useRef<Item<any, SelectOptionMeta>|undefined>();
+  const currentScrollIndex = useRef<number|undefined>();
   const scrollToRef = useRef<{ index: number, align: 'start' | 'center' | 'end' | 'auto' } | undefined>();
   const [keyboardItem, setKeyboardItem] = useState<Item<any, SelectOptionMeta>|undefined>()
   const arrowItemRef = useRef<Item<any, SelectOptionMeta>|undefined>()
@@ -128,6 +128,16 @@ const SelectComponent: FC<SelectProps<any>> = ({
     }
   }, [focus, collection, value, keyboardItem, multiple]);
 
+  // const highlightItem = useCallback((item: SelectItem|undefined, highlight: boolean = true) => {
+  //   if (highlight && currentHighlightedItem.current !== undefined) {
+  //     collection.setMeta(currentHighlightedItem.current, 'highlighted', false);
+  //   }    
+  //   currentHighlightedItem.current = highlight ? item : undefined;
+  //   if (item != undefined) {
+  //     collection.setMeta(item, 'highlighted', highlight);
+  //   }
+  // }, [collection])
+
 
   const setOpen = useCallback((open) => {
     if (open) {
@@ -140,7 +150,7 @@ const SelectComponent: FC<SelectProps<any>> = ({
         }
       }     
     } else {
-      previousScrollItem.current = undefined;
+      currentScrollItem.current = undefined;
     }
     _setOpen(open)
   }, [collection, proxyItem])  
@@ -225,17 +235,17 @@ const SelectComponent: FC<SelectProps<any>> = ({
     [onChange, collection, multiple, onRemoveToken],
   );
 
-  const onItemEnter: SelectOptionHandler = useCallback((item) => {
-    if (item !== undefined && item.id !== undefined && collection.getMeta(item.id)) {
-      collection.setMeta(item, 'highlighted', true);
-    }
-  }, [collection])
+  // const onItemEnter: SelectOptionHandler = useCallback((item) => {
+  //   if (item !== undefined && item.id !== undefined && collection.getMeta(item.id)) {
+  //     highlightItem(item, true);
+  //   }
+  // }, [collection, highlightItem])
 
-  const onItemLeave: SelectOptionHandler = useCallback((item) => {
-    if (item !== undefined && item.id !== undefined && collection.getMeta(item.id)) {
-      collection.setMeta(item, 'highlighted', false);
-    }
-  }, [collection])  
+  // const onItemLeave: SelectOptionHandler = useCallback((item) => {
+  //   if (item !== undefined && item.id !== undefined && collection.getMeta(item.id)) {
+  //     highlightItem(item, false);
+  //   }
+  // }, [collection, false])  
 
 
 
@@ -309,14 +319,14 @@ const SelectComponent: FC<SelectProps<any>> = ({
 
 
   useEffect(() => {
-    if (proxyItem?.id !== previousProxyItem.current?.id) {
-      if (previousProxyItem.current !== undefined) {
-        const item = previousProxyItem.current
-        previousProxyItem.current = undefined;
+    if (proxyItem?.id !== currentProxyItem.current?.id) {    
+      if (currentProxyItem.current !== undefined) {
+        const item = currentProxyItem.current
+        currentProxyItem.current = undefined;
         collection.setMeta(item, multiple ? 'highlighted' : 'selected', false);
       } 
       if (proxyItem !== undefined && proxyItem.id !== undefined && collection.getMeta(proxyItem.id)) {
-        previousProxyItem.current = proxyItem;
+        currentProxyItem.current = proxyItem;     
         collection.setMeta(proxyItem, multiple ? 'highlighted' : 'selected', true);
       }
     }
@@ -342,8 +352,8 @@ const SelectComponent: FC<SelectProps<any>> = ({
   const { view: listView, scrollToIndex } = useListView({
     ItemComponent: ItemComponent ? ItemComponent : multiple ? MultiSelectOptionComponent : SelectOptionComponent, 
     onItemClick: onSelect, 
-    onItemMouseEnter: onItemEnter,
-    onItemMouseLeave: onItemLeave,
+    // onItemMouseEnter: onItemEnter,
+    // onItemMouseLeave: onItemLeave,
     collection, 
     height, 
     className: 'o-select-options',
@@ -359,11 +369,11 @@ const SelectComponent: FC<SelectProps<any>> = ({
   
   useIsomorphicLayoutEffect(() => {
     if (open && scrollToIndex) {
-      const previousItem = previousScrollItem.current;
-      const previousIndex = previousScrollIndex.current
-      previousScrollItem.current = proxyItem;
+      const previousItem = currentScrollItem.current;
+      const previousIndex = currentScrollIndex.current
+      currentScrollItem.current = proxyItem;
       const index = findItemIndex(collection, proxyItem);
-      previousScrollIndex.current = index
+      currentScrollIndex.current = index
       
       if ((proxyItem?.id !== previousItem?.id || previousIndex !== index) && index >= 0) {
         const align = keyboardItem ? 'auto': 'center';
@@ -372,7 +382,6 @@ const SelectComponent: FC<SelectProps<any>> = ({
     }
 
   }, [collection, scrollToIndex, open, proxyItem, keyboardItem]);
-
 
   useEventListener('keydown', onKeyDownCapture, true);
   useEventListener('keydown', onKeyDown, false);

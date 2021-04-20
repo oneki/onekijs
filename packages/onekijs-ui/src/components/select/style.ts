@@ -5,7 +5,7 @@ import { borderColor, borderRadius, borderWidth } from '../../styles/border';
 import { display, visibility } from '../../styles/display';
 import { opacity } from '../../styles/effects';
 import { flexGrow, flexWrap } from '../../styles/flex';
-import { appearance, cursor, outline } from '../../styles/interactivity';
+import { appearance, cursor, outline, userSelect } from '../../styles/interactivity';
 import { bottom, left, position, right, top } from '../../styles/position';
 import { height, maxWidth, minWidth, width } from '../../styles/size';
 import { margin, marginRight, marginY, padding, paddingLeft, paddingX, paddingY } from '../../styles/spacing';
@@ -17,12 +17,12 @@ import { deriveColor } from '../../utils/color';
 import { preflight } from '../../utils/style';
 import { SelectProps } from './typings';
 
-const selectStyle: ComponentStyle<SelectProps> = ({multiple}) => {
+const selectStyle: ComponentStyle<SelectProps> = ({multiple, theme}) => {
   return css`
     ${preflight()}
     ${width('100%')}
     .o-select-input-container {
-      ${padding(1)}
+      ${padding('4px')}
       ${backgroundColor('white')}
       ${display('flex')}
       ${alignItems('stretch')}
@@ -33,6 +33,7 @@ const selectStyle: ComponentStyle<SelectProps> = ({multiple}) => {
       &.o-select-input-focus {
         ${borderColor('primary')}
         ${borderWidth(2)}
+        ${padding('3px')}
       }
     }
     &.o-select-close {
@@ -104,8 +105,8 @@ const selectStyle: ComponentStyle<SelectProps> = ({multiple}) => {
         ${backgroundColor('primary')}
         ${color('white')}
         ${marginRight(2)}
-        ${paddingY(1)}
-        ${marginY(1)}
+        ${paddingY('2px')}
+        ${marginY('3px')}
         ${borderRadius('default')}
         ${fontSize('sm')}
         ${display('flex')}
@@ -170,21 +171,20 @@ const selectStyle: ComponentStyle<SelectProps> = ({multiple}) => {
         ${paddingY(2)}
         ${display('flex')}
         ${alignItems('center')}
+        ${backgroundColor('transparent', {'hover': 'gray-200'})}
+        ${userSelect('none')}
         &.o-select-option-clickable {
           ${cursor('pointer')}
         }
-        &.o-select-option-highlighted {
-          ${backgroundColor(multiple ? 'primary' : 'gray-200')}
-          ${color(multiple ? 'white': 'inherits')}
-        } 
         &.o-select-option-selected {
-          ${backgroundColor(multiple ? 'gray-200': 'primary')}
-          ${color(multiple ? 'inherits': 'white')}
-        }   
-
-        &.o-select-option-selected.o-select-option-highlighted {
-          background: ${(props) => props.theme.colors[deriveColor(props.theme.kind.primary, 100, false)]}
-        }
+          ${backgroundColor(multiple ? deriveColor(theme.kind.primary, -300, false): 'primary', {'hover': multiple ? deriveColor(theme.kind.primary, -300, false): 'primary'})}
+          ${color(multiple ? 'inherits': 'white', {'hover': multiple ? 'inherits': 'white'})}
+        }         
+        &.o-select-option-highlighted {
+          ${backgroundColor(multiple ? 'primary' : 'gray-200', {'hover': multiple ? 'primary' : 'gray-200'})}
+          ${color(multiple ? 'white': 'inherits')}
+        }         
+           
 
         .o-select-option-icon {
           ${width(6)}

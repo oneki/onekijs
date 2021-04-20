@@ -10,6 +10,7 @@ import { ComponentStyle } from '../../styles/typings';
 import { CheckboxProps } from './typings';
 import { color } from '../../styles/typography';
 import { stroke } from '../../styles/svg';
+import { deriveColor } from '../../utils/color';
 
 const checkedKeyframes = keyframes`
   0% {
@@ -21,7 +22,8 @@ const checkedKeyframes = keyframes`
 `;
 
 const checkboxStyle: ComponentStyle<CheckboxProps> = ({ height: cssHeight = '16px', width: cssWidth = '16px', theme, color: cssColor }) => {
-  const checkboxColor = cssColor ?? theme.colors[theme.kind.primary]
+  const checkboxCheckedColor = cssColor ?? theme.colors[theme.kind.primary]
+  const checkboxColor = cssColor ?? deriveColor(theme.kind.primary, -200, false);
   const checkboxHeight = isNaN(cssHeight as any) ? `${cssHeight}` : `${cssHeight}px`
   const checkboxWidth = isNaN(cssHeight as any) ? `${cssWidth}` : `${cssWidth}px`
   const svgWidth = calcSize(checkboxWidth, (() => 10))
@@ -44,6 +46,7 @@ const checkboxStyle: ComponentStyle<CheckboxProps> = ({ height: cssHeight = '16p
   input:checked + label > svg {
     ${height(svgHeigth)};
     animation: ${checkedKeyframes} ease-in-out 0.2s forwards;
+    ${stroke(checkboxCheckedColor)}
   }
     
   label:active::after {
@@ -69,6 +72,9 @@ const checkboxStyle: ComponentStyle<CheckboxProps> = ({ height: cssHeight = '16p
       margin-right: 1rem;
       transition: 0.15s all ease-out;      
     }
+  }
+  input:checked + label:after {
+    ${borderColor(checkboxCheckedColor)}
   }
   svg {
     ${stroke(checkboxColor)}

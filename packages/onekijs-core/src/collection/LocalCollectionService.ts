@@ -78,8 +78,15 @@ export default class LocalCollectionService<
   protected _onLocationChange(location: Location): void {
     const nextQuery = this._parseLocation(location);
     this._setQuery(nextQuery);
-    const queryEngine: QueryEngine<T, M> = this.state.queryEngine || this._execute.bind(this);
-    this.state.items = queryEngine(this.state.db || [], nextQuery);
+    if (location.relativeurl && this.cache[location.relativeurl]) {
+      this.state.items = this.cache[location.relativeurl];
+    } else {
+      const queryEngine: QueryEngine<T, M> = this.state.queryEngine || this._execute.bind(this);
+      this.state.items = queryEngine(this.state.db || [], nextQuery);
+      if (location.relativeurl) {
+        this.cache[location.relativeurl] = this.state.items;
+      }
+    }
   }
 
   protected _applyCriteria(item: Item<T, M>, criteria: QueryFilterCriteria): boolean {
