@@ -37,6 +37,7 @@ export const secure = (
       if (securityContext) {
         if (validator && !validator(securityContext)) {
           // Example: user doesn't have the required role
+          error.code = 403;
           return <ErrorComponent error={error} />;
         } else {
           return <Component {...props} securityContext={securityContext} auth={auth} />;
