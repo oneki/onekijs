@@ -28,6 +28,7 @@ const useLogout = (options: LogoutOptions = {}): [BasicError | undefined, boolea
 
   useEffect(() => {
     if (callback) {
+      console.log('success logout');
       service.successLogout(onError, onSuccess);
     } else {
       service.logout(onError, onSuccess);
