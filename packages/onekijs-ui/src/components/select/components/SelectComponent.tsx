@@ -1,5 +1,6 @@
-import { AnonymousObject, Collection, get, isCollectionFetching, isCollectionLoading, Item, toCollectionItem, useCollection, useEventListener, useIsomorphicLayoutEffect } from 'onekijs-core';
+import { AnonymousObject, Collection, get, isCollectionFetching, isCollectionLoading, Item, toCollectionItem, useCollection, useEventListener, useIsomorphicLayoutEffect, ValidationStatus } from 'onekijs-core';
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { addClassname } from '../../../utils/style';
 import { useClickOutside, useFocusOutside } from '../../../utils/event';
 import Dropdown from '../../dropdown';
 import useListView from '../../list/hooks/useListView';
@@ -85,12 +86,16 @@ const SelectComponent: FC<SelectProps<any>> = ({
   autoFocus,
   value,
   onChange,
+  onBlur: forwardBlur,
+  onFocus: forwardFocus,
   height = '220px',
   multiple = false,
+  status = ValidationStatus.None,
+  size = 'medium',
 }) => {
   const collection = useCollection(items);
   const [open, _setOpen] = useState(false);
-  const [focus, setFocus] = useState(!!autoFocus);
+  const [focus, setFocus] = useState(false);
   const stateRef = useRef<AnonymousObject>({});
   const currentProxyItem = useRef<Item<any, SelectOptionMeta>|undefined>();
 
@@ -167,9 +172,25 @@ const SelectComponent: FC<SelectProps<any>> = ({
       if (open) {
         setOpen(false);
       }
-      setFocus(false);
+      if (focus) {
+        setFocus(false);
+        if (forwardBlur) {
+          console.log('forwardBlur');
+          forwardBlur();
+        }
+      }
+
     }
   }, [open, keyboardItem, collection]);
+
+  const onFocus = useCallback(() => {
+    if (!focus) {
+      setFocus(true);
+      if (forwardFocus) {
+        forwardFocus();
+      }
+    }
+  }, [open, keyboardItem, collection]);  
 
   useClickOutside(containerRef, () => {
     onBlur();
@@ -347,7 +368,7 @@ const SelectComponent: FC<SelectProps<any>> = ({
     }
   }, [value, collection, proxyItem, tokens]);
   
-  const classNames = [className, `o-select-${open ? 'open' : 'close'}`].join(' ')
+  const classNames = addClassname(`o-select o-select-size-${size} o-select-${open ? 'open' : 'close'}${status ? ' o-select-status-'+status.toLowerCase() : ''}`, className);
 
   const { view: listView, scrollToIndex } = useListView({
     ItemComponent: ItemComponent ? ItemComponent : multiple ? MultiSelectOptionComponent : SelectOptionComponent, 
@@ -402,11 +423,12 @@ const SelectComponent: FC<SelectProps<any>> = ({
         onChange={onInputChange}
         value={proxyItem ? proxyItem.text : ''}
         focus={focus}
-        onFocus={() => setFocus(true)}
+        onFocus={onFocus}
         onBlur={onBlur}
         tokens={tokens}
         multiple={multiple}
         onRemove={onRemoveToken}
+        autoFocus={autoFocus}
       />
       <Dropdown refElement={containerRef} open={open} distance={5} onUpdate={onDropDownUpdate}>
         {listView}

@@ -1,6 +1,12 @@
-import { AnyFunction, ChangeHandler, Item, ItemAdapter, ItemMeta } from 'onekijs-core';
-import { FC } from 'react';
+import { AnyFunction, ChangeHandler, FormFieldProps, Item, ItemAdapter, ItemMeta, ValidationStatus } from 'onekijs-core';
+import React, { FC } from 'react';
+import { FieldLayoutProps } from '../field/typings';
 import { ListItemHandler, ListItemProps, ListProps } from '../list/typings';
+
+export type FormSelectProps<T = any, M extends SelectOptionMeta = SelectOptionMeta> = SelectProps<T,M> & FormFieldProps & FieldLayoutProps & {
+  defaultValue?: T | T[] | null;
+  FieldComponent?: React.FC<SelectProps>
+};
 
 export type SelectAdapter<T, M extends SelectOptionMeta = SelectOptionMeta> = ItemAdapter<T, M>;
 export type SelectItem<T = any, M extends SelectOptionMeta = SelectOptionMeta> = Item<T, M>;
@@ -63,11 +69,17 @@ export interface SelectProps<T = any, M extends SelectOptionMeta = SelectOptionM
   placeholder?: string;
   value?: T | T[] | null;
   onChange?: ChangeHandler<T>;
+  onFocus?: () => void;
+  onBlur?: () => void;
   autoFocus?: boolean;
   className?: string;
   multiple?: boolean;
+  status?: ValidationStatus;
+  name?: string;
+  size?: SelectSize;
 }
 
-export interface ClickOutsideHandler {
-  handleClickOutside?: AnyFunction<void>;
-}
+export type SelectSize = 'xsmall'|'small'|'medium'|'large'|'xlarge'
+
+
+

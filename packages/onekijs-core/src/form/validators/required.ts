@@ -1,6 +1,6 @@
 import { Validator } from '../typings';
-import { isNull, isObject } from 'util';
 import { isTrue, isFalse } from '../../core/utils/type';
+import { isNull, isObject } from '../../core/utils/object';
 
 const required = (message?: string | boolean): Validator => {
   return (value: any) => {

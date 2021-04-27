@@ -21,19 +21,94 @@ const selectStyle: ComponentStyle<SelectProps> = ({multiple, theme}) => {
   return css`
     ${preflight()}
     ${width('100%')}
+    &.o-select-status-error {
+      .o-select-input-container {
+        ${borderColor('danger')}   
+      }
+      .o-select-icon-container {
+        .o-select-icon {   
+          ${color('danger')}
+        }  
+      } 
+    }
+    &.o-select-size-xsmall {
+      .o-select-input-wrapper {
+        ${paddingY(0)}
+      }    
+      .o-select-input {
+        ${paddingY(0)}
+        ${fontSize('sm')}     
+      }  
+      .o-select-token {
+        ${paddingY(0)}
+        ${marginY('px')}
+      }        
+    }      
+    &.o-select-size-small {
+      .o-select-input-wrapper {
+        ${paddingY(1)}
+      }
+      .o-select-input {
+        ${paddingY(1)} 
+        ${fontSize('sm')}
+      }   
+      .o-select-token {
+        ${paddingY(0)}
+        ${marginY(1)}
+      }              
+    }       
+    &.o-select-size-medium {
+      .o-select-input-wrapper {
+        ${paddingY(2)}
+      }     
+      .o-select-input {
+        ${paddingY(2)}  
+        ${fontSize('base')} 
+      }  
+      .o-select-token {
+        ${paddingY(1)}
+        ${marginY(1)}
+      }               
+    }
+    &.o-select-size-large {
+      .o-select-input-wrapper {
+        ${paddingY(3)}
+      }   
+      .o-select-input {
+        ${paddingY(3)}  
+        ${fontSize('base')}    
+      }
+      .o-select-token {
+        ${paddingY(2)}
+        ${marginY(1)}
+      }                  
+    }
+    &.o-select-size-xlarge {
+      .o-select-input-wrapper {
+        ${paddingY(4)}
+      }  
+      .o-select-input {
+        ${paddingY(4)}   
+        ${fontSize('lg')}     
+      }    
+      .o-select-token {
+        ${paddingY(3)}
+        ${marginY(1)}
+      }        
+    }    
     .o-select-input-container {
-      ${padding('4px')}
       ${backgroundColor('white')}
       ${display('flex')}
       ${alignItems('stretch')}
       ${borderWidth(1)}
-      ${borderColor('gray-200')}
+      ${borderColor('gray-300')}
       ${borderRadius('default')}
       ${cursor('pointer')}
+      ${padding('1px')}
       &.o-select-input-focus {
         ${borderColor('primary')}
         ${borderWidth(2)}
-        ${padding('3px')}
+        ${padding(0)}
       }
     }
     &.o-select-close {
@@ -46,13 +121,12 @@ const selectStyle: ComponentStyle<SelectProps> = ({multiple, theme}) => {
       ${flexGrow(1)}
       ${flexWrap('wrap')}
       ${alignItems('center')}
+      ${paddingX(2)}
       .o-select-input-wrapper {
         ${flexGrow(1)}
         ${color('gray-800')}
         ${position('relative')}
         ${display('inline-block')}
-        ${paddingY(1)}
-        ${paddingX(2)}  
         ${minWidth('50px')}         
         .o-select-input-auto-sizer {
           ${visibility(false)}
@@ -64,9 +138,7 @@ const selectStyle: ComponentStyle<SelectProps> = ({multiple, theme}) => {
           ${top(0)}
           ${left(0)}
           ${right(0)}
-          ${bottom(0)}
-          ${paddingY(1)}
-          ${paddingX(2)}        
+          ${bottom(0)}       
           ${appearance('none')}
           ${outline('none')}
           ${width('full')}
@@ -105,8 +177,6 @@ const selectStyle: ComponentStyle<SelectProps> = ({multiple, theme}) => {
         ${backgroundColor('primary')}
         ${color('white')}
         ${marginRight(2)}
-        ${paddingY('2px')}
-        ${marginY('3px')}
         ${borderRadius('default')}
         ${fontSize('sm')}
         ${display('flex')}

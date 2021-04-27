@@ -1,8 +1,7 @@
-import React, { useCallback, useState } from 'react';
-import { useCollection, CollectionState, LocalCollectionService, toCollectionItem, Query } from 'onekijs';
-import { users, userAdapter, userSearcher, User } from '../data/users';
-import { useService, Fetcher } from 'onekijs';
-import { Select, SelectOptionMeta } from 'onekijs-ui';
+import { CollectionState, Fetcher, LocalCollectionService, Query, toCollectionItem, useCollection, useForm, useService } from 'onekijs';
+import { FormSelect, SelectOptionMeta } from 'onekijs-ui';
+import React, { useCallback } from 'react';
+import { User, userAdapter, users, userSearcher } from '../data/users';
 
 export const SelectPage = () => {
   const [, service] = useService<CollectionState<User, SelectOptionMeta>, LocalCollectionService<User, SelectOptionMeta, CollectionState<User, SelectOptionMeta>>>(LocalCollectionService, {
@@ -41,15 +40,31 @@ export const SelectPage = () => {
     fetcher 
   });  
 
-  const [value, setValue] = useState(users[1]);
-  const [value2, setValue2] = useState([users[2],users[1]]);
+  // const [value, setValue] = useState(users[1]);
+  // const [value2, setValue2] = useState([users[2],users[1]]);
+  const { Form, } = useForm(() => {});
 
   return (
+    <Form>
     <div style={{display: 'flex', justifyContent: 'center'}}>
-      <div style={{width: '500px'}}>
-        <Select placeholder="Search by position" items={collection} value={value} onChange={(nextValue: User) => setValue(nextValue)}  /><br/>
-        <Select multiple={true} placeholder="Search..." items={collection2} value={value2} onChange={(nextValue: User[]) => setValue2(nextValue)}  />
+      <div style={{width: '800px', padding: '10px'}}>
+    
+          <FormSelect label="Simple select" size="xsmall" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" items={collection} name="simple" required /><br/>
+          <FormSelect label="Simple select" size="small" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" items={collection} name="simple" required /><br/>
+          <FormSelect label="Simple select" size="medium" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" items={collection} name="simple" required /><br/>
+          <FormSelect label="Simple select" size="large" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" items={collection} name="simple" required /><br/>
+          <FormSelect label="Simple select" size="xlarge" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" items={collection} name="simple" required /><br/>
+
       </div>
+      <div style={{width: '800px', padding: '10px'}}>
+          <FormSelect label="Multi select" size="xsmall" description="Multiple entries are permitted" multiple={true} placeholder="Search..." items={collection2} name="multi" /><br/>
+          <FormSelect label="Multi select" size="small" description="Multiple entries are permitted" multiple={true} placeholder="Search..." items={collection2} name="multi" /><br/>
+          <FormSelect label="Multi select" size="medium" description="Multiple entries are permitted" multiple={true} placeholder="Search..." items={collection2} name="multi" /><br/>
+          <FormSelect label="Multi select" size="large" description="Multiple entries are permitted" multiple={true} placeholder="Search..." items={collection2} name="multi" /><br/>
+          <FormSelect label="Multi select" size="xlarge" description="Multiple entries are permitted" multiple={true} placeholder="Search..." items={collection2} name="multi" /><br/>
+          
+      </div>      
     </div>
+    </Form>
   );
 };

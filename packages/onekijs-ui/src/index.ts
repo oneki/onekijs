@@ -1,5 +1,7 @@
 export { default as Button } from './components/button';
 export { default as Select } from './components/select';
+export { default as FormSelect } from './components/select/FormSelect';
+export { default as Label } from './components/label';
 export { default as SelectComponent } from './components/select/components/SelectComponent';
 export { default as List } from './components/list';
 export {

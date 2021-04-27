@@ -45,6 +45,15 @@ export interface FieldOptions {
 
 export type FormErrorCallback = (fields: Field[], values: AnonymousObject) => void;
 
+export type FormFieldProps = FieldOptions & ValidatorsType & {
+  name: string;
+  id?: string|number;
+}
+
+export type FormLabelWidth = 1|2|3|4|5|6|7|8|9|10|11|12;
+
+export type FormLayout = 'horizontal' | 'vertical';
+
 export type FormListener = (...args: any[]) => void;
 
 export interface FormListenerProps {
@@ -60,6 +69,8 @@ export interface FormOptions {
   initialValues?: AnonymousObject;
   onError?: FormErrorCallback;
   onWarning?: FormWarningCallback;
+  labelWidth?: FormLabelWidth;
+  layout?: FormLayout;
 }
 
 export type FormProps = Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onSubmit'>;
@@ -86,6 +97,8 @@ export interface FormContext {
     prefix?: string,
     touchedOnly?: boolean,
   ) => ContainerValidation;
+  labelWidth?: FormLabelWidth,
+  layout?: FormLayout,
   offSubmittingChange: (listener: FormListener) => void;
   offValidationChange: (listener: FormListener, watchs: string[] | string) => void;
   offValueChange: (listener: FormListener, watchs: string[] | string) => void;

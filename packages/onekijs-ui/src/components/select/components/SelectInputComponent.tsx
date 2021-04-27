@@ -1,5 +1,5 @@
 import { useIsomorphicLayoutEffect } from 'onekijs-core';
-import React, { FC, useCallback, useMemo, useRef } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useRef } from 'react';
 import { SelectInputProps } from '../typings';
 import SelectIconComponent from './SelectIconComponent';
 import SelectTokensComponent from './SelectTokensComponent';
@@ -19,6 +19,7 @@ const SelectInputComponent: FC<SelectInputProps> = ({
   focus,
   multiple,
   tokens,
+  autoFocus,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const autoSizeRef = useRef<HTMLSpanElement>(null);
@@ -140,6 +141,12 @@ const SelectInputComponent: FC<SelectInputProps> = ({
     forwardFocus && forwardFocus(e);
     setOpen(!open);
   }, [open, forwardFocus])
+
+  useEffect(() => {
+    if (autoFocus && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [])
 
   return (
     <div className={className}>
