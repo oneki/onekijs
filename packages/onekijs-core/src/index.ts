@@ -50,6 +50,7 @@ export {
   SecurePageProps,
   SecureRouteProps,
 } from './auth/typings';
+export { default as useAuth } from './auth/useAuth';
 export { default as useAuthService } from './auth/useAuthService';
 export { default as useLogin, useLoginService } from './auth/useLogin';
 export { default as useLoginCallback, useLoginCallbackService } from './auth/useLoginCallback';
@@ -362,8 +363,8 @@ export {
 } from './router/typings';
 export { default as useHistory } from './router/useHistory';
 export { default as useLocation } from './router/useLocation';
-export { default as useRouter } from './router/useRouter';
 export { default as useParams } from './router/useParams';
+export { default as useRouter } from './router/useRouter';
 export {
   absoluteUrl,
   extractState,

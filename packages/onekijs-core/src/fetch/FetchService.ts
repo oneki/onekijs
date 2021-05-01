@@ -1,3 +1,4 @@
+import { Task } from '@redux-saga/types';
 import { call, cancel, delay, fork } from 'redux-saga/effects';
 import { reducer, saga } from '../core/annotations';
 import Service from '../core/Service';
@@ -38,16 +39,16 @@ export default class FetchService<S extends FetchState = FetchState> extends Ser
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
   *fetch<R = any, T = any>(url: string, method: FetchMethod, body?: T, options: FetchOptions<R, T> = {}) {
-    let loadingTask = null;
+    let loadingTask: Task | null = null;
     try {
       loadingTask = yield fork([this, this.delayLoading], options.delayLoading);
       const fetcher = options.fetcher || asyncHttp;
-      const result = yield fetcher(url, method, body, options);
-      yield cancel(loadingTask);
+      const result: Response = yield fetcher(url, method, body, options);
+      yield cancel(loadingTask as Task);
       yield this.fetchSuccess(result); // to update the store and trigger a re-render.
       const onSuccess = options.onSuccess;
       if (onSuccess) {
-        yield call(onSuccess, result);
+        yield call(onSuccess as any, result);
       }
     } catch (e) {
       if (process.env.NODE_ENV === 'development') {

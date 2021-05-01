@@ -258,6 +258,12 @@ export default abstract class CollectionService<
   }
 
   @reducer
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  setStatus(status: LoadingStatus): void {
+    this.state.status = status;
+  }
+
+  @reducer
   sort(dir: QuerySortDir): void {
     this._setLoading({ limit: this.state.limit, offset: 0 });
     this._setSort(dir);
