@@ -1,4 +1,5 @@
 export { default as Button } from './components/button';
+export { default as Tooltip } from './components/tooltip';
 export { default as Select } from './components/select';
 export { default as FormSelect } from './components/select/FormSelect';
 export { default as Label } from './components/label';

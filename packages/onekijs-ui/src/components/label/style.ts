@@ -1,39 +1,64 @@
 import { css } from "styled-components";
-import { marginBottom, marginLeft, marginRight } from "../../styles/spacing";
-import { color, fontSize, fontWeight } from "../../styles/typography";
+import { alignContent, justifyContent } from "../../styles/alignment";
 import { display, visibility } from "../../styles/display";
+import { width } from "../../styles/size";
+import { marginLeft, marginRight, marginY, paddingY } from "../../styles/spacing";
 import { ComponentStyle } from "../../styles/typings";
+import { color, fontSize, fontVariant, fontWeight } from "../../styles/typography";
 import { preflight } from "../../utils/style";
 import { LabelProps } from "./typings";
-import { alignContent, justifyContent } from "../../styles/alignment";
-import { width } from "../../styles/size";
 
 const labelStyle: ComponentStyle<LabelProps> = ({width: labelWidth}) => {
     return css`
       ${preflight()}
       ${display('flex')}
-      &.o-label {
-        ${fontWeight('bold')}
-        ${fontSize('sm')}
+      .o-label-text {
+        ${fontWeight('medium')}
+        ${fontVariant('small-caps')}
+        ${color('blue-700')}
       }      
       &.o-label-vertical {
-        ${marginBottom(2)}
+        ${alignContent('center')}
       }
       &.o-label-horizontal {
-        ${display('flex')}
         ${justifyContent('flex-end')}
         ${alignContent('center')}
         ${width(`${(100/12) * (labelWidth || 12)}%`)}
+        ${marginY('2px')}
+        &.o-label-xsmall {
+          ${paddingY(0)}
+        }
+        &.o-label-small {
+          ${paddingY(1)}
+        }                   
+        &.o-label-medium {
+          ${paddingY(2)}
+        }
+        &.o-label-large {
+          ${paddingY(3)}
+        }  
+        &.o-label-xlarge {
+          ${paddingY(4)}
+        }  
+        .o-marker-required, .o-marker-optional {
+          ${marginRight(4)}
+        }                 
       }      
       .o-marker-required, .o-marker-optional {
         ${color('danger')}
         ${fontWeight('bold')}
-        ${marginRight(4)}
-        ${marginLeft(1)}
+        ${marginLeft(1)} 
       }
       .o-marker-optional {
         ${visibility(false)}
       }
+
+      .o-helper-icon {
+        ${fontSize('xl')}
+        ${color('primary')}
+        ${marginLeft(2)}
+      }   
+
     `;
   };
   

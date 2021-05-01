@@ -8,7 +8,7 @@ import { DropdownProps } from '../typings';
 
 
 
-const DropdownComponent: FC<DropdownProps> = ({ className, refElement, open, children, skidding=0, distance=0, onUpdate }) => {
+const TooltipComponent: FC<DropdownProps> = ({ className, refElement, open, children, skidding=0, distance=0, onUpdate }) => {
   const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
   const { forceUpdate, styles, attributes } = usePopper(refElement, popperElement, {
     modifiers: [
@@ -62,4 +62,4 @@ const DropdownComponent: FC<DropdownProps> = ({ className, refElement, open, chi
   );
 };
 
-export default DropdownComponent;
+export default TooltipComponent;

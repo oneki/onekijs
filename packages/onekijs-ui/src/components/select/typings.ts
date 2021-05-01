@@ -1,6 +1,6 @@
 import { AnyFunction, ChangeHandler, FormFieldProps, Item, ItemAdapter, ItemMeta, ValidationStatus } from 'onekijs-core';
 import React, { FC } from 'react';
-import { FieldLayoutProps } from '../field/typings';
+import { FieldLayoutProps, FieldSize } from '../field/typings';
 import { ListItemHandler, ListItemProps, ListProps } from '../list/typings';
 
 export type FormSelectProps<T = any, M extends SelectOptionMeta = SelectOptionMeta> = SelectProps<T,M> & FormFieldProps & FieldLayoutProps & {
@@ -76,10 +76,10 @@ export interface SelectProps<T = any, M extends SelectOptionMeta = SelectOptionM
   multiple?: boolean;
   status?: ValidationStatus;
   name?: string;
-  size?: SelectSize;
+  size?: FieldSize;
 }
 
-export type SelectSize = 'xsmall'|'small'|'medium'|'large'|'xlarge'
+
 
 
 

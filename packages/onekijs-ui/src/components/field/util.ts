@@ -7,7 +7,7 @@ export const extractFieldLayoutProps = (props: AnonymousObject): {validators: Va
   let fieldLayoutProps: FieldLayoutProps = {};
   let fieldOptions: FieldOptions = {};
   let fieldProps: AnonymousObject = {};
-  let fieldLayoutKeys = ['className', 'description', 'DescriptionComponent', 'help', 'id', 'label', 'LabelComponent', 'labelWidth', 'layout', 'required'];
+  let fieldLayoutKeys = ['className', 'description', 'DescriptionComponent', 'help', 'id', 'label', 'LabelComponent', 'labelWidth', 'layout', 'required', 'size'];
   let fieldOptionsKeys = ['defaultValue', 'touchedOn']
   Object.keys(nonValidatorProps).forEach(k => {
     if (fieldLayoutKeys.includes(k)) {

@@ -25,7 +25,8 @@ const FormSelect: FC<FormSelectProps> = React.memo((props) => {
         onFocus={onFocus}
         onBlur={onBlur}
         onChange={onChange}
-        status={validation.status}    
+        status={validation.status}
+        size={fieldLayoutProps.size}    
       />
     </FieldLayout>
   )

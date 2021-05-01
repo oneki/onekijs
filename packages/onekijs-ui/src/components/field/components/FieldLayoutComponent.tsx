@@ -1,38 +1,35 @@
 import { FormLayout, useFormContext, useSetting } from 'onekijs-core';
 import React from 'react';
-import { DescriptionProps, FieldLayoutProps } from '../typings';
-import Label from '../../label';
-import { addClassname } from '../../../utils/style';
-import { gridSize } from '../../../utils/size';
 import { GridSize } from '../../../styles/typings';
+import { gridSize } from '../../../utils/size';
+import { addClassname } from '../../../utils/style';
+import Label from '../../label';
+import FieldDescription from '../FieldDescription';
+import FieldHelp from '../FieldHelp';
+import { FieldLayoutProps } from '../typings';
 
-const Description: React.FC<DescriptionProps> = React.memo(({
-  className,
-  text
-}) => {
-  const classNames = addClassname('o-field-description', className);
-  return <div className={classNames}>{text}</div>
-});
 
 const FieldLayoutComponent: React.FC<FieldLayoutProps> = React.memo(({
   className,
   description,
   help,
+  HelpComponent = FieldHelp,
   id,
   label,
   LabelComponent = Label,
-  DescriptionComponent = Description,
+  DescriptionComponent = FieldDescription,
   labelWidth,
   layout,
   required,
   children,
+  size,
 }) => {
   const settingLayout = useSetting('form.layout');
   const settingWidth = useSetting('form.labelWidth');
   const { layout: contextLayout, labelWidth: contextWidth } = useFormContext();
   let fieldLayout: FormLayout = layout || contextLayout || settingLayout || 'vertical';
-  const fieldLabelWidth: GridSize = labelWidth || contextWidth || settingWidth || 2;
-  const classNames = addClassname(`o-form-field`, className);
+  const fieldLabelWidth: GridSize = labelWidth || contextWidth || settingWidth || 5;
+  const classNames = addClassname(`o-form-field o-form-field-${fieldLayout}`, className);
 
   if (fieldLayout === 'vertical') {
     return (
@@ -40,37 +37,35 @@ const FieldLayoutComponent: React.FC<FieldLayoutProps> = React.memo(({
         {label && <LabelComponent
           description={description}
           htmlFor={id}
-          help={help}
           text={label}
           layout={fieldLayout}
           required={required}
+          size={size}
+          help={help}
         />}
         {children}
-        {description && <DescriptionComponent text={description} />}
+        {description && <DescriptionComponent content={description} />}
       </div>
     )
   } else if (layout === 'horizontal') {
     return (
       <div className={classNames}>
-        <div>
-          {label && <LabelComponent
-            description={description}
-            htmlFor={id}
-            help={help}
-            text={label}
-            width={fieldLabelWidth}
-            layout={fieldLayout}
-            required={required}
-          />}
-          <div style={{ width: `${gridSize((12 - fieldLabelWidth) as GridSize)}` }}>
+        {label && <LabelComponent
+          description={description}
+          htmlFor={id}
+          help={help}
+          text={label}
+          width={fieldLabelWidth}
+          layout={fieldLayout}
+          required={required}
+          size={size}
+        />}
+        <div style={{ display: 'flex', flexDirection: 'column', width: `${gridSize((12 - fieldLabelWidth) as GridSize)}` }}>
+          <div style={{ display: 'flex' }}>
             {children}
+            {<HelpComponent content={help} visible={help ? true : false} />}
           </div>
-        </div>
-        <div>
-          <div style={{ width: `${gridSize(fieldLabelWidth)}` }}></div>
-          <div style={{ width: `${gridSize((12 - fieldLabelWidth) as GridSize)}` }}>
-            {description && <DescriptionComponent text={description} />}
-          </div>
+          {description && <DescriptionComponent content={description} />}
         </div>
       </div>
     )
