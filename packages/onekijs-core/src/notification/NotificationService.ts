@@ -1,15 +1,15 @@
 import { delay } from 'redux-saga/effects';
 import { AppSettings } from '../app/typings';
 import { reducer, saga, service } from '../core/annotations';
-import GlobalService from '../core/GlobalService';
+import DefaultGlobalService from '../app/GlobalService';
 import { SagaEffect } from '../core/typings';
-import { append, get, isNull, set } from '../core/utils/object';
+import { append, get, isNull, set } from '../utils/object';
 import { Notification, NotificationContent, NotificationLevel } from './typings';
 
 let nextId = 1;
 
 @service
-export default class NotificationService extends GlobalService {
+export default class NotificationService extends DefaultGlobalService {
   init(): void {
     this.context.router.listen(this.onRouteChange);
   }

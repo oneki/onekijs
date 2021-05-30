@@ -1,7 +1,7 @@
 import React from 'react';
 import { regexIndexOf } from './string';
 import { set } from './object';
-import { AnonymousObject } from '../typings';
+import { AnonymousObject } from '../typings/object';
 
 export const extractTag = (str: string, startPos: number): [string, string, number, number] | [] => {
   const openingStart = regexIndexOf(str, /<[1-9][0-9]*>/, startPos);

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import useGlobalProp from '../app/useGlobalProp';
 import useAuthService from './useAuthService';
-import { get } from '../core/utils/object';
+import { get } from '../utils/object';
 
 function useSecurityContext<T = any>(): [T | undefined, boolean];
 function useSecurityContext<T = any>(selector: string): [T | undefined, boolean];

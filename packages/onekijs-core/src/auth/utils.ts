@@ -1,11 +1,11 @@
-import AppContext from '../app/AppContext';
+import BasicAppContext from '../app/AppContext';
 import { defaultIdpSettings } from '../app/settings';
 import { AppSettings } from '../app/typings';
-import BasicError from '../core/BasicError';
+import DefaultBasicError from '../core/BasicError';
 import { AnonymousObject, AnyState } from '../core/typings';
-import { sha256, verify } from '../core/utils/crypt';
-import { get } from '../core/utils/object';
-import { generateRandomString, hex2b64 } from '../core/utils/string';
+import { sha256, verify } from '../utils/crypt';
+import { get } from '../utils/object';
+import { generateRandomString, hex2b64 } from '../utils/string';
 import { asyncGet } from '../fetch/utils';
 import { Idp, IdpSettings, IdpType } from './typings';
 
@@ -39,7 +39,7 @@ export function getIdp(settings: AppSettings, name?: string): Idp {
   name = name || 'default';
   const idp = idps[name];
   if (!idp) {
-    throw new BasicError(`Cannot find a valid IDP named ${name}`);
+    throw new DefaultBasicError(`Cannot find a valid IDP named ${name}`);
   }
   return Object.assign({ name }, defaultIdpSettings[idp.type], idp);
 }
@@ -88,9 +88,9 @@ export function parseJwt(token: string, section = 'payload'): any {
 
 export async function validateToken(
   token: string,
-  jwksEndpoint: string | ((token: string, idp: Idp, context: AppContext) => string),
+  jwksEndpoint: string | ((token: string, idp: Idp, context: BasicAppContext) => string),
   idp: Idp,
-  context: AppContext,
+  context: BasicAppContext,
 ): Promise<boolean> {
   let pubKey = null;
   const header = parseJwt(token, 'header');

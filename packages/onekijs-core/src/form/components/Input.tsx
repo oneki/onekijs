@@ -3,7 +3,7 @@ import useField from '../useField';
 import { InputProps } from '../typings';
 import { extractValidators } from '../utils';
 import useValidation from '../useValidation';
-import { mergeString } from '../../core/utils/string';
+import { mergeString } from '../../utils/string';
 
 const Input: FC<InputProps> = React.memo((props) => {
   const [validators, wrappedProps] = extractValidators(props);

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import useFormContext from './useFormContext';
 import FieldValidation, { defaultValidation } from './FieldValidation';
 import ContainerValidation from './ContainerValidation';
-import { isNullOrEmpty } from '../core/utils/object';
+import { isNullOrEmpty } from '../utils/object';
 
 const useValidation = (name = '', touchedOnly = true): FieldValidation | ContainerValidation => {
   const {

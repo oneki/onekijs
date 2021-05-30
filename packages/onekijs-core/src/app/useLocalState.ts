@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
-import useLocalService from '../core/useLocalService';
+import useLocalService from './useLocalService';
 import LocalStateService from './LocalStateService';
-import { State, AnyState } from '../core/typings';
+import { AnyState, State } from '../typings/state';
 
 export const useLocalState = <T extends State = AnyState>(
   initialState: T,

@@ -2,8 +2,7 @@ import qs from 'query-string';
 import { indexedLocales, isLocalePath, localeNoPathSymbol } from '../app/settings';
 import { AppSettings } from '../app/typings';
 import { AnonymousObject } from '../core/typings';
-import { isNull } from '../core/utils/object';
-import { trimEnd, trimStart } from '../core/utils/string';
+import { isNull } from '../utils/object';
 import { Location } from './typings';
 
 export function urlBuilder(path: string, params: AnonymousObject = {}, query: AnonymousObject = {}): string {
@@ -17,22 +16,6 @@ export function urlBuilder(path: string, params: AnonymousObject = {}, query: An
   const separator = queryKeys.length > 0 ? '?' : '';
   const queryString = queryKeys.map((k) => esc(k) + '=' + esc(query[k])).join('&');
   return `${path}${separator}${queryString}`;
-}
-
-export function isAbsoluteUrl(url: string): boolean {
-  const pattern = new RegExp('^(?:[a-z]+:)?//', 'i');
-  return pattern.test(url);
-}
-
-export function absoluteUrl(url: string, baseUrl?: string): string {
-  if (isAbsoluteUrl(url)) {
-    return url;
-  }
-
-  if (!baseUrl) {
-    baseUrl = `${window.location.protocol}//${window.location.host}`;
-  }
-  return [trimEnd(baseUrl, '/'), trimStart(url, '/')].join('/');
 }
 
 export const URL_STATE = '__STATE__';

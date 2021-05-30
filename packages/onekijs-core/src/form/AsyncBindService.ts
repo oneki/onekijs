@@ -3,10 +3,10 @@ import { fork } from 'redux-saga/effects';
 import { AnyFunction, SagaEffect } from '../core/typings';
 import { AsyncBindState } from './typings';
 import { service, reducer, saga } from '../core/annotations';
-import LocalService from '../core/LocalService';
+import DefaultLocalService from '../core/LocalService';
 
 @service
-export default class AsyncBindService<T> extends LocalService<AsyncBindState> {
+export default class AsyncBindService<T> extends DefaultLocalService<AsyncBindState> {
   @reducer
   setLoading(isLoading: boolean): void {
     this.state.loading = isLoading;

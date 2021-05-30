@@ -1,12 +1,12 @@
 import { Task } from '@redux-saga/types';
 import { call, cancel, delay, fork } from 'redux-saga/effects';
 import { reducer, saga } from '../core/annotations';
-import Service from '../core/Service';
+import DefaultService from '../core/Service';
 import { SagaEffect } from '../core/typings';
 import { FetchMethod, FetchOptions, FetchState, HttpMethod } from './typings';
 import { asyncHttp } from './utils';
 
-export default class FetchService<S extends FetchState = FetchState> extends Service<S> {
+export default class FetchService<S extends FetchState = FetchState> extends DefaultService<S> {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   *delayLoading(delay_ms?: number) {
     yield this.setLoading(delay_ms ? false : true, true);

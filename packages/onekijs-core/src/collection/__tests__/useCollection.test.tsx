@@ -5,7 +5,7 @@ import { UseCollectionOptions, QuerySortBy, ItemMeta } from '../typings';
 import UseCollectionWidget from './components/UseCollectionWidget';
 import { basicUsers } from './data/userList';
 import { TestHandler, TestUser } from './typings';
-import { get } from '../../core/utils/object';
+import { get } from '../../utils/object';
 
 type TestProps = {
   data: TestUser[];

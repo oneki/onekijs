@@ -1,9 +1,9 @@
 import Router from '../router/Router';
 import { Location } from '../router/typings';
 import { reducer } from '../core/annotations';
-import Service from '../core/Service';
+import DefaultService from '../core/Service';
 import { AnonymousObject, Primitive } from '../core/typings';
-import { get } from '../core/utils/object';
+import { get } from '../utils/object';
 import { urlBuilder } from '../router/utils';
 import {
   Collection,
@@ -40,7 +40,7 @@ export default abstract class CollectionService<
   T = any,
   M extends ItemMeta = ItemMeta,
   S extends CollectionState<T, M> = CollectionState<T, M>
-> extends Service<S> implements Collection<T, M> {
+> extends DefaultService<S> implements Collection<T, M> {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   initialState: S = null!;
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

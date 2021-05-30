@@ -165,11 +165,11 @@ export {
   service,
   throttle,
 } from './core/annotations';
-export { default as AppService } from './core/AppService';
+export { default as AppService } from './app/AppService';
 export { default as BasicError } from './core/BasicError';
 export { default as Container } from './core/Container';
 export { default as ContainerContext } from './core/ContainerContext';
-export { default as GlobalService } from './core/GlobalService';
+export { default as GlobalService } from './app/GlobalService';
 export { default as HTTPError } from './core/HTTPError';
 export { default as LocalService } from './core/LocalService';
 export { default as Service } from './core/Service';
@@ -185,18 +185,18 @@ export {
   State,
   SuccessCallback,
 } from './core/typings';
-export { default as useAppService } from './core/useAppService';
+export { default as useAppService } from './app/useAppService';
 export { default as useContainer } from './core/useContainer';
-export { default as useGlobalService } from './core/useGlobalService';
+export { default as useGlobalService } from './app/useGlobalService';
 export { useIsomorphicLayoutEffect } from './core/useIsomorphicLayoutEffect';
 export { default as useLazyRef } from './core/useLazyRef';
-export { default as useLocalService } from './core/useLocalService';
+export { default as useLocalService } from './app/useLocalService';
 export { default as useService } from './core/useService';
 export { delayLoading } from './core/utils/async';
-export { isBrowser, isMobile } from './core/utils/browser';
-export { decrypt, encrypt, sha256, verify } from './core/utils/crypt';
-export { extractTag, parseJsx, stringifyJsx } from './core/utils/jsx';
-export { layout, withLayout } from './core/utils/layout';
+export { isBrowser, isMobile } from './utils/browser';
+export { decrypt, encrypt, sha256, verify } from './utils/crypt';
+export { extractTag, parseJsx, stringifyJsx } from './utils/jsx';
+export { layout, withLayout } from './utils/layout';
 export {
   append,
   deepFreeze,
@@ -216,7 +216,7 @@ export {
   toPayload,
   update,
   useShallowEqual,
-} from './core/utils/object';
+} from './utils/object';
 export {
   addCookie,
   getCookie,
@@ -226,7 +226,7 @@ export {
   removeCookie,
   removeItem,
   setItem,
-} from './core/utils/storage';
+} from './utils/storage';
 export {
   generateRandomString,
   generateUniqueId,
@@ -238,7 +238,7 @@ export {
   trim,
   trimEnd,
   trimStart,
-} from './core/utils/string';
+} from './utils/string';
 export {
   ensureType,
   isAsyncFunction,
@@ -249,7 +249,7 @@ export {
   isInteger,
   isPromise,
   isTrue,
-} from './core/utils/type';
+} from './utils/type';
 export { default as FetchService } from './fetch/FetchService';
 export {
   AppExtraFetchOptions,

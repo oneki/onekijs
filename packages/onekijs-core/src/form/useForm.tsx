@@ -17,8 +17,8 @@ import {
 import { ValidationCode, Validator } from './typings';
 import FieldValidation, { defaultValidation } from './FieldValidation';
 import ContainerValidation from './ContainerValidation';
-import { get } from '../core/utils/object';
-import useLocalService from '../core/useLocalService';
+import { get } from '../utils/object';
+import useLocalService from '../app/useLocalService';
 import useLazyRef from '../core/useLazyRef';
 /**
  * This callback is used when the user press the submit button

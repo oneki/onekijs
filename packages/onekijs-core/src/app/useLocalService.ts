@@ -1,8 +1,9 @@
-import LocalService from './LocalService';
-import { Class, State } from './typings';
 import useAppService from './useAppService';
-import useLazyRef from './useLazyRef';
-import useLocalReducer from './useLocalReducer';
+import useLazyRef from '../core/useLazyRef';
+import useLocalReducer from '../core/useLocalReducer';
+import { State } from '../typings/state';
+import { LocalService } from '../typings/service';
+import { Class } from '../typings/object';
 
 const useLocalService = <S extends State, T extends LocalService<S>>(
   ctor: Class<T>,

@@ -1,7 +1,7 @@
 import { __metadata } from 'tslib';
-import BasicError from '../core/BasicError';
+import DefaultBasicError from '../core/BasicError';
 import { AnonymousObject, Primitive } from '../core/typings';
-import { isNull, shallowEqual } from '../core/utils/object';
+import { isNull, shallowEqual } from '../utils/object';
 import {
   Collection,
   CollectionItemAdapter,
@@ -136,7 +136,7 @@ export const getQueryFilterCriteriaValue = (value: string): QueryFilterCriteriaV
   const lastChar = value.charAt(value.length - 1);
   if (firstChar === "'" || firstChar === '"') {
     if (lastChar !== firstChar) {
-      throw new BasicError(`Invalid query criteria value ${value}`);
+      throw new DefaultBasicError(`Invalid query criteria value ${value}`);
     }
     //value = trimQuote(value, firstChar);
   }

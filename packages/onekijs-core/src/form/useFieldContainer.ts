@@ -4,7 +4,7 @@ import useFormContext from './useFormContext';
 import { FormContext, FormListenerProps, ValidationStatus, ValidationCode, FieldContainer } from './typings';
 import FieldValidation from './FieldValidation';
 import ContainerValidation from './ContainerValidation';
-import { get, set, diffArrays } from '../core/utils/object';
+import { get, set, diffArrays } from '../utils/object';
 import useLazyRef from '../core/useLazyRef';
 
 const useFieldContainer = (): FieldContainer => {

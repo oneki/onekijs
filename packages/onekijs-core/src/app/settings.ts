@@ -1,7 +1,6 @@
-import { AnonymousObject } from '../core/typings';
-import { Location } from '../router/typings';
-import AppContext from './AppContext';
-import { AppSettings } from './typings';
+import { AppContext, AppSettings } from '../typings/app';
+import { AnonymousObject } from '../typings/object';
+import { defaultLocaleSymbol, indexedLocalesSymbol, localeNoPathSymbol, localesModeSymbol } from '../typings/symbol';
 
 export const defaultSettings = {
   contextPath: '/',
@@ -178,11 +177,6 @@ export const defaultIdpSettings: AnonymousObject = {
   },
 };
 
-export const indexedLocalesSymbol = Symbol();
-export const localesModeSymbol = Symbol();
-export const defaultLocaleSymbol = Symbol();
-export const localeNoPathSymbol = Symbol();
-
 export const indexLocales = (settings: AppSettings): AppSettings => {
   const locales: any[] = settings.i18n?.locales;
   const index: any = {
@@ -213,22 +207,6 @@ export const indexLocales = (settings: AppSettings): AppSettings => {
   }
   settings.i18n[indexedLocalesSymbol] = index;
   return settings;
-};
-
-export const isLocalePath = (settings: AppSettings): boolean => {
-  return settings.i18n[indexedLocalesSymbol][localesModeSymbol] === 'path';
-};
-
-export const isLocaleSimple = (settings: AppSettings): boolean => {
-  return settings.i18n[indexedLocalesSymbol][localesModeSymbol] === 'simple';
-};
-
-export const isLocaleDomain = (settings: AppSettings): boolean => {
-  return settings.i18n[indexedLocalesSymbol][localesModeSymbol] === 'domain';
-};
-
-export const indexedLocales = (settings: AppSettings): any => {
-  return settings.i18n[indexedLocalesSymbol];
 };
 
 // export const getLocaleSettings = (

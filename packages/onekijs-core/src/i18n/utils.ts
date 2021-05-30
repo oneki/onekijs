@@ -1,11 +1,11 @@
 import React from 'react';
 import { indexedLocales, isLocaleDomain, isLocalePath, localeNoPathSymbol } from '../app/settings';
 import { AppSettings } from '../app/typings';
-import BasicError from '../core/BasicError';
+import DefaultBasicError from '../core/BasicError';
 import { AnonymousObject } from '../core/typings';
-import { isBrowser } from '../core/utils/browser';
-import { parseJsx } from '../core/utils/jsx';
-import { get, isNull } from '../core/utils/object';
+import { isBrowser } from '../utils/browser';
+import { parseJsx } from '../utils/jsx';
+import { get, isNull } from '../utils/object';
 import { Location } from '../router/typings';
 import { rebuildLocation, toLocation } from '../router/utils';
 import I18nService from './I18nService';
@@ -218,7 +218,7 @@ export const handleModifiers = (input: string, value: any, locale: string, i18nS
       if (i18nService.modifiers[modifierNoArgs]) {
         return i18nService.modifiers[modifierNoArgs](...args);
       } else {
-        throw new BasicError(`No filter named ${modifierNoArgs} found in settings`);
+        throw new DefaultBasicError(`No filter named ${modifierNoArgs} found in settings`);
       }
     }
   }

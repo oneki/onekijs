@@ -1,10 +1,10 @@
 import { cancel, delay, fork } from 'redux-saga/effects';
 import { Location } from '../router/typings';
 import { reducer, saga, service } from '../core/annotations';
-import BasicError from '../core/BasicError';
+import DefaultBasicError from '../core/BasicError';
 import { dispatch, types } from '../core/Service';
 import { AnonymousObject, SagaEffect } from '../core/typings';
-import { toPayload } from '../core/utils/object';
+import { toPayload } from '../utils/object';
 import { Fetcher, HttpMethod } from '../fetch/typings';
 import { asyncHttp } from '../fetch/utils';
 import CollectionService from './CollectionService';
@@ -40,7 +40,7 @@ export default class RemoteCollectionService<
 
   get url(): string {
     if (!this.state.url) {
-      throw new BasicError('URL is required for a remote collection');
+      throw new DefaultBasicError('URL is required for a remote collection');
     }
     return this.state.url;
   }
@@ -52,12 +52,12 @@ export default class RemoteCollectionService<
 
   @reducer
   setData(_data: T[]): void {
-    throw new BasicError('Call to unsupported method setData of a remote collection');
+    throw new DefaultBasicError('Call to unsupported method setData of a remote collection');
   }
 
   @reducer
   setItems(_items: Item<T, M>[]): void {
-    throw new BasicError('Call to unsupported method setItems of a remote collection');
+    throw new DefaultBasicError('Call to unsupported method setItems of a remote collection');
   }
 
   @reducer

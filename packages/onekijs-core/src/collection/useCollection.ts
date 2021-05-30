@@ -3,7 +3,7 @@ import LocalRouter from '../router/LocalRouter';
 import useRouter from '../router/useRouter';
 import { AnonymousObject } from '../core/typings';
 import useService from '../core/useService';
-import { omit } from '../core/utils/object';
+import { omit } from '../utils/object';
 import { Fetcher, FetchOptions, HttpMethod } from '../fetch/typings';
 import { asyncHttp } from '../fetch/utils';
 import CollectionService from './CollectionService';

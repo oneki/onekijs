@@ -1,18 +1,20 @@
 import { delay, spawn } from 'redux-saga/effects';
 import { reducer, saga, service } from '../core/annotations';
-import BasicError from '../core/BasicError';
-import GlobalService from '../core/GlobalService';
+import DefaultGlobalService from '../app/GlobalService';
 import HTTPError from '../core/HTTPError';
-import { AnonymousObject, ErrorCallback, SagaEffect, SuccessCallback } from '../core/typings';
-import { del, get, isNull, set } from '../core/utils/object';
-import { getItem, onStorageChange, removeItem, setItem } from '../core/utils/storage';
-import { absoluteUrl } from '../router/utils';
+import { del, get, isNull, set } from '../utils/object';
+import { getItem, onStorageChange, removeItem, setItem } from '../utils/storage';
 import { asyncGet, asyncPost } from '../fetch/utils';
 import { Idp } from './typings';
 import { getIdp, getIdpName, oauth2Keys, parseJwt, validateToken } from './utils';
+import { AnonymousObject } from '../typings/object';
+import { SagaEffect } from '../typings/saga';
+import { ErrorCallback } from '../typings/error';
+import { SuccessCallback } from '../typings/callback';
+import DefaultBasicError from '../core/BasicError';
 
 @service
-export default class AuthService extends GlobalService {
+export default class AuthService extends DefaultGlobalService {
   /**
    * Save the security context in the redux store
    *
@@ -403,7 +405,7 @@ export default class AuthService extends GlobalService {
         }
       }
       if (!nextToken) {
-        throw new BasicError('Cannot refresh token');
+        throw new DefaultBasicError('Cannot refresh token');
       }
       // add to the result the refresh token (when refreshing a token,
       // the result don't have the refresh token)

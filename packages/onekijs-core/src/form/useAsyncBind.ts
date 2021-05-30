@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect } from 'react';
-import useLocalService from '../core/useLocalService';
+import useLocalService from '../app/useLocalService';
 import { AsyncBinder, AsyncBindState } from './typings';
 import AsyncBindService from './AsyncBindService';
 

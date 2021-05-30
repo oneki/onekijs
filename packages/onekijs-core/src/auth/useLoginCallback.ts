@@ -1,9 +1,9 @@
 import { LoginOptions } from './typings';
 import useLogin from './useLogin';
-import BasicError from '../core/BasicError';
+import DefaultBasicError from '../core/BasicError';
 
 // manage the result of a external login
-const useLoginCallback = (idpName = 'default', options: LoginOptions = {}): [BasicError | undefined, boolean] => {
+const useLoginCallback = (idpName = 'default', options: LoginOptions = {}): [DefaultBasicError | undefined, boolean] => {
   options.callback = true;
   const [error, loading] = useLogin(idpName, options);
   return [error, loading];

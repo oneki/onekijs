@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { AnonymousObject } from '../typings';
+import { AnonymousObject } from '../typings/object';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function isNull(value: any): boolean {

@@ -1,7 +1,7 @@
 import { State, AnonymousObject } from '../core/typings';
-import BasicError from '../core/BasicError';
+import DefaultBasicError from '../core/BasicError';
 import { ComponentPropsWithoutRef, ElementType } from 'react';
-import AppContext from '../app/AppContext';
+import BasicAppContext from '../app/AppContext';
 import { AppErrorCallback, AppSuccessCallback } from '../app/typings';
 
 export interface AuthErrorProps {
@@ -53,27 +53,28 @@ export enum IdpMethod {
 }
 
 export interface IdpSettings extends AnonymousObject {
-  authorizeEndpoint?: string | ((params: AnonymousObject, idp: Idp, context: AppContext) => string | Promise<string>);
-  callback?: 'token' | 'securityContext' | ((response: any, idp: Idp, context: AppContext) => [any?, AnonymousObject?]);
+  authorizeEndpoint?: string | ((params: AnonymousObject, idp: Idp, context: BasicAppContext) => string | Promise<string>);
+  callback?: 'token' | 'securityContext' | ((response: any, idp: Idp, context: BasicAppContext) => [any?, AnonymousObject?]);
   clientAuth?: IdpClientAuth;
   clientId?: string;
   clientSecret?: string;
   clockSkew?: number;
   codeChallengeMethod?: IdpCodeChallengeMethod;
+  cookieCrypt?: boolean;
   cookiePath?: string;
   cookieSecure?: boolean;
   cookieTTL?: number;
   external?: boolean;
-  externalLoginEndpoint?: string | ((idp: Idp, context: AppContext) => string);
-  externalLogoutEndpoint?: string | ((idp: Idp, context: AppContext) => string);
-  jwksEndpoint?: string | ((token: any, idp: Idp, context: AppContext) => string);
+  externalLoginEndpoint?: string | ((idp: Idp, context: BasicAppContext) => string);
+  externalLogoutEndpoint?: string | ((idp: Idp, context: BasicAppContext) => string);
+  jwksEndpoint?: string | ((token: any, idp: Idp, context: BasicAppContext) => string);
   loginCallbackRoute?: string;
   loginContentType?: IdpContentType;
-  loginEndpoint?: string | ((data: AnonymousObject, idp: Idp, context: AppContext) => string);
+  loginEndpoint?: string | ((data: AnonymousObject, idp: Idp, context: BasicAppContext) => string);
   loginMethod?: IdpMethod;
   logoutMethod?: IdpMethod;
   logoutCallbackRoute?: string;
-  logoutEndpoint?: string | ((idp: Idp, context: AppContext) => string);
+  logoutEndpoint?: string | ((idp: Idp, context: BasicAppContext) => string);
   name?: string;
   nonce?: boolean;
   oauth2?: boolean;
@@ -90,8 +91,8 @@ export interface IdpSettings extends AnonymousObject {
   scope?: string;
   state?: boolean;
   type?: 'oidc_browser' | 'oidc_server' | 'form' | 'external' | 'oauth2_browser' | 'oauth2_server';
-  tokenEndpoint?: string | ((grant_type: string, idp: Idp, context: AppContext) => string);
-  userinfoEndpoint?: string | ((idp: Idp, context: AppContext) => string);
+  tokenEndpoint?: string | ((grant_type: string, idp: Idp, context: BasicAppContext) => string);
+  userinfoEndpoint?: string | ((idp: Idp, context: BasicAppContext) => string);
   validate?: boolean;
 }
 
@@ -101,8 +102,8 @@ export interface Idp extends IdpSettings {
   oauth2: boolean;
   oidc: boolean;
   type: IdpType;
-  tokenEndpoint?: string | ((grant_type: string, idp: Idp, context: AppContext) => string);
-  userinfoEndpoint?: string | ((idp: Idp, context: AppContext) => string);
+  tokenEndpoint?: string | ((grant_type: string, idp: Idp, context: BasicAppContext) => string);
+  userinfoEndpoint?: string | ((idp: Idp, context: BasicAppContext) => string);
   validate?: boolean;
 }
 
@@ -120,12 +121,12 @@ export interface LogoutOptions {
 
 export interface LoginState extends State {
   loading?: boolean;
-  error?: BasicError;
+  error?: DefaultBasicError;
 }
 
 export interface LogoutState {
   loading?: boolean;
-  error?: BasicError;
+  error?: DefaultBasicError;
 }
 
 export type SecureRouteProps = ComponentPropsWithoutRef<any> & {

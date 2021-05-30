@@ -1,6 +1,7 @@
-import useAppContext from '../app/useAppContext';
-import GlobalService from './GlobalService';
-import { Class, State } from './typings';
+import { Class } from '../typings/object';
+import { GlobalService } from '../typings/service';
+import { State } from '../typings/state';
+import useAppContext from './useAppContext';
 import useAppService from './useAppService';
 
 const useGlobalService = <T extends GlobalService<State>>(ctor: Class<T>): T => {

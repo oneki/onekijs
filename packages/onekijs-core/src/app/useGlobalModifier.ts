@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import useGlobalService from '../core/useGlobalService';
+import useGlobalService from './useGlobalService';
 import GlobalStateService from './GlobalStateService';
 import { GlobalModifierFunction } from './typings';
 

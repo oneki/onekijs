@@ -1,9 +1,10 @@
 import 'reflect-metadata';
-import useAppContext from '../app/useAppContext';
-import AppService from './AppService';
-import { Class, State } from './typings';
-import useContainer from './useContainer';
-import useLazyRef from './useLazyRef';
+import useAppContext from './useAppContext';
+import { Class } from '../typings/object';
+import { AppService } from '../typings/service';
+import { State } from '../typings/state';
+import useContainer from '../core/useContainer';
+import useLazyRef from '../core/useLazyRef';
 
 const useAppService = <S extends State, T extends AppService<S>>(ctor: Class<T>, initialState: S): T => {
   const appContext = useAppContext();

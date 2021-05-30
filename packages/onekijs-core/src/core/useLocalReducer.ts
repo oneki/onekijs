@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 import { runSaga, stdChannel } from 'redux-saga';
-import Service, { combinedReducers, dispatch, reducers, sagas } from './Service';
-import { State } from './typings';
+import { combinedReducers, dispatch, reducers, sagas, Service } from '../typings/service';
+import { State } from '../typings/state';
 
 const useLocalReducer = <S extends State, T extends Service<S>>(service: T, initialState: S): [S, T] => {
   const [state, reactDispatch] = useReducer(service[combinedReducers], initialState);

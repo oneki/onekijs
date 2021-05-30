@@ -1,9 +1,9 @@
 import { call } from 'redux-saga/effects';
 import { reducer, saga, service } from '../core/annotations';
-import BasicError from '../core/BasicError';
-import LocalService from '../core/LocalService';
+import DefaultBasicError from '../core/BasicError';
+import DefaultLocalService from '../core/LocalService';
 import { ErrorCallback, SagaEffect, SuccessCallback } from '../core/typings';
-import { get } from '../core/utils/object';
+import { get } from '../utils/object';
 import { absoluteUrl } from '../router/utils';
 import { asyncHttp } from '../fetch/utils';
 import NotificationService from '../notification/NotificationService';
@@ -12,7 +12,7 @@ import { LogoutState } from './typings';
 import { getIdp, getIdpName, isExternal, isOauth } from './utils';
 
 @service
-export default class LogoutService extends LocalService<LogoutState> {
+export default class LogoutService extends DefaultLocalService<LogoutState> {
   notificationService: NotificationService;
   authService: AuthService;
 
@@ -38,7 +38,7 @@ export default class LogoutService extends LocalService<LogoutState> {
    * @param {object} error
    */
   @reducer
-  onError(error: BasicError): void {
+  onError(error: DefaultBasicError): void {
     this.state.error = error;
     this.state.loading = false;
   }

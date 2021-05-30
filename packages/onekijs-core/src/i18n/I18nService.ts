@@ -2,16 +2,16 @@ import { all, call } from 'redux-saga/effects';
 import { isLocaleSimple } from '../app/settings';
 import { AppSettings } from '../app/typings';
 import { reducer, saga, service } from '../core/annotations';
-import GlobalService from '../core/GlobalService';
+import DefaultGlobalService from '../app/GlobalService';
 import { AnonymousObject, SagaEffect } from '../core/typings';
-import { append, get, set } from '../core/utils/object';
-import { isFunction } from '../core/utils/type';
+import { append, get, set } from '../utils/object';
+import { isFunction } from '../utils/type';
 import { asyncGet } from '../fetch/utils';
 import NotificationService from '../notification/NotificationService';
 import { flattenTranslations } from './utils';
 
 @service
-export default class I18nService extends GlobalService {
+export default class I18nService extends DefaultGlobalService {
   notificationService: NotificationService;
   modifiers: AnonymousObject<any>;
 

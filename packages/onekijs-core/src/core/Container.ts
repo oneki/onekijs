@@ -1,10 +1,12 @@
 import 'reflect-metadata';
-import AppContext from '../app/AppContext';
-import AppService from './AppService';
-import BasicError from './BasicError';
-import GlobalService from './GlobalService';
-import Service, { create, handler, serviceClass } from './Service';
-import { Class, ID, ServiceFactory, State } from './typings';
+import { AppContext } from '../typings/app';
+import { Class } from '../typings/object';
+import { AppService, create, Service, serviceClass, ServiceFactory } from '../typings/service';
+import { State } from '../typings/state';
+import { ID } from '../typings/symbol';
+import DefaultBasicError from './BasicError';
+import DefaultGlobalService from '../app/GlobalService';
+import { handler } from './Service';
 
 export default class Container implements ServiceFactory {
   private classRegistry: {
@@ -39,7 +41,7 @@ export default class Container implements ServiceFactory {
     const types = Reflect.getMetadata('design:paramtypes', ctor) || [];
     const args = types.map((type: any) => {
       if (!type[ID]) {
-        throw new BasicError(`Cannot find a valid class for service ${type}`);
+        throw new DefaultBasicError(`Cannot find a valid class for service ${type}`);
       }
       return this.instanceRegistry[type[ID]] || this.createService(type, context, context.store.getState());
     });
@@ -58,7 +60,7 @@ export default class Container implements ServiceFactory {
     service[create](initialState);
 
     const proxy = new Proxy(service, handler);
-    if (service instanceof GlobalService) {
+    if (service instanceof DefaultGlobalService) {
       this.instanceRegistry[(ctor as any)[ID]] = proxy;
     }
     return proxy as T;

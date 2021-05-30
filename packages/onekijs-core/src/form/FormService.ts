@@ -17,12 +17,12 @@ import {
 } from './typings';
 import FieldValidation, { defaultValidation } from './FieldValidation';
 import ContainerValidation from './ContainerValidation';
-import { get, set, del, isObject } from '../core/utils/object';
+import { get, set, del, isObject } from '../utils/object';
 import { service, reducer, saga } from '../core/annotations';
-import LocalService from '../core/LocalService';
+import DefaultLocalService from '../core/LocalService';
 
 @service
-export default class FormService extends LocalService<FormState> {
+export default class FormService extends DefaultLocalService<FormState> {
   public fields: AnonymousObject<Field>;
   public listeners: {
     [k in FormListenerType]: AnonymousObject<FormListenerProps[]>;

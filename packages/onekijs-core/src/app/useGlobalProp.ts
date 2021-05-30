@@ -1,5 +1,5 @@
 import { DefaultRootState, useSelector } from 'react-redux';
-import { get } from '../core/utils/object';
+import { get } from '../utils/object';
 
 function useGlobalProp<T = any>(prop: string): T | undefined;
 function useGlobalProp<T = any>(prop: string, defaultValue: undefined): T | undefined;

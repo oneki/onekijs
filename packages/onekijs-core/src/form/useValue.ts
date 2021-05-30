@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import useFormContext from './useFormContext';
-import { get, isNullOrEmpty } from '../core/utils/object';
+import { get, isNullOrEmpty } from '../utils/object';
 
 const useValue = (fieldName: string): any => {
   const { onValueChange, offValueChange, valuesRef } = useFormContext();

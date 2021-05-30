@@ -2,8 +2,8 @@ import React, { FC, useEffect, useMemo, useState } from 'react';
 import Container from '../core/Container';
 import ContainerContext from '../core/ContainerContext';
 import useLazyRef from '../core/useLazyRef';
-import { detectLocale, flattenTranslations } from '../i18n/utils';
-import AppContext, { DefaultAppContext } from './AppContext';
+import { detectLocale, flattenTranslations } from '../utils/i18n';
+import BasicAppContext, { DefaultAppContext } from './AppContext';
 import AppErrorBoundary from './AppErrorBoundary';
 import { AppProviderProps } from './typings';
 import useGlobalProp from './useGlobalProp';
@@ -39,8 +39,8 @@ const AppProvider: FC<AppProviderProps> = ({
     return flattenTranslations(translations || {});
   }, [translations]);
 
-  const appContext: AppContext = useMemo(() => {
-    return new AppContext(router, settings, store, {
+  const appContext: BasicAppContext = useMemo(() => {
+    return new BasicAppContext(router, settings, store, {
       translations: formattedTranslations,
       ns: i18nNs,
       locale,

@@ -1,9 +1,9 @@
-import AppContext from '../app/AppContext';
+import BasicAppContext from '../app/AppContext';
 import Router from '../router/Router';
 import { asResultCallback } from '../app/utils';
 import HTTPError from '../core/HTTPError';
 import { AnonymousObject } from '../core/typings';
-import { get, set } from '../core/utils/object';
+import { get, set } from '../utils/object';
 import { urlBuilder } from '../router/utils';
 import NotificationService from '../notification/NotificationService';
 import { AppFetchOptions, FetchMethod, FetchOptions } from './typings';
@@ -125,7 +125,7 @@ export async function asyncPatch(url: string, body?: AnonymousObject, options: A
 export function asFetchOptions<T = any>(
   options: AppFetchOptions<T>,
   notificationService: NotificationService,
-  appContext: AppContext,
+  appContext: BasicAppContext,
   router: Router,
 ): FetchOptions<T> {
   if (!options.onError) {

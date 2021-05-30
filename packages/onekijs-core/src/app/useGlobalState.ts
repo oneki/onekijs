@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
-import { get } from '../core/utils/object';
-import useGlobalService from '../core/useGlobalService';
+import { get } from '../utils/object';
+import useGlobalService from './useGlobalService';
 import GlobalStateService from './GlobalStateService';
 import { SetGlobalStateFunction } from './typings';
 

@@ -1,10 +1,10 @@
 import React, { FC, useCallback, useEffect, useMemo } from 'react';
 import useAppContext from '../app/useAppContext';
 import useGlobalProp from '../app/useGlobalProp';
-import BasicError from '../core/BasicError';
+import DefaultBasicError from '../core/BasicError';
 import { AnonymousObject } from '../core/typings';
-import { stringifyJsx } from '../core/utils/jsx';
-import { get } from '../core/utils/object';
+import { stringifyJsx } from '../utils/jsx';
+import { get } from '../utils/object';
 import { TranslationProps } from './typings';
 import useI18nService from './useI18nService';
 import useLocale from './useLocale';
@@ -56,11 +56,11 @@ const useTranslation = (
         // check if alias contains a namespace
         const aliasTokens = alias.split(':');
         if (aliasTokens.length > 2) {
-          throw new BasicError(`The i18n alias '${alias}' is invalid. It can't contain the character ':'`);
+          throw new DefaultBasicError(`The i18n alias '${alias}' is invalid. It can't contain the character ':'`);
         } else if (aliasTokens.length === 2) {
           aliasNs = aliasTokens[0];
           if (!nsRequired.includes(aliasNs)) {
-            throw new BasicError(
+            throw new DefaultBasicError(
               `The i18n alias '${alias}' is invalid. The namespace ${aliasNs} is not declared as a namespace by useTranslation`,
             );
           }

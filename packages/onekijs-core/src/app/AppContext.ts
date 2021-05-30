@@ -1,10 +1,11 @@
-import { ID } from '../core/typings';
 import React from 'react';
-import { CONTEXT_ID, AppSettings, AppStore } from './typings';
-import { I18n } from '../i18n/typings';
-import Router from '../router/Router';
+import { AppContext, AppSettings, AppStore } from '../typings/app';
+import { I18n } from '../typings/i18n';
+import { Router } from '../typings/router';
+import { ID } from '../typings/symbol';
+import { CONTEXT_ID } from './typings';
 
-export default class AppContext {
+export default class BasicAppContext implements AppContext {
   static [ID] = CONTEXT_ID;
   router: Router;
   settings: AppSettings;
@@ -19,4 +20,4 @@ export default class AppContext {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-export const DefaultAppContext = React.createContext<AppContext>(null!);
+export const DefaultAppContext = React.createContext<BasicAppContext>(null!);
