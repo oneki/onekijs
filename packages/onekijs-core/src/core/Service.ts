@@ -163,7 +163,7 @@ export default class DefaultService<S extends State = AnyState> implements Servi
 
     const wrapper: any = function* wrapper(action: any) {
       try {
-        const result = yield apply(self, saga, fromPayload(action.payload));
+        const result: unknown = yield apply(self, saga, fromPayload(action.payload));
         if (action.resolve) {
           action.resolve(result);
         }
@@ -190,7 +190,7 @@ export default class DefaultService<S extends State = AnyState> implements Servi
     } else {
       this[sagas][actionType] = function* () {
         while (true) {
-          const action = yield take(actionType);
+          const action: unknown = yield take(actionType);
           yield wrapper(action);
         }
       };

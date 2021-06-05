@@ -1,4 +1,4 @@
-import DefaultService, { serviceClass } from './Service';
+import DefaultService from './Service';
 import {
   debounce as debounceSaga,
   takeEvery,
@@ -13,6 +13,7 @@ import { State } from '../typings/state';
 import { AnonymousObject, Class } from '../typings/object';
 import { SagaEffect } from '../typings/saga';
 import { ID } from '../typings/symbol';
+import { serviceClass } from '../typings/service';
 
 const uids = new Set<string>();
 let counter = 0;

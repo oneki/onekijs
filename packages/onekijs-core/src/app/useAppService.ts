@@ -3,8 +3,8 @@ import useAppContext from './useAppContext';
 import { Class } from '../typings/object';
 import { AppService } from '../typings/service';
 import { State } from '../typings/state';
-import useContainer from '../core/useContainer';
 import useLazyRef from '../core/useLazyRef';
+import useContainer from './useContainer';
 
 const useAppService = <S extends State, T extends AppService<S>>(ctor: Class<T>, initialState: S): T => {
   const appContext = useAppContext();

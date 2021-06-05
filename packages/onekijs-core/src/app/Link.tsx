@@ -1,5 +1,5 @@
 import React from 'react';
-import { LinkProps } from './typings';
+import { LinkProps } from '../typings/router';
 import useRouter from './useRouter';
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {

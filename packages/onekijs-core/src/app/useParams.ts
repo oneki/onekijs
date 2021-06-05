@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import useAppContext from '../app/useAppContext';
-import { AnonymousObject } from '../core/typings';
+import { AnonymousObject } from '../typings/object';
 
 // change the state every time it changes
 const useParams = (): AnonymousObject<string> => {

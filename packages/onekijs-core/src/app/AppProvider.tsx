@@ -1,10 +1,10 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
-import Container from '../core/Container';
-import ContainerContext from '../core/ContainerContext';
 import useLazyRef from '../core/useLazyRef';
 import { detectLocale, flattenTranslations } from '../utils/i18n';
 import BasicAppContext, { DefaultAppContext } from './AppContext';
 import AppErrorBoundary from './AppErrorBoundary';
+import Container from './Container';
+import ContainerContext from './ContainerContext';
 import { AppProviderProps } from './typings';
 import useGlobalProp from './useGlobalProp';
 

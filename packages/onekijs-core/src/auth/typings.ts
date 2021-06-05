@@ -1,8 +1,9 @@
-import { State, AnonymousObject } from '../core/typings';
 import DefaultBasicError from '../core/BasicError';
 import { ComponentPropsWithoutRef, ElementType } from 'react';
 import BasicAppContext from '../app/AppContext';
 import { AppErrorCallback, AppSuccessCallback } from '../app/typings';
+import { AnonymousObject } from '../typings/object';
+import { State } from '../typings/state';
 
 export interface AuthErrorProps {
   error: { code: number };
@@ -53,8 +54,13 @@ export enum IdpMethod {
 }
 
 export interface IdpSettings extends AnonymousObject {
-  authorizeEndpoint?: string | ((params: AnonymousObject, idp: Idp, context: BasicAppContext) => string | Promise<string>);
-  callback?: 'token' | 'securityContext' | ((response: any, idp: Idp, context: BasicAppContext) => [any?, AnonymousObject?]);
+  authorizeEndpoint?:
+    | string
+    | ((params: AnonymousObject, idp: Idp, context: BasicAppContext) => string | Promise<string>);
+  callback?:
+    | 'token'
+    | 'securityContext'
+    | ((response: any, idp: Idp, context: BasicAppContext) => [any?, AnonymousObject?]);
   clientAuth?: IdpClientAuth;
   clientId?: string;
   clientSecret?: string;
@@ -70,7 +76,7 @@ export interface IdpSettings extends AnonymousObject {
   jwksEndpoint?: string | ((token: any, idp: Idp, context: BasicAppContext) => string);
   loginCallbackRoute?: string;
   loginContentType?: IdpContentType;
-  loginEndpoint?: string | ((data: AnonymousObject, idp: Idp, context: BasicAppContext) => string);
+  loginEndpoint?: string | ((data: AnonymousObject, idp: Idp, context: BasicAppContext) => unknown);
   loginMethod?: IdpMethod;
   logoutMethod?: IdpMethod;
   logoutCallbackRoute?: string;

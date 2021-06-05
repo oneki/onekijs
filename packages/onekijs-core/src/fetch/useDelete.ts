@@ -2,10 +2,11 @@ import { useCallback, useRef } from 'react';
 import useAppContext from '../app/useAppContext';
 import useService from '../core/useService';
 import useNotificationService from '../notification/useNotificationService';
-import FetchService from './FetchService';
-import { AppFetchOptions, FetchState, AppExtraFetchOptions } from './typings';
+import FetchService from '../core/FetchService';
+import { AppFetchOptions, AppExtraFetchOptions } from './typings';
 import { asFetchOptions } from './utils';
-import useRouter from '../router/useRouter';
+import useRouter from '../app/useRouter';
+import { FetchState } from '../typings/fetch';
 
 const useDelete = (
   url: string,

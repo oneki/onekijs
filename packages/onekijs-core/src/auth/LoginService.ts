@@ -6,7 +6,7 @@ import { get } from '../utils/object';
 import { asyncHttp, asyncPost } from '../fetch/utils';
 import NotificationService from '../notification/NotificationService';
 import AuthService from './AuthService';
-import { LoginState } from './typings';
+import { LoginState, OidcToken } from './typings';
 import {
   generateCodeChallenge,
   generateCodeVerifier,
@@ -96,7 +96,7 @@ export default class LoginService extends DefaultLocalService<LoginState> {
       const idp = getIdp(settings, idpName);
 
       // will contain the result of the submit
-      let response;
+      let response: unknown;
 
       if (typeof idp.loginEndpoint === 'function') {
         // if the user specifies a function as loginEndpoint, we delegate to
@@ -303,14 +303,14 @@ export default class LoginService extends DefaultLocalService<LoginState> {
 
       // by default, the response is the current location containing all
       // parameters found in the URL
-      let response = router.location;
+      let response: Location | unknown = router.location;
 
       // the callback found in the IDP configuration is a custom function
       // for parsing the reponse of the exernal login
       let callback = idp.callback;
 
       // Will contain the token from the response (if found)
-      let token = null;
+      let token: unknown = null;
 
       // Will contain the security context found in the response (if found)
       let securityContext = null;
@@ -345,7 +345,7 @@ export default class LoginService extends DefaultLocalService<LoginState> {
               );
             }
 
-            const hash = yield sha256(state || undefined);
+            const hash: string = yield sha256(state || undefined);
             if (idp.state && hash !== params.state) {
               throw new DefaultBasicError('Invalid oauth2 state', 'invalid_state');
             }
@@ -405,16 +405,16 @@ export default class LoginService extends DefaultLocalService<LoginState> {
       if (isOauth(idp) && idp.nonce && get(token, 'id_token')) {
         // validates the nonce found in the id_token
         // https://openid.net/specs/openid-connect-core-1_0.html#TokenResponseValidation
-        const id_token = parseJwt(token.id_token);
+        const id_token = parseJwt((token as { id_token: string }).id_token);
         const nonce = getIdpStorage(idp).getItem('onekijs.nonce');
-        const hash = yield sha256(nonce || undefined);
+        const hash: string = yield sha256(nonce || undefined);
         getIdpStorage(idp).removeItem('onekijs.nonce');
         if (hash !== id_token.nonce) {
           throw Error('Invalid oauth2 nonce');
         }
       }
 
-      yield this.successLogin(token, securityContext, idpName, onError, onSuccess);
+      yield this.successLogin(token as any, securityContext, idpName, onError, onSuccess);
     } catch (e) {
       if (process.env.NODE_ENV === 'development') {
         console.error('External login callback error', e);
@@ -524,19 +524,21 @@ export default class LoginService extends DefaultLocalService<LoginState> {
       if (isOauth(idp)) {
         // ask the authService to load the token in the store from the
         // localStorage (if not yet loaded)
-        const token = yield this.authService.loadToken();
-        if (token && parseInt(token.expires_at) >= Date.now()) {
+        const token: OidcToken = yield this.authService.loadToken();
+        if (token && token.expires_at && parseInt(token.expires_at) >= Date.now()) {
           // do a success login because the token was found and is still valid
-          return yield this.successLogin(token, undefined, idpName, onError, onSuccess);
+          yield this.successLogin(token, undefined, idpName, onError, onSuccess);
+          return;
         }
       }
 
       // try to fetch the security context to see if we are already logged in
       try {
-        const securityContext = yield this.authService.fetchSecurityContext();
+        const securityContext: AnonymousObject | undefined = yield this.authService.fetchSecurityContext();
         // We didn't receive an 401 while loading the context, meaning that we are
         // already logged => do a success login
-        return yield this.successLogin(undefined, securityContext, idpName, onError, onSuccess);
+        yield this.successLogin(undefined, securityContext, idpName, onError, onSuccess);
+        return;
       } catch (e) {
         // for any technical error (50X), we stop here and forward the error
         // to the caller

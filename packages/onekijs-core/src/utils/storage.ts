@@ -59,7 +59,7 @@ export const getCookieExpireTime = (ttl: number): string => {
  * @param {string} storage : localStorage, sessionStorage, cookie, any (defaults to any)
  * @param {boolean} secure : decrypt the cookie (defaults to true)
  */
-export async function getItem(key: string, storage = 'any', secure = true): Promise<any> {
+export async function getItem(key: string, storage = 'any', secure = true): Promise<unknown> {
   if (!storage) storage = 'any';
 
   if (['localStorage', 'any'].includes(storage)) {
@@ -77,6 +77,7 @@ export async function getItem(key: string, storage = 'any', secure = true): Prom
       return await getCookie(key, secure);
     }
   }
+  return;
 }
 
 /**

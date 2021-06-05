@@ -250,7 +250,7 @@ export {
   isPromise,
   isTrue,
 } from './utils/type';
-export { default as FetchService } from './fetch/FetchService';
+export { default as FetchService } from './core/FetchService';
 export {
   AppExtraFetchOptions,
   AppFetchOptions,
@@ -351,7 +351,7 @@ export { Notification, NotificationContent, NotificationLevel } from './notifica
 export { default as useAllNotifications } from './notification/useAllNotifications';
 export { default as useNotifications } from './notification/useNotifications';
 export { default as useNotificationService } from './notification/useNotificationService';
-export { default as Link } from './router/Link';
+export { default as Link } from './app/Link';
 export { default as AppRouter } from './router/Router';
 export {
   LinkComponentProps,

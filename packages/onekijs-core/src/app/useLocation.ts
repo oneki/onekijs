@@ -1,14 +1,17 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Location } from './typings';
 import useAppContext from '../app/useAppContext';
+import { Location } from '../typings/router';
 
 // change the state every time it changes
-const useHistory = (): Location[] => {
+const useLocation = (): Location => {
   const router = useAppContext().router;
-  const [, setHistory] = useState(router.history);
-  const listener = useCallback(() => {
-    setHistory(router.history);
-  }, [setHistory, router.history]);
+  const [, setLocation] = useState(router.location);
+  const listener = useCallback(
+    (location) => {
+      setLocation(location);
+    },
+    [setLocation],
+  );
 
   useEffect(() => {
     const unregister = router.listen(listener);
@@ -17,7 +20,7 @@ const useHistory = (): Location[] => {
     };
   }, [router, listener]);
 
-  return router.history;
+  return router.location;
 };
 
-export default useHistory;
+export default useLocation;

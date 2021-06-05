@@ -12,6 +12,7 @@ import { SagaEffect } from '../typings/saga';
 import { ErrorCallback } from '../typings/error';
 import { SuccessCallback } from '../typings/callback';
 import DefaultBasicError from '../core/BasicError';
+import { absoluteUrl } from '../utils/router';
 
 @service
 export default class AuthService extends DefaultGlobalService {
@@ -200,7 +201,7 @@ export default class AuthService extends DefaultGlobalService {
         throw new HTTPError(500, `Could not find a valid userinfo endpoint for idp ${idpName}`);
       }
 
-      let securityContext = null;
+      let securityContext: AnonymousObject | null = null;
       // we fetch the token from the redux store
       let token = get(store.getState(), 'auth.token');
 
@@ -266,7 +267,7 @@ export default class AuthService extends DefaultGlobalService {
   *loadToken(onError?: ErrorCallback, onSuccess?: SuccessCallback) {
     const { store, settings } = this.context;
     try {
-      let result = get(store.getState(), 'auth.token', null);
+      let result: string | AnonymousObject | null = get(store.getState(), 'auth.token', null);
       if (isNull(result)) {
         const idpName = getIdpName(store.getState());
         if (!idpName || idpName === 'null') {
@@ -285,8 +286,8 @@ export default class AuthService extends DefaultGlobalService {
 
         const expires_at = parseInt(yield getItem('onekijs.expires_at', storage));
         const clockSkew = idp.clockSkew || 60;
-        const access_token = yield getItem('onekijs.access_token', persist);
-        const refresh_token = yield getItem('onekijs.refresh_token', persist);
+        const access_token: string | undefined | null = yield getItem('onekijs.access_token', persist);
+        const refresh_token: string | undefined | null = yield getItem('onekijs.refresh_token', persist);
         if (access_token && expires_at >= Date.now() + clockSkew * 1000) {
           // the token is still valid
           const token: AnonymousObject = {
@@ -296,7 +297,8 @@ export default class AuthService extends DefaultGlobalService {
           // build the token
           for (const k of oauth2Keys) {
             if (!token[k]) {
-              token[k] = yield getItem(`onekijs.${k}`, storage);
+              const item: unknown = yield getItem(`onekijs.${k}`, storage);
+              token[k] = item;
             }
           }
           // save it
@@ -306,7 +308,7 @@ export default class AuthService extends DefaultGlobalService {
           // use the refresh token to get a new valid token
           result = yield this.refreshToken({ refresh_token }, idp, true);
         } else {
-          const token = yield getItem('onekijs.token', persist);
+          const token: AnonymousObject | string | undefined = yield getItem('onekijs.token', persist);
           if (token) {
             result = yield this.saveToken(token, idp);
           }
@@ -443,7 +445,7 @@ export default class AuthService extends DefaultGlobalService {
           throw new HTTPError(500, 'A jwksEndpoint is required to validate tokens');
         }
         if (!(token instanceof String) && (token as AnonymousObject).id_token) {
-          const isValidIdToken = yield validateToken(
+          const isValidIdToken: boolean = yield validateToken(
             (token as AnonymousObject).id_token,
             idp.jwksEndpoint,
             idp,
@@ -453,7 +455,7 @@ export default class AuthService extends DefaultGlobalService {
             throw new HTTPError(400, 'Invalid id token');
           }
         } else if (!(token instanceof String) && (token as AnonymousObject).access_token) {
-          const isValidAccessToken = yield validateToken(
+          const isValidAccessToken: boolean = yield validateToken(
             (token as AnonymousObject).access_token,
             idp.jwksEndpoint,
             idp,

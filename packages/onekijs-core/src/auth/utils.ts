@@ -1,13 +1,14 @@
 import BasicAppContext from '../app/AppContext';
 import { defaultIdpSettings } from '../app/settings';
-import { AppSettings } from '../app/typings';
 import DefaultBasicError from '../core/BasicError';
-import { AnonymousObject, AnyState } from '../core/typings';
 import { sha256, verify } from '../utils/crypt';
 import { get } from '../utils/object';
 import { generateRandomString, hex2b64 } from '../utils/string';
 import { asyncGet } from '../fetch/utils';
 import { Idp, IdpSettings, IdpType } from './typings';
+import { AppSettings } from '../typings/app';
+import { AnyState } from '../typings/state';
+import { AnonymousObject } from '../typings/object';
 
 export const oauth2Keys = ['access_token', 'id_token', 'refresh_token', 'expires_in', 'expires_at', 'token_type'];
 

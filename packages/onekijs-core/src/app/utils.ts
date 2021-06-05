@@ -3,7 +3,6 @@ import { AnyAction, applyMiddleware, createStore, Middleware, Store } from 'redu
 import createSagaMiddleware, { SagaMiddleware } from 'redux-saga';
 import DefaultBasicError from '../core/BasicError';
 import useLazyRef from '../core/useLazyRef';
-import useRouter from '../router/useRouter';
 import { AppSettings, AppStore, reducersSymbol, sagasSymbol } from '../typings/app';
 import { ResultCallback, SuccessCallback } from '../typings/callback';
 import { BasicError, ErrorCallback } from '../typings/error';
@@ -15,6 +14,7 @@ import BasicAppContext from './AppContext';
 import { defaultSettings, indexLocales } from './settings';
 import { AppErrorCallback, AppResultCallback, AppSuccessCallback } from './typings';
 import useAppContext from './useAppContext';
+import useRouter from './useRouter';
 
 export const createReduxStore = (
   initialState: AnonymousObject = {},

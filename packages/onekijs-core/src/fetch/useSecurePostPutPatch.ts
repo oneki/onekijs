@@ -1,5 +1,6 @@
 import useGlobalProp from '../app/useGlobalProp';
-import { AppFetchOptions, AppExtraFetchOptions, FetchMethod } from './typings';
+import { FetchMethod } from '../typings/fetch';
+import { AppFetchOptions, AppExtraFetchOptions } from './typings';
 import usePostPutPatch from './usePostPutPatch';
 
 const useSecurePostPutPatch = <T = any>(

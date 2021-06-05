@@ -1,22 +1,10 @@
 import qs from 'query-string';
-import { indexedLocales, isLocalePath, localeNoPathSymbol } from '../app/settings';
-import { AppSettings } from '../app/typings';
-import { AnonymousObject } from '../core/typings';
+import { AppSettings } from '../typings/app';
+import { AnonymousObject } from '../typings/object';
+import { Location } from '../typings/router';
+import { localeNoPathSymbol } from '../typings/symbol';
 import { isNull } from '../utils/object';
-import { Location } from './typings';
-
-export function urlBuilder(path: string, params: AnonymousObject = {}, query: AnonymousObject = {}): string {
-  const esc = encodeURIComponent;
-  Object.keys(params)
-    .sort((a, b) => b.length - a.length)
-    .forEach((k) => {
-      path = path.replace(`:${k}`, params[k]);
-    });
-  const queryKeys = Object.keys(query);
-  const separator = queryKeys.length > 0 ? '?' : '';
-  const queryString = queryKeys.map((k) => esc(k) + '=' + esc(query[k])).join('&');
-  return `${path}${separator}${queryString}`;
-}
+import { indexedLocales, isLocalePath } from '../utils/settings';
 
 export const URL_STATE = '__STATE__';
 
