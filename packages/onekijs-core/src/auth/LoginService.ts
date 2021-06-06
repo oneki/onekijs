@@ -3,7 +3,6 @@ import { reducer, saga, service } from '../core/annotations';
 import DefaultBasicError from '../core/BasicError';
 import { sha256 } from '../utils/crypt';
 import { get } from '../utils/object';
-import { asyncHttp, asyncPost } from '../fetch/utils';
 import NotificationService from '../notification/NotificationService';
 import AuthService from './AuthService';
 import { LoginState, OidcToken } from './typings';
@@ -25,6 +24,7 @@ import { AnonymousObject } from '../typings/object';
 import { ErrorCallback } from '../typings/error';
 import { SuccessCallback } from '../typings/callback';
 import { absoluteUrl } from '../utils/router';
+import { asyncHttp, asyncPost } from '../core';
 
 @service
 export default class LoginService extends DefaultLocalService<LoginState> {

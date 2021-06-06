@@ -1,11 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import LocalRouter from '../router/LocalRouter';
-import useRouter from '../router/useRouter';
-import { AnonymousObject } from '../core/typings';
 import useService from '../core/useService';
 import { omit } from '../utils/object';
-import { Fetcher, FetchOptions, HttpMethod } from '../fetch/typings';
-import { asyncHttp } from '../fetch/utils';
 import CollectionService from './CollectionService';
 import LocalCollectionService from './LocalCollectionService';
 import RemoteCollectionService from './RemoteCollectionService';
@@ -22,6 +18,9 @@ import {
 } from './typings';
 import { isCollection, toCollectionItem } from './utils';
 import useAuth from '../auth/useAuth';
+import { useRouter } from '../app';
+import { AnonymousObject, Fetcher, FetchOptions, HttpMethod } from '../typings';
+import { asyncHttp } from '../core';
 
 const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
   dataSource: T[] | string | Collection<T, M>,

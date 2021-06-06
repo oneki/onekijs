@@ -1,6 +1,6 @@
 import { __metadata } from 'tslib';
 import DefaultBasicError from '../core/BasicError';
-import { AnonymousObject, Primitive } from '../core/typings';
+import { AnonymousObject, Primitive } from '../typings';
 import { isNull, shallowEqual } from '../utils/object';
 import {
   Collection,

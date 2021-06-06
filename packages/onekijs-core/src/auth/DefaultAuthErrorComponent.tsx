@@ -1,7 +1,7 @@
 import React, { FC, useEffect } from 'react';
 import { AuthErrorProps } from './typings';
-import useRouter from '../router/useRouter';
 import useSetting from '../app/useSetting';
+import { useRouter } from '../app';
 
 const DefaultAuthErrorComponent: FC<AuthErrorProps> = ({ error }) => {
   const router = useRouter();

@@ -1,10 +1,8 @@
 import Router from '../router/Router';
-import { Location } from '../router/typings';
+import { Location } from '../typings/router';
 import { reducer } from '../core/annotations';
 import DefaultService from '../core/Service';
-import { AnonymousObject, Primitive } from '../core/typings';
 import { get } from '../utils/object';
-import { urlBuilder } from '../router/utils';
 import {
   Collection,
   CollectionItemAdapter,
@@ -35,6 +33,8 @@ import {
   visitFilter,
 } from './utils';
 import LocalRouter from '../router/LocalRouter';
+import { urlBuilder } from '../utils';
+import { AnonymousObject, Primitive } from '../typings';
 
 export default abstract class CollectionService<
   T = any,

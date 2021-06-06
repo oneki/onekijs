@@ -1,6 +1,5 @@
 import Router from '../router/Router';
-import { Primitive, AnonymousObject } from '../core/typings';
-import { Fetcher, HttpMethod, FetchState, FetchOptions } from '../fetch/typings';
+import { AnonymousObject, Fetcher, FetchOptions, FetchState, HttpMethod, Primitive } from '../typings';
 
 export type ChangeHandler<T> = (value: T) => void;
 

@@ -3,12 +3,12 @@ import { ParsedQuery } from 'query-string';
 import { MutableRefObject } from 'react';
 
 import { get } from '../utils/object';
-import { I18n } from '../i18n/typings';
 import { LinkProps, Location, LocationChangeCallback, RouterPushOptions, UnregisterCallback } from '../typings/router';
 import { AppSettings } from '../typings/app';
 import { AnonymousObject } from '../typings/object';
+import { I18n } from '../typings';
 
-export default abstract class Router {
+export default abstract class BaseRouter {
   settings: AppSettings = {};
   i18n: I18n = {};
   history: Location[];

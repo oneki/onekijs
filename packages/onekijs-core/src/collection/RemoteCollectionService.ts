@@ -1,12 +1,10 @@
+import { Task } from '@redux-saga/types';
 import { cancel, delay, fork } from 'redux-saga/effects';
-import { Location } from '../router/typings';
+import { asyncHttp } from '../core';
 import { reducer, saga, service } from '../core/annotations';
 import DefaultBasicError from '../core/BasicError';
-import { dispatch, types } from '../core/Service';
-import { AnonymousObject, SagaEffect } from '../core/typings';
+import { AnonymousObject, dispatch, Fetcher, HttpMethod, Location, SagaEffect, types } from '../typings';
 import { toPayload } from '../utils/object';
-import { Fetcher, HttpMethod } from '../fetch/typings';
-import { asyncHttp } from '../fetch/utils';
 import CollectionService from './CollectionService';
 import {
   Collection,
@@ -98,7 +96,7 @@ export default class RemoteCollectionService<
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
   protected *_fetch(query: Query, resetData: boolean) {
-    let loadingTask = null;
+    let loadingTask: Task | null = null;
     const options = this.state.fetchOptions || {};
     const { onSuccess, onError } = options;
     try {
@@ -118,7 +116,7 @@ export default class RemoteCollectionService<
       const body = this.state.method === HttpMethod.Get ? undefined : query;
       const fetchOptions =
         method === HttpMethod.Get ? Object.assign({}, options, { query: this.serializeQuery(query) }) : options;
-      const result = yield fetcher(this.url, method, body, fetchOptions);
+      const result: CollectionFetcherResult<T> = yield fetcher(this.url, method, body, fetchOptions);
       if (loadingTask !== null) {
         yield cancel(loadingTask);
       }

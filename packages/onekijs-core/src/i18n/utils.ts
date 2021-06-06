@@ -1,16 +1,16 @@
 import React from 'react';
 import DefaultBasicError from '../core/BasicError';
-import { isBrowser } from '../utils/browser';
-import { parseJsx } from '../utils/jsx';
-import { get, isNull } from '../utils/object';
 import { rebuildLocation, toLocation } from '../router/utils';
-import I18nService from './I18nService';
-import { I18n, I18nLocaleDomain, I18nLocalePath } from './typings';
-import { AnonymousObject } from '../typings/object';
+import { I18n } from '../typings';
 import { AppSettings } from '../typings/app';
-import { indexedLocales, isLocaleDomain, isLocalePath } from '../utils/settings';
+import { AnonymousObject } from '../typings/object';
 import { Location } from '../typings/router';
 import { localeNoPathSymbol } from '../typings/symbol';
+import { parseJsx } from '../utils/jsx';
+import { get, isNull } from '../utils/object';
+import { indexedLocales, isLocaleDomain, isLocalePath } from '../utils/settings';
+import I18nService from './I18nService';
+import { I18nLocaleDomain, I18nLocalePath } from './typings';
 
 export const buildJsx = (
   str: string,
@@ -43,87 +43,6 @@ export const buildJsx = (
   if (isNull(wrapperReactElement)) return str;
   const children = parseJsx(str, ctx);
   return React.cloneElement(wrapperReactElement as JSX.Element, {}, children);
-};
-
-export function detectLocale(
-  location: Location,
-  reduxLocale: string,
-  settings?: AppSettings,
-  initialLocale?: string,
-): string | undefined {
-  // 1. return the initialLocale if present
-  if (initialLocale) return initialLocale;
-  let locale: string | undefined;
-  // 2. Detect locale via the URL
-  if (!locale && location && settings) {
-    const locales = indexedLocales(settings);
-    const defaultLocale = settings.i18n.defaultLocale;
-    if (isLocalePath(settings)) {
-      if (location.pathlocale && locales[location.pathlocale]) {
-        return locales[location.pathlocale];
-      }
-      if (!location.pathlocale) {
-        return locales[localeNoPathSymbol];
-      }
-      return defaultLocale;
-    } else if (location.hostname && isLocaleDomain(settings)) {
-      return locales[location.hostname] || defaultLocale;
-    }
-  }
-
-  // 3. Detect locale via the redux store
-  if (!locale) {
-    locale = reduxLocale;
-  }
-
-  // 4. Detect locale via the browser preferences
-  if (!locale && isBrowser()) {
-    locale = localStorage.getItem('onekijs.locale') || undefined;
-    if (!locale) {
-      const languages = navigator.languages;
-      if (languages && languages.length > 0 && settings) {
-        locale = languages.find((language) => indexedLocales(settings)[language.slice(0, 2)]);
-        if (locale) return locale.slice(0, 2);
-      } else if (navigator.language) locale = navigator.language.slice(0, 2);
-      else if ((navigator as any).userLanguage) locale = (navigator as any).userLanguage.slice(0, 2);
-    }
-  }
-  if (locale && settings && indexedLocales(settings)[locale]) {
-    return locale;
-  }
-
-  // 5. If no locale found, return the default locale
-  return get<string>(settings, 'i18n.defaultLocale');
-}
-
-export const flattenTranslations = (
-  translations: AnonymousObject<AnonymousObject<string>>,
-): AnonymousObject<string> => {
-  /* Example:
-  Input:
-  {
-    "product": {
-      "key": "value" 
-    },
-    "common": {
-      "key1": "value1"
-    }
-  }
-
-  Output:
-  { 
-    "product:key": "value", 
-    "common:key1": "value1" 
-  }
-  */
-  const result: AnonymousObject = {};
-  Object.keys(translations).forEach((ns) => {
-    Object.keys(translations[ns]).reduce((accumulator, key) => {
-      accumulator[`${ns}:${key}`] = translations[ns][key];
-      return accumulator;
-    }, result);
-  });
-  return result;
 };
 
 export const handleFilterArgs = (filter: string, result: any[]): void => {

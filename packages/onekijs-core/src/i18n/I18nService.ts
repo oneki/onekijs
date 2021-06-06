@@ -6,10 +6,10 @@ import NotificationService from '../notification/NotificationService';
 import { AppSettings } from '../typings/app';
 import { AnonymousObject } from '../typings/object';
 import { SagaEffect } from '../typings/saga';
+import { flattenTranslations } from '../utils';
 import { append, get, set } from '../utils/object';
 import { isLocaleSimple } from '../utils/settings';
 import { isFunction } from '../utils/type';
-import { flattenTranslations } from './utils';
 
 @service
 export default class I18nService extends DefaultGlobalService {

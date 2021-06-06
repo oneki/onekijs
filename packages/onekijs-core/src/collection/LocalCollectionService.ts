@@ -1,4 +1,4 @@
-import { Location } from '../router/typings';
+import { Location } from '../typings/router';
 import { reducer, service } from '../core/annotations';
 import { get } from '../utils/object';
 import CollectionService from './CollectionService';
