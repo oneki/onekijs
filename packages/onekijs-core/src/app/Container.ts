@@ -4,9 +4,9 @@ import { Class } from '../typings/object';
 import { AppService, create, Service, serviceClass, ServiceFactory } from '../typings/service';
 import { State } from '../typings/state';
 import { ID } from '../typings/symbol';
-import DefaultBasicError from './BasicError';
 import DefaultGlobalService from '../app/GlobalService';
-import { handler } from './Service';
+import DefaultBasicError from '../core/BasicError';
+import { handler } from '../core/Service';
 
 export default class Container implements ServiceFactory {
   private classRegistry: {

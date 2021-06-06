@@ -9,8 +9,6 @@ export {
   AppErrorCallback,
   AppProps as CoreAppProps,
   AppProviderProps,
-  AppSettings,
-  AppStore,
   AppSuccessCallback,
   ErrorBoundaryComponentProps,
 } from './app/typings';
@@ -375,3 +373,5 @@ export {
   toUrl,
   urlBuilder,
 } from './router/utils';
+
+export { AppContext, AppService, AppSettings, AppStore, reducersSymbol, sagasSymbol } from './typings/app';

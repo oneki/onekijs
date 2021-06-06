@@ -2,7 +2,7 @@ import React, { FC, useCallback, useEffect, useMemo } from 'react';
 import useAppContext from '../app/useAppContext';
 import useGlobalProp from '../app/useGlobalProp';
 import DefaultBasicError from '../core/BasicError';
-import { AnonymousObject } from '../core/typings';
+import { AnonymousObject } from '../typings/object';
 import { stringifyJsx } from '../utils/jsx';
 import { get } from '../utils/object';
 import { TranslationProps } from './typings';

@@ -1,10 +1,9 @@
-import { Router } from './router';
-import { Service } from './service';
-import { AnyState, State } from './state';
 import { Action, AnyAction, Store } from 'redux';
-import { AnonymousObject } from './object';
-import { Saga } from './saga';
 import { I18n } from './i18n';
+import { AnonymousObject } from './object';
+import { Router } from './router';
+import { Saga } from './saga';
+import { Service } from './service';
 
 export interface AppSettings {
   [propName: string]: any;
@@ -26,8 +25,4 @@ export interface AppContext {
   settings: AppSettings;
   store: AppStore;
   i18n: I18n;
-}
-
-export interface AppService<S extends State = AnyState> extends Service<S> {
-  context: AppContext;
 }

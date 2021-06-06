@@ -1,11 +1,11 @@
-import { AnonymousObject } from '../core/typings';
 import { useEffect, useReducer, useRef } from 'react';
-import useFormContext from './useFormContext';
-import { FormContext, FormListenerProps, ValidationStatus, ValidationCode, FieldContainer } from './typings';
-import FieldValidation from './FieldValidation';
-import ContainerValidation from './ContainerValidation';
-import { get, set, diffArrays } from '../utils/object';
 import useLazyRef from '../core/useLazyRef';
+import { AnonymousObject } from '../typings/object';
+import { diffArrays, get, set } from '../utils/object';
+import ContainerValidation from './ContainerValidation';
+import FieldValidation from './FieldValidation';
+import { FieldContainer, FormContext, FormListenerProps, ValidationCode, ValidationStatus } from './typings';
+import useFormContext from './useFormContext';
 
 const useFieldContainer = (): FieldContainer => {
   const fieldsRef = useRef<string[]>([]);
@@ -84,12 +84,12 @@ const useFieldContainer = (): FieldContainer => {
   useEffect(() => {
     return () => {
       // eslint-disable-next-line
-      Object.values(valueListenersRef.current).forEach(listener =>
+      Object.values(valueListenersRef.current).forEach((listener) =>
         context.offValueChange(listener.listener, listener.watchs),
       );
 
       // eslint-disable-next-line
-      Object.values(validationListenersRef.current).forEach(listener =>
+      Object.values(validationListenersRef.current).forEach((listener) =>
         context.offValidationChange(listener.listener, listener.watchs),
       );
     };

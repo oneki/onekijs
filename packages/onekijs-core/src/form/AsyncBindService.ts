@@ -1,12 +1,13 @@
 import { Task } from 'redux-saga';
 import { fork } from 'redux-saga/effects';
-import { AnyFunction, SagaEffect } from '../core/typings';
+import { reducer, saga, service } from '../core/annotations';
+import DefaultService from '../core/Service';
+import { AnyFunction } from '../typings/core';
+import { SagaEffect } from '../typings/saga';
 import { AsyncBindState } from './typings';
-import { service, reducer, saga } from '../core/annotations';
-import DefaultLocalService from '../core/LocalService';
 
 @service
-export default class AsyncBindService<T> extends DefaultLocalService<AsyncBindState> {
+export default class AsyncBindService<T> extends DefaultService<AsyncBindState> {
   @reducer
   setLoading(isLoading: boolean): void {
     this.state.loading = isLoading;
@@ -29,7 +30,7 @@ export default class AsyncBindService<T> extends DefaultLocalService<AsyncBindSt
   @saga(SagaEffect.Latest)
   *execute(asyncMethod: AnyFunction<T>, dependencies: any[]) {
     try {
-      const task = yield this.forkAsyncBind(asyncMethod, dependencies);
+      const task: Task = yield this.forkAsyncBind(asyncMethod, dependencies);
       const error = task.error();
       if (error) {
         yield this.error(error);

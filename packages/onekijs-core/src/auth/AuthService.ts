@@ -4,7 +4,6 @@ import DefaultGlobalService from '../app/GlobalService';
 import HTTPError from '../core/HTTPError';
 import { del, get, isNull, set } from '../utils/object';
 import { getItem, onStorageChange, removeItem, setItem } from '../utils/storage';
-import { asyncGet, asyncPost } from '../fetch/utils';
 import { Idp } from './typings';
 import { getIdp, getIdpName, oauth2Keys, parseJwt, validateToken } from './utils';
 import { AnonymousObject } from '../typings/object';
@@ -13,6 +12,7 @@ import { ErrorCallback } from '../typings/error';
 import { SuccessCallback } from '../typings/callback';
 import DefaultBasicError from '../core/BasicError';
 import { absoluteUrl } from '../utils/router';
+import { asyncGet, asyncPost } from '../core/xhr';
 
 @service
 export default class AuthService extends DefaultGlobalService {
@@ -246,6 +246,7 @@ export default class AuthService extends DefaultGlobalService {
       }
       if (onError) {
         yield onError(e);
+        return;
       } else {
         throw e;
       }
@@ -324,6 +325,7 @@ export default class AuthService extends DefaultGlobalService {
     } catch (e) {
       if (onError) {
         yield onError(e);
+        return;
       } else {
         throw e;
       }
