@@ -1,7 +1,7 @@
 import React from 'react';
 import { History, Location as ReactRouterLocation, LocationListener, LocationState } from 'history';
 import {
-  AppRouter,
+  BaseRouter,
   LinkProps,
   Location,
   LocationChangeCallback,
@@ -19,7 +19,7 @@ import { AppSettings } from 'onekijs-core';
 // import { Location, LocationChangeCallback } from '../lib/app/typings';
 // import { toLocation, toUrl } from '../lib/core/utils/url';
 
-export class ReactRouter extends AppRouter {
+export class ReactRouter extends BaseRouter {
   protected reactRouterHistory?: History<LocationState>;
 
   constructor(history?: History<LocationState>) {

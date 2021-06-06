@@ -88,5 +88,5 @@ export interface Router {
   listen(callback: LocationChangeCallback): UnregisterCallback;
   push(urlOrLocation: string | Location, options?: RouterPushOptions): void;
   replace(urlOrLocation: string | Location, options?: RouterPushOptions): void;
-  saveOrigin(force: boolean): void;
+  saveOrigin(force?: boolean): void;
 }
