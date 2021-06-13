@@ -25,6 +25,7 @@ const useListView: (props: ListInternalProps) => { view: ReactElement, scrollToI
   onItemMouseEnter,
   onItemMouseLeave,
   parentRef,
+  tag: Component='div',
 }) => {
   const virtual = height !== undefined
   const localParentRef = useRef(null);
@@ -97,7 +98,7 @@ const useListView: (props: ListInternalProps) => { view: ReactElement, scrollToI
           overflow: overflow,
         }}
       >
-        <div
+        <Component
           className="o-list-virtualizer"
           style={{
             height: `${totalSize}px`,
@@ -134,7 +135,7 @@ const useListView: (props: ListInternalProps) => { view: ReactElement, scrollToI
               </div>
             );
           })}
-        </div>
+        </Component>
       </div>
     )   
     return { view, scrollToIndex, } 

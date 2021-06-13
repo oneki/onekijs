@@ -6,6 +6,14 @@ export { default as Label } from './components/label';
 export { default as SelectComponent } from './components/select/components/SelectComponent';
 export { default as List } from './components/list';
 export {
+  ListProps,
+  ListItemProps,
+  ListItems,
+  ListStatus,
+  ListItemHandler,
+} from './components/list/typings';
+
+export {
   SelectAdapter,
   SelectIconProps,
   SelectInputProps,
@@ -15,6 +23,8 @@ export {
   SelectOptionMeta,
   SelectOptionHandler,
 } from './components/select/typings';
+
+export { default as Grid } from './components/grid';
 
 export { theme } from './styles/theme';
 

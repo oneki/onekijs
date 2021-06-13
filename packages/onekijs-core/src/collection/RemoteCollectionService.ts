@@ -118,7 +118,7 @@ export default class RemoteCollectionService<
     try {
       const oQuery = this.serializeQuery(query);
       const sQuery = Object.keys(oQuery).map((k) => `${k}=${oQuery[k]}`).join('&')      
-      let result: Fetcher<CollectionFetcherResult<T>, T | Query | undefined>;
+      let result: CollectionFetcherResult<T>;
       if (this.cache[sQuery]) {
         result = this.cache[sQuery];
       } else {

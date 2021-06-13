@@ -32,7 +32,7 @@ export const fieldStyle: ComponentStyle<FieldLayoutProps> = () => {
     `;
 };
 
-export const fieldHelpStyle: ComponentStyle<FieldHelpProps> = ({visible = true}) => {
+export const fieldHelpStyle: ComponentStyle<FieldHelpProps> = ({ visible = true }) => {
   return css`
       ${preflight()}
       ${fontSize('xl')}

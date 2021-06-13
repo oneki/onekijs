@@ -1,5 +1,5 @@
+import { Collection, Item, ItemMeta } from 'onekijs-core';
 import { FC, MutableRefObject } from 'react';
-import { Collection, ItemMeta, Item } from 'onekijs-core';
 
 export type ListItems<T = any, M extends ItemMeta = ItemMeta> = T[] | Collection<T, M>;
 
@@ -29,6 +29,7 @@ export interface ListProps<T = any, M extends ItemMeta = ItemMeta> {
   onItemMouseEnter?: ListItemHandler<T, M>;
   onItemMouseLeave?: ListItemHandler<T, M>;
   parentRef?: MutableRefObject<null>;
+  tag?: keyof JSX.IntrinsicElements;
   virtual?: boolean;
 }
 
