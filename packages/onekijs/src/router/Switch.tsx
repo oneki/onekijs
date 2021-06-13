@@ -1,4 +1,5 @@
-import { toLocation, useSettings } from 'onekijs-core';
+import { useSettings } from '@oneki/app';
+import { toLocation } from '@oneki/router';
 import React, { FC } from 'react';
 import { useLocation } from 'react-router';
 import { Switch as ReactRouterSwitch } from 'react-router-dom';

@@ -1,4 +1,4 @@
-import { useRouter } from 'onekijs-core';
+import { useRouter } from '@oneki/app';
 import React, { FC } from 'react';
 import { matchPath, Route as ReactRouterRoute, RouteProps, useHistory } from 'react-router-dom';
 

@@ -16058,6 +16058,15 @@ once@^1.3.0, once@^1.3.1, once@^1.4.0:
   dependencies:
     wrappy "1"
 
+onekijs@^0.9.3:
+  version "0.9.3"
+  resolved "https://registry.yarnpkg.com/onekijs/-/onekijs-0.9.3.tgz#aba0258c1247934accd552e3d291801c457619fd"
+  integrity sha512-XnOJpDTRgShvMOC2kzKRWLOuFNb/2yOHi0YbJStZx6rQgNtujB580zdu2BMlUhtacGzAs9d6vmw+UEX+cx6wwQ==
+  dependencies:
+    onekijs-core "^0.9.3"
+    onekijs-ui "^0.9.3"
+    react-router-dom "^5.1.2"
+
 onetime@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/onetime/-/onetime-2.0.1.tgz#067428230fd67443b2794b22bba528b6867962d4"

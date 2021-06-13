@@ -1,6 +1,8 @@
+import { useGlobalProp, useSetting } from '@oneki/app';
+import { SecureRouteProps } from '@oneki/auth';
+import { AnonymousObject } from '@oneki/types';
 import React, { FC } from 'react';
 import { Redirect, Route } from 'react-router-dom';
-import { AnonymousObject, SecureRouteProps, useGlobalProp, useSetting } from 'onekijs-core';
 
 const SecureRoute: FC<SecureRouteProps> = ({ component: Component, ...args }) => {
   const token = useGlobalProp('auth.token', null);

@@ -1,10 +1,8 @@
 {
   "name": "onekijs",
-  "version": "0.9.3",
+  "version": "0.10.0",
   "description": "Opiniated React framework built on top of Redux and React Router",
-  "author": "oneki",
-  "license": "MIT",
-  "repository": "oneki/onekijs",
+  "source": "src/index.ts",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
@@ -14,27 +12,46 @@
   "engines": {
     "node": ">=10"
   },
+  "exports": "./dist/index.modern.js",
+  "module": "dist/index.module.js",
+  "unpkg": "dist/index.umd.js",
   "scripts": {
-    "start": "tsdx watch",
-    "build": "tsdx build",
-    "test": "tsdx test --passWithNoTests",
-    "lint": "tsdx lint",
-    "prepare": "tsdx build"
+    "build": "microbundle --jsx React.createElement --no-compress",
+    "dev": "microbundle watch"
+  },
+  "author": "Oneki",
+  "license": "MIT",
+  "dependencies": {
+    "@oneki/app": "^0.0.1",
+    "@oneki/auth": "^0.0.1",
+    "@oneki/collection": "^0.0.1",
+    "@oneki/core": "^0.0.1",
+    "@oneki/fetch": "^0.0.1",
+    "@oneki/form": "^0.0.1",
+    "@oneki/i18n": "^0.0.1",
+    "@oneki/notification": "^0.0.1",
+    "@oneki/router": "^0.0.1",
+    "@oneki/types": "^0.0.1",
+    "@oneki/utils": "^0.0.1",
+    "history": "^4.10.1",
+    "immer": "^6.0.2",
+    "query-string": "^6.11.1",
+    "redux": "^4.0.5",
+    "react-redux": "^7.2.0",
+    "redux-saga": "^1.1.3",
+    "react-router": "^5.2.0",
+    "react-router-dom": "^5.1.2",
+    "react-transition-group": "^4.4.1",
+    "reflect-metadata": "^0.1.13",
+    "rfc4648": "^1.3.0",
+    "text-encoding-shim": "^1.0.5"
+  },
+  "devDependencies": {
+    "microbundle": "^0.13.3"
   },
   "peerDependencies": {
-    "react": ">=16"
+    "react": ">=16",
+    "react-dom": ">=16"
   },
-  "dependencies": {
-    "onekijs-core": "^0.9.3",
-    "onekijs-ui": "^0.9.3",
-    "react-router-dom": "^5.1.2"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "tsdx lint"
-    }
-  },
-  "sideEffects": false,
-  "module": "dist/onekijs.esm.js",
-  "gitHead": "0cd0bf1700bb2ed374972fad7fe6bd6d87a0456e"
+  "sideEffects": false
 }
