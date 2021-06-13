@@ -1,8 +1,8 @@
+import { asyncHttp, useService } from '@oneki/core';
+import { LocalRouter } from '@oneki/router';
+import { AnonymousObject, Fetcher, FetchOptions, HttpMethod } from '@oneki/types';
+import { omit } from '@oneki/utils';
 import { useEffect, useMemo, useRef } from 'react';
-import LocalRouter from '../router/LocalRouter';
-
-import useService from '../core/useService';
-
 import CollectionService from './CollectionService';
 import LocalCollectionService from './LocalCollectionService';
 import RemoteCollectionService from './RemoteCollectionService';
@@ -18,20 +18,13 @@ import {
   UseCollectionOptions,
 } from './typings';
 import { isCollection, toCollectionItem } from './utils';
-import { useRouter } from '../app';
-import { omit } from '../utils';
-import { AnonymousObject, Fetcher, FetchOptions, HttpMethod } from '../typings';
-import { asyncHttp } from '../core';
 
 const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
   dataSource: T[] | string | Collection<T, M>,
   options: UseCollectionOptions<T, M> = {},
 ): Collection<T, M> => {
   const initializedRef = useRef(false);
-  let router = useRouter();
-  if (!options.mutateUrl) {
-    router = new LocalRouter();
-  }
+  const router = options.router || new LocalRouter();
   let dataOrUrl: T[] | string;
 
   if (isCollection(dataSource)) {

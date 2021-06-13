@@ -19,7 +19,7 @@ import createSagaMiddleware, { SagaMiddleware } from 'redux-saga';
 import BasicAppContext from './AppContext';
 import { defaultSettings, indexLocales } from './settings';
 import { AppErrorCallback, AppResultCallback, AppSuccessCallback } from './typings';
-import useAppContext from './useAppContext';
+import useAppContext from './/useAppContext';
 import useRouter from './useRouter';
 
 export const createReduxStore = (

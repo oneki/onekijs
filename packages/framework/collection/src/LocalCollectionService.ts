@@ -1,6 +1,6 @@
-import { Location } from '../typings/router';
-import { reducer, service } from '../core/annotations';
-
+import { reducer, service } from '@oneki/core';
+import { Location } from '@oneki/types';
+import { get } from '@oneki/utils';
 import CollectionService from './CollectionService';
 import {
   Collection,
@@ -18,7 +18,6 @@ import {
   QuerySortDir,
 } from './typings';
 import { defaultComparator, isQueryFilterCriteria } from './utils';
-import { get } from '../utils';
 
 const defaultSearcher = 'i_like';
 

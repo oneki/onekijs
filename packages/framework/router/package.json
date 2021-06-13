@@ -21,5 +21,6 @@
   },
   "devDependencies": {
     "microbundle": "^0.13.3"
-  }
+  },
+  "sideEffects": false
 }

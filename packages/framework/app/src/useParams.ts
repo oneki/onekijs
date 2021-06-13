@@ -1,22 +1,12 @@
+import { useTryParams } from '@oneki/core';
 import { AnonymousObject } from '@oneki/types';
-import { useCallback, useEffect, useState } from 'react';
-import useAppContext from './useAppContext';
 
 // change the state every time it changes
 const useParams = (): AnonymousObject<string> => {
-  const router = useAppContext().router;
-  const [render, rerender] = useState(false);
-  const listener = useCallback(() => {
-    rerender(!render);
-  }, [render]);
-
-  useEffect(() => {
-    const unregister = router.listen(listener);
-    return () => {
-      unregister();
-    };
-  }, [router, listener]);
-  return router.params;
+  const params = useTryParams();
+  // useParams is called in the context of an <App>
+  // Therefore we know params is always defined
+  return params as AnonymousObject<string>;
 };
 
 export default useParams;

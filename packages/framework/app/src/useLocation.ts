@@ -1,26 +1,12 @@
+import { useTryLocation } from '@oneki/core';
 import { Location } from '@oneki/types';
-import { useCallback, useEffect, useState } from 'react';
-import useAppContext from './useAppContext';
 
 // change the state every time it changes
 const useLocation = (): Location => {
-  const router = useAppContext().router;
-  const [, setLocation] = useState(router.location);
-  const listener = useCallback(
-    (location) => {
-      setLocation(location);
-    },
-    [setLocation],
-  );
-
-  useEffect(() => {
-    const unregister = router.listen(listener);
-    return () => {
-      unregister();
-    };
-  }, [router, listener]);
-
-  return router.location;
+  const location = useTryLocation();
+  // useLocation is called in the context of an <App>
+  // Therefore we know location is always defined
+  return location as Location;
 };
 
 export default useLocation;

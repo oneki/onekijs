@@ -1,10 +1,7 @@
-import Router from '../router/Router';
-import { Location } from '../typings/router';
-import { reducer } from '../core/annotations';
-import Service from '../core/Service';
-import { Primitive } from '../typings/core';
-import { get } from '../utils/object';
-import { urlBuilder } from '../utils/router';
+import { DefaultService, reducer } from '@oneki/core';
+import { LocalRouter } from '@oneki/router';
+import { AnonymousObject, Location, Primitive, Router } from '@oneki/types';
+import { get, urlBuilder } from '@oneki/utils';
 import {
   Collection,
   CollectionItemAdapter,
@@ -34,14 +31,12 @@ import {
   urlSerializer,
   visitFilter,
 } from './utils';
-import LocalRouter from '../router/LocalRouter';
-import { AnonymousObject } from '../typings';
 
 export default abstract class CollectionService<
   T = any,
   M extends ItemMeta = ItemMeta,
   S extends CollectionState<T, M> = CollectionState<T, M>
-> extends Service<S> implements Collection<T, M> {
+> extends DefaultService<S> implements Collection<T, M> {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   initialState: S = null!;
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -305,7 +300,7 @@ export default abstract class CollectionService<
       this.state.router = new LocalRouter();
     }
     // listen on location change and adapt filters, sort, ... with these values
-    this.state.router.listen((location) => this._onLocationChange(location));
+    this.state.router.listen((location: Location) => this._onLocationChange(location));
     // retrieve params from URL and initiate filter, sort ... with these values
     this._setQuery(this._parseLocation(this.state.router.location), false);
   }

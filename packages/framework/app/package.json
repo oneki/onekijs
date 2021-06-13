@@ -31,5 +31,6 @@
   "peerDependencies": {
     "react": ">=16",
     "react-dom": ">=16"
-  }
+  },
+  "sideEffects": false
 }

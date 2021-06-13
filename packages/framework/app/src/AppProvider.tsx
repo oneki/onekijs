@@ -1,7 +1,7 @@
-import { useLazyRef } from '@oneki/core';
+import { DefaultAppContext, useLazyRef } from '@oneki/core';
 import { detectLocale, flattenTranslations } from '@oneki/utils';
 import React, { FC, useEffect, useMemo, useState } from 'react';
-import BasicAppContext, { DefaultAppContext } from './AppContext';
+import BasicAppContext from './AppContext';
 import AppErrorBoundary from './AppErrorBoundary';
 import Container from './Container';
 import ContainerContext from './ContainerContext';

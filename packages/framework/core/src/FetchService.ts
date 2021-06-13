@@ -91,8 +91,8 @@ export default class FetchService<S extends FetchState = FetchState> extends Def
   }
 
   @reducer
-  setLoading(loading: boolean, deprecated: boolean): void {
+  setLoading(loading: boolean, fetching: boolean): void {
     this.state.loading = loading;
-    this.state.deprecated = deprecated;
+    this.state.fetching = fetching;
   }
 }

@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { UseCollectionOptions, ItemMeta } from '../../typings';
 import useCollection from '../../useCollection';
 import { TestHandler, TestUser } from '../typings';
-import { get } from '../../../utils/object';
+import { get } from '../../../core/utils/object';
 
 type UseRestCollectionProps<T> = {
   url: string;

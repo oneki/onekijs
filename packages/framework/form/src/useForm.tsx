@@ -329,6 +329,8 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
       fields: service.fields,
       init,
       getContainerFieldValidation: service.getContainerFieldValidation.bind(service),
+      labelWidth: formOptionsRef.current.labelWidth,
+      layout: formOptionsRef.current.layout,
       offSubmittingChange: service.offSubmittingChange.bind(service),
       offValidationChange: service.offValidationChange.bind(service),
       offValueChange: service.offValueChange.bind(service),

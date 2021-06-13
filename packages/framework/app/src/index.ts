@@ -1,4 +1,4 @@
-export { DefaultAppContext, default as BasicAppContext } from './AppContext';
+export { default as BasicAppContext } from './AppContext';
 export { default as AppErrorBoundary } from './AppErrorBoundary';
 export { default as AppProvider } from './AppProvider';
 export { default as DefaultAppService } from './AppService';
@@ -25,7 +25,7 @@ export {
   GlobalSelectorFunction,
   SetGlobalStateFunction,
 } from './typings';
-export { default as useAppContext } from './useAppContext';
+export { default as useAppContext } from './/useAppContext';
 export { default as useAppService } from './useAppService';
 export { default as useContainer } from './useContainer';
 export { default as useGlobalModifier } from './useGlobalModifier';
@@ -33,7 +33,7 @@ export { default as useGlobalProp } from './useGlobalProp';
 export { default as useGlobalSelector } from './useGlobalSelector';
 export { useReduxService, default as useGlobalService } from './useGlobalService';
 export { default as useGlobalState } from './useGlobalState';
-export { default as useHistory } from './useHistory';
+export { default as useHistory } from './/useHistory';
 export { default as useLocalService } from './useLocalService';
 export { useLocalState } from './useLocalState';
 export { default as useLocation } from './useLocation';

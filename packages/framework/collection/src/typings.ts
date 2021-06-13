@@ -1,5 +1,4 @@
-import Router from '../router/Router';
-import { AnonymousObject, Fetcher, FetchOptions, FetchState, HttpMethod, Primitive } from '../typings';
+import { AnonymousObject, Fetcher, FetchOptions, FetchState, HttpMethod, Primitive, Router } from '@oneki/types';
 
 export type ChangeHandler<T> = (value: T) => void;
 
@@ -83,6 +82,7 @@ export interface CollectionOptions<T, M extends ItemMeta> {
   method?: HttpMethod;
   mutateUrl?: boolean;
   queryEngine?: QueryEngine<T, M>;
+  router?: Router;
   searcher?: QuerySearcher<T>;
   serializer?: QuerySerializer;
   throttle?: number;

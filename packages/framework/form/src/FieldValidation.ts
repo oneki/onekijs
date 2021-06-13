@@ -28,7 +28,7 @@ export default class FieldValidation {
   }
 
   isOK(): boolean {
-    return this.code === ValidationCode.Warning;
+    return this.code === ValidationCode.Ok;
   }
 
   isNotOK(): boolean {

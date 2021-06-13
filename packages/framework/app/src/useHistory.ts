@@ -1,23 +1,12 @@
+import { useTryHistory } from '@oneki/core';
 import { Location } from '@oneki/types';
-import { useCallback, useEffect, useState } from 'react';
-import useAppContext from './useAppContext';
 
 // change the state every time it changes
 const useHistory = (): Location[] => {
-  const router = useAppContext().router;
-  const [, setHistory] = useState(router.history);
-  const listener = useCallback(() => {
-    setHistory(router.history);
-  }, [setHistory, router.history]);
-
-  useEffect(() => {
-    const unregister = router.listen(listener);
-    return () => {
-      unregister();
-    };
-  }, [router, listener]);
-
-  return router.history;
+  const history = useTryHistory();
+  // useHistory is called in the context of an <App>
+  // Therefore we know history is always defined
+  return history as Location[];
 };
 
 export default useHistory;

@@ -1,5 +1,4 @@
 import { AppContext, AppSettings, AppStore, I18n, ID, Router } from '@oneki/types';
-import React from 'react';
 import { CONTEXT_ID } from './typings';
 
 export default class BasicAppContext implements AppContext {
@@ -15,6 +14,3 @@ export default class BasicAppContext implements AppContext {
     this.i18n = i18n;
   }
 }
-
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-export const DefaultAppContext = React.createContext<BasicAppContext>(null!);

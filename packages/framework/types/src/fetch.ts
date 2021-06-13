@@ -5,7 +5,7 @@ import { State } from './state';
 
 export interface FetchState extends State {
   loading?: boolean;
-  deprecated?: boolean;
+  fetching?: boolean;
   result?: any;
   error?: BasicError;
 }
