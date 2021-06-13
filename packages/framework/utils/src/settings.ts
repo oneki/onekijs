@@ -1,4 +1,4 @@
-import { AppSettings, indexedLocalesSymbol, localesModeSymbol } from '@oneki/typings';
+import { AppSettings, indexedLocalesSymbol, localesModeSymbol } from '@oneki/types';
 
 export const isLocalePath = (settings: AppSettings): boolean => {
   return settings.i18n[indexedLocalesSymbol][localesModeSymbol] === 'path';

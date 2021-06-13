@@ -3,13 +3,13 @@
   "version": "0.9.3",
   "private": true,
   "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
+    "@testing-library/jest-dom": "^5.11.1",
+    "@testing-library/react": "^10.4.7",
+    "@testing-library/user-event": "^12.1.0",
+    "onekijs": "^0.10.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "msw": "^0.21.3",
-    "onekijs": "^0.9.3",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
     "react-scripts": "3.4.1"
   },
   "peerDependencies": {

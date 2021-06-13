@@ -1,4 +1,4 @@
-import { AnonymousObject } from '@oneki/typings';
+import { AnonymousObject } from '@oneki/types';
 import { trimEnd, trimStart } from './string';
 
 export function isAbsoluteUrl(url: string): boolean {

@@ -1,4 +1,4 @@
-import { AppSettings, AnonymousObject, Location, localeNoPathSymbol } from '@oneki/typings';
+import { AnonymousObject, AppSettings, localeNoPathSymbol, Location } from '@oneki/types';
 import { isBrowser } from './browser';
 import { get } from './object';
 import { indexedLocales, isLocaleDomain, isLocalePath } from './settings';
