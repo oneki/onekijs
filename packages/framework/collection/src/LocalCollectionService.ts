@@ -49,6 +49,7 @@ export default class LocalCollectionService<
 
   @reducer
   setData(data: T[]): void {
+    this.cache = {};
     const query = this.getQuery();
     this._clearOffset(query);
     this.state.db = data.map((d) => this._adapt(d));
@@ -79,6 +80,7 @@ export default class LocalCollectionService<
     const nextQuery = this._parseLocation(location);
     this._setQuery(nextQuery);
     if (location.relativeurl && this.cache[location.relativeurl]) {
+      console.log("FROM CACHE");
       this.state.items = this.cache[location.relativeurl];
     } else {
       const queryEngine: QueryEngine<T, M> = this.state.queryEngine || this._execute.bind(this);

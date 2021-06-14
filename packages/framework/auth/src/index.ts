@@ -4,9 +4,7 @@ export { default as LoginService } from './LoginService';
 export { default as LogoutService } from './LogoutService';
 export { secure } from './secure';
 export {
-  Auth,
   AuthErrorProps,
-  BasicAuth,
   Idp,
   IdpClientAuth,
   IdpCodeChallengeMethod,
@@ -21,10 +19,8 @@ export {
   LoginState,
   LogoutOptions,
   LogoutState,
-  OidcToken,
   SecurePageProps,
   SecureRouteProps,
-  Token,
 } from './typings';
 export { default as useAuth } from './useAuth';
 export { default as useAuthService } from './useAuthService';

@@ -276,6 +276,11 @@ export default abstract class CollectionService<
   }
 
   @reducer
+  setStatus(status: LoadingStatus): void {
+    this.state.status = status;
+  }
+
+  @reducer
   sort(dir: QuerySortDir): void {
     const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });

@@ -61,6 +61,10 @@ export type CollectionFetcher<T> = Fetcher<CollectionFetcherResult<T>, Query | u
 
 export type CollectionFetcherResult<T> = T[] | AnonymousObject;
 
+export type CollectionFetchOptions<R = any, T = any> = Omit<FetchOptions<R, T>, 'auth'> & {
+  auth?: AnonymousObject<any> | boolean;
+};
+
 export type CollectionItemAdapter<T, M extends ItemMeta> = (data: T | undefined) => Partial<Item<T, M>>;
 
 export interface CollectionOptions<T, M extends ItemMeta> {
@@ -82,7 +86,6 @@ export interface CollectionOptions<T, M extends ItemMeta> {
   method?: HttpMethod;
   mutateUrl?: boolean;
   queryEngine?: QueryEngine<T, M>;
-  router?: Router;
   searcher?: QuerySearcher<T>;
   serializer?: QuerySerializer;
   throttle?: number;
@@ -229,4 +232,4 @@ export type QuerySortDir = 'asc' | 'desc';
 
 export interface UseCollectionOptions<T, M extends ItemMeta>
   extends CollectionOptions<T, M>,
-    FetchOptions<CollectionFetcherResult<T>, Query | undefined> {}
+    CollectionFetchOptions<CollectionFetcherResult<T>, Query | undefined> {}

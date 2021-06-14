@@ -42,3 +42,4 @@ export {
   localeNoPathSymbol,
   localesModeSymbol,
 } from './symbol';
+export { Auth, BasicAuth, OidcToken, Token } from './auth';

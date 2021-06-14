@@ -1,11 +1,11 @@
 import { DefaultLocalService } from '@oneki/app';
 import { asyncHttp, asyncPost, DefaultBasicError, reducer, saga, service } from '@oneki/core';
 import { NotificationService } from '@oneki/notification';
-import { AnonymousObject, ErrorCallback, SagaEffect, SuccessCallback } from '@oneki/types';
+import { AnonymousObject, ErrorCallback, OidcToken, SagaEffect, SuccessCallback } from '@oneki/types';
 import { absoluteUrl, get, sha256 } from '@oneki/utils';
 import { call } from 'redux-saga/effects';
 import AuthService from './AuthService';
-import { LoginState, OidcToken } from './typings';
+import { LoginState } from './typings';
 import {
   generateCodeChallenge,
   generateCodeVerifier,

@@ -1,5 +1,5 @@
 import { useGlobalProp } from '@oneki/app';
-import { Auth } from './typings';
+import { Auth } from '@oneki/types';
 
 const useAuth = (): Auth | undefined => {
   return useGlobalProp<Auth>('auth');

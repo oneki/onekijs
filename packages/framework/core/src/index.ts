@@ -28,6 +28,7 @@ export { default as useTryQuery } from './useTryQuery';
 export { default as useTryRouter } from './useTryRouter';
 export { default as useTrySetting } from './useTrySetting';
 export { default as useTrySettings } from './useTrySettings';
+export { default as useTryStore } from './useTryStore';
 export { delayLoading } from './utils/async';
 export {
   asyncDelete,

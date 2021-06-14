@@ -1,4 +1,4 @@
-import { asyncHttp, useService } from '@oneki/core';
+import { asyncHttp, useService, useTryRouter, useTryStore } from '@oneki/core';
 import { LocalRouter } from '@oneki/router';
 import { AnonymousObject, Fetcher, FetchOptions, HttpMethod } from '@oneki/types';
 import { omit } from '@oneki/utils';
@@ -24,7 +24,12 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
   options: UseCollectionOptions<T, M> = {},
 ): Collection<T, M> => {
   const initializedRef = useRef(false);
-  const router = options.router || new LocalRouter();
+  let router = useTryRouter();
+  if (!router || !options.mutateUrl) {
+    router = new LocalRouter();
+  }
+  const auth = useTryStore()?.getState().auth;
+
   let dataOrUrl: T[] | string;
 
   if (isCollection(dataSource)) {
@@ -38,6 +43,11 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
   const [state, service] = useService<CollectionState<T, M>, CollectionService<T, M, CollectionState<T, M>>>(
     ctor,
     () => {
+      if (options.auth === true) {
+        options.auth = auth;
+      } else if (options.auth === false) {
+        options.auth = undefined;
+      }
       const fetchOptions = Object.assign(
         { delayLoading: 0 },
         omit<FetchOptions<CollectionFetcherResult<T>, Query | undefined>>(options, [
@@ -164,7 +174,10 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
   useEffect(() => {
     if (typeof dataOrUrl === 'string' && options.fetchOnce) {
       const fetcher: Fetcher<CollectionFetcherResult<T>, Query | undefined> = options.fetcher || asyncHttp;
+      service.setStatus(LoadingStatus.Loading);
       fetcher(dataOrUrl, options.method || HttpMethod.Get, undefined, state.fetchOptions).then((result) => {
+        console.log("result", result);
+        service.setStatus(LoadingStatus.Loaded);
         if (Array.isArray(result)) {
           service.setData(result);
         } else {
@@ -173,7 +186,7 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dataOrUrl]);
 
   useEffect(() => {
     if (!isCollection(dataSource) && options.autoload && !initializedRef.current) {
