@@ -1,6 +1,6 @@
 {
   "name": "@oneki/app",
-  "version": "0.0.1",
+  "version": "0.10.0",
   "description": "",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -14,9 +14,9 @@
   "author": "Oneki",
   "license": "ISC",
   "dependencies": {
-    "@oneki/types": "^0.0.1",
-    "@oneki/utils": "^0.0.1",
-    "@oneki/core": "^0.0.1",
+    "@oneki/types": "^0.10.0",
+    "@oneki/utils": "^0.10.0",
+    "@oneki/core": "^0.10.0",
     "@redux-saga/types": "^1.1.0",
     "immer": "^6.0.2",
     "redux": "^4.0.5",

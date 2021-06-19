@@ -1,6 +1,6 @@
 {
   "name": "@oneki/i18n",
-  "version": "0.0.1",
+  "version": "0.10.0",
   "description": "",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -8,18 +8,18 @@
   "module": "dist/index.module.js",
   "unpkg": "dist/index.umd.js",
   "scripts": {
-    "build": "microbundle --jsx React.createElement --no-compress",
+    "build": "microbundle --jsx React.createElement",
     "dev": "microbundle watch"
   },
   "author": "Oneki",
   "license": "ISC",
   "dependencies": {
-    "@oneki/types": "^0.0.1",
-    "@oneki/utils": "^0.0.1",
-    "@oneki/core": "^0.0.1",
-    "@oneki/app": "^0.0.1",
-    "@oneki/router": "^0.0.1",
-    "@oneki/notification": "^0.0.1"
+    "@oneki/types": "^0.10.0",
+    "@oneki/utils": "^0.10.0",
+    "@oneki/core": "^0.10.0",
+    "@oneki/app": "^0.10.0",
+    "@oneki/router": "^0.10.0",
+    "@oneki/notification": "^0.10.0"
   },
   "devDependencies": {
     "microbundle": "^0.13.3"
