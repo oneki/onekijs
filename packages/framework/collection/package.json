@@ -29,5 +29,9 @@
     "react": ">=16",
     "react-dom": ">=16"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "gitHead": "bd34719c6e0a4119cec72b64ce8fe6b35d1c342f",
+  "publishConfig": {
+    "access": "public"
+  }
 }
