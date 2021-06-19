@@ -217,9 +217,9 @@ export default class DefaultService<S extends State = AnyState> implements Servi
         });
         this.state = nextState;
         if (action.resolve) {
-          setTimeout(() => {
-            action.resolve(nextState);
-          }, 0);
+          //setTimeout(() => {
+          action.resolve(nextState);
+          //}, 0);
         }
         return nextState;
       } catch (e) {

@@ -421,6 +421,7 @@ export default class FormService extends DefaultService<FormState> {
         async.push(fieldName);
       }
     });
+
     yield this._setValues(values, validations);
     return async;
   }

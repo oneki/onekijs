@@ -20,5 +20,8 @@ export const right = cssProperty<RightProperty<TLength>>('right');
 // integer
 export const top = cssProperty<TopProperty<TLength>>('top');
 
+// integer
+export const bottom = cssProperty<TopProperty<TLength>>('bottom');
+
 // auto or integer
 export const zIndex = cssProperty('z-index');

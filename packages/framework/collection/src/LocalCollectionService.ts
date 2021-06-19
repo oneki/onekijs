@@ -80,7 +80,6 @@ export default class LocalCollectionService<
     const nextQuery = this._parseLocation(location);
     this._setQuery(nextQuery);
     if (location.relativeurl && this.cache[location.relativeurl]) {
-      console.log("FROM CACHE");
       this.state.items = this.cache[location.relativeurl];
     } else {
       const queryEngine: QueryEngine<T, M> = this.state.queryEngine || this._execute.bind(this);

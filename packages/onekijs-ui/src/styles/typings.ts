@@ -116,3 +116,5 @@ export type KindTheme = 'primary' | 'danger' | 'success' | 'info' | 'warning' | 
 export type ComponentStyle<P, T extends Theme = Theme> = (
   propsWithTheme: ThemedStyledProps<P, T>,
 ) => FlattenInterpolation<ThemeProps<T>>;
+
+export type GridSize = 1|2|3|4|5|6|7|8|9|10|11|12;

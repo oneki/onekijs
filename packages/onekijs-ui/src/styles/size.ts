@@ -10,7 +10,6 @@ import { Formatter, SizeProperty, Theme } from './typings';
 import { pxFormatter } from '../utils/formatter';
 
 const sizeFormatter = (type: 'width' | 'height', value: SizeProperty, theme: Theme) => {
-  console.log("theme", theme);
   if (theme.sizes[value] !== undefined) {
     return theme.sizes[value];
   }

@@ -176,7 +176,6 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
       const fetcher: Fetcher<CollectionFetcherResult<T>, Query | undefined> = options.fetcher || asyncHttp;
       service.setStatus(LoadingStatus.Loading);
       fetcher(dataOrUrl, options.method || HttpMethod.Get, undefined, state.fetchOptions).then((result) => {
-        console.log("result", result);
         service.setStatus(LoadingStatus.Loaded);
         if (Array.isArray(result)) {
           service.setData(result);
