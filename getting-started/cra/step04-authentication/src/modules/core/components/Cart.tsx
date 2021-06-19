@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'onekijs';
 import { ProductType } from '../../products/components/Product';
 import { currency } from '../libs/format';
 
@@ -21,7 +21,7 @@ const Cart: FC<CartProps> = ({ cart }) => {
 
       {(!cart || cart.length === 0) && <h4>There is no item in the shopping cart !</h4>}
       <p>
-        <Link to="/products">Buy another products</Link>
+        <Link href="/products">Buy another products</Link>
       </p>
     </div>
   );

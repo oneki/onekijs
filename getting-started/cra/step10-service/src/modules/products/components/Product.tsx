@@ -1,6 +1,6 @@
 import { useTranslation } from 'onekijs';
 import React, { FC } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'onekijs';
 
 interface ProductProps {
   product: ProductType;
@@ -14,7 +14,7 @@ const Product: FC<ProductProps> = ({ product, id, onClick, onNotify }) => {
   return (
     <div>
       <h3>
-        <Link to={`/products/${id}`}>
+        <Link href={`/products/${id}`}>
           <T>{product.name}</T>
         </Link>
       </h3>

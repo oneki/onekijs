@@ -1,17 +1,13 @@
 import { useNotificationService, usePost } from 'onekijs';
 import React, { FC } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'onekijs';
 import { products } from '..';
 import { ProductType } from '../../../__server__/api/dto/product';
 import { URL_ADD_PRODUCT } from '../../../modules/core/libs/constants';
 import ProductDetails from '../../../modules/products/components/ProductDetails';
 
-type ProductDetailsParams = {
-  productId: string;
-};
-
 const ProductDetailsPage: FC = () => {
-  const { productId } = useParams<ProductDetailsParams>();
+  const { productId } = useParams();
   const notificationService = useNotificationService();
   const [submit] = usePost<ProductType>(URL_ADD_PRODUCT, {
     onSuccess: () => {

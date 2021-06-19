@@ -1,13 +1,13 @@
 import React, { FC } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'onekijs';
 
 const Navbar: FC = () => {
   return (
     <div className="app-top-bar">
-      <Link to="/">
+      <Link href="/">
         <h1>My Store</h1>
       </Link>
-      <Link to="/cart" className="button fancy-button">
+      <Link href="/cart" className="button fancy-button">
         <i className="material-icons">shopping_cart</i>
         Checkout
       </Link>

@@ -1,13 +1,13 @@
 import { useI18nService, useSecurityContext, useTranslation } from 'onekijs';
 import React, { FC } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'onekijs';
 
 const Navbar: FC = () => {
   const [T, , locale] = useTranslation();
   const [loggedUser] = useSecurityContext('username');
   return (
     <div className="app-top-bar">
-      <Link to="/">
+      <Link href="/">
         <h1>
           <T>My Store</T>
         </h1>
@@ -16,12 +16,12 @@ const Navbar: FC = () => {
         {loggedUser && (
           <div className="user">
             {loggedUser}{' '}
-            <Link className="logout" to="/logout">
+            <Link className="logout" href="/logout">
               [<T>Log out</T>]
             </Link>
           </div>
         )}
-        <Link to="/cart" className="button fancy-button">
+        <Link href="/cart" className="button fancy-button">
           <i className="material-icons">shopping_cart</i>
           <T>Checkout</T>
         </Link>

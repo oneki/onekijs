@@ -1,17 +1,13 @@
 import { useGlobalState } from 'onekijs';
 import React, { FC } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'onekijs';
 import { products } from '..';
 import { ProductType } from '../../../modules/products/components/Product';
 import ProductDetails from '../../../modules/products/components/ProductDetails';
 import { STATE_CART } from '../../../modules/core/libs/constants';
 
-type ProductDetailsParams = {
-  productId: string;
-};
-
 const ProductDetailsPage: FC = () => {
-  const { productId } = useParams<ProductDetailsParams>();
+  const { productId } = useParams();
   const [cart, setCart] = useGlobalState<ProductType[]>(STATE_CART, []); // TODO update to useGlobalState
 
   const product = products[+productId];

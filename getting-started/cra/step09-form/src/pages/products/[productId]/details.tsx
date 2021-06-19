@@ -1,17 +1,13 @@
 import { useNotificationService, usePost, useTranslation } from 'onekijs';
 import React, { FC } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'onekijs';
 import { products } from '..';
 import { URL_ADD_PRODUCT } from '../../../modules/core/libs/constants';
 import ProductDetails from '../../../modules/products/components/ProductDetails';
 import { ProductType } from '../../../__server__/api/dto/product';
 
-type ProductDetailsParams = {
-  productId: string;
-};
-
 const ProductDetailsPage: FC = () => {
-  const { productId } = useParams<ProductDetailsParams>();
+  const { productId } = useParams();
   const notificationService = useNotificationService();
   const [, t] = useTranslation();
   const [submit] = usePost<ProductType>(URL_ADD_PRODUCT, {

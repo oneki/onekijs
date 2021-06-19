@@ -1,4 +1,13 @@
-import { asyncGet, inject, LocalService, NotificationService, reducer, saga, SagaEffect, service } from 'onekijs';
+import {
+  asyncGet,
+  DefaultLocalService,
+  inject,
+  NotificationService,
+  reducer,
+  saga,
+  SagaEffect,
+  service,
+} from 'onekijs';
 
 export interface AvailabilityState {
   // a flag to indicate if a request is in flight
@@ -15,7 +24,7 @@ interface AvailabilityResponse {
 }
 
 @service
-export default class AvailabilityService extends LocalService<AvailabilityState> {
+export default class AvailabilityService extends DefaultLocalService<AvailabilityState> {
   notificationService = inject(NotificationService);
 
   @reducer

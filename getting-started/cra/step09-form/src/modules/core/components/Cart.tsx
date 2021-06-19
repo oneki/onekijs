@@ -1,6 +1,6 @@
 import { useTranslation } from 'onekijs';
 import React, { FC } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'onekijs';
 import { CartType } from '../../../__server__/api/dto/cart';
 import { currency } from '../libs/format';
 
@@ -42,7 +42,7 @@ const Cart: FC<CartProps> = ({ cart }) => {
         </h4>
       )}
       <p>
-        <Link to="/products">
+        <Link href="/products">
           <T>Buy another products</T>
         </Link>
       </p>

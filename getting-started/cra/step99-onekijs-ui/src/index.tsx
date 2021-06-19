@@ -2,7 +2,7 @@ import { App } from 'onekijs';
 import { theme } from 'onekijs-ui';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch } from 'onekijs';
 import { ThemeProvider } from 'styled-components';
 import AppLayout from './components/layout/AppLayout';
 import Product from './pages/product';

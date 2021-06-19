@@ -1,5 +1,5 @@
 import { color, fontSize, margin } from 'onekijs-ui';
-import { NavLink } from 'react-router-dom';
+import { NavLink } from 'onekijs';
 import styled from 'styled-components';
 
 const NavbarBrand = styled(NavLink)`

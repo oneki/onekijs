@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'onekijs';
 
 interface ProductProps {
   product: ProductType;
@@ -12,7 +12,7 @@ const Product: FC<ProductProps> = ({ product, id, onClick, onNotify }) => {
   return (
     <div>
       <h3>
-        <Link to={`/products/${id}`}>{product.name}</Link>
+        <Link href={`/products/${id}`}>{product.name}</Link>
       </h3>
       {product.description && <p>Description: {product.description}</p>}
       <button onClick={onClick}>Share</button>

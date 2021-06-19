@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRouteMatch } from 'react-router-dom';
+import { useRouteMatch } from 'onekijs';
 import ProductDetailsPage from './[productId]/details';
 import ProductsPage from '.';
 import { Route, Switch } from 'onekijs';
