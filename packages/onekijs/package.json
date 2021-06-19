@@ -16,7 +16,7 @@
   "module": "dist/index.module.js",
   "unpkg": "dist/index.umd.js",
   "scripts": {
-    "build": "microbundle --jsx React.createElement --no-compress",
+    "build": "microbundle --jsx React.createElement",
     "dev": "microbundle watch"
   },
   "author": "Oneki",

@@ -20,7 +20,8 @@ export const BasicPage = () => {
           <div><b>Name: </b><Input name="lastname" /></div>
           <div><b>Firstname: </b><Input name="firstname" /></div>
           <div><b>Gender: </b>
-            <Select name="gender">
+            <Select name="gender" defaultValue="female">
+              <option value=""></option>
               <option value="female">Female</option>
               <option value="male">Male</option>
             </Select>   

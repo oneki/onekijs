@@ -37,7 +37,7 @@ export { default as useHistory } from './/useHistory';
 export { default as useLocalService } from './useLocalService';
 export { useLocalState } from './useLocalState';
 export { default as useLocation } from './useLocation';
-export { default as useParams } from './useParams';
+// export { default as useParams } from './useParams';
 export { default as useQuery } from './useQuery';
 export { default as useRouter } from './useRouter';
 export { default as useSetting } from './useSetting';

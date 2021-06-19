@@ -1,34 +1,30 @@
-import { App } from 'onekijs-cra';
+import { App, Link, Route, Switch } from 'onekijs';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Route, Switch, Link } from 'react-router-dom';
+import { ArrayPage } from './pages/array';
 import { BasicPage } from './pages/basic';
-import { WrapperPage } from './pages/wrapper';
-import { InitialValuePage } from './pages/initial_value';
-import { CustomComponentPage } from './pages/custom_component';
 import { BindPage } from './pages/bind';
-import { RulesPage } from './pages/rules';
-import { FieldPage } from './pages/field';
-import { ValidatorPage } from './pages/validator';
 import { ComplexValidatorPage } from './pages/complex_validator';
 import { ContainerPage } from './pages/container';
-import { ArrayPage } from './pages/array';
+import { CustomComponentPage } from './pages/custom_component';
+import { FieldPage } from './pages/field';
+import { InitialValuePage } from './pages/initial_value';
+import { RulesPage } from './pages/rules';
+import { ValidatorPage } from './pages/validator';
+import { WrapperPage } from './pages/wrapper';
 
 ReactDOM.render(
   <App>
     <>
-      <Link to="/">Basic</Link> | <Link to="/field">Field</Link> |{' '}
-      <Link to="/wrapper">Wrapper</Link> |{' '}
-      <Link to="/validator">Simple Validation</Link> |{' '}
-      <Link to="/complex_validator">Complex Validation</Link> |{' '}
-      <Link to="/customcomponent">Custom Components</Link> |{' '}
-      <Link to="/initialvalue">Initial Value</Link> |{' '}
-      <Link to="/bind">Bind</Link> | <Link to="/rules">Rules</Link> |{' '}
-      <Link to="/container">Container</Link> | <Link to="/array">Array</Link>
+      <Link href="/">Basic</Link> | <Link href="/field">Field</Link> | <Link href="/wrapper">Wrapper</Link> |{' '}
+      <Link href="/validator">Simple Validation</Link> | <Link href="/complex_validator">Complex Validation</Link> |{' '}
+      <Link href="/customcomponent">Custom Components</Link> | <Link href="/initialvalue">Initial Value</Link> |{' '}
+      <Link href="/bind">Bind</Link> | <Link href="/rules">Rules</Link> | <Link href="/container">Container</Link> |{' '}
+      <Link href="/array">Array</Link>
       <Switch>
-      <Route path="/array">
+        <Route path="/array">
           <ArrayPage />
-        </Route>        
+        </Route>
         <Route path="/container">
           <ContainerPage />
         </Route>
@@ -62,5 +58,5 @@ ReactDOM.render(
       </Switch>
     </>
   </App>,
-  document.getElementById('root')
+  document.getElementById('root'),
 );

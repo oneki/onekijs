@@ -25,6 +25,7 @@ export {
   matchPath,
   useRouteMatch,
   withRouter,
+  useParams,
 } from 'react-router-dom';
 export * from '@oneki/app';
 export * from '@oneki/auth';

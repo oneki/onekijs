@@ -1,10 +1,10 @@
-import { useGet, useNotificationService, useSetting } from 'onekijs';
+import { useGet, useNotificationService, useSetting, Link, useLocation } from 'onekijs';
 import React, { useCallback } from 'react';
-import { Link } from 'react-router-dom';
 import { User } from '../../../types';
 
-export default () => {
+export default (): JSX.Element => {
   const notificationService = useNotificationService();
+  const location = useLocation();
   const onError = useCallback(
     (e) => {
       notificationService.error(e);
@@ -28,7 +28,7 @@ export default () => {
   const [users, loading] = useGet<User[]>(`${baseUrl}/api/users`, {
     onError,
     defaultValue: [],
-    throttle: 1000,
+    // throttle: 1000,
   });
 
   // Display a loading indicator while the request is pending
@@ -36,32 +36,18 @@ export default () => {
 
   return (
     <>
-<<<<<<< HEAD:examples/cra-crud/src/routes/users/list/UserList.js
-      <ul>
-        {users.map(user => (
-          <li key={`key-${user.id}`}>
-            <Link to={location => `${location.pathname}/${user.id}`}>
-              {user.firstname} {user.name}
-            </Link>
-          </li>
-        ))}
-      </ul>
-
-      <Link to={location => `${location.pathname}/create`}>Add a user</Link>
-=======
       {users && (
         <ul>
           {users.map((user) => (
             <li key={`key-${user.id}`}>
-              <Link to={(location) => `${location.pathname}/${user.id}`}>
+              <Link href={`${location.pathname}/${user.id}`}>
                 {user.firstname} {user.name}
               </Link>
             </li>
           ))}
         </ul>
       )}
-      <Link to={(location) => `${location.pathname}/create`}>Add a user</Link>
->>>>>>> feature/ts:examples/cra-crud/src/routes/users/list/UserList.tsx
+      <Link href={`${location.pathname}/create`}>Add a user</Link>
     </>
   );
 };

@@ -1,9 +1,19 @@
-import { append, latest, reducer, set, useLocalService, LocalService, service, saga, SagaEffect } from 'onekijs';
+import {
+  AnyState,
+  append,
+  DefaultLocalService,
+  reducer,
+  saga,
+  SagaEffect,
+  service,
+  set,
+  useLocalService,
+} from 'onekijs';
 import React from 'react';
 import { delay } from 'redux-saga/effects';
 
 @service
-class TestService extends LocalService {
+class TestService extends DefaultLocalService {
   format(value: any) {
     if (typeof value === 'string') {
       return value.toUpperCase();
@@ -42,8 +52,8 @@ class TestService extends LocalService {
   }
 }
 
-export const HomePage = () => {
-  const [state, localService] = useLocalService(TestService);
+export const HomePage = (): JSX.Element => {
+  const [state, localService] = useLocalService(TestService, {} as AnyState);
 
   console.log('state', state);
 

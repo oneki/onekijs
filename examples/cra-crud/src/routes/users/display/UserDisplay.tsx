@@ -1,12 +1,12 @@
-import { useGet, useSetting, useDelete } from 'onekijs';
+import { Link, useDelete, useGet, useLocation, useParams, useSetting } from 'onekijs';
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
 import { User } from '../../../types';
 
-export default () => {
+export default (): JSX.Element => {
   // userId is present in the URL: /users/:userId
   // useParams is a hook coming from react-router-dom
   const { userId } = useParams();
+  const location = useLocation();
 
   // baseUrl is defined in settings.js
   const baseUrl = useSetting('server.baseUrl');
@@ -24,7 +24,7 @@ export default () => {
     <>
       {user && (
         <div>
-          <h2>Details of user {userId}</h2>[<Link to={(location) => `${location.pathname}/edit`}>edit</Link>]
+          <h2>Details of user {userId}</h2>[<Link href={`${location.pathname}/edit`}>edit</Link>]
           <li>
             <b>Name: </b> {user.name}
           </li>
