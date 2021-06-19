@@ -1,7 +1,7 @@
 {
   "name": "onekijs-next",
   "private": true,
-  "version": "0.9.3",
+  "version": "0.10.0",
   "description": "Opiniated React framework built on top of Next.js",
   "author": "Oneki",
   "license": "MIT",
@@ -27,7 +27,7 @@
     "react": ">=16"
   },
   "dependencies": {
-    "onekijs-core": "^0.9.3"
+    "onekijs-core": "^0.10.0"
   },
   "sideEffects": false,
   "module": "dist/onekijs-next.esm.js"

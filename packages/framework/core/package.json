@@ -21,7 +21,6 @@
     "query-string": "^6.11.1",
     "redux-saga": "^1.1.3",
     "reflect-metadata": "^0.1.13"
-    
   },
   "devDependencies": {
     "microbundle": "^0.13.3"

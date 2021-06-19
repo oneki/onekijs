@@ -14,12 +14,12 @@
   "author": "Oneki",
   "license": "ISC",
   "dependencies": {
-    "@oneki/types": "^0.10.0",
-    "@oneki/utils": "^0.10.0",
-    "@oneki/core": "^0.10.0",
     "@oneki/app": "^0.10.0",
+    "@oneki/core": "^0.10.0",
+    "@oneki/notification": "^0.10.0",
     "@oneki/router": "^0.10.0",
-    "@oneki/notification": "^0.10.0"
+    "@oneki/types": "^0.10.0",
+    "@oneki/utils": "^0.10.0"
   },
   "devDependencies": {
     "microbundle": "^0.13.3"

@@ -1,6 +1,6 @@
 {
   "name": "step03-global-state",
-  "version": "0.9.3",
+  "version": "0.10.0",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.1",
