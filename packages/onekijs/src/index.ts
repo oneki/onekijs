@@ -25,7 +25,19 @@ export {
   matchPath,
   useRouteMatch,
   withRouter,
+  useParams,
 } from 'react-router-dom';
-export * from 'onekijs-core';
+export * from '@oneki/app';
+export * from '@oneki/auth';
+export * from '@oneki/collection';
+export * from '@oneki/core';
+export * from '@oneki/fetch';
+export * from '@oneki/form';
+export * from '@oneki/i18n';
+export * from '@oneki/notification';
+export * from '@oneki/router';
+export * from '@oneki/types';
+export * from '@oneki/utils';
+
 export { default as Route } from './router/Route';
 export { default as Switch } from './router/Switch';

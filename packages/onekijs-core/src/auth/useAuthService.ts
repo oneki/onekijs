@@ -1,5 +1,5 @@
 import AuthService from './AuthService';
-import useGlobalService from '../core/useGlobalService';
+import useGlobalService from '../app/useGlobalService';
 
 const useAuthService = (): AuthService => {
   return useGlobalService(AuthService);

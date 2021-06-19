@@ -1,0 +1,26 @@
+{
+  "name": "@oneki/router",
+  "version": "0.0.1",
+  "description": "",
+  "source": "src/index.ts",
+  "main": "dist/index.js",
+  "exports": "./dist/index.modern.js",
+  "module": "dist/index.module.js",
+  "unpkg": "dist/index.umd.js",
+  "scripts": {
+    "build": "microbundle",
+    "dev": "microbundle watch"
+  },
+  "author": "Oneki",
+  "license": "ISC",
+  "dependencies": {
+    "@oneki/types": "^0.0.1",
+    "@oneki/utils": "^0.0.1",
+    "immer": "^6.0.2",
+    "query-string": "^6.11.1"
+  },
+  "devDependencies": {
+    "microbundle": "^0.13.3"
+  },
+  "sideEffects": false
+}

@@ -1,14 +1,17 @@
 import { LoginOptions, LoginState } from './typings';
-import { AnyFunction } from '../core/typings';
 import LoginService from './LoginService';
 import useNotificationService from '../notification/useNotificationService';
 import { useCallback, useEffect } from 'react';
-import BasicError from '../core/BasicError';
-import useLocalService from '../core/useLocalService';
+import DefaultBasicError from '../core/BasicError';
+import useLocalService from '../app/useLocalService';
 import { useErrorCallback, useSuccessCallback } from '../app/utils';
+import { AnyFunction } from '../typings/core';
 
 // manage the login
-const useLogin = (idpName = 'default', options: LoginOptions = {}): [BasicError | undefined, boolean, AnyFunction] => {
+const useLogin = (
+  idpName = 'default',
+  options: LoginOptions = {},
+): [DefaultBasicError | undefined, boolean, AnyFunction] => {
   // create the local login service
   const [state, service] = useLocalService(LoginService, {
     loading: false,

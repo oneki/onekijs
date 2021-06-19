@@ -5,7 +5,7 @@ import UserCreate from './create';
 import UserEdit from './edit';
 import UserDisplay from './display';
 
-const Users = () => {
+const Users = (): JSX.Element => {
   const match = useRouteMatch();
   return (
     <Switch>

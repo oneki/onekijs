@@ -1,123 +1,437 @@
-import { AnonymousObject, get } from 'onekijs-core';
-import React, { FC, useCallback, useMemo, useRef, useState, useEffect } from 'react';
-import { LoadingStatus, Item, useCollection, toCollectionItem } from 'onekijs-core';
-import { useClickOutside } from '../../../utils/event';
+import { AnonymousObject, Collection, get, isCollectionFetching, isCollectionLoading, Item, toCollectionItem, useCollection, useEventListener, useIsomorphicLayoutEffect, ValidationStatus } from 'onekijs-core';
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { addClassname } from '../../../utils/style';
+import { useClickOutside, useFocusOutside } from '../../../utils/event';
 import Dropdown from '../../dropdown';
-import { SelectInternalProps, SelectOptionMeta, SelectOptionHandler, SelectProps } from '../typings';
+import useListView from '../../list/hooks/useListView';
+import { SelectOptionHandler, SelectOptionMeta, SelectOptionSelectionHandler, SelectProps } from '../typings';
 import SelectInputComponent from './SelectInputComponent';
-import SelectOptionsComponent from './SelectOptionsComponent';
+import SelectOptionComponent, { MultiSelectOptionComponent } from './SelectOptionComponent';
 
-const SelectComponent: FC<SelectProps<any>> = (props) => {
-  const { items, ...selectInternalProps } = props;
-  if (Array.isArray(items)) {
-    return <SelectDataComponent {...selectInternalProps} items={items} />;
-  } else {
-    return <SelectInternalComponent {...selectInternalProps} collection={items} />;
+const findItem = (collection: Collection<any, SelectOptionMeta>, pattern: string): any => {
+  if (collection.items === undefined) {
+    return undefined;
   }
+  return collection.items.find(i => {
+    if (i === undefined) {
+      return false
+    }
+    if (i.text === undefined) {
+      return false;
+    }
+    return i.text.toLowerCase().startsWith(pattern.toLowerCase())
+  })
+}
+
+const findItemIndex = (collection: Collection<any, SelectOptionMeta>, item?: Item<any, SelectOptionMeta>): number => {
+  if (collection.items === undefined) {
+    return -1;
+  }
+  return collection.items.findIndex(i => {
+    if (i === undefined) {
+      return false
+    }
+    if (i.id === undefined) {
+      return false;
+    }
+    return i.id === item?.id
+  })
 };
 
-const SelectDataComponent: FC<Omit<SelectProps, 'items'> & { items: any[] }> = (props) => {
-  const { items, ...selectInternalProps } = props;
-  const collection = useCollection(items);
-  return <SelectInternalComponent {...selectInternalProps} collection={collection} />;
-};
+const diffItems = (previousItems: Item<any, SelectOptionMeta>[] | undefined, nextItems: Item<any, SelectOptionMeta>[] | undefined): { 'removed': Item<any, SelectOptionMeta>[], 'added': Item<any, SelectOptionMeta>[] } => {
+  if (previousItems === undefined && nextItems === undefined) {
+    return {
+      'added': [],
+      'removed': [],
+    }
+  }
 
-const SelectInternalComponent: FC<SelectInternalProps> = ({
-  className,
+  if (previousItems === undefined && nextItems !== undefined) {
+    return {
+      'added': nextItems,
+      'removed': [],
+    }
+  }  
+
+  if (previousItems !== undefined && nextItems === undefined) {
+    return {
+      'added': [],
+      'removed': previousItems,
+    }
+  }   
+
+  if (previousItems !== undefined && nextItems !== undefined) {
+    const previousItemIds = previousItems.map(previousItem => previousItem.id)
+    const nextItemIds = nextItems.map(nextItem => nextItem.id)
+    const added = nextItems.filter(nextItem => !previousItemIds.includes(nextItem.id))
+    const removed = previousItems.filter(previousItem => !nextItemIds.includes(previousItem.id))
+    return {
+      added,
+      removed
+    }
+  }
+
+  return {
+    'added': [],
+    'removed': [],
+  }  
+}
+
+const SelectComponent: FC<SelectProps<any>> = ({
+  className = '',
   placeholder,
-  collection,
+  items,
   InputComponent = SelectInputComponent,
+  ItemComponent,
   autoFocus,
   value,
   onChange,
+  onBlur: forwardBlur,
+  onFocus: forwardFocus,
+  height = '220px',
+  multiple = false,
+  status = ValidationStatus.None,
+  size = 'medium',
 }) => {
-  const [open, setOpen] = useState(false);
-  const [focus, setFocus] = useState(!!autoFocus);
+  const collection = useCollection(items);
+  const [open, _setOpen] = useState(false);
+  const [focus, setFocus] = useState(false);
   const stateRef = useRef<AnonymousObject>({});
-  const previousValueRef = useRef<Item<any, SelectOptionMeta>>();
+  const currentProxyItem = useRef<Item<any, SelectOptionMeta>|undefined>();
 
-  const loading = useMemo(() => {
-    return collection.status === LoadingStatus.Loading || collection.status === LoadingStatus.PartialLoading;
-  }, [collection]);
+  const currentScrollItem = useRef<Item<any, SelectOptionMeta>|undefined>();
+  const currentScrollIndex = useRef<number|undefined>();
+  const scrollToRef = useRef<{ index: number, align: 'start' | 'center' | 'end' | 'auto' } | undefined>();
+  const [keyboardItem, setKeyboardItem] = useState<Item<any, SelectOptionMeta>|undefined>()
+  const arrowItemRef = useRef<Item<any, SelectOptionMeta>|undefined>()
 
-  const delayOpen = useMemo(() => {
-    return loading && !open;
-  }, [open, loading]);
+  const loading = isCollectionLoading(collection);
+  const fetching = isCollectionFetching(collection);
 
   const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
 
+  const tokens = useMemo(() => {
+    return multiple && Array.isArray(value) ? value.map(v => toCollectionItem(v, collection.getAdapter()) || '') : undefined;
+  }, [value])
+
+  const previousTokensRef = useRef<Item<any, SelectOptionMeta>[] | undefined>();
+
+  const proxyItem = useMemo(() => {
+    const search = collection.getSearch();
+    
+    if (keyboardItem !== undefined) {
+      return keyboardItem;
+    }
+    if (focus && search) {
+      let item = findItem(collection, search.toString());
+      if (item === undefined && !isCollectionFetching(collection)) {
+        return get(collection, 'items.0');
+      }
+      return item;
+    } else if (!multiple) {
+      return toCollectionItem(value, collection.getAdapter());
+    }
+  }, [focus, collection, value, keyboardItem, multiple]);
+
+  // const highlightItem = useCallback((item: SelectItem|undefined, highlight: boolean = true) => {
+  //   if (highlight && currentHighlightedItem.current !== undefined) {
+  //     collection.setMeta(currentHighlightedItem.current, 'highlighted', false);
+  //   }    
+  //   currentHighlightedItem.current = highlight ? item : undefined;
+  //   if (item != undefined) {
+  //     collection.setMeta(item, 'highlighted', highlight);
+  //   }
+  // }, [collection])
+
+
+  const setOpen = useCallback((open) => {
+    if (open) {
+      arrowItemRef.current = undefined;      
+      const index = findItemIndex(collection, proxyItem);
+      if (index !== undefined) {
+        scrollToRef.current = {
+          index,
+          align: 'center',
+        }
+      }     
+    } else {
+      currentScrollItem.current = undefined;
+    }
+    _setOpen(open)
+  }, [collection, proxyItem])  
+
   const onBlur = useCallback(() => {
     if (!stateRef.current.keepFocus) {
-      setFocus(false);
-      setOpen(false);
+
+      if (collection.getSearch()) {
+        collection.clearSearch();
+      }      
+      if (keyboardItem !== undefined) {
+        setKeyboardItem(undefined);
+      }
+      if (open) {
+        setOpen(false);
+      }
+      if (focus) {
+        setFocus(false);
+        if (forwardBlur) {
+          console.log('forwardBlur');
+          forwardBlur();
+        }
+      }
+
     }
-  }, []);
+  }, [open, keyboardItem, collection]);
+
+  const onFocus = useCallback(() => {
+    if (!focus) {
+      setFocus(true);
+      if (forwardFocus) {
+        forwardFocus();
+      }
+    }
+  }, [open, keyboardItem, collection]);  
 
   useClickOutside(containerRef, () => {
     onBlur();
   });
 
-  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  useFocusOutside(containerRef, () => {
+    onBlur();
+  });  
+
+  const onInputChange = (nextValue: string) => {
     if (!open) {
       setOpen(true);
     }
-    collection.search(e.target.value);
-  };
+    setKeyboardItem(undefined);
+    collection.search(nextValue);
+    scrollToRef.current = {
+      index: 0,
+      align: 'start',
+    }    
+  };  
 
-  const selectedItem = useMemo(() => {
-    if (!focus) {
-      return toCollectionItem(value, collection.getAdapter());
-    } else {
-      if (collection.getSearch()) {
-        return get(collection, 'items.0');
-      } else {
-        return toCollectionItem(value, collection.getAdapter());
-      }
+  const onRemoveToken: SelectOptionHandler = useCallback((item) => {
+    if (onChange) {
+      const nextValue = (Array.isArray(tokens)) ? tokens.filter(v => v.id !== item.id).map(v => v.data) : [item.data]
+      onChange(nextValue);
     }
-  }, [collection, value, focus]);
 
-  const onSelect: SelectOptionHandler = useCallback(
-    (item) => {
-      if (onChange) {
-        onChange(item.data);
+  }, [tokens])  
+
+  const onSelect: SelectOptionSelectionHandler = useCallback(
+    (item, index, close) => {
+      if (close === undefined) {
+        close = !(multiple && !collection.getSearch())
       }
-      setOpen(false);
-      collection.clearSearch();
+      if (close) {
+        setOpen(false);
+      }
+      if (keyboardItem !== undefined) {
+        if (!close) {
+          arrowItemRef.current = keyboardItem;
+        }        
+        setKeyboardItem(undefined);
+
+      }
+      if (collection.getSearch()) {
+        collection.clearSearch();
+      }
+      if (onChange) {
+        if (multiple) {
+          if (item.meta?.selected) {
+            onRemoveToken(item, index);
+          } else {
+            
+            const nextValue = (Array.isArray(value)) ? value.concat([item.data]) : [item.data]
+            onChange(nextValue);
+          }
+        } else {
+          onChange(item.data);
+        }
+        
+      }
     },
-    [onChange, collection],
+    [onChange, collection, multiple, onRemoveToken],
   );
 
-  useEffect(() => {
-    if (value !== previousValueRef.current) {
-      const item = toCollectionItem(value, collection.getAdapter());
-      const previousItem = toCollectionItem(previousValueRef.current, collection.getAdapter());
-      collection.setMeta(previousItem, 'selected', false);
-      collection.setMeta(item, 'selected', true);
+  // const onItemEnter: SelectOptionHandler = useCallback((item) => {
+  //   if (item !== undefined && item.id !== undefined && collection.getMeta(item.id)) {
+  //     highlightItem(item, true);
+  //   }
+  // }, [collection, highlightItem])
+
+  // const onItemLeave: SelectOptionHandler = useCallback((item) => {
+  //   if (item !== undefined && item.id !== undefined && collection.getMeta(item.id)) {
+  //     highlightItem(item, false);
+  //   }
+  // }, [collection, false])  
+
+
+
+  const onKeyDownCapture = useCallback((e:KeyboardEvent) => {	
+    if (['ArrowDown', 'ArrowUp', 'Enter', 'Escape'].includes(e.key)) {
+      stateRef.current.keepFocus = true;
     }
-    previousValueRef.current = value;
-  }, [value, collection]);
+  }, [])
+
+  const onKeyDown = useCallback((e:KeyboardEvent) => {
+    const currentIndex = keyboardItem === undefined && arrowItemRef.current ? findItemIndex(collection, arrowItemRef.current) : findItemIndex(collection, proxyItem);
+    let nextIndex: number|undefined;
+    let nextItem: Item<any,SelectOptionMeta>|undefined;
+    switch(e.key) {
+      case 'ArrowDown':
+        if (open) {
+          nextIndex = (currentIndex === -1) ? 0 : currentIndex + 1;
+          nextItem = get(collection.items, nextIndex.toString());
+          if (nextItem !== undefined) {
+            setKeyboardItem(nextItem);
+          }
+        } else if (!open && focus) {
+          setOpen(true);
+        }
+        stateRef.current.keepFocus = false;
+        break;
+
+      case 'ArrowUp':
+        if (open) {
+          nextIndex = (currentIndex <= 0) ? 0 : currentIndex - 1;
+          nextItem = get(collection.items, nextIndex.toString());
+  
+          if (nextItem !== undefined) {
+            setKeyboardItem(nextItem);
+          } 
+        } else if (!open && focus) {
+          setOpen(true);
+        }
+        stateRef.current.keepFocus = false;
+        break;
+
+      case 'Enter':
+        if (open && currentIndex !== -1) {
+          nextItem = get(collection.items, currentIndex.toString());
+          if (nextItem !== undefined) {
+            onSelect(nextItem, currentIndex, !(multiple && !collection.getSearch()));
+          }
+        } else if (!open && focus) {
+          setOpen(true);
+        }
+        stateRef.current.keepFocus = false;
+        break;
+
+      case 'Escape':
+        if (focus) {
+          if (open) {
+            setOpen(false);
+          }
+          setKeyboardItem(undefined);
+          if (collection.getSearch()) {
+            collection.clearSearch();
+          }
+        }
+
+        stateRef.current.keepFocus = false;
+        break;        
+        
+    }
+  }, [collection, proxyItem, keyboardItem, onSelect, open, setOpen, focus, multiple])
+
+
+
+  useEffect(() => {
+    if (proxyItem?.id !== currentProxyItem.current?.id) {    
+      if (currentProxyItem.current !== undefined) {
+        const item = currentProxyItem.current
+        currentProxyItem.current = undefined;
+        collection.setMeta(item, multiple ? 'highlighted' : 'selected', false);
+      } 
+      if (proxyItem !== undefined && proxyItem.id !== undefined && collection.getMeta(proxyItem.id)) {
+        currentProxyItem.current = proxyItem;     
+        collection.setMeta(proxyItem, multiple ? 'highlighted' : 'selected', true);
+      }
+    }
+
+    if (multiple) {
+      const diffTokens = diffItems(previousTokensRef.current, tokens)
+      diffTokens.removed.forEach(token => {
+        if (token.id !== undefined) {
+          collection.setMeta(token, 'selected', false);
+        }
+      })      
+      diffTokens.added.forEach(token => {
+        if (token.id !== undefined) {
+          collection.setMeta(token, 'selected', true);
+        }
+      })
+      previousTokensRef.current = tokens;
+    }
+  }, [value, collection, proxyItem, tokens]);
+  
+  const classNames = addClassname(`o-select o-select-size-${size} o-select-${open ? 'open' : 'close'}${status ? ' o-select-status-'+status.toLowerCase() : ''}`, className);
+
+  const { view: listView, scrollToIndex } = useListView({
+    ItemComponent: ItemComponent ? ItemComponent : multiple ? MultiSelectOptionComponent : SelectOptionComponent, 
+    onItemClick: onSelect, 
+    // onItemMouseEnter: onItemEnter,
+    // onItemMouseLeave: onItemLeave,
+    collection, 
+    height, 
+    className: 'o-select-options',
+  });
+
+  const onDropDownUpdate = useCallback(() => {
+    // const index = findItemIndex(collection, previousProxyItem.current);
+    // if (open && scrollToIndex && index >= 0) {
+    //   const align = keyboardItem ? 'auto': 'center';
+    //   scrollToIndex(index, { 'align': align });
+    // }
+  }, [open, scrollToIndex, collection, proxyItem])  
+  
+  useIsomorphicLayoutEffect(() => {
+    if (open && scrollToIndex) {
+      const previousItem = currentScrollItem.current;
+      const previousIndex = currentScrollIndex.current
+      currentScrollItem.current = proxyItem;
+      const index = findItemIndex(collection, proxyItem);
+      currentScrollIndex.current = index
+      
+      if ((proxyItem?.id !== previousItem?.id || previousIndex !== index) && index >= 0) {
+        const align = keyboardItem ? 'auto': 'center';
+        scrollToIndex(index, { 'align': align });
+      }
+    }
+
+  }, [collection, scrollToIndex, open, proxyItem, keyboardItem]);
+
+  useEventListener('keydown', onKeyDownCapture, true);
+  useEventListener('keydown', onKeyDown, false);
 
   return (
     <div
-      className={className}
+      className={classNames}
       ref={setContainerRef}
-      onClick={() => setFocus(true)}
       onMouseDown={() => (stateRef.current.keepFocus = true)}
       onMouseUp={() => (stateRef.current.keepFocus = false)}
     >
       <InputComponent
         placeholder={placeholder}
-        onIconClick={() => !delayOpen && setOpen(!open)}
-        open={open && !delayOpen}
+        setOpen={setOpen}
+        open={open}
         loading={loading}
+        fetching={fetching}
         onChange={onInputChange}
-        value={selectedItem.text}
+        value={proxyItem ? proxyItem.text : ''}
         focus={focus}
-        onFocus={() => setFocus(true)}
+        onFocus={onFocus}
         onBlur={onBlur}
+        tokens={tokens}
+        multiple={multiple}
+        onRemove={onRemoveToken}
+        autoFocus={autoFocus}
       />
-      <Dropdown refElement={containerRef} open={open}>
-        <SelectOptionsComponent items={collection} onItemClick={onSelect} />
+      <Dropdown refElement={containerRef} open={open} distance={5} onUpdate={onDropDownUpdate}>
+        {listView}
       </Dropdown>
     </div>
   );

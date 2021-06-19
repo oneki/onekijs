@@ -1,8 +1,8 @@
-import required from './validators/required';
-import regex from './validators/regex';
+import { AnonymousObject } from '../typings/object';
+import { isFalse } from '../utils/type';
 import { Validator } from './typings';
-import { AnonymousObject } from '../core/typings';
-import { isFalse } from '../core/utils/type';
+import regex from './validators/regex';
+import required from './validators/required';
 
 // extract validators from props
 export const extractValidators = (props: AnonymousObject): [Validator[], AnonymousObject] => {

@@ -1,6 +1,6 @@
 import useGlobalProp from '../app/useGlobalProp';
+import { AnonymousObject } from '../typings/object';
 import { Notification } from './typings';
-import { AnonymousObject } from '../core/typings';
 
 const useAllNotifications = (): AnonymousObject<Notification[]> => {
   return useGlobalProp<AnonymousObject<Notification[]>>('notifications') || {};

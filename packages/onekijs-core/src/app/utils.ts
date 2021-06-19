@@ -1,25 +1,20 @@
 import produce from 'immer';
 import { AnyAction, applyMiddleware, createStore, Middleware, Store } from 'redux';
 import createSagaMiddleware, { SagaMiddleware } from 'redux-saga';
-import BasicError from '../core/BasicError';
-import { inReducer } from '../core/Service';
-import { AnonymousObject, ErrorCallback, ResultCallback, SuccessCallback } from '../core/typings';
+import DefaultBasicError from '../core/BasicError';
 import useLazyRef from '../core/useLazyRef';
-import { clone, fromPayload, simpleMergeDeep } from '../core/utils/object';
-import Router from '../router/Router';
-import useRouter from '../router/useRouter';
-import AppContext from './AppContext';
+import { AppSettings, AppStore, reducersSymbol, sagasSymbol } from '../typings/app';
+import { ResultCallback, SuccessCallback } from '../typings/callback';
+import { BasicError, ErrorCallback } from '../typings/error';
+import { AnonymousObject } from '../typings/object';
+import { Router } from '../typings/router';
+import { inReducer } from '../typings/service';
+import { clone, fromPayload, simpleMergeDeep } from '../utils/object';
+import BasicAppContext from './AppContext';
 import { defaultSettings, indexLocales } from './settings';
-import {
-  AppErrorCallback,
-  AppResultCallback,
-  AppSettings,
-  AppStore,
-  AppSuccessCallback,
-  reducersSymbol,
-  sagasSymbol,
-} from './typings';
+import { AppErrorCallback, AppResultCallback, AppSuccessCallback } from './typings';
 import useAppContext from './useAppContext';
+import useRouter from './useRouter';
 
 export const createReduxStore = (
   initialState: AnonymousObject = {},
@@ -121,7 +116,7 @@ export const formatSettings = (settings: AppSettings): AppSettings => {
 export function asResultCallback<T = any>(
   callback: AppResultCallback<T> | undefined,
   router: Router,
-  appContext: AppContext,
+  appContext: BasicAppContext,
 ): ResultCallback<T> | undefined {
   if (!callback) return undefined;
   if (typeof callback === 'string') {
@@ -145,7 +140,7 @@ function useResultCallback<T = any>(callback?: AppResultCallback<T>): ResultCall
   return callbackRef.current;
 }
 
-export function useErrorCallback<T extends BasicError = BasicError>(
+export function useErrorCallback<T extends BasicError = DefaultBasicError>(
   callback?: AppErrorCallback<T>,
   defaultCallback?: AppErrorCallback<T>,
 ): ErrorCallback<T> | undefined {

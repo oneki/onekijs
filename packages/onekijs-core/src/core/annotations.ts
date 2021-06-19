@@ -1,5 +1,4 @@
-import Service, { serviceClass } from './Service';
-import { State, Class, ID, AnyFunction, AnonymousObject, SagaEffect } from './typings';
+import DefaultService from './Service';
 import {
   debounce as debounceSaga,
   takeEvery,
@@ -9,6 +8,12 @@ import {
   take,
 } from 'redux-saga/effects';
 import 'reflect-metadata';
+import { AnyFunction } from '../typings/core';
+import { State } from '../typings/state';
+import { AnonymousObject, Class } from '../typings/object';
+import { SagaEffect } from '../typings/saga';
+import { ID } from '../typings/symbol';
+import { serviceClass } from '../typings/service';
 
 const uids = new Set<string>();
 let counter = 0;
@@ -28,7 +33,7 @@ export const asReducer: (reducer: AnyFunction<void>) => AnyFunction<void> = func
   return func;
 };
 
-export const inject = <S extends State, T extends Service<S>>(ctor: Class<T>): T => {
+export const inject = <S extends State, T extends DefaultService<S>>(ctor: Class<T>): T => {
   const result: unknown = {
     [serviceClass]: ctor,
   };

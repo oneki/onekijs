@@ -3,10 +3,11 @@ import useAppContext from '../app/useAppContext';
 import useLazyRef from '../core/useLazyRef';
 import useService from '../core/useService';
 import useNotificationService from '../notification/useNotificationService';
-import FetchService from './FetchService';
-import { FetchOptions, FetchState, UseGetOptions } from './typings';
-import useRouter from '../router/useRouter';
+import FetchService from '../core/FetchService';
+import { UseGetOptions } from './typings';
 import { asResultCallback } from '../app/utils';
+import useRouter from '../app/useRouter';
+import { FetchOptions, FetchState } from '../typings/fetch';
 
 const useGet = <T = any>(url?: string | null, options: UseGetOptions<T> = {}): [T, boolean, () => void] => {
   const notificationService = useNotificationService();

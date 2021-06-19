@@ -1,8 +1,8 @@
 import { SyntheticEvent, useEffect, useState } from 'react';
-import { AnonymousObject } from '../core/typings';
 import useFormContext from './useFormContext';
 import { ValidationCode, ValidationStatus } from './typings';
 import useFormStatus from './useFormStatus';
+import { AnonymousObject } from '../typings/object';
 
 const useSubmit = (): {
   submit: (e?: SyntheticEvent<Element, Event>) => void;

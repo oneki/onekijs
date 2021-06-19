@@ -1,18 +1,20 @@
 import { call } from 'redux-saga/effects';
 import { reducer, saga, service } from '../core/annotations';
-import BasicError from '../core/BasicError';
-import LocalService from '../core/LocalService';
-import { ErrorCallback, SagaEffect, SuccessCallback } from '../core/typings';
-import { get } from '../core/utils/object';
-import { absoluteUrl } from '../router/utils';
-import { asyncHttp } from '../fetch/utils';
+import DefaultBasicError from '../core/BasicError';
+import { get } from '../utils/object';
 import NotificationService from '../notification/NotificationService';
 import AuthService from './AuthService';
 import { LogoutState } from './typings';
 import { getIdp, getIdpName, isExternal, isOauth } from './utils';
+import DefaultLocalService from '../app/LocalService';
+import { SagaEffect } from '../typings/saga';
+import { ErrorCallback } from '../typings/error';
+import { SuccessCallback } from '../typings/callback';
+import { absoluteUrl } from '../utils/router';
+import { asyncHttp } from '../core/xhr';
 
 @service
-export default class LogoutService extends LocalService<LogoutState> {
+export default class LogoutService extends DefaultLocalService<LogoutState> {
   notificationService: NotificationService;
   authService: AuthService;
 
@@ -38,7 +40,7 @@ export default class LogoutService extends LocalService<LogoutState> {
    * @param {object} error
    */
   @reducer
-  onError(error: BasicError): void {
+  onError(error: DefaultBasicError): void {
     this.state.error = error;
     this.state.loading = false;
   }
@@ -66,7 +68,8 @@ export default class LogoutService extends LocalService<LogoutState> {
     try {
       const idpName = getIdpName(store.getState());
       if (!idpName) {
-        return yield this.successLogout(onError, onSuccess);
+        yield this.successLogout(onError, onSuccess);
+        return;
       }
 
       // forward to reducer to set loading flag
@@ -80,7 +83,7 @@ export default class LogoutService extends LocalService<LogoutState> {
           // if the user specifies a function as externalLogoutEndpoint, we delegate to
           // this function the task of building the URL of the external logout
           // page
-          const url = yield idp.externalLogoutEndpoint(idp, this.context);
+          const url: string = yield idp.externalLogoutEndpoint(idp, this.context);
           window.location.href = `${absoluteUrl(url, get(settings, 'server.baseUrl'))}`;
         } else if (idp.externalLogoutEndpoint) {
           // Build the logout URL

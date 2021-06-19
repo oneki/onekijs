@@ -2,11 +2,11 @@ import React, { FC } from 'react';
 import { SelectIconProps } from '../typings';
 import LoadingIcon from '../../icon/LoadingIcon';
 
-const SelectIconComponent: FC<SelectIconProps> = ({ onIconClick, open, loading }) => {
+const SelectIconComponent: FC<SelectIconProps> = ({ onClick, open, loading }) => {
   if (!loading) {
     return (
-      <div className="o-select-icon-container" onClick={onIconClick}>
-        <button className="o-select-icon">
+      <div className="o-select-icon-container" onClick={onClick}>
+        <button type="button" tabIndex={-1} className="o-select-icon">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="100%"
@@ -27,7 +27,7 @@ const SelectIconComponent: FC<SelectIconProps> = ({ onIconClick, open, loading }
     );
   } else {
     return (
-      <div className="o-select-icon-container" onClick={onIconClick}>
+      <div className="o-select-icon-container" onClick={onClick}>
         <div className="o-select-icon">
           <LoadingIcon />
         </div>

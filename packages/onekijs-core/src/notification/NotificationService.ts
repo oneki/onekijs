@@ -1,15 +1,15 @@
 import { delay } from 'redux-saga/effects';
-import { AppSettings } from '../app/typings';
 import { reducer, saga, service } from '../core/annotations';
-import GlobalService from '../core/GlobalService';
-import { SagaEffect } from '../core/typings';
-import { append, get, isNull, set } from '../core/utils/object';
+import DefaultGlobalService from '../app/GlobalService';
+import { append, get, isNull, set } from '../utils/object';
 import { Notification, NotificationContent, NotificationLevel } from './typings';
+import { SagaEffect } from '../typings/saga';
+import { AppSettings } from '../typings/app';
 
 let nextId = 1;
 
 @service
-export default class NotificationService extends GlobalService {
+export default class NotificationService extends DefaultGlobalService {
   init(): void {
     this.context.router.listen(this.onRouteChange);
   }
@@ -151,7 +151,7 @@ export default class NotificationService extends GlobalService {
       notification.ttl = get(
         settings,
         `notification.${notification.topic}.ttl`,
-        get(settings, `notification.default.ttl`),
+        get<number | undefined>(settings, `notification.default.ttl`),
       );
     }
     yield this.add(notification);

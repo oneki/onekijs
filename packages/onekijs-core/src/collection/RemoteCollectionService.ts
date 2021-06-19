@@ -1,12 +1,11 @@
+import { Task } from '@redux-saga/types';
 import { cancel, delay, fork } from 'redux-saga/effects';
-import { Location } from '../router/typings';
+import { asyncHttp } from '../core';
 import { reducer, saga, service } from '../core/annotations';
 import BasicError from '../core/BasicError';
-import { dispatch, types } from '../core/Service';
-import { AnonymousObject, SagaEffect } from '../core/typings';
-import { toPayload } from '../core/utils/object';
-import { Fetcher, HttpMethod } from '../fetch/typings';
-import { asyncHttp } from '../fetch/utils';
+import { AnonymousObject, dispatch, Fetcher, HttpMethod, SagaEffect, types } from '../typings';
+import { Location } from '../typings/router';
+import { toPayload } from '../utils';
 import CollectionService from './CollectionService';
 import {
   Collection,
@@ -45,6 +44,17 @@ export default class RemoteCollectionService<
     return this.state.url;
   }
 
+  getItem(id: string | number): Item<T, M> | undefined {
+    if (this.state.items) {
+      return this.state.items.find((stateItem) => id === stateItem?.id);
+    }
+    return undefined;
+  }
+
+  getMeta(id: string | number): M | undefined {
+    return this.itemMeta[String(id)];
+  }
+
   serializeQuery(query: Query): QuerySerializerResult {
     const serializer = this.state.serializer || defaultSerializer;
     return serializer(query);
@@ -66,7 +76,8 @@ export default class RemoteCollectionService<
     if (item.id !== undefined) {
       const meta = Object.assign({}, this.itemMeta[String(item.id)] ?? item.meta, { [key]: value });
       this.itemMeta[String(item.id)] = meta;
-      item.meta = meta;
+
+      //item.meta = meta;
 
       if (this.state.items) {
         const stateItem = this.state.items.find((stateItem) => item.id === stateItem?.id);
@@ -98,31 +109,39 @@ export default class RemoteCollectionService<
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
   protected *_fetch(query: Query, resetData: boolean) {
-    let loadingTask = null;
+    let loadingTask: Task | null = null;
     const options = this.state.fetchOptions || {};
     const { onSuccess, onError } = options;
+
     try {
-      if (options.delayLoading) {
-        loadingTask = yield fork(
-          [this, this._delayLoading],
-          options.delayLoading,
-          query.limit,
-          query.offset,
-          resetData,
-        );
+      const oQuery = this.serializeQuery(query);
+      const sQuery = Object.keys(oQuery)
+        .map((k) => `${k}=${oQuery[k]}`)
+        .join('&');
+      let result: CollectionFetcherResult<T>;
+      if (this.cache[sQuery]) {
+        result = this.cache[sQuery];
+      } else {
+        if (options.delayLoading) {
+          loadingTask = yield fork(
+            [this, this._delayLoading],
+            options.delayLoading,
+            query.limit,
+            query.offset,
+            resetData,
+          );
+        }
+        const fetcher: Fetcher<CollectionFetcherResult<T>, T | Query | undefined> = options.fetcher || asyncHttp;
+        const method = this.state.method ?? HttpMethod.Get;
+        const body = this.state.method === HttpMethod.Get ? undefined : Object.assign({}, query);
+
+        const fetchOptions = method === HttpMethod.Get ? Object.assign({}, options, { query: oQuery }) : options;
+        result = yield fetcher(this.url, method, body, fetchOptions);
+        this.cache[sQuery] = result;
+        if (loadingTask !== null) {
+          yield cancel(loadingTask);
+        }
       }
-
-      const fetcher: Fetcher<CollectionFetcherResult<T>, T | Query | undefined> = options.fetcher || asyncHttp;
-
-      const method = this.state.method ?? HttpMethod.Get;
-      const body = this.state.method === HttpMethod.Get ? undefined : query;
-      const fetchOptions =
-        method === HttpMethod.Get ? Object.assign({}, options, { query: this.serializeQuery(query) }) : options;
-      const result = yield fetcher(this.url, method, body, fetchOptions);
-      if (loadingTask !== null) {
-        yield cancel(loadingTask);
-      }
-
       yield this._fetchSuccess(result, resetData, query); // to update the store and trigger a re-render.
       if (onSuccess) {
         yield onSuccess(result);
@@ -158,23 +177,24 @@ export default class RemoteCollectionService<
     const currentQuery = this.getQuery();
     const data: T[] = Array.isArray(result) ? result : result[this.state.dataKey];
     const total = Array.isArray(result) ? undefined : result[this.state.totalKey];
+
     let hasMore = true;
     if (Array.isArray(result)) {
-      if (!limit || result.length <= limit) {
+      if (!limit || result.length < limit) {
         hasMore = false;
       }
     } else {
-      if (result[this.state.hasMoreKey] === true) {
-        hasMore = true;
-      } else if (
-        result[this.state.hasMoreKey] === false ||
-        !limit ||
-        data.length <= limit ||
-        (total && total <= limit + offset)
-      ) {
+      if (!limit) {
         hasMore = false;
+      } else if (result[this.state.hasMoreKey] === true) {
+        hasMore = true;
+      } else if (Object.keys(result).includes(this.state.totalKey)) {
+        hasMore = total > limit + offset;
+      } else {
+        hasMore = data.length >= limit;
       }
     }
+
     // check if current query is still equals to the query used for fetching
     let same = isSameQuery(query, currentQuery);
 
@@ -230,7 +250,7 @@ export default class RemoteCollectionService<
     same = same && query.limit === currentQuery.limit && query.offset === currentQuery.offset;
 
     if (same && resetData) {
-      this.state.status = this.state.total === undefined ? LoadingStatus.PartialLoaded : LoadingStatus.Loaded;
+      this.state.status = hasMore ? LoadingStatus.PartialLoaded : LoadingStatus.Loaded;
     } else {
       // need to calculate the status as we cannot be sure that there is not another running request
       if (
@@ -238,11 +258,11 @@ export default class RemoteCollectionService<
       ) {
         this.state.status = LoadingStatus.PartialLoading;
       } else if (
-        Object.values(this.itemMeta).find((itemMeta) => itemMeta && itemMeta.loadingStatus === LoadingStatus.Deprecated)
+        Object.values(this.itemMeta).find((itemMeta) => itemMeta && itemMeta.loadingStatus === LoadingStatus.Fetching)
       ) {
-        this.state.status = LoadingStatus.PartialDeprecated;
+        this.state.status = LoadingStatus.PartialFetching;
       } else {
-        this.state.status = this.state.total === undefined ? LoadingStatus.PartialLoaded : LoadingStatus.Loaded;
+        this.state.status = hasMore ? LoadingStatus.PartialLoaded : LoadingStatus.Loaded;
       }
     }
   }
@@ -263,7 +283,7 @@ export default class RemoteCollectionService<
     if (options.status === undefined) {
       options.status =
         this.state.fetchOptions?.delayLoading !== undefined && this.state.fetchOptions?.delayLoading > 0
-          ? LoadingStatus.Deprecated
+          ? LoadingStatus.Fetching
           : LoadingStatus.Loading;
     }
 
@@ -316,7 +336,7 @@ export default class RemoteCollectionService<
         }
         this.state.status = `${resetData ? '' : 'partial_'}${options.status}` as CollectionStatus;
       } else {
-        // no items yet, so we are sure that the collection is either full loading of full deprecated
+        // no items yet, so we are sure that the collection is either full loading of full fetching
         this.state.status = options.status;
       }
     }
@@ -326,7 +346,10 @@ export default class RemoteCollectionService<
   @reducer
   protected _onLocationChange(location: Location) {
     const nextQuery = this._parseLocation(location);
-    const resetData = this.state.items ? false : shouldResetData(this.getQuery(), nextQuery);
+    const resetData = this.state.items ? shouldResetData(this.getQuery(), nextQuery) : false;
+    if (resetData) {
+      this._clearOffset(nextQuery);
+    }
     this._setQuery(nextQuery);
     this[dispatch]({
       type: this[types]._fetch.actionType,

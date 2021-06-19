@@ -1,9 +1,10 @@
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { Provider } from 'react-redux';
-import { isPromise } from '../core/utils/type';
+import { AppSettings, AppStore } from '../typings/app';
+import { isPromise } from '../utils/type';
 import AppProvider from './AppProvider';
 import DefaultLoadingComponent from './DefaultLoadingComponent';
-import { AppStateProps, AppSettings, AppStore } from './typings';
+import { AppStateProps } from './typings';
 import { createReduxStore, formatSettings } from './utils';
 
 const AppState: FC<AppStateProps> = ({

@@ -1,4 +1,4 @@
-import { get } from '../core/utils/object';
+import { get } from '../utils/object';
 import useAppContext from './useAppContext';
 
 function useSetting<T = any>(selector: string): T | undefined;

@@ -1,6 +1,5 @@
 import { Task } from 'redux-saga';
 import { fork } from 'redux-saga/effects';
-import { AnonymousObject, SagaEffect } from '../core/typings';
 import {
   Field,
   FormErrorCallback,
@@ -17,12 +16,14 @@ import {
 } from './typings';
 import FieldValidation, { defaultValidation } from './FieldValidation';
 import ContainerValidation from './ContainerValidation';
-import { get, set, del, isObject } from '../core/utils/object';
+import { get, set, del, isObject } from '../utils/object';
 import { service, reducer, saga } from '../core/annotations';
-import LocalService from '../core/LocalService';
+import DefaultService from '../core/Service';
+import { AnonymousObject } from '../typings/object';
+import { SagaEffect } from '../typings/saga';
 
 @service
-export default class FormService extends LocalService<FormState> {
+export default class FormService extends DefaultService<FormState> {
   public fields: AnonymousObject<Field>;
   public listeners: {
     [k in FormListenerType]: AnonymousObject<FormListenerProps[]>;
@@ -296,7 +297,7 @@ export default class FormService extends LocalService<FormState> {
   @saga(SagaEffect.Every)
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   *setValue(fieldName: string, value: any) {
-    const async = yield this.validateAll({
+    const async: string[] = yield this.validateAll({
       [fieldName]: value,
     });
     if (async.length > 0) {
@@ -307,7 +308,7 @@ export default class FormService extends LocalService<FormState> {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Latest)
   *setValues(values: AnonymousObject<any>) {
-    const async = yield this.validateAll(values);
+    const async: string[] = yield this.validateAll(values);
     if (async.length > 0) {
       yield this.compileValidations(async);
     }

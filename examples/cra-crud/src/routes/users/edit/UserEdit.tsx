@@ -1,10 +1,9 @@
-import { useGet, usePut, useSetting } from 'onekijs';
+import { useGet, usePut, useSetting, useParams } from 'onekijs';
 import React from 'react';
-import { useParams } from 'react-router-dom';
 import UserForm from '../../../components/userForm';
 import { User } from '../../../types';
 
-export default () => {
+export default (): JSX.Element => {
   // userId is present in the URL: /users/:userId
   // useParams is a hook coming from react-router-dom
   const { userId } = useParams();

@@ -1,13 +1,12 @@
-import { App } from 'onekijs';
+import { App, Link, Route, Switch } from 'onekijs';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Link, Route, Switch } from 'react-router-dom';
 import { UserForm } from './components/UserForm';
 
 ReactDOM.render(
   <App>
     <div style={{ backgroundColor: '#EEE', padding: '10px', marginBottom: '10px' }}>
-      <Link to="/">Home</Link> | <Link to="/users">Users</Link>
+      <Link href="/">Home</Link> | <Link href="/users">Users</Link>
     </div>
     <Switch>
       <Route path="/users">

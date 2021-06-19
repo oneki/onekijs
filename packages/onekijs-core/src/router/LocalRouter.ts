@@ -1,6 +1,6 @@
 import { toLocation } from './utils';
 import Router from './Router';
-import { Location, LocationChangeCallback, UnregisterCallback } from './typings';
+import { Location, LocationChangeCallback, UnregisterCallback } from '../typings/router';
 
 let uid = 0;
 export default class LocalRouter extends Router {

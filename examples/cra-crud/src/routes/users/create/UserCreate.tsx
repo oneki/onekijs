@@ -2,7 +2,7 @@ import { usePost, useSetting } from 'onekijs';
 import React from 'react';
 import UserForm from '../../../components/userForm';
 
-export default () => {
+export default (): JSX.Element => {
   // baseUrl is defined in settings.js
   const baseUrl = useSetting('server.baseUrl');
 

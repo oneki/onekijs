@@ -1,7 +1,8 @@
-import { State, AnonymousObject } from '../core/typings';
 import { SyntheticEvent, MutableRefObject, FC } from 'react';
 import FieldValidation from './FieldValidation';
 import ContainerValidation from './ContainerValidation';
+import { State } from '../typings/state';
+import { AnonymousObject } from '../typings/object';
 
 export type AsyncBinder<T> = (...args: any[]) => Promise<T>;
 

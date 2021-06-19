@@ -1,4 +1,4 @@
-import { AppSettings } from './typings';
+import { AppSettings } from '../typings/app';
 import useAppContext from './useAppContext';
 
 const useSettings = (): AppSettings => {

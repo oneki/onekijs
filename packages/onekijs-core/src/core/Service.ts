@@ -1,25 +1,33 @@
 import produce from 'immer';
 import { apply, take } from 'redux-saga/effects';
-import BasicError from './BasicError';
-import { AnyFunction, AnyState, ID, State } from './typings';
-import { fromPayload, get, isGetterOrSetter, toPayload } from './utils/object';
-import { isFunction } from './utils/type';
+import { AnyFunction } from '../typings/core';
+import {
+  combinedReducers,
+  create,
+  dispatch,
+  inReducer,
+  reducers,
+  run,
+  sagas,
+  Service,
+  stop,
+  types,
+} from '../typings/service';
+import { AnyState, State } from '../typings/state';
+import { ID } from '../typings/symbol';
+import DefaultBasicError from './BasicError';
+import { fromPayload, get, isGetterOrSetter, toPayload } from '../utils/object';
+import { isFunction } from '../utils/type';
 
-export const reducers = Symbol('service.reducers');
-export const types = Symbol('service.types');
-export const sagas = Symbol('service.sagas');
-export const dispatch = Symbol('service.dispatch');
-export const combinedReducers = Symbol('service.combinedReducers');
-export const inReducer = Symbol('service.reducer');
 const createReducer = Symbol('service.createReducer');
 const createSaga = Symbol('service.createSaga');
-export const run = Symbol('service.run');
-export const stop = Symbol('service.stop');
-export const serviceClass = Symbol('onekijs.serviceClass');
-export const create = Symbol('service.create');
 
 export const handler = {
-  get: function <S extends State, T extends Service<S>>(target: T, prop: string | number | symbol, receiver?: T): any {
+  get: function <S extends State, T extends DefaultService<S>>(
+    target: T,
+    prop: string | number | symbol,
+    receiver?: T,
+  ): any {
     const alias = target[types][prop];
     if (alias) {
       if (alias.type === 'reducer') {
@@ -47,10 +55,10 @@ export const handler = {
   },
 };
 
-export default class Service<S extends State = AnyState> {
-  protected [reducers]: any;
+export default class DefaultService<S extends State = AnyState> implements Service {
+  public [reducers]: any;
   public [types]: any;
-  protected [sagas]: any;
+  public [sagas]: any;
   public [dispatch]: any;
   public [combinedReducers]: (state: any, action: any) => any;
   public [inReducer]: boolean;
@@ -141,7 +149,7 @@ export default class Service<S extends State = AnyState> {
       const sep = delay.indexOf('.');
       const obj = delay.substring(0, sep);
       if (sep === -1 || !['state', 'settings'].includes(obj)) {
-        throw new BasicError(
+        throw new DefaultBasicError(
           'A string delay for a saga of type throttle or debounce must starts with state.xxx or settings.xxx',
         );
       }
@@ -155,7 +163,7 @@ export default class Service<S extends State = AnyState> {
 
     const wrapper: any = function* wrapper(action: any) {
       try {
-        const result = yield apply(self, saga, fromPayload(action.payload));
+        const result: unknown = yield apply(self, saga, fromPayload(action.payload));
         if (action.resolve) {
           action.resolve(result);
         }
@@ -182,7 +190,7 @@ export default class Service<S extends State = AnyState> {
     } else {
       this[sagas][actionType] = function* () {
         while (true) {
-          const action = yield take(actionType);
+          const action: unknown = yield take(actionType);
           yield wrapper(action);
         }
       };

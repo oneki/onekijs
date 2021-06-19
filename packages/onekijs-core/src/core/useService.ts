@@ -1,6 +1,8 @@
 import 'reflect-metadata';
-import Service, { handler, create } from './Service';
-import { Class, State } from './typings';
+import { Class } from '../typings/object';
+import { create, Service } from '../typings/service';
+import { State } from '../typings/state';
+import { handler } from './Service';
 import useLazyRef from './useLazyRef';
 import useLocalReducer from './useLocalReducer';
 

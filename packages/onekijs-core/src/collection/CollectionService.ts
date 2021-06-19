@@ -1,10 +1,10 @@
 import Router from '../router/Router';
-import { Location } from '../router/typings';
+import { Location } from '../typings/router';
 import { reducer } from '../core/annotations';
 import Service from '../core/Service';
-import { AnonymousObject, Primitive } from '../core/typings';
-import { get } from '../core/utils/object';
-import { urlBuilder } from '../router/utils';
+import { Primitive } from '../typings/core';
+import { get } from '../utils/object';
+import { urlBuilder } from '../utils/router';
 import {
   Collection,
   CollectionItemAdapter,
@@ -35,6 +35,7 @@ import {
   visitFilter,
 } from './utils';
 import LocalRouter from '../router/LocalRouter';
+import { AnonymousObject } from '../typings';
 
 export default abstract class CollectionService<
   T = any,
@@ -45,7 +46,9 @@ export default abstract class CollectionService<
   initialState: S = null!;
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   router: Router = null!;
-
+  cache: AnonymousObject<any> = {};
+  abstract getItem(id: string | number): Item<T, M> | undefined;
+  abstract getMeta(id: string | number): M | undefined;
   abstract setData(data: T[]): void;
   abstract setItems(items: Item<T, M>[]): void;
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -62,9 +65,10 @@ export default abstract class CollectionService<
 
   @reducer
   addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId: QueryFilterId = rootFilterId): void {
+    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
-    this._addFilter(filterOrCriteria, parentFilterId);
-    this.refresh();
+    this._addFilter(query, filterOrCriteria, parentFilterId);
+    this.refresh(query);
   }
 
   @reducer
@@ -95,78 +99,90 @@ export default abstract class CollectionService<
     comparator: QuerySortComparator = defaultComparator,
     prepend = true,
   ): void {
+    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
-    this._addSortBy(field, dir, comparator, prepend);
+    this._addSortBy(query, field, dir, comparator, prepend);
+    this.refresh(query);
   }
 
   @reducer
   clearFields(): void {
+    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
-    this._clearFields();
-    this.refresh();
+    this._clearFields(query);
+    this.refresh(query);
   }
 
   @reducer
   clearFilter(): void {
+    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
-    this._clearFilter();
-    this.refresh();
+    this._clearFilter(query);
+    this.refresh(query);
   }
 
   @reducer
   clearLimit(): void {
+    const query = this.getQuery();
     this._setLoading({ offset: this.state.offset, resetData: false });
-    this._clearLimit();
-    this.refresh();
+    this._clearLimit(query);
+    this.refresh(query);
   }
 
   @reducer
   clearOffset(): void {
+    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, resetData: false });
-    this._clearOffset();
-    this.refresh();
+    this._clearOffset(query);
+    this.refresh(query);
   }
 
   @reducer
   clearParam(key: string): void {
+    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
-    this._clearParam(key);
-    this.refresh();
+    this._clearParam(query, key);
+    this.refresh(query);
   }
 
   @reducer
   clearParams(): void {
+    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
-    this._clearParams();
-    this.refresh();
+    this._clearParams(query);
+    this.refresh(query);
   }
 
   @reducer
   clearSearch(): void {
+    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
-    this._clearSearch();
-    this.refresh();
+    this._clearSearch(query);
+    this.refresh(query);
   }
 
   @reducer
   clearSort(): void {
+    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
-    this._clearSort();
-    this.refresh();
+    this._clearSort(query);
+    this.refresh(query);
   }
 
   @reducer
   clearSortBy(): void {
+    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
-    this._clearSortBy();
-    this.refresh();
+    this._clearSortBy(query);
+    this.refresh(query);
   }
 
   @reducer
   filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[]): void {
+    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
-    this._setFilter(filter);
-    this.refresh();
+    this._setFilter(query, filter);
+    this.refresh(query);
   }
 
   getQuery(): Query {
@@ -192,7 +208,9 @@ export default abstract class CollectionService<
   @reducer
   query(query: Query): void {
     let resetData = false;
-    if (query.filter || query.search || query.sort || query.sortBy || query.fields) {
+    if (
+      ['filter', 'search', 'sort', 'sortBy', 'fields'].filter((value) => Object.keys(query).includes(value)).length > 0
+    ) {
       resetData = true;
     }
     this._setLoading({ limit: query.limit, offset: query.offset, resetData });
@@ -201,24 +219,25 @@ export default abstract class CollectionService<
   }
 
   @reducer
-  refresh(): void {
+  refresh(query?: Query): void {
     const path = this.state.router.location.pathname;
-    const query = urlSerializer(this.getQuery());
-    this.state.router.push(urlBuilder(path, {}, query));
+    this.state.router.push(urlBuilder(path, {}, urlSerializer(query || this.getQuery())));
   }
 
   @reducer
   removeFilter(filterId: QueryFilterId): void {
+    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
-    this._removeFilter(filterId);
-    this.refresh();
+    this._removeFilter(query, filterId);
+    this.refresh(query);
   }
 
   @reducer
   removeSortBy(field: string): void {
+    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
-    this._removeSortBy(field);
-    this.refresh();
+    this._removeSortBy(query, field);
+    this.refresh(query);
   }
 
   @reducer
@@ -230,51 +249,51 @@ export default abstract class CollectionService<
 
   @reducer
   search(search: Primitive): void {
+    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
-    this._setSearch(search);
-    this.refresh();
+    this._setSearch(query, search);
+    this.refresh(query);
   }
 
   @reducer
   setFields(fields: string[]): void {
+    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
-    this._setFields(fields);
-    this.refresh();
+    this._setFields(query, fields);
+    this.refresh(query);
   }
 
   @reducer
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   setParam(key: string, value: any): void {
+    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
-    this._setParam(key, value);
-    this.refresh();
+    this._setParam(query, key, value);
+    this.refresh(query);
   }
 
   @reducer
   setParams(params: AnonymousObject): void {
+    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
-    this._setParams(params);
-    this.refresh();
-  }
-
-  @reducer
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  setStatus(status: LoadingStatus): void {
-    this.state.status = status;
+    this._setParams(query, params);
+    this.refresh(query);
   }
 
   @reducer
   sort(dir: QuerySortDir): void {
+    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
-    this._setSort(dir);
-    this.refresh();
+    this._setSort(query, dir);
+    this.refresh(query);
   }
 
   @reducer
   sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void {
+    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
-    this._setSortBy(sortBy);
-    this.refresh();
+    this._setSortBy(query, sortBy);
+    this.refresh(query);
   }
 
   init(): void {
@@ -388,9 +407,12 @@ export default abstract class CollectionService<
     return toCollectionItem(data, this.state.adapter);
   }
 
-  @reducer
-  protected _addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId: QueryFilterId = rootFilterId): void {
-    const filter = this.getFilter() || { id: rootFilterId, operator: 'and', criterias: [] };
+  protected _addFilter(
+    query: Query,
+    filterOrCriteria: QueryFilterOrCriteria,
+    parentFilterId: QueryFilterId = rootFilterId,
+  ): void {
+    const filter = this._formatFilter(query.filter) || { id: rootFilterId, operator: 'and', criterias: [] };
     visitFilter(filter, (filter) => {
       if (filter.id === parentFilterId) {
         let index = -1;
@@ -406,71 +428,65 @@ export default abstract class CollectionService<
       }
       return false;
     });
-    this.state.filter = filter;
+    query.filter = filter;
   }
 
-  @reducer
   protected _addSortBy(
+    query: Query,
     field: string,
     dir: QuerySortDir = 'asc',
     comparator: QuerySortComparator = defaultComparator,
     prepend = true,
   ): void {
-    this._removeSortBy(field);
-    const sortBy = this.getSortBy() || [];
+    this._removeSortBy(query, field);
+    const sortBy = this._formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(query, 'sortBy')) || [];
     if (prepend) {
       sortBy.unshift({ field, dir, comparator });
     } else {
       sortBy.push({ field, dir, comparator });
     }
-    this.state.sortBy = sortBy;
+    query.sortBy = sortBy;
   }
 
-  @reducer
-  protected _clearFields(): void {
-    this.state.fields = undefined;
+  protected _clearFields(query: Query): void {
+    query.fields = undefined;
   }
 
-  @reducer
-  protected _clearFilter(): void {
-    this.state.filter = undefined;
+  protected _clearFilter(query: Query): void {
+    query.filter = undefined;
   }
 
-  @reducer
-  protected _clearOffset(): void {
-    this.state.offset = undefined;
+  protected _clearOffset(query: Query): void {
+    query.offset = undefined;
   }
 
-  @reducer
-  protected _clearParam(key: string): void {
-    if (this.state.params) {
-      delete this.state.params[key];
+  protected _clearParam(query: Query, key: string): void {
+    if (query.params) {
+      delete query.params[key];
     }
   }
 
-  @reducer
-  protected _clearParams(): void {
-    this.state.params = undefined;
+  protected _clearParams(query: Query): void {
+    query.params = undefined;
+  }
+
+  protected _clearSearch(query: Query): void {
+    query.search = undefined;
   }
 
   @reducer
-  protected _clearSearch(): void {
-    this.state.search = undefined;
+  protected _clearLimit(query: Query): void {
+    query.limit = undefined;
   }
 
   @reducer
-  protected _clearLimit(): void {
-    this.state.limit = undefined;
+  protected _clearSortBy(query: Query): void {
+    query.sortBy = undefined;
   }
 
   @reducer
-  protected _clearSortBy(): void {
-    this.state.sortBy = undefined;
-  }
-
-  @reducer
-  protected _clearSort(): void {
-    this.state.sort = undefined;
+  protected _clearSort(query: Query): void {
+    query.sort = undefined;
   }
 
   protected _formatFilter(
@@ -524,9 +540,8 @@ export default abstract class CollectionService<
     return parseQuery(location.query || {});
   }
 
-  @reducer
-  protected _removeFilter(filterId: QueryFilterId): void {
-    const filter = this.getFilter();
+  protected _removeFilter(query: Query, filterId: QueryFilterId): void {
+    const filter = this._formatFilter(query.filter);
     if (filter) {
       visitFilter(filter, (filter) => {
         for (const i in filter.criterias) {
@@ -537,37 +552,32 @@ export default abstract class CollectionService<
         }
         return false;
       });
-      this.state.filter = filter;
+      query.filter = filter;
     }
   }
 
-  @reducer
-  protected _removeSortBy(field: string): void {
-    const sortBy = this.getSortBy();
+  protected _removeSortBy(query: Query, field: string): void {
+    const sortBy = this._formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(query, 'sortBy'));
     if (sortBy) {
-      this.state.sortBy = sortBy.filter((sort) => sort.field !== field);
+      query.sortBy = sortBy.filter((sort) => sort.field !== field);
     }
   }
 
-  @reducer
-  protected _setFields(fields: string[]): void {
-    this.state.fields = fields;
+  protected _setFields(query: Query, fields: string[]): void {
+    query.fields = fields;
   }
 
-  @reducer
-  protected _setFilter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[]): void {
-    this.state.filter = this._formatFilter(filter);
+  protected _setFilter(query: Query, filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[]): void {
+    query.filter = this._formatFilter(filter);
   }
 
-  @reducer
-  protected _setLimit(limit: number): void {
-    this.state.limit = limit;
+  protected _setLimit(query: Query, limit: number): void {
+    query.limit = limit;
   }
 
-  @reducer
-  protected _setLimitOffset(limit?: number, offset?: number): void {
-    this.state.limit = limit;
-    this.state.offset = offset;
+  protected _setLimitOffset(query: Query, limit?: number, offset?: number): void {
+    query.limit = limit;
+    query.offset = offset;
   }
 
   @reducer
@@ -581,30 +591,26 @@ export default abstract class CollectionService<
     if (force || query.fields) this.state.fields = query.fields;
     if (force || query.offset) this.state.offset = query.offset;
     if (force || query.limit) this.state.limit = query.limit;
+    if (force || query.params) this.state.params = query.params;
   }
 
-  @reducer
-  protected _setOffset(offset: number): void {
-    this.state.offset = offset;
+  protected _setOffset(query: Query, offset: number): void {
+    query.offset = offset;
   }
 
-  @reducer
-  protected _setParams(params: AnonymousObject): void {
-    this.state.params = params;
+  protected _setParams(query: Query, params: AnonymousObject): void {
+    query.params = params;
   }
 
-  @reducer
-  protected _setSearch(search: Primitive): void {
-    this.state.search = search;
+  protected _setSearch(query: Query, search: Primitive): void {
+    query.search = search;
   }
 
-  @reducer
-  protected _setSort(dir: QuerySortDir): void {
-    this.state.sort = dir;
+  protected _setSort(query: Query, dir: QuerySortDir): void {
+    query.sort = dir;
   }
 
-  @reducer
-  protected _setSortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void {
-    this.state.sortBy = this._formatSortBy(sortBy);
+  protected _setSortBy(query: Query, sortBy: string | QuerySortBy | QuerySortBy[]): void {
+    query.sortBy = this._formatSortBy(sortBy);
   }
 }

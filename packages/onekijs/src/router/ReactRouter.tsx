@@ -1,25 +1,18 @@
-import React from 'react';
-import { History, Location as ReactRouterLocation, LocationListener, LocationState } from 'history';
+import { toI18nLocation } from '@oneki/i18n';
+import { BaseRouter, toLocation, toRelativeUrl, toUrl } from '@oneki/router';
 import {
-  AppRouter,
+  AppSettings,
   LinkProps,
   Location,
   LocationChangeCallback,
   RouterPushOptions,
-  toI18nLocation,
-  toLocation,
-  toRelativeUrl,
-  toUrl,
   UnregisterCallback,
-} from 'onekijs-core';
-import { MutableRefObject } from 'react';
+} from '@oneki/types';
+import { History, Location as ReactRouterLocation, LocationListener, LocationState } from 'history';
+import React, { MutableRefObject } from 'react';
 import Link from '../components/Link';
-import { AppSettings } from 'onekijs-core';
-// import AppRouter from '../lib/app/AppRouter';
-// import { Location, LocationChangeCallback } from '../lib/app/typings';
-// import { toLocation, toUrl } from '../lib/core/utils/url';
 
-export class ReactRouter extends AppRouter {
+export class ReactRouter extends BaseRouter {
   protected reactRouterHistory?: History<LocationState>;
 
   constructor(history?: History<LocationState>) {

@@ -1,10 +1,10 @@
-import { set } from '../core/utils/object';
+import { set } from '../utils/object';
 import { service, reducer } from '../core/annotations';
-import LocalService from '../core/LocalService';
-import { State, AnyState } from '../core/typings';
+import DefaultLocalService from './LocalService';
+import { AnyState, State } from '../typings/state';
 
 @service
-export default class LocalStateService<S extends State = AnyState> extends LocalService<S> {
+export default class LocalStateService<S extends State = AnyState> extends DefaultLocalService<S> {
   @reducer
   setState(key: string, value: unknown): void {
     set(this.state, key, value);

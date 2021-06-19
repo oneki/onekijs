@@ -1,4 +1,4 @@
-import useGlobalService from '../core/useGlobalService';
+import useGlobalService from '../app/useGlobalService';
 import NotificationService from './NotificationService';
 
 export const useNotificationService = (): NotificationService => {

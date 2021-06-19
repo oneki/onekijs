@@ -6,7 +6,7 @@ import settings from './settings';
 const IndexPage = () => {
   const [T, t, locale] = useTranslation();
   const i18nService = useI18nService();
-  const locales: string[] = useSetting('i18n.locales');
+  const locales = useSetting<string[]>('i18n.locales');
 
   const lastname = 'Franki';
   const firstname = 'Bruno';
@@ -32,7 +32,7 @@ const IndexPage = () => {
             value={locale}
             onChange={e => i18nService.changeLocale(e.target.value)}
           >
-            {locales.map(l => (
+            {locales && locales.map(l => (
               <option key={l} value={l}>
                 {l}
               </option>

@@ -1,25 +1,26 @@
 import React, { FC, SyntheticEvent, useCallback, useEffect, useMemo, useRef } from 'react';
-import { AnonymousObject } from '../core/typings';
-import { DefaultFormContext } from './useFormContext';
+import useLazyRef from '../core/useLazyRef';
+import useService from '../core/useService';
+import { AnonymousObject } from '../typings/object';
+import { get } from '../utils/object';
+import ContainerValidation from './ContainerValidation';
+import FieldValidation, { defaultValidation } from './FieldValidation';
 import FormService from './FormService';
 import {
   FieldOptions,
   FieldProps,
+  FormContext,
   FormListenerType,
   FormOptions,
   FormProps,
   FormState,
   FormSubmitCallback,
-  FormContext,
   TouchOn,
   UseForm,
+  ValidationCode,
+  Validator,
 } from './typings';
-import { ValidationCode, Validator } from './typings';
-import FieldValidation, { defaultValidation } from './FieldValidation';
-import ContainerValidation from './ContainerValidation';
-import { get } from '../core/utils/object';
-import useLocalService from '../core/useLocalService';
-import useLazyRef from '../core/useLazyRef';
+import { DefaultFormContext } from './useFormContext';
 /**
  * This callback is used when the user press the submit button
  *
@@ -39,7 +40,7 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
   // we copy initialValues to values to be able to reset the form to its initial state
   // immer will not kept a reference between to two objects. So changing values will not change initialValues
   const formOptionsRef = useRef(formOptions);
-  const [state, service] = useLocalService(
+  const [state, service] = useService(
     FormService,
     (): FormState => {
       formOptions.touchOn = formOptions.touchOn ?? TouchOn.Blur;

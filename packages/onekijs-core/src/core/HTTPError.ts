@@ -1,5 +1,6 @@
-import { AnonymousObject } from './typings';
-import BasicError from './BasicError';
+import DefaultBasicError from './BasicError';
+import { BasicError } from '../typings/error';
+import { AnonymousObject } from '../typings/object';
 
 // https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
 const httpCodes: AnonymousObject<string> = {
@@ -68,7 +69,7 @@ const httpCodes: AnonymousObject<string> = {
   '511': 'Network Authentication Required',
 };
 
-export default class HTTPError extends BasicError {
+export default class HTTPError extends DefaultBasicError implements BasicError {
   constructor(code: string | number, message?: string, payload: AnonymousObject = {}) {
     super(message || httpCodes[code] || 'Unkown error', code, payload);
   }

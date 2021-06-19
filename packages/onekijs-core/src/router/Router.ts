@@ -1,13 +1,14 @@
 import produce from 'immer';
 import { ParsedQuery } from 'query-string';
 import { MutableRefObject } from 'react';
-import { AppSettings } from '../app/typings';
-import { AnonymousObject } from '../core/typings';
-import { get } from '../core/utils/object';
-import { I18n } from '../i18n/typings';
-import { LinkProps, Location, LocationChangeCallback, RouterPushOptions, UnregisterCallback } from './typings';
 
-export default abstract class Router {
+import { get } from '../utils/object';
+import { LinkProps, Location, LocationChangeCallback, RouterPushOptions, UnregisterCallback } from '../typings/router';
+import { AppSettings } from '../typings/app';
+import { AnonymousObject } from '../typings/object';
+import { I18n } from '../typings';
+
+export default abstract class BaseRouter {
   settings: AppSettings = {};
   i18n: I18n = {};
   history: Location[];

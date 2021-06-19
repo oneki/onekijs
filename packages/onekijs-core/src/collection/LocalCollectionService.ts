@@ -1,6 +1,6 @@
-import { Location } from '../router/typings';
+import { Location } from '../typings/router';
 import { reducer, service } from '../core/annotations';
-import { get } from '../core/utils/object';
+
 import CollectionService from './CollectionService';
 import {
   Collection,
@@ -18,6 +18,7 @@ import {
   QuerySortDir,
 } from './typings';
 import { defaultComparator, isQueryFilterCriteria } from './utils';
+import { get } from '../utils';
 
 const defaultSearcher = 'i_like';
 
@@ -32,18 +33,35 @@ export default class LocalCollectionService<
     this.refresh();
   }
 
+  getItem(id: string | number): Item<T, M> | undefined {
+    if (this.state.items) {
+      return this.state.items.find((stateItem) => id === stateItem?.id);
+    }
+    return undefined;
+  }
+
+  getMeta(id: string | number): M | undefined {
+    const item = this.getItem(id);
+    if (item !== undefined) {
+      return item.meta;
+    }
+    return undefined;
+  }
+
   @reducer
   setData(data: T[]): void {
-    this._clearOffset();
+    const query = this.getQuery();
+    this._clearOffset(query);
     this.state.db = data.map((d) => this._adapt(d));
-    this.refresh();
+    this.refresh(query);
   }
 
   @reducer
   setItems(items: Item<T, M>[]): void {
-    this._clearOffset();
+    const query = this.getQuery();
+    this._clearOffset(query);
     this.state.db = items;
-    this.refresh();
+    this.refresh(query);
   }
 
   @reducer
@@ -61,8 +79,15 @@ export default class LocalCollectionService<
   protected _onLocationChange(location: Location): void {
     const nextQuery = this._parseLocation(location);
     this._setQuery(nextQuery);
-    const queryEngine: QueryEngine<T, M> = this.state.queryEngine || this._execute.bind(this);
-    this.state.items = queryEngine(this.state.db || [], nextQuery);
+    if (location.relativeurl && this.cache[location.relativeurl]) {
+      this.state.items = this.cache[location.relativeurl];
+    } else {
+      const queryEngine: QueryEngine<T, M> = this.state.queryEngine || this._execute.bind(this);
+      this.state.items = queryEngine(this.state.db || [], nextQuery);
+      if (location.relativeurl) {
+        this.cache[location.relativeurl] = this.state.items;
+      }
+    }
   }
 
   protected _applyCriteria(item: Item<T, M>, criteria: QueryFilterCriteria): boolean {
@@ -191,7 +216,7 @@ export default class LocalCollectionService<
     if (query.filter) {
       result = items.filter((item) => this._applyFilter(item, this._formatFilter(query.filter)));
     } else if (query.search) {
-      result = items.filter((item) => this._applySearch(item, this.state.search));
+      result = items.filter((item) => this._applySearch(item, query.search));
     } else {
       result = Object.assign([], items);
     }

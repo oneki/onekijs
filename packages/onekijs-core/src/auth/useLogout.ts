@@ -2,11 +2,11 @@ import { useCallback, useEffect } from 'react';
 import useNotificationService from '../notification/useNotificationService';
 import LogoutService from './LogoutService';
 import { LogoutOptions, LogoutState } from './typings';
-import useLocalService from '../core/useLocalService';
-import BasicError from '../core/BasicError';
+import useLocalService from '../app/useLocalService';
+import DefaultBasicError from '../core/BasicError';
 import { useErrorCallback, useSuccessCallback } from '../app/utils';
 
-const useLogout = (options: LogoutOptions = {}): [BasicError | undefined, boolean] => {
+const useLogout = (options: LogoutOptions = {}): [DefaultBasicError | undefined, boolean] => {
   const [state, service] = useLocalService(LogoutService, {
     loading: true,
   } as LogoutState);

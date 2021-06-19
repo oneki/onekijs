@@ -1,5 +1,6 @@
 import { useContext } from 'react';
-import AppContext, { DefaultAppContext } from './AppContext';
+import { AppContext } from '../typings/app';
+import { DefaultAppContext } from './AppContext';
 
 const useAppContext = (): AppContext => {
   return useContext(DefaultAppContext);

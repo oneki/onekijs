@@ -5,7 +5,7 @@ const FirstnameInput: FC<InputProps> = () => {
   return <Input name="firstname" />;
 };
 
-export const UserForm = () => {
+export const UserForm = (): JSX.Element => {
   const { Form } = useForm((data) => {
     console.log(data);
   });

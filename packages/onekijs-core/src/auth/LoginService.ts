@@ -1,15 +1,11 @@
 import { call } from 'redux-saga/effects';
 import { reducer, saga, service } from '../core/annotations';
-import BasicError from '../core/BasicError';
-import LocalService from '../core/LocalService';
-import { AnonymousObject, ErrorCallback, SagaEffect, SuccessCallback } from '../core/typings';
-import { sha256 } from '../core/utils/crypt';
-import { get } from '../core/utils/object';
-import { absoluteUrl } from '../router/utils';
-import { asyncHttp, asyncPost } from '../fetch/utils';
+import DefaultBasicError from '../core/BasicError';
+import { sha256 } from '../utils/crypt';
+import { get } from '../utils/object';
 import NotificationService from '../notification/NotificationService';
 import AuthService from './AuthService';
-import { LoginState } from './typings';
+import { LoginState, OidcToken } from './typings';
 import {
   generateCodeChallenge,
   generateCodeVerifier,
@@ -22,9 +18,16 @@ import {
   parseHashToken,
   parseJwt,
 } from './utils';
+import DefaultLocalService from '../app/LocalService';
+import { SagaEffect } from '../typings/saga';
+import { AnonymousObject } from '../typings/object';
+import { ErrorCallback } from '../typings/error';
+import { SuccessCallback } from '../typings/callback';
+import { absoluteUrl } from '../utils/router';
+import { asyncHttp, asyncPost } from '../core';
 
 @service
-export default class LoginService extends LocalService<LoginState> {
+export default class LoginService extends DefaultLocalService<LoginState> {
   notificationService: NotificationService;
   authService: AuthService;
 
@@ -52,7 +55,7 @@ export default class LoginService extends LocalService<LoginState> {
    */
 
   @reducer
-  onError(error: BasicError): void {
+  onError(error: DefaultBasicError): void {
     this.state.error = error;
     this.state.loading = false;
   }
@@ -93,7 +96,7 @@ export default class LoginService extends LocalService<LoginState> {
       const idp = getIdp(settings, idpName);
 
       // will contain the result of the submit
-      let response;
+      let response: unknown;
 
       if (typeof idp.loginEndpoint === 'function') {
         // if the user specifies a function as loginEndpoint, we delegate to
@@ -108,7 +111,7 @@ export default class LoginService extends LocalService<LoginState> {
         const contentType = idp.loginContentType || 'application/json';
         let url = idp.loginEndpoint;
         if (!url) {
-          throw new BasicError(`Invalid loginEndpoint for IDP ${idp.name}`);
+          throw new DefaultBasicError(`Invalid loginEndpoint for IDP ${idp.name}`);
         }
         let body;
 
@@ -188,7 +191,7 @@ export default class LoginService extends LocalService<LoginState> {
 
       if (isOauth(idp)) {
         if (!idp.clientId) {
-          throw new BasicError(`Cannot find a valid client_id for IDP ${idp.name}`);
+          throw new DefaultBasicError(`Cannot find a valid client_id for IDP ${idp.name}`);
         }
         const params: AnonymousObject = {
           client_id: idp.clientId,
@@ -247,7 +250,7 @@ export default class LoginService extends LocalService<LoginState> {
 
           window.location.href = `${absoluteUrl(idp.authorizeEndpoint, get(settings, 'server.baseUrl'))}${search}`;
         } else {
-          throw new BasicError(`Cannot find a valid authorizeEndpoint for IDP ${idp.name}`);
+          throw new DefaultBasicError(`Cannot find a valid authorizeEndpoint for IDP ${idp.name}`);
         }
       } else if (typeof idp.externalLoginEndpoint === 'function') {
         // if the user specifies a function as externalLoginEndpoint, we delegate to
@@ -260,7 +263,7 @@ export default class LoginService extends LocalService<LoginState> {
         const search = idp.postLoginRedirectKey ? `?${idp.postLoginRedirectKey}=${redirectUri}` : '';
         window.location.href = `${absoluteUrl(idp.externalLoginEndpoint, get(settings, 'server.baseUrl'))}${search}`;
       } else {
-        throw new BasicError(`Cannot find a valid externalLoginEndpoint for IDP ${idp.name}`);
+        throw new DefaultBasicError(`Cannot find a valid externalLoginEndpoint for IDP ${idp.name}`);
       }
     } catch (e) {
       if (process.env.NODE_ENV === 'development') {
@@ -300,14 +303,14 @@ export default class LoginService extends LocalService<LoginState> {
 
       // by default, the response is the current location containing all
       // parameters found in the URL
-      let response = router.location;
+      let response: Location | unknown = router.location;
 
       // the callback found in the IDP configuration is a custom function
       // for parsing the reponse of the exernal login
       let callback = idp.callback;
 
       // Will contain the token from the response (if found)
-      let token = null;
+      let token: unknown = null;
 
       // Will contain the security context found in the response (if found)
       let securityContext = null;
@@ -328,23 +331,23 @@ export default class LoginService extends LocalService<LoginState> {
             getIdpStorage(idp).removeItem('onekijs.state');
 
             if (!params) {
-              throw new BasicError('Cannot parse the URL');
+              throw new DefaultBasicError('Cannot parse the URL');
             }
 
             if (params.error) {
-              throw new BasicError(params.error_description?.toString() || '', params.error?.toString());
+              throw new DefaultBasicError(params.error_description?.toString() || '', params.error?.toString());
             }
 
             if (!params.code) {
-              throw new BasicError(
+              throw new DefaultBasicError(
                 'No authorization code received from Identity Provider',
                 'missing_authorization_code',
               );
             }
 
-            const hash = yield sha256(state || undefined);
+            const hash: string = yield sha256(state || undefined);
             if (idp.state && hash !== params.state) {
-              throw new BasicError('Invalid oauth2 state', 'invalid_state');
+              throw new DefaultBasicError('Invalid oauth2 state', 'invalid_state');
             }
 
             // build the token request based on spec
@@ -379,7 +382,7 @@ export default class LoginService extends LocalService<LoginState> {
             // get the token from the tokenEndpoint
             token = yield asyncPost(idp.tokenEndpoint, body, { headers });
           } else {
-            throw new BasicError(`Cannot find a valid tokenEndpoint for IDP ${idp.name}`);
+            throw new DefaultBasicError(`Cannot find a valid tokenEndpoint for IDP ${idp.name}`);
           }
 
           // use the token instead of the location as the response
@@ -402,16 +405,16 @@ export default class LoginService extends LocalService<LoginState> {
       if (isOauth(idp) && idp.nonce && get(token, 'id_token')) {
         // validates the nonce found in the id_token
         // https://openid.net/specs/openid-connect-core-1_0.html#TokenResponseValidation
-        const id_token = parseJwt(token.id_token);
+        const id_token = parseJwt((token as { id_token: string }).id_token);
         const nonce = getIdpStorage(idp).getItem('onekijs.nonce');
-        const hash = yield sha256(nonce || undefined);
+        const hash: string = yield sha256(nonce || undefined);
         getIdpStorage(idp).removeItem('onekijs.nonce');
         if (hash !== id_token.nonce) {
           throw Error('Invalid oauth2 nonce');
         }
       }
 
-      yield this.successLogin(token, securityContext, idpName, onError, onSuccess);
+      yield this.successLogin(token as any, securityContext, idpName, onError, onSuccess);
     } catch (e) {
       if (process.env.NODE_ENV === 'development') {
         console.error('External login callback error', e);
@@ -521,19 +524,21 @@ export default class LoginService extends LocalService<LoginState> {
       if (isOauth(idp)) {
         // ask the authService to load the token in the store from the
         // localStorage (if not yet loaded)
-        const token = yield this.authService.loadToken();
-        if (token && parseInt(token.expires_at) >= Date.now()) {
+        const token: OidcToken = yield this.authService.loadToken();
+        if (token && token.expires_at && parseInt(token.expires_at) >= Date.now()) {
           // do a success login because the token was found and is still valid
-          return yield this.successLogin(token, undefined, idpName, onError, onSuccess);
+          yield this.successLogin(token, undefined, idpName, onError, onSuccess);
+          return;
         }
       }
 
       // try to fetch the security context to see if we are already logged in
       try {
-        const securityContext = yield this.authService.fetchSecurityContext();
+        const securityContext: AnonymousObject | undefined = yield this.authService.fetchSecurityContext();
         // We didn't receive an 401 while loading the context, meaning that we are
         // already logged => do a success login
-        return yield this.successLogin(undefined, securityContext, idpName, onError, onSuccess);
+        yield this.successLogin(undefined, securityContext, idpName, onError, onSuccess);
+        return;
       } catch (e) {
         // for any technical error (50X), we stop here and forward the error
         // to the caller

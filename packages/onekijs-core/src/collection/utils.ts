@@ -1,7 +1,7 @@
 import { __metadata } from 'tslib';
 import BasicError from '../core/BasicError';
-import { AnonymousObject, Primitive } from '../core/typings';
-import { isNull, shallowEqual } from '../core/utils/object';
+import { AnonymousObject, Primitive } from '../typings';
+import { isNull, shallowEqual } from '../utils';
 import {
   Collection,
   CollectionItemAdapter,
@@ -63,9 +63,11 @@ export const generateFilterId = (): number => {
 };
 
 export const isCollectionLoading = <T, M>(collection: Collection<T, M>): boolean => {
-  return !!(
-    collection && ['partial_deprecated', 'partial_loading', 'loading', 'deprecated'].includes(collection.status)
-  );
+  return !!(collection && ['partial_loading', 'loading'].includes(collection.status));
+};
+
+export const isCollectionFetching = <T, M>(collection: Collection<T, M>): boolean => {
+  return !!(collection && ['partial_fetching', 'partial_loading', 'loading', 'fetching'].includes(collection.status));
 };
 
 export const isItem = <T, M extends ItemMeta>(itemOrMeta: Item<T, M> | M): itemOrMeta is Item<T, M> => {
@@ -83,7 +85,7 @@ export const isItemLoading = <T, M extends ItemMeta>(itemOrMeta?: Item<T, M> | M
   }
 };
 
-export const isItemDeprecated = <T, M extends ItemMeta>(itemOrMeta?: Item<T, M> | M): boolean => {
+export const isItemFetching = <T, M extends ItemMeta>(itemOrMeta?: Item<T, M> | M): boolean => {
   if (itemOrMeta === undefined) {
     return false;
   }
@@ -91,10 +93,10 @@ export const isItemDeprecated = <T, M extends ItemMeta>(itemOrMeta?: Item<T, M> 
     return !!(
       itemOrMeta.meta &&
       (itemOrMeta.meta.loadingStatus === LoadingStatus.Loading ||
-        itemOrMeta.meta.loadingStatus === LoadingStatus.Deprecated)
+        itemOrMeta.meta.loadingStatus === LoadingStatus.Fetching)
     );
   } else {
-    return itemOrMeta.loadingStatus === LoadingStatus.Loading || itemOrMeta.loadingStatus === LoadingStatus.Deprecated;
+    return itemOrMeta.loadingStatus === LoadingStatus.Loading || itemOrMeta.loadingStatus === LoadingStatus.Fetching;
   }
 };
 
@@ -478,4 +480,8 @@ export const toCollectionItem = <T, M>(data?: T, adapter?: CollectionItemAdapter
     id: getId(data),
     text: getText(data),
   };
+};
+
+export const dummyLogMetadata = (): void => {
+  console.log(__metadata);
 };

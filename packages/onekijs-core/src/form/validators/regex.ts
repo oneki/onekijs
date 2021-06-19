@@ -1,5 +1,5 @@
 import { Validator } from '../typings';
-import { isNullOrEmpty } from '../../core/utils/object';
+import { isNullOrEmpty } from '../../utils/object';
 
 const regex = (regex: string | RegExp, message: string): Validator => {
   return (value: string) => {

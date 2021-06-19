@@ -1,35 +1,34 @@
 import { css } from 'styled-components';
+import { borderRadius, boxShadow } from '../../styles/border';
+import { opacity } from '../../styles/effects';
+import { overflowY } from '../../styles/overflow';
+import { transitionDuration, transitionProperty, transitionTimingFunction } from '../../styles/transition';
 import { ComponentStyle } from '../../styles/typings';
 import { preflight } from '../../utils/style';
 import { DropdownProps } from './typings';
-import { width, height } from '../../styles/size';
-import { borderRadius, borderColor, boxShadow } from '../../styles/border';
-import { overflowY } from '../../styles/overflow';
-import { backgroundColor } from '../../styles/background';
-import { transitionDuration, transitionProperty, transitionTimingFunction } from '../../styles/transition';
-import { opacity } from '../../styles/effects';
+import { width } from '../../styles/size';
+import { zIndex } from '../../styles/position';
 
 const dropdownStyle: ComponentStyle<DropdownProps> = () => {
   return css`
     ${preflight()}
     ${width(64)}
     ${borderRadius('default')}
-    ${borderColor('gray-200')}
-    ${boxShadow('default')}
+    ${boxShadow('lg')}
     ${overflowY('auto')}
-    ${height('200px')}
-    ${backgroundColor('white')}
+    ${zIndex(1000)}
+
     &.o-dropdown-enter {
       ${opacity(0)}
     }
     &.o-dropdown-enter-active {
-      ${transitionDuration('.5s')}
+      ${transitionDuration('.3s')}
       ${transitionProperty('opacity')}
       ${transitionTimingFunction('ease-in-out')}    
       ${opacity(1)}
     } 
     &.o-dropdown-exit-active {
-      ${transitionDuration('.5s')}
+      ${transitionDuration('.3s')}
       ${transitionProperty('opacity')}
       ${transitionTimingFunction('ease-in-out')}    
       ${opacity(0)}

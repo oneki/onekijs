@@ -1,6 +1,5 @@
 import Router from '../router/Router';
-import { Primitive, AnonymousObject } from '../core/typings';
-import { Fetcher, HttpMethod, FetchState, FetchOptions } from '../fetch/typings';
+import { AnonymousObject, Fetcher, FetchOptions, FetchState, HttpMethod, Primitive } from '../typings';
 
 export type ChangeHandler<T> = (value: T) => void;
 
@@ -26,10 +25,12 @@ export type Collection<T, M extends ItemMeta> = {
   items?: (Item<T, M> | undefined)[];
   filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | null): void;
   getAdapter(): CollectionItemAdapter<T, M> | undefined;
+  getItem(id: string | number): Item<T, M> | undefined;
   getFields(): string[] | undefined;
   getFilter(): QueryFilter | undefined;
   getFilterById(id: QueryFilterId): QueryFilterOrCriteria | undefined;
   getLimit(): number | undefined;
+  getMeta(id: string | number): M | undefined;
   getOffset(): number | undefined;
   getParam(key: string): any;
   getParams(): AnonymousObject | undefined;
@@ -40,7 +41,7 @@ export type Collection<T, M extends ItemMeta> = {
   hasMore: boolean;
   load(limit?: number, offset?: number): void;
   query(query: Query): void;
-  refresh(): void;
+  refresh(query?: Query): void;
   removeFilter(filterId: QueryFilterId): void;
   removeSortBy(field: string): void;
   reset(): void;
@@ -60,10 +61,6 @@ export type Collection<T, M extends ItemMeta> = {
 export type CollectionFetcher<T> = Fetcher<CollectionFetcherResult<T>, Query | undefined>;
 
 export type CollectionFetcherResult<T> = T[] | AnonymousObject;
-
-export type CollectionFetchOptions<R = any, T = any> = Omit<FetchOptions<R, T>, 'auth'> & {
-  auth?: AnonymousObject<any> | boolean;
-};
 
 export type CollectionItemAdapter<T, M extends ItemMeta> = (data: T | undefined) => Partial<Item<T, M>>;
 
@@ -124,10 +121,10 @@ export interface CollectionState<T, M extends ItemMeta> extends FetchState {
 export type CollectionStatus =
   | 'not_initialized'
   | 'loading'
-  | 'deprecated'
+  | 'fetching'
   | 'loaded'
   | 'partial_loading'
-  | 'partial_deprecated'
+  | 'partial_fetching'
   | 'partial_loaded';
 
 export type Item<T, M extends ItemMeta> = {
@@ -151,15 +148,15 @@ export type ItemMeta = {
 
 export type List<T, M extends ItemMeta = ItemMeta> = Collection<T, M>;
 
-export type LoadingItemStatus = 'loading' | 'deprecated' | 'loaded';
+export type LoadingItemStatus = 'loading' | 'fetching' | 'loaded';
 
 export enum LoadingStatus {
   NotInitialized = 'not_initialized',
   Loading = 'loading',
-  Deprecated = 'deprecated',
+  Fetching = 'fetching',
   Loaded = 'loaded',
   PartialLoading = 'partial_loading',
-  PartialDeprecated = 'partial_deprecated',
+  PartialFetching = 'partial_fetching',
   PartialLoaded = 'partial_loaded',
 }
 
@@ -232,4 +229,4 @@ export type QuerySortDir = 'asc' | 'desc';
 
 export interface UseCollectionOptions<T, M extends ItemMeta>
   extends CollectionOptions<T, M>,
-    CollectionFetchOptions<CollectionFetcherResult<T>, Query | undefined> {}
+    FetchOptions<CollectionFetcherResult<T>, Query | undefined> {}

@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect } from 'react';
-import useLocalService from '../core/useLocalService';
-import { AsyncBinder, AsyncBindState } from './typings';
+import useService from '../core/useService';
 import AsyncBindService from './AsyncBindService';
+import { AsyncBinder, AsyncBindState } from './typings';
 
 const useAsyncBind = <T = any>(
   binder: AsyncBinder<T>,
   dependencies: any[] = [],
 ): [T | undefined, boolean, Error | undefined] => {
-  const [state, service] = useLocalService(AsyncBindService, {
+  const [state, service] = useService(AsyncBindService, {
     loading: true,
     result: undefined,
     error: undefined,

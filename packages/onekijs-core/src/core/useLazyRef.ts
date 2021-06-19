@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { isFunction } from './utils/type';
+import { isFunction } from '../utils/type';
 
 const useLazyRef = <T>(initialValue: T | (() => T)): React.MutableRefObject<T> => {
   const ref: React.MutableRefObject<unknown> = useRef(null);

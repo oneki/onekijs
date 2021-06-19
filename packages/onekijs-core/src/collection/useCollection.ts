@@ -1,11 +1,8 @@
 import { useEffect, useMemo, useRef } from 'react';
 import LocalRouter from '../router/LocalRouter';
-import useRouter from '../router/useRouter';
-import { AnonymousObject } from '../core/typings';
+
 import useService from '../core/useService';
-import { omit } from '../core/utils/object';
-import { Fetcher, FetchOptions, HttpMethod } from '../fetch/typings';
-import { asyncHttp } from '../fetch/utils';
+
 import CollectionService from './CollectionService';
 import LocalCollectionService from './LocalCollectionService';
 import RemoteCollectionService from './RemoteCollectionService';
@@ -21,7 +18,10 @@ import {
   UseCollectionOptions,
 } from './typings';
 import { isCollection, toCollectionItem } from './utils';
-import useAuth from '../auth/useAuth';
+import { useRouter } from '../app';
+import { omit } from '../utils';
+import { AnonymousObject, Fetcher, FetchOptions, HttpMethod } from '../typings';
+import { asyncHttp } from '../core';
 
 const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
   dataSource: T[] | string | Collection<T, M>,
@@ -29,11 +29,11 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
 ): Collection<T, M> => {
   const initializedRef = useRef(false);
   let router = useRouter();
-  const auth = useAuth();
   if (!options.mutateUrl) {
     router = new LocalRouter();
   }
   let dataOrUrl: T[] | string;
+
   if (isCollection(dataSource)) {
     // we are going to create a fake collection (because hooks cannot be conditionals)
     dataOrUrl = [];
@@ -45,11 +45,6 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
   const [state, service] = useService<CollectionState<T, M>, CollectionService<T, M, CollectionState<T, M>>>(
     ctor,
     () => {
-      if (options.auth === true) {
-        options.auth = auth;
-      } else if (options.auth === false) {
-        options.auth = undefined;
-      }
       const fetchOptions = Object.assign(
         { delayLoading: 0 },
         omit<FetchOptions<CollectionFetcherResult<T>, Query | undefined>>(options, [
@@ -132,6 +127,8 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
       'getFields',
       'getFilter',
       'getFilterById',
+      'getItem',
+      'getMeta',
       'getOffset',
       'getParam',
       'getParams',
@@ -174,9 +171,7 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
   useEffect(() => {
     if (typeof dataOrUrl === 'string' && options.fetchOnce) {
       const fetcher: Fetcher<CollectionFetcherResult<T>, Query | undefined> = options.fetcher || asyncHttp;
-      service.setStatus(LoadingStatus.Loading);
       fetcher(dataOrUrl, options.method || HttpMethod.Get, undefined, state.fetchOptions).then((result) => {
-        service.setStatus(LoadingStatus.Loaded);
         if (Array.isArray(result)) {
           service.setData(result);
         } else {
@@ -185,10 +180,10 @@ const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataOrUrl]);
+  }, []);
 
   useEffect(() => {
-    if (options.autoload && !initializedRef.current) {
+    if (!isCollection(dataSource) && options.autoload && !initializedRef.current) {
       initializedRef.current = true;
       collection.load(options.initialLimit, options.initialOffset);
     }

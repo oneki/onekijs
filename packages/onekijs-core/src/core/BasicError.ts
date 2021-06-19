@@ -1,6 +1,7 @@
-import { AnonymousObject } from './typings';
+import { BasicError } from '../typings/error';
+import { AnonymousObject } from '../typings/object';
 
-export default class BasicError extends Error {
+export default class DefaultBasicError extends Error implements BasicError {
   code: string | number;
   payload: AnonymousObject;
   constructor(message: string, code?: string | number, payload: AnonymousObject = {}) {

@@ -1,17 +1,18 @@
 import { all, call } from 'redux-saga/effects';
-import { isLocaleSimple } from '../app/settings';
-import { AppSettings } from '../app/typings';
+import DefaultGlobalService from '../app/GlobalService';
 import { reducer, saga, service } from '../core/annotations';
-import GlobalService from '../core/GlobalService';
-import { AnonymousObject, SagaEffect } from '../core/typings';
-import { append, get, set } from '../core/utils/object';
-import { isFunction } from '../core/utils/type';
-import { asyncGet } from '../fetch/utils';
+import { asyncGet } from '../core/xhr';
 import NotificationService from '../notification/NotificationService';
-import { flattenTranslations } from './utils';
+import { AppSettings } from '../typings/app';
+import { AnonymousObject } from '../typings/object';
+import { SagaEffect } from '../typings/saga';
+import { flattenTranslations } from '../utils';
+import { append, get, set } from '../utils/object';
+import { isLocaleSimple } from '../utils/settings';
+import { isFunction } from '../utils/type';
 
 @service
-export default class I18nService extends GlobalService {
+export default class I18nService extends DefaultGlobalService {
   notificationService: NotificationService;
   modifiers: AnonymousObject<any>;
 
@@ -54,7 +55,7 @@ export default class I18nService extends GlobalService {
     const nsToFetch = namespaces.filter((ns) => !get<boolean>(this.state, `i18n.fetching.${locale}.${ns}`, false));
     try {
       yield this.setFetchingTranslations(true, locale, nsToFetch);
-      const results = yield all(
+      const results: AnonymousObject[] = yield all(
         nsToFetch.map((ns) => {
           return call(asyncGet, this.getLocaleUrl(locale, ns, settings), options);
         }),
