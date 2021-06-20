@@ -1,5 +1,15 @@
 import { DefaultBasicError, DefaultService } from '@oneki/core';
-import { AnonymousObject, AnyState, AppContext, AppSettings, AppStore, BasicError, Class, Router } from '@oneki/types';
+import {
+  AnonymousObject,
+  AnyState,
+  AppContext,
+  AppSettings,
+  AppStore,
+  BasicError,
+  Class,
+  FetchOptions,
+  Router,
+} from '@oneki/types';
 import { ComponentType, ElementType, ErrorInfo } from 'react';
 import { DefaultRootState } from 'react-redux';
 
@@ -34,6 +44,19 @@ export interface AppStateProps extends AppProps {
 //   removeReducers: (namespace: string, reducers: AnonymousObject) => void;
 // }
 export type AppSuccessCallback<T = any> = AppResultCallback<T>;
+export type CacheEntry<T> = {
+  loading?: boolean;
+  fetching?: boolean;
+  payload?: T;
+  expireAt?: number;
+  eTag?: string;
+  error?: BasicError;
+};
+export interface CacheOptions<T> extends FetchOptions<T> {
+  ttl?: number;
+  defaultValue?: T;
+  alias?: string;
+}
 export type ErrorBoundaryComponentProps = {
   error?: Error;
   errorInfo?: ErrorInfo;

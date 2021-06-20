@@ -25,6 +25,7 @@ export default class FetchService<S extends FetchState = FetchState> extends Def
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   fetchError(e: any): void {
     this.state.error = e;
+    this.setLoading(false, false);
   }
 
   @reducer

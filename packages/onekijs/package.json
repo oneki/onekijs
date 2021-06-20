@@ -34,7 +34,7 @@
     "@oneki/types": "^0.10.0",
     "@oneki/utils": "^0.10.0",
     "history": "^4.10.1",
-    "immer": "^6.0.2",
+    "immer": "^8.0.1",
     "query-string": "^6.11.1",
     "react-redux": "^7.2.0",
     "react-router": "^5.2.0",

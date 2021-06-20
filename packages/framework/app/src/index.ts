@@ -43,3 +43,5 @@ export { default as useRouter } from './useRouter';
 export { default as useSetting } from './useSetting';
 export { default as useSettings } from './useSettings';
 export { asResultCallback, createReduxStore, formatSettings, useErrorCallback, useSuccessCallback } from './utils';
+export { NO_EXPIRATION, cacheKey, default as CacheEntryService } from './CacheEntryService';
+export { default as useCache } from './useCache';

@@ -1,13 +1,11 @@
-import { usePost } from 'onekijs';
+import { useParams, usePost } from 'onekijs';
 import React, { FC } from 'react';
-import { useParams } from 'onekijs';
-import { products } from '..';
-import { ProductType } from '../../../__server__/api/dto/product';
 import { URL_ADD_PRODUCT } from '../../../modules/core/libs/constants';
 import ProductDetails from '../../../modules/products/components/ProductDetails';
+import { ProductType } from '../../../__server__/api/dto/product';
 
 const ProductDetailsPage: FC = () => {
-  const { productId } = useParams();
+  const { productId } = useParams<any>();
   const [submit] = usePost<ProductType>(URL_ADD_PRODUCT, {
     onSuccess: () => {
       window.alert('Product added succesfully to the cart!');
@@ -24,5 +22,22 @@ const ProductDetailsPage: FC = () => {
     </div>
   );
 };
+
+const products: ProductType[] = [
+  {
+    name: 'Phone XL',
+    price: 799,
+    description: 'A large phone with one of the best screens',
+  },
+  {
+    name: 'Phone Mini',
+    price: 699,
+    description: 'A great phone with one of the best cameras',
+  },
+  {
+    name: 'Phone Standard',
+    price: 299,
+  },
+];
 
 export default ProductDetailsPage;
