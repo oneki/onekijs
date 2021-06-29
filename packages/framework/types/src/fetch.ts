@@ -2,12 +2,14 @@ import { SuccessCallback } from './callback';
 import { BasicError, ErrorCallback } from './error';
 import { AnonymousObject } from './object';
 import { State } from './state';
+import { Task } from '@redux-saga/types';
 
 export interface FetchState extends State {
   loading?: boolean;
   fetching?: boolean;
   result?: any;
   error?: BasicError;
+  task?: Task;
 }
 
 export enum HttpMethod {

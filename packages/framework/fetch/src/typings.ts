@@ -13,4 +13,5 @@ export interface AppExtraFetchOptions<T = any> extends AppFetchOptions<T> {
 
 export interface UseGetOptions<T = any> extends Omit<AppFetchOptions<T>, 'onSuccess'> {
   defaultValue?: T;
+  pollingMs?: number;
 }

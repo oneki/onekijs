@@ -5,9 +5,14 @@ import Product from '../../modules/products/components/Product';
 import { ProductsResponse } from '../../__server__/api/dto/product';
 
 const ProductsPage: FC = () => {
+  // perform an AJAX GET request and cache the response
+  // the response looks like this:
+  // {
+  //   "products": [{...}]
+  // }
   const [cache, loading] = useCache<ProductsResponse>(URL_PRODUCT, {
-    // if ttl is not passed, the value in HTTP header response 'cache-control' is used
-    // ttl: NO_EXPIRATION,
+    // if ttl is not passed, the value in HTTP header response 'cache-control' is used (default: no cache)
+    ttl: NO_EXPIRATION, // The validity time of the cache in seconds (NO_EXPIRATION means infinite)
   });
   if (loading) {
     return null;

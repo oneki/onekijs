@@ -1,11 +1,13 @@
 import { FetchMethod, FetchOptions, FetchState, HttpMethod, SagaEffect } from '@oneki/types';
 import { Task } from '@redux-saga/types';
-import { call, cancel, delay, fork } from 'redux-saga/effects';
+import { call, cancel, delay, fork, spawn } from 'redux-saga/effects';
 import { reducer, saga } from './annotations';
 import DefaultService from './Service';
 import { asyncHttp } from './xhr';
 
 export default class FetchService<S extends FetchState = FetchState> extends DefaultService<S> {
+  pullTask?: Task;
+
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   *delayLoading(delay_ms?: number) {
     yield this.setLoading(delay_ms ? false : true, true);
@@ -69,8 +71,30 @@ export default class FetchService<S extends FetchState = FetchState> extends Def
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
-  *get<R = any>(url: string, options?: FetchOptions<R, never>) {
+  *get<R = any>(url: string, options?: FetchOptions<R, never>): any {
     yield this.fetch(url, HttpMethod.Get, undefined, options);
+  }
+
+  @saga(SagaEffect.Every)
+  *pollFetch(url: string, fixedRateInMs: number, options?: FetchOptions<any, never>): any {
+    yield this.fetch(url, HttpMethod.Get, undefined, options);
+    if (fixedRateInMs > 0) {
+      yield delay(fixedRateInMs);
+      yield this.pollFetch(url, fixedRateInMs, options);
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  @saga(SagaEffect.Every)
+  *poll(url: string, fixedRateInMs: number, options?: FetchOptions<any, never>): any {
+    const task: Task = yield spawn([this, this.pollFetch], url, fixedRateInMs, options);
+    return task;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  @saga(SagaEffect.Every)
+  *cancelPull() {
+    yield this.pullTask?.cancel();
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
