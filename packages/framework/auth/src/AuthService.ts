@@ -14,7 +14,7 @@ export default class AuthService extends DefaultGlobalService {
    * @param {object} securityContext : the security context to save
    */
   @reducer
-  setSecurityContext(securityContext: AnonymousObject | null): void {
+  setSecurityContext(securityContext?: AnonymousObject | null): void {
     set(this.state, 'auth.securityContext', securityContext);
   }
 
@@ -146,7 +146,7 @@ export default class AuthService extends DefaultGlobalService {
   @saga(SagaEffect.Latest)
   *clear(onError?: ErrorCallback, onSuccess?: SuccessCallback) {
     try {
-      yield this.setSecurityContext(null);
+      yield this.setSecurityContext(undefined);
       yield this.setToken(null);
       yield this.setIdp();
       if (onSuccess) {
@@ -234,7 +234,7 @@ export default class AuthService extends DefaultGlobalService {
       return securityContext;
     } catch (e) {
       if (process.env.NODE_ENV === 'development') {
-        console.error('fetchSecurityContext error', e);
+        console.error('fetchSecurityContext error', e, onError);
       }
       if (onError) {
         yield onError(e);
@@ -299,7 +299,8 @@ export default class AuthService extends DefaultGlobalService {
         } else if (refresh_token) {
           // the access token is not still valid but we have a refresh token
           // use the refresh token to get a new valid token
-          result = yield this.refreshToken({ refresh_token }, idp, true);
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          result = yield this.refreshToken({ refresh_token }, idp, true, () => {});
         } else {
           const token: AnonymousObject | string | undefined = yield getItem('onekijs.token', persist);
           if (token) {
@@ -308,7 +309,7 @@ export default class AuthService extends DefaultGlobalService {
         }
       }
 
-      if (onSuccess) {
+      if (onSuccess && result) {
         // call the success callback
         yield onSuccess(result);
       }
@@ -337,7 +338,7 @@ export default class AuthService extends DefaultGlobalService {
    *    - settings: the full settings object passed to the application
    */
   @saga(SagaEffect.Every)
-  *refreshToken(token: AnonymousObject, idp: Idp, force = false, onError?: ErrorCallback): AnonymousObject {
+  *refreshToken(token: AnonymousObject, idp: Idp, force = false, onError?: ErrorCallback): AnonymousObject | undefined {
     const { store } = this.context;
     try {
       if (!force && !token.hasOwnProperty('expires_at')) {
@@ -413,6 +414,17 @@ export default class AuthService extends DefaultGlobalService {
       }
       return yield this.saveToken(nextToken, idp);
     } catch (e) {
+      if (e instanceof HTTPError) {
+        if (typeof e.code === 'number') {
+          if (e.code >= 400 && e.code < 500) {
+            // refresh token is not valid anymore
+            // Clear tokens stored in local storage
+            yield this.clear();
+            // eslint-disable-next-line no-ex-assign
+            e = new HTTPError(401, 'Refresh token is expired', e);
+          }
+        }
+      }
       if (onError) {
         yield onError(e);
       } else {

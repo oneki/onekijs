@@ -1,13 +1,17 @@
 import React, { ErrorInfo } from 'react';
+import { AppContext } from '@oneki/types';
 import { ErrorBoundaryComponentProps } from './typings';
 
-type AppErrorBoundaryProps = {
+export type AppErrorBoundaryProps = {
   ErrorBoundaryComponent: React.ComponentType<ErrorBoundaryComponentProps>;
+  context: AppContext;
 };
 
 type AppErrorBoundaryState = {
   hasError: boolean;
-} & ErrorBoundaryComponentProps;
+  error?: Error;
+  errorInfo?: ErrorInfo;
+};
 
 export default class AppErrorBoundary extends React.Component<AppErrorBoundaryProps, AppErrorBoundaryState> {
   constructor(props: AppErrorBoundaryProps) {
@@ -31,7 +35,7 @@ export default class AppErrorBoundary extends React.Component<AppErrorBoundaryPr
     if (this.state.hasError) {
       const ErrorBoundaryComponent = this.props.ErrorBoundaryComponent;
       return (
-        <ErrorBoundaryComponent error={this.state.error} errorInfo={this.state.errorInfo}>
+        <ErrorBoundaryComponent error={this.state.error} errorInfo={this.state.errorInfo} context={this.props.context}>
           {this.props.children}
         </ErrorBoundaryComponent>
       );

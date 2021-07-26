@@ -1,19 +1,11 @@
+import { BaseRouter, toLocation, toRouteUrl, toUrl } from '@oneki/router';
+import { LinkProps, Location, LocationChangeCallback, RouterPushOptions } from '@oneki/types';
+import { UnregisterCallback } from 'history';
 import Router, { NextRouter as NextRouterType } from 'next/router';
-import {
-  AppRouter,
-  LinkProps,
-  Location,
-  LocationChangeCallback,
-  RouterPushOptions,
-  toI18nLocation,
-  toRouteUrl,
-  toUrl,
-  UnregisterCallback,
-} from 'onekijs-core';
 import React from 'react';
 import Link from '../../components/Link';
 
-export default class NextRouter extends AppRouter {
+export default class NextRouter extends BaseRouter {
   listeners: LocationChangeCallback[];
 
   constructor(listeners: LocationChangeCallback[]) {
@@ -121,7 +113,7 @@ export default class NextRouter extends AppRouter {
 
   sync(nextRouter: NextRouterType): void {
     const asPath = nextRouter.asPath;
-    const location = toI18nLocation(asPath, this.settings, this.i18n, undefined);
+    const location = toLocation(asPath, this.settings);
     this.route = nextRouter.route;
     this.params = nextRouter.query || {};
     this._pushLocation(location);
@@ -150,7 +142,13 @@ export default class NextRouter extends AppRouter {
     //   settings: this.settings,
     //   i18n: this.i18n,
     // });
-    const nextLocation = toI18nLocation(urlOrLocation, this.settings, this.i18n, options?.locale);
+    let nextLocation: Location;
+    if (typeof urlOrLocation === 'string') {
+      nextLocation = toLocation(urlOrLocation, this.settings);
+    } else {
+      nextLocation = urlOrLocation;
+    }
+    //const nextLocation = toLocation(urlOrLocation, this.settings);
     // check if hostname is different.
     // If it's the case, use window.location and not next router
     if (nextLocation && this.location && nextLocation.baseurl !== this.location.baseurl) {

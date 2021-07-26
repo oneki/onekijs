@@ -5,6 +5,7 @@ import BasicAppContext from './AppContext';
 import AppErrorBoundary from './AppErrorBoundary';
 import Container from './Container';
 import ContainerContext from './ContainerContext';
+import DefaultErrorBoundaryComponent from './DefaultErrorBoundaryComponent';
 import { AppProviderProps } from './typings';
 import useGlobalProp from './useGlobalProp';
 
@@ -17,7 +18,7 @@ const AppProvider: FC<AppProviderProps> = ({
   services,
   children,
   store,
-  ErrorBoundaryComponent,
+  ErrorBoundaryComponent = DefaultErrorBoundaryComponent,
 }) => {
   const reduxLocale = useGlobalProp('i18n.locale');
   const [locale, setLocale] = useState<string | undefined>(
@@ -67,7 +68,9 @@ const AppProvider: FC<AppProviderProps> = ({
     <ContainerContext.Provider value={container.current}>
       <DefaultAppContext.Provider value={appContext}>
         {ErrorBoundaryComponent && (
-          <AppErrorBoundary ErrorBoundaryComponent={ErrorBoundaryComponent}>{children}</AppErrorBoundary>
+          <AppErrorBoundary ErrorBoundaryComponent={ErrorBoundaryComponent} context={appContext}>
+            {children}
+          </AppErrorBoundary>
         )}
         {!ErrorBoundaryComponent && children}
       </DefaultAppContext.Provider>

@@ -154,7 +154,6 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
     (name: string, validators: Validator[] = [], options = {}): FieldProps => {
       const field = init(name, validators, options);
       field.value = get(values, name, options.defaultValue === undefined ? '' : options.defaultValue);
-      console.log(field);
       return field;
     },
     [init, values],

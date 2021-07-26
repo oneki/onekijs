@@ -19,7 +19,11 @@ function useSecurityContext(selector?: string, defaultValue?: any): [any, boolea
       setLoading(false);
     } else {
       setLoading(true);
-      authService.fetchSecurityContext(() => authService.setSecurityContext(null));
+      authService.fetchSecurityContext(() => {
+        setTimeout(() => {
+          authService.setSecurityContext(null);
+        }, 0);
+      });
     }
   }, [authService, securityContext]);
 

@@ -60,6 +60,7 @@ export interface CacheOptions<T> extends FetchOptions<T> {
 export type ErrorBoundaryComponentProps = {
   error?: Error;
   errorInfo?: ErrorInfo;
+  context: AppContext;
 };
 export type GlobalModifierFunction = (key: string, value: unknown) => void;
 export type GlobalSelectorFunction = (state: DefaultRootState) => unknown;

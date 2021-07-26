@@ -32,7 +32,6 @@ export const secure = (
     //     });
     //   }
     // }, [authService, onError, error, loading, securityContext]);
-
     if (!loading && securityContext !== undefined) {
       if (securityContext) {
         if (validator && !validator(securityContext)) {

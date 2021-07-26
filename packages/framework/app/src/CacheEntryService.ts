@@ -1,9 +1,9 @@
-import { DefaultGlobalService } from '@oneki/app';
 import { formatAsyncResponse, reducer, saga, service, xhr } from '@oneki/core';
 import { BasicError, SagaEffect } from '@oneki/types';
 import { get, set } from '@oneki/utils';
 import { Task } from 'redux-saga';
 import { call, cancel, delay, fork } from 'redux-saga/effects';
+import DefaultGlobalService from './GlobalService';
 import { CacheEntry, CacheOptions } from './typings';
 
 const now = (): number => Math.floor(Date.now() / 1000);

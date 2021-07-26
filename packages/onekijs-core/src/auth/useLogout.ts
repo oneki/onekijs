@@ -28,7 +28,6 @@ const useLogout = (options: LogoutOptions = {}): [DefaultBasicError | undefined,
 
   useEffect(() => {
     if (callback) {
-      console.log('success logout');
       service.successLogout(onError, onSuccess);
     } else {
       service.logout(onError, onSuccess);
