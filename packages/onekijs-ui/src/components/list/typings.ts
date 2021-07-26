@@ -1,4 +1,4 @@
-import { Collection, Item, ItemMeta } from 'onekijs-core';
+import { Collection, Item, ItemMeta } from '@oneki/collection';
 import { FC, MutableRefObject } from 'react';
 
 export type ListItems<T = any, M extends ItemMeta = ItemMeta> = T[] | Collection<T, M>;

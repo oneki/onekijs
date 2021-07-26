@@ -1,6 +1,6 @@
-import { AnonymousObject } from '@oneki/types';
+import { AnonymousObject, ValidationStatus } from '@oneki/types';
 import FieldValidation from './FieldValidation';
-import { ValidationCode, ValidationStatus } from './typings';
+import { ValidationCode } from './typings';
 
 export default class ContainerValidation extends FieldValidation {
   fields: AnonymousObject<string>;

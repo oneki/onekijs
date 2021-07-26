@@ -25,6 +25,7 @@ export {
 } from './components/select/typings';
 
 export { default as Grid } from './components/grid';
+export { default as useGrid } from './components/grid/useGrid';
 
 export { theme } from './styles/theme';
 

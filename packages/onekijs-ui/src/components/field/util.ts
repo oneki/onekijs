@@ -1,4 +1,5 @@
-import { AnonymousObject, extractValidators, FieldOptions, Validator } from "onekijs-core";
+import { AnonymousObject } from "@oneki/types";
+import { extractValidators, FieldOptions, Validator } from "@oneki/form";
 import { FieldLayoutProps } from "./typings";
 
 // extract validators from props

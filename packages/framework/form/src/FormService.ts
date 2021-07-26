@@ -1,5 +1,5 @@
 import { DefaultService, reducer, saga, service } from '@oneki/core';
-import { AnonymousObject, SagaEffect } from '@oneki/types';
+import { AnonymousObject, SagaEffect, ValidationStatus } from '@oneki/types';
 import { del, get, isObject, set } from '@oneki/utils';
 import { Task } from 'redux-saga';
 import { fork } from 'redux-saga/effects';
@@ -16,8 +16,7 @@ import {
   FormWarningCallback,
   ValidationCode,
   ValidationResult,
-  ValidationStatus,
-  Validator,
+  Validator
 } from './typings';
 
 @service

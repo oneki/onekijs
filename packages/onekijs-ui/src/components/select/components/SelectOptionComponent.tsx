@@ -1,5 +1,5 @@
 import Checkbox from '../../checkbox';
-import { LoadingStatus } from 'onekijs-core';
+import { LoadingStatus } from '@oneki/collection';
 import React, { FC, useMemo } from 'react';
 import { SelectOptionProps } from '../typings';
 

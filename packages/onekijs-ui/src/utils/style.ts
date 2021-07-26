@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
-import { AnonymousObject, lcfirst, toKebabCase } from 'onekijs-core';
+import { lcfirst, toKebabCase } from '@oneki/utils';
+import { AnonymousObject } from '@oneki/types';
 import { css, FlattenInterpolation, ThemeProps } from 'styled-components';
 import { CssProperty, Formatter, Theme } from '../styles/typings';
 import { themeFormatter } from './formatter';

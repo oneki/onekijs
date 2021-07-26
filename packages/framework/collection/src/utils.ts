@@ -70,6 +70,10 @@ export const isCollectionFetching = <T, M>(collection: Collection<T, M>): boolea
   return !!(collection && ['partial_fetching', 'partial_loading', 'loading', 'fetching'].includes(collection.status));
 };
 
+export const isCollectionInitializing = <T, M>(collection: Collection<T, M>): boolean => {
+  return !!(collection && collection.status == 'not_initialized');
+};
+
 export const isItem = <T, M extends ItemMeta>(itemOrMeta: Item<T, M> | M): itemOrMeta is Item<T, M> => {
   return (itemOrMeta as any).meta !== undefined;
 };

@@ -1,4 +1,5 @@
-import { ValidationStatus, ValidationCode } from './typings';
+import { ValidationCode } from './typings';
+import {  ValidationStatus } from '@oneki/types';
 
 export default class FieldValidation {
   message: string;

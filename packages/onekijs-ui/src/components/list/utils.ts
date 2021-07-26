@@ -1,4 +1,4 @@
-import { Collection, CollectionStatus, ItemMeta, LoadingStatus, Item, isCollection } from 'onekijs-core';
+import { Collection, CollectionStatus, ItemMeta, LoadingStatus, Item, isCollection } from '@oneki/collection';
 
 // export const adapt = <T, M extends ItemMeta>(
 //   item: Item<T, M>,

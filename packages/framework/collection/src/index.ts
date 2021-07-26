@@ -46,6 +46,7 @@ export {
   getQueryFilterOrCriterias,
   isCollection,
   isCollectionFetching,
+  isCollectionInitializing,
   isCollectionLoading,
   isItem,
   isItemFetching,

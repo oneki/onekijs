@@ -1,6 +1,6 @@
-import { AnonymousObject } from '@oneki/types';
+import { AnonymousObject, ValidationStatus } from '@oneki/types';
 import { SyntheticEvent, useEffect, useState } from 'react';
-import { ValidationCode, ValidationStatus } from './typings';
+import { ValidationCode } from './typings';
 import useFormContext from './useFormContext';
 import useFormStatus from './useFormStatus';
 

@@ -1,4 +1,5 @@
-import { AnonymousObject, get } from 'onekijs-core';
+import { AnonymousObject } from '@oneki/types';
+import { get } from '@oneki/utils';
 import { Formatter } from '../styles/typings';
 import { hexToRgb } from './color';
 

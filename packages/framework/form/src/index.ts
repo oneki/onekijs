@@ -16,6 +16,8 @@ export {
   FieldProps,
   FormContext,
   FormErrorCallback,
+  FormFieldProps,
+  FormLabelWidth,
   FormListener,
   FormListenerProps,
   FormListenerType,
@@ -34,7 +36,6 @@ export {
   UseForm,
   ValidationCode,
   ValidationResult,
-  ValidationStatus,
   Validator,
   ValidatorsType,
 } from './typings';

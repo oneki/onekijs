@@ -1,4 +1,4 @@
-import { useCollection } from 'onekijs-core';
+import { useCollection } from '@oneki/collection';
 import React, { FC } from 'react';
 import useListView from '../hooks/useListView';
 import { ListProps } from '../typings';

@@ -1,4 +1,4 @@
-import { CollectionStatus, Item, ItemMeta, LoadingStatus, toCollectionItem } from 'onekijs-core';
+import { CollectionStatus, Item, ItemMeta, LoadingStatus, toCollectionItem } from '@oneki/collection';
 import React, { ReactElement, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useVirtual } from 'react-virtual';
 import { addClassname } from '../../../utils/style';
@@ -26,8 +26,9 @@ const useListView: (props: ListInternalProps) => { view: ReactElement, scrollToI
   onItemMouseLeave,
   parentRef,
   tag: Component='div',
+  virtual,
 }) => {
-  const virtual = height !== undefined
+  const isVirtual = virtual === undefined ? height !== undefined : virtual;
   const localParentRef = useRef(null);
   let overflow = 'none';
   if (parentRef === undefined) {
@@ -69,7 +70,7 @@ const useListView: (props: ListInternalProps) => { view: ReactElement, scrollToI
   });
 
   useEffect(() => {
-    if (virtual) {
+    if (isVirtual) {
       if (collection.status === LoadingStatus.NotInitialized) {
         collection.load(preload);
       } else if (canFetchMore(collection)) {
@@ -88,7 +89,7 @@ const useListView: (props: ListInternalProps) => { view: ReactElement, scrollToI
 
   let view: ReactElement;
 
-  if (virtual) {
+  if (isVirtual) {
     view = (
       <div
         ref={parentRef}
