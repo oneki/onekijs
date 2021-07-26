@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.11.0](https://github.com/oneki/onekijs/compare/v0.10.0...v0.11.0) (2021-07-26)
+
+
+### Bug Fixes
+
+* getting-started example ([44364f6](https://github.com/oneki/onekijs/commit/44364f611b6bbbbed507ab5efe069e6f7cb6e0fe))
+
+
+
+
+
 # [0.10.0](https://github.com/oneki/onekijs/compare/v0.9.3...v0.10.0) (2021-06-19)
 
 **Note:** Version bump only for package step09-form

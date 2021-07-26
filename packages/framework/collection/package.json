@@ -1,6 +1,6 @@
 {
   "name": "@oneki/collection",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "description": "",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -14,10 +14,10 @@
   "author": "Oneki",
   "license": "ISC",
   "dependencies": {
-    "@oneki/core": "^0.10.0",
-    "@oneki/router": "^0.10.0",
-    "@oneki/types": "^0.10.0",
-    "@oneki/utils": "^0.10.0",
+    "@oneki/core": "^0.11.0",
+    "@oneki/router": "^0.11.0",
+    "@oneki/types": "^0.11.0",
+    "@oneki/utils": "^0.11.0",
     "@redux-saga/types": "^1.1.0",
     "redux-saga": "^1.1.3"
   },
