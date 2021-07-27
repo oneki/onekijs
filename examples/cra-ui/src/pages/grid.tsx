@@ -1,27 +1,29 @@
+import { useGrid } from 'onekijs-ui';
 
-import { Grid, useGrid } from 'onekijs-ui';
-
-import React from "react";
+import React from 'react';
 import { users } from '../data/users';
 
 export const GridPage = () => {
-  const controller = useGrid({
-    columns: [{
+  const {Grid } = useGrid(users, [
+    {
       id: 'id',
-    }, {
+    },
+    {
       id: 'firstname',
-    }, {
-      id: 'firstname',
-    }, {
+    },
+    {
+      id: 'lastname',
+    },
+    {
       id: 'address.street',
-    }, {
+    },
+    {
       id: 'address.postalCode',
-    }, {
+    },
+    {
       id: 'address.city',
-    }],
-    items: users
-  })
+    },
+  ]);
 
-  return <Grid controller={controller} />
+  return <Grid />;
 };
-

@@ -1,26 +1,24 @@
-import React from "react";
-import { useObjectProxy } from "@oneki/core";
-import { addClassname } from "../../../utils/style";
-import { GridContext, GridProps } from "../typings";
-import { DefaultGridContext } from "../useGridContext";
-import GridBodyComponent from "./GridBodyComponent";
+import React, { useRef } from 'react';
+import { addClassname } from '../../../utils/style';
+import GridService from '../GridService';
+import { GridProps } from '../typings';
+import { DefaultGridContext } from '../useGridContext';
+import GridBodyComponent from './GridBodyComponent';
 
-const GridComponent: React.FC<GridProps> = React.memo(({
-  controller
-}) => {
-  const classNames = addClassname('o-grid', controller.className);
+const GridComponent: React.FC<GridProps> = ({ service }) => {
+  const classNames = addClassname('o-grid', service.className);
 
-  const context = useObjectProxy<GridContext>(controller, {
-    'omit': ['data', 'hasMore', 'items', 'status', 'total', 'columns', 'className']
-  })
+  const contextRef = useRef<GridService>(service);
 
   return (
-    <DefaultGridContext.Provider value={context}>
+    <DefaultGridContext.Provider value={contextRef.current}>
       <div className={classNames}>
-        <GridBodyComponent controller={controller} />
+        <GridBodyComponent collection={service} columns={service.columns} />
       </div>
     </DefaultGridContext.Provider>
-  )
-});
+  );
+};
+
+GridComponent.displayName = 'Grid';
 
 export default GridComponent;

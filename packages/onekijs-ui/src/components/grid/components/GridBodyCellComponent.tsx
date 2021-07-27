@@ -8,16 +8,17 @@ const GridBodyCellComponent: FC<GridBodyCellProps> = ({ column, rowIndex, colId,
   const ref = useRef<HTMLDivElement>(null);
   const initializedRef = useRef<boolean>(false);
 
-  
   useEffect(() => {
     if (!initializedRef.current && ref.current !== null) {
       initializedRef.current = initCell(rowIndex, colId, ref);
     }
   });
 
+  const style = column.computedWidth ? { width: column.computedWidth } : { flexGrow: 1 };
+
   return (
-    <div ref={ref} className="o-grid-body-cell" style={{ width: column.width }}>
-      {get(rowValue, colId)}
+    <div ref={ref} className="o-grid-body-cell" style={style}>
+      {get(rowValue, `data.${colId}`)}
     </div>
   );
 };

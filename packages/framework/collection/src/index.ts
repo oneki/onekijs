@@ -1,6 +1,6 @@
 export { default as CollectionService } from './CollectionService';
-export { default as LocalCollectionService } from './LocalCollectionService';
-export { default as RemoteCollectionService } from './RemoteCollectionService';
+export { default as useCollectionService } from './useCollectionService';
+export { default as useCollectionState } from './useCollectionState';
 export {
   ChangeHandler,
   Collection,

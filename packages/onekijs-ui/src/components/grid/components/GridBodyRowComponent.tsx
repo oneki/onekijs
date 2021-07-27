@@ -12,7 +12,7 @@ const GridBodyRowComponent: FC<GridBodyRowProps> = ({
     return null;
   }
   return (
-    <div className="o-grid-body-row">
+    <div className="o-grid-body-row" style={{ display: 'flex' }}>
       {columns.map((column, colIndex) => {
         return (
           <CellComponent

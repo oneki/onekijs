@@ -1,15 +1,15 @@
-import { AnonymousObject } from '@oneki/types';
+import { AnonymousObject, Service } from '@oneki/types';
 import { isFunction } from '@oneki/utils';
 import { useMemo } from 'react';
 import useLazyRef from './useLazyRef';
 
-type useServiceProxyOptions = {
+type useObjectProxyOptions = {
   mutables?: string[];
   pick?: string[];
   omit?: string[];
 };
 
-const getServiceProps = (object: AnonymousObject): string[] => {
+const getObjectProps = (object: AnonymousObject): string[] => {
   const props = [];
   let obj = object;
   do {
@@ -19,13 +19,13 @@ const getServiceProps = (object: AnonymousObject): string[] => {
   return props;
 };
 
-const useObjectProxy = <R>(object: AnonymousObject, options: useServiceProxyOptions): R => {
+const useObjectProxy = <R>(object: AnonymousObject | Service, options: useObjectProxyOptions): R => {
   const mutableKeys = options.mutables || [];
   const pickKeys = options.pick || [];
   const omitKeys = options.omit || [];
   const immutables = useLazyRef(() => {
-    let keys = pickKeys.length > 0 ? pickKeys : getServiceProps(object);
-    keys = keys.filter((k) => mutableKeys.includes(k) || omitKeys.includes(k));
+    let keys = pickKeys.length > 0 ? pickKeys : getObjectProps(object);
+    keys = keys.filter((k) => !(mutableKeys.includes(k) || omitKeys.includes(k)));
 
     return keys.reduce((accumulator, prop) => {
       if (isFunction(object[prop])) {
@@ -37,10 +37,10 @@ const useObjectProxy = <R>(object: AnonymousObject, options: useServiceProxyOpti
     }, {} as AnonymousObject);
   });
 
-  const mutables = mutableKeys.map(k => object[k]);
+  const mutables = mutableKeys.map((k) => object[k]);
 
-  const proxy = useMemo(() => {
-    const mutables =  mutableKeys.reduce((accumulator, prop) => {
+  const proxy = (useMemo(() => {
+    const mutables = mutableKeys.reduce((accumulator, prop) => {
       if (isFunction(object[prop])) {
         accumulator[prop] = object[prop].bind(object);
       } else {
@@ -48,12 +48,11 @@ const useObjectProxy = <R>(object: AnonymousObject, options: useServiceProxyOpti
       }
       return accumulator;
     }, {} as AnonymousObject);
-    return Object.assign({}, immutables, mutables);
+    return Object.assign({}, immutables.current, mutables);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, mutables) as unknown as R;
+  }, mutables) as unknown) as R;
 
   return proxy;
 };
-
 
 export default useObjectProxy;

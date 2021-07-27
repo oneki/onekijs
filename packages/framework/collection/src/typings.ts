@@ -47,7 +47,6 @@ export type Collection<T, M extends ItemMeta> = {
   search(search: Primitive): void;
   setData(data: T[]): void;
   setFields(fields: string[]): void;
-  setItems(items: Item<T, M>[]): void;
   setMeta(item: Item<T, M>, key: keyof M, value: any): void;
   setParam(key: string, value: any): void;
   setParams(params: AnonymousObject): void;
@@ -94,9 +93,11 @@ export interface CollectionOptions<T, M extends ItemMeta> {
 
 export interface CollectionState<T, M extends ItemMeta> extends FetchState {
   adapter?: CollectionItemAdapter<T, M>;
+  autoload?: boolean;
   comparator?: QuerySortComparator;
   dataKey: string;
   db?: Item<T, M>[];
+  fetchOnce?: boolean;
   fetchOptions?: FetchOptions<CollectionFetcherResult<T>, Query | undefined>;
   fields?: string[];
   filter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[];
@@ -104,6 +105,7 @@ export interface CollectionState<T, M extends ItemMeta> extends FetchState {
   hasMoreKey: string;
   items?: (Item<T, M> | undefined)[];
   method?: HttpMethod;
+  local: boolean;
   limit?: number;
   offset?: number;
   params?: AnonymousObject;
