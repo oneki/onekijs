@@ -26,7 +26,6 @@ export {
   GridBodyProps,
   GridBodyRowProps,
   GridColumn,
-  GridController,
   GridItem,
   GridItemMeta,
   GridItems,

@@ -1,21 +1,29 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { useLazyRef } from '@oneki/core';
 import GridService from './GridService';
-import { GridColumn, GridState, UseGridOptions } from './typings';
+import { GridColumnSpec, GridState, UseGridOptions } from './typings';
 import useGridService from './useGridService';
 import useGridState from './useGridState';
 import wrapper from './wrapper';
+import { useRef } from 'react';
 
 const useGrid = <T = any>(
   dataSource: T[] | string,
-  columns: GridColumn<T>[],
+  columns: GridColumnSpec<T>[],
   options: UseGridOptions<T> = {},
 ): { Grid: FC; service: GridService<T, GridState<T>> } => {
   const gridState = useGridState(dataSource, columns, options);
   const [, service] = useGridService<T>(dataSource, GridService, gridState);
 
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+
   const componentRef = useLazyRef<FC>(() => {
-    return wrapper(service);
+    return wrapper(service, gridRef, bodyRef);
+  });
+
+  useEffect(() => {
+    service.onMount(gridRef, bodyRef);
   });
 
   return {

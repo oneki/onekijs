@@ -34,7 +34,7 @@ export const users: User[] = [
     firstname: 'Burnett',
     lastname: 'Casey',
     address: {
-      street: 'Christopher Avenue',
+      street: 'Christopher Avenue Christopher Avenue Christopher Avenue Christopher Avenue Christopher Avenue Christopher Avenue Christopher Avenue Christopher Avenue',
       postalCode: 4362,
       city: 'Sugartown',
     },

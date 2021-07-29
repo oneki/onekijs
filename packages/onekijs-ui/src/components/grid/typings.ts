@@ -1,4 +1,4 @@
-import { Collection, CollectionState, Item, ItemMeta, UseCollectionOptions } from '@oneki/collection';
+import { CollectionState, Item, ItemMeta, UseCollectionOptions } from '@oneki/collection';
 import React from 'react';
 import { ListInternalProps, ListItemProps, ListItems } from '../list/typings';
 import GridService from './GridService';
@@ -22,11 +22,25 @@ export type GridBodyRowProps<T = any> = ListItemProps<T, GridItemMeta> & {
   CellComponent?: React.FC<GridBodyCellProps<T>>;
 };
 
-export type GridColumn<T> = {
-  id: string;
-  BodyCellComponent?: React.FC<GridBodyCellProps<T>>;
-  width?: string | number;
+export type GridColumn<T> = Omit<GridColumnSpec<T>, 'width'> & {
+  width: GridColumnWidth;
   computedWidth?: string;
+};
+
+export type GridColumnSpec<T> = {
+  className?: string | ((rowData: T, column: GridColumn<T>, context: GridService<T>) => string);
+  CellComponent?: React.FC<GridBodyCellProps<T>>;
+  HeaderComponent?: React.FC; //TODO put the correct props
+  id: string;
+  width?: string | number;
+};
+
+export type GridColumnWidth = {
+  auto?: boolean;
+  grow?: boolean;
+  force?: boolean;
+  unit?: 'px' | '%';
+  value?: number;
 };
 
 export type GridItem<T> = Item<T, GridItemMeta>;
@@ -35,19 +49,24 @@ export type GridItems<T> = ListItems<T, GridItemMeta>;
 
 export type GridProps<T = any> = {
   service: GridService<T>;
+  bodyRef: React.RefObject<HTMLDivElement>;
 };
 
-export type GridState<T> = CollectionState<T, GridItemMeta> & {
+type _GridState<T> = {
+  bodyClassName?: string | ((context: GridService<T>) => string);
+  BodyComponent?: React.ForwardRefExoticComponent<GridBodyProps<T> & React.RefAttributes<HTMLDivElement>>;
+  bodyWidth?: string;
+  className?: string;
   columns: GridColumn<T>[];
-  className?: string;
+  fit?: boolean;
+  GridComponent?: React.ForwardRefExoticComponent<GridProps<T> & React.RefAttributes<HTMLDivElement>>;
+  grow?: string;
+  HeaderComponent?: React.FC;
+  height?: string;
+  rowClassName?: string | ((rowData: T, context: GridService<T>) => string);
+  RowComponent?: React.FC<GridBodyRowProps<T>>;
 };
 
-export type GridController<T> = Collection<T, GridItemMeta> & {
-  className?: string;
-  columns: GridColumn<T>[];
-  initCell: (rowNumber: number, colId: string, ref: React.RefObject<HTMLDivElement>) => boolean;
-};
+export type GridState<T> = CollectionState<T, GridItemMeta> & _GridState<T>;
 
-export type UseGridOptions<T> = UseCollectionOptions<T, GridItemMeta> & {
-  className?: string;
-};
+export type UseGridOptions<T> = UseCollectionOptions<T, GridItemMeta> & Omit<_GridState<T>, 'columns'>;

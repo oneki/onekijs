@@ -1,48 +1,147 @@
 import { CollectionService, isCollectionFetching, isCollectionInitializing } from '@oneki/collection';
 import { reducer, service } from '@oneki/core';
 import { AnonymousObject } from '@oneki/types';
-import { GridColumn, GridItem, GridItemMeta, GridState } from './typings';
+import {
+  GridBodyProps,
+  GridBodyRowProps,
+  GridColumn,
+  GridColumnWidth,
+  GridItemMeta,
+  GridProps,
+  GridState,
+} from './typings';
+
+export const parseColumnWidth = (width: string | number = 'auto'): GridColumnWidth => {
+  const regex = /^\s*(auto|(?:(?:([0-9]+)|(?:([0-9]+)\s*(px|%)))\s*(grow|force)?)|(grow))\s*$/;
+  const match = `${width}`.match(regex);
+  if (match === null || match[1] === 'auto') {
+    return { auto: true };
+  }
+  let value: number | undefined;
+  let force: boolean | undefined;
+  let grow: boolean | undefined;
+
+  if (match[2] !== undefined) {
+    value = parseFloat(match[2]);
+  } else if (match[3] !== undefined) {
+    value = parseFloat(match[3]);
+  }
+
+  if (match[5] === 'force') {
+    force = true;
+  }
+
+  if (match[5] === 'grow' || match[6] === 'grow') {
+    grow = true;
+  }
+
+  return {
+    force,
+    grow,
+    value,
+    unit: match[4] as 'px' | '%' | undefined,
+  };
+};
 
 @service
 class GridService<T = any, S extends GridState<T> = GridState<T>> extends CollectionService<T, GridItemMeta, S> {
-  // this counter will have the number of cells to inspect to auto detect width
-  // at the beginning the value can be null if the data are not yet loaded
-  // once data are loaded, this counter is set to the number cells (colmuns * data length)
-  // each time a cell is initialized, the counter is decreased by one
-  // if the counter is greater than 0, no width is set on the cells and we let the flex layout determine the best size of the cell
-  // once the counter reaches 0, we take the max width of each column cells and we force this width to all cells of the column (to have a grid layout)
-  private counter: number | null = null;
+  // The grid has three init steps
+  //  - unmounted => data are not yet loaded
+  //  - initializing -> the first render (with real data) is in progress
+  //  - mounted -> the first render is done
+  protected _step: 'unmounted' | 'mounted' | 'initializing' = 'unmounted';
 
   // contains a reference to each initial cells (the one built during the initial render)
-  private cells: AnonymousObject<React.RefObject<HTMLDivElement>[]> = {};
+  protected cells: AnonymousObject<React.RefObject<HTMLDivElement>[]> = {};
 
-  get columns(): GridColumn<T>[] {
-    return this.state.columns;
+  // ref of the grid container
+  protected gridRef: React.RefObject<HTMLDivElement> | null = null;
+
+  // ref of the body container
+  protected bodyRef: React.RefObject<HTMLDivElement> | null = null;
+
+  init(): void {
+    super.init();
+  }
+
+  get bodyClassName(): string | ((context: GridService<T>) => string) | undefined {
+    return this.state.bodyClassName;
+  }
+
+  get BodyComponent():
+    | React.ForwardRefExoticComponent<GridBodyProps<T> & React.RefAttributes<HTMLDivElement>>
+    | undefined {
+    return this.state.BodyComponent;
   }
 
   get className(): string | undefined {
     return this.state.className;
   }
 
+  get columns(): GridColumn<T>[] {
+    return this.state.columns;
+  }
+
+  get fit(): boolean {
+    return this.state.fit === false ? false : true;
+  }
+
+  get GridComponent(): React.ForwardRefExoticComponent<GridProps<T> & React.RefAttributes<HTMLDivElement>> | undefined {
+    return this.state.GridComponent;
+  }
+
+  get grow(): string | undefined {
+    return this.state.grow;
+  }
+
+  get HeaderComponent(): React.FC | undefined {
+    return this.state.HeaderComponent;
+  }
+
+  get height(): string | undefined {
+    return this.state.height;
+  }
+
+  get rowClassName(): string | ((rowData: T, context: GridService<T>) => string) | undefined {
+    return this.state.rowClassName;
+  }
+
+  get RowComponent(): React.FC<GridBodyRowProps<T>> | undefined {
+    return this.state.RowComponent;
+  }
+
   @reducer
   initCell(rowNumber: number, colId: string, ref: React.RefObject<HTMLDivElement>): boolean {
     let result = false;
-    if (this.counter !== null) {
+
+    if (this._step !== 'mounted' && !isCollectionFetching(this) && !isCollectionInitializing(this)) {
+      this._step = 'initializing';
+    }
+
+    if (this._step !== 'unmounted') {
       result = true;
-      if (this.counter > 0) {
-        // width are not yet initialized
+      if (this._step === 'initializing') {
+        // width are not yet computed
         this.cells[colId] = this.cells[colId] || [];
         this.cells[colId][rowNumber] = ref;
-        if (--this.counter === 0) {
-          this.setCellWidth();
-        }
       }
     }
     return result;
   }
 
   @reducer
-  private setCellWidth() {
+  onMount(gridRef: React.RefObject<HTMLDivElement>, bodyRef: React.RefObject<HTMLDivElement>): void {
+    this.gridRef = gridRef;
+    this.bodyRef = bodyRef;
+    if (this._step === 'initializing') {
+      const fit = (bodyRef.current?.offsetWidth || 0) <= (gridRef.current?.offsetWidth || 0);
+      this._setCellWidth(fit);
+      this._step = 'mounted';
+    }
+  }
+
+  @reducer
+  protected _setCellWidth(fit: boolean): void {
     const colWidths: AnonymousObject<number> = {};
     Object.keys(this.cells).forEach((colId) => {
       colWidths[colId] = this.cells[colId].reduce(
@@ -53,18 +152,8 @@ class GridService<T = any, S extends GridState<T> = GridState<T>> extends Collec
 
     //TODO: do actual calculations
     this.state.columns.forEach((column) => {
-      console.log('column.computedWidth', `${colWidths[column.id]}px`);
       column.computedWidth = `${colWidths[column.id]}px`;
     });
-  }
-
-  _setItems(items: (GridItem<T> | undefined)[]): void {
-    super._setItems(items);
-    if (this.counter === null && !isCollectionFetching(this) && !isCollectionInitializing(this)) {
-      if (this.items) {
-        this.counter = this.columns.length * this.items.length;
-      }
-    }
   }
 }
 

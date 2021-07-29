@@ -11,7 +11,12 @@ const defaultItemHeight = 37;
 const defaultPreload = 100;
 const defaultIncrement = 100;
 
-const useListView: (props: ListInternalProps) => { view: ReactElement, scrollToIndex?: (index: number, options?: { align: 'start' | 'center' | 'end' | 'auto' }) => void } = ({
+const useListView: (
+  props: ListInternalProps,
+) => {
+  view: ReactElement;
+  scrollToIndex?: (index: number, options?: { align: 'start' | 'center' | 'end' | 'auto' }) => void;
+} = ({
   className,
   collection,
   height = defaultHeight,
@@ -25,7 +30,7 @@ const useListView: (props: ListInternalProps) => { view: ReactElement, scrollToI
   onItemMouseEnter,
   onItemMouseLeave,
   parentRef,
-  tag: Component='div',
+  tag: Component = 'div',
   virtual,
 }) => {
   const isVirtual = virtual === undefined ? height !== undefined : virtual;
@@ -63,7 +68,7 @@ const useListView: (props: ListInternalProps) => { view: ReactElement, scrollToI
     return result;
   }, [collection, preload]);
 
-  let { totalSize, virtualItems, scrollToIndex } = useVirtual({
+  const { totalSize, virtualItems, scrollToIndex } = useVirtual({
     size: memo.items.length,
     estimateSize: estimatedItemHeight,
     parentRef,
@@ -79,12 +84,10 @@ const useListView: (props: ListInternalProps) => { view: ReactElement, scrollToI
         if (lastVirtualItemIndex >= memo.items.length - preload / 2) {
           collection.load(increment, (collection.items as any[]).length);
         }
-      }      
-    }
-    else if (collection.status === LoadingStatus.NotInitialized) {
+      }
+    } else if (collection.status === LoadingStatus.NotInitialized) {
       collection.load();
     }
-
   }, [collection, preload, virtualItems, increment, memo]);
 
   let view: ReactElement;
@@ -138,9 +141,8 @@ const useListView: (props: ListInternalProps) => { view: ReactElement, scrollToI
           })}
         </Component>
       </div>
-    )   
-    return { view, scrollToIndex, } 
-
+    );
+    return { view, scrollToIndex };
   } else {
     view = (
       <div className={addClassname('o-list', className)}>
@@ -154,17 +156,16 @@ const useListView: (props: ListInternalProps) => { view: ReactElement, scrollToI
               onMouseOver={onItemMouseOver}
               onMouseOut={onItemMouseOut}
               onMouseEnter={onItemMouseEnter}
-              onMouseLeave={onItemMouseLeave}              
+              onMouseLeave={onItemMouseLeave}
             />
           );
         })}
       </div>
-    )
+    );
     return {
-      view
-    }    
+      view,
+    };
   }
-
 };
 
 export default useListView;
