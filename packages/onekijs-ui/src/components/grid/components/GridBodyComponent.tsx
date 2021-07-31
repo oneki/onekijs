@@ -1,23 +1,9 @@
-import useListView from 'components/list/hooks/useListView';
-import { ListItemProps } from 'components/list/typings';
+import ListBodyComponent from 'components/list/components/ListBodyComponent';
 import React from 'react';
 import { GridBodyProps } from '../typings';
-import GridBodyRowComponent from './GridBodyRowComponent';
 
-const GridBodyComponent = React.forwardRef<HTMLDivElement, GridBodyProps>((props, ref) => {
-  const ItemComponent = props.RowComponent || GridBodyRowComponent;
-
-  const Component = (listItemProps: ListItemProps) => {
-    return <ItemComponent {...listItemProps} columns={props.columns} />;
-  };
-
-  const { view } = useListView(
-    Object.assign({ className: 'o-grid-body', ItemComponent: Component, parentRef: ref }, props),
-  );
-
-  return <>{view}</>;
-});
-
-GridBodyComponent.displayName = 'GridBody';
+const GridBodyComponent: React.FC<GridBodyProps> = (props) => {
+  return <ListBodyComponent {...props} />;
+};
 
 export default GridBodyComponent;

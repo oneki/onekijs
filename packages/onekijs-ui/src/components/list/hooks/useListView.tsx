@@ -1,10 +1,10 @@
 import { CollectionStatus, Item, ItemMeta, LoadingStatus, toCollectionItem } from '@oneki/collection';
 import React, { ReactElement, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useVirtual } from 'react-virtual';
-import { addClassname } from '../../../utils/style';
-import ListItemComponent from '../components/ListItemComponent';
+import { addClassname, addStyle } from '../../../utils/style';
+import ListBodyComponent from '../components/ListBodyComponent';
 import { ListInternalProps } from '../typings';
-import { canFetchMore, emptyListItem, getListStatus } from '../utils';
+import { canFetchMore, getListStatus } from '../utils';
 
 const defaultHeight = '100%';
 const defaultItemHeight = 37;
@@ -18,9 +18,18 @@ const useListView: (
   scrollToIndex?: (index: number, options?: { align: 'start' | 'center' | 'end' | 'auto' }) => void;
 } = ({
   className,
+  bodyClassName,
+  BodyComponent = ListBodyComponent,
+  bodyStyle,
   collection,
+  footerClassName,
+  FooterComponent,
+  footerStyle,
+  headerClassName,
+  HeaderComponent,
+  headerStyle,
   height = defaultHeight,
-  ItemComponent = ListItemComponent,
+  ItemComponent,
   itemHeight = defaultItemHeight,
   preload = defaultPreload,
   increment = defaultIncrement,
@@ -29,16 +38,14 @@ const useListView: (
   onItemMouseOut,
   onItemMouseEnter,
   onItemMouseLeave,
-  parentRef,
-  tag: Component = 'div',
+  ref,
   virtual,
+  style,
 }) => {
   const isVirtual = virtual === undefined ? height !== undefined : virtual;
-  const localParentRef = useRef(null);
-  let overflow = 'none';
-  if (parentRef === undefined) {
-    parentRef = localParentRef;
-    overflow = 'auto';
+  const localParentRef = useRef<HTMLDivElement>(null);
+  if (ref === undefined) {
+    ref = localParentRef;
   }
 
   const estimatedItemHeight = useCallback(
@@ -71,7 +78,7 @@ const useListView: (
   const { totalSize, virtualItems, scrollToIndex } = useVirtual({
     size: memo.items.length,
     estimateSize: estimatedItemHeight,
-    parentRef,
+    parentRef: ref,
   });
 
   useEffect(() => {
@@ -88,21 +95,27 @@ const useListView: (
     } else if (collection.status === LoadingStatus.NotInitialized) {
       collection.load();
     }
-  }, [collection, preload, virtualItems, increment, memo]);
+  }, [collection, preload, virtualItems, increment, memo, isVirtual]);
 
   let view: ReactElement;
 
   if (isVirtual) {
     view = (
       <div
-        ref={parentRef}
+        ref={ref}
         className={addClassname('o-list', className)}
-        style={{
-          maxHeight: `${typeof height === 'string' ? height : `${height}px`}`,
-          overflow: overflow,
-        }}
+        style={addStyle(
+          {
+            maxHeight: `${typeof height === 'string' ? height : `${height}px`}`,
+            overflow: 'auto',
+          },
+          style,
+        )}
       >
-        <Component
+        {HeaderComponent && (
+          <HeaderComponent className={addClassname('o-list-header', headerClassName)} style={headerStyle} />
+        )}
+        <div
           className="o-list-virtualizer"
           style={{
             height: `${totalSize}px`,
@@ -110,56 +123,45 @@ const useListView: (
             position: 'relative',
           }}
         >
-          {virtualItems.map(({ index, measureRef, start }) => {
-            const listItem = memo.items[index];
-            return (
-              <div
-                className="o-list-virtual-item"
-                key={`virtual-item-${index}`}
-                ref={measureRef}
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  minHeight: '20px',
-                  transform: `translateY(${start}px)`,
-                }}
-              >
-                <ItemComponent
-                  key={`item-${index}`}
-                  index={index}
-                  item={listItem || emptyListItem}
-                  onClick={onItemClick}
-                  onMouseOver={onItemMouseOver}
-                  onMouseOut={onItemMouseOut}
-                  onMouseEnter={onItemMouseEnter}
-                  onMouseLeave={onItemMouseLeave}
-                />
-              </div>
-            );
-          })}
-        </Component>
+          <BodyComponent
+            className={addClassname('o-list-body', bodyClassName)}
+            items={memo.items}
+            ItemComponent={ItemComponent}
+            onItemClick={onItemClick}
+            onItemMouseOver={onItemMouseOver}
+            onItemMouseOut={onItemMouseOut}
+            onItemMouseEnter={onItemMouseEnter}
+            onItemMouseLeave={onItemMouseLeave}
+            virtualItems={virtualItems}
+            style={bodyStyle}
+          />
+        </div>
+        {FooterComponent && (
+          <FooterComponent className={addClassname('o-list-footer', footerClassName)} style={footerStyle} />
+        )}
       </div>
     );
     return { view, scrollToIndex };
   } else {
     view = (
-      <div className={addClassname('o-list', className)}>
-        {memo.items.map((item: any, index: number) => {
-          return (
-            <ItemComponent
-              key={`item-${index}`}
-              index={index}
-              item={item || emptyListItem}
-              onClick={onItemClick}
-              onMouseOver={onItemMouseOver}
-              onMouseOut={onItemMouseOut}
-              onMouseEnter={onItemMouseEnter}
-              onMouseLeave={onItemMouseLeave}
-            />
-          );
-        })}
+      <div ref={ref} className={addClassname('o-list', className)} style={style}>
+        {HeaderComponent && (
+          <HeaderComponent className={addClassname('o-list-header', headerClassName)} style={headerStyle} />
+        )}
+        <BodyComponent
+          className={addClassname('o-list-body', bodyClassName)}
+          items={memo.items}
+          ItemComponent={ItemComponent}
+          onItemClick={onItemClick}
+          onItemMouseOver={onItemMouseOver}
+          onItemMouseOut={onItemMouseOut}
+          onItemMouseEnter={onItemMouseEnter}
+          onItemMouseLeave={onItemMouseLeave}
+          style={bodyStyle}
+        />
+        {FooterComponent && (
+          <FooterComponent className={addClassname('o-list-footer', footerClassName)} style={footerStyle} />
+        )}
       </div>
     );
     return {

@@ -6,6 +6,7 @@ import {
   GridBodyRowProps,
   GridColumn,
   GridColumnWidth,
+  GridHeaderProps,
   GridItemMeta,
   GridProps,
   GridState,
@@ -52,25 +53,19 @@ class GridService<T = any, S extends GridState<T> = GridState<T>> extends Collec
   protected _step: 'unmounted' | 'mounted' | 'initializing' = 'unmounted';
 
   // contains a reference to each initial cells (the one built during the initial render)
-  protected cells: AnonymousObject<React.RefObject<HTMLDivElement>[]> = {};
+  protected cells: AnonymousObject<AnonymousObject<React.RefObject<HTMLDivElement>>> = {};
 
   // ref of the grid container
   protected gridRef: React.RefObject<HTMLDivElement> | null = null;
 
   // ref of the body container
-  protected bodyRef: React.RefObject<HTMLDivElement> | null = null;
-
-  init(): void {
-    super.init();
-  }
+  protected contentRef: React.RefObject<HTMLDivElement> | null = null;
 
   get bodyClassName(): string | ((context: GridService<T>) => string) | undefined {
     return this.state.bodyClassName;
   }
 
-  get BodyComponent():
-    | React.ForwardRefExoticComponent<GridBodyProps<T> & React.RefAttributes<HTMLDivElement>>
-    | undefined {
+  get BodyComponent(): React.FC<GridBodyProps<T>> | undefined {
     return this.state.BodyComponent;
   }
 
@@ -86,6 +81,10 @@ class GridService<T = any, S extends GridState<T> = GridState<T>> extends Collec
     return this.state.fit === false ? false : true;
   }
 
+  get fixHeader(): boolean {
+    return this.state.fixHeader === false ? false : true;
+  }
+
   get GridComponent(): React.ForwardRefExoticComponent<GridProps<T> & React.RefAttributes<HTMLDivElement>> | undefined {
     return this.state.GridComponent;
   }
@@ -94,7 +93,11 @@ class GridService<T = any, S extends GridState<T> = GridState<T>> extends Collec
     return this.state.grow;
   }
 
-  get HeaderComponent(): React.FC | undefined {
+  get headerClassName(): string | ((context: GridService<T>) => string) | undefined {
+    return this.state.headerClassName;
+  }
+
+  get HeaderComponent(): React.FC<GridHeaderProps> | undefined {
     return this.state.HeaderComponent;
   }
 
@@ -111,7 +114,7 @@ class GridService<T = any, S extends GridState<T> = GridState<T>> extends Collec
   }
 
   @reducer
-  initCell(rowNumber: number, colId: string, ref: React.RefObject<HTMLDivElement>): boolean {
+  initCell(rowNumber: number | 'header' | 'footer', colId: string, ref: React.RefObject<HTMLDivElement>): boolean {
     let result = false;
 
     if (this._step !== 'mounted' && !isCollectionFetching(this) && !isCollectionInitializing(this)) {
@@ -122,19 +125,19 @@ class GridService<T = any, S extends GridState<T> = GridState<T>> extends Collec
       result = true;
       if (this._step === 'initializing') {
         // width are not yet computed
-        this.cells[colId] = this.cells[colId] || [];
-        this.cells[colId][rowNumber] = ref;
+        this.cells[colId] = this.cells[colId] || {};
+        this.cells[colId][`${rowNumber}`] = ref;
       }
     }
     return result;
   }
 
   @reducer
-  onMount(gridRef: React.RefObject<HTMLDivElement>, bodyRef: React.RefObject<HTMLDivElement>): void {
+  onMount(gridRef: React.RefObject<HTMLDivElement>, contentRef: React.RefObject<HTMLDivElement>): void {
     this.gridRef = gridRef;
-    this.bodyRef = bodyRef;
+    this.contentRef = contentRef;
     if (this._step === 'initializing') {
-      const fit = (bodyRef.current?.offsetWidth || 0) <= (gridRef.current?.offsetWidth || 0);
+      const fit = (contentRef.current?.offsetWidth || 0) <= (gridRef.current?.offsetWidth || 0);
       this._setCellWidth(fit);
       this._step = 'mounted';
     }
@@ -144,16 +147,19 @@ class GridService<T = any, S extends GridState<T> = GridState<T>> extends Collec
   protected _setCellWidth(fit: boolean): void {
     const colWidths: AnonymousObject<number> = {};
     Object.keys(this.cells).forEach((colId) => {
-      colWidths[colId] = this.cells[colId].reduce(
+      colWidths[colId] = Object.values(this.cells[colId]).reduce(
         (result, cellRef) => Math.max(result, cellRef.current?.offsetWidth || 0),
         0,
       );
     });
 
-    //TODO: do actual calculations
-    this.state.columns.forEach((column) => {
-      column.computedWidth = `${colWidths[column.id]}px`;
-    });
+    const total = this.contentRef?.current?.offsetWidth || 0;
+    if (total) {
+      this.state.columns.forEach((column) => {
+        const width = `${(colWidths[column.id] / total) * 100}%`;
+        column.computedWidth = fit ? { width } : { minWidth: width };
+      });
+    }
   }
 }
 

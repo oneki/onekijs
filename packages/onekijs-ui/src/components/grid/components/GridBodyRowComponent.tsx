@@ -17,7 +17,6 @@ const GridBodyRowComponent: FC<GridBodyRowProps> = ({
         return (
           <CellComponent
             column={column}
-            colId={column.id}
             colIndex={colIndex}
             rowIndex={index}
             rowId={item.id}

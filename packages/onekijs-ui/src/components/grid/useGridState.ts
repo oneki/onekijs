@@ -1,9 +1,6 @@
 import { useCollectionState } from '@oneki/collection';
 import { useLazyRef } from '@oneki/core';
-import GridBodyComponent from './components/GridBodyComponent';
-import GridBodyRowComponent from './components/GridBodyRowComponent';
-import { parseColumnWidth } from './GridService';
-import { GridColumn, GridColumnSpec, GridState, UseGridOptions } from './typings';
+import { GridColumnSpec, GridState, UseGridOptions } from './typings';
 
 const useGridState = <T = any>(
   dataSource: T[] | string,
@@ -13,17 +10,19 @@ const useGridState = <T = any>(
   const collectionState = useCollectionState(dataSource, options);
 
   const stateRef = useLazyRef<GridState<T>>(() => {
-    const gridColumns: GridColumn<T>[] = columns.map((c) => Object.assign({}, c, { width: parseColumnWidth(c.width) }));
     return Object.assign(
       {
         className: options.className,
-        columns: gridColumns,
+        columns,
         bodyClassName: options.bodyClassName,
-        BodyComponent: options.BodyComponent || GridBodyComponent,
+        BodyComponent: options.BodyComponent,
+        fit: options.fit,
+        fixHeader: options.fixHeader,
+        grow: options.grow,
         HeaderComponent: options.HeaderComponent,
         height: options.height || '300px',
         rowClassName: options.rowClassName,
-        RowComponent: options.RowComponent || GridBodyRowComponent,
+        RowComponent: options.RowComponent,
       },
       collectionState,
     );

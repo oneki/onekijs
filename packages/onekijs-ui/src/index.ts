@@ -32,6 +32,7 @@ export {
   GridProps,
   GridState,
   UseGridOptions,
+  GridColumnSpec,
 } from './components/grid/typings';
 
 export { theme } from './styles/theme';

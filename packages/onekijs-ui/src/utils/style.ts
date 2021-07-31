@@ -4,6 +4,7 @@ import { AnonymousObject } from '@oneki/types';
 import { css, FlattenInterpolation, ThemeProps } from 'styled-components';
 import { CssProperty, Formatter, Theme } from '../styles/typings';
 import { themeFormatter } from './formatter';
+import { CSSProperties } from 'react';
 
 const formatValue = <T>(value: T, theme: Theme, formatter?: Formatter<T>): string => {
   if (formatter) {
@@ -183,4 +184,8 @@ export const addClassname = (classname: string, existing?: string, after = true)
     return after ? `${existing} ${classname}` : `${classname} ${existing}`;
   }
   return classname;
+};
+
+export const addStyle = (style: CSSProperties, existing?: CSSProperties): CSSProperties => {
+  return Object.assign({}, existing, style);
 };

@@ -1,5 +1,5 @@
 import { Collection, Item, ItemMeta } from '@oneki/collection';
-import { FC, MutableRefObject } from 'react';
+import { FC, RefObject } from 'react';
 
 export type ListItems<T = any, M extends ItemMeta = ItemMeta> = T[] | Collection<T, M>;
 
@@ -17,21 +17,50 @@ export interface ListItemProps<T = any, M extends ItemMeta = ItemMeta> {
 
 export interface ListProps<T = any, M extends ItemMeta = ItemMeta> {
   className?: string;
-  items: ListItems<T, M>;
+  bodyClassName?: string;
+  BodyComponent?: React.FC<ListBodyProps<T, M>>;
+  bodyStyle?: React.CSSProperties;
+  footerClassName?: string;
+  FooterComponent?: React.FC<ListFooterProps>;
+  footerStyle?: React.CSSProperties;
+  headerClassName?: string;
+  HeaderComponent?: React.FC<ListHeaderProps>;
+  headerStyle?: React.CSSProperties;
   height?: number | string;
+  increment?: number;
+  items: ListItems<T, M>;
   ItemComponent?: FC<ListItemProps<T, M>>;
   itemHeight?: number | ((index: number) => number);
-  preload?: number;
-  increment?: number;
   onItemClick?: ListItemHandler<T, M>;
   onItemMouseOver?: ListItemHandler<T, M>;
   onItemMouseOut?: ListItemHandler<T, M>;
   onItemMouseEnter?: ListItemHandler<T, M>;
   onItemMouseLeave?: ListItemHandler<T, M>;
-  parentRef?: MutableRefObject<null>;
-  tag?: keyof JSX.IntrinsicElements;
+  ref?: RefObject<HTMLDivElement>;
+  preload?: number;
+  style?: React.CSSProperties;
   virtual?: boolean;
 }
+
+export type ListBodyProps<T = any, M extends ItemMeta = ItemMeta> = Pick<
+  ListProps,
+  'onItemClick' | 'onItemMouseEnter' | 'onItemMouseLeave' | 'onItemMouseOut' | 'onItemMouseOver' | 'ItemComponent'
+> & {
+  className?: string;
+  items: (Item<T, M> | undefined)[];
+  style?: React.CSSProperties;
+  virtualItems?: VirtualItem[];
+};
+
+export type ListFooterProps = {
+  className?: string;
+  style?: React.CSSProperties;
+};
+
+export type ListHeaderProps = {
+  className?: string;
+  style?: React.CSSProperties;
+};
 
 export type ListInternalProps<T = any, M extends ItemMeta = ItemMeta> = Omit<ListProps, 'items'> & {
   collection: Collection<T, M>;
@@ -51,5 +80,13 @@ export type StandardListProps<T = any, M extends ItemMeta = ItemMeta> = Omit<
   ListInternalProps<T, M>,
   'height' | 'itemHeight'
 >;
+
+export type VirtualItem = {
+  end: number;
+  index: number;
+  start: number;
+  size: number;
+  measureRef: (el: HTMLElement | null) => void;
+};
 
 export type VirtualListProps<T = any, M extends ItemMeta = ItemMeta> = ListInternalProps<T, M>;

@@ -15,15 +15,15 @@ const useGrid = <T = any>(
   const gridState = useGridState(dataSource, columns, options);
   const [, service] = useGridService<T>(dataSource, GridService, gridState);
 
-  const bodyRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
   const componentRef = useLazyRef<FC>(() => {
-    return wrapper(service, gridRef, bodyRef);
+    return wrapper(service, gridRef, contentRef);
   });
 
   useEffect(() => {
-    service.onMount(gridRef, bodyRef);
+    service.onMount(gridRef, contentRef);
   });
 
   return {
