@@ -20,7 +20,7 @@ const GridHeaderCellComponent: FC<GridHeaderCellProps> = ({ column }) => {
   });
 
   return (
-    <div ref={ref} className={addClassname('o-grid-body-cell', className)} style={getCellWidth(column, fit, grow)}>
+    <div ref={ref} className={addClassname('o-grid-header-cell', className)} style={getCellWidth(column, fit, grow)}>
       {column.title}
     </div>
   );

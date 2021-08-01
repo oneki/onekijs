@@ -2,17 +2,17 @@ import React, { useRef } from 'react';
 import { addClassname } from '../../../utils/style';
 import ListBodyComponent from '../../list/components/ListBodyComponent';
 import useListView from '../../list/hooks/useListView';
-import { ListHeaderProps, ListItemProps } from '../../list/typings';
+import { ListBodyProps, ListHeaderProps, ListItemProps } from '../../list/typings';
 import GridService from '../GridService';
-import { GridProps } from '../typings';
+import { GridBodyRowProps, GridItemMeta, GridProps } from '../typings';
 import { GridColumnsContext } from '../useGridColumns';
 import { GridContext } from '../useGridContext';
 import { GridValueContext } from '../useGridValue';
 import GridBodyRowComponent from './GridBodyRowComponent';
 import GridHeaderComponent from './GridHeaderComponent';
 
-const GridComponent = React.forwardRef<HTMLDivElement, GridProps>(({ service, contentRef }, ref) => {
-  const classNames = addClassname('o-grid', service.className);
+const GridComponent = React.forwardRef<HTMLDivElement, GridProps>(({ service, contentRef, className }, ref) => {
+  const classNames = addClassname(addClassname('o-grid', service.className), className);
 
   const contextRef = useRef<GridService>(service);
   const bodyClassName =
@@ -22,11 +22,11 @@ const GridComponent = React.forwardRef<HTMLDivElement, GridProps>(({ service, co
   // const footerClassName =
   //   typeof service.headerClassName === 'function' ? service.headerClassName(service) : service.headerClassName;
 
-  const BodyComponent = service.BodyComponent || ListBodyComponent;
-  const RowComponent = service.RowComponent || GridBodyRowComponent;
+  const BodyComponent = (service.BodyComponent || ListBodyComponent) as React.FC<ListBodyProps<any, GridItemMeta>>;
+  const RowComponent = (service.RowComponent || GridBodyRowComponent) as React.FC<GridBodyRowProps<any, GridItemMeta>>;
   const HeaderComponent = service.HeaderComponent || GridHeaderComponent;
 
-  const ItemComponent: React.FC<ListItemProps> = (listItemProps) => {
+  const ItemComponent: React.FC<ListItemProps<any, GridItemMeta>> = (listItemProps) => {
     return <RowComponent {...listItemProps} columns={service.columns} />;
   };
 
@@ -34,11 +34,11 @@ const GridComponent = React.forwardRef<HTMLDivElement, GridProps>(({ service, co
     return <HeaderComponent {...listHeaderProps} columns={service.columns} />;
   };
 
-  const { view } = useListView({
+  const { view } = useListView<any, GridItemMeta>({
     className: 'o-grid-content',
-    bodyClassName,
+    bodyClassName: addClassname('o-grid-body', bodyClassName),
     BodyComponent: BodyComponent,
-    headerClassName,
+    headerClassName: addClassname('o-grid-header', headerClassName),
     HeaderComponent: ListHeaderComponent,
     ItemComponent,
     collection: service,

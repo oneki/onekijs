@@ -1,19 +1,17 @@
 import { useCollectionState } from '@oneki/collection';
 import { useLazyRef } from '@oneki/core';
-import { GridColumnSpec, GridState, UseGridOptions } from './typings';
+import { GridItemMeta, GridState, UseGridOptions } from './typings';
 
-const useGridState = <T = any>(
-  dataSource: T[] | string,
-  columns: GridColumnSpec<T>[],
-  options: UseGridOptions<T> = {},
-): GridState<T> => {
-  const collectionState = useCollectionState(dataSource, options);
+const useGridState = <T = any, M extends GridItemMeta = GridItemMeta>(
+  options: UseGridOptions<T, M>,
+): GridState<T, M> => {
+  const collectionState = useCollectionState(options.dataSource, options);
 
-  const stateRef = useLazyRef<GridState<T>>(() => {
+  const stateRef = useLazyRef<GridState<T, M>>(() => {
     return Object.assign(
       {
         className: options.className,
-        columns,
+        columns: options.columns,
         bodyClassName: options.bodyClassName,
         BodyComponent: options.BodyComponent,
         fit: options.fit,

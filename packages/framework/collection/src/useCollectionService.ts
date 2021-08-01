@@ -2,12 +2,12 @@ import { asyncHttp, useService } from '@oneki/core';
 import { Class, Fetcher, HttpMethod } from '@oneki/types';
 import { useEffect } from 'react';
 import CollectionService from './CollectionService';
-import { Collection, CollectionFetcherResult, CollectionState, LoadingStatus, Query } from './typings';
+import { Collection, CollectionFetcherResult, CollectionState, ItemMeta, LoadingStatus, Query } from './typings';
 import { isCollection } from './utils';
 
 const useCollectionService = <
   T,
-  M,
+  M extends ItemMeta = ItemMeta,
   S extends CollectionState<T, M> = CollectionState<T, M>,
   C extends CollectionService<T, M, S> = CollectionService<T, M, S>
 >(

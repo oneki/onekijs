@@ -1,8 +1,7 @@
-import { CollectionStatus, Item, ItemMeta, LoadingStatus, toCollectionItem } from '@oneki/collection';
+import { CollectionStatus, ItemMeta, LoadingStatus, toCollectionItem } from '@oneki/collection';
 import React, { ReactElement, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useVirtual } from 'react-virtual';
 import { addClassname, addStyle } from '../../../utils/style';
-import ListBodyComponent from '../components/ListBodyComponent';
 import { ListInternalProps } from '../typings';
 import { canFetchMore, getListStatus } from '../utils';
 
@@ -11,15 +10,15 @@ const defaultItemHeight = 37;
 const defaultPreload = 100;
 const defaultIncrement = 100;
 
-const useListView: (
-  props: ListInternalProps,
+const useListView: <T = any, M extends ItemMeta = ItemMeta>(
+  props: ListInternalProps<T, M>,
 ) => {
   view: ReactElement;
   scrollToIndex?: (index: number, options?: { align: 'start' | 'center' | 'end' | 'auto' }) => void;
 } = ({
   className,
   bodyClassName,
-  BodyComponent = ListBodyComponent,
+  BodyComponent,
   bodyStyle,
   collection,
   footerClassName,
@@ -60,7 +59,7 @@ const useListView: (
 
   const memo = useMemo(() => {
     const result: {
-      items: (Item<any, ItemMeta> | undefined)[];
+      items: any[];
       status: CollectionStatus;
     } = {
       items: [],

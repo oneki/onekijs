@@ -10,19 +10,17 @@ import { overflowX } from 'styles/overflow';
 
 export const gridStyle: ComponentStyle<GridProps<any>> = () => {
   return css`
-      ${preflight()}
+    ${preflight()}
+    .o-grid-body {
+      ${overflowX('auto')}
+    }
+    .o-grid-body-row {
       ${display('flex')}
-      ${flexDirection('column')}
-      .o-grid-body {
-        ${overflowX('auto')}
-      }
-      .o-grid-body-row {
-        ${display('flex')}
-        ${flexDirection('row')}
+      ${flexDirection('row')}
         .o-grid-body-cell {
-          ${border('1px solid black')}
-          ${padding(1)}
-        }
+        ${border('1px solid black')}
+        ${padding(1)}
       }
-    `;
+    }
+  `;
 };

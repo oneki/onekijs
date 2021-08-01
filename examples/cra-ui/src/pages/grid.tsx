@@ -1,9 +1,16 @@
-import { useGrid } from 'onekijs-ui';
+import { ComponentStyle, fontFamily, preflight, useGrid } from 'onekijs-ui';
 
 import React from 'react';
+import styled, { css } from 'styled-components';
 import { users } from '../data/users';
 
-export const GridPage = () => {
+const gridStyle: ComponentStyle<{}> = () => {
+  return css`
+      ${preflight()}
+    `;
+};
+
+const Page: React.FC<{className?: string}> = ({ className }) => {
   const {Grid } = useGrid(users, [
     {
       id: 'id',
@@ -36,7 +43,12 @@ export const GridPage = () => {
     },
   ], {
     //grow: 'address.city'
+    className
   });
 
-  return <Grid />;
+  return <Grid  />;
 };
+
+export const GridPage = styled(Page)`
+  ${gridStyle}
+`;

@@ -5,14 +5,15 @@ import { GridItemMeta, GridState } from './typings';
 
 const useGridService = <
   T = any,
-  S extends GridState<T> = GridState<T>,
-  C extends GridService<T, S> = GridService<T, S>
+  M extends GridItemMeta = GridItemMeta,
+  S extends GridState<T, M> = GridState<T, M>,
+  C extends GridService<T, M, S> = GridService<T, M, S>
 >(
   dataSource: T[] | string,
   ctor: Class<C>,
   initialState: S,
 ): [S, C] => {
-  return useCollectionService<T, GridItemMeta, S, C>(dataSource, ctor, initialState);
+  return useCollectionService<T, M, S, C>(dataSource, ctor, initialState);
 };
 
 export default useGridService;

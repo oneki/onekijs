@@ -27,7 +27,7 @@
     "react": ">=16"
   },
   "dependencies": {
-    "onekijs-core": "^0.10.0"
+    "@oneki/core": "^0.10.0"
   },
   "sideEffects": false,
   "module": "dist/onekijs-next.esm.js"

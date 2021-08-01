@@ -132,12 +132,12 @@ export type CollectionStatus =
   | 'partial_fetching'
   | 'partial_loaded';
 
-export type Item<T, M extends ItemMeta> = {
+export interface Item<T, M extends ItemMeta> {
   data?: T;
   meta?: M;
   id?: string;
   text?: string;
-};
+}
 
 export type ItemAdapter<T, M extends ItemMeta> = (
   data: T,

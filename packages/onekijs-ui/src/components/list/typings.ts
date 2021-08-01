@@ -43,7 +43,7 @@ export interface ListProps<T = any, M extends ItemMeta = ItemMeta> {
 }
 
 export type ListBodyProps<T = any, M extends ItemMeta = ItemMeta> = Pick<
-  ListProps,
+  ListProps<T, M>,
   'onItemClick' | 'onItemMouseEnter' | 'onItemMouseLeave' | 'onItemMouseOut' | 'onItemMouseOver' | 'ItemComponent'
 > & {
   className?: string;
@@ -62,8 +62,12 @@ export type ListHeaderProps = {
   style?: React.CSSProperties;
 };
 
-export type ListInternalProps<T = any, M extends ItemMeta = ItemMeta> = Omit<ListProps, 'items'> & {
+export type ListInternalProps<T = any, M extends ItemMeta = ItemMeta> = Omit<
+  ListProps<T, M>,
+  'items' | 'BodyComponent'
+> & {
   collection: Collection<T, M>;
+  BodyComponent: React.FC<ListBodyProps<T, M>>;
 };
 
 export enum ListStatus {

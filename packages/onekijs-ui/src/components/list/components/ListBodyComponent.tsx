@@ -1,9 +1,10 @@
 import React from 'react';
+import { ItemMeta } from '@oneki/collection';
 import { ListBodyProps } from '../typings';
 import { emptyListItem } from '../utils';
 import ListItemComponent from './ListItemComponent';
 
-const ListBodyComponent: React.FC<ListBodyProps> = ({
+const ListBodyComponent: React.FC<ListBodyProps<any, ItemMeta>> = ({
   className,
   items,
   ItemComponent = ListItemComponent,

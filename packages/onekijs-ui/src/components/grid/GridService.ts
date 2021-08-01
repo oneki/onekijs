@@ -45,7 +45,11 @@ export const parseColumnWidth = (width: string | number = 'auto'): GridColumnWid
 };
 
 @service
-class GridService<T = any, S extends GridState<T> = GridState<T>> extends CollectionService<T, GridItemMeta, S> {
+class GridService<
+  T = any,
+  M extends GridItemMeta = GridItemMeta,
+  S extends GridState<T, M> = GridState<T, M>
+> extends CollectionService<T, M, S> {
   // The grid has three init steps
   //  - unmounted => data are not yet loaded
   //  - initializing -> the first render (with real data) is in progress
@@ -61,7 +65,7 @@ class GridService<T = any, S extends GridState<T> = GridState<T>> extends Collec
   // ref of the body container
   protected contentRef: React.RefObject<HTMLDivElement> | null = null;
 
-  get bodyClassName(): string | ((context: GridService<T>) => string) | undefined {
+  get bodyClassName(): string | ((context: GridService<T, M>) => string) | undefined {
     return this.state.bodyClassName;
   }
 
@@ -73,7 +77,7 @@ class GridService<T = any, S extends GridState<T> = GridState<T>> extends Collec
     return this.state.className;
   }
 
-  get columns(): GridColumn<T>[] {
+  get columns(): GridColumn<T, M>[] {
     return this.state.columns;
   }
 
@@ -85,7 +89,9 @@ class GridService<T = any, S extends GridState<T> = GridState<T>> extends Collec
     return this.state.fixHeader === false ? false : true;
   }
 
-  get GridComponent(): React.ForwardRefExoticComponent<GridProps<T> & React.RefAttributes<HTMLDivElement>> | undefined {
+  get GridComponent():
+    | React.ForwardRefExoticComponent<GridProps<T, M> & React.RefAttributes<HTMLDivElement>>
+    | undefined {
     return this.state.GridComponent;
   }
 
@@ -93,7 +99,7 @@ class GridService<T = any, S extends GridState<T> = GridState<T>> extends Collec
     return this.state.grow;
   }
 
-  get headerClassName(): string | ((context: GridService<T>) => string) | undefined {
+  get headerClassName(): string | ((context: GridService<T, M>) => string) | undefined {
     return this.state.headerClassName;
   }
 
@@ -105,11 +111,11 @@ class GridService<T = any, S extends GridState<T> = GridState<T>> extends Collec
     return this.state.height;
   }
 
-  get rowClassName(): string | ((rowData: T, context: GridService<T>) => string) | undefined {
+  get rowClassName(): string | ((rowData: T, context: GridService<T, M>) => string) | undefined {
     return this.state.rowClassName;
   }
 
-  get RowComponent(): React.FC<GridBodyRowProps<T>> | undefined {
+  get RowComponent(): React.FC<GridBodyRowProps<T, M>> | undefined {
     return this.state.RowComponent;
   }
 
