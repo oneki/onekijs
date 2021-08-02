@@ -28,16 +28,10 @@ export default class NextRouter extends BaseRouter {
       window.history.go(delta);
     }
   }
-  // deleteOrigin() {
-  //   localStorage.removeItem('onekijs.from');
-  //   // localStorage.removeItem('onekijs.from_route');
-  // }
 
-  // getOrigin() {
-  //   const from = localStorage.getItem('onekijs.from') || get(this.settings, 'routes.home', '/');
-  //   // const fromRoute = localStorage.getItem('onekijs.from_route') || get(this.settings, 'routes.home_route', from);
-  //   return { from };
-  // }
+  getLinkComponent(props: LinkProps): JSX.Element {
+    return <Link {...props} />;
+  }
 
   /**
    * url can be a string or an object.
@@ -70,16 +64,6 @@ export default class NextRouter extends BaseRouter {
    *   state: obj // example: {key1: 'value1'}
    * }
    */
-  // listen(callback) {
-  //   const handler = (url) => {
-  //     callback(this._toLocation(url));
-  //   };
-  //   Router.events.on('routeChangeComplete', handler);
-  //   Router.events.on('hashChangeComplete', handler);
-
-  //   return handler;
-  // }
-
   listen(callback: LocationChangeCallback): UnregisterCallback {
     this.listeners.push(callback);
     return () => {
@@ -119,29 +103,7 @@ export default class NextRouter extends BaseRouter {
     this._pushLocation(location);
   }
 
-  getLinkComponent(props: LinkProps): JSX.Element {
-    return <Link {...props} />;
-  }
-
-  // i18nLink(props, i18n, settings) {
-  //   const { href, as } = props;
-  //   let location;
-  //   if (as) {
-  //     location = toI18nLocation(as, { i18n, settings }, href);
-  //   } else {
-  //     location = toI18nLocation(href, { i18n, settings });
-  //   }
-  //   const i18nAs = toRelativeUrl(location);
-  //   const i18nHref = location.route || toRelativeUrl(location);
-
-  //   return <Link {...props} as={i18nAs} href={i18nHref} />;
-  // }
-
   private goto(type: 'push' | 'replace', urlOrLocation: string | Location, options: RouterPushOptions): void {
-    // const location = toI18nLocation(urlOrLocation, {
-    //   settings: this.settings,
-    //   i18n: this.i18n,
-    // });
     let nextLocation: Location;
     if (typeof urlOrLocation === 'string') {
       nextLocation = toLocation(urlOrLocation, this.settings);
@@ -161,20 +123,4 @@ export default class NextRouter extends BaseRouter {
         : Router.router.replace(nextUrl, undefined, { locale: options?.locale });
     }
   }
-
-  // _toLocation(url) {
-  //   const location = toLocation(url);
-  //   location.route = Router.router.route;
-  //   location.params = Router.router.query;
-  //   return location;
-  // }
-
-  // _pushLocation(location) {
-  //   this._location = location;
-  //   this.history = produce(this.history, (draft) => {
-  //     draft.unshift(location);
-  //     // keep max 20 items
-  //     draft.splice(20, draft.length);
-  //   });
-  // }
 }

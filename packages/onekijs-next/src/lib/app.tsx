@@ -1,10 +1,11 @@
-// import { getRouteMatcher } from 'next/dist/next-server/lib/router/utils/route-matcher';
-// import { getRouteRegex } from 'next/dist/next-server/lib/router/utils/route-regex';
-import { AppState, DefaultLoadingComponent, simpleMergeDeep, useLazyRef } from 'onekijs-core';
-import React, { FC, useMemo } from 'react';
+import React, { FC, useEffect, useMemo } from 'react';
+import { AppState, DefaultLoadingComponent } from '@oneki/app';
 import { AppProps } from '../typings';
 import NextRouter from './router/NextRouter';
 import { useRouterSync } from './router/useRouterSync';
+import { useLazyRef } from '@oneki/core';
+import { simpleMergeDeep } from '@oneki/utils';
+import { SS_KEY_404 } from './404';
 
 const Router: FC<{ router: NextRouter }> = ({ router, children }) => {
   useRouterSync(router);
@@ -23,14 +24,6 @@ export const App: FC<AppProps> = ({
 }) => {
   const routerRef = useLazyRef(() => new NextRouter([]));
 
-  // useEffect(() => {
-  //   if (pageProps.is404) {
-  //     routerRef.current.replace(toLocation(window.location.href), {
-  //       shallow: true,
-  //     });
-  //   }
-  // }, [routerRef, pageProps.is404]);
-
   i18nNs = useMemo(() => {
     return Object.keys(pageProps.translations || {})
       .concat(Object.keys(translations || {}))
@@ -46,10 +39,11 @@ export const App: FC<AppProps> = ({
     return initialLocale;
   }, [nextRouter, initialLocale]);
 
-  // if (nextRouter.route === '/404') {
-  //   if (route || !routerRef.location) return null;
-  //   return <Error code={404} />;
-  // }
+  useEffect(() => {
+    if (nextRouter.pathname === nextRouter.asPath) {
+      sessionStorage.removeItem(SS_KEY_404);
+    }
+  }, [nextRouter]);
 
   const getLayout = (Component && (Component as any).getLayout) || ((page: any) => page);
   return (
@@ -64,21 +58,6 @@ export const App: FC<AppProps> = ({
       <Router router={routerRef.current}>{getLayout(<Component {...pageProps}></Component>)}</Router>
     </AppState>
   );
-
-  /*return (
-      <Provider store={appStore}>
-        <AppProvider
-          router={routerRef}
-          settings={formattedSettings}
-          initialLocale={initialLocale}
-          translations={translations}
-          i18nNs={i18nNs}
-          services={services}
-        >
-          {getLayout(<Component {...pageProps}></Component>)}
-        </AppProvider>
-      </Provider>
-    );*/
 };
 
 // App.displayName = 'App';

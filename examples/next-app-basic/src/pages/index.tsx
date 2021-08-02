@@ -1,7 +1,7 @@
-import React from 'react';
-import Link from 'next/link';
+import { Link } from 'onekijs-next';
+import React, { FC } from 'react';
 
-const IndexPage = () => {
+const IndexPage: FC = () => {
   return (
     <div>
       <div>
@@ -19,10 +19,7 @@ const IndexPage = () => {
         This simple example bootstraps:
         <ul>
           <li>
-            <b>A router</b>: Go to{' '}
-            <Link href="/users">
-              <a>Users page</a>
-            </Link>
+            <b>A router</b>: Go to <Link href="/users">Users</Link>
           </li>
           <li>
             <b>A Redux store</b>

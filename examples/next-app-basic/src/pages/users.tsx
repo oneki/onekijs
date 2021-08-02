@@ -1,7 +1,7 @@
-import React from 'react';
-import Link from 'next/link';
+import React, { FC } from 'react';
+import { Link } from 'onekijs-next';
 
-const UsersPage = () => {
+const UsersPage: FC = () => {
   return (
     <div>
       This is the users page. Go to <Link href="/">Index page</Link>
