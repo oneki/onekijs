@@ -1,4 +1,4 @@
-import { secure, useDelete, useGet, useTranslation } from 'onekijs-next';
+import { secure, useDelete, useGet, useTranslation } from 'onekijs';
 import React, { FC } from 'react';
 import { URL_CART } from '../modules/core/libs/constants';
 import { CartResponse } from '../__server__/api/dto/cart';

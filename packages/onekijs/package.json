@@ -17,9 +17,9 @@
       "import": "./dist/index.modern.js",
       "require": "./dist/index.js"
     },
-    "./ssr": {
-      "import": "./ssr/dist/index.modern.js",
-      "require": "./ssr/dist/index.js"
+    "./next": {
+      "import": "./next/dist/index.modern.js",
+      "require": "./next/dist/index.js"
     },
     "./next-ssr": {
       "import": "./next-ssr/dist/index.modern.js",

@@ -1,7 +1,8 @@
 import { NextPage } from 'next';
 import Head from 'next/head';
-import { Link, useParams, useRouter, useTranslation, withLayout } from 'onekijs-next';
-import { withI18nStaticProps } from 'onekijs-next/ssr';
+import { Link, useRouter, useTranslation, withLayout } from 'onekijs';
+import { useParams } from 'onekijs/next';
+import { withI18nStaticProps } from 'onekijs/next-ssr';
 import React from 'react';
 import SiteLayout from '../layout/SiteLayout';
 import { GetStaticProps } from 'next';

@@ -1,4 +1,4 @@
-import { I18nLocalePath, layout, Link, useI18nService, useLocale, useSetting } from 'onekijs-next';
+import { I18nLocalePath, layout, Link, useI18nService, useLocale, useSetting } from 'onekijs';
 import PropTypes from 'prop-types';
 import React, { FC } from 'react';
 

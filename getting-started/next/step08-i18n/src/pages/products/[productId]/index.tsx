@@ -19,8 +19,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
+type ProductParams = {
+  productId: string;
+};
 const ProductDetailsPage: FC = () => {
-  const { productId } = useParams();
+  const { productId } = useParams<ProductParams>();
   const notificationService = useNotificationService();
   const [, t] = useTranslation();
   const [submit] = usePost<ProductType>(URL_ADD_PRODUCT, {
