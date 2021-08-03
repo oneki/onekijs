@@ -1,3 +1,4 @@
+import 'regenerator-runtime/runtime.js';
 export * from '@oneki/app';
 export * from '@oneki/auth';
 export * from '@oneki/collection';
@@ -9,8 +10,8 @@ export * from '@oneki/notification';
 export * from '@oneki/router';
 export * from '@oneki/types';
 export * from '@oneki/utils';
-
+export { default as withNotFound } from './lib/404';
 export { App as NextApp } from './lib/app';
 export { default as NextRouter } from './lib/router/NextRouter';
-export { AppProps as NextAppProps } from './typings';
-export { default as withNotFound } from './lib/404';
+export { default as useParams } from './lib/router/useParams';
+export { AppProps as NextAppProps } from './lib/typings';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Redirect, Route, Switch } from 'onekijs';
+import { Redirect, Route, Switch } from 'onekijs/cra';
 import ProductsRouter from './products/_router';
 import CartPage from './cart';
 import LoginPage from './login';

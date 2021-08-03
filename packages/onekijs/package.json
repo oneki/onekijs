@@ -12,12 +12,29 @@
   "engines": {
     "node": ">=10"
   },
-  "exports": "./dist/index.modern.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.modern.js",
+      "require": "./dist/index.js"
+    },
+    "./ssr": {
+      "import": "./ssr/dist/index.modern.js",
+      "require": "./ssr/dist/index.js"
+    },
+    "./next-ssr": {
+      "import": "./next-ssr/dist/index.modern.js",
+      "require": "./next-ssr/dist/index.js"
+    }
+  },
   "module": "dist/index.module.js",
   "unpkg": "dist/index.umd.js",
   "scripts": {
-    "build": "microbundle --jsx React.createElement",
-    "dev": "microbundle watch"
+    "build": "concurrently \"yarn build:onekijs\" \"yarn build:cra\" \"yarn build:next\" \"yarn build:next-ssr\" ",
+    "build:onekijs": "microbundle -f es,cjs,modern --jsx React.createElement",
+    "build:cra": "microbundle -f es,cjs,modern --jsx React.createElement --prefix cra",
+    "build:next": "microbundle -f es,cjs,modern --jsx React.createElement --prefix next",
+    "build:next-ssr": "microbundle -f es,cjs,modern --jsx React.createElement --prefix next-ssr",
+    "start": "microbundle watch -f es,cjs,modern --jsx React.createElement"
   },
   "author": "Oneki",
   "license": "MIT",
@@ -37,8 +54,6 @@
     "immer": "^8.0.1",
     "query-string": "^6.11.1",
     "react-redux": "^7.2.0",
-    "react-router": "^5.2.0",
-    "react-router-dom": "^5.1.2",
     "react-transition-group": "^4.4.1",
     "redux": "^4.0.5",
     "redux-saga": "^1.1.3",
@@ -47,7 +62,8 @@
     "text-encoding-shim": "^1.0.5"
   },
   "devDependencies": {
-    "microbundle": "^0.13.3"
+    "microbundle": "^0.13.3",
+    "concurrently": "^6.2.0"
   },
   "peerDependencies": {
     "react": ">=16",

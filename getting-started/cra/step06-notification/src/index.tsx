@@ -1,4 +1,4 @@
-import { App } from 'onekijs';
+import { App } from 'onekijs/cra';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import RootRouter from './pages/_router';

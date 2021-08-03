@@ -1,8 +1,7 @@
+import { FadeSwitch, Route, useRouteMatch } from 'onekijs/cra';
 import React from 'react';
-import { useRouteMatch, Route } from 'onekijs';
-import ProductDetailsPage from './[productId]';
 import ProductsPage from '.';
-import { FadeSwitch } from 'onekijs';
+import ProductDetailsPage from './[productId]';
 
 const ProductsRouter = (): JSX.Element => {
   const match = useRouteMatch();

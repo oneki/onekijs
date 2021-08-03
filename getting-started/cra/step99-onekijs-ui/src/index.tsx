@@ -1,4 +1,4 @@
-import { App } from 'onekijs';
+import { App } from 'onekijs/cra';
 import { theme } from 'onekijs-ui';
 import React from 'react';
 import ReactDOM from 'react-dom';

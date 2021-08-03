@@ -1,13 +1,16 @@
 import { usePost } from 'onekijs';
 import React, { FC } from 'react';
-import { useParams } from 'onekijs';
+import { useParams } from 'onekijs/cra';
 import { products } from '..';
 import { ProductType } from '../../../__server__/api/dto/product';
 import { URL_ADD_PRODUCT } from '../../../modules/core/libs/constants';
 import ProductDetails from '../../../modules/products/components/ProductDetails';
 
+type ProductParams = {
+  productId: string;
+};
 const ProductDetailsPage: FC = () => {
-  const { productId } = useParams();
+  const { productId } = useParams<ProductParams>();
   const [submit] = usePost<ProductType>(URL_ADD_PRODUCT, {
     onSuccess: () => {
       window.alert('Product added succesfully to the cart!');

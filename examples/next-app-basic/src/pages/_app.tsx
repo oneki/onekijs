@@ -1,4 +1,3 @@
-// import { App } from 'onekijs-next';
 import { NextApp, NextAppProps } from 'onekijs-next';
 import React, { FC } from 'react';
 
