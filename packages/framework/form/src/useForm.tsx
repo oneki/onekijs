@@ -32,6 +32,7 @@ import { DefaultFormContext } from './useFormContext';
  */
 
 const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): UseForm => {
+  console.log('insideUseForm');
   // onSubmit cannot be changed after initialization but we do not want to force using useCallback
   const onSubmitRef = useRef(onSubmit);
 
