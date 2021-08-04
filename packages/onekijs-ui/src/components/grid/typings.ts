@@ -47,6 +47,10 @@ export type GridColumnComputedWidth = {
   minWidth?: string;
 };
 
+export type GridFilterProps<T = any, M extends GridItemMeta = GridItemMeta> = {
+  column: GridColumn<T, M>;
+};
+
 export type GridHeaderCellProps<T = any, M extends GridItemMeta = GridItemMeta> = {
   colIndex: number;
   column: GridColumn<T, M>;
@@ -68,6 +72,10 @@ export type GridProps<T = any, M extends GridItemMeta = GridItemMeta> = {
   service: GridService<T, M>;
   contentRef: React.RefObject<HTMLDivElement>;
   className?: string;
+};
+
+export type GridSortProps = {
+  order?: 'asc' | 'desc';
 };
 
 type _GridState<T = any, M extends GridItemMeta = GridItemMeta> = {

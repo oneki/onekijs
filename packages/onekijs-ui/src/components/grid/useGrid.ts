@@ -1,10 +1,29 @@
 import { useLazyRef } from '@oneki/core';
 import { FC, useEffect, useRef } from 'react';
+import { collectionProxyProps } from '../../../../framework/collection/dist';
 import GridService from './GridService';
 import { GridItemMeta, GridState, UseGridOptions } from './typings';
 import useGridService from './useGridService';
 import useGridState from './useGridState';
 import wrapper from './wrapper';
+
+export const gridCollectionProps = {
+  pick: collectionProxyProps.pick.concat([
+    'bodyClassName',
+    'BodyComponent',
+    'bodyWidth',
+    'className',
+    'fit',
+    'fixHeader',
+    'grow',
+    'headerClassName',
+    'HeaderComponent',
+    'height',
+    'rowClassName',
+    'RowComponent',
+  ]),
+  mutables: ['columns'],
+};
 
 const useGrid = <T = any, M extends GridItemMeta = GridItemMeta>(
   options: UseGridOptions<T, M>,

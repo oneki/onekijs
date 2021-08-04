@@ -17,6 +17,7 @@ import useListView from '../../list/hooks/useListView';
 import { SelectOptionHandler, SelectOptionMeta, SelectOptionSelectionHandler, SelectProps } from '../typings';
 import SelectInputComponent from './SelectInputComponent';
 import SelectOptionComponent, { MultiSelectOptionComponent } from './SelectOptionComponent';
+import ListBodyComponent from 'components/list/components/ListBodyComponent';
 
 const findItem = (collection: Collection<any, SelectOptionMeta>, pattern: string): any => {
   if (collection.items === undefined) {
@@ -138,7 +139,7 @@ const SelectComponent: FC<SelectProps<any>> = ({
       return keyboardItem;
     }
     if (focus && search) {
-      let item = findItem(collection, search.toString());
+      const item = findItem(collection, search.toString());
       if (item === undefined && !isCollectionFetching(collection)) {
         return get(collection, 'items.0');
       }
@@ -393,6 +394,7 @@ const SelectComponent: FC<SelectProps<any>> = ({
   );
 
   const { view: listView, scrollToIndex } = useListView({
+    BodyComponent: ListBodyComponent,
     ItemComponent: ItemComponent ? ItemComponent : multiple ? MultiSelectOptionComponent : SelectOptionComponent,
     onItemClick: onSelect,
     // onItemMouseEnter: onItemEnter,

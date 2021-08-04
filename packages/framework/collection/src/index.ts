@@ -33,7 +33,7 @@ export {
   QuerySortDir,
   UseCollectionOptions,
 } from './typings';
-export { default as useCollection } from './useCollection';
+export { default as useCollection, collectionProxyProps } from './useCollection';
 export { default as useList } from './useList';
 export {
   defaultComparator,

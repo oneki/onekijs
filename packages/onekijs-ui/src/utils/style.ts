@@ -168,6 +168,7 @@ export const preflight = (): FlattenInterpolation<ThemeProps<any>> => {
       box-sizing: border-box;
       border-style: solid;
       border-width: 0;
+      font-size: 14px;
     }
     ${toCss('font-family', themeFormatter('font.families'), 'sans', {})}
     button, input, optgroup, select, textarea {

@@ -1,4 +1,5 @@
 import { CSSProperties } from 'react';
+import { isQueryFilterCriteria, QueryFilterOrCriteria } from '@oneki/collection';
 import { GridColumn } from './typings';
 
 export const getCellWidth = (column: GridColumn<unknown>, fit?: boolean, grow?: string): CSSProperties => {
@@ -14,8 +15,6 @@ export const getCellWidth = (column: GridColumn<unknown>, fit?: boolean, grow?: 
       style.maxWidth = column.maxWidth;
     }
 
-    console.log(grow);
-
     if (!grow || grow === column.id) {
       style.flexGrow = 1;
     }
@@ -29,4 +28,17 @@ export const getCellWidth = (column: GridColumn<unknown>, fit?: boolean, grow?: 
     }
     return style;
   }
+};
+
+export const getValueFromFilter = (filter?: QueryFilterOrCriteria): string => {
+  if (filter === undefined) {
+    return '';
+  }
+  if (isQueryFilterCriteria(filter)) {
+    return `${filter.value || ''}`;
+  }
+  if (isQueryFilterCriteria(filter.criterias[0])) {
+    return `${filter.criterias[0].value || ''}`;
+  }
+  return '';
 };

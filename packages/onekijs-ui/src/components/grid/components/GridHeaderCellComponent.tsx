@@ -3,6 +3,8 @@ import { addClassname } from 'utils/style';
 import { GridHeaderCellProps } from '../typings';
 import useGridContext from '../useGridContext';
 import { getCellWidth } from '../util';
+import GridInputFilterComponent from './filters/GridInputFilterComponent';
+import GridSortComponent from './GridSortComponent';
 
 const GridHeaderCellComponent: FC<GridHeaderCellProps> = ({ column }) => {
   const context = useGridContext();
@@ -20,8 +22,12 @@ const GridHeaderCellComponent: FC<GridHeaderCellProps> = ({ column }) => {
   });
 
   return (
-    <div ref={ref} className={addClassname('o-grid-header-cell', className)} style={getCellWidth(column, fit, grow)}>
-      {column.title}
+    <div className={addClassname('o-grid-header-cell', className)} style={getCellWidth(column, fit, grow)}>
+      <div ref={ref} className="o-grid-header-cell-title">
+        <span>{column.title}</span>
+        <GridSortComponent order="asc" />
+      </div>
+      <GridInputFilterComponent column={column} />
     </div>
   );
 };

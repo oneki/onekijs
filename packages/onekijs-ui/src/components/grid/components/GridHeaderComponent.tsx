@@ -14,7 +14,6 @@ const GridHeaderComponent: React.FC<GridHeaderProps> = ({ className, columns, st
     headerStyle.position = 'sticky';
     headerStyle.top = 0;
     headerStyle.zIndex = 1;
-    headerStyle.background = 'gray';
   }
 
   return (

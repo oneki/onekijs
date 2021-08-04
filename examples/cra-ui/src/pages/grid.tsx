@@ -6,47 +6,49 @@ import { users } from '../data/users';
 
 const gridStyle: ComponentStyle<{}> = () => {
   return css`
-      ${preflight()}
-    `;
+    ${preflight()}
+  `;
 };
 
-const Page: React.FC<{className?: string}> = ({ className }) => {
-  const {Grid } = useGrid(users, [
-    {
-      id: 'id',
-      minWidth: '50px',
-      maxWidth: '50px',
-      title: 'ID',
-    },
-    {
-      id: 'firstname',
-      width: '10px',
-      title: 'Firstname',
-    },
-    {
-      id: 'lastname',
-      width: '20px',
-      title: 'Lastname',
-    },
-    {
-      id: 'address.street',
-      width: '600px',
-      title: 'Street',
-    },
-    {
-      id: 'address.postalCode',
-      title: 'Postal Code',
-    },
-    {
-      id: 'address.city',
-      title: 'City',
-    },
-  ], {
+const Page: React.FC<{ className?: string }> = ({ className }) => {
+  const { Grid } = useGrid({
+    dataSource: users,
+    columns: [
+      {
+        id: 'id',
+        minWidth: '50px',
+        maxWidth: '50px',
+        title: 'ID',
+      },
+      {
+        id: 'firstname',
+        width: '10px',
+        title: 'Firstname',
+      },
+      {
+        id: 'lastname',
+        width: '20px',
+        title: 'Lastname',
+      },
+      {
+        id: 'address.street',
+        width: '600px',
+        title: 'Street',
+      },
+      {
+        id: 'address.postalCode',
+        title: 'Postal Code',
+      },
+      {
+        id: 'address.city',
+        title: 'City',
+      },
+    ],
     //grow: 'address.city'
-    className
+    className,
   });
 
-  return <Grid  />;
+  return <Grid />;
 };
 
 export const GridPage = styled(Page)`

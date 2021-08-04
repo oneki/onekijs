@@ -9,6 +9,7 @@ import { SelectPage } from './pages/select';
 import { ListPage } from './pages/list';
 import { AjaxListPage } from './pages/ajaxList';
 import { GridPage } from './pages/grid';
+import { InputPage } from './pages/input';
 
 const customTheme = {};
 
@@ -24,7 +25,7 @@ ReactDOM.render(
           marginBottom: '10px',
         }}
       >
-        <Link to="/">Home</Link> | <Link to="/button">Button</Link> | <Link to="/select">Select</Link> | <Link to="/list">List</Link>| <Link to="/ajaxList">Ajax List</Link>| <Link to="/grid">Grid</Link>
+        <Link to="/">Home</Link> | <Link to="/button">Button</Link> | <Link to="/select">Select</Link> | <Link to="/list">List</Link> | <Link to="/ajaxList">Ajax List</Link> | <Link to="/grid">Grid</Link> | <Link to="/input">Input</Link>
       </div>
       <Switch>
         <Route path="/button">
@@ -41,7 +42,10 @@ ReactDOM.render(
         </Route>
         <Route path="/grid">
           <GridPage />
-        </Route>                                 
+        </Route>           
+        <Route path="/input">
+          <InputPage />
+        </Route>                                
         <Route>
           <div>This is the main page</div>
         </Route>

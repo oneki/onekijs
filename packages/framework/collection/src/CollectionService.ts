@@ -78,6 +78,7 @@ export default class CollectionService<
     const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
     this._addFilter(query, filterOrCriteria, parentFilterId);
+    console.log(query);
     this.refresh(query);
   }
 
@@ -249,7 +250,7 @@ export default class CollectionService<
           return true;
         }
         for (const filterOrCriteria of filter.criterias) {
-          if (isQueryFilterCriteria(filterOrCriteria) && filter.id === id) {
+          if (isQueryFilterCriteria(filterOrCriteria) && filterOrCriteria.id === id) {
             result = filterOrCriteria;
             return true;
           }
