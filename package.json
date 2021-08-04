@@ -6,7 +6,7 @@
     "build2": "LIBRARY_OUTPUT=es6 lerna exec --parallel --scope onekijs-* -- babel --source-maps --root-mode upward src -d dist/esm && LIBRARY_OUTPUT=es5 lerna exec --parallel --scope onekijs-* -- babel --source-maps --root-mode upward src -d dist/es",
     "start2": "LIBRARY_OUTPUT=es6 lerna exec --parallel --scope onekijs-* -- babel --watch --source-maps --root-mode upward src -d dist/esm",
     "start": "lerna exec --parallel --scope onekijs -- tsdx watch",
-    "build": "lerna exec --parallel --scope @oneki/* --scope onekijs  -- yarn build",
+    "build": "lerna exec --scope @oneki/* --scope onekijs --scope onekijs-ui  -- yarn build",
     "ts": "lerna exec --scope onekijs -- yarn start",
     "cm": "git-cz",
     "lerna-version": "lerna version --conventional-commits",

@@ -3,14 +3,39 @@ import { useCallback, useEffect, useReducer, useRef } from 'react';
 import { runSaga, stdChannel } from 'redux-saga';
 
 const useLocalReducer = <S extends State, T extends Service<S>>(service: T, initialState: S): [S, T] => {
-  const [state, reactDispatch] = useReducer(service[combinedReducers], initialState);
+  const reducer = (_state: S, action: { nextState: S })  =>{
+    return action.nextState;
+  }
+  
+  const [state, reactDispatch] = useReducer(reducer, initialState);
   const env = useRef(state);
   env.current = state;
   const channelRef = useRef(stdChannel());
   const dispatcher = useCallback(
     (a) => {
       if (service[reducers][a.type]) {
-        (reactDispatch as any)(a);
+        try {
+          const state = service.state;
+          const nextState = service[combinedReducers](state, a);
+          // only dispatch to the actual reducer if the state has changed
+          // this forces a refresh
+          // we do this because it's possible that useReducer trigger a refresh even if the state has not changed
+          // https://github.com/facebook/react/issues/14994
+          if (nextState !== state) {
+            reactDispatch({
+              nextState
+            });
+          }
+          if (a.resolve) {
+            a.resolve(nextState);
+          }          
+        } catch (e) {
+          if (a.reject) {
+            a.reject(e);
+          } else {
+            throw e;
+          }
+        }
       } else {
         setTimeout(() => channelRef.current.put(a), 0);
       }

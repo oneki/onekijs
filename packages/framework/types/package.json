@@ -12,7 +12,7 @@
   "unpkg": "dist/index.umd.js",
   "scripts": {
     "build": "microbundle",
-    "dev": "microbundle watch"
+    "start": "microbundle watch"
   },
   "author": "Oneki",
   "license": "ISC",

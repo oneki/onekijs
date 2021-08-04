@@ -1,5 +1,5 @@
 import observeRect from '@reach/observe-rect';
-import { useIsomorphicLayoutEffect } from 'onekijs-core';
+import { useIsomorphicLayoutEffect } from '@oneki/core';
 import React, { FC, useRef, useState } from 'react';
 import { usePopper } from 'react-popper';
 import { CSSTransition } from 'react-transition-group';

@@ -1,4 +1,4 @@
-import { generateUniqueId } from 'onekijs-core';
+import { generateUniqueId } from '@oneki/utils';
 import React, { FC, useRef } from 'react';
 import { CheckboxProps } from './typings';
 

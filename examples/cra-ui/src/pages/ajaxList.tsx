@@ -5,7 +5,7 @@ import {
   HttpMethod,
   ItemMeta,
   LoadingStatus,
-  LocalCollectionService,
+  CollectionService,
   Query,
   toCollectionItem,
   useCollection,
@@ -23,8 +23,8 @@ const isLoading = (collection: Collection<User, ItemMeta>): boolean => {
 export const AjaxListPage = () => {
   const [, service] = useService<
     CollectionState<User, ItemMeta>,
-    LocalCollectionService<User, ItemMeta, CollectionState<User, ItemMeta>>
-  >(LocalCollectionService, {
+    CollectionService<User, ItemMeta, CollectionState<User, ItemMeta>>
+  >(CollectionService, {
     db: users.map((u) => toCollectionItem(u)),
     adapter: userAdapter,
     searcher: userSearcher,

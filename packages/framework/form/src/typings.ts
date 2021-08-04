@@ -1,4 +1,4 @@
-import { AnonymousObject, State } from '@oneki/types';
+import { AnonymousObject, State, FormLayout } from '@oneki/types';
 import { FC, MutableRefObject, SyntheticEvent } from 'react';
 import ContainerValidation from './ContainerValidation';
 import FieldValidation from './FieldValidation';
@@ -52,8 +52,6 @@ export type FormFieldProps = FieldOptions &
   };
 
 export type FormLabelWidth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
-
-export type FormLayout = 'horizontal' | 'vertical';
 
 export type FormListener = (...args: any[]) => void;
 
@@ -179,14 +177,6 @@ export enum ValidationCode {
 }
 
 export type ValidationResult = { valid: boolean; message?: string };
-
-export enum ValidationStatus {
-  Loading = 'Loading',
-  Error = 'Error',
-  Warning = 'Warning',
-  Ok = 'OK',
-  None = '',
-}
 
 export type ValidatorsType = {
   required?: boolean;

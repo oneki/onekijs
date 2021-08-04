@@ -1,6 +1,6 @@
 export { default as CollectionService } from './CollectionService';
-export { default as LocalCollectionService } from './LocalCollectionService';
-export { default as RemoteCollectionService } from './RemoteCollectionService';
+export { default as useCollectionService } from './useCollectionService';
+export { default as useCollectionState } from './useCollectionState';
 export {
   ChangeHandler,
   Collection,
@@ -33,7 +33,7 @@ export {
   QuerySortDir,
   UseCollectionOptions,
 } from './typings';
-export { default as useCollection } from './useCollection';
+export { default as useCollection, collectionProxyProps } from './useCollection';
 export { default as useList } from './useList';
 export {
   defaultComparator,
@@ -46,6 +46,7 @@ export {
   getQueryFilterOrCriterias,
   isCollection,
   isCollectionFetching,
+  isCollectionInitializing,
   isCollectionLoading,
   isItem,
   isItemFetching,

@@ -216,17 +216,7 @@ export default class DefaultService<S extends State = AnyState> implements Servi
           }
         });
         this.state = nextState;
-        if (action.resolve) {
-          //setTimeout(() => {
-          action.resolve(nextState);
-          //}, 0);
-        }
         return nextState;
-      } catch (e) {
-        if (action.reject) {
-          action.reject(e);
-        }
-        throw e;
       } finally {
         this[inReducer] = false;
       }

@@ -17,7 +17,7 @@ import { deriveColor } from '../../utils/color';
 import { preflight } from '../../utils/style';
 import { SelectProps } from './typings';
 
-const selectStyle: ComponentStyle<SelectProps> = ({multiple, theme}) => {
+const selectStyle: ComponentStyle<SelectProps> = ({ multiple, theme }) => {
   return css`
     ${preflight()}
     ${width('100%')}
@@ -186,7 +186,7 @@ const selectStyle: ComponentStyle<SelectProps> = ({multiple, theme}) => {
         }
         .o-select-token-remove {
           ${cursor('pointer')}
-          ${color('white', {'hover': 'danger'})}
+          ${color('white', { hover: 'danger' })}
           ${fontFamily('Arial')}
           ${paddingX(2)}
         }
@@ -223,7 +223,8 @@ const selectStyle: ComponentStyle<SelectProps> = ({multiple, theme}) => {
 
     .o-select-options {
       scrollbar-width: thin;
-      scrollbar-color: ${(props) => props.theme.colors[props.theme.kind.primary]} ${(props) => props.theme.colors['gray-200']};
+      scrollbar-color: ${(props) => props.theme.colors[props.theme.kind.primary]} ${(props) =>
+    props.theme.colors['gray-200']};
       &::-webkit-scrollbar {
         width: 12px;
       }
@@ -241,18 +242,20 @@ const selectStyle: ComponentStyle<SelectProps> = ({multiple, theme}) => {
         ${paddingY(2)}
         ${display('flex')}
         ${alignItems('center')}
-        ${backgroundColor('transparent', {'hover': 'gray-200'})}
+        ${backgroundColor('transparent', { hover: 'gray-200' })}
         ${userSelect('none')}
         &.o-select-option-clickable {
           ${cursor('pointer')}
         }
         &.o-select-option-selected {
-          ${backgroundColor(multiple ? deriveColor(theme.kind.primary, -300, false): 'primary', {'hover': multiple ? deriveColor(theme.kind.primary, -300, false): 'primary'})}
-          ${color(multiple ? 'inherits': 'white', {'hover': multiple ? 'inherits': 'white'})}
+          ${backgroundColor(multiple ? deriveColor(theme.kind.primary, -300, false) : 'primary', {
+            hover: multiple ? deriveColor(theme.kind.primary, -300, false) : 'primary',
+          })}
+          ${color(multiple ? 'inherits' : 'white', { hover: multiple ? 'inherits' : 'white' })}
         }         
         &.o-select-option-highlighted {
-          ${backgroundColor(multiple ? 'primary' : 'gray-200', {'hover': multiple ? 'primary' : 'gray-200'})}
-          ${color(multiple ? 'white': 'inherits')}
+          ${backgroundColor(multiple ? 'primary' : 'gray-200', { hover: multiple ? 'primary' : 'gray-200' })}
+          ${color(multiple ? 'white' : 'inherits')}
         }         
            
 

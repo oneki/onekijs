@@ -1,10 +1,10 @@
 import { useLazyRef } from '@oneki/core';
-import { AnonymousObject } from '@oneki/types';
+import { AnonymousObject, ValidationStatus } from '@oneki/types';
 import { diffArrays, get, set } from '@oneki/utils';
 import { useEffect, useReducer, useRef } from 'react';
 import ContainerValidation from './ContainerValidation';
 import FieldValidation from './FieldValidation';
-import { FieldContainer, FormContext, FormListenerProps, ValidationCode, ValidationStatus } from './typings';
+import { FieldContainer, FormContext, FormListenerProps, ValidationCode } from './typings';
 import useFormContext from './useFormContext';
 
 const useFieldContainer = (): FieldContainer => {
