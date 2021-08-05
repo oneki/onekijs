@@ -13,7 +13,7 @@ import { GridFilterProps } from '../../../grid/typings';
 import SearchIcon from '../../../icon/SearchIcon';
 import Input from '../../../input';
 import { InputProps } from '../../../input/typings';
-import useGridContext from '../../useGridContext';
+import useGridController from '../../useGridController';
 import { getValueFromFilter } from '../../util';
 
 const SearchComponent: React.FC<InputProps> = ({ className }) => {
@@ -54,15 +54,14 @@ const StyledInput = styled(Input)`
 `;
 
 const GridInputFilterComponent: React.FC<GridFilterProps> = ({ column }) => {
-  const service = useGridContext();
-  const filter = service.getFilterById(column.id);
+  const controller = useGridController();
+  const filter = controller.getFilterById(column.id);
   const value = getValueFromFilter(filter);
-  console.log(service.items);
   const onValueChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.value) {
-      service.addFilterCriteria(column.id, 'i_like', e.target.value, false, column.id);
+      controller.addFilterCriteria(column.id, 'i_like', e.target.value, false, column.id);
     } else {
-      service.removeFilter(column.id);
+      controller.removeFilter(column.id);
     }
   };
   return <StyledInput value={value} onChange={onValueChange} PrefixComponent={StyledSearchComponent} />;

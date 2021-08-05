@@ -10,7 +10,6 @@ const useGridState = <T = any, M extends GridItemMeta = GridItemMeta>(
   const stateRef = useLazyRef<GridState<T, M>>(() => {
     return Object.assign(
       {
-        className: options.className,
         columns: options.columns,
         bodyClassName: options.bodyClassName,
         BodyComponent: options.BodyComponent,

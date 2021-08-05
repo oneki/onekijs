@@ -2,17 +2,17 @@ import React, { FC, useEffect, useRef } from 'react';
 import { get } from '../../../../utils/object';
 import { addClassname } from '../../../utils/style';
 import { GridBodyCellProps } from '../typings';
-import useGridContext from '../useGridContext';
+import useGridController from '../useGridController';
 import { getCellWidth } from '../util';
 
 const GridBodyCellComponent: FC<GridBodyCellProps> = ({ column, rowIndex, rowValue }) => {
-  const context = useGridContext();
-  const { initCell, fit, grow } = context;
+  const controller = useGridController();
+  const { initCell, fit, grow } = controller;
   const ref = useRef<HTMLDivElement>(null);
   const initializedRef = useRef<boolean>(false);
 
   const className =
-    typeof column.className === 'function' ? column.className(rowValue, column, context) : column.className;
+    typeof column.className === 'function' ? column.className(rowValue, column, controller) : column.className;
 
   useEffect(() => {
     if (!initializedRef.current && ref.current !== null) {
