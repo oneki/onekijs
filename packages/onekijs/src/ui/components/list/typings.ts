@@ -1,5 +1,5 @@
-import { Collection, Item, ItemMeta } from '@oneki/collection';
 import { FC, RefObject } from 'react';
+import { Collection, Item, ItemMeta } from '../../../collection/typings';
 
 export type ListItems<T = any, M extends ItemMeta = ItemMeta> = T[] | Collection<T, M>;
 

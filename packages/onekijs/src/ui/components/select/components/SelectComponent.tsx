@@ -125,6 +125,7 @@ const SelectComponent: FC<SelectProps<any>> = ({
     return multiple && Array.isArray(value)
       ? value.map((v) => toCollectionItem(v, collection.getAdapter()) || '')
       : undefined;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   const previousTokensRef = useRef<Item<any, SelectOptionMeta>[] | undefined>();
@@ -189,12 +190,11 @@ const SelectComponent: FC<SelectProps<any>> = ({
       if (focus) {
         setFocus(false);
         if (forwardBlur) {
-          console.log('forwardBlur');
           forwardBlur();
         }
       }
     }
-  }, [open, keyboardItem, collection]);
+  }, [open, keyboardItem, collection, forwardBlur, setOpen, focus]);
 
   const onFocus = useCallback(() => {
     if (!focus) {
@@ -203,7 +203,7 @@ const SelectComponent: FC<SelectProps<any>> = ({
         forwardFocus();
       }
     }
-  }, [open, keyboardItem, collection]);
+  }, [focus, forwardFocus]);
 
   useClickOutside(containerRef, () => {
     onBlur();
@@ -234,7 +234,7 @@ const SelectComponent: FC<SelectProps<any>> = ({
         onChange(nextValue);
       }
     },
-    [tokens],
+    [tokens, onChange],
   );
 
   const onSelect: SelectOptionSelectionHandler = useCallback(
@@ -267,7 +267,7 @@ const SelectComponent: FC<SelectProps<any>> = ({
         }
       }
     },
-    [onChange, collection, multiple, onRemoveToken],
+    [onChange, collection, multiple, onRemoveToken, keyboardItem, value, setOpen],
   );
 
   // const onItemEnter: SelectOptionHandler = useCallback((item) => {
@@ -381,7 +381,7 @@ const SelectComponent: FC<SelectProps<any>> = ({
       });
       previousTokensRef.current = tokens;
     }
-  }, [value, collection, proxyItem, tokens]);
+  }, [value, collection, proxyItem, tokens, multiple]);
 
   const classNames = addClassname(
     `o-select o-select-size-${size} o-select-${open ? 'open' : 'close'}${
@@ -401,13 +401,7 @@ const SelectComponent: FC<SelectProps<any>> = ({
     className: 'o-select-options',
   });
 
-  const onDropDownUpdate = useCallback(() => {
-    // const index = findItemIndex(collection, previousProxyItem.current);
-    // if (open && scrollToIndex && index >= 0) {
-    //   const align = keyboardItem ? 'auto': 'center';
-    //   scrollToIndex(index, { 'align': align });
-    // }
-  }, [open, scrollToIndex, collection, proxyItem]);
+  const onDropDownUpdate = useCallback(() => undefined, []);
 
   useIsomorphicLayoutEffect(() => {
     if (open && scrollToIndex) {
