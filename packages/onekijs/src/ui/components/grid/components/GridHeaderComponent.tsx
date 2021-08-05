@@ -1,11 +1,11 @@
 import React, { CSSProperties } from 'react';
 import { addStyle } from '../../../utils/style';
 import { GridHeaderProps } from '../typings';
-import useGridContext from '../useGridContext';
+import useGridController from '../useGridController';
 import GridHeaderCellComponent from './GridHeaderCellComponent';
 
 const GridHeaderComponent: React.FC<GridHeaderProps> = ({ className, columns, style }) => {
-  const { fixHeader } = useGridContext();
+  const { fixHeader } = useGridController();
   const headerStyle: CSSProperties = {
     display: 'flex',
   };

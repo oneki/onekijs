@@ -10,8 +10,8 @@ import {
   toCollectionItem,
   useCollection,
   useService,
+  List2
 } from 'onekijs';
-import { List } from 'onekijs-ui';
 import React, { useCallback } from 'react';
 import { User, userAdapter, users, userSearcher } from '../data/users';
 import Spinner from './spinner';
@@ -70,7 +70,7 @@ export const AjaxListPage = () => {
         {isLoading(remoteCollection) && <Spinner />}
       </div>
       <div style={{ width: '300px', border: '1px solid black', padding: '5px' }}>
-        <List height={200} items={remoteCollection} preload={100} increment={100} />
+        <List2 height={200} items={remoteCollection} preload={100} increment={100} />
       </div>
     </div>
   );

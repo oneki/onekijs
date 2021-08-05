@@ -8,20 +8,19 @@ import {
   cursor,
   display,
   fontSize,
-  Input,
-  InputProps,
+  Input2,
+  InputProps2,
   justifyContent,
-  marginLeft,
   padding,
   paddingX,
   paddingY,
   SearchIcon,
   width,
-} from 'onekijs-ui';
+} from 'onekijs';
 import React from 'react';
 import styled, { css } from 'styled-components';
 
-const SearchComponent: React.FC<InputProps> = ({ className }) => {
+const SearchComponent: React.FC<InputProps2> = ({ className }) => {
   return (
     <div className={addClassname('o-search-icon-container', className)}>
       <SearchIcon width="14px" height="14px" />
@@ -46,7 +45,7 @@ const StyledSearchComponent = styled(SearchComponent)`
   `}
 `;
 
-const StyledInput = styled(Input)`
+const StyledInput = styled(Input2)`
   ${css`
     ${backgroundColor('#f6f6f6')}
     ${borderWidth(0)}

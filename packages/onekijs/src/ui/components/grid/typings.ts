@@ -1,5 +1,5 @@
 import React from 'react';
-import { CollectionState, Item, ItemMeta, UseCollectionOptions } from '../../../collection/typings';
+import { Collection, CollectionState, Item, ItemMeta, UseCollectionOptions } from '../../../collection/typings';
 import { ListBodyProps, ListHeaderProps, ListItemProps, ListItems } from '../list/typings';
 import GridService from './GridService';
 
@@ -23,9 +23,9 @@ export type GridColumn<T = any, M extends GridItemMeta = GridItemMeta> = GridCol
 };
 
 export type GridColumnSpec<T = any, M extends GridItemMeta = GridItemMeta> = {
-  className?: string | ((rowData: T, column: GridColumn<T, M>, context: GridService<T, M>) => string);
+  className?: string | ((rowData: T, column: GridColumn<T, M>, context: GridController<T, M>) => string);
   CellComponent?: React.FC<GridBodyCellProps<T, M>>;
-  headerClassName?: string | ((column: GridColumn<T, M>, context: GridService<T, M>) => string);
+  headerClassName?: string | ((column: GridColumn<T, M>, context: GridController<T, M>) => string);
   HeaderComponent?: React.FC<GridHeaderCellProps<T, M>>; //TODO put the correct props
   id: string;
   maxWidth?: string;
@@ -47,6 +47,13 @@ export type GridColumnComputedWidth = {
   minWidth?: string;
 };
 
+export type GridController<T = any, M extends GridItemMeta = GridItemMeta> = Collection<T, M> &
+  _GridState<T, M> & {
+    initCell(rowNumber: number | 'header' | 'footer', colId: string, ref: React.RefObject<HTMLDivElement>): boolean;
+    onMount(gridRef: React.RefObject<HTMLDivElement>, contentRef: React.RefObject<HTMLDivElement>): void;
+    asService(): GridController<T, M>;
+  };
+
 export type GridFilterProps<T = any, M extends GridItemMeta = GridItemMeta> = {
   column: GridColumn<T, M>;
 };
@@ -62,15 +69,13 @@ export type GridHeaderProps<T = any, M extends GridItemMeta = GridItemMeta> = Li
 
 export type GridItem<T = any, M extends GridItemMeta = GridItemMeta> = Item<T, M>;
 
-export interface GridItemMeta extends ItemMeta {
-  toto: string;
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface GridItemMeta extends ItemMeta {}
 
 export type GridItems<T = any, M extends GridItemMeta = GridItemMeta> = ListItems<T, M>;
 
 export type GridProps<T = any, M extends GridItemMeta = GridItemMeta> = {
-  service: GridService<T, M>;
-  contentRef: React.RefObject<HTMLDivElement>;
+  controller: GridController<T, M>;
   className?: string;
 };
 
@@ -79,19 +84,17 @@ export type GridSortProps = {
 };
 
 type _GridState<T = any, M extends GridItemMeta = GridItemMeta> = {
-  bodyClassName?: string | ((context: GridService<T, M>) => string);
+  bodyClassName?: string | ((context: GridController<T, M>) => string);
   BodyComponent?: React.FC<GridBodyProps<T>>;
   bodyWidth?: string;
-  className?: string;
   columns: GridColumn<T, M>[];
   fit?: boolean;
   fixHeader?: boolean;
-  GridComponent?: React.ForwardRefExoticComponent<GridProps<T, M> & React.RefAttributes<HTMLDivElement>>;
   grow?: string;
-  headerClassName?: string | ((context: GridService<T, M>) => string);
+  headerClassName?: string | ((context: GridController<T, M>) => string);
   HeaderComponent?: React.FC<GridHeaderProps>;
   height?: string;
-  rowClassName?: string | ((rowData: T, context: GridService<T, M>) => string);
+  rowClassName?: string | ((rowData: T, context: GridController<T, M>) => string);
   RowComponent?: React.FC<GridBodyRowProps<T, M>>;
 };
 

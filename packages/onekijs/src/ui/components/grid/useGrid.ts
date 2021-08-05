@@ -1,18 +1,15 @@
-import { FC, useEffect, useRef } from 'react';
 import { collectionProxyProps } from '../../../collection/useCollection';
-import useLazyRef from '../../../core/useLazyRef';
+import useObjectProxy from '../../../core/useObjectProxy';
 import GridService from './GridService';
-import { GridItemMeta, GridState, UseGridOptions } from './typings';
+import { GridController, GridItemMeta, GridState, UseGridOptions } from './typings';
 import useGridService from './useGridService';
 import useGridState from './useGridState';
-import wrapper from './wrapper';
 
 export const gridCollectionProps = {
   pick: collectionProxyProps.pick.concat([
     'bodyClassName',
     'BodyComponent',
     'bodyWidth',
-    'className',
     'fit',
     'fixHeader',
     'grow',
@@ -21,13 +18,16 @@ export const gridCollectionProps = {
     'height',
     'rowClassName',
     'RowComponent',
+    'asService',
+    'initCell',
+    'onMount',
   ]),
   mutables: ['columns'],
 };
 
 const useGrid = <T = any, M extends GridItemMeta = GridItemMeta>(
   options: UseGridOptions<T, M>,
-): { Grid: FC; service: GridService<T, M, GridState<T, M>> } => {
+): GridController<T, M> => {
   const gridState = useGridState<T, M>(options);
   const [, service] = useGridService<T, M, GridState<T, M>, GridService<T, M, GridState<T, M>>>(
     options.dataSource,
@@ -35,21 +35,7 @@ const useGrid = <T = any, M extends GridItemMeta = GridItemMeta>(
     gridState,
   );
 
-  const contentRef = useRef<HTMLDivElement>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
-
-  const componentRef = useLazyRef<FC>(() => {
-    return wrapper(service, gridRef, contentRef);
-  });
-
-  useEffect(() => {
-    service.onMount(gridRef, contentRef);
-  });
-
-  return {
-    Grid: componentRef.current,
-    service,
-  };
+  return useObjectProxy(service, gridCollectionProps);
 };
 
 export default useGrid;

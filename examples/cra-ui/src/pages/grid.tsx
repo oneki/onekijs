@@ -1,4 +1,4 @@
-import { ComponentStyle, fontFamily, preflight, useGrid } from 'onekijs-ui';
+import { ComponentStyle, preflight, useGrid, Grid } from 'onekijs';
 
 import React from 'react';
 import styled, { css } from 'styled-components';
@@ -11,7 +11,7 @@ const gridStyle: ComponentStyle<{}> = () => {
 };
 
 const Page: React.FC<{ className?: string }> = ({ className }) => {
-  const { Grid } = useGrid({
+  const controller = useGrid({
     dataSource: users,
     columns: [
       {
@@ -45,10 +45,9 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
       },
     ],
     //grow: 'address.city'
-    className,
   });
 
-  return <Grid />;
+  return <Grid controller={controller} className={className} />;
 };
 
 export const GridPage = styled(Page)`
