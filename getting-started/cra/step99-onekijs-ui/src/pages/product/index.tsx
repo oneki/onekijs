@@ -1,9 +1,9 @@
-import React, { FC } from 'react';
+import React from 'react';
 import H2 from '../../components/H2';
 import { products } from '../../data/product';
 import Product from './components/Product';
 
-const Home: FC = () => {
+const Home: React.FC = () => {
   return (
     <div>
       <H2>Products</H2>

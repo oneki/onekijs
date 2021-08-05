@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { ProductType } from '../../../pages/products';
 
 interface ProductProps {
@@ -7,7 +7,7 @@ interface ProductProps {
   onNotify: () => void;
 }
 
-const Product: FC<ProductProps> = ({ product, onClick, onNotify }) => {
+const Product: React.FC<ProductProps> = ({ product, onClick, onNotify }) => {
   return (
     <div>
       <h3>

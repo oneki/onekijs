@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { ProductType } from '../../products/components/Product';
 import { currency } from '../libs/format';
 
@@ -6,7 +6,7 @@ interface CartProps {
   cart: ProductType[];
 }
 
-const Cart: FC<CartProps> = ({ cart }) => {
+const Cart: React.FC<CartProps> = ({ cart }) => {
   return (
     <div>
       <h3>Cart</h3>

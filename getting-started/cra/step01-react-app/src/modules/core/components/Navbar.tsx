@@ -1,6 +1,6 @@
-import React, { FC } from 'react';
+import React from 'react';
 
-const Navbar: FC = () => {
+const Navbar: React.FC = () => {
   return (
     <div className="app-top-bar">
       <a href="/">

@@ -1,4 +1,4 @@
-import { MutableRefObject } from 'react';
+import React, { MutableRefObject } from 'react';
 import { AppSettings } from './app';
 import { I18n } from './i18n';
 import { AnonymousObject } from './object';
@@ -62,7 +62,6 @@ export type UnregisterCallback = () => void;
 //   locale?: string | false;
 // }
 // export type UnregisterCallback = () => void;
-
 export interface Router {
   readonly location: Location;
   readonly previousLocation: Location;
@@ -79,6 +78,7 @@ export interface Router {
   back(delta?: number): void;
   deleteOrigin(): void;
   forward(delta?: number): void;
+  getReactContext(): React.Context<any>;
   getLinkComponent(
     props: LinkProps,
     ref: ((instance: HTMLAnchorElement | null) => void) | MutableRefObject<HTMLAnchorElement | null> | null,
@@ -89,4 +89,11 @@ export interface Router {
   push(urlOrLocation: string | Location, options?: RouterPushOptions): void;
   replace(urlOrLocation: string | Location, options?: RouterPushOptions): void;
   saveOrigin(force?: boolean): void;
+}
+
+export interface RouterContext {
+  location: Location;
+  match: {
+    params: AnonymousObject;
+  };
 }

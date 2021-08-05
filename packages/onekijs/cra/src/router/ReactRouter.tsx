@@ -1,15 +1,19 @@
-import { toI18nLocation } from 'onekijs';
-import { BaseRouter, toLocation, toRelativeUrl, toUrl } from 'onekijs';
+import { History, Location as ReactRouterLocation, LocationListener, LocationState } from 'history';
 import {
   AppSettings,
+  BaseRouter,
   LinkProps,
   Location,
   LocationChangeCallback,
   RouterPushOptions,
+  toI18nLocation,
+  toLocation,
+  toRelativeUrl,
+  toUrl,
   UnregisterCallback,
 } from 'onekijs';
-import { History, Location as ReactRouterLocation, LocationListener, LocationState } from 'history';
 import React, { MutableRefObject } from 'react';
+import { __RouterContext } from 'react-router';
 import Link from '../components/Link';
 
 export class ReactRouter extends BaseRouter {
@@ -35,6 +39,10 @@ export class ReactRouter extends BaseRouter {
     if (this.reactRouterHistory) {
       this.reactRouterHistory.go(delta);
     }
+  }
+
+  getReactContext(): React.Context<any> {
+    return __RouterContext;
   }
 
   getLinkComponent(

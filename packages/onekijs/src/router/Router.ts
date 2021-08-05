@@ -1,13 +1,22 @@
 import produce from 'immer';
-import { ParsedQuery } from 'query-string';
-import { MutableRefObject } from 'react';
+import React, { MutableRefObject } from 'react';
 import { AppSettings } from '../types/app';
 import { I18n } from '../types/i18n';
 import { AnonymousObject } from '../types/object';
-import { LinkProps, Location, LocationChangeCallback, RouterPushOptions, UnregisterCallback } from '../types/router';
+import {
+  LinkProps,
+  Location,
+  LocationChangeCallback,
+  ParsedQuery,
+  Router,
+  RouterPushOptions,
+  UnregisterCallback,
+} from '../types/router';
 import { get } from '../utils/object';
 
-export default abstract class BaseRouter {
+export const RouterContext = React.createContext<any>(undefined);
+
+export default abstract class BaseRouter implements Router {
   settings: AppSettings = {};
   i18n: I18n = {};
   history: Location[];
@@ -58,6 +67,10 @@ export default abstract class BaseRouter {
     props: LinkProps,
     ref: ((instance: HTMLAnchorElement | null) => void) | MutableRefObject<HTMLAnchorElement | null> | null,
   ): JSX.Element;
+
+  getReactContext(): React.Context<any> {
+    return RouterContext;
+  }
 
   getOrigin(): { from: string } {
     const from = localStorage.getItem('onekijs.from') || get<string>(this.settings, 'routes.home', '/');

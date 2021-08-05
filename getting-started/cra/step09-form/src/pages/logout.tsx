@@ -1,7 +1,7 @@
 import { useLogout, useTranslation } from 'onekijs';
-import React, { FC } from 'react';
+import React from 'react';
 
-const AuthLogoutPage: FC = () => {
+const AuthLogoutPage: React.FC = () => {
   const [error, loading] = useLogout();
   const [T] = useTranslation();
   if (error)

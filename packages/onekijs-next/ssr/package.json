@@ -48,8 +48,8 @@
     "redux": "^4.0.5",
     "redux-saga": "^1.1.3",
     "reflect-metadata": "^0.1.13",
-    "rfc4648": "^1.3.0",
     "regenerator-runtime": "0.13.9",
+    "rfc4648": "^1.3.0",
     "text-encoding-shim": "^1.0.5"
   },
   "devDependencies": {

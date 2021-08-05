@@ -1,7 +1,7 @@
 import { Input, Link, SubmitButton, useForm, useLogin, useTranslation } from 'onekijs';
-import React, { FC } from 'react';
+import React from 'react';
 
-const LoginPage: FC = () => {
+const LoginPage: React.FC = () => {
   const [error, , submit] = useLogin();
   const [T, t] = useTranslation();
   const { Form, values, getValidation } = useForm(submit);

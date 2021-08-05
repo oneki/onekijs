@@ -1,5 +1,5 @@
 import { useLocalService, useTranslation } from 'onekijs';
-import React, { FC } from 'react';
+import React from 'react';
 import AvailabilityService, { AvailabilityState } from '../services/AvailabilityService';
 import { currency } from '../../core/libs/format';
 import { ProductType } from './Product';
@@ -13,7 +13,7 @@ const initialAvailabilityState: AvailabilityState = {
   loading: false,
 };
 
-const ProductDetails: FC<ProductDetailsProps> = ({ product, onBuy }) => {
+const ProductDetails: React.FC<ProductDetailsProps> = ({ product, onBuy }) => {
   const [T] = useTranslation();
   const [availability, availabilityService] = useLocalService(AvailabilityService, initialAvailabilityState);
   return (

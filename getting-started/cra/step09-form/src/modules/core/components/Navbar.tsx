@@ -1,8 +1,8 @@
 import { useI18nService, useSecurityContext, useTranslation } from 'onekijs';
-import React, { FC } from 'react';
+import React from 'react';
 import { Link } from 'onekijs';
 
-const Navbar: FC = () => {
+const Navbar: React.FC = () => {
   const [T, , locale] = useTranslation();
   const [loggedUser] = useSecurityContext('username');
   return (
@@ -38,7 +38,7 @@ interface LocaleLinkProps {
   selected: boolean;
 }
 
-const LocaleLink: FC<LocaleLinkProps> = ({ locale, selected }) => {
+const LocaleLink: React.FC<LocaleLinkProps> = ({ locale, selected }) => {
   const i18nService = useI18nService();
   return (
     <button className={`link ${selected ? 'selected' : ''}`} onClick={() => i18nService.changeLocale(locale)}>

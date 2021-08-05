@@ -1,7 +1,7 @@
-import React, { FC } from 'react';
+import React from 'react';
 import Navbar from '../components/Navbar';
 
-const AppLayout: FC = ({ children }) => {
+const AppLayout: React.FC = ({ children }) => {
   return (
     <div>
       <Navbar />

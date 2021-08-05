@@ -21,20 +21,20 @@
       "import": "./next/dist/index.modern.js",
       "require": "./next/dist/index.js"
     },
-    "./next-ssr": {
-      "import": "./next-ssr/dist/index.modern.js",
-      "require": "./next-ssr/dist/index.js"
+    "./ssr": {
+      "import": "./ssr/dist/index.modern.js",
+      "require": "./ssr/dist/index.js"
     }
   },
   "module": "dist/index.module.js",
   "unpkg": "dist/index.umd.js",
   "scripts": {
-    "build": "concurrently \"yarn build:onekijs\" \"yarn build:cra\" \"yarn build:next\" \"yarn build:next-ssr\" ",
+    "build": "concurrently \"yarn build:onekijs\" \"yarn build:ssr\" ",
     "build:onekijs": "microbundle -f es,cjs,modern --jsx React.createElement",
     "build:cra": "cd cra && microbundle -f es,cjs,modern --jsx React.createElement",
     "build:next": "cd next && microbundle -f es,cjs,modern --jsx React.createElement",
-    "build:next-ssr": "cd next-ssr && microbundle -f es,cjs,modern --jsx React.createElement",
-    "start": "microbundle watch -f es,cjs,modern --jsx React.createElement"
+    "build:ssr": "cd ssr && microbundle -f es,cjs,modern --jsx React.createElement",
+    "start": "microbundle watch -f es,cjs,modern --jsx React.createElement --max-old-space-size=8192"
   },
   "author": "Oneki",
   "license": "MIT",
@@ -43,6 +43,8 @@
     "immer": "^8.0.1",
     "query-string": "^6.11.1",
     "react-redux": "^7.2.0",
+    "react-router": "^5.2.0",
+    "react-router-dom": "^5.1.2",
     "react-transition-group": "^4.4.1",
     "redux": "^4.0.5",
     "redux-saga": "^1.1.3",
@@ -51,12 +53,18 @@
     "text-encoding-shim": "^1.0.5"
   },
   "devDependencies": {
-    "microbundle": "^0.13.3",
-    "concurrently": "^6.2.0"
+    "concurrently": "^6.2.0",
+    "microbundle": "^0.13.3"
   },
   "peerDependencies": {
+    "next": ">=11",
     "react": ">=16",
     "react-dom": ">=16"
+  },
+  "peerDependenciesMeta": {
+    "next": {
+      "optional": true
+    }
   },
   "sideEffects": false,
   "gitHead": "bd34719c6e0a4119cec72b64ce8fe6b35d1c342f"

@@ -1,11 +1,11 @@
 import { useGet, usePost, Link } from 'onekijs';
 import { useParams } from 'onekijs/cra';
-import React, { FC } from 'react';
+import React from 'react';
 import { URL_ADD_PRODUCT, URL_PRODUCT } from '../../../modules/core/libs/constants';
 import ProductDetails from '../../../modules/products/components/ProductDetails';
 import { ProductType } from '../../../__server__/api/dto/product';
 
-const ProductDetailsPage: FC = () => {
+const ProductDetailsPage: React.FC = () => {
   const { productId } = useParams<any>();
   const [product] = useGet<ProductType>(`${URL_PRODUCT}/${productId}`, {
     pollingMs: 2000,

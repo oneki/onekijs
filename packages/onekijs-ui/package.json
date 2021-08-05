@@ -15,13 +15,13 @@
     "start": "microbundle watch --jsx React.createElement --no-compress"
   },
   "dependencies": {
-    "@popperjs/core": "^2.4.4",
-    "react-icons": "^4.2.0",
-    "@oneki/core": "^0.10.0",
     "@oneki/collection": "^0.10.0",
+    "@oneki/core": "^0.10.0",
+    "@oneki/form": "^0.10.0",
     "@oneki/types": "^0.10.0",
     "@oneki/utils": "^0.10.0",
-    "@oneki/form": "^0.10.0",
+    "@popperjs/core": "^2.4.4",
+    "react-icons": "^4.2.0",
     "react-popper": "^2.2.3",
     "react-popper-tooltip": "^4.2.0",
     "react-transition-group": "^4.4.1",
@@ -32,10 +32,10 @@
     "styled-components": "^5.1.1"
   },
   "devDependencies": {
-    "microbundle": "^0.13.3",
     "@types/react-transition-group": "^4.4.0",
     "@types/react-virtualized-auto-sizer": "^1.0.0",
-    "@types/react-window": "^1.8.2"    
+    "@types/react-window": "^1.8.2",
+    "microbundle": "^0.13.3"
   },
   "peerDependencies": {
     "react": ">=16",

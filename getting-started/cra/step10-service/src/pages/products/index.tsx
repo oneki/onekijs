@@ -1,9 +1,9 @@
 import { useNotificationService, useTranslation } from 'onekijs';
-import React, { FC } from 'react';
+import React from 'react';
 import { NOTIF_TOPIC_ERROR, NOTIF_TOPIC_SUCCESS } from '../../modules/core/libs/constants';
 import Product, { ProductType } from '../../modules/products/components/Product';
 
-const ProductsPage: FC = () => {
+const ProductsPage: React.FC = () => {
   const notificationService = useNotificationService();
   const [, t] = useTranslation();
   return (

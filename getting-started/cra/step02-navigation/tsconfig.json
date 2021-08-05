@@ -19,9 +19,11 @@
     "noEmit": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "jsx": "react"
+    "jsx": "react-jsx",
+    "noFallthroughCasesInSwitch": true
   },
   "include": [
-    "src"
-, "../../next/step01-next-app/src/modules/products/data"  ]
+    "src",
+    "../../next/step01-next-app/src/modules/products/data"
+  ]
 }

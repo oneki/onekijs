@@ -1,7 +1,7 @@
 import { useSecurityContext, Link } from 'onekijs';
-import React, { FC } from 'react';
+import React from 'react';
 
-const Navbar: FC = () => {
+const Navbar: React.FC = () => {
   const [loggedUser] = useSecurityContext('username');
   return (
     <div className="app-top-bar">
