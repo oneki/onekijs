@@ -1,5 +1,5 @@
-import { toI18nLocation } from '@oneki/i18n';
-import { BaseRouter, toLocation, toRelativeUrl, toUrl } from '@oneki/router';
+import { toI18nLocation } from 'onekijs';
+import { BaseRouter, toLocation, toRelativeUrl, toUrl } from 'onekijs';
 import {
   AppSettings,
   LinkProps,
@@ -7,7 +7,7 @@ import {
   LocationChangeCallback,
   RouterPushOptions,
   UnregisterCallback,
-} from '@oneki/types';
+} from 'onekijs';
 import { History, Location as ReactRouterLocation, LocationListener, LocationState } from 'history';
 import React, { MutableRefObject } from 'react';
 import Link from '../components/Link';

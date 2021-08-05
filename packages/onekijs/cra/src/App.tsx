@@ -1,6 +1,5 @@
-import { AppState, DefaultLoadingComponent } from '@oneki/app';
-import { useLazyRef } from '@oneki/core';
 import { createBrowserHistory } from 'history';
+import { AppState, DefaultLoadingComponent, useLazyRef } from 'onekijs';
 import React, { FC, Suspense } from 'react';
 import { Router } from 'react-router-dom';
 import { ReactRouter } from './router/ReactRouter';

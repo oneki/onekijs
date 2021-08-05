@@ -1,6 +1,4 @@
-import { useGlobalProp, useSetting } from '@oneki/app';
-import { SecureRouteProps } from '@oneki/auth';
-import { AnonymousObject } from '@oneki/types';
+import { AnonymousObject, SecureRouteProps, useGlobalProp, useSetting } from 'onekijs';
 import React, { FC } from 'react';
 import { Redirect, Route } from 'react-router-dom';
 

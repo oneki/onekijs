@@ -1,7 +1,6 @@
 import NextLink from 'next/link';
+import { LinkProps, toRelativeUrl } from 'onekijs';
 import React, { FC } from 'react';
-import { LinkProps } from '@oneki/types';
-import { toRelativeUrl } from '@oneki/router';
 
 const Link: FC<LinkProps> = ({
   href,

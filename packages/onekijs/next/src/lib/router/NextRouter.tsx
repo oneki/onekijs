@@ -1,7 +1,15 @@
-import { BaseRouter, toLocation, toRouteUrl, toUrl } from '@oneki/router';
-import { LinkProps, Location, LocationChangeCallback, RouterPushOptions } from '@oneki/types';
 import { UnregisterCallback } from 'history';
 import Router, { NextRouter as NextRouterType } from 'next/router';
+import {
+  BaseRouter,
+  LinkProps,
+  Location,
+  LocationChangeCallback,
+  RouterPushOptions,
+  toLocation,
+  toRouteUrl,
+  toUrl,
+} from 'onekijs';
 import React from 'react';
 import Link from '../../components/Link';
 

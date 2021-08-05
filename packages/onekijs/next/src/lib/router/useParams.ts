@@ -1,5 +1,4 @@
-import { useTryParams } from '@oneki/core';
-import { AnonymousObject } from '@oneki/types';
+import { AnonymousObject, useTryParams } from 'onekijs';
 
 // change the state every time it changes
 const useParams = (): AnonymousObject<string> => {

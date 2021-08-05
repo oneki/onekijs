@@ -1,11 +1,9 @@
+import { AppState, DefaultLoadingComponent, simpleMergeDeep, useLazyRef } from 'onekijs';
 import React, { FC, useEffect, useMemo } from 'react';
-import { AppState, DefaultLoadingComponent } from '@oneki/app';
-import { AppProps } from './typings';
+import { SS_KEY_404 } from './404';
 import NextRouter from './router/NextRouter';
 import { useRouterSync } from './router/useRouterSync';
-import { useLazyRef } from '@oneki/core';
-import { simpleMergeDeep } from '@oneki/utils';
-import { SS_KEY_404 } from './404';
+import { AppProps } from './typings';
 
 const Router: FC<{ router: NextRouter }> = ({ router, children }) => {
   useRouterSync(router);

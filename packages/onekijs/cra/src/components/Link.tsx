@@ -1,7 +1,4 @@
-import { useLocation, useSettings } from '@oneki/app';
-import { toI18nLocation, useI18n } from '@oneki/i18n';
-import { toRelativeUrl, toUrl } from '@oneki/router';
-import { LinkProps } from '@oneki/types';
+import { LinkProps, toI18nLocation, toRelativeUrl, toUrl, useI18n, useLocation, useSettings } from 'onekijs';
 import React from 'react';
 import { Link as ReactRouterLink, NavLink } from 'react-router-dom';
 

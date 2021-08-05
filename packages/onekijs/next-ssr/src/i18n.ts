@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { AnonymousObject } from '@oneki/types';
 import fs from 'fs';
+import { AnonymousObject } from 'onekijs';
 import path from 'path';
 
 interface StaticProps extends AnonymousObject {
