@@ -115,10 +115,15 @@ export default abstract class BaseRouter implements Router {
     if (!force && currentValue) return;
 
     let from = get(this.settings, 'routes.home', '/');
-    const previous = this.previousLocation;
+
+    const previous = this.history.find((location) => {
+      return location.relativeurl && location.relativeurl !== this.history[0].relativeurl;
+    });
+
     if (previous && previous.relativeurl) {
       from = previous.relativeurl;
     }
+    console.log('from = ' + from);
 
     localStorage.setItem('onekijs.from', from);
   }
@@ -128,6 +133,7 @@ export default abstract class BaseRouter implements Router {
       if (replace) {
         draft[0] = location;
       } else {
+        console.log('push location in history', location);
         draft.unshift(location);
         // keep max 20 items
         draft.splice(20, draft.length);
