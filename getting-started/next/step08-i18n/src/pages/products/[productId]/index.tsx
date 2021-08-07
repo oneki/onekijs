@@ -1,6 +1,6 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { useNotificationService, usePost, useTranslation, withLayout } from 'onekijs';
-import { withI18nStaticProps } from 'onekijs/ssr';
+import { withI18nStaticProps, withI18nStaticPaths } from 'onekijs/ssr';
 import React, { FC } from 'react';
 import { products, ProductType } from '../../../../data/products';
 import AppLayout from '../../../modules/core/layouts/AppLayout';
@@ -20,10 +20,12 @@ export const getStaticProps: GetStaticProps<PageProps> = async ({ params, locale
   });
 };
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  const paths = products.map((_, index) => ({
+export const getStaticPaths: GetStaticPaths = async ({ locales }) => {
+  let paths = products.map((_, index) => ({
     params: { productId: '' + index },
   }));
+
+  paths = withI18nStaticPaths(paths, locales);
 
   return { paths, fallback: false };
 };

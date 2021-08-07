@@ -51,10 +51,7 @@ const ProductDetailsPage: FC<PageProps> = ({ product }) => {
       });
     },
   });
-  if (product.name === 'Phone Invalid' && typeof window !== 'undefined') {
-    // to simulate an error, we pickup a non entry in the array
-    product = products[9999];
-  }
+
   return <ProductDetails product={product} onBuy={() => submit(product)} />;
 };
 

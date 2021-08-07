@@ -3,8 +3,13 @@ import fs from 'fs';
 import { AnonymousObject } from 'onekijs';
 import path from 'path';
 
-interface StaticProps extends AnonymousObject {
+interface StaticProps {
   props?: AnonymousObject;
+}
+
+interface StaticPaths {
+  params: AnonymousObject;
+  locale?: string;
 }
 
 export const withI18nStaticProps = (locale: string, staticProps?: StaticProps, namespaces: string[] = []): any => {
@@ -12,6 +17,18 @@ export const withI18nStaticProps = (locale: string, staticProps?: StaticProps, n
   staticProps.props = staticProps.props || {};
   staticProps.props.translations = getI18nTranslations(locale, namespaces);
   return staticProps;
+};
+
+export const withI18nStaticPaths = (staticPaths: StaticPaths[], locales?: string[]): any => {
+  if (!locales) return staticPaths;
+  return staticPaths.flatMap((staticPath) => {
+    return locales.map((locale) => {
+      return {
+        params: staticPath.params,
+        locale,
+      };
+    });
+  });
 };
 
 function getI18nTranslations(locale: string, namespaces: string[] = []): AnonymousObject {

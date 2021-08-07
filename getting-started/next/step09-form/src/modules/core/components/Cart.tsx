@@ -41,7 +41,7 @@ const Cart: React.FC<CartProps> = ({ cart }) => {
         </h4>
       )}
       <p>
-        <Link href="/products">
+        <Link href="/">
           <T>Buy another products</T>
         </Link>
       </p>

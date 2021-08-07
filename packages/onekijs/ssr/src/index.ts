@@ -1,1 +1,1 @@
-export { withI18nStaticProps } from './i18n';
+export { withI18nStaticProps, withI18nStaticPaths } from './i18n';

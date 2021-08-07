@@ -3,7 +3,6 @@ import React from 'react';
 
 const LoginPage: React.FC = () => {
   const [error, , submit] = useLogin();
-  console.log('inside LoginPage');
 
   const { Form, submitting } = useForm(submit);
 
