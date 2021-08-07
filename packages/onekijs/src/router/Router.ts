@@ -115,7 +115,11 @@ export default abstract class BaseRouter implements Router {
     if (!force && currentValue) return;
 
     let from = get(this.settings, 'routes.home', '/');
-    const previous = this.previousLocation;
+
+    const previous = this.history.find((location) => {
+      return location.relativeurl && location.relativeurl !== this.history[0].relativeurl;
+    });
+
     if (previous && previous.relativeurl) {
       from = previous.relativeurl;
     }

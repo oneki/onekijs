@@ -17,10 +17,6 @@
       "import": "./dist/index.modern.js",
       "require": "./dist/index.js"
     },
-    "./next": {
-      "import": "./next/dist/index.modern.js",
-      "require": "./next/dist/index.js"
-    },
     "./ssr": {
       "import": "./ssr/dist/index.modern.js",
       "require": "./ssr/dist/index.js"
@@ -34,6 +30,8 @@
     "build:cra": "cd cra && microbundle -f es,cjs,modern --jsx React.createElement",
     "build:next": "cd next && microbundle -f es,cjs,modern --jsx React.createElement",
     "build:ssr": "cd ssr && microbundle -f es,cjs,modern --jsx React.createElement",
+    "build:fast": "microbundle -f modern --jsx React.createElement --max-old-space-size=8192 --no-compress",
+    "compile": "tsc",
     "start": "microbundle watch -f modern --jsx React.createElement --max-old-space-size=8192 --no-compress"
   },
   "author": "Oneki",
@@ -59,7 +57,7 @@
     "react-virtualized-auto-sizer": "^1.0.2",
     "react-window": "^1.8.5",
     "react-window-infinite-loader": "^1.0.5",
-    "styled-components": "^5.1.1"    
+    "styled-components": "^5.1.1"
   },
   "devDependencies": {
     "microbundle": "^0.13.3",
@@ -79,5 +77,26 @@
     }
   },
   "sideEffects": false,
-  "gitHead": "bd34719c6e0a4119cec72b64ce8fe6b35d1c342f"
+  "gitHead": "bd34719c6e0a4119cec72b64ce8fe6b35d1c342f",
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "modules": false
+        }
+      ],
+      "@babel/preset-react"
+    ],
+    "plugins": [
+      "@babel/plugin-proposal-class-properties",
+
+      [
+        "babel-plugin-styled-components",
+        {
+          "pure": true
+        }
+      ]
+    ]
+  }
 }

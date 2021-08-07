@@ -6,9 +6,8 @@ import { color, fontWeight } from '../../styles/typography';
 import { ButtonProps } from './typings';
 
 const buttonStyle: ComponentStyle<ButtonProps> = ({ kind = 'primary', theme }) => {
-  console.log('theme', theme);
   const t = theme.button[kind];
-  
+
   return css`
     ${backgroundColor(t.backgroundColor, {
       hover: t.hoverBackgroundColor,

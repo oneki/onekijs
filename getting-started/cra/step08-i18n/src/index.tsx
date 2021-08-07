@@ -1,4 +1,4 @@
-import { App } from 'onekijs/cra';
+import { App } from 'onekijs';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import ErrorBoundary from './modules/core/components/ErrorBoundary';

@@ -41,8 +41,10 @@ export default class I18nService extends DefaultGlobalService {
     const { router } = this.context;
     const location = router.location;
     if (isLocaleSimple(this.context.settings)) {
+      console.log('changeLocale simpleLocale');
       yield this.setLocale(locale);
     } else {
+      console.log('changeLocale, router.push', location, locale);
       yield router.push(location, { locale });
     }
   }

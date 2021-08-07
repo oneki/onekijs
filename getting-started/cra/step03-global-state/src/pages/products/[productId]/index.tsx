@@ -1,6 +1,5 @@
-import { useGlobalState } from 'onekijs';
+import { useGlobalState, useParams } from 'onekijs';
 import React from 'react';
-import { useParams } from 'onekijs/cra';
 import { products } from '..';
 import { STATE_CART } from '../../../modules/core/libs/constants';
 import { ProductType } from '../../../modules/products/components/Product';
