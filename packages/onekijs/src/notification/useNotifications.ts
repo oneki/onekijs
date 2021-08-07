@@ -13,7 +13,6 @@ const extractNotifications = (
 };
 
 const useNotifications = (topic: string): Notification[] => {
-  console.log('insideUseNotifications');
   const notifications = useGlobalProp<Notification[] | AnonymousObject>(`notifications.${topic}`) || [];
   return extractNotifications(notifications, []);
 };

@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import { layout } from 'onekijs';
 import Navbar from '../components/Navbar';
 import NotificationCenter from '../components/NotificationCenter';
 
@@ -12,4 +13,4 @@ const AppLayout: FC = ({ children }) => {
   );
 };
 
-export default AppLayout;
+export default layout(AppLayout);

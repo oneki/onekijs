@@ -1,29 +1,34 @@
-import { GetServerSideProps } from 'next';
-import { Link, useNotificationService, usePost, useTranslation, useParams } from 'onekijs-next';
+import { GetStaticPaths, GetStaticProps } from 'next';
+import { useNotificationService, usePost, useTranslation, withLayout } from 'onekijs';
+import { withI18nStaticProps } from 'onekijs/ssr';
 import React, { FC } from 'react';
+import { products, ProductType } from '../../../../data/products';
+import AppLayout from '../../../modules/core/layouts/AppLayout';
 import { URL_ADD_PRODUCT } from '../../../modules/core/libs/constants';
 import ProductDetails from '../../../modules/products/components/ProductDetails';
-import { products } from '../../../modules/products/data/products';
-import { ProductType } from '../../../__server__/api/dto/product';
 
-type ProductDetailsParams = {
-  productId: string;
-};
+interface PageProps {
+  product: ProductType;
+}
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { productId } = context.params;
-  return {
+export const getStaticProps: GetStaticProps<PageProps> = async ({ params, locale }) => {
+  const productId = params?.productId as string;
+  return withI18nStaticProps(locale || 'en', {
     props: {
       product: products[+productId],
     },
-  };
+  });
 };
 
-type ProductParams = {
-  productId: string;
+export const getStaticPaths: GetStaticPaths = async () => {
+  const paths = products.map((_, index) => ({
+    params: { productId: '' + index },
+  }));
+
+  return { paths, fallback: false };
 };
-const ProductDetailsPage: FC = () => {
-  const { productId } = useParams<ProductParams>();
+
+const ProductDetailsPage: FC<PageProps> = ({ product }) => {
   const notificationService = useNotificationService();
   const [, t] = useTranslation();
   const [submit] = usePost<ProductType>(URL_ADD_PRODUCT, {
@@ -44,21 +49,11 @@ const ProductDetailsPage: FC = () => {
       });
     },
   });
-
-  let product = products[+productId];
-  if (product.name === 'Phone Invalid') {
+  if (product.name === 'Phone Invalid' && typeof window !== 'undefined') {
     // to simulate an error, we pickup a non entry in the array
     product = products[9999];
   }
-  return (
-    <>
-      <div>
-        <ProductDetails product={product} onBuy={() => submit(product)} />
-      </div>
-      <Link href="/products/0">Product 0</Link>
-      <Link href="/products/1">Product 1</Link>
-    </>
-  );
+  return <ProductDetails product={product} onBuy={() => submit(product)} />;
 };
 
-export default ProductDetailsPage;
+export default withLayout(ProductDetailsPage, AppLayout);

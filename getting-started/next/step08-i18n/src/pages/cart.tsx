@@ -1,10 +1,11 @@
-import { secure, useDelete, useGet, useTranslation } from 'onekijs';
-import React, { FC } from 'react';
-import { URL_CART } from '../modules/core/libs/constants';
-import { CartResponse } from '../__server__/api/dto/cart';
+import { secure, useDelete, useGet, useTranslation, withLayout } from 'onekijs';
+import React from 'react';
+import { CartResponse } from '../../data/dto/cart';
 import Cart from '../modules/core/components/Cart';
+import AppLayout from '../modules/core/layouts/AppLayout';
+import { URL_CART } from '../modules/core/libs/constants';
 
-const CartPage: FC = () => {
+const CartPage: React.FC = () => {
   const [T, t] = useTranslation();
   const [cart, loading, refresh] = useGet<CartResponse>(URL_CART);
   const [deleleCart] = useDelete(URL_CART, {
@@ -32,4 +33,4 @@ const CartPage: FC = () => {
   );
 };
 
-export default secure(CartPage);
+export default secure(withLayout(CartPage, AppLayout));

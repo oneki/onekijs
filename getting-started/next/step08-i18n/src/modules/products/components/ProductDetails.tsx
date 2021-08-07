@@ -1,7 +1,7 @@
-import { useTranslation } from 'onekijs-next';
 import React, { FC } from 'react';
+import { useTranslation } from '../../../../../../../packages/onekijs/dist';
+import { ProductType } from '../../../../data/products';
 import { currency } from '../../core/libs/format';
-import { ProductType } from './Product';
 
 interface ProductDetailsProps {
   product: ProductType;

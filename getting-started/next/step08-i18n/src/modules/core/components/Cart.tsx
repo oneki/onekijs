@@ -1,14 +1,13 @@
-import { useTranslation } from 'onekijs-next';
-import React, { FC } from 'react';
-import { Link } from 'react-router-dom';
-import { CartType } from '../../../__server__/api/dto/cart';
+import { Link, useTranslation } from 'onekijs';
+import React from 'react';
+import { CartType } from '../../../../data/dto/cart';
 import { currency } from '../libs/format';
 
 interface CartProps {
   cart: CartType;
 }
 
-const Cart: FC<CartProps> = ({ cart }) => {
+const Cart: React.FC<CartProps> = ({ cart }) => {
   const nbItems = cart.products.length;
   const [T] = useTranslation();
   return (
@@ -42,7 +41,7 @@ const Cart: FC<CartProps> = ({ cart }) => {
         </h4>
       )}
       <p>
-        <Link to="/products">
+        <Link href="/products">
           <T>Buy another products</T>
         </Link>
       </p>

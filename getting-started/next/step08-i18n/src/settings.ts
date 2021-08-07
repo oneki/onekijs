@@ -1,29 +1,30 @@
-import { AppSettings } from 'onekijs-next';
+import { AppSettings } from 'onekijs';
 
 export default {
   i18n: {
     locales: [
       {
         locale: 'en',
-        domain: 'oneki.dom',
+        path: '/en',
       },
       {
         locale: 'fr',
-        domain: 'fr.oneki.dom',
+        path: '/fr',
       },
-    ], // supported locales
+    ],
     defaultLocale: 'en',
-    url: '/locales', // the URL to retrieves the JSON files with the translations
   },
   routes: {
+    // redirect to /login if non authenticated user
+    // tries to access a secured page
     login: '/login',
   },
   idp: {
     default: {
       type: 'form',
-      loginEndpoint: '/auth/login',
-      logoutEndpoint: '/auth/logout',
-      userinfoEndpoint: '/userinfo',
+      loginEndpoint: '/api/auth/login',
+      logoutEndpoint: '/api/auth/logout',
+      userinfoEndpoint: '/api/userinfo',
     },
   },
 } as AppSettings;

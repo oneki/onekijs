@@ -1,7 +1,7 @@
-import { useLogout, useTranslation } from 'onekijs-next';
-import React, { FC } from 'react';
+import { useLogout, useTranslation } from 'onekijs';
+import React from 'react';
 
-const LogoutPage: FC = () => {
+const LogoutPage: React.FC = () => {
   const [error, loading] = useLogout();
   const [T] = useTranslation();
   if (error)

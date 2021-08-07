@@ -24,7 +24,6 @@ export const App: FC<AppProps> = ({
   ...appProps
 }) => {
   const routerRef = useLazyRef(() => new NextRouter([]));
-  console.log('insideNextApp');
   i18nNs = useMemo(() => {
     return Object.keys(pageProps.translations || {})
       .concat(Object.keys(translations || {}))

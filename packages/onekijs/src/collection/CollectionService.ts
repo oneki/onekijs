@@ -87,7 +87,6 @@ export default class CollectionService<
     const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
     this._addFilter(query, filterOrCriteria, parentFilterId);
-    console.log(query);
     this.refresh(query);
   }
 

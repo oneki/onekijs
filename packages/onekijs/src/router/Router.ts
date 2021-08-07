@@ -123,7 +123,6 @@ export default abstract class BaseRouter implements Router {
     if (previous && previous.relativeurl) {
       from = previous.relativeurl;
     }
-    console.log('from = ' + from);
 
     localStorage.setItem('onekijs.from', from);
   }
@@ -133,7 +132,6 @@ export default abstract class BaseRouter implements Router {
       if (replace) {
         draft[0] = location;
       } else {
-        console.log('push location in history', location);
         draft.unshift(location);
         // keep max 20 items
         draft.splice(20, draft.length);

@@ -1,5 +1,6 @@
-import { useTranslation, Link, useLocale } from 'onekijs-next';
 import React, { FC } from 'react';
+import { Link, useTranslation } from 'onekijs';
+import { ProductType } from '../../../../data/products';
 
 interface ProductProps {
   product: ProductType;
@@ -9,18 +10,9 @@ interface ProductProps {
 }
 
 const Product: FC<ProductProps> = ({ product, id, onClick, onNotify }) => {
-  const currentLocale = useLocale();
-  const nextLocale = currentLocale === 'fr' ? 'en' : 'fr';
   const [T] = useTranslation();
   return (
     <div>
-      <Link href={`/cart`}>to Cart page {currentLocale}</Link>
-      <br />
-      <Link href={`/cart`} locale={nextLocale}>
-        to Cart page {nextLocale}
-      </Link>
-      <br />
-      <Link href="https://oneki.github.io">to Oneki</Link>
       <h3>
         <Link href={`/products/${id}`}>
           <T>{product.name}</T>
@@ -44,12 +36,5 @@ const Product: FC<ProductProps> = ({ product, id, onClick, onNotify }) => {
     </div>
   );
 };
-
-export interface ProductType {
-  id: number;
-  name: string;
-  price: number;
-  description?: string;
-}
 
 export default Product;
