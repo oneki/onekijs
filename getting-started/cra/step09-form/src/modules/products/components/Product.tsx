@@ -1,6 +1,5 @@
-import { useTranslation } from 'onekijs';
+import { Link, useTranslation } from 'onekijs';
 import React from 'react';
-import { Link } from 'onekijs';
 
 interface ProductProps {
   product: ProductType;
