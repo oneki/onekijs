@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import { GridSortProps } from '../typings';
 
-const GridSortComponent: FC<GridSortProps> = ({ order }) => {
-  if (order !== undefined) {
+const GridSortComponent: FC<GridSortProps> = ({ sort }) => {
+  if (sort !== undefined) {
     return (
       <div className="o-grid-sort-container">
         <button type="button" tabIndex={-1} className="o-grid-sort-icon">
@@ -16,7 +16,7 @@ const GridSortComponent: FC<GridSortProps> = ({ order }) => {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            transform={`rotate(${order === 'desc' ? '0' : '180'})`}
+            transform={`rotate(${sort.dir === 'desc' ? '0' : '180'})`}
             className="o-grid-sort-svg"
           >
             <polyline points="18 15 12 9 6 15"></polyline>

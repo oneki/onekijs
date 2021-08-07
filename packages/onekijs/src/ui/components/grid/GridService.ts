@@ -76,6 +76,10 @@ class GridService<T = any, M extends GridItemMeta = GridItemMeta, S extends Grid
     return this.state.columns;
   }
 
+  get filterable(): boolean | undefined {
+    return this.state.filterable;
+  }
+
   get fit(): boolean {
     return this.state.fit === false ? false : true;
   }
@@ -100,12 +104,40 @@ class GridService<T = any, M extends GridItemMeta = GridItemMeta, S extends Grid
     return this.state.height;
   }
 
+  get onRowClick(): ((rowData: T, rowIndex: number) => void) | undefined {
+    return this.state.onRowClick;
+  }
+
+  get onRowEnter(): ((rowData: T, rowIndex: number) => void) | undefined {
+    return this.state.onRowEnter;
+  }
+
+  get onRowLeave(): ((rowData: T, rowIndex: number) => void) | undefined {
+    return this.state.onRowLeave;
+  }
+
+  get onRowOver(): ((rowData: T, rowIndex: number) => void) | undefined {
+    return this.state.onRowOver;
+  }
+
+  get onRowOut(): ((rowData: T, rowIndex: number) => void) | undefined {
+    return this.state.onRowOut;
+  }
+
   get rowClassName(): string | ((rowData: T, context: GridController<T, M>) => string) | undefined {
     return this.state.rowClassName;
   }
 
   get RowComponent(): React.FC<GridBodyRowProps<T, M>> | undefined {
     return this.state.RowComponent;
+  }
+
+  get sortable(): boolean | undefined {
+    return this.state.sortable;
+  }
+
+  get step(): 'unmounted' | 'mounted' | 'initializing' {
+    return this._step;
   }
 
   asService(): GridController<T, M> {

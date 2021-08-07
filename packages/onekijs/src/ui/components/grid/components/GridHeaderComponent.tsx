@@ -1,26 +1,33 @@
 import React, { CSSProperties } from 'react';
-import { addStyle } from '../../../utils/style';
+import { addClassname } from '../../../utils/style';
 import { GridHeaderProps } from '../typings';
-import useGridController from '../useGridController';
 import GridHeaderCellComponent from './GridHeaderCellComponent';
 
-const GridHeaderComponent: React.FC<GridHeaderProps> = ({ className, columns, style }) => {
-  const { fixHeader } = useGridController();
+const GridHeaderComponent: React.FC<GridHeaderProps> = ({ controller }) => {
   const headerStyle: CSSProperties = {
     display: 'flex',
   };
 
-  if (fixHeader) {
+  if (controller.fixHeader) {
     headerStyle.position = 'sticky';
     headerStyle.top = 0;
     headerStyle.zIndex = 1;
   }
 
+  const className =
+    typeof controller.headerClassName === 'function'
+      ? controller.headerClassName(controller)
+      : controller.headerClassName;
+
   return (
-    <div className={className} style={addStyle(headerStyle, style)}>
-      {columns.map((column, colIndex) => {
+    <div className={addClassname('o-grid-header', className)} style={headerStyle}>
+      {controller.columns.map((column, colIndex) => {
         const Component = column.HeaderComponent || GridHeaderCellComponent;
-        return <Component column={column} colIndex={colIndex} key={`header-cell-${colIndex}`} />;
+        const filter = controller.getFilterById(column.id);
+        const sort = controller.getSortById(column.id);
+        return (
+          <Component column={column} filter={filter} sort={sort} colIndex={colIndex} key={`header-cell-${colIndex}`} />
+        );
       })}
     </div>
   );

@@ -1,4 +1,4 @@
-import { FC, RefObject } from 'react';
+import React, { FC } from 'react';
 import { Collection, Item, ItemMeta } from '../../../collection/typings';
 
 export type ListItems<T = any, M extends ItemMeta = ItemMeta> = T[] | Collection<T, M>;
@@ -17,15 +17,6 @@ export interface ListItemProps<T = any, M extends ItemMeta = ItemMeta> {
 
 export interface ListProps<T = any, M extends ItemMeta = ItemMeta> {
   className?: string;
-  bodyClassName?: string;
-  BodyComponent?: React.FC<ListBodyProps<T, M>>;
-  bodyStyle?: React.CSSProperties;
-  footerClassName?: string;
-  FooterComponent?: React.FC<ListFooterProps>;
-  footerStyle?: React.CSSProperties;
-  headerClassName?: string;
-  HeaderComponent?: React.FC<ListHeaderProps>;
-  headerStyle?: React.CSSProperties;
   height?: number | string;
   increment?: number;
   items: ListItems<T, M>;
@@ -36,7 +27,7 @@ export interface ListProps<T = any, M extends ItemMeta = ItemMeta> {
   onItemMouseOut?: ListItemHandler<T, M>;
   onItemMouseEnter?: ListItemHandler<T, M>;
   onItemMouseLeave?: ListItemHandler<T, M>;
-  ref?: RefObject<HTMLDivElement>;
+  overscan?: number;
   preload?: number;
   style?: React.CSSProperties;
   virtual?: boolean;
@@ -44,11 +35,20 @@ export interface ListProps<T = any, M extends ItemMeta = ItemMeta> {
 
 export type ListBodyProps<T = any, M extends ItemMeta = ItemMeta> = Pick<
   ListProps<T, M>,
-  'onItemClick' | 'onItemMouseEnter' | 'onItemMouseLeave' | 'onItemMouseOut' | 'onItemMouseOver' | 'ItemComponent'
+  | 'onItemClick'
+  | 'onItemMouseEnter'
+  | 'onItemMouseLeave'
+  | 'onItemMouseOut'
+  | 'onItemMouseOver'
+  | 'ItemComponent'
+  | 'height'
 > & {
   className?: string;
+  ItemComponent: FC<ListItemProps<T, M>>;
   items: (Item<T, M> | undefined)[];
+  parentRef?: React.RefObject<HTMLDivElement>;
   style?: React.CSSProperties;
+  totalSize?: number;
   virtualItems?: VirtualItem[];
 };
 

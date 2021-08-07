@@ -44,6 +44,7 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
         title: 'City',
       },
     ],
+    mutateUrl: true,
     //grow: 'address.city'
   });
 

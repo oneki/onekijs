@@ -39,6 +39,9 @@ export const gridStyle: ComponentStyle<GridProps<any>> = () => {
       ${borderBottomStyle('solid')}
       ${borderBottomColor('primary')}
       ${backgroundColor('#f6f6f6')}
+      .o-grid-header-cell-sortable {
+        cursor: pointer;
+      }
       .o-grid-header-cell {
         ${display('flex')}
         ${flexDirection('column')}
@@ -47,6 +50,7 @@ export const gridStyle: ComponentStyle<GridProps<any>> = () => {
         .o-grid-header-cell-title {
           ${fontVariant('all-small-caps')}
           ${display('flex')}
+          ${alignItems('center')}
           ${color('primary')}
           .o-grid-sort-container {
             ${color('primary')}

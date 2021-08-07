@@ -29,6 +29,7 @@ export const collectionProxyProps = {
     'getLimit',
     'getSort',
     'getSortBy',
+    'getSortById',
     'getSortByField',
     'load',
     'query',

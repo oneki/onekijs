@@ -34,6 +34,8 @@ import {
   QueryFilterOrCriteria,
   QuerySerializerResult,
   QuerySortBy,
+  QuerySortByField,
+  QuerySortByMultiFields,
   QuerySortComparator,
   QuerySortDir,
 } from './typings';
@@ -41,7 +43,10 @@ import {
   defaultComparator,
   defaultSerializer,
   isQueryFilterCriteria,
+  isQuerySortByField,
+  isQuerySortByMultiFields,
   isSameQuery,
+  isSameSortBy,
   parseQuery,
   rootFilterId,
   shouldResetData,
@@ -87,7 +92,6 @@ export default class CollectionService<
     const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
     this._addFilter(query, filterOrCriteria, parentFilterId);
-    console.log(query);
     this.refresh(query);
   }
 
@@ -113,15 +117,10 @@ export default class CollectionService<
   }
 
   @reducer
-  addSortBy(
-    field: string,
-    dir: QuerySortDir = 'asc',
-    comparator: QuerySortComparator = defaultComparator,
-    prepend = true,
-  ): void {
+  addSortBy(sortBy: QuerySortBy, prepend?: boolean): void {
     const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
-    this._addSortBy(query, field, dir, comparator, prepend);
+    this._addSortBy(query, sortBy, prepend);
     this.refresh(query);
   }
 
@@ -330,10 +329,32 @@ export default class CollectionService<
     return this._formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(this.state, 'sortBy'));
   }
 
-  getSortByField(field: string): QuerySortBy | undefined {
+  getSortByField(field: string): QuerySortByField | undefined {
     const sorts = this.getSortBy();
     if (sorts) {
-      return sorts.find((sort) => sort.field === field);
+      for (const sort of sorts) {
+        if (isQuerySortByField(sort)) {
+          if (sort.field === field) {
+            return sort;
+          }
+        } else if (isQuerySortByMultiFields(sort)) {
+          const field: any = sort.fields.find((f) => (typeof f === 'string' ? f === field : f.name === field));
+          return {
+            id: sort.id,
+            dir: sort.dir,
+            comparator: typeof field === 'string' ? undefined : field.comparator,
+            field: typeof field === 'string' ? field : field.name,
+          } as QuerySortByField;
+        }
+      }
+    }
+    return undefined;
+  }
+
+  getSortById(id: string): QuerySortBy | undefined {
+    const sorts = this.getSortBy();
+    if (sorts) {
+      return sorts.find((sort) => sort.id === id);
     }
     return undefined;
   }
@@ -373,10 +394,10 @@ export default class CollectionService<
   }
 
   @reducer
-  removeSortBy(field: string): void {
+  removeSortBy(id: string): void {
     const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
-    this._removeSortBy(query, field);
+    this._removeSortById(query, id);
     this.refresh(query);
   }
 
@@ -507,21 +528,15 @@ export default class CollectionService<
     query.filter = filter;
   }
 
-  protected _addSortBy(
-    query: Query,
-    field: string,
-    dir: QuerySortDir = 'asc',
-    comparator: QuerySortComparator = defaultComparator,
-    prepend = true,
-  ): void {
-    this._removeSortBy(query, field);
-    const sortBy = this._formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(query, 'sortBy')) || [];
+  protected _addSortBy(query: Query, sortBy: QuerySortBy, prepend = true): void {
+    this._removeSortBy(query, sortBy);
+    const currentSortBy = this._formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(query, 'sortBy')) || [];
     if (prepend) {
-      sortBy.unshift({ field, dir, comparator });
+      currentSortBy.unshift(sortBy);
     } else {
-      sortBy.push({ field, dir, comparator });
+      currentSortBy.push(sortBy);
     }
-    query.sortBy = sortBy;
+    query.sortBy = currentSortBy;
   }
 
   protected _applyCriteria(item: Item<T, M>, criteria: QueryFilterCriteria): boolean {
@@ -612,9 +627,8 @@ export default class CollectionService<
     return this._applyOperator(searcher, item, search);
   }
 
-  protected _applySort(items: Item<T, M>[], dir?: QuerySortDir): Item<T, M>[] {
+  protected _applySort(items: Item<T, M>[], dir: QuerySortDir, comparator: QuerySortComparator): Item<T, M>[] {
     if (dir) {
-      const comparator = this.state.comparator || defaultComparator;
       const itemComparator = function (a: Item<T, M>, b: Item<T, M>): number {
         const reverse = dir === 'desc' ? -1 : 1;
         return reverse * comparator(a.data, b.data);
@@ -625,16 +639,45 @@ export default class CollectionService<
     return items;
   }
 
-  protected _applySortBy(items: Item<T, M>[], sortBy?: QuerySortBy[]): Item<T, M>[] {
-    if (sortBy && sortBy.length > 0) {
+  protected _applySortBy(
+    items: Item<T, M>[],
+    sortBy: QuerySortBy[],
+    comparators: AnonymousObject<QuerySortComparator>,
+  ): Item<T, M>[] {
+    if (sortBy.length > 0) {
       const comparator = function () {
         return function (a: Item<T, M>, b: Item<T, M>): number {
           let result = 0;
-          for (const sort of sortBy) {
-            const comparator = sort.comparator || defaultComparator;
-            const reverse = sort.dir === 'desc' ? -1 : 1;
-            result = reverse * comparator(get(a.data, sort.field), get(b.data, sort.field));
-            if (result !== 0) break;
+          sort_loop: for (const sort of sortBy) {
+            let s: QuerySortByMultiFields | undefined;
+            if (isQuerySortByField(sort)) {
+              s = {
+                id: sort.id,
+                fields: [
+                  {
+                    name: sort.field,
+                    comparator: sort.comparator,
+                  },
+                ],
+                dir: sort.dir,
+              };
+            } else if (isQuerySortByMultiFields(sort)) {
+              s = sort;
+            }
+
+            if (s) {
+              for (const field of s.fields) {
+                const fieldName = typeof field === 'string' ? field : field.name;
+                const comparator =
+                  typeof field === 'string' || !field.comparator
+                    ? defaultComparator
+                    : comparators[field.comparator] || defaultComparator;
+                const reverse = s.dir === 'desc' ? -1 : 1;
+
+                result = reverse * comparator(get(a.data, fieldName), get(b.data, fieldName));
+                if (result !== 0) break sort_loop;
+              }
+            }
           }
           return result;
         };
@@ -703,7 +746,12 @@ export default class CollectionService<
     });
   }
 
-  protected _execute(items: Item<T, M>[], query: LocalQuery): Item<T, M>[] {
+  protected _execute(
+    items: Item<T, M>[],
+    query: LocalQuery,
+    comparator: QuerySortComparator,
+    comparators: AnonymousObject<QuerySortComparator>,
+  ): Item<T, M>[] {
     // apply filters to data
     let result = items;
     if (query.filter) {
@@ -716,9 +764,9 @@ export default class CollectionService<
 
     // apply sort
     if (query.sortBy) {
-      result = this._applySortBy(result, this._formatSortBy(query.sortBy));
+      result = this._applySortBy(result, this._formatSortBy(query.sortBy) || [], comparators);
     } else if (query.sort) {
-      result = this._applySort(result, query.sort);
+      result = this._applySort(result, query.sort || 'asc', comparator);
     }
 
     // apply field subset
@@ -944,7 +992,14 @@ export default class CollectionService<
         this._setItems(this.cache[location.relativeurl]);
       } else {
         const queryEngine: QueryEngine<T, M> = this.state.queryEngine || this._execute.bind(this);
-        this._setItems(queryEngine(this.state.db || [], nextQuery));
+        this._setItems(
+          queryEngine(
+            this.state.db || [],
+            nextQuery,
+            this.state.comparator || defaultComparator,
+            this.state.comparators || {},
+          ),
+        );
         if (location.relativeurl) {
           this.cache[location.relativeurl] = this.state.items;
         }
@@ -982,10 +1037,17 @@ export default class CollectionService<
     }
   }
 
-  protected _removeSortBy(query: Query, field: string): void {
+  protected _removeSortBy(query: Query, sort: QuerySortBy): void {
     const sortBy = this._formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(query, 'sortBy'));
     if (sortBy) {
-      query.sortBy = sortBy.filter((sort) => sort.field !== field);
+      query.sortBy = sortBy.filter((s) => !isSameSortBy(sort, s));
+    }
+  }
+
+  protected _removeSortById(query: Query, id: string): void {
+    const sortBy = this._formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(query, 'sortBy'));
+    if (sortBy) {
+      query.sortBy = sortBy.filter((sort) => sort.id !== id);
     }
   }
 

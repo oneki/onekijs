@@ -1,5 +1,5 @@
 import { theme } from 'onekijs';
-import { App } from 'onekijs/cra';
+import { App } from 'onekijs';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Link, Route, Switch } from 'react-router-dom';

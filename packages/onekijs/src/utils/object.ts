@@ -351,3 +351,8 @@ export const isGetterOrSetter = (obj: any, property: string): boolean => {
   const descriptor = Object.getOwnPropertyDescriptor(obj, property);
   return descriptor !== undefined && (descriptor.get !== undefined || descriptor.set !== undefined);
 };
+
+export const toArray = <T>(a: T | T[]): T[] => {
+  if (Array.isArray(a)) return a;
+  return [a];
+};

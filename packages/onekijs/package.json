@@ -26,7 +26,7 @@
       "require": "./ssr/dist/index.js"
     }
   },
-  "module": "dist/index.module.js",
+  "module": "dist/index.modern.js",
   "unpkg": "dist/index.umd.js",
   "scripts": {
     "build": "concurrently \"yarn build:onekijs\" \"yarn build:ssr\" ",
@@ -34,7 +34,7 @@
     "build:cra": "cd cra && microbundle -f es,cjs,modern --jsx React.createElement",
     "build:next": "cd next && microbundle -f es,cjs,modern --jsx React.createElement",
     "build:ssr": "cd ssr && microbundle -f es,cjs,modern --jsx React.createElement",
-    "start": "microbundle watch -f es,cjs,modern --jsx React.createElement --max-old-space-size=8192"
+    "start": "microbundle watch -f modern --jsx React.createElement --max-old-space-size=8192 --no-compress"
   },
   "author": "Oneki",
   "license": "MIT",

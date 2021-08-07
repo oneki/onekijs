@@ -2,7 +2,7 @@ import { __metadata } from 'tslib';
 import DefaultBasicError from '../core/BasicError';
 import { Primitive } from '../types/core';
 import { AnonymousObject } from '../types/object';
-import { isNull, shallowEqual } from '../utils/object';
+import { isNull, shallowEqual, toArray } from '../utils/object';
 import {
   Collection,
   CollectionItemAdapter,
@@ -18,6 +18,8 @@ import {
   QuerySerializer,
   QuerySerializerResult,
   QuerySortBy,
+  QuerySortByField,
+  QuerySortByMultiFields,
   QuerySortDir,
 } from './typings';
 
@@ -188,6 +190,14 @@ export const isQueryFilterCriteria = (value: QueryFilterOrCriteria): value is Qu
   return !isQueryFilter(value);
 };
 
+export const isQuerySortByField = (value: QuerySortBy): value is QuerySortByField => {
+  return Object.keys(value).includes('field');
+};
+
+export const isQuerySortByMultiFields = (value: QuerySortBy): value is QuerySortByMultiFields => {
+  return Object.keys(value).includes('fields');
+};
+
 export const isSameArray = (a1: any[] | undefined, a2: any[] | undefined): boolean => {
   if (a1 === undefined && a2 === undefined) return true;
   if (a1 === undefined || a2 === undefined) return false;
@@ -253,15 +263,50 @@ export const isSameQuery = (q1: Query, q2: Query): boolean => {
   return true;
 };
 
-export const isSameSortBy = (s1?: QuerySortBy[], s2?: QuerySortBy[]): boolean => {
-  if (s1 === undefined && s2 === undefined) return true;
-  if (s1 === undefined || s2 === undefined) return false;
-  if (s1.length !== s2.length) return false;
-  for (let i = 0; i < s1.length; i++) {
-    if (s1[i].field !== s2[i].field) {
+export const isSameSortBy = (s1?: QuerySortBy | QuerySortBy[], s2?: QuerySortBy | QuerySortBy[]): boolean => {
+  const isSameSortByField = (s1: QuerySortByField, s2: QuerySortByField): boolean => {
+    if (s1.field !== s2.field || s1.dir !== s2.dir) {
       return false;
     }
-    if (s1[i].dir !== s2[i].dir) {
+    return true;
+  };
+
+  const isSameSortByMultiFields = (s1: QuerySortByMultiFields, s2: QuerySortByMultiFields): boolean => {
+    if (s1.dir !== s2.dir) {
+      return false;
+    }
+    if (s1.fields.length !== s2.fields.length) {
+      return false;
+    }
+    for (let i = 0; i < s1.fields.length; i++) {
+      if (typeof s1.fields[i] !== typeof s2.fields[i]) {
+        return false;
+      }
+      if (typeof s1.fields[i] === 'string' && s1.fields[i] !== s2.fields[i]) {
+        return false;
+      }
+      if ((s1.fields[i] as any).name !== (s2.fields[i] as any).name) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  if (s1 === undefined && s2 === undefined) return true;
+  if (s1 === undefined || s2 === undefined) return false;
+  s1 = toArray(s1);
+  s2 = toArray(s2);
+  if (s1.length !== s2.length) return false;
+  for (let i = 0; i < s1.length; i++) {
+    if (isQuerySortByField(s1[i]) && isQuerySortByField(s2[i])) {
+      if (!isSameSortByField(s1[i] as QuerySortByField, s2[i] as QuerySortByField)) {
+        return false;
+      }
+    } else if (isQuerySortByMultiFields(s1[i]) && isQuerySortByMultiFields(s2[i])) {
+      if (!isSameSortByMultiFields(s1[i] as QuerySortByMultiFields, s2[i] as QuerySortByMultiFields)) {
+        return false;
+      }
+    } else {
       return false;
     }
   }
@@ -332,10 +377,52 @@ export const parseQueryFilter = (filter: string): QueryFilter => {
 
 export const parseSortBy = (sortBy: string): QuerySortBy[] => {
   const result: QuerySortBy[] = [];
+  const sorts: any = [];
   sortBy.split(';').forEach((sort) => {
-    const [field, order] = sort.split(',');
+    const [field, order, id, comparator] = sort.split(',');
     const dir = order.toLowerCase() === 'desc' ? 'desc' : 'asc';
-    result.push({ field, dir });
+    if (id === undefined || id === '') {
+      sorts.push({
+        fields: [
+          {
+            name: field,
+            comparator,
+          },
+        ],
+        dir,
+      });
+    } else {
+      const current = sorts.find((t: any) => t.id === id);
+      if (current) {
+        current.fields.push({
+          name: field,
+          comparator,
+        });
+      } else {
+        sorts.push({
+          id,
+          fields: [
+            {
+              name: field,
+              comparator,
+            },
+          ],
+          dir,
+        });
+      }
+    }
+    for (const sort of sorts) {
+      if (sort.fields.length === 1) {
+        result.push({
+          id: sort.id,
+          field: sort.fields[0].name,
+          dir: sort.dir,
+          comparator: sort.fields[0].comparator,
+        } as QuerySortByField);
+      } else {
+        result.push(sort as QuerySortByMultiFields);
+      }
+    }
   });
   return result;
 };
@@ -395,8 +482,36 @@ export const serializeSort = (sort: QuerySortDir | undefined): string | void => 
 };
 
 export const serializeSortBy = (sortBy: QuerySortBy[] | undefined): string | void => {
+  const serializeSortByField = (s: QuerySortByField): string => {
+    return `${s.field},${s.dir || 'asc'}${s.id || s.comparator ? `,${s.id || ''}` : ''}${
+      s.comparator ? `,${s.comparator}` : ''
+    }`;
+  };
+
+  const serializeSortByMultiFields = (s: QuerySortByMultiFields): string => {
+    const result: string[] = s.fields.map((f) => {
+      if (typeof f === 'string') {
+        return `${f},${s.dir || 'asc'}${s.id ? `,${s.id}` : ''}`;
+      } else {
+        return `${f.name},${s.dir || 'asc'}${s.id || f.comparator ? `,${s.id || ''}` : ''}${
+          f.comparator ? `,${f.comparator}` : ''
+        }`;
+      }
+    });
+
+    return result.join(';');
+  };
+
   if (sortBy && sortBy.length > 0) {
-    return `${sortBy.map((s) => `${s.field},${s.dir || 'asc'}`).join(';')}`;
+    return `${sortBy
+      .map((s) => {
+        if (isQuerySortByField(s)) {
+          return serializeSortByField(s);
+        } else {
+          return serializeSortByMultiFields(s);
+        }
+      })
+      .join(';')}`;
   }
 };
 

@@ -49,6 +49,7 @@ const useCollectionState = <T = any, M extends ItemMeta = ItemMeta>(
       omit<FetchOptions<CollectionFetcherResult<T>, Query | undefined>>(options, [
         'adapter',
         'comparator',
+        'comparators',
         'fetchOnce',
         'initialFields',
         'initialFilter',
@@ -83,6 +84,7 @@ const useCollectionState = <T = any, M extends ItemMeta = ItemMeta>(
       adapter,
       autoload: options.autoload,
       comparator: options.comparator,
+      comparators: options.comparators,
       dataKey: options.dataKey || 'data',
       db: Array.isArray(dataOrUrl) ? dataOrUrl.map((entry) => toCollectionItem(entry, adapter)) : undefined,
       fetchOptions,

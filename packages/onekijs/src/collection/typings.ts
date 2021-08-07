@@ -15,7 +15,7 @@ export type Collection<T, M extends ItemMeta> = {
     id?: QueryFilterId,
     parentFilterId?: QueryFilterId,
   ): void;
-  addSortBy(field: string, dir?: QuerySortDir, comparator?: QuerySortComparator, prepend?: boolean): void;
+  addSortBy(sortBy: QuerySortBy, prepend?: boolean): void;
   clearFields(): void;
   clearFilter(): void;
   clearParams(): void;
@@ -23,8 +23,8 @@ export type Collection<T, M extends ItemMeta> = {
   clearSearch(): void;
   clearSort(): void;
   clearSortBy(): void;
-  data?: (T | undefined)[];
-  items?: (Item<T, M> | undefined)[];
+  readonly data?: (T | undefined)[];
+  readonly items?: (Item<T, M> | undefined)[];
   filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | null): void;
   getAdapter(): CollectionItemAdapter<T, M> | undefined;
   getItem(id: string | number): Item<T, M> | undefined;
@@ -39,13 +39,14 @@ export type Collection<T, M extends ItemMeta> = {
   getSearch(): Primitive | undefined;
   getSort(): QuerySortDir | undefined;
   getSortBy(): QuerySortBy[] | undefined;
-  getSortByField(field: string): QuerySortBy | undefined;
-  hasMore: boolean;
+  getSortByField(field: string): QuerySortByField | undefined;
+  getSortById(id: string): QuerySortBy | undefined;
+  readonly hasMore: boolean;
   load(limit?: number, offset?: number): void;
   query(query: Query): void;
   refresh(query?: Query): void;
   removeFilter(filterId: QueryFilterId): void;
-  removeSortBy(field: string): void;
+  removeSortBy(id: string): void;
   reset(): void;
   search(search: Primitive): void;
   setData(data: T[]): void;
@@ -55,8 +56,8 @@ export type Collection<T, M extends ItemMeta> = {
   setParams(params: AnonymousObject): void;
   sort(dir: QuerySortDir): void;
   sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void;
-  status: CollectionStatus;
-  total?: number;
+  readonly status: CollectionStatus;
+  readonly total?: number;
 };
 
 export type CollectionFetcher<T> = Fetcher<CollectionFetcherResult<T>, Query | undefined>;
@@ -73,6 +74,7 @@ export interface CollectionOptions<T, M extends ItemMeta> {
   adapter?: CollectionItemAdapter<T, M>;
   autoload?: boolean;
   comparator?: QuerySortComparator;
+  comparators?: AnonymousObject<QuerySortComparator>;
   dataKey?: string;
   fetcher?: CollectionFetcher<T>;
   fetchOnce?: boolean;
@@ -98,6 +100,7 @@ export interface CollectionState<T, M extends ItemMeta> extends FetchState {
   adapter?: CollectionItemAdapter<T, M>;
   autoload?: boolean;
   comparator?: QuerySortComparator;
+  comparators?: AnonymousObject<QuerySortComparator>;
   dataKey: string;
   db?: Item<T, M>[];
   fetchOnce?: boolean;
@@ -181,7 +184,12 @@ export interface Query {
   sort?: QuerySortDir;
 }
 
-export type QueryEngine<T, M extends ItemMeta> = (items: Item<T, M>[], query: LocalQuery) => Item<T, M>[];
+export type QueryEngine<T, M extends ItemMeta> = (
+  items: Item<T, M>[],
+  query: LocalQuery,
+  comparator: QuerySortComparator,
+  comparators: AnonymousObject<QuerySortComparator>,
+) => Item<T, M>[];
 
 export interface QueryFilter {
   id?: QueryFilterId;
@@ -225,11 +233,26 @@ export type QuerySerializer = (query: Query) => QuerySerializerResult;
 
 export type QuerySerializerResult = AnonymousObject<string>;
 
-export interface QuerySortBy {
-  comparator?: QuerySortComparator;
-  field: string;
+export type QuerySortBy = QuerySortByField | QuerySortByMultiFields;
+
+export type QuerySortByField = {
+  id?: string;
   dir?: QuerySortDir;
-}
+  comparator?: string;
+  field: string;
+};
+
+export type QuerySortByMultiFields = {
+  id?: string;
+  dir?: QuerySortDir;
+  fields: (
+    | string
+    | {
+        name: string;
+        comparator?: string;
+      }
+  )[];
+};
 
 export type QuerySortComparator = <T>(a: T | null | undefined, b: T | null | undefined) => number;
 

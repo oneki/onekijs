@@ -1,7 +1,9 @@
 import { CSSProperties } from 'react';
 import { QueryFilterOrCriteria } from '../../../collection/typings';
 import { isQueryFilterCriteria } from '../../../collection/utils';
-import { GridColumn } from './typings';
+import { GridColumn, GridItem, GridItemMeta } from './typings';
+
+export const emptyGridItem: GridItem<any, GridItemMeta> = {};
 
 export const getCellWidth = (column: GridColumn<unknown>, fit?: boolean, grow?: string): CSSProperties => {
   const style: CSSProperties = {};

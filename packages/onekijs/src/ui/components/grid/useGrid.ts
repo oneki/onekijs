@@ -10,6 +10,7 @@ export const gridCollectionProps = {
     'bodyClassName',
     'BodyComponent',
     'bodyWidth',
+    'filterable',
     'fit',
     'fixHeader',
     'grow',
@@ -21,8 +22,14 @@ export const gridCollectionProps = {
     'asService',
     'initCell',
     'onMount',
+    'onRowClick',
+    'onRowEnter',
+    'onRowLeave',
+    'onRowOver',
+    'onRowOut',
+    'sortable',
   ]),
-  mutables: ['columns'],
+  mutables: collectionProxyProps.mutables.concat(['columns', 'step']),
 };
 
 const useGrid = <T = any, M extends GridItemMeta = GridItemMeta>(
