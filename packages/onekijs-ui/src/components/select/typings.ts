@@ -1,12 +1,16 @@
-import { AnyFunction, ChangeHandler, FormFieldProps, Item, ItemAdapter, ItemMeta, ValidationStatus } from 'onekijs-core';
+import { ChangeHandler, Item, ItemAdapter, ItemMeta } from '@oneki/collection';
+import { FormFieldProps } from '@oneki/form';
+import { AnyFunction, ValidationStatus } from '@oneki/types';
 import React, { FC } from 'react';
 import { FieldLayoutProps, FieldSize } from '../field/typings';
 import { ListItemHandler, ListItemProps, ListProps } from '../list/typings';
 
-export type FormSelectProps<T = any, M extends SelectOptionMeta = SelectOptionMeta> = SelectProps<T,M> & FormFieldProps & FieldLayoutProps & {
-  defaultValue?: T | T[] | null;
-  FieldComponent?: React.FC<SelectProps>
-};
+export type FormSelectProps<T = any, M extends SelectOptionMeta = SelectOptionMeta> = SelectProps<T, M> &
+  FormFieldProps &
+  FieldLayoutProps & {
+    defaultValue?: T | T[] | null;
+    FieldComponent?: React.FC<SelectProps>;
+  };
 
 export type SelectAdapter<T, M extends SelectOptionMeta = SelectOptionMeta> = ItemAdapter<T, M>;
 export type SelectItem<T = any, M extends SelectOptionMeta = SelectOptionMeta> = Item<T, M>;
@@ -25,7 +29,7 @@ export interface SelectInputProps extends Omit<React.InputHTMLAttributes<HTMLInp
   tokens?: SelectItem[];
   open: boolean;
   loading: boolean;
-  fetching: boolean;  
+  fetching: boolean;
   setOpen: (open: boolean) => void;
   onChange: (nextValue: string) => void;
   multiple: boolean;
@@ -48,7 +52,11 @@ export interface SelectTokenProps {
 // };
 
 export type SelectOptionHandler<T = any, M extends ItemMeta = SelectOptionMeta> = ListItemHandler<T, M>;
-export type SelectOptionSelectionHandler<T = any, M extends ItemMeta = SelectOptionMeta> = (item: Item<T, M>, index: number, close?: boolean) => void;
+export type SelectOptionSelectionHandler<T = any, M extends ItemMeta = SelectOptionMeta> = (
+  item: Item<T, M>,
+  index: number,
+  close?: boolean,
+) => void;
 
 export interface SelectOptionMeta extends ItemMeta {
   selected?: boolean;
@@ -78,8 +86,3 @@ export interface SelectProps<T = any, M extends SelectOptionMeta = SelectOptionM
   name?: string;
   size?: FieldSize;
 }
-
-
-
-
-

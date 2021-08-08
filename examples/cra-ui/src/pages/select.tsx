@@ -1,10 +1,10 @@
-import { CollectionState, Fetcher, LocalCollectionService, Query, toCollectionItem, useCollection, useForm, useService } from 'onekijs';
-import { FormSelect, SelectOptionMeta } from 'onekijs-ui';
+import { CollectionState, Fetcher, CollectionService, Query, toCollectionItem, useCollection, useForm, useService } from 'onekijs';
+import { FormSelect, SelectOptionMeta } from 'onekijs';
 import React, { useCallback } from 'react';
 import { User, userAdapter, users, userSearcher } from '../data/users';
 
 export const SelectPage = () => {
-  const [, service] = useService<CollectionState<User, SelectOptionMeta>, LocalCollectionService<User, SelectOptionMeta, CollectionState<User, SelectOptionMeta>>>(LocalCollectionService, {
+  const [, service] = useService<CollectionState<User, SelectOptionMeta>, CollectionService<User, SelectOptionMeta, CollectionState<User, SelectOptionMeta>>>(CollectionService, {
     db: users.map(u => toCollectionItem(u)),
     adapter: userAdapter, 
     searcher: userSearcher

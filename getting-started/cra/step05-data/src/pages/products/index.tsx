@@ -1,10 +1,10 @@
 import { NO_EXPIRATION, useCache } from 'onekijs';
-import React, { FC } from 'react';
+import React from 'react';
 import { URL_PRODUCT } from '../../modules/core/libs/constants';
 import Product from '../../modules/products/components/Product';
 import { ProductsResponse } from '../../__server__/api/dto/product';
 
-const ProductsPage: FC = () => {
+const ProductsPage: React.FC = () => {
   // perform an AJAX GET request and cache the response
   // the response looks like this:
   // {

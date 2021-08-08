@@ -3,7 +3,7 @@
   "compilerOptions": {
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "module": "esnext",
+    "module": "ESNext",
     "lib": ["dom", "esnext"],
     "importHelpers": true,
     "declaration": true,
@@ -23,7 +23,7 @@
     "jsx": "react",
     "esModuleInterop": true,
     "allowJs": true,
-    "target": "ES5",
+    "target": "ESNext",
     "downlevelIteration": true,
     "outDir": "./dist/",
     "incremental": true,

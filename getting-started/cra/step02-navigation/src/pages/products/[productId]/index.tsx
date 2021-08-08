@@ -1,10 +1,13 @@
 import { useParams } from 'onekijs';
-import React, { FC } from 'react';
+import React from 'react';
 import { products } from '..';
 import ProductDetails from '../../../modules/products/components/ProductDetails';
 
-const ProductDetailsPage: FC = () => {
-  const { productId } = useParams();
+type ProductParams = {
+  productId: string;
+};
+const ProductDetailsPage: React.FC = () => {
+  const { productId } = useParams<ProductParams>();
   const product = products[+productId];
   return <ProductDetails product={product} />;
 };

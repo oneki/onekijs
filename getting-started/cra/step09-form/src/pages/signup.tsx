@@ -9,9 +9,9 @@ import {
   useRule,
   useTranslation,
 } from 'onekijs';
-import React, { FC } from 'react';
+import React from 'react';
 
-const SignupPage: FC = () => {
+const SignupPage: React.FC = () => {
   const [T, t] = useTranslation();
   const authService = useAuthService();
   const router = useRouter();

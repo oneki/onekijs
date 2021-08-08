@@ -21,7 +21,11 @@ module.exports = (api) => {
         ],
         '@babel/preset-react',
       ],
-      plugins: ['@babel/plugin-proposal-class-properties', '@babel/plugin-transform-runtime'],
+      plugins: [
+        '@babel/plugin-proposal-class-properties',
+        '@babel/plugin-transform-runtime',
+        ['babel-plugin-styled-components', { pure: true }],
+      ],
     };
   } else {
     return {
@@ -35,7 +39,11 @@ module.exports = (api) => {
         ],
         '@babel/preset-react',
       ],
-      plugins: ['@babel/plugin-proposal-class-properties', '@babel/plugin-transform-runtime'],
+      plugins: [
+        '@babel/plugin-proposal-class-properties',
+        '@babel/plugin-transform-runtime',
+        ['babel-plugin-styled-components', { pure: true }],
+      ],
     };
   }
 };

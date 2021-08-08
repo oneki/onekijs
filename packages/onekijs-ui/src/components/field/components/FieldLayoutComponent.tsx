@@ -1,4 +1,6 @@
-import { FormLayout, useFormContext, useSetting } from 'onekijs-core';
+import { useFormContext } from '@oneki/form';
+import { FormLayout } from '@oneki/types';
+import { useTrySetting } from '@oneki/core';
 import React from 'react';
 import { GridSize } from '../../../styles/typings';
 import { gridSize } from '../../../utils/size';
@@ -24,8 +26,8 @@ const FieldLayoutComponent: React.FC<FieldLayoutProps> = React.memo(({
   children,
   size,
 }) => {
-  const settingLayout = useSetting('form.layout');
-  const settingWidth = useSetting('form.labelWidth');
+  const settingLayout = useTrySetting('form.layout');
+  const settingWidth = useTrySetting('form.labelWidth');
   const { layout: contextLayout, labelWidth: contextWidth } = useFormContext();
   let fieldLayout: FormLayout = layout || contextLayout || settingLayout || 'vertical';
   const fieldLabelWidth: GridSize = labelWidth || contextWidth || settingWidth || 5;

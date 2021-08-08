@@ -1,6 +1,7 @@
 import NextLink from 'next/link';
-import { LinkProps, toI18nLocation, toRelativeUrl, toUrl, useI18n, useLocation, useSettings } from 'onekijs-core';
 import React, { FC } from 'react';
+import { LinkProps } from '@oneki/types';
+import { toRelativeUrl } from '@oneki/router';
 
 const Link: FC<LinkProps> = ({
   href,
@@ -16,25 +17,17 @@ const Link: FC<LinkProps> = ({
   activeStyle,
   ...anchorProps
 }) => {
-  const location = useLocation();
-  const settings = useSettings();
-  const i18n = useI18n();
-  const nextLocation = toI18nLocation(href, settings, i18n, locale);
-  if (nextLocation.baseurl !== location.baseurl) {
-    return (
-      <a {...anchorProps} href={toUrl(nextLocation)}>
-        {children}
-      </a>
-    );
+  if (typeof href !== 'string') {
+    href = toRelativeUrl(href);
   }
 
   return (
     <NextLink
-      href={toRelativeUrl(nextLocation)}
+      href={href}
       replace={replace}
       scroll={scroll}
       prefetch={prefetch}
-      locale={false}
+      locale={locale}
       shallow={shallow}
       passHref
     >

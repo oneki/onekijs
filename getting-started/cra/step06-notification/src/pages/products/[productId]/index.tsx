@@ -1,12 +1,11 @@
-import { usePost } from 'onekijs';
-import React, { FC } from 'react';
-import { useParams } from 'onekijs';
+import { useParams, usePost } from 'onekijs';
+import React from 'react';
 import { products } from '..';
-import { ProductType } from '../../../__server__/api/dto/product';
 import { URL_ADD_PRODUCT } from '../../../modules/core/libs/constants';
 import ProductDetails from '../../../modules/products/components/ProductDetails';
+import { ProductType } from '../../../__server__/api/dto/product';
 
-const ProductDetailsPage: FC = () => {
+const ProductDetailsPage: React.FC = () => {
   const { productId } = useParams();
   const [submit] = usePost<ProductType>(URL_ADD_PRODUCT, {
     onSuccess: () => {

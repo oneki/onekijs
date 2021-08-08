@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { Link } from 'onekijs';
 import Button from '../../../components/Button';
 import { ProductType } from '../../../data/product';
@@ -9,7 +9,7 @@ interface ProductProps {
   onNotify: () => void;
 }
 
-const Product: FC<ProductProps> = ({ product, onClick, onNotify }) => {
+const Product: React.FC<ProductProps> = ({ product, onClick, onNotify }) => {
   return (
     <div>
       <h3>

@@ -7,8 +7,6 @@ build
 dist
 .rpt2_cache
 
-.next
-
 # misc
 .DS_Store
 .env.local
@@ -26,3 +24,7 @@ lerna-debug.log
 
 # jest
 coverage
+
+# next
+.next
+out

@@ -1,7 +1,7 @@
 import { useLogout } from 'onekijs';
-import React, { FC } from 'react';
+import React from 'react';
 
-const LogoutPage: FC = () => {
+const LogoutPage: React.FC = () => {
   const [error, loading] = useLogout();
 
   if (error) return <div>Error: {JSON.stringify(error)}</div>;

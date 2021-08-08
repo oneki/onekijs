@@ -1,4 +1,4 @@
-import { get } from 'onekijs-core';
+import { get } from '@oneki/utils';
 import { deriveColor } from '../utils/color';
 import { Theme } from './typings';
 
@@ -111,7 +111,7 @@ export const theme = (customTheme = {}): Theme => {
       font: {
         families: {
           sans:
-            'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
+            'Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
           serif: 'Georgia, Cambria, "Times New Roman", Times, serif',
           mono: 'Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
         },

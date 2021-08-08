@@ -1,5 +1,5 @@
-import { AnyFunction } from "onekijs-core";
-import { SizeProperty } from "styles/typings";
+import { AnyFunction } from '@oneki/types';
+import { SizeProperty } from 'styles/typings';
 
 export interface DropdownProps {
   className?: string;
@@ -10,5 +10,3 @@ export interface DropdownProps {
   distance?: number;
   onUpdate?: AnyFunction<void>;
 }
-
-

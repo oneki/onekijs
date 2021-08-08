@@ -1,6 +1,5 @@
-import { useTranslation } from 'onekijs';
-import React, { FC } from 'react';
-import { Link } from 'onekijs';
+import { Link, useTranslation } from 'onekijs';
+import React from 'react';
 
 interface ProductProps {
   product: ProductType;
@@ -9,7 +8,7 @@ interface ProductProps {
   onNotify: () => void;
 }
 
-const Product: FC<ProductProps> = ({ product, id, onClick, onNotify }) => {
+const Product: React.FC<ProductProps> = ({ product, id, onClick, onNotify }) => {
   const [T] = useTranslation();
   return (
     <div>

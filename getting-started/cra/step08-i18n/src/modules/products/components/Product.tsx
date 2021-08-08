@@ -1,5 +1,5 @@
 import { useTranslation, Link } from 'onekijs';
-import React, { FC } from 'react';
+import React from 'react';
 
 interface ProductProps {
   product: ProductType;
@@ -8,7 +8,7 @@ interface ProductProps {
   onNotify: () => void;
 }
 
-const Product: FC<ProductProps> = ({ product, id, onClick, onNotify }) => {
+const Product: React.FC<ProductProps> = ({ product, id, onClick, onNotify }) => {
   const [T] = useTranslation();
   return (
     <div>

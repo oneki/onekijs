@@ -1,5 +1,5 @@
 import { useTranslation } from 'onekijs';
-import React, { FC } from 'react';
+import React from 'react';
 import { Link } from 'onekijs';
 import { CartType } from '../../../__server__/api/dto/cart';
 import { currency } from '../libs/format';
@@ -8,7 +8,7 @@ interface CartProps {
   cart: CartType;
 }
 
-const Cart: FC<CartProps> = ({ cart }) => {
+const Cart: React.FC<CartProps> = ({ cart }) => {
   const nbItems = cart.products.length;
   const [T] = useTranslation();
   return (

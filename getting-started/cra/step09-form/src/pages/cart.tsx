@@ -1,10 +1,10 @@
 import { secure, useDelete, useGet, useTranslation } from 'onekijs';
-import React, { FC } from 'react';
+import React from 'react';
 import { URL_CART } from '../modules/core/libs/constants';
 import { CartResponse } from '../__server__/api/dto/cart';
 import Cart from '../modules/core/components/Cart';
 
-const CartPage: FC = () => {
+const CartPage: React.FC = () => {
   const [T, t] = useTranslation();
   const [cart, loading, refresh] = useGet<CartResponse>(URL_CART);
   const [deleleCart] = useDelete(URL_CART, {

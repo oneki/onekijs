@@ -1,8 +1,8 @@
 import { Notification, useNotifications } from 'onekijs';
-import React, { FC } from 'react';
+import React from 'react';
 import { NOTIF_TOPIC_ERROR, NOTIF_TOPIC_SUCCESS } from '../libs/constants';
 
-const NotificationCenter: FC = () => {
+const NotificationCenter: React.FC = () => {
   const errors = useNotifications(NOTIF_TOPIC_ERROR);
   const successes = useNotifications(NOTIF_TOPIC_SUCCESS);
   const notifications = mergeNotifications(errors, successes);

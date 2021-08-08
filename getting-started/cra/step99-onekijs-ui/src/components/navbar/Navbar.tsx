@@ -8,7 +8,7 @@ import {
   padding,
   width,
 } from 'onekijs-ui';
-import React, { FC } from 'react';
+import React from 'react';
 
 import styled from 'styled-components';
 import NavbarBrand from './NavbarBrand';
@@ -25,7 +25,7 @@ const Container = styled.div`
   ${alignItems('center')}
 `;
 
-const Navbar: FC = () => {
+const Navbar: React.FC = () => {
   return (
     <Container>
       <NavbarBrand to="/">My Store</NavbarBrand>

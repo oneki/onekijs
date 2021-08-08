@@ -1,7 +1,7 @@
 import { Input, SubmitButton, useForm, useLogin } from 'onekijs';
-import React, { FC } from 'react';
+import React from 'react';
 
-const LoginPage: FC = () => {
+const LoginPage: React.FC = () => {
   const [error, , submit] = useLogin();
 
   const { Form, submitting } = useForm(submit);

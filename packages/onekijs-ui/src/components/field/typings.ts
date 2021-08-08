@@ -1,7 +1,7 @@
 import { LabelProps } from "../label/typings";
 import React from "react";
 import { GridSize } from "styles/typings";
-import { FormLayout } from "onekijs-core";
+import { FormLayout } from "@oneki/types";
 
 export type FieldDescriptionProps = {
   className?: string;
