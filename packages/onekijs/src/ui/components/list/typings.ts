@@ -43,6 +43,7 @@ export type ListBodyProps<T = any, M extends ItemMeta = ItemMeta> = Pick<
   | 'ItemComponent'
   | 'height'
 > & {
+  bodyRef?: React.RefObject<HTMLDivElement>;
   className?: string;
   ItemComponent: FC<ListItemProps<T, M>>;
   items: (Item<T, M> | undefined)[];

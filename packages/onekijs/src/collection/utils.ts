@@ -605,3 +605,46 @@ export const toCollectionItem = <T, M>(data?: T, adapter?: CollectionItemAdapter
 export const dummyLogMetadata = (): void => {
   console.log(__metadata);
 };
+
+export const formatFilter = (
+  filter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[],
+): QueryFilter | undefined => {
+  if (!filter) {
+    return;
+  } else if (Array.isArray(filter)) {
+    // current filter is a QueryFilterOrCriteria[]
+    return {
+      id: rootFilterId,
+      operator: 'and',
+      criterias: filter,
+    };
+  } else if (isQueryFilterCriteria(filter)) {
+    // current filter is a QueryFilterCriteria
+    return {
+      id: rootFilterId,
+      operator: 'and',
+      criterias: [filter],
+    };
+  } else if (filter.id === undefined || filter.operator === undefined) {
+    return Object.assign({ id: rootFilterId, operator: 'and', criterias: [] }, filter);
+  } else {
+    return filter;
+  }
+};
+
+export const formatSortBy = (sortBy?: string | QuerySortBy | QuerySortBy[]): QuerySortBy[] | undefined => {
+  if (Array.isArray(sortBy)) {
+    return sortBy;
+  }
+  if (!sortBy) {
+    return;
+  }
+  if (typeof sortBy === 'string') {
+    return [
+      {
+        field: sortBy,
+      },
+    ];
+  }
+  return [sortBy];
+};

@@ -11,11 +11,14 @@ import {
 import { ListItemProps, ListItems } from '../list/typings';
 
 export type GridBodyCellProps<T = any, M extends GridItemMeta = GridItemMeta> = {
-  rowValue: GridItem<T>;
-  rowIndex: number;
-  rowId?: string | number;
   colIndex: number;
   column: GridColumn<T, M>;
+  onBlur: (field: string) => void;
+  onChange: (field: string, nextValue: any) => void;
+  onFocus: (field: string) => void;
+  rowId?: string | number;
+  rowIndex: number;
+  rowValue: GridItem<T>;
 };
 
 export type GridBodyProps<T = any, M extends GridItemMeta = GridItemMeta> = {

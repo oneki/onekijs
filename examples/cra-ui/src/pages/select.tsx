@@ -30,6 +30,7 @@ export const SelectPage = () => {
     [service],
   );
 
+
   const collection = useCollection<User, SelectOptionMeta>('http://localhost', {
     adapter: userAdapter,
     fetcher 

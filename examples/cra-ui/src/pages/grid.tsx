@@ -1,14 +1,16 @@
-import { ComponentStyle, preflight, useGrid, Grid } from 'onekijs';
+import { ComponentStyle, preflight, useGrid, Grid, GridBodyCellProps, Input2 as Input, GridItemMeta } from 'onekijs';
 
 import React from 'react';
 import styled, { css } from 'styled-components';
-import { users } from '../data/users';
+import { User, users } from '../data/users';
 
 const gridStyle: ComponentStyle<{}> = () => {
-  return css`
-    ${preflight()}
-  `;
+  return css``;
 };
+
+const FirstnameInput: React.FC<GridBodyCellProps<User, GridItemMeta>> = ({ rowValue }) => {
+  return <Input name="firstname" value={rowValue.data?.firstname} />
+}
 
 const Page: React.FC<{ className?: string }> = ({ className }) => {
   const controller = useGrid({
@@ -24,11 +26,14 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
         id: 'firstname',
         width: '10px',
         title: 'Firstname',
+        CellComponent: FirstnameInput,
+
       },
       {
         id: 'lastname',
         width: '20px',
         title: 'Lastname',
+
       },
       {
         id: 'address.street',

@@ -12,12 +12,10 @@ import { verticalAlign } from '../../styles/table';
 import { transitionDuration, transitionProperty, transitionTimingFunction } from '../../styles/transition';
 import { ComponentStyle } from '../../styles/typings';
 import { color, fontVariant } from '../../styles/typography';
-import { preflight } from '../../utils/style';
 import { GridProps } from './typings';
 
 export const gridStyle: ComponentStyle<GridProps<any>> = () => {
   return css`
-    ${preflight()}
     .o-grid-body {
       ${overflowX('auto')}
     }

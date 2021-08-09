@@ -5,27 +5,10 @@ import { Router } from '../types/router';
 
 export type ChangeHandler<T> = (value: T) => void;
 
-export type Collection<T, M extends ItemMeta> = {
-  addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId?: QueryFilterId): void;
-  addFilterCriteria(
-    field: string,
-    operator: QueryFilterCriteriaOperator,
-    value: QueryFilterCriteriaValue | QueryFilterCriteriaValue[],
-    not?: boolean,
-    id?: QueryFilterId,
-    parentFilterId?: QueryFilterId,
-  ): void;
-  addSortBy(sortBy: QuerySortBy, prepend?: boolean): void;
-  clearFields(): void;
-  clearFilter(): void;
-  clearParams(): void;
-  clearParam(key: string): void;
-  clearSearch(): void;
-  clearSort(): void;
-  clearSortBy(): void;
+export type Collection<T, M extends ItemMeta> = Omit<CollectionBroker<T, M>, 'addSubscriber' | 'removeSubscriber'> & {
+  asService(): Collection<T, M>;
   readonly data?: (T | undefined)[];
   readonly items?: (Item<T, M> | undefined)[];
-  filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | null): void;
   getAdapter(): CollectionItemAdapter<T, M> | undefined;
   getItem(id: string | number): Item<T, M> | undefined;
   getFields(): string[] | undefined;
@@ -45,19 +28,42 @@ export type Collection<T, M extends ItemMeta> = {
   load(limit?: number, offset?: number): void;
   query(query: Query): void;
   refresh(query?: Query): void;
+  reset(): void;
+  setMeta(item: Item<T, M>, key: keyof M, value: any): void;
+  readonly status: CollectionStatus;
+  readonly total?: number;
+};
+
+export type CollectionBroker<T, M extends ItemMeta> = {
+  addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId?: QueryFilterId): void;
+  addFilterCriteria(
+    field: string,
+    operator: QueryFilterCriteriaOperator,
+    value: QueryFilterCriteriaValue | QueryFilterCriteriaValue[],
+    not?: boolean,
+    id?: QueryFilterId,
+    parentFilterId?: QueryFilterId,
+  ): void;
+  addSortBy(sortBy: QuerySortBy, prepend?: boolean): void;
+  addSubscriber(collection: Collection<T, M>): void;
+  clearFields(): void;
+  clearFilter(): void;
+  clearParams(): void;
+  clearParam(key: string): void;
+  clearSearch(): void;
+  clearSort(): void;
+  clearSortBy(): void;
+  filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | null): void;
   removeFilter(filterId: QueryFilterId): void;
   removeSortBy(id: string): void;
-  reset(): void;
+  removeSubscriber(collection: Collection<T, M>): void;
   search(search: Primitive): void;
   setData(data: T[]): void;
   setFields(fields: string[]): void;
-  setMeta(item: Item<T, M>, key: keyof M, value: any): void;
   setParam(key: string, value: any): void;
   setParams(params: AnonymousObject): void;
   sort(dir: QuerySortDir): void;
   sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void;
-  readonly status: CollectionStatus;
-  readonly total?: number;
 };
 
 export type CollectionFetcher<T> = Fetcher<CollectionFetcherResult<T>, Query | undefined>;

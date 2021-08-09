@@ -42,6 +42,8 @@ import {
 import {
   defaultComparator,
   defaultSerializer,
+  formatFilter,
+  formatSortBy,
   isQueryFilterCriteria,
   isQuerySortByField,
   isQuerySortByMultiFields,
@@ -81,6 +83,10 @@ export default class CollectionService<
     this.state.router.listen((location: Location) => this._onLocationChange(location));
     // retrieve params from URL and initiate filter, sort ... with these values
     this._setQuery(this._parseLocation(this.state.router.location), false);
+
+    if (this.state.local === undefined) {
+      this.state.local = Array.isArray(this.state.db) || this.state.fetchOnce === true;
+    }
 
     if (this.state.local) {
       this.refresh();
@@ -122,6 +128,10 @@ export default class CollectionService<
     this._setLoading({ limit: this.state.limit, offset: 0 });
     this._addSortBy(query, sortBy, prepend);
     this.refresh(query);
+  }
+
+  asService(): CollectionService<T, M> {
+    return this;
   }
 
   @reducer
@@ -936,49 +946,6 @@ export default class CollectionService<
     }
   }
 
-  protected _formatFilter(
-    filter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[],
-  ): QueryFilter | undefined {
-    if (!filter) {
-      return;
-    } else if (Array.isArray(filter)) {
-      // current filter is a QueryFilterOrCriteria[]
-      return {
-        id: rootFilterId,
-        operator: 'and',
-        criterias: filter,
-      };
-    } else if (isQueryFilterCriteria(filter)) {
-      // current filter is a QueryFilterCriteria
-      return {
-        id: rootFilterId,
-        operator: 'and',
-        criterias: [filter],
-      };
-    } else if (filter.id === undefined || filter.operator === undefined) {
-      return Object.assign({ id: rootFilterId, operator: 'and', criterias: [] }, filter);
-    } else {
-      return filter;
-    }
-  }
-
-  protected _formatSortBy(sortBy?: string | QuerySortBy | QuerySortBy[]): QuerySortBy[] | undefined {
-    if (Array.isArray(sortBy)) {
-      return sortBy;
-    }
-    if (!sortBy) {
-      return;
-    }
-    if (typeof sortBy === 'string') {
-      return [
-        {
-          field: sortBy,
-        },
-      ];
-    }
-    return [sortBy];
-  }
-
   protected _getId(data: T): string | undefined {
     return this._adapt(data).id;
   }
@@ -1022,7 +989,7 @@ export default class CollectionService<
   }
 
   protected _removeFilter(query: Query, filterId: QueryFilterId): void {
-    const filter = this._formatFilter(query.filter);
+    const filter = formatFilter(query.filter);
     if (filter) {
       visitFilter(filter, (filter) => {
         for (const i in filter.criterias) {
@@ -1038,14 +1005,14 @@ export default class CollectionService<
   }
 
   protected _removeSortBy(query: Query, sort: QuerySortBy): void {
-    const sortBy = this._formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(query, 'sortBy'));
+    const sortBy = formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(query, 'sortBy'));
     if (sortBy) {
       query.sortBy = sortBy.filter((s) => !isSameSortBy(sort, s));
     }
   }
 
   protected _removeSortById(query: Query, id: string): void {
-    const sortBy = this._formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(query, 'sortBy'));
+    const sortBy = formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(query, 'sortBy'));
     if (sortBy) {
       query.sortBy = sortBy.filter((sort) => sort.id !== id);
     }
@@ -1056,7 +1023,7 @@ export default class CollectionService<
   }
 
   protected _setFilter(query: Query, filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[]): void {
-    query.filter = this._formatFilter(filter);
+    query.filter = formatFilter(filter);
   }
 
   protected _setItems(items: (Item<T, M> | undefined)[]): void {
