@@ -1,6 +1,6 @@
 {
   "name": "onekijs",
-  "version": "0.12.2",
+  "version": "0.12.1",
   "description": "Opiniated React framework built on top of Redux and React Router",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -9,7 +9,11 @@
     "dist",
     "src",
     "ssr/dist",
-    "ssr/src"
+    "ssr/src",
+    "cra/dist",
+    "cra/src",
+    "next/dist",
+    "next/src"
   ],
   "engines": {
     "node": ">=10"
