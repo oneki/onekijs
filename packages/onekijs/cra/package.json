@@ -28,7 +28,7 @@
   "author": "Oneki",
   "license": "MIT",
   "dependencies": {
-    "onekijs": "^0.12.2",
+    "onekijs": "^0.13.1",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.1.2"
   },

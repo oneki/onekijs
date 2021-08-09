@@ -28,7 +28,7 @@
   "author": "Oneki",
   "license": "MIT",
   "dependencies": {
-    "onekijs": "^0.12.2",
+    "onekijs": "^0.13.1",
     "regenerator-runtime": "0.13.9"
   },
   "devDependencies": {
