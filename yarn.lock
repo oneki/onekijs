@@ -3399,18 +3399,6 @@
     "@oneki/types" "^0.11.0"
     "@oneki/utils" "^0.11.0"
 
-"@oneki/collection@^0.10.0":
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/@oneki/collection/-/collection-0.10.0.tgz#c1989f819571b5e6dc81d152deba8419622a20a6"
-  integrity sha512-E0FMp/JHPIjlgrSvalKhnI1jolNYZuhvXDGRK+xdT5MYsp+4ZP7IOJX4ckNsRsAt++2TG1B1m1u2anzCpwOWgg==
-  dependencies:
-    "@oneki/core" "^0.10.0"
-    "@oneki/router" "^0.10.0"
-    "@oneki/types" "^0.10.0"
-    "@oneki/utils" "^0.10.0"
-    "@redux-saga/types" "^1.1.0"
-    redux-saga "^1.1.3"
-
 "@oneki/collection@^0.11.0":
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/@oneki/collection/-/collection-0.11.0.tgz#dc061ae950709c1a96bc510f7175974600e2a33d"
@@ -3422,19 +3410,6 @@
     "@oneki/utils" "^0.11.0"
     "@redux-saga/types" "^1.1.0"
     redux-saga "^1.1.3"
-
-"@oneki/core@^0.10.0":
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/@oneki/core/-/core-0.10.0.tgz#e835fd70f93f8402b0f4518a13c1f0c478fef84a"
-  integrity sha512-ZXLDckAqdALfX+qSdlTDAW3eGa64XBjVMv9HK0YNqsAKTHJCFkxdi0Frp2PsxQwX02NXHuPzIG8CICdEvKjAdg==
-  dependencies:
-    "@oneki/types" "^0.10.0"
-    "@oneki/utils" "^0.10.0"
-    "@redux-saga/types" "^1.1.0"
-    immer "^6.0.2"
-    query-string "^6.11.1"
-    redux-saga "^1.1.3"
-    reflect-metadata "^0.1.13"
 
 "@oneki/core@^0.11.0":
   version "0.11.0"
@@ -3459,16 +3434,6 @@
     "@oneki/notification" "^0.11.0"
     "@oneki/types" "^0.11.0"
     "@oneki/utils" "^0.11.0"
-
-"@oneki/form@^0.10.0":
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/@oneki/form/-/form-0.10.0.tgz#daf0a6574d30ce967d5c1795a681b3d9799f9b11"
-  integrity sha512-W4kMqve30sGfzZP/juP/WeBdrx8rhObcRErvmpJ3PivHLOBCW9G1IQXgyr/XifGpfF4DOz+URauy7GRynZMoOg==
-  dependencies:
-    "@oneki/core" "^0.10.0"
-    "@oneki/types" "^0.10.0"
-    "@oneki/utils" "^0.10.0"
-    redux-saga "^1.1.3"
 
 "@oneki/form@^0.11.0":
   version "0.11.0"
@@ -3503,16 +3468,6 @@
     "@oneki/utils" "^0.11.0"
     redux-saga "^1.1.3"
 
-"@oneki/router@^0.10.0":
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/@oneki/router/-/router-0.10.0.tgz#10a6e8c7464f48bad5fdec284d5ad38b6566d059"
-  integrity sha512-WFw9JxN8vHcVsVGVrbDHKu5r473XbRPzk7jghd6dnWBy57WZzUMHXoW3xrqAro5JR8OjIEO6pp5jVwlr0+D5Pw==
-  dependencies:
-    "@oneki/types" "^0.10.0"
-    "@oneki/utils" "^0.10.0"
-    immer "^6.0.2"
-    query-string "^6.11.1"
-
 "@oneki/router@^0.11.0":
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/@oneki/router/-/router-0.11.0.tgz#329f8861ede18d80198d3579b52899efa2252612"
@@ -3523,28 +3478,12 @@
     immer "^6.0.2"
     query-string "^6.11.1"
 
-"@oneki/types@^0.10.0":
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/@oneki/types/-/types-0.10.0.tgz#2ecc3f356f20e2ea6a16e8559d73bd1243a522d5"
-  integrity sha512-Yk372tl2UaZQAAuJlKg7mhGObCCeuuNmeTNZp16657N+h8e4FoA1JRimGX38GrmoaJQh5ZOFjY7kd6RsX4sklw==
-  dependencies:
-    redux "^4.0.5"
-
 "@oneki/types@^0.11.0":
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/@oneki/types/-/types-0.11.0.tgz#66956c1d9644eb3eaeb07e21a5ed32fd25e77c42"
   integrity sha512-3mxe67vaAsSRInBlUH9TF0dBrvFX8oUzVpcEOz7/fjSBa8VSlQy6j096xL5hqzh22XYgrxDSS7scPsOynYZz0w==
   dependencies:
     redux "^4.0.5"
-
-"@oneki/utils@^0.10.0":
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/@oneki/utils/-/utils-0.10.0.tgz#f3b694a5a61ccf0a9fd1e99836ea9be91a3eea82"
-  integrity sha512-Xhdgx2Ar0obF/kiYkPuLaj8x0ntZGADcMRFpPmwQePhEFgE79tAFEoPTj/8caOq1lDslu/IP/XtEeIysWARr7w==
-  dependencies:
-    "@oneki/types" "^0.10.0"
-    rfc4648 "^1.3.0"
-    text-encoding-shim "^1.0.5"
 
 "@oneki/utils@^0.11.0":
   version "0.11.0"
@@ -4260,6 +4199,15 @@
   version "17.0.15"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.15.tgz#c7533dc38025677e312606502df7656a6ea626d0"
   integrity sha512-uTKHDK9STXFHLaKv6IMnwp52fm0hwU+N89w/p9grdUqcFA6WuqDyPhaWopbNyE1k/VhgzmHl8pu1L4wITtmlLw==
+  dependencies:
+    "@types/prop-types" "*"
+    "@types/scheduler" "*"
+    csstype "^3.0.2"
+
+"@types/react@17.0.16":
+  version "17.0.16"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.16.tgz#056f40c45645761527baeb7d89d842a6abdf285a"
+  integrity sha512-3kCUiOOlQTwUUvjNFkbBTWMTxdTGybz/PfjCw9JmaRGcEDBQh+nGMg7/E9P2rklhJuYVd25IYLNcvqgSPCPksg==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -8694,50 +8642,7 @@ eslint-webpack-plugin@^2.5.2:
     normalize-path "^3.0.0"
     schema-utils "^3.0.0"
 
-eslint@^6.1.0:
-  version "6.8.0"
-  resolved "https://registry.yarnpkg.com/eslint/-/eslint-6.8.0.tgz#62262d6729739f9275723824302fb227c8c93ffb"
-  integrity sha512-K+Iayyo2LtyYhDSYwz5D5QdWw0hCacNzyq1Y821Xna2xSJj7cijoLLYmLxTQgcgZ9mC61nryMy9S7GRbYpI5Ig==
-  dependencies:
-    "@babel/code-frame" "^7.0.0"
-    ajv "^6.10.0"
-    chalk "^2.1.0"
-    cross-spawn "^6.0.5"
-    debug "^4.0.1"
-    doctrine "^3.0.0"
-    eslint-scope "^5.0.0"
-    eslint-utils "^1.4.3"
-    eslint-visitor-keys "^1.1.0"
-    espree "^6.1.2"
-    esquery "^1.0.1"
-    esutils "^2.0.2"
-    file-entry-cache "^5.0.1"
-    functional-red-black-tree "^1.0.1"
-    glob-parent "^5.0.0"
-    globals "^12.1.0"
-    ignore "^4.0.6"
-    import-fresh "^3.0.0"
-    imurmurhash "^0.1.4"
-    inquirer "^7.0.0"
-    is-glob "^4.0.0"
-    js-yaml "^3.13.1"
-    json-stable-stringify-without-jsonify "^1.0.1"
-    levn "^0.3.0"
-    lodash "^4.17.14"
-    minimatch "^3.0.4"
-    mkdirp "^0.5.1"
-    natural-compare "^1.4.0"
-    optionator "^0.8.3"
-    progress "^2.0.0"
-    regexpp "^2.0.1"
-    semver "^6.1.2"
-    strip-ansi "^5.2.0"
-    strip-json-comments "^3.0.1"
-    table "^5.2.3"
-    text-table "^0.2.0"
-    v8-compile-cache "^2.0.3"
-
-eslint@^7.11.0, eslint@^7.32.0:
+eslint@7.32.0, eslint@^7.11.0, eslint@^7.32.0:
   version "7.32.0"
   resolved "https://registry.yarnpkg.com/eslint/-/eslint-7.32.0.tgz#c6d328a14be3fb08c8d1d21e12c02fdb7a2a812d"
   integrity sha512-VHZ8gX+EDfz+97jGcgyGCyRia/dPOd6Xh9yPv8Bl1+SoaIwD+a/vlrOmGRUyOYu7MwUhc7CxqeaDZU13S4+EpA==
@@ -8780,6 +8685,49 @@ eslint@^7.11.0, eslint@^7.32.0:
     strip-ansi "^6.0.0"
     strip-json-comments "^3.1.0"
     table "^6.0.9"
+    text-table "^0.2.0"
+    v8-compile-cache "^2.0.3"
+
+eslint@^6.1.0:
+  version "6.8.0"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-6.8.0.tgz#62262d6729739f9275723824302fb227c8c93ffb"
+  integrity sha512-K+Iayyo2LtyYhDSYwz5D5QdWw0hCacNzyq1Y821Xna2xSJj7cijoLLYmLxTQgcgZ9mC61nryMy9S7GRbYpI5Ig==
+  dependencies:
+    "@babel/code-frame" "^7.0.0"
+    ajv "^6.10.0"
+    chalk "^2.1.0"
+    cross-spawn "^6.0.5"
+    debug "^4.0.1"
+    doctrine "^3.0.0"
+    eslint-scope "^5.0.0"
+    eslint-utils "^1.4.3"
+    eslint-visitor-keys "^1.1.0"
+    espree "^6.1.2"
+    esquery "^1.0.1"
+    esutils "^2.0.2"
+    file-entry-cache "^5.0.1"
+    functional-red-black-tree "^1.0.1"
+    glob-parent "^5.0.0"
+    globals "^12.1.0"
+    ignore "^4.0.6"
+    import-fresh "^3.0.0"
+    imurmurhash "^0.1.4"
+    inquirer "^7.0.0"
+    is-glob "^4.0.0"
+    js-yaml "^3.13.1"
+    json-stable-stringify-without-jsonify "^1.0.1"
+    levn "^0.3.0"
+    lodash "^4.17.14"
+    minimatch "^3.0.4"
+    mkdirp "^0.5.1"
+    natural-compare "^1.4.0"
+    optionator "^0.8.3"
+    progress "^2.0.0"
+    regexpp "^2.0.1"
+    semver "^6.1.2"
+    strip-ansi "^5.2.0"
+    strip-json-comments "^3.0.1"
+    table "^5.2.3"
     text-table "^0.2.0"
     v8-compile-cache "^2.0.3"
 
@@ -14172,6 +14120,60 @@ once@^1.3.0, once@^1.3.1, once@^1.4.0:
   dependencies:
     wrappy "1"
 
+onekijs@^0.11.0:
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/onekijs/-/onekijs-0.11.0.tgz#68d9a293667ee2010b87815844e6b73c66a5cbdc"
+  integrity sha512-68VvvO467Q98AiSq55lNjSL6SMg0HD/HvPmPVILP8Vte5FADztsO2frAc4JTCBwUnAYtdJHetUxCgRYUzLXdqA==
+  dependencies:
+    "@oneki/app" "^0.11.0"
+    "@oneki/auth" "^0.11.0"
+    "@oneki/collection" "^0.11.0"
+    "@oneki/core" "^0.11.0"
+    "@oneki/fetch" "^0.11.0"
+    "@oneki/form" "^0.11.0"
+    "@oneki/i18n" "^0.11.0"
+    "@oneki/notification" "^0.11.0"
+    "@oneki/router" "^0.11.0"
+    "@oneki/types" "^0.11.0"
+    "@oneki/utils" "^0.11.0"
+    history "^4.10.1"
+    immer "^8.0.1"
+    query-string "^6.11.1"
+    react-redux "^7.2.0"
+    react-router "^5.2.0"
+    react-router-dom "^5.1.2"
+    react-transition-group "^4.4.1"
+    redux "^4.0.5"
+    redux-saga "^1.1.3"
+    reflect-metadata "^0.1.13"
+    rfc4648 "^1.3.0"
+    text-encoding-shim "^1.0.5"
+
+onekijs@^0.12.2:
+  version "0.12.2"
+  resolved "https://registry.yarnpkg.com/onekijs/-/onekijs-0.12.2.tgz#001e1da535937316026f7c1e1dd41c00d759937f"
+  integrity sha512-eTFx9huEUaIXIFJkhlwVouke84xTFIZEJ+MUMAD4a1us3H9L9DmjCS6ziSTA/duOzmrOZ+k+HhRiOCW671mL5w==
+  dependencies:
+    "@popperjs/core" "^2.4.4"
+    history "^4.10.1"
+    immer "^8.0.1"
+    query-string "^6.11.1"
+    react-icons "^4.2.0"
+    react-popper "^2.2.3"
+    react-popper-tooltip "^4.2.0"
+    react-redux "^7.2.0"
+    react-transition-group "^4.4.1"
+    react-virtual "^2.6.2"
+    react-virtualized-auto-sizer "^1.0.2"
+    react-window "^1.8.5"
+    react-window-infinite-loader "^1.0.5"
+    redux "^4.0.5"
+    redux-saga "^1.1.3"
+    reflect-metadata "^0.1.13"
+    rfc4648 "^1.3.0"
+    styled-components "^5.1.1"
+    text-encoding-shim "^1.0.5"
+
 onetime@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/onetime/-/onetime-2.0.1.tgz#067428230fd67443b2794b22bba528b6867962d4"
@@ -19080,15 +19082,15 @@ typescript-tuple@^2.2.1:
   dependencies:
     typescript-compare "^0.0.2"
 
+typescript@4.3.5, typescript@^4.1.3, typescript@^4.3.5:
+  version "4.3.5"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.3.5.tgz#4d1c37cc16e893973c45a06886b7113234f119f4"
+  integrity sha512-DqQgihaQ9cUrskJo9kIyW/+g0Vxsk8cDtZ52a3NGh0YNTfpUSArXSohyUGnvbPazEPLu398C0UxmKSOrPumUzA==
+
 typescript@^3.7.3:
   version "3.9.10"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.10.tgz#70f3910ac7a51ed6bef79da7800690b19bf778b8"
   integrity sha512-w6fIxVE/H1PkLKcCPsFqKE7Kv7QUwhU8qQY2MueZXWx5cPZdwFupLgKK3vntcK98BtNHZtAF4LA/yl2a7k8R6Q==
-
-typescript@^4.1.3, typescript@^4.3.5:
-  version "4.3.5"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.3.5.tgz#4d1c37cc16e893973c45a06886b7113234f119f4"
-  integrity sha512-DqQgihaQ9cUrskJo9kIyW/+g0Vxsk8cDtZ52a3NGh0YNTfpUSArXSohyUGnvbPazEPLu398C0UxmKSOrPumUzA==
 
 uglify-js@^3.1.4:
   version "3.14.1"
