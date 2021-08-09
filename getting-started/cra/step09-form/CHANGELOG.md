@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.12.2](https://github.com/oneki/onekijs/compare/v0.12.1...v0.12.2) (2021-08-09)
+
+
+### Features
+
+* create oneki/next and oneki/cra packages ([962d6ed](https://github.com/oneki/onekijs/commit/962d6eddc05a880bb4c70109ef3c3d6741c44938))
+
+
+
+
+
 ## [0.12.1](https://github.com/oneki/onekijs/compare/v0.12.0...v0.12.1) (2021-08-09)
 
 **Note:** Version bump only for package step09-form

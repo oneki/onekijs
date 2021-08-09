@@ -1,7 +1,7 @@
 {
   "name": "onekijs-cra",
   "private": true,
-  "version": "0.12.1",
+  "version": "0.12.2",
   "description": "Opiniated React framework built on top of Next.js",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -28,7 +28,7 @@
   "author": "Oneki",
   "license": "MIT",
   "dependencies": {
-    "onekijs": "^0.12.1",
+    "onekijs": "^0.12.2",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.1.2"
   },
