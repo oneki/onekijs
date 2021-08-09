@@ -1,8 +1,7 @@
+import { toLocation, useSettings } from 'onekijs';
 import React, { FC } from 'react';
 import { useLocation } from 'react-router';
 import { Switch as ReactRouterSwitch } from 'react-router-dom';
-import useSettings from '../../../app/useSettings';
-import { toLocation } from '../../../router/utils';
 
 const Switch: FC = ({ children }) => {
   const location = useLocation();

@@ -1,29 +1,3 @@
-import 'regenerator-runtime/runtime.js';
-export {
-  BrowserRouter,
-  BrowserRouterProps,
-  generatePath,
-  HashRouter,
-  HashRouterProps,
-  match,
-  matchPath,
-  MemoryRouter,
-  NavLink,
-  NavLinkProps,
-  Prompt,
-  Redirect,
-  RedirectProps,
-  RouteChildrenProps,
-  RouteComponentProps,
-  RouteProps,
-  Router as NativeReactDomRouter,
-  RouterChildContext,
-  StaticRouter,
-  SwitchProps,
-  useRouteMatch,
-  withRouter,
-} from 'react-router-dom';
-export { default as useAppContext } from './app//useAppContext';
 export { default as useHistory } from './app//useHistory';
 export { default as BasicAppContext } from './app/AppContext';
 export { default as AppErrorBoundary } from './app/AppErrorBoundary';
@@ -42,6 +16,7 @@ export { default as LocalStateService } from './app/LocalStateService';
 export { defaultIdpSettings, defaultSettings, indexLocales } from './app/settings';
 export {
   AppErrorCallback,
+  AppProps,
   AppProps as CoreAppProps,
   AppProviderProps,
   AppResultCallback,
@@ -53,6 +28,7 @@ export {
   GlobalSelectorFunction,
   SetGlobalStateFunction,
 } from './app/typings';
+export { default as useAppContext } from './app/useAppContext';
 export { default as useAppService } from './app/useAppService';
 export { default as useCache } from './app/useCache';
 export { default as useContainer } from './app/useContainer';
@@ -122,16 +98,6 @@ export {
   parseJwt,
   validateToken,
 } from './auth/utils';
-export { App } from './buildtools/cra/App';
-export { default as FadeSwitch } from './buildtools/cra/router/FadeSwitch';
-export { ReactRouter } from './buildtools/cra/router/ReactRouter';
-export { default as Route } from './buildtools/cra/router/Route';
-export { default as Switch } from './buildtools/cra/router/Switch';
-export { AppProps } from './buildtools/cra/typings';
-export { default as withNotFound } from './buildtools/next/404';
-export { App as NextApp } from './buildtools/next/app';
-export { default as NextRouter } from './buildtools/next/router/NextRouter';
-export { AppProps as NextAppProps } from './buildtools/next/typings';
 export { default as CollectionService } from './collection/CollectionService';
 export {
   ChangeHandler,

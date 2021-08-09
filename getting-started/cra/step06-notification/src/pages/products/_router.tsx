@@ -1,4 +1,4 @@
-import { FadeSwitch, Route, useRouteMatch } from 'onekijs';
+import { FadeSwitch, Route, useRouteMatch } from 'onekijs/cra';
 import React from 'react';
 import ProductsPage from '.';
 import ProductDetailsPage from './[productId]';

@@ -1,17 +1,19 @@
 import { History, Location as ReactRouterLocation, LocationListener, LocationState } from 'history';
-import React, { MutableRefObject } from 'react';
-import { __RouterContext } from 'react-router';
-import { toI18nLocation } from '../../../i18n/utils';
-import BaseRouter from '../../../router/Router';
-import { toLocation, toRelativeUrl, toUrl } from '../../../router/utils';
-import { AppSettings } from '../../../types/app';
 import {
+  AppSettings,
+  BaseRouter,
   LinkProps,
   Location,
   LocationChangeCallback,
   RouterPushOptions,
+  toI18nLocation,
+  toLocation,
+  toRelativeUrl,
+  toUrl,
   UnregisterCallback,
-} from '../../../types/router';
+} from 'onekijs';
+import React, { MutableRefObject } from 'react';
+import { __RouterContext } from 'react-router';
 import Link from '../Link';
 
 export class ReactRouter extends BaseRouter {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRouteMatch, Switch, Route } from 'onekijs';
+import { useRouteMatch, Switch, Route } from 'onekijs/cra';
 import ProductsPage from '.';
 import ProductDetailsPage from './[productId]';
 

@@ -1,9 +1,6 @@
+import { AnonymousObject, SecureRouteProps, useGlobalProp, useSetting } from 'onekijs';
 import React, { FC } from 'react';
 import { Redirect, Route } from 'react-router-dom';
-import useGlobalProp from '../../app/useGlobalProp';
-import useSetting from '../../app/useSetting';
-import { SecureRouteProps } from '../../auth/typings';
-import { AnonymousObject } from '../../types/object';
 
 const SecureRoute: FC<SecureRouteProps> = ({ component: Component, ...args }) => {
   const token = useGlobalProp('auth.token', null);

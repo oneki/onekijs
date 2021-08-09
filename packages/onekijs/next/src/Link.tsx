@@ -1,7 +1,6 @@
 import NextLink from 'next/link';
+import { LinkProps, toRelativeUrl } from 'onekijs';
 import React, { FC } from 'react';
-import { toRelativeUrl } from '../../router/utils';
-import { LinkProps } from '../../types/router';
 
 const Link: FC<LinkProps> = ({
   href,

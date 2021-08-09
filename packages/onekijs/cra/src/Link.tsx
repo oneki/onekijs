@@ -1,11 +1,6 @@
+import { LinkProps, toI18nLocation, toRelativeUrl, toUrl, useI18n, useLocation, useSettings } from 'onekijs';
 import React from 'react';
 import { Link as ReactRouterLink, NavLink } from 'react-router-dom';
-import useLocation from '../../app/useLocation';
-import useSettings from '../../app/useSettings';
-import useI18n from '../../i18n/useI18n';
-import { toI18nLocation } from '../../i18n/utils';
-import { toRelativeUrl, toUrl } from '../../router/utils';
-import { LinkProps } from '../../types/router';
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
   (

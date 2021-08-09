@@ -1,8 +1,5 @@
+import { AppState, DefaultLoadingComponent, simpleMergeDeep, useLazyRef } from 'onekijs';
 import React, { FC, useEffect, useMemo } from 'react';
-import AppState from '../../app/AppState';
-import DefaultLoadingComponent from '../../app/DefaultLoadingComponent';
-import useLazyRef from '../../core/useLazyRef';
-import { simpleMergeDeep } from '../../utils/object';
 import { SS_KEY_404 } from './404';
 import NextRouter from './router/NextRouter';
 import { useRouterSync } from './router/useRouterSync';

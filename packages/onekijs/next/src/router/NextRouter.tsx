@@ -1,10 +1,16 @@
 import { UnregisterCallback } from 'history';
 import Router, { NextRouter as NextRouterType } from 'next/router';
-
+import {
+  BaseRouter,
+  LinkProps,
+  Location,
+  LocationChangeCallback,
+  RouterPushOptions,
+  toLocation,
+  toRouteUrl,
+  toUrl,
+} from 'onekijs';
 import React from 'react';
-import BaseRouter from '../../../router/Router';
-import { toLocation, toRouteUrl, toUrl } from '../../../router/utils';
-import { LinkProps, Location, LocationChangeCallback, RouterPushOptions } from '../../../types/router';
 import Link from '../Link';
 
 export default class NextRouter extends BaseRouter {

@@ -1,6 +1,6 @@
+import { useRouter } from 'onekijs';
 import React, { FC } from 'react';
 import { matchPath, Route as ReactRouterRoute, RouteProps, useHistory } from 'react-router-dom';
-import useRouter from '../../../app/useRouter';
 
 const Route: FC<RouteProps> = (props) => {
   const history = useHistory();

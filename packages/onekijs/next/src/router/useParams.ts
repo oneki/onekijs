@@ -1,5 +1,4 @@
-import useTryParams from '../../../core/useTryParams';
-import { AnonymousObject } from '../../../types/object';
+import { AnonymousObject, useTryParams } from 'onekijs';
 
 // change the state every time it changes
 const useParams = (): AnonymousObject<string> => {

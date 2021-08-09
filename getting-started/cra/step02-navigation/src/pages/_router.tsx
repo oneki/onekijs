@@ -1,4 +1,4 @@
-import { Redirect, Route, Switch } from 'onekijs';
+import { Redirect, Route, Switch } from 'onekijs/cra';
 import React from 'react';
 import AppLayout from '../modules/core/layouts/AppLayout';
 import ProductsRouter from './products/_router';

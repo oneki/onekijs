@@ -19,21 +19,28 @@
       "import": "./dist/index.modern.js",
       "require": "./dist/index.js"
     },
+    "./cra": {
+      "import": "./cra/dist/index.modern.js",
+      "require": "./cra/dist/index.js"
+    },
+    "./next": {
+      "import": "./next/dist/index.modern.js",
+      "require": "./next/dist/index.js"
+    },
     "./ssr": {
       "import": "./ssr/dist/index.modern.js",
       "require": "./ssr/dist/index.js"
     }
   },
-  "module": "dist/index.modern.js",
+  "module": "dist/index.module.js",
   "unpkg": "dist/index.umd.js",
   "scripts": {
-    "build": "concurrently \"yarn build:onekijs\" \"yarn build:ssr\" ",
-    "build:onekijs": "microbundle -f es,cjs,modern --jsx React.createElement",
-    "build:cra": "cd cra && microbundle -f es,cjs,modern --jsx React.createElement",
-    "build:next": "cd next && microbundle -f es,cjs,modern --jsx React.createElement",
-    "build:ssr": "cd ssr && microbundle -f es,cjs,modern --jsx React.createElement",
+    "build": "yarn build:onekijs && yarn build:ssr && yarn build:cra && yarn build:next ",
+    "build:onekijs": "microbundle --jsx React.createElement",
+    "build:cra": "cd cra && microbundle --jsx React.createElement && cd ..",
+    "build:next": "cd next && microbundle --jsx React.createElement && cd ..",
+    "build:ssr": "cd ssr && microbundle --jsx React.createElement && cd ..",
     "build:fast": "microbundle -f modern --jsx React.createElement --max-old-space-size=8192 --no-compress",
-    "compile": "tsc",
     "start": "microbundle watch -f modern --jsx React.createElement --max-old-space-size=8192 --no-compress"
   },
   "author": "Oneki",
@@ -47,8 +54,6 @@
     "react-popper": "^2.2.3",
     "react-popper-tooltip": "^4.2.0",
     "react-redux": "^7.2.0",
-    "react-router": "^5.2.0",
-    "react-router-dom": "^5.1.2",
     "react-transition-group": "^4.4.1",
     "react-virtual": "^2.6.2",
     "react-virtualized-auto-sizer": "^1.0.2",
@@ -69,14 +74,8 @@
     "microbundle": "^0.13.3"
   },
   "peerDependencies": {
-    "next": ">=11",
     "react": ">=16",
     "react-dom": ">=16"
-  },
-  "peerDependenciesMeta": {
-    "next": {
-      "optional": true
-    }
   },
   "sideEffects": false,
   "gitHead": "bd34719c6e0a4119cec72b64ce8fe6b35d1c342f",

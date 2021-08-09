@@ -1,4 +1,4 @@
-import { Route, Switch, useRouteMatch } from 'onekijs';
+import { Route, Switch, useRouteMatch } from 'onekijs/cra';
 import React from 'react';
 import ProductsPage from '.';
 import ProductDetailsPage from './[productId]/details';
