@@ -5,16 +5,6 @@
   "source": "src/index.ts",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
-  "files": [
-    "dist",
-    "src",
-    "ssr/dist",
-    "ssr/src",
-    "cra/dist",
-    "cra/src",
-    "next/dist",
-    "next/src"
-  ],
   "engines": {
     "node": ">=10"
   },
