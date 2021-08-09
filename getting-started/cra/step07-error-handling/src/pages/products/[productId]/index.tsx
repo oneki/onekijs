@@ -29,7 +29,8 @@ const ProductDetailsPage: React.FC = () => {
 
   let product = products[+productId];
   if (product.name === 'Phone Invalid') {
-    // to simulate an error, we pickup a non entry in the array
+    // to simulate an error during the rendering phase,
+    // we pickup a non entry in the array
     product = products[9999];
   }
   return (

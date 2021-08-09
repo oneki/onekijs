@@ -8,8 +8,7 @@ export const ArrayPage = () => {
     setResult(JSON.stringify(data, null, 2));
   }, []);
 
-  const { Form, getValue, getValidation, add, remove, values } = useForm(submit);
-  console.log(values);
+  const { Form, getValue, getValidation, add, remove } = useForm(submit);
 
   return (
     <>
