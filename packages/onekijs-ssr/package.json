@@ -1,0 +1,42 @@
+{
+  "name": "onekijs-ssr",
+  "private": true,
+  "version": "0.13.1",
+  "description": "Opiniated React framework built on top of Next.js",
+  "source": "src/index.ts",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=10"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.module.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "module": "dist/index.module.js",
+  "unpkg": "dist/index.umd.js",
+  "scripts": {
+    "build": "microbundle --jsx React.createElement",
+    "build:fast": "microbundle -f es --jsx React.createElement --no-compress",
+    "start": "microbundle watch -f es --jsx React.createElement --max-old-space-size=8192 --no-compress"
+  },
+  "author": "Oneki",
+  "license": "MIT",
+  "dependencies": {
+    "onekijs-framework": "^0.13.1"
+  },
+  "devDependencies": {
+    "microbundle": "^0.13.3"
+  },
+  "peerDependencies": {
+    "react": ">=16",
+    "react-dom": ">=16"
+  },
+  "sideEffects": false
+}

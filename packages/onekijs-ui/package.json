@@ -1,0 +1,53 @@
+{
+  "name": "onekijs-ui",
+  "private": true,
+  "version": "0.13.1",
+  "description": "Opiniated React framework built on top of Next.js",
+  "source": "src/index.ts",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=10"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.module.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "module": "dist/index.module.js",
+  "unpkg": "dist/index.umd.js",
+  "scripts": {
+    "build": "microbundle --jsx React.createElement",
+    "build:fast": "microbundle -f ejs --jsx React.createElement --no-compress",
+    "start": "microbundle watch -f ejs --jsx React.createElement --max-old-space-size=8192 --no-compress"
+  },
+  "author": "Oneki",
+  "license": "MIT",
+  "dependencies": {
+    "@popperjs/core": "^2.4.4",
+    "onekijs-framework": "^0.13.1",
+    "react-icons": "^4.2.0",
+    "react-popper": "^2.2.3",
+    "react-popper-tooltip": "^4.2.0",
+    "react-virtual": "^2.6.2",
+    "react-virtualized-auto-sizer": "^1.0.2",
+    "react-window": "^1.8.5",
+    "react-window-infinite-loader": "^1.0.5",    
+    "styled-components": "^5.1.1"
+  },
+  "devDependencies": {
+    "@types/react-virtualized-auto-sizer": "^1.0.0",
+    "@types/react-window": "^1.8.2",
+    "microbundle": "^0.13.3"
+  },
+  "peerDependencies": {
+    "react": ">=16",
+    "react-dom": ">=16"
+  },
+  "sideEffects": false
+}

@@ -1,4 +1,4 @@
-import { secure, useDelete, useGet, withLayout } from 'onekijs';
+import { secure, useDelete, useGet, withLayout } from 'onekijs-next';
 import React from 'react';
 import { CartResponse } from '../../data/dto/cart';
 import Cart from '../modules/core/components/Cart';

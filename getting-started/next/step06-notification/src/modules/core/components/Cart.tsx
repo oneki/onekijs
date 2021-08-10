@@ -1,4 +1,4 @@
-import { Link } from 'onekijs';
+import { Link } from 'onekijs-next';
 import React from 'react';
 import { CartType } from '../../../../data/dto/cart';
 import { currency } from '../libs/format';

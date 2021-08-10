@@ -1,96 +1,44 @@
 {
   "name": "onekijs",
   "version": "0.13.1",
-  "description": "Opiniated React framework built on top of Redux and React Router",
+  "description": "Opiniated React framework built on top of Next.js",
   "source": "src/index.ts",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
   "engines": {
     "node": ">=10"
   },
   "exports": {
     ".": {
-      "import": "./dist/index.modern.js",
+      "import": "./dist/index.module.js",
       "require": "./dist/index.js"
-    },
-    "./cra": {
-      "import": "./cra/dist/index.modern.js",
-      "require": "./cra/dist/index.js"
-    },
-    "./next": {
-      "import": "./next/dist/index.modern.js",
-      "require": "./next/dist/index.js"
-    },
-    "./ssr": {
-      "import": "./ssr/dist/index.modern.js",
-      "require": "./ssr/dist/index.js"
     }
   },
   "module": "dist/index.module.js",
   "unpkg": "dist/index.umd.js",
   "scripts": {
-    "build": "yarn build:onekijs && yarn build:ssr && yarn build:cra && yarn build:next ",
-    "build:onekijs": "microbundle --jsx React.createElement",
-    "build:cra": "cd cra && microbundle --jsx React.createElement && cd ..",
-    "build:next": "cd next && microbundle --jsx React.createElement && cd ..",
-    "build:ssr": "cd ssr && microbundle --jsx React.createElement && cd ..",
-    "build:fast": "microbundle -f modern --jsx React.createElement --max-old-space-size=8192 --no-compress",
-    "start": "microbundle watch -f modern --jsx React.createElement --max-old-space-size=8192 --no-compress"
+    "build": "microbundle --jsx React.createElement",
+    "build:fast": "microbundle -f es --jsx React.createElement --no-compress",
+    "start": "microbundle watch -f es --jsx React.createElement --no-compress"
   },
   "author": "Oneki",
   "license": "MIT",
   "dependencies": {
-    "@popperjs/core": "^2.4.4",
+    "onekijs-framework": "^0.13.1",
     "history": "^4.10.1",
-    "immer": "^8.0.1",
-    "query-string": "^6.11.1",
-    "react-icons": "^4.2.0",
-    "react-popper": "^2.2.3",
-    "react-popper-tooltip": "^4.2.0",
-    "react-redux": "^7.2.0",
-    "react-transition-group": "^4.4.1",
-    "react-virtual": "^2.6.2",
-    "react-virtualized-auto-sizer": "^1.0.2",
-    "react-window": "^1.8.5",
-    "react-window-infinite-loader": "^1.0.5",
-    "redux": "^4.0.5",
-    "redux-saga": "^1.1.3",
-    "reflect-metadata": "^0.1.13",
-    "rfc4648": "^1.3.0",
-    "styled-components": "^5.1.1",
-    "text-encoding-shim": "^1.0.5"
+    "react-router": "^5.2.0",
+    "react-router-dom": "^5.1.2"
   },
   "devDependencies": {
-    "@types/react-transition-group": "^4.4.0",
-    "@types/react-virtualized-auto-sizer": "^1.0.0",
-    "@types/react-window": "^1.8.2",
-    "concurrently": "^6.2.0",
     "microbundle": "^0.13.3"
   },
   "peerDependencies": {
     "react": ">=16",
     "react-dom": ">=16"
   },
-  "sideEffects": false,
-  "gitHead": "bd34719c6e0a4119cec72b64ce8fe6b35d1c342f",
-  "babel": {
-    "presets": [
-      [
-        "@babel/preset-env",
-        {
-          "modules": false
-        }
-      ],
-      "@babel/preset-react"
-    ],
-    "plugins": [
-      "@babel/plugin-proposal-class-properties",
-      [
-        "babel-plugin-styled-components",
-        {
-          "pure": true
-        }
-      ]
-    ]
-  }
+  "sideEffects": false
 }

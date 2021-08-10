@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { layout } from 'onekijs';
+import { layout } from 'onekijs-next';
 import Navbar from '../components/Navbar';
 
 const AppLayout: FC = ({ children }) => {

@@ -1,5 +1,5 @@
 import { AppProps } from 'next/app';
-import { NextApp } from 'onekijs/next';
+import { NextApp } from 'onekijs-next';
 import Head from 'next/head';
 import React, { FC } from 'react';
 import settings from '../settings';

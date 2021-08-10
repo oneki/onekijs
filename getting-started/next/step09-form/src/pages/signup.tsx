@@ -8,7 +8,7 @@ import {
   usePost,
   useRule,
   useTranslation,
-} from 'onekijs';
+} from 'onekijs-next';
 import React from 'react';
 
 const SignupPage: React.FC = () => {

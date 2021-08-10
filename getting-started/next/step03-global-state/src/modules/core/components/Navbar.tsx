@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Link } from 'onekijs';
+import { Link } from 'onekijs-next';
 
 const Navbar: FC = () => {
   return (

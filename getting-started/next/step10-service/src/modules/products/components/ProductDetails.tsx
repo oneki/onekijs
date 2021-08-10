@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { useLocalService, useTranslation } from 'onekijs';
+import { useLocalService, useTranslation } from 'onekijs-next';
 import { ProductType } from '../../../../data/products';
 import { currency } from '../../core/libs/format';
 import AvailabilityService, { AvailabilityState } from '../services/AvailabilityService';

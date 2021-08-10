@@ -1,4 +1,4 @@
-import { useLogout, useTranslation } from 'onekijs';
+import { useLogout, useTranslation } from 'onekijs-next';
 import React from 'react';
 
 const LogoutPage: React.FC = () => {

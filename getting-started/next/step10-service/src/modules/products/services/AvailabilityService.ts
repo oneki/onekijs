@@ -8,7 +8,7 @@ import {
   saga,
   SagaEffect,
   service,
-} from 'onekijs';
+} from 'onekijs-next';
 
 export interface AvailabilityState {
   // a flag to indicate if a request is in flight
