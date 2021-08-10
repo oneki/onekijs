@@ -10,6 +10,7 @@ export const collectionProxyProps = {
     'addFilter',
     'addFilterCriteria',
     'addSortBy',
+    'asService',
     'clearFields',
     'clearFilter',
     'clearSearch',

@@ -11,6 +11,7 @@ import {
   GridHeaderProps,
   GridItemMeta,
   GridState,
+  GridRowHandler,
 } from './typings';
 
 export const parseColumnWidth = (width: string | number = 'auto'): GridColumnWidth => {
@@ -104,23 +105,23 @@ class GridService<T = any, M extends GridItemMeta = GridItemMeta, S extends Grid
     return this.state.height;
   }
 
-  get onRowClick(): ((rowData: T, rowIndex: number) => void) | undefined {
+  get onRowClick(): GridRowHandler<T, M> | undefined {
     return this.state.onRowClick;
   }
 
-  get onRowEnter(): ((rowData: T, rowIndex: number) => void) | undefined {
+  get onRowEnter(): GridRowHandler<T, M> | undefined {
     return this.state.onRowEnter;
   }
 
-  get onRowLeave(): ((rowData: T, rowIndex: number) => void) | undefined {
+  get onRowLeave(): GridRowHandler<T, M> | undefined {
     return this.state.onRowLeave;
   }
 
-  get onRowOver(): ((rowData: T, rowIndex: number) => void) | undefined {
+  get onRowOver(): GridRowHandler<T, M> | undefined {
     return this.state.onRowOver;
   }
 
-  get onRowOut(): ((rowData: T, rowIndex: number) => void) | undefined {
+  get onRowOut(): GridRowHandler<T, M> | undefined {
     return this.state.onRowOut;
   }
 
@@ -140,7 +141,7 @@ class GridService<T = any, M extends GridItemMeta = GridItemMeta, S extends Grid
     return this._step;
   }
 
-  asService(): GridController<T, M> {
+  asService(): GridService<T, M> {
     return this;
   }
 

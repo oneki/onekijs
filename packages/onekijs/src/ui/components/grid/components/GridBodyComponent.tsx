@@ -44,7 +44,7 @@ const GridBodyComponent: React.FC<GridBodyProps> = ({ controller, gridRef, conte
       onItemMouseOut={onRowOut}
       onItemMouseOver={onRowOver}
       parentRef={gridRef}
-      ref={contentRef}
+      bodyRef={contentRef}
       totalSize={totalSize}
       virtualItems={isVirtual ? virtualItems : undefined}
     />

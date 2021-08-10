@@ -19,7 +19,6 @@ export const gridCollectionProps = {
     'height',
     'rowClassName',
     'RowComponent',
-    'asService',
     'initCell',
     'onMount',
     'onRowClick',

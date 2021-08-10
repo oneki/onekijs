@@ -5,11 +5,17 @@ import { GridBodyCellProps } from '../typings';
 import useGridController from '../useGridController';
 import { getCellWidth } from '../util';
 
-const GridBodyCellComponent: FC<GridBodyCellProps> = ({ column, rowIndex, rowValue }) => {
+const DefaultCellComponent: FC<GridBodyCellProps> = ({ rowValue, column }) => {
+  return <>{get(rowValue, `data.${column.id}`)}</>;
+};
+
+const GridBodyCellComponent: FC<GridBodyCellProps> = React.memo((props) => {
+  const { column, rowIndex, rowValue } = props;
   const controller = useGridController();
   const { initCell, fit, grow } = controller;
   const ref = useRef<HTMLDivElement>(null);
   const initializedRef = useRef<boolean>(false);
+  const Component = column.CellComponent || DefaultCellComponent;
 
   const className =
     typeof column.className === 'function' ? column.className(rowValue, column, controller) : column.className;
@@ -22,9 +28,11 @@ const GridBodyCellComponent: FC<GridBodyCellProps> = ({ column, rowIndex, rowVal
 
   return (
     <div ref={ref} className={addClassname('o-grid-body-cell', className)} style={getCellWidth(column, fit, grow)}>
-      {get(rowValue, `data.${column.id}`)}
+      <Component {...props} />
     </div>
   );
-};
+});
+
+GridBodyCellComponent.displayName = 'GridCell';
 
 export default GridBodyCellComponent;
