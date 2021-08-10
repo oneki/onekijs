@@ -1,6 +1,5 @@
 {
   "name": "onekijs-framework",
-  "private": true,
   "version": "0.13.1",
   "description": "Opiniated React framework built on top of Redux and React Router",
   "source": "src/index.ts",

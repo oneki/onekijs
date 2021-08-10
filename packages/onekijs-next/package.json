@@ -1,6 +1,5 @@
 {
   "name": "onekijs-next",
-  "private": true,
   "version": "0.13.1",
   "description": "Opiniated React framework built on top of Next.js",
   "source": "src/index.ts",
