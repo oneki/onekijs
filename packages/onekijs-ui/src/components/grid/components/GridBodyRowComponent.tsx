@@ -22,6 +22,9 @@ const GridBodyRowComponent: FC<GridBodyRowProps> = ({
             rowId={item.id}
             rowValue={item}
             key={`cell-${colIndex}`}
+            onFocus={() => undefined}
+            onBlur={() => undefined}
+            onChange={() => undefined}
           />
         );
       })}
