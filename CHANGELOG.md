@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.14.1](https://github.com/oneki/onekijs/compare/v0.14.0...v0.14.1) (2021-08-10)
+
+
+### Bug Fixes
+
+* GridController typing ([ec72ae5](https://github.com/oneki/onekijs/commit/ec72ae544326cd7802fb83682f376be3da2a18e8))
+
+
+### Features
+
+* add collection broker to proxy request to several collection at once ([1297a19](https://github.com/oneki/onekijs/commit/1297a1972cc8b715a9bc4a1a2b846314b7cc8b48))
+
+
+
+
+
 # [0.14.0](https://github.com/oneki/onekijs/compare/v0.13.1...v0.14.0) (2021-08-10)
 
 **Note:** Version bump only for package root

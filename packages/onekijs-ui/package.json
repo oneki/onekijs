@@ -1,7 +1,7 @@
 {
   "name": "onekijs-ui",
   "private": true,
-  "version": "0.14.0",
+  "version": "0.14.1",
   "description": "Opiniated React framework built on top of Next.js",
   "source": "src/index.ts",
   "main": "dist/index.js",
