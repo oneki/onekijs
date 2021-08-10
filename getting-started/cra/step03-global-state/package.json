@@ -1,12 +1,12 @@
 {
   "name": "step03-global-state",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.1",
     "@testing-library/react": "^10.4.7",
     "@testing-library/user-event": "^12.1.0",
-    "onekijs": "^0.13.1",
+    "onekijs": "^0.14.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3"
