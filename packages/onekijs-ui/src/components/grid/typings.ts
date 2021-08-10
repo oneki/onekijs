@@ -63,7 +63,7 @@ export type GridColumnComputedWidth = {
   minWidth?: string;
 };
 
-export type GridController<T = any, M extends GridItemMeta = GridItemMeta> = Collection<T, M> &
+export type GridController<T = any, M extends GridItemMeta = GridItemMeta> = Omit<Collection<T, M>, 'asService'> &
   Readonly<_GridState<T, M>> & {
     asService(): GridController<T, M>;
     initCell(rowNumber: number | 'header' | 'footer', colId: string, ref: React.RefObject<HTMLDivElement>): boolean;

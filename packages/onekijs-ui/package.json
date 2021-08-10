@@ -23,8 +23,8 @@
   "unpkg": "dist/index.umd.js",
   "scripts": {
     "build": "microbundle --jsx React.createElement",
-    "build:fast": "microbundle -f ejs --jsx React.createElement --no-compress",
-    "start": "microbundle watch -f ejs --jsx React.createElement --max-old-space-size=8192 --no-compress"
+    "build:fast": "microbundle -f es --jsx React.createElement --no-compress",
+    "start": "microbundle watch -f es --jsx React.createElement --max-old-space-size=8192 --no-compress"
   },
   "author": "Oneki",
   "license": "MIT",
