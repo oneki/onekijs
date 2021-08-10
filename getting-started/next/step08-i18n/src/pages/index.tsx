@@ -5,7 +5,7 @@ import Product from '../modules/products/components/Product';
 import { products, ProductType } from '../../data/products';
 import AppLayout from '../modules/core/layouts/AppLayout';
 import { NOTIF_TOPIC_ERROR, NOTIF_TOPIC_SUCCESS } from '../modules/core/libs/constants';
-import { withI18nStaticProps } from 'onekijs/ssr';
+import { withI18nStaticProps } from 'onekijs-ssr';
 
 interface PageProps {
   products: ProductType[];

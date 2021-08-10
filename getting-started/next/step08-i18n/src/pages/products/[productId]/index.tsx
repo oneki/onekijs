@@ -1,6 +1,6 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { useNotificationService, usePost, useTranslation, withLayout } from 'onekijs-next';
-import { withI18nStaticProps, withI18nStaticPaths } from 'onekijs/ssr';
+import { withI18nStaticProps, withI18nStaticPaths } from 'onekijs-ssr';
 import React, { FC } from 'react';
 import { products, ProductType } from '../../../../data/products';
 import AppLayout from '../../../modules/core/layouts/AppLayout';
