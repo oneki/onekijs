@@ -1,6 +1,6 @@
-import { useI18nService, useSecurityContext, useTranslation } from 'onekijs';
+import { useI18nService, useSecurityContext, useTranslation } from 'onekijs-next';
 import React from 'react';
-import { Link } from 'onekijs';
+import { Link } from 'onekijs-next';
 
 const Navbar: React.FC = () => {
   const [T, , locale] = useTranslation();

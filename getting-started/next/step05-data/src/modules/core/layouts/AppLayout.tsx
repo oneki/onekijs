@@ -1,4 +1,4 @@
-import { layout } from 'onekijs';
+import { layout } from 'onekijs-next';
 import React, { FC } from 'react';
 import Navbar from '../components/Navbar';
 

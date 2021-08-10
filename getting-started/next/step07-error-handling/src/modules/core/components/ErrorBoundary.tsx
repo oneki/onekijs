@@ -1,4 +1,4 @@
-import { ErrorBoundaryComponentProps } from 'onekijs';
+import { ErrorBoundaryComponentProps } from 'onekijs-next';
 import React from 'react';
 
 const ErrorBoundary: React.FC<ErrorBoundaryComponentProps> = ({ error, errorInfo }) => {

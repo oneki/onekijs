@@ -1,6 +1,6 @@
 import { GetStaticProps } from 'next';
 import React, { FC } from 'react';
-import { withLayout } from 'onekijs';
+import { withLayout } from 'onekijs-next';
 import Product from '../modules/products/components/Product';
 import { products, ProductType } from '../../data/products';
 import AppLayout from '../modules/core/layouts/AppLayout';

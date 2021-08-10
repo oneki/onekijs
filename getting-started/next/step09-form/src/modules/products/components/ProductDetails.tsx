@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { useTranslation } from 'onekijs';
+import { useTranslation } from 'onekijs-next';
 import { ProductType } from '../../../../data/products';
 import { currency } from '../../core/libs/format';
 

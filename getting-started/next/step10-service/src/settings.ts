@@ -1,4 +1,4 @@
-import { AppSettings } from 'onekijs';
+import { AppSettings } from 'onekijs-next';
 
 export default {
   i18n: {

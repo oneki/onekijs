@@ -1,0 +1,49 @@
+{
+  "name": "onekijs-framework",
+  "private": true,
+  "version": "0.13.1",
+  "description": "Opiniated React framework built on top of Redux and React Router",
+  "source": "src/index.ts",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "engines": {
+    "node": ">=10"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.modern.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "module": "dist/index.modern.js",
+  "unpkg": "dist/index.umd.js",
+  "scripts": {
+    "build": "microbundle --jsx React.createElement",
+    "build:fast": "microbundle -f es --jsx React.createElement --no-compress",
+    "start": "microbundle watch -f es --jsx React.createElement --max-old-space-size=8192 --no-compress"
+  },
+  "author": "Oneki",
+  "license": "MIT",
+  "dependencies": {
+    "history": "^4.10.1",
+    "immer": "^8.0.1",
+    "query-string": "^6.11.1",
+    "react-redux": "^7.2.0",
+    "react-transition-group": "^4.4.1",
+    "redux": "^4.0.5",
+    "redux-saga": "^1.1.3",
+    "reflect-metadata": "^0.1.13",
+    "rfc4648": "^1.3.0",
+    "text-encoding-shim": "^1.0.5"
+  },
+  "devDependencies": {
+    "@types/react-transition-group": "^4.4.0",
+    "concurrently": "^6.2.0",
+    "microbundle": "^0.13.3"
+  },
+  "peerDependencies": {
+    "react": ">=16",
+    "react-dom": ">=16"
+  },
+  "sideEffects": false
+}

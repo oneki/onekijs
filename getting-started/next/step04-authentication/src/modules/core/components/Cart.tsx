@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'onekijs';
+import { Link } from 'onekijs-next';
 import { ProductType } from '../../../../data/products';
 import { currency } from '../libs/format';
 

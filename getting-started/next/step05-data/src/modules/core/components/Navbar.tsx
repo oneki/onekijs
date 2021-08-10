@@ -1,6 +1,6 @@
-import { useSecurityContext } from 'onekijs';
+import { useSecurityContext } from 'onekijs-next';
 import React from 'react';
-import { Link } from 'onekijs';
+import { Link } from 'onekijs-next';
 
 const Navbar: React.FC = () => {
   const [loggedUser] = useSecurityContext('username');

@@ -1,4 +1,4 @@
-import { Input, Link, SubmitButton, useForm, useLogin, useTranslation } from 'onekijs';
+import { Input, Link, SubmitButton, useForm, useLogin, useTranslation } from 'onekijs-next';
 import React from 'react';
 
 const LoginPage: React.FC = () => {

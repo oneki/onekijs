@@ -1,4 +1,4 @@
-import { useGlobalProp, withLayout } from 'onekijs';
+import { useGlobalProp, withLayout } from 'onekijs-next';
 import React from 'react';
 import { STATE_CART } from '../modules/core/libs/constants';
 import Cart from '../modules/core/components/Cart';
