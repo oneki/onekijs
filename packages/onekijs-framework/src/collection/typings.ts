@@ -24,6 +24,7 @@ export type Collection<T, M extends ItemMeta> = Omit<CollectionBroker<T, M>, 'ad
   getSortBy(): QuerySortBy[] | undefined;
   getSortByField(field: string): QuerySortByField | undefined;
   getSortById(id: string): QuerySortBy | undefined;
+  hasDataSource(): boolean;
   readonly hasMore: boolean;
   load(limit?: number, offset?: number): void;
   query(query: Query): void;
@@ -113,6 +114,7 @@ export interface CollectionState<T, M extends ItemMeta> extends FetchState {
   fetchOptions?: FetchOptions<CollectionFetcherResult<T>, Query | undefined>;
   fields?: string[];
   filter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[];
+  hasDataSource: boolean;
   hasMore?: boolean;
   hasMoreKey: string;
   items?: (Item<T, M> | undefined)[];

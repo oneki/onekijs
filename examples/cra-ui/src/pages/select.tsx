@@ -1,5 +1,5 @@
 import { CollectionState, Fetcher, CollectionService, Query, toCollectionItem, useCollection, useForm, useService } from 'onekijs';
-import { FormSelect, SelectOptionMeta } from 'onekijs';
+import { FormSelect, SelectOptionMeta } from 'onekijs-ui';
 import React, { useCallback } from 'react';
 import { User, userAdapter, users, userSearcher } from '../data/users';
 

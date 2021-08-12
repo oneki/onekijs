@@ -126,6 +126,9 @@ export function del(content: any, property: string | number) {
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function find(content: any, property: string | number, populate = false): any[] {
+  let parentContent: any = undefined;
+  let parentIndex: any = undefined;
+
   if (typeof property !== 'string') {
     property = `${property}`;
   }
@@ -152,8 +155,30 @@ export function find(content: any, property: string | number, populate = false):
         }
       }
     } catch (e) {
-      return [undefined, undefined];
+      if (populate) {
+        if (!isNaN(Number(index)) && !Array.isArray(content)) {
+          content = [];
+          if (parentContent !== undefined) {
+            parentContent[parentIndex] = content;
+          }
+        }
+        if (isNaN(Number(index)) && (typeof content !== 'object' || content === null)) {
+          content = {};
+          if (parentContent !== undefined) {
+            parentContent[parentIndex] = content;
+          }
+        }
+        if (!isNaN(Number(parts[i + 1]))) {
+          content[index] = [];
+        } else {
+          content[index] = {};
+        }
+      } else {
+        return [undefined, undefined];
+      }
     }
+    parentContent = content;
+    parentIndex = index;
     content = content[index];
     if (isNull(content)) {
       return [undefined, undefined];
@@ -202,12 +227,25 @@ export function set<T>(content: any, property: string | number, value: any, forc
   if (property === '') {
     return value;
   }
+
+  const parts = `${property}`.split('.');
   if (content === undefined && force) {
-    const parts = `${property}`.split('.');
     if (!isNaN(Number(parts[0]))) {
       content = [];
     } else {
       content = {};
+    }
+  }
+
+  if (force) {
+    if (!isNaN(Number(parts[0]))) {
+      if (!Array.isArray(content)) {
+        content = [];
+      }
+    } else {
+      if (typeof content !== 'object' || content === null) {
+        content = {};
+      }
     }
   }
 

@@ -382,56 +382,47 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
           }
           for (const prop of service.pendingDispatch) {
             for (const type of Object.keys(service.listeners) as FormListenerType[]) {
-              for (const key of Object.keys(service.listeners[type])) {
-                if (prop.startsWith(key)) {
-                  for (const listener of service.listeners[type][key]) {
-                    const watchs = [];
-                    let changed = false;
-                    if (type === 'valueChange') {
-                      listener.watchs.forEach((w: string) => {
-                        const prev = get(prevValuesRef.current, w, '');
-                        const next = get(valuesRef.current, w, '');
-                        watchs.push(next);
-                        if (prev !== next) {
-                          changed = true;
-                        }
-                      });
-                    } else if (type === 'validationChange') {
-                      listener.watchs.forEach((w: string) => {
-                        let prev, next;
-                        // check if w is a field or a composition
-                        if (!service.fields[w]) {
-                          prev = service.getContainerFieldValidation(
-                            prevValidationsRef.current,
-                            service.fields,
-                            w,
-                            false,
-                          );
-                          next = service.getContainerFieldValidation(validationsRef.current, service.fields, w, false);
-                          if (prev.status !== next.status || prev.message !== next.message) {
-                            changed = true;
-                          }
-                        } else {
-                          prev = prevValidationsRef.current[w];
-                          next = validationsRef.current[w];
-                          if (prev !== next) {
-                            changed = true;
-                          }
-                        }
-                        watchs.push(next);
-                      });
-                    } else if (type === 'submittingChange') {
-                      changed = prevSubmittingRef.current !== submittingRef.current;
-                      watchs.push(submittingRef.current);
+              for (const listener of service.listeners[type][prop] || []) {
+                const watchs = [];
+                let changed = false;
+                if (type === 'valueChange') {
+                  listener.watchs.forEach((w: string) => {
+                    const prev = get(prevValuesRef.current, w, '');
+                    const next = get(valuesRef.current, w, '');
+                    watchs.push(next);
+                    if (prev !== next) {
+                      changed = true;
                     }
-
-                    if (changed) {
-                      if (listener.once) {
-                        service.offChange(type, listener.listener, listener.watchs);
+                  });
+                } else if (type === 'validationChange') {
+                  listener.watchs.forEach((w: string) => {
+                    let prev, next;
+                    // check if w is a field or a composition
+                    if (!service.fields[w]) {
+                      prev = service.getContainerFieldValidation(prevValidationsRef.current, service.fields, w, false);
+                      next = service.getContainerFieldValidation(validationsRef.current, service.fields, w, false);
+                      if (prev.status !== next.status || prev.message !== next.message) {
+                        changed = true;
                       }
-                      listener.listener(...watchs);
+                    } else {
+                      prev = prevValidationsRef.current[w];
+                      next = validationsRef.current[w];
+                      if (prev !== next) {
+                        changed = true;
+                      }
                     }
+                    watchs.push(next);
+                  });
+                } else if (type === 'submittingChange') {
+                  changed = prevSubmittingRef.current !== submittingRef.current;
+                  watchs.push(submittingRef.current);
+                }
+
+                if (changed) {
+                  if (listener.once) {
+                    service.offChange(type, listener.listener, listener.watchs);
                   }
+                  listener.listener(...watchs);
                 }
               }
             }

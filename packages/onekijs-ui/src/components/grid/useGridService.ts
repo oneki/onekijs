@@ -8,11 +8,11 @@ const useGridService = <
   S extends GridState<T, M> = GridState<T, M>,
   C extends GridService<T, M, S> = GridService<T, M, S>
 >(
-  dataSource: T[] | string,
+  dataSource: T[] | string | undefined,
   ctor: Class<C>,
   initialState: S,
 ): [S, C] => {
-  return useCollectionService<T, M, S, C>(dataSource, ctor, initialState);
+  return useCollectionService<T, M, S, C>(dataSource || [], ctor, initialState);
 };
 
 export default useGridService;

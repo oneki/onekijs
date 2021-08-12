@@ -74,7 +74,7 @@ export default class CollectionService<
   init(): void {
     this.initialState = this.state;
     if (this.state.filter) {
-      this.state.filter = this._formatFilter(this.state.filter);
+      this.state.filter = formatFilter(this.state.filter);
     }
     if (!this.state.router) {
       this.state.router = new LocalRouter();
@@ -255,12 +255,12 @@ export default class CollectionService<
   }
 
   getFilter(): QueryFilter | undefined {
-    return this._formatFilter(this.state.filter);
+    return formatFilter(this.state.filter);
   }
 
   getFilterById(id: QueryFilterId): QueryFilterOrCriteria | undefined {
     let result: QueryFilter | QueryFilterCriteria | undefined = undefined;
-    const filter = this._formatFilter(this.state.filter);
+    const filter = formatFilter(this.state.filter);
     if (filter !== undefined) {
       visitFilter(filter, (filter) => {
         if (filter.id === id) {
@@ -336,7 +336,7 @@ export default class CollectionService<
   }
 
   getSortBy(): QuerySortBy[] | undefined {
-    return this._formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(this.state, 'sortBy'));
+    return formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(this.state, 'sortBy'));
   }
 
   getSortByField(field: string): QuerySortByField | undefined {
@@ -367,6 +367,10 @@ export default class CollectionService<
       return sorts.find((sort) => sort.id === id);
     }
     return undefined;
+  }
+
+  hasDataSource(): boolean {
+    return this.state.hasDataSource;
   }
 
   @reducer
@@ -519,7 +523,7 @@ export default class CollectionService<
     filterOrCriteria: QueryFilterOrCriteria,
     parentFilterId: QueryFilterId = rootFilterId,
   ): void {
-    const filter = this._formatFilter(query.filter) || { id: rootFilterId, operator: 'and', criterias: [] };
+    const filter = formatFilter(query.filter) || { id: rootFilterId, operator: 'and', criterias: [] };
     visitFilter(filter, (filter) => {
       if (filter.id === parentFilterId) {
         let index = -1;
@@ -540,7 +544,7 @@ export default class CollectionService<
 
   protected _addSortBy(query: Query, sortBy: QuerySortBy, prepend = true): void {
     this._removeSortBy(query, sortBy);
-    const currentSortBy = this._formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(query, 'sortBy')) || [];
+    const currentSortBy = formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(query, 'sortBy')) || [];
     if (prepend) {
       currentSortBy.unshift(sortBy);
     } else {
@@ -765,7 +769,7 @@ export default class CollectionService<
     // apply filters to data
     let result = items;
     if (query.filter) {
-      result = items.filter((item) => this._applyFilter(item, this._formatFilter(query.filter)));
+      result = items.filter((item) => this._applyFilter(item, formatFilter(query.filter)));
     } else if (query.search) {
       result = items.filter((item) => this._applySearch(item, query.search));
     } else {
@@ -774,7 +778,7 @@ export default class CollectionService<
 
     // apply sort
     if (query.sortBy) {
-      result = this._applySortBy(result, this._formatSortBy(query.sortBy) || [], comparators);
+      result = this._applySortBy(result, formatSortBy(query.sortBy) || [], comparators);
     } else if (query.sort) {
       result = this._applySort(result, query.sort || 'asc', comparator);
     }
@@ -1121,9 +1125,9 @@ export default class CollectionService<
 
   @reducer
   protected _setQuery(query: Query, force = true): void {
-    const nextFilter = this._formatFilter(query.filter);
+    const nextFilter = formatFilter(query.filter);
     if (force || nextFilter) this.state.filter = nextFilter;
-    const nextSortBy = this._formatSortBy(query.sortBy);
+    const nextSortBy = formatSortBy(query.sortBy);
     if (force || nextSortBy) this.state.sortBy = nextSortBy;
     if (force || query.sort) this.state.sort = query.sort;
     if (force || query.search) this.state.search = query.search;
@@ -1150,6 +1154,6 @@ export default class CollectionService<
   }
 
   protected _setSortBy(query: Query, sortBy: string | QuerySortBy | QuerySortBy[]): void {
-    query.sortBy = this._formatSortBy(sortBy);
+    query.sortBy = formatSortBy(sortBy);
   }
 }

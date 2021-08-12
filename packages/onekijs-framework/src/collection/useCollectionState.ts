@@ -18,7 +18,7 @@ import {
 import { isCollection, toCollectionItem } from './utils';
 
 const useCollectionState = <T = any, M extends ItemMeta = ItemMeta>(
-  dataSource: T[] | string | Collection<T, M>,
+  dataSource?: T[] | string | Collection<T, M>,
   options: UseCollectionOptions<T, M> = {},
 ): CollectionState<T, M> => {
   const auth = useTryStore()?.getState().auth;
@@ -31,7 +31,7 @@ const useCollectionState = <T = any, M extends ItemMeta = ItemMeta>(
     dataOrUrl = [];
     options = {};
   } else {
-    dataOrUrl = dataSource;
+    dataOrUrl = dataSource || [];
   }
 
   const stateRef = useLazyRef<CollectionState<T, M>>(() => {
@@ -91,6 +91,7 @@ const useCollectionState = <T = any, M extends ItemMeta = ItemMeta>(
       fields: options.initialFields,
       filter: options.initialFilter,
       fetchOnce: options.fetchOnce,
+      hasDataSource: dataSource !== undefined,
       hasMoreKey: options.hasMoreKey || 'has_more',
       limit: options.initialLimit,
       local: Array.isArray(dataOrUrl) || options.fetchOnce,

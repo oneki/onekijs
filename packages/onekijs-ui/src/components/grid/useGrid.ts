@@ -1,4 +1,4 @@
-import { useObjectProxy, collectionProxyProps } from 'onekijs-framework';
+import { collectionProxyProps, useObjectProxy } from 'onekijs-framework';
 import GridService from './GridService';
 import { GridController, GridItemMeta, GridState, UseGridOptions } from './typings';
 import useGridService from './useGridService';
@@ -6,18 +6,18 @@ import useGridState from './useGridState';
 
 export const gridCollectionProps = {
   pick: collectionProxyProps.pick.concat([
+    'addColumn',
+    'addSelected',
     'bodyClassName',
     'BodyComponent',
     'bodyWidth',
     'filterable',
     'fit',
     'fixHeader',
+    'footerClassName',
     'grow',
     'headerClassName',
-    'HeaderComponent',
     'height',
-    'rowClassName',
-    'RowComponent',
     'initCell',
     'onMount',
     'onRowClick',
@@ -25,9 +25,26 @@ export const gridCollectionProps = {
     'onRowLeave',
     'onRowOver',
     'onRowOut',
+    'removeColumn',
+    'removeSelected',
+    'rowClassName',
+    'RowComponent',
+    'setFooter',
+    'setFooterCompent',
+    'setHeader',
+    'setHeaderComponent',
+    'setSelected',
     'sortable',
   ]),
-  mutables: collectionProxyProps.mutables.concat(['columns', 'step']),
+  mutables: collectionProxyProps.mutables.concat([
+    'columns',
+    'footer',
+    'FooterComponent',
+    'header',
+    'headerComponent',
+    'selected',
+    'step',
+  ]),
 };
 
 const useGrid = <T = any, M extends GridItemMeta = GridItemMeta>(

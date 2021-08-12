@@ -1,15 +1,16 @@
 import React from 'react';
+import { useLazyRef } from 'onekijs';
 import { addClassname } from '../../../utils/style';
 import ListBodyComponent from '../../list/components/ListBodyComponent';
 import useListView from '../../list/hooks/useListView';
 import { ListItemProps } from '../../list/typings';
 import { GridBodyProps } from '../typings';
+import useGridColumns from '../useGridColumns';
 import GridBodyRowComponent from './GridBodyRowComponent';
 
 const GridBodyComponent: React.FC<GridBodyProps> = ({ controller, gridRef, contentRef }) => {
   const {
     bodyClassName,
-    columns,
     onRowClick,
     onRowEnter,
     onRowLeave,
@@ -28,15 +29,20 @@ const GridBodyComponent: React.FC<GridBodyProps> = ({ controller, gridRef, conte
     overscan: step === 'mounted' ? 1 : 20,
   });
 
-  const ItemComponent: React.FC<ListItemProps<any, any>> = (props) => {
-    return <RowComponent {...props} columns={columns} />;
-  };
+  const ItemComponentRef = useLazyRef<React.FC<ListItemProps<any, any>>>(() => {
+    const Component = (props: ListItemProps<any, any>) => {
+      const columns = useGridColumns();
+      return <RowComponent {...props} columns={columns} />;
+    };
+    Component.displayName = 'GridBodyRow';
+    return Component;
+  });
 
   return (
     <ListBodyComponent
       className={addClassname('o-grid-body', className)}
       height={controller.height}
-      ItemComponent={ItemComponent}
+      ItemComponent={ItemComponentRef.current}
       items={items}
       onItemClick={onRowClick}
       onItemMouseEnter={onRowEnter}

@@ -5,14 +5,19 @@ import {
   isCollectionInitializing,
   reducer,
   service,
+  set,
 } from 'onekijs-framework';
+import React from 'react';
+import { toArray } from 'onekijs';
 import {
   GridBodyProps,
   GridBodyRowProps,
   GridColumn,
   GridColumnWidth,
   GridController,
+  GridFooterProps,
   GridHeaderProps,
+  GridItem,
   GridItemMeta,
   GridRowHandler,
   GridState,
@@ -93,8 +98,24 @@ class GridService<T = any, M extends GridItemMeta = GridItemMeta, S extends Grid
     return this.state.fixHeader === false ? false : true;
   }
 
+  get footer(): boolean | undefined {
+    return this.state.footer;
+  }
+
+  get footerClassName(): string | ((context: GridController<T, M>) => string) | undefined {
+    return this.state.footerClassName;
+  }
+
+  get FooterComponent(): React.FC<GridHeaderProps> | undefined {
+    return this.state.FooterComponent;
+  }
+
   get grow(): string | undefined {
     return this.state.grow;
+  }
+
+  get header(): boolean | undefined {
+    return this.state.header;
   }
 
   get headerClassName(): string | ((context: GridController<T, M>) => string) | undefined {
@@ -141,12 +162,31 @@ class GridService<T = any, M extends GridItemMeta = GridItemMeta, S extends Grid
     return this.state.sortable;
   }
 
+  get selected(): string[] | undefined {
+    return this.state.selected;
+  }
+
   get step(): 'unmounted' | 'mounted' | 'initializing' {
     return this._step;
   }
 
   asService(): GridService<T, M> {
     return this;
+  }
+
+  @reducer
+  addColumn(column: GridColumn<T, M>, position?: number): void {
+    if (position === undefined) {
+      this.state.columns.push(column);
+    } else {
+      this.state.columns.splice(position, 0, column);
+    }
+    this.resetWidth();
+  }
+
+  @reducer
+  addSelected(id: string | string[]): void {
+    this.state.selected = [...new Set((this.state.selected || []).concat(toArray(id)))];
   }
 
   @reducer
@@ -177,6 +217,57 @@ class GridService<T = any, M extends GridItemMeta = GridItemMeta, S extends Grid
       this._setCellWidth(fit);
       this._step = 'mounted';
     }
+  }
+
+  @reducer
+  removeColumn(id: string): void {
+    this.state.columns = this.state.columns.filter((c) => c.id !== id);
+    this.resetWidth();
+  }
+
+  @reducer
+  removeSelected(id: string | string[]): void {
+    id = toArray(id);
+    this.state.selected = (this.state.selected || []).filter((s) => !id.includes(s));
+  }
+
+  @reducer
+  resetWidth(): void {
+    this.state.columns.forEach((column) => {
+      column.computedWidth = undefined;
+    });
+    this._step = 'initializing';
+  }
+
+  @reducer
+  setFooter(footer?: boolean): void {
+    this.state.footer = footer;
+  }
+
+  @reducer
+  setFooterComponent(FooterComponent?: React.FC<GridFooterProps>): void {
+    this.state.FooterComponent = FooterComponent;
+  }
+
+  @reducer
+  setHeader(header?: boolean): void {
+    this.state.header = header;
+  }
+
+  @reducer
+  setHeaderComponent(HeaderComponent?: React.FC<GridHeaderProps>): void {
+    this.state.HeaderComponent = HeaderComponent;
+  }
+
+  @reducer
+  setSelected(id: string | string[]): void {
+    this.state.selected = toArray(id);
+  }
+
+  protected _adapt(data: T | undefined): GridItem<T, M> {
+    const item = super._adapt(data);
+    set(item.meta, 'selected', this.state.selected && item.id !== undefined && this.state.selected.includes(item.id));
+    return item;
   }
 
   @reducer

@@ -1,19 +1,73 @@
-import { ComponentStyle, preflight, useGrid, Grid, GridBodyCellProps, Input2 as Input, GridItemMeta } from 'onekijs';
-
+import { FormSubmitCallback, SubmitButton, useForm } from 'onekijs';
+import { Button, ComponentStyle, FormGrid, useGrid, useInputColumn, useSelectColumn } from 'onekijs-ui';
 import React from 'react';
 import styled, { css } from 'styled-components';
-import { User, users } from '../data/users';
+import { users } from '../data/users';
 
 const gridStyle: ComponentStyle<{}> = () => {
   return css``;
 };
 
-const FirstnameInput: React.FC<GridBodyCellProps<User, GridItemMeta>> = ({ rowValue }) => {
-  return <Input name="firstname" value={rowValue.data?.firstname} />
-}
+const addresses = [
+  {
+    street: 'rue Jean Allard 10',
+    state: 'NY',
+  },
+  {
+    street: 'rue de la Jardiniere',
+    state: 'Alabama',
+  },
+];
+
+const u = ['1', '2'];
 
 const Page: React.FC<{ className?: string }> = ({ className }) => {
+  const onSubmit: FormSubmitCallback = (data) => {
+    console.log(data);
+  };
+  const { Form } = useForm(onSubmit, {
+    initialValues: {
+      addresses,
+      users: u,
+    },
+  });
+
+  const streetColumn = useInputColumn({
+    id: 'street',
+    title: 'Street',
+    required: true,
+  });
+
+  const stateColumn = useSelectColumn({
+    id: 'state',
+    dataSource: [
+      { id: 1, text: 'Alabama' },
+      { id: 2, text: 'California' },
+      { id: 2, text: 'NY' },
+    ],
+    title: 'State',
+  });
+
+  const addFilter = () => {
+    stateColumn.broker.addFilter({
+      id: 'state',
+      operator: 'eq',
+      not: true,
+      value: 'California',
+      field: 'text',
+    });
+  };
+
+  const removeFilter = () => {
+    stateColumn.broker.removeFilter('state');
+  };
+
   const controller = useGrid({
+    columns: [streetColumn, stateColumn],
+    //grow: 'address.city'
+  });
+
+  const controller2 = useGrid({
     dataSource: users,
     columns: [
       {
@@ -26,8 +80,6 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
         id: 'firstname',
         width: '10px',
         title: 'Firstname',
-        CellComponent: FirstnameInput,
-
       },
       {
         id: 'lastname',
@@ -49,11 +101,18 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
         title: 'City',
       },
     ],
-    mutateUrl: true,
     //grow: 'address.city'
   });
 
-  return <Grid controller={controller} className={className} />;
+
+  return (
+    <Form>
+      <FormGrid name="addresses" controller={controller} className={className} />
+      <Button onClick={addFilter}>Add Filter</Button> <Button onClick={removeFilter}>Remove Filter</Button> <SubmitButton>Submit</SubmitButton>
+
+      <FormGrid name="users" controller={controller2} className={className} />
+    </Form>
+  );
 };
 
 export const GridPage = styled(Page)`

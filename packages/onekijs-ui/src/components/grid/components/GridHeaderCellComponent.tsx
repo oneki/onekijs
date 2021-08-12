@@ -8,10 +8,11 @@ import GridSortComponent from './GridSortComponent';
 
 const GridHeaderCellComponent: FC<GridHeaderCellProps> = React.memo(({ column, filter, sort }) => {
   const controller = useGridController();
-  const { initCell, fit, grow, sortable } = controller;
+  const { initCell, fit, grow, sortable, filterable } = controller;
   const ref = useRef<HTMLDivElement>(null);
   const initializedRef = useRef<boolean>(false);
   const isSortable = column.sortable || (column.sortable === undefined && sortable !== false);
+  const isFilterable = column.sortable || (column.filterable === undefined && filterable !== false);
 
   const className =
     typeof column.headerClassName === 'function' ? column.headerClassName(column, controller) : column.headerClassName;
@@ -42,7 +43,7 @@ const GridHeaderCellComponent: FC<GridHeaderCellProps> = React.memo(({ column, f
         <span>{column.title}</span>
         {sort && <GridSortComponent sort={sort} column={column} />}
       </div>
-      <GridInputFilterComponent column={column} filter={filter} />
+      {isFilterable && <GridInputFilterComponent column={column} filter={filter} />}
     </div>
   );
 });

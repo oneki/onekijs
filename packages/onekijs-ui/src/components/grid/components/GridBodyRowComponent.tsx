@@ -11,6 +11,7 @@ const GridBodyRowComponent: FC<GridBodyRowProps> = ({
   if (item === undefined) {
     return null;
   }
+
   return (
     <div className="o-grid-body-row" style={{ display: 'flex' }}>
       {columns.map((column, colIndex) => {
@@ -22,9 +23,6 @@ const GridBodyRowComponent: FC<GridBodyRowProps> = ({
             rowId={item.id}
             rowValue={item}
             key={`cell-${colIndex}`}
-            onFocus={() => undefined}
-            onBlur={() => undefined}
-            onChange={() => undefined}
           />
         );
       })}

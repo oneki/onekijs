@@ -1,5 +1,8 @@
 export { default as Button } from './components/button';
 export { default as Grid } from './components/grid';
+export { default as FormGrid } from './components/grid/FormGrid';
+export { default as useInputColumn } from './components/grid/columns/useInputColumn';
+export { default as useSelectColumn } from './components/grid/columns/useSelectColumn';
 export {
   GridBodyCellProps,
   GridBodyProps,
@@ -17,13 +20,13 @@ export { default as useGrid } from './components/grid/useGrid';
 export { default as CrossIcon } from './components/icon/CrossIcon';
 export { default as LoadingIcon } from './components/icon/LoadingIcon';
 export { default as SearchIcon } from './components/icon/SearchIcon';
-export { default as Input2 } from './components/input';
+export { default as Input } from './components/input';
 export { default as InputComponent } from './components/input/components/InputComponent';
-export { InputProps as InputProps2 } from './components/input/typings';
+export { InputProps } from './components/input/typings';
 export { default as Label } from './components/label';
-export { default as List2 } from './components/list';
+export { default as List } from './components/list';
 export { ListItemHandler, ListItemProps, ListItems, ListProps, ListStatus } from './components/list/typings';
-export { default as Select2 } from './components/select';
+export { default as Select } from './components/select';
 export { default as SelectComponent } from './components/select/components/SelectComponent';
 export { default as FormSelect } from './components/select/FormSelect';
 export {
@@ -34,7 +37,7 @@ export {
   SelectOptionMeta,
   SelectOptionProps,
   SelectOptionsProps,
-  SelectProps as SelectProps2,
+  SelectProps,
 } from './components/select/typings';
 export { default as Tooltip } from './components/tooltip';
 export * from './styles/alignment';

@@ -559,9 +559,9 @@ export const visitFilter = (filter: QueryFilter, visitor: (filter: QueryFilter) 
 };
 
 export const isCollection = <T, M extends ItemMeta>(
-  data: T[] | Collection<T, M> | string,
+  data?: T[] | Collection<T, M> | string,
 ): data is Collection<T, M> => {
-  return !Array.isArray(data) && !(typeof data === 'string');
+  return data !== undefined && !Array.isArray(data) && !(typeof data === 'string');
 };
 
 export const toCollectionItem = <T, M>(data?: T, adapter?: CollectionItemAdapter<T, M>): Item<T, M> => {

@@ -32,6 +32,7 @@ export const collectionProxyProps = {
     'getSortBy',
     'getSortById',
     'getSortByField',
+    'hasDataSource',
     'load',
     'query',
     'refresh',
@@ -50,7 +51,7 @@ export const collectionProxyProps = {
 };
 
 const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
-  dataSource: T[] | string | Collection<T, M>,
+  dataSource?: T[] | string | Collection<T, M>,
   options: UseCollectionOptions<T, M> = {},
 ): Collection<T, M> => {
   const initialState = useCollectionState(dataSource, options);
