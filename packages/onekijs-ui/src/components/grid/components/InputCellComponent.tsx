@@ -10,7 +10,7 @@ const InputCellComponent = (options: UseInputColumnOptions<any, any>): React.FC<
     const [validators] = extractValidators(options);
     const field = init(`${gridName}.${rowIndex}.${column.id}`, validators);
 
-    return <Input {...options} {...field} value={get(rowValue.data, column.id)} className={'o-grid-input'} />;
+    return <Input {...options} {...field} value={get(rowValue.data, column.id, '')} className={'o-grid-input'} />;
   };
   InputCellComponent.displayName = 'InputCellComponent';
   return InputCellComponent;

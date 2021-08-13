@@ -7,6 +7,7 @@ import { isCollection } from './utils';
 
 export const collectionProxyProps = {
   pick: [
+    'adapt',
     'addFilter',
     'addFilterCriteria',
     'addSortBy',
@@ -16,6 +17,7 @@ export const collectionProxyProps = {
     'clearSearch',
     'clearSort',
     'clearSortBy',
+    'dataSource',
     'filter',
     'getAdapter',
     'getFields',
@@ -32,7 +34,6 @@ export const collectionProxyProps = {
     'getSortBy',
     'getSortById',
     'getSortByField',
-    'hasDataSource',
     'load',
     'query',
     'refresh',
@@ -43,6 +44,7 @@ export const collectionProxyProps = {
     'setData',
     'setFields',
     'setMeta',
+    'setMetaById',
     'setParams',
     'sort',
     'sortBy',

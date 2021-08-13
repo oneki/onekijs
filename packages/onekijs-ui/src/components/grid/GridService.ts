@@ -74,6 +74,12 @@ class GridService<T = any, M extends GridItemMeta = GridItemMeta, S extends Grid
   // ref of the body container
   protected contentRef: React.RefObject<HTMLDivElement> | null = null;
 
+  adapt(data: T | undefined): GridItem<T, M> {
+    const item = super.adapt(data);
+    set(item.meta, 'selected', this.state.selected && item.id !== undefined && this.state.selected.includes(item.id));
+    return item;
+  }
+
   get bodyClassName(): string | ((context: GridController<T, M>) => string) | undefined {
     return this.state.bodyClassName;
   }
@@ -162,7 +168,7 @@ class GridService<T = any, M extends GridItemMeta = GridItemMeta, S extends Grid
     return this.state.sortable;
   }
 
-  get selected(): string[] | undefined {
+  get selected(): (string | number)[] | undefined {
     return this.state.selected;
   }
 
@@ -185,8 +191,10 @@ class GridService<T = any, M extends GridItemMeta = GridItemMeta, S extends Grid
   }
 
   @reducer
-  addSelected(id: string | string[]): void {
-    this.state.selected = [...new Set((this.state.selected || []).concat(toArray(id)))];
+  addSelected(id: string | number | (string | number)[]): void {
+    const arrayOfIds = toArray(id);
+    this.state.selected = [...new Set((this.state.selected || []).concat(arrayOfIds))];
+    arrayOfIds.forEach((i) => this.setMetaById(i, 'selected', true));
   }
 
   @reducer
@@ -226,9 +234,10 @@ class GridService<T = any, M extends GridItemMeta = GridItemMeta, S extends Grid
   }
 
   @reducer
-  removeSelected(id: string | string[]): void {
-    id = toArray(id);
-    this.state.selected = (this.state.selected || []).filter((s) => !id.includes(s));
+  removeSelected(id: string | number | (string | number)[]): void {
+    const arrayOfIds = toArray(id);
+    this.state.selected = (this.state.selected || []).filter((s) => !arrayOfIds.includes(s));
+    arrayOfIds.forEach((i) => this.setMetaById(i, 'selected', false));
   }
 
   @reducer
@@ -260,14 +269,12 @@ class GridService<T = any, M extends GridItemMeta = GridItemMeta, S extends Grid
   }
 
   @reducer
-  setSelected(id: string | string[]): void {
+  setSelected(id: string | number | (string | number)[]): void {
+    const arrayOfIds = toArray(id);
+    const current = this.state.selected || [];
+    current.filter((i) => !arrayOfIds.includes(i)).forEach((i) => this.setMetaById(i, 'selected', false));
+    arrayOfIds.filter((i) => !current.includes(i)).forEach((i) => this.setMetaById(i, 'selected', true));
     this.state.selected = toArray(id);
-  }
-
-  protected _adapt(data: T | undefined): GridItem<T, M> {
-    const item = super._adapt(data);
-    set(item.meta, 'selected', this.state.selected && item.id !== undefined && this.state.selected.includes(item.id));
-    return item;
   }
 
   @reducer

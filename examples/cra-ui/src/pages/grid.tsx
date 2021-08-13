@@ -19,13 +19,34 @@ const addresses = [
   },
 ];
 
-const u = ['1', '2'];
+const u = [  {
+  id: 1,
+  firstname: 'Alyce',
+  lastname: 'Warren',
+  address: {
+    street: 'Abbey Court',
+    postalCode: 4517,
+    city: 'Zortman',
+  },
+  phones: ['+32 (941) 540-2562', '+32 (804) 558-2088', '+32 (844) 418-3245'],
+},
+{
+  id: 2,
+  firstname: 'Hale',
+  lastname: 'Stuart',
+  address: {
+    street: 'Fillmore Avenue',
+    postalCode: 2166,
+    city: 'Winston',
+  },
+  phones: [],
+}];
 
 const Page: React.FC<{ className?: string }> = ({ className }) => {
   const onSubmit: FormSubmitCallback = (data) => {
     console.log(data);
   };
-  const { Form } = useForm(onSubmit, {
+  const { Form, values } = useForm(onSubmit, {
     initialValues: {
       addresses,
       users: u,
@@ -85,7 +106,6 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
         id: 'lastname',
         width: '20px',
         title: 'Lastname',
-
       },
       {
         id: 'address.street',
@@ -104,13 +124,13 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
     //grow: 'address.city'
   });
 
-
   return (
     <Form>
       <FormGrid name="addresses" controller={controller} className={className} />
-      <Button onClick={addFilter}>Add Filter</Button> <Button onClick={removeFilter}>Remove Filter</Button> <SubmitButton>Submit</SubmitButton>
-
+      <Button onClick={addFilter}>Add Filter</Button> <Button onClick={removeFilter}>Remove Filter</Button>{' '}
+      <SubmitButton>Submit</SubmitButton>
       <FormGrid name="users" controller={controller2} className={className} />
+      <pre>{JSON.stringify(values, null, 2)}</pre>
     </Form>
   );
 };

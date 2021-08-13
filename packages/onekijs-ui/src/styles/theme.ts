@@ -13,6 +13,17 @@ export const theme = (customTheme = {}): Theme => {
         xl: '1280px',
       },
       colors: {
+        primary_light: {
+          background: 'blue-500',
+          text_default: 'white',
+          text_link: 'blue-100',
+          text_danger: 'red-500',
+          text_success: 'green-500',
+          text_info: 'blue-100',
+          text_warning: 'yellow-500',
+        },
+        primary: {},
+        primary_dark: {},
         transparent: 'transparent',
         current: 'currentColor',
         black: '#000',

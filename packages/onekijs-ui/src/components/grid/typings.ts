@@ -16,10 +16,12 @@ import { InputProps } from '../input/typings';
 
 export type FormGridProps<T = any, M extends GridItemMeta = GridItemMeta> = GridProps<T, M> & {
   name: string;
+  format?: 'id' | 'object' | 'auto';
 };
 
 export type FormGridContext = FormContext & {
   gridName: string;
+  onSelect: (item: GridItem, selected: boolean) => void;
 };
 
 export type GridBodyCellProps<T = any, M extends GridItemMeta = GridItemMeta> = {
@@ -78,16 +80,16 @@ export type GridController<T = any, M extends GridItemMeta = GridItemMeta> = Omi
   Readonly<_GridState<T, M>> & {
     asService(): GridController<T, M>;
     addColumn(column: GridColumn<T, M>, position?: number): void;
-    addSelected(id: string | string[]): void;
+    addSelected(id: string | number | (string | number)[]): void;
     initCell(rowNumber: number | 'header' | 'footer', colId: string, ref: React.RefObject<HTMLDivElement>): boolean;
     onMount(gridRef: React.RefObject<HTMLDivElement>, contentRef: React.RefObject<HTMLDivElement>): void;
     removeColumn(id: string): void;
-    removeSelected(id: string | string[]): void;
+    removeSelected(id: string | number | (string | number)[]): void;
     setFooter(footer?: boolean): void;
     setFooterComponent(FooterComponent?: React.FC<GridFooterProps>): void;
     setHeader(header?: boolean): void;
     setHeaderComponent(HeaderComponent?: React.FC<GridHeaderProps>): void;
-    setSelected(id: string | string[]): void;
+    setSelected(id: string | number | (string | number)[]): void;
     step: 'unmounted' | 'mounted' | 'initializing';
   };
 
@@ -163,7 +165,7 @@ type _GridState<T = any, M extends GridItemMeta = GridItemMeta> = {
   onRowOut?: GridRowHandler<T, M>;
   rowClassName?: string | ((rowData: T, context: GridController<T, M>) => string);
   RowComponent?: React.FC<GridBodyRowProps<T, M>>;
-  selected?: string[];
+  selected?: (string | number)[];
   sortable?: boolean;
 };
 

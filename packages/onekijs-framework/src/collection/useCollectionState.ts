@@ -15,7 +15,7 @@ import {
   Query,
   UseCollectionOptions,
 } from './typings';
-import { isCollection, toCollectionItem } from './utils';
+import { isCollection } from './utils';
 
 const useCollectionState = <T = any, M extends ItemMeta = ItemMeta>(
   dataSource?: T[] | string | Collection<T, M>,
@@ -86,7 +86,7 @@ const useCollectionState = <T = any, M extends ItemMeta = ItemMeta>(
       comparator: options.comparator,
       comparators: options.comparators,
       dataKey: options.dataKey || 'data',
-      db: Array.isArray(dataOrUrl) ? dataOrUrl.map((entry) => toCollectionItem(entry, adapter)) : undefined,
+      dataSource,
       fetchOptions,
       fields: options.initialFields,
       filter: options.initialFilter,

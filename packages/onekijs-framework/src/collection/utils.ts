@@ -570,7 +570,7 @@ export const toCollectionItem = <T, M>(data?: T, adapter?: CollectionItemAdapter
       return undefined;
     }
     if (!isNull(data.id)) {
-      return String(data.id);
+      return data.id;
     } else {
       return undefined;
     }
