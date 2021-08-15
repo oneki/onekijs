@@ -1,7 +1,6 @@
 import { App, Link, Route, Switch } from 'onekijs';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { UserForm } from './components/UserForm';
 
 ReactDOM.render(
   <App>
@@ -15,7 +14,6 @@ ReactDOM.render(
       <Route>
         <div>
           <span>This is the main page</span>
-          <UserForm />
         </div>
       </Route>
     </Switch>

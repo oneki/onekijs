@@ -1,9 +1,9 @@
-import React from 'react';
 import Head from 'next/head';
 import { withLayout } from 'onekijs-next';
-import SiteLayout from '../layout/siteLayout';
+import React, { FC } from 'react';
+import AppLayout from '../layout/AppLayout';
 
-const UsersPage = () => {
+const UsersPage: FC = () => {
   return (
     <>
       <Head>
@@ -14,4 +14,4 @@ const UsersPage = () => {
   );
 };
 
-export default withLayout(UsersPage, SiteLayout);
+export default withLayout(UsersPage, AppLayout);

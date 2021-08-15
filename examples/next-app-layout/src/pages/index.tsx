@@ -1,8 +1,9 @@
 import { withLayout } from 'onekijs-next';
 import React from 'react';
-import SiteLayout from '../layout/siteLayout';
+import { FC } from 'react';
+import AppLayout from '../layout/AppLayout';
 
-const IndexPage = () => {
+const IndexPage: FC = () => {
   return (
     <div>
       <p>This example shows how to use a common layout in several pages.</p>
@@ -11,4 +12,4 @@ const IndexPage = () => {
   );
 };
 
-export default withLayout(IndexPage, SiteLayout);
+export default withLayout(IndexPage, AppLayout);
