@@ -21,7 +21,7 @@ const inputStyle: ComponentStyle<InputProps> = () => {
     ${alignItems('stretch')}
     ${borderWidth(1)}
     ${borderColor('gray-300')}
-    ${borderRadius('default')}
+    ${borderRadius('md')}
     ${borderStyle('solid')}
     ${padding('1px')}
     &.o-input-focus {
@@ -31,8 +31,8 @@ const inputStyle: ComponentStyle<InputProps> = () => {
     }
     .o-input-field {
       ${flexGrow(1)}
-      ${paddingX(2)}
-      ${paddingY(1)}
+      ${paddingX('sm')}
+      ${paddingY('xs')}
       ${appearance('none')}
       ${outline('none')}
       ${backgroundColor('inherit')}

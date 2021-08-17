@@ -52,8 +52,8 @@ const StyledInput = styled(Input)`
     ${borderRadius('none')}
     ${padding(0)}
     .o-input-field {
-      ${paddingY(1)}
-      ${paddingX(1)}
+      ${paddingY('xs')}
+      ${paddingX('xs')}
     }
     ${fontSize('14px')}
   `}

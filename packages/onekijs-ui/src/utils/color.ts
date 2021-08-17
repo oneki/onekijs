@@ -1,10 +1,28 @@
-export const deriveColor = (color: string, gap: number, dark: boolean, newColorValue?: string): string => {
+export const darken = (color: string, gap = 100, newColorValue?: string): string => {
+  const [colorValue, weight] = color.split('-');
+  newColorValue = newColorValue || colorValue;
+  if (weight === undefined) {
+    return newColorValue;
+  }
+  return `${newColorValue}-${Math.min(parseInt(weight) + gap, 900)}`;
+};
+
+export const deriveColor = (color: string, gap = 100, dark: boolean, newColorValue?: string): string => {
   const [colorValue, weight] = color.split('-');
   newColorValue = newColorValue || colorValue;
   if (weight === undefined) {
     return newColorValue;
   }
   return `${newColorValue}-${parseInt(weight) + (dark ? -gap : gap)}`;
+};
+
+export const lighten = (color: string, gap: number, newColorValue?: string): string => {
+  const [colorValue, weight] = color.split('-');
+  newColorValue = newColorValue || colorValue;
+  if (weight === undefined) {
+    return newColorValue;
+  }
+  return `${newColorValue}-${Math.max(parseInt(weight) - gap, 100)}`;
 };
 
 // https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb

@@ -29,25 +29,25 @@ const labelStyle: ComponentStyle<LabelProps> = ({ width: labelWidth }) => {
           ${paddingY(0)}
         }
         &.o-label-small {
-          ${paddingY(1)}
+          ${paddingY('xs')}
         }                   
         &.o-label-medium {
-          ${paddingY(2)}
+          ${paddingY('sm')}
         }
         &.o-label-large {
-          ${paddingY(3)}
+          ${paddingY('md')}
         }  
         &.o-label-xlarge {
-          ${paddingY(4)}
+          ${paddingY('lg')}
         }  
         .o-marker-required, .o-marker-optional {
-          ${marginRight(4)}
+          ${marginRight('lg')}
         }                 
       }      
       .o-marker-required, .o-marker-optional {
         ${color('danger')}
         ${fontWeight('bold')}
-        ${marginLeft(1)} 
+        ${marginLeft('xs')} 
       }
       .o-marker-optional {
         ${visibility(false)}
@@ -56,7 +56,7 @@ const labelStyle: ComponentStyle<LabelProps> = ({ width: labelWidth }) => {
       .o-helper-icon {
         ${fontSize('xl')}
         ${color('primary')}
-        ${marginLeft(2)}
+        ${marginLeft('sm')}
       }   
 
     `;

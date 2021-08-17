@@ -8,7 +8,7 @@ import { margin, padding } from '../../styles/spacing';
 import { stroke } from '../../styles/svg';
 import { ComponentStyle } from '../../styles/typings';
 import { color } from '../../styles/typography';
-import { deriveColor } from '../../utils/color';
+import { lighten } from '../../utils/color';
 import { calcSize } from '../../utils/size';
 import { CheckboxProps } from './typings';
 
@@ -27,8 +27,8 @@ const checkboxStyle: ComponentStyle<CheckboxProps> = ({
   theme,
   color: cssColor,
 }) => {
-  const checkboxCheckedColor = cssColor ?? theme.colors[theme.kind.primary];
-  const checkboxColor = cssColor ?? deriveColor(theme.kind.primary, -200, false);
+  const checkboxCheckedColor = cssColor ?? theme.palette.colors[theme.colors.primary];
+  const checkboxColor = cssColor ?? lighten(theme.colors.primary, 200);
   const checkboxHeight = isNaN(cssHeight as any) ? `${cssHeight}` : `${cssHeight}px`;
   const checkboxWidth = isNaN(cssHeight as any) ? `${cssWidth}` : `${cssWidth}px`;
   const svgWidth = calcSize(checkboxWidth, () => 10);
@@ -73,7 +73,7 @@ const checkboxStyle: ComponentStyle<CheckboxProps> = ({
       ${borderWidth('2px')}
       ${borderStyle('solid')}
       ${borderColor(checkboxColor)}
-      ${borderRadius('default')}
+      ${borderRadius('md')}
       margin-right: 1rem;
       transition: 0.15s all ease-out;      
     }

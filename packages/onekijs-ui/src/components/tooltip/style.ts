@@ -32,7 +32,7 @@ const tooltipStyle: ComponentStyle<TooltipProps> = () => {
     ${cursor('pointer')}
     .o-tooltip-container {
       ${backgroundColor(bgColor)}
-      ${borderRadius('default')}
+      ${borderRadius('md')}
       ${borderWidth('1px')}
       ${borderStyle('solid')}
       ${borderColor(bColor)}
@@ -42,7 +42,7 @@ const tooltipStyle: ComponentStyle<TooltipProps> = () => {
       ${flexDirection('column')}
       ${transition('opacity 0.3s')}
       ${zIndex(9999)}
-      ${padding(2)}
+      ${padding('sm')}
       ${fontSize('sm')}
       &[data-popper-interactive='false'] {
         ${pointerEvents('none')}

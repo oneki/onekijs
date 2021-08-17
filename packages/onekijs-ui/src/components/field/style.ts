@@ -14,7 +14,7 @@ export const fieldStyle: ComponentStyle<FieldLayoutProps> = () => {
   return css`
       ${preflight()}
       ${display('flex')}
-      ${marginY(1)}
+      ${marginY('xs')}
       &.o-form-field-vertical {
         ${flexDirection('column')}
       }
@@ -24,7 +24,7 @@ export const fieldStyle: ComponentStyle<FieldLayoutProps> = () => {
       .o-helper-icon {
         ${fontSize('xl')}
         ${color('primary')}
-        ${marginLeft(2)}
+        ${marginLeft('sm')}
         ${height('100%')}
         ${display('flex')}
         ${alignItems('center')}
@@ -37,7 +37,7 @@ export const fieldHelpStyle: ComponentStyle<FieldHelpProps> = ({ visible = true 
       ${preflight()}
       ${fontSize('xl')}
       ${color('primary')}
-      ${marginLeft(2)}
+      ${marginLeft('sm')}
       ${height('100%')}
       ${display('flex')}
       ${alignItems('center')}  

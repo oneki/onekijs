@@ -26,8 +26,8 @@ export const gridStyle: ComponentStyle<GridProps<any>> = () => {
         ${borderBottomColor('gray-200')}
         ${borderBottomWidth(1)}
         ${borderBottomStyle('solid')}
-        ${paddingX(1)}
-        ${paddingY(2)}
+        ${paddingX('xs')}
+        ${paddingY('sm')}
       }
     }
     .o-grid-header {
@@ -43,8 +43,8 @@ export const gridStyle: ComponentStyle<GridProps<any>> = () => {
       .o-grid-header-cell {
         ${display('flex')}
         ${flexDirection('column')}
-        ${paddingX(1)}
-        ${paddingY(2)}        
+        ${paddingX('xs')}
+        ${paddingY('sm')}        
         .o-grid-header-cell-title {
           ${fontVariant('all-small-caps')}
           ${display('flex')}
@@ -54,8 +54,8 @@ export const gridStyle: ComponentStyle<GridProps<any>> = () => {
             ${color('primary')}
             ${cursor('pointer')}
             ${width(8)}
-            ${paddingY(1)}
-            ${paddingX(1)}
+            ${paddingY('xs')}
+            ${paddingX('xs')}
             ${display('flex')}
             ${alignItems('center')}
             ${borderColor('gray-200')}
