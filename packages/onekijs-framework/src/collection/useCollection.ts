@@ -7,6 +7,7 @@ import { isCollection } from './utils';
 
 export const collectionProxyProps = {
   pick: [
+    'adapt',
     'addFilter',
     'addFilterCriteria',
     'addSortBy',
@@ -16,6 +17,7 @@ export const collectionProxyProps = {
     'clearSearch',
     'clearSort',
     'clearSortBy',
+    'dataSource',
     'filter',
     'getAdapter',
     'getFields',
@@ -42,6 +44,7 @@ export const collectionProxyProps = {
     'setData',
     'setFields',
     'setMeta',
+    'setMetaById',
     'setParams',
     'sort',
     'sortBy',
@@ -50,7 +53,7 @@ export const collectionProxyProps = {
 };
 
 const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
-  dataSource: T[] | string | Collection<T, M>,
+  dataSource?: T[] | string | Collection<T, M>,
   options: UseCollectionOptions<T, M> = {},
 ): Collection<T, M> => {
   const initialState = useCollectionState(dataSource, options);

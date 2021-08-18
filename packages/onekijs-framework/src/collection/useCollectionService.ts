@@ -13,7 +13,7 @@ const useCollectionService = <
   S extends CollectionState<T, M> = CollectionState<T, M>,
   C extends CollectionService<T, M, S> = CollectionService<T, M, S>
 >(
-  dataSource: T[] | string | Collection<T, M>,
+  dataSource: T[] | string | Collection<T, M> | undefined,
   ctor: Class<C>,
   initialState: S,
 ): [S, C] => {

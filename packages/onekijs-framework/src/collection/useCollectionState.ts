@@ -15,10 +15,10 @@ import {
   Query,
   UseCollectionOptions,
 } from './typings';
-import { isCollection, toCollectionItem } from './utils';
+import { isCollection } from './utils';
 
 const useCollectionState = <T = any, M extends ItemMeta = ItemMeta>(
-  dataSource: T[] | string | Collection<T, M>,
+  dataSource?: T[] | string | Collection<T, M>,
   options: UseCollectionOptions<T, M> = {},
 ): CollectionState<T, M> => {
   const auth = useTryStore()?.getState().auth;
@@ -31,7 +31,7 @@ const useCollectionState = <T = any, M extends ItemMeta = ItemMeta>(
     dataOrUrl = [];
     options = {};
   } else {
-    dataOrUrl = dataSource;
+    dataOrUrl = dataSource || [];
   }
 
   const stateRef = useLazyRef<CollectionState<T, M>>(() => {
@@ -86,11 +86,12 @@ const useCollectionState = <T = any, M extends ItemMeta = ItemMeta>(
       comparator: options.comparator,
       comparators: options.comparators,
       dataKey: options.dataKey || 'data',
-      db: Array.isArray(dataOrUrl) ? dataOrUrl.map((entry) => toCollectionItem(entry, adapter)) : undefined,
+      dataSource,
       fetchOptions,
       fields: options.initialFields,
       filter: options.initialFilter,
       fetchOnce: options.fetchOnce,
+      hasDataSource: dataSource !== undefined,
       hasMoreKey: options.hasMoreKey || 'has_more',
       limit: options.initialLimit,
       local: Array.isArray(dataOrUrl) || options.fetchOnce,

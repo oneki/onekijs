@@ -6,8 +6,10 @@ import { Router } from '../types/router';
 export type ChangeHandler<T> = (value: T) => void;
 
 export type Collection<T, M extends ItemMeta> = Omit<CollectionBroker<T, M>, 'addSubscriber' | 'removeSubscriber'> & {
+  adapt(data: T | undefined): Item<T, M>;
   asService(): Collection<T, M>;
   readonly data?: (T | undefined)[];
+  readonly dataSource?: T[] | string;
   readonly items?: (Item<T, M> | undefined)[];
   getAdapter(): CollectionItemAdapter<T, M> | undefined;
   getItem(id: string | number): Item<T, M> | undefined;
@@ -30,6 +32,7 @@ export type Collection<T, M extends ItemMeta> = Omit<CollectionBroker<T, M>, 'ad
   refresh(query?: Query): void;
   reset(): void;
   setMeta(item: Item<T, M>, key: keyof M, value: any): void;
+  setMetaById(id: Primitive, key: keyof M, value: any): void;
   readonly status: CollectionStatus;
   readonly total?: number;
 };
@@ -108,7 +111,7 @@ export interface CollectionState<T, M extends ItemMeta> extends FetchState {
   comparator?: QuerySortComparator;
   comparators?: AnonymousObject<QuerySortComparator>;
   dataKey: string;
-  db?: Item<T, M>[];
+  dataSource?: T[] | string;
   fetchOnce?: boolean;
   fetchOptions?: FetchOptions<CollectionFetcherResult<T>, Query | undefined>;
   fields?: string[];
@@ -147,7 +150,7 @@ export type CollectionStatus =
 export interface Item<T, M extends ItemMeta> {
   data?: T;
   meta?: M;
-  id?: string;
+  id?: string | number;
   text?: string;
 }
 

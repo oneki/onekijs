@@ -70,11 +70,12 @@ export default class CollectionService<
   // router: Router = null!;
   protected cache: AnonymousObject<any> = {};
   protected itemMeta: AnonymousObject<M | undefined> = {};
+  protected db?: Item<T, M>[];
 
   init(): void {
     this.initialState = this.state;
     if (this.state.filter) {
-      this.state.filter = this._formatFilter(this.state.filter);
+      this.state.filter = formatFilter(this.state.filter);
     }
     if (!this.state.router) {
       this.state.router = new LocalRouter();
@@ -84,13 +85,21 @@ export default class CollectionService<
     // retrieve params from URL and initiate filter, sort ... with these values
     this._setQuery(this._parseLocation(this.state.router.location), false);
 
+    this.db = Array.isArray(this.state.dataSource)
+      ? this.state.dataSource.map((entry) => this.adapt(entry))
+      : undefined;
+
     if (this.state.local === undefined) {
-      this.state.local = Array.isArray(this.state.db) || this.state.fetchOnce === true;
+      this.state.local = Array.isArray(this.state.dataSource) || this.state.fetchOnce === true;
     }
 
     if (this.state.local) {
       this.refresh();
     }
+  }
+
+  adapt(data: T | undefined): Item<T, M> {
+    return toCollectionItem(data, this.state.adapter);
   }
 
   @reducer
@@ -222,6 +231,10 @@ export default class CollectionService<
     return undefined;
   }
 
+  get dataSource(): T[] | string | undefined {
+    return this.state.dataSource;
+  }
+
   get hasMore(): boolean {
     return this.state.hasMore || false;
   }
@@ -255,12 +268,12 @@ export default class CollectionService<
   }
 
   getFilter(): QueryFilter | undefined {
-    return this._formatFilter(this.state.filter);
+    return formatFilter(this.state.filter);
   }
 
   getFilterById(id: QueryFilterId): QueryFilterOrCriteria | undefined {
     let result: QueryFilter | QueryFilterCriteria | undefined = undefined;
-    const filter = this._formatFilter(this.state.filter);
+    const filter = formatFilter(this.state.filter);
     if (filter !== undefined) {
       visitFilter(filter, (filter) => {
         if (filter.id === id) {
@@ -336,7 +349,7 @@ export default class CollectionService<
   }
 
   getSortBy(): QuerySortBy[] | undefined {
-    return this._formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(this.state, 'sortBy'));
+    return formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(this.state, 'sortBy'));
   }
 
   getSortByField(field: string): QuerySortByField | undefined {
@@ -439,7 +452,7 @@ export default class CollectionService<
     this.cache = {};
     const query = this.getQuery();
     this._clearOffset(query);
-    this.state.db = data.map((d) => this._adapt(d));
+    this.db = data.map((d) => this.adapt(d));
     this.refresh(query);
   }
 
@@ -467,6 +480,27 @@ export default class CollectionService<
         const stateItem = this.state.items.find((stateItem) => item.id === stateItem?.id);
         if (stateItem) {
           stateItem.meta = this.itemMeta[String(item.id)];
+        }
+      }
+    }
+  }
+
+  @reducer
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  setMetaById(id: string | number, key: keyof M, value: any): void {
+    if (this.state.local && this.state.items) {
+      const stateItem = this.state.items.find((stateItem) => id === stateItem?.id);
+      if (stateItem) {
+        stateItem.meta = Object.assign({}, stateItem.meta, { [key]: value });
+      }
+    } else if (!this.state.local) {
+      const meta = Object.assign({}, this.itemMeta[String(id)], { [key]: value });
+      this.itemMeta[String(id)] = meta;
+
+      if (this.state.items) {
+        const stateItem = this.state.items.find((stateItem) => id === stateItem?.id);
+        if (stateItem) {
+          stateItem.meta = this.itemMeta[String(id)];
         }
       }
     }
@@ -510,16 +544,12 @@ export default class CollectionService<
     this.refresh(query);
   }
 
-  protected _adapt(data: T | undefined): Item<T, M> {
-    return toCollectionItem(data, this.state.adapter);
-  }
-
   protected _addFilter(
     query: Query,
     filterOrCriteria: QueryFilterOrCriteria,
     parentFilterId: QueryFilterId = rootFilterId,
   ): void {
-    const filter = this._formatFilter(query.filter) || { id: rootFilterId, operator: 'and', criterias: [] };
+    const filter = formatFilter(query.filter) || { id: rootFilterId, operator: 'and', criterias: [] };
     visitFilter(filter, (filter) => {
       if (filter.id === parentFilterId) {
         let index = -1;
@@ -540,7 +570,7 @@ export default class CollectionService<
 
   protected _addSortBy(query: Query, sortBy: QuerySortBy, prepend = true): void {
     this._removeSortBy(query, sortBy);
-    const currentSortBy = this._formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(query, 'sortBy')) || [];
+    const currentSortBy = formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(query, 'sortBy')) || [];
     if (prepend) {
       currentSortBy.unshift(sortBy);
     } else {
@@ -765,7 +795,7 @@ export default class CollectionService<
     // apply filters to data
     let result = items;
     if (query.filter) {
-      result = items.filter((item) => this._applyFilter(item, this._formatFilter(query.filter)));
+      result = items.filter((item) => this._applyFilter(item, formatFilter(query.filter)));
     } else if (query.search) {
       result = items.filter((item) => this._applySearch(item, query.search));
     } else {
@@ -774,7 +804,7 @@ export default class CollectionService<
 
     // apply sort
     if (query.sortBy) {
-      result = this._applySortBy(result, this._formatSortBy(query.sortBy) || [], comparators);
+      result = this._applySortBy(result, formatSortBy(query.sortBy) || [], comparators);
     } else if (query.sort) {
       result = this._applySort(result, query.sort || 'asc', comparator);
     }
@@ -893,7 +923,7 @@ export default class CollectionService<
       });
       // update metadata
       const itemResult: Item<T, M>[] = data.map((itemData) => {
-        const item = this._adapt(itemData);
+        const item = this.adapt(itemData);
         const id = item.id;
         if (id !== undefined) {
           const meta = Object.assign({}, this.itemMeta[id] ?? item.meta, { loadingStatus: LoadingStatus.Loaded });
@@ -946,8 +976,8 @@ export default class CollectionService<
     }
   }
 
-  protected _getId(data: T): string | undefined {
-    return this._adapt(data).id;
+  protected _getId(data: T): string | number | undefined {
+    return this.adapt(data).id;
   }
 
   @reducer
@@ -961,7 +991,7 @@ export default class CollectionService<
         const queryEngine: QueryEngine<T, M> = this.state.queryEngine || this._execute.bind(this);
         this._setItems(
           queryEngine(
-            this.state.db || [],
+            this.db || [],
             nextQuery,
             this.state.comparator || defaultComparator,
             this.state.comparators || {},
@@ -1066,12 +1096,12 @@ export default class CollectionService<
       const setItemStatus = (item: Item<T, M> | undefined): Item<T, M> => {
         let meta = undefined;
         if (item === undefined) {
-          item = this._adapt(undefined);
+          item = this.adapt(undefined);
           meta = item.meta;
         } else if (item.id) {
           meta = this.itemMeta[item.id];
         } else {
-          meta = this._adapt(item.data).meta;
+          meta = this.adapt(item.data).meta;
         }
 
         if (meta !== undefined) {
@@ -1121,9 +1151,9 @@ export default class CollectionService<
 
   @reducer
   protected _setQuery(query: Query, force = true): void {
-    const nextFilter = this._formatFilter(query.filter);
+    const nextFilter = formatFilter(query.filter);
     if (force || nextFilter) this.state.filter = nextFilter;
-    const nextSortBy = this._formatSortBy(query.sortBy);
+    const nextSortBy = formatSortBy(query.sortBy);
     if (force || nextSortBy) this.state.sortBy = nextSortBy;
     if (force || query.sort) this.state.sort = query.sort;
     if (force || query.search) this.state.search = query.search;
@@ -1150,6 +1180,6 @@ export default class CollectionService<
   }
 
   protected _setSortBy(query: Query, sortBy: string | QuerySortBy | QuerySortBy[]): void {
-    query.sortBy = this._formatSortBy(sortBy);
+    query.sortBy = formatSortBy(sortBy);
   }
 }
