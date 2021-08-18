@@ -1,7 +1,7 @@
 {
   "name": "onekijs-ui",
   "private": true,
-  "version": "0.14.2",
+  "version": "0.14.3",
   "description": "Opiniated React framework built on top of Next.js",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -30,7 +30,7 @@
   "license": "MIT",
   "dependencies": {
     "@popperjs/core": "^2.4.4",
-    "onekijs-framework": "^0.14.2",
+    "onekijs-framework": "^0.14.3",
     "react-icons": "^4.2.0",
     "react-popper": "^2.2.3",
     "react-popper-tooltip": "^4.2.0",
