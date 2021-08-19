@@ -23,11 +23,11 @@ const useLocalReducer = <S extends State, T extends Service<S>>(service: T, init
           // this forces a refresh
           // we do this because it's possible that useReducer trigger a refresh even if the state has not changed
           // https://github.com/facebook/react/issues/14994
-          if (nextState !== state) {
-            reactDispatch({
-              nextState,
-            });
-          }
+          //if (nextState !== state) {
+          reactDispatch({
+            nextState,
+          });
+          //}
           if (a.resolve) {
             a.resolve(nextState);
           }
