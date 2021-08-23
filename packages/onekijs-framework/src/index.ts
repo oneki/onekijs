@@ -371,6 +371,7 @@ export { decrypt, encrypt, sha256, verify } from './utils/crypt';
 export { detectLocale, flattenTranslations } from './utils/i18n';
 export { extractTag, parseJsx, stringifyJsx } from './utils/jsx';
 export { layout, withLayout } from './utils/layout';
+export { sleep } from './utils/misc';
 export {
   append,
   clone,

@@ -125,6 +125,7 @@ export interface FormContext {
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   name: string;
+  touchOn?: TouchOnType;
 } & ValidatorsType;
 
 export enum TouchOn {
@@ -188,4 +189,11 @@ export type ValidatorsType = {
   validators?: Validator[];
 };
 
-export type Validator = (value: any) => ValidationResult;
+export type ValidatorFunction = ((value: any) => ValidationResult) | ((value: any) => Promise<ValidationResult>);
+
+export type Validator =
+  | ValidatorFunction
+  | {
+      async: boolean;
+      validator: ValidatorFunction;
+    };

@@ -20,6 +20,7 @@ import {
   ValidationCode,
   ValidationResult,
   Validator,
+  ValidatorFunction,
 } from './typings';
 
 @service
@@ -88,7 +89,8 @@ export default class FormService extends DefaultService<FormState> {
     touchedOnly = true,
   ): ContainerValidation {
     // compile the validations to get the status
-    const messages = [];
+
+    let messages = [];
     const result = new ContainerValidation('', ValidationStatus.None, ValidationCode.None, {});
 
     for (const fieldName of Object.keys(validations).filter((k) => k.startsWith(prefix))) {
@@ -99,6 +101,7 @@ export default class FormService extends DefaultService<FormState> {
             result.status = validation.status;
             result.code = validation.code;
             result.fields = {};
+            messages = [];
           }
           result.fields[fieldName] = validation.message;
           if (validation.message) {
@@ -377,10 +380,13 @@ export default class FormService extends DefaultService<FormState> {
     validator: Validator,
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     value: any,
+    async: boolean,
   ) {
-    yield this.setValidation(fieldName, validatorName, ValidationCode.Loading, '', false);
-    const result: ValidationResult = yield validator(value);
-    yield this.clearValidation(fieldName, validatorName, ValidationCode.Loading, false);
+    const validatorFunction: ValidatorFunction = typeof validator === 'object' ? validator.validator : validator;
+    const result: ValidationResult = yield validatorFunction(value);
+    if (async) {
+      yield this.clearValidation(fieldName, validatorName, ValidationCode.Loading, false);
+    }
     if (result.valid) {
       yield this.clearValidation(fieldName, validatorName, ValidationCode.Error, false);
     } else {
@@ -394,6 +400,8 @@ export default class FormService extends DefaultService<FormState> {
     const tasks: AnonymousObject<Task[]> = {};
     const validations: AnonymousObject<FieldValidation> = {};
     const keys = Object.keys(values);
+    const async: Set<string> = new Set();
+
     for (const key of keys) {
       // we need to find all sub fields (if any) and do the validations for these fields
       const fieldNames = this._getSubFieldNames(key);
@@ -404,27 +412,35 @@ export default class FormService extends DefaultService<FormState> {
         for (const i in validators) {
           const validatorName = `__validator_${i}`;
           const validator = validators[i];
-          tasks[fieldName].push(
+          if (typeof validator === 'object' && validator.async === true) {
+            async.add(fieldName);
+            this.setValidation(fieldName, validatorName, ValidationCode.Loading, '', false);
             yield fork(
               [this, this.validate],
               fieldName,
               validatorName,
               validator,
               get(values[key], fieldName.substr(key.length + 1)),
-            ),
-          );
+              true,
+            );
+          } else {
+            yield this.validate(
+              fieldName,
+              validatorName,
+              validator,
+              get(values[key], fieldName.substr(key.length + 1)),
+              false,
+            );
+          }
         }
       }
     }
-    const async: string[] = [];
+
     Object.keys(tasks).forEach((fieldName) => {
       validations[fieldName] = this.getValidation(fieldName);
-      if (tasks[fieldName].find((t) => t.isRunning())) {
-        async.push(fieldName);
-      }
     });
 
     yield this._setValues(values, validations);
-    return async;
+    return Array.from(async);
   }
 }

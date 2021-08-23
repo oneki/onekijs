@@ -7,9 +7,10 @@ import { mergeString } from '../../utils/string';
 
 const Input: FC<InputProps> = React.memo((props) => {
   const [validators, wrappedProps] = extractValidators(props);
-  const { name, defaultValue, className, ...inputProps } = wrappedProps;
+  const { name, defaultValue, className, touchOn, ...inputProps } = wrappedProps;
   const { value, onFocus, onBlur, onChange } = useField(name, validators, {
     defaultValue: defaultValue === undefined ? (props.type === 'checkbox' ? false : '') : defaultValue,
+    touchOn,
   });
   const validation = useValidation(props.name);
   const onCheck = useCallback(
