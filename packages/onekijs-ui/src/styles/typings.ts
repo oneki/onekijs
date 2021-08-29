@@ -1,6 +1,23 @@
-import { BackgroundColorProperty, ColorProperty, FontWeightProperty, Globals, PaddingProperty } from 'csstype';
-import { FlattenInterpolation, ThemedStyledProps, ThemeProps as SytledThemeProps } from 'styled-components';
+import {
+  AppearanceProperty,
+  BackgroundColorProperty,
+  BorderBottomStyleProperty,
+  BorderColorProperty,
+  BorderWidthProperty,
+  BoxShadowProperty,
+  ColorProperty,
+  FontSizeProperty,
+  FontWeightProperty,
+  Globals,
+  LetterSpacingProperty,
+  MarginProperty,
+  OutlineProperty,
+  PaddingProperty,
+  TextTransformProperty,
+  WidthProperty,
+} from 'csstype';
 import { AnonymousObject } from 'onekijs-framework';
+import { FlattenInterpolation, ThemedStyledProps, ThemeProps as SytledThemeProps } from 'styled-components';
 
 export type CssProperty<T> = (value: T, variants?: AnonymousObject) => FlattenInterpolation<SytledThemeProps<any>>;
 export type Formatter<T> = (value: T, theme: Theme) => string;
@@ -77,6 +94,7 @@ export enum FontLineHeightKeys {
 }
 
 export enum FontSizeKeys {
+  '2xs' = '2xs',
   xs = 'xs',
   sm = 'sm',
   md = 'md',
@@ -207,6 +225,69 @@ export type Theme = {
       paddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
       radius: RadiusPropertyTheme | string;
     };
+  };
+
+  table: {
+    bgColor: ColorPropertyTheme | BackgroundColorProperty;
+    shadow: ShadowPropertyTheme | BoxShadowProperty;
+    thPaddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
+    thPaddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
+    thBorderBottomWidth: number | BorderWidthProperty<TLength>;
+    thBorderBottomColor: ColorPropertyTheme | BorderColorProperty;
+    thBgColor: ColorPropertyTheme | BackgroundColorProperty;
+    thFontWeigth: FontWeightPropertyTheme | FontWeightProperty;
+    thFontColor: ColorPropertyTheme | ColorProperty;
+    thFontCase: TextTransformProperty;
+    thFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
+    thLetterSpacing: LetterSpacingPropertyTheme | LetterSpacingProperty<TLength>;
+    thFilterInputBgColor: ColorPropertyTheme | BackgroundColorProperty;
+    thFilterInputFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
+    thFilterInputPaddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
+    thFilterInputPaddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
+    tdFontColor: ColorPropertyTheme | ColorProperty;
+    tdPaddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
+    tdPaddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
+    tdBorderBottomColor: ColorPropertyTheme | BorderColorProperty;
+    tdBorderBottomWidth: number | BorderWidthProperty<TLength>;
+    tdBorderBottomStyle: BorderBottomStyleProperty;
+    tdStripBgColor: ColorPropertyTheme | BackgroundColorProperty;
+    tdHoverBgColor: ColorPropertyTheme | BackgroundColorProperty;
+    tdHoverFontColor: ColorPropertyTheme | ColorProperty;
+  };
+
+  input: {
+    bgColor: ColorPropertyTheme | BackgroundColorProperty;
+    width: SizePropertyTheme | WidthProperty<TLength>;
+    borderWidth: number | BorderWidthProperty<TLength>;
+    borderColor: ColorPropertyTheme | BorderColorProperty;
+    borderRadius: RadiusPropertyTheme | string;
+    borderStyle: BorderBottomStyleProperty;
+    borderFocusColor: ColorPropertyTheme | BorderColorProperty;
+    borderFocusWidth: number | BorderWidthProperty<TLength>;
+    paddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
+    paddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
+    appearance: AppearanceProperty;
+    outline: OutlineProperty<TLength>;
+    fontColor: ColorPropertyTheme | ColorProperty;
+    placeholderColor: ColorPropertyTheme | ColorProperty;
+  };
+
+  checkbox: {
+    bgColor: ColorPropertyTheme | BackgroundColorProperty;
+    color: ColorPropertyTheme | BackgroundColorProperty;
+  };
+
+  label: {
+    fontWeight: FontWeightPropertyTheme | FontWeightProperty;
+    fontCase: TextTransformProperty;
+    fontColor: ColorPropertyTheme | ColorProperty;
+    fontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
+    letterSpacing: LetterSpacingPropertyTheme | LetterSpacingProperty<TLength>;
+    requiredColor: ColorPropertyTheme | ColorProperty;
+    requiredWeight: FontWeightPropertyTheme | FontWeightProperty;
+    requiredMarginLeft: SpacingPropertyTheme | MarginProperty<TLength>;
+    helperIconColor: ColorPropertyTheme | ColorProperty;
+    helperMarginLeft: SpacingPropertyTheme | MarginProperty<TLength>;
   };
 };
 export type ThemeProps = AnonymousObject; //TODO create a actual type

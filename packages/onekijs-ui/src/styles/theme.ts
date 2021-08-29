@@ -1,6 +1,6 @@
 import { AnonymousObject, get, set, simpleMergeDeep } from 'onekijs-framework';
 import { darken } from '../utils/color';
-import { ColorKeys, Palette, Theme } from './typings';
+import { ColorKeys, Palette, ShadowKeys, Theme } from './typings';
 
 export const palette: Palette = {
   colors: {
@@ -113,8 +113,8 @@ export const theme = (customTheme: AnonymousObject = {}): Theme => {
       white: 'white',
       lightest: 'gray-100',
       light: 'gray-300',
-      dark: 'gray-600',
-      darkest: 'gray-800',
+      dark: 'gray-700',
+      darkest: 'gray-900',
       black: 'black',
       success: 'green-500',
       info: 'blue-500',
@@ -162,6 +162,7 @@ export const theme = (customTheme: AnonymousObject = {}): Theme => {
         xl: 2,
       },
       sizes: {
+        '2xs': '.625rem',
         xs: '.75rem',
         sm: '.875rem',
         md: '1rem',
@@ -250,6 +251,68 @@ export const theme = (customTheme: AnonymousObject = {}): Theme => {
       'screen-lg': '1024px',
       'screen-xl': '1280px',
     },
+    table: {
+      bgColor: 'white',
+      shadow: ShadowKeys.default,
+      thPaddingX: 'md',
+      thPaddingY: 'md',
+      thBorderBottomWidth: '1px',
+      thBorderBottomColor: 'lightest',
+      thBgColor: 'light',
+      thFontWeigth: 'medium',
+      thFontColor: 'dark',
+      thFontCase: 'uppercase',
+      thFontSize: 'xs',
+      thLetterSpacing: 'xl',
+      thFilterInputBgColor: 'lightest',
+      thFilterInputFontSize: 'sm',
+      thFilterInputPaddingX: 'xs',
+      thFilterInputPaddingY: 'xs',
+      tdFontColor: 'darkest',
+      tdPaddingX: 'md',
+      tdPaddingY: 'sm',
+      tdBorderBottomColor: 'light',
+      tdBorderBottomStyle: 'solid',
+      tdBorderBottomWidth: '1px',
+      tdStripBgColor: 'lightest',
+      tdHoverBgColor: 'primary',
+      tdHoverFontColor: 'white',
+    },
+
+    input: {
+      bgColor: 'white',
+      width: 'full',
+      borderWidth: 1,
+      borderColor: 'light',
+      borderRadius: 'md',
+      borderStyle: 'solid',
+      borderFocusColor: 'primary',
+      borderFocusWidth: 2,
+      paddingX: 'sm',
+      paddingY: 'xs',
+      appearance: 'none',
+      outline: 'none',
+      fontColor: 'darkest',
+      placeholderColor: 'light',
+    },
+
+    label: {
+      fontWeight: 'medium',
+      fontCase: 'none',
+      fontColor: 'dark',
+      fontSize: 'inherit',
+      letterSpacing: 'md',
+      requiredColor: 'danger',
+      requiredWeight: 'bold',
+      requiredMarginLeft: 'xs',
+      helperIconColor: 'primary',
+      helperMarginLeft: 'sm',
+    },
+
+    checkbox: {
+      color: 'primary',
+      bgColor: 'white',
+    },
   };
   Object.keys(ColorKeys).forEach((kind) => {
     set(theme, `buttons.${kind}`, {
@@ -263,6 +326,5 @@ export const theme = (customTheme: AnonymousObject = {}): Theme => {
       radius: 'sm',
     });
   });
-
   return simpleMergeDeep(customTheme, theme);
 };

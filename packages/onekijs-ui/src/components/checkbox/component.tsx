@@ -1,6 +1,7 @@
 import React, { ChangeEvent, FC, useRef } from 'react';
 import { generateUniqueId } from 'onekijs-framework';
 import { CheckboxProps } from './typings';
+import { addClassname } from '../../utils/style';
 
 const CheckboxComponent: FC<CheckboxProps> = ({ label, className = '', onChange, value = false, ...checkboxProps }) => {
   const id = useRef(generateUniqueId());
@@ -9,7 +10,7 @@ const CheckboxComponent: FC<CheckboxProps> = ({ label, className = '', onChange,
   };
 
   return (
-    <div className={className}>
+    <div className={addClassname('o-checkbox', className)}>
       <input
         {...checkboxProps}
         onChange={onChecked}

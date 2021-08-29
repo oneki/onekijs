@@ -4,18 +4,19 @@ import { display, visibility } from '../../styles/display';
 import { width } from '../../styles/size';
 import { marginLeft, marginRight, marginY, paddingY } from '../../styles/spacing';
 import { ComponentStyle } from '../../styles/typings';
-import { color, fontSize, fontVariant, fontWeight } from '../../styles/typography';
-import { preflight } from '../../utils/style';
+import { color, fontSize, fontWeight, letterSpacing, textTransform } from '../../styles/typography';
 import { LabelProps } from './typings';
 
-const labelStyle: ComponentStyle<LabelProps> = ({ width: labelWidth }) => {
+const labelStyle: ComponentStyle<LabelProps> = ({ theme, width: labelWidth }) => {
+  const t = theme.label;
   return css`
-      ${preflight()}
       ${display('flex')}
       .o-label-text {
-        ${fontWeight('medium')}
-        ${fontVariant('small-caps')}
-        ${color('blue-700')}
+        ${fontWeight(t.fontWeight)}
+        ${t.fontCase === 'uppercase' ? textTransform('uppercase') : ''}
+        ${color(t.fontColor)}
+        ${fontSize(t.fontSize)}
+        ${letterSpacing(t.letterSpacing)}
       }      
       &.o-label-vertical {
         ${alignContent('center')}
@@ -45,9 +46,9 @@ const labelStyle: ComponentStyle<LabelProps> = ({ width: labelWidth }) => {
         }                 
       }      
       .o-marker-required, .o-marker-optional {
-        ${color('danger')}
-        ${fontWeight('bold')}
-        ${marginLeft('xs')} 
+        ${color(t.requiredColor)}
+        ${fontWeight(t.requiredWeight)}
+        ${marginLeft(t.requiredMarginLeft)} 
       }
       .o-marker-optional {
         ${visibility(false)}
@@ -55,8 +56,8 @@ const labelStyle: ComponentStyle<LabelProps> = ({ width: labelWidth }) => {
 
       .o-helper-icon {
         ${fontSize('xl')}
-        ${color('primary')}
-        ${marginLeft('sm')}
+        ${color(t.helperIconColor)}
+        ${marginLeft(t.helperMarginLeft)}
       }   
 
     `;

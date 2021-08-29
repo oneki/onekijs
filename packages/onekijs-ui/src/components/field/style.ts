@@ -1,18 +1,16 @@
 import { css } from 'styled-components';
-import { cursor } from '../../styles/interactivity';
 import { alignItems } from '../../styles/alignment';
 import { display } from '../../styles/display';
 import { flexDirection } from '../../styles/flex';
+import { cursor } from '../../styles/interactivity';
 import { height } from '../../styles/size';
 import { marginLeft, marginY } from '../../styles/spacing';
 import { ComponentStyle } from '../../styles/typings';
 import { color, fontSize } from '../../styles/typography';
-import { preflight } from '../../utils/style';
 import { FieldDescriptionProps, FieldHelpProps, FieldLayoutProps } from './typings';
 
 export const fieldStyle: ComponentStyle<FieldLayoutProps> = () => {
   return css`
-      ${preflight()}
       ${display('flex')}
       ${marginY('xs')}
       &.o-form-field-vertical {
@@ -34,7 +32,6 @@ export const fieldStyle: ComponentStyle<FieldLayoutProps> = () => {
 
 export const fieldHelpStyle: ComponentStyle<FieldHelpProps> = ({ visible = true }) => {
   return css`
-      ${preflight()}
       ${fontSize('xl')}
       ${color('primary')}
       ${marginLeft('sm')}
@@ -49,8 +46,7 @@ export const fieldHelpStyle: ComponentStyle<FieldHelpProps> = ({ visible = true 
 
 export const fieldDescriptionStyle: ComponentStyle<FieldDescriptionProps> = () => {
   return css`
-      ${preflight()}
-      ${fontSize('sm')}
-      ${color('gray-600')}
-    `;
+    ${fontSize('sm')}
+    ${color('gray-600')}
+  `;
 };

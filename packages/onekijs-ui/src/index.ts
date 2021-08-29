@@ -1,22 +1,22 @@
 export { default as Button } from './components/button';
-export { default as Grid } from './components/grid';
-export { default as FormGrid } from './components/grid/FormGrid';
-export { default as useInputColumn } from './components/grid/columns/useInputColumn';
-export { default as useSelectColumn } from './components/grid/columns/useSelectColumn';
+export { default as Table } from './components/table';
+export { default as FormTable } from './components/table/FormTable';
+export { default as useInputColumn } from './components/table/columns/useInputColumn';
+export { default as useSelectColumn } from './components/table/columns/useSelectColumn';
 export {
-  GridBodyCellProps,
-  GridBodyProps,
-  GridBodyRowProps,
-  GridColumn,
-  GridColumnSpec,
-  GridItem,
-  GridItemMeta,
-  GridItems,
-  GridProps,
-  GridState,
-  UseGridOptions,
-} from './components/grid/typings';
-export { default as useGrid } from './components/grid/useGrid';
+  TableBodyCellProps,
+  TableBodyProps,
+  TableBodyRowProps,
+  TableColumn,
+  TableColumnSpec,
+  TableItem,
+  TableItemMeta,
+  TableItems,
+  TableProps,
+  TableState,
+  UseTableOptions,
+} from './components/table/typings';
+export { default as useTable } from './components/table/useTable';
 export { default as CrossIcon } from './components/icon/CrossIcon';
 export { default as LoadingIcon } from './components/icon/LoadingIcon';
 export { default as SearchIcon } from './components/icon/SearchIcon';
