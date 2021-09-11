@@ -1,6 +1,6 @@
 import { theme } from 'onekijs-ui';
 import { App } from 'onekijs';
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { Link, Route, Switch } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
@@ -13,6 +13,19 @@ import { SelectPage } from './pages/select';
 import "@fontsource/roboto";
 
 const customTheme = {};
+
+const Child: React.FC = () => {
+  return <div></div>
+}
+
+Child.displayName = "DashboardHeader"
+
+const Parent: React.FC = ({ children }) => {
+  useEffect(() => {
+    console.log(children);
+  })
+  return <div></div>
+}
 
 ReactDOM.render(
   <App>
@@ -31,6 +44,7 @@ ReactDOM.render(
           <Link to="/list">List</Link> | <Link to="/ajaxList">Ajax List</Link> | <Link to="/table">Table</Link> |{' '}
           <Link to="/input">Input</Link>
         </div>
+        <Parent><Child /></Parent>
         <Switch>
           <Route path="/button">
             <ButtonPage />
