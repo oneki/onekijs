@@ -1,59 +1,38 @@
-import { isTrue } from 'onekijs';
 import React from 'react';
 import styled from 'styled-components';
-import { DashboardContainerProps, DashboardPanel, DashboardSize } from '../typings';
+import { DashboardArea, DashboardContainerProps } from '../typings';
 
-export const getColWidth = (column: DashboardPanel, size: DashboardSize): string | 0 => {
-  let width = column.width;
-  if (!isTrue(column.floating)) {
-    if (column.collapse === 'auto') {
-      width = size === 'small' ? column.collapseWidth : column.width;
-    } else if (isTrue(column.collapse)) {
-      width = column.collapseWidth;
-    }
-  }
-  return width || 0;
-};
-
-export const getDashboardTemplate = (size: DashboardSize, dashboardContainerProps: DashboardContainerProps): string => {
+export const getDashboardTemplate = (dashboardContainerProps: DashboardContainerProps): string => {
   const { areas, left, right, header, footer } = dashboardContainerProps;
+  if (!areas) {
+    return '';
+  }
   const clone = (items: any) => items.map((item: any) => (Array.isArray(item) ? clone(item) : item));
-  const dashboardAreas: (DashboardPanel | undefined)[][] = clone(areas);
-  const rows: (0 | 'auto' | string)[] = [0, 'auto', 0];
-  const cols: (0 | 'auto' | string)[] = [0, 'auto', 0];
+  const dashboardAreas: (DashboardArea | undefined)[][] = clone(areas);
+  const rows: (0 | string)[] = [0, '1fr', 0];
+  const cols: (0 | string)[] = [0, '1fr', 0];
 
-  if (!right || right.floating || !right.present) {
+  if (!right) {
     // drop last column
     [0, 1, 2].forEach((i) => dashboardAreas[i].splice(2, 1));
     cols.splice(2, 1);
-  } else {
-    cols[2] = getColWidth(right, size);
   }
 
-  if (!left || isTrue(left.floating) || !left.present) {
+  if (!left) {
     // drop first column
     [0, 1, 2].forEach((i) => dashboardAreas[i].splice(0, 1));
     cols.splice(0, 1);
-  } else {
-    cols[0] = getColWidth(left, size);
   }
 
-  if (!footer || isTrue(footer.floating) || !footer.present) {
+  if (!footer) {
     rows.splice(2, 1);
     dashboardAreas.splice(2, 1);
-  } else {
-    rows[2] = footer.height || 0;
   }
 
-  if (!header || isTrue(header.floating) || !header.present) {
+  if (!header) {
     rows.splice(0, 1);
     dashboardAreas.splice(0, 1);
-  } else {
-    rows[0] = header.height || 0;
   }
-
-  if (rows.length === 1) rows[0] = '1fr';
-  if (cols.length === 1) cols[0] = '1fr';
 
   return `
     grid-template-columns: ${cols.join(' ')};
@@ -62,18 +41,18 @@ export const getDashboardTemplate = (size: DashboardSize, dashboardContainerProp
   `;
 };
 
-const DashboardContainer: React.FC<DashboardContainerProps> = (props) => {
-  const Component = styled.div`
-    display: grid;
-    ${getDashboardTemplate('small', props)}
-    height: 100vh;
-    overflow-x: hidden;
-
-    @media only screen and (min-width: 46.875em) {
-      ${getDashboardTemplate('large', props)}
-    }
-  `;
-  return <Component>{props.children}</Component>;
+const DashboardContainerComponent: React.FC<DashboardContainerProps> = (props) => {
+  return <div className={props.className}>{props.children}</div>;
 };
+
+const DashboardContainer = styled(DashboardContainerComponent)`
+  display: grid;
+  ${(props) => getDashboardTemplate(props)}
+  height: 100vh;
+  padding: 0;
+  margin: 0;
+  overflow-x: hidden;
+  overflow-y: hidden;
+`;
 
 export default DashboardContainer;

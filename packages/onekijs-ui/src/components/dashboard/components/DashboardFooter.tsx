@@ -1,15 +1,4 @@
-import React from 'react';
-import styled from 'styled-components';
-import { DashboardPanelProps } from '../typings';
+import dashboardHorizontalPanel from '../hoc/dashboardHorizontalPanel';
 
-const Component = styled.div`
-  grid-area: footer;
-`;
-
-const DashboardFooter: React.FC<DashboardPanelProps> = (props) => {
-  return <Component {...props}>{props.children}</Component>;
-};
-
-DashboardFooter.displayName = 'DashboardFooter';
-
+const DashboardFooter = dashboardHorizontalPanel('footer');
 export default DashboardFooter;

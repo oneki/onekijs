@@ -1,34 +1,57 @@
 import { AnyFunction } from 'onekijs';
 import React from 'react';
 
-export type DashboardArea = 'right' | 'left' | 'header' | 'footer' | 'body';
+export type DashboardArea = DashboardHorizontalArea | DashboardVerticalArea | 'body' | 'none';
+
+export type DashboardBodyComponentProps = {
+  className?: string;
+  footer?: DashboardHorizontalPanel;
+  header?: DashboardHorizontalPanel;
+  left?: DashboardVerticalPanel;
+  right?: DashboardVerticalPanel;
+};
+
+export type DashboardBodyPanel = {
+  className?: string;
+};
+
+export type DashboardBodyPanelProps = {
+  className?: string;
+};
 
 export type DashboardContainerProps = {
-  right?: DashboardPanel;
-  left?: DashboardPanel;
-  header?: DashboardPanel;
-  footer?: DashboardPanel;
-  body?: DashboardPanel;
-  areas?: (DashboardArea | 'none')[][];
+  areas?: DashboardArea[][];
+  className?: string;
+  footer?: DashboardHorizontalPanel;
+  header?: DashboardHorizontalPanel;
+  left?: DashboardVerticalPanel;
+  right?: DashboardVerticalPanel;
+  body?: DashboardBodyPanel;
 };
 
-export type DashboardPanelProps = {
-  initialCollapse?: boolean | 'auto';
+export type DashboardHorizontalArea = 'header' | 'footer';
+
+export type DashboardHorizontalPanel = {
+  area: DashboardHorizontalArea;
+  className?: string;
+  collapse: boolean;
+  collapseHeight: string | 0;
+  floating: boolean;
+  height: string | 0;
+};
+
+export type DashboardHorizontalPanelComponentProps = React.InputHTMLAttributes<HTMLDivElement> &
+  DashboardState & {
+    className?: string;
+    panel: DashboardHorizontalPanel;
+  };
+
+export type DashboardHorizontalPanelProps = {
+  className?: string;
+  initialCollapse?: boolean;
   initialCollapseHeight?: string | 0;
-  initialCollapseWidth?: string | 0;
-  initialFloating?: boolean | 'auto';
+  initialFloating?: boolean;
   initialHeight?: string | 0;
-  initialWidth?: string | 0;
-};
-
-export type DashboardPanel = {
-  collapse?: boolean | 'auto';
-  collapseHeight?: string | 0;
-  collapseWidth?: string | 0;
-  floating?: boolean | 'auto';
-  height?: string | 0;
-  present?: boolean;
-  width?: string | 0;
 };
 
 export type DashboardProps = {
@@ -41,23 +64,42 @@ export type DashboardOverlayProps = {
   onClick: AnyFunction<void>;
 };
 
-export type DashboardSidebarProps = React.InputHTMLAttributes<HTMLDivElement> & {
-  area: DashboardArea;
-  panel: DashboardPanel;
-};
-
 export type DashboardSize = 'small' | 'medium' | 'large';
 
 export type DashboardState = {
-  right?: DashboardPanel;
-  left?: DashboardPanel;
-  header?: DashboardPanel;
-  footer?: DashboardPanel;
-  body?: DashboardPanel;
-  areas?: (DashboardArea | 'none')[][];
-  initialized?: boolean;
+  right?: DashboardVerticalPanel;
+  left?: DashboardVerticalPanel;
+  header?: DashboardHorizontalPanel;
+  footer?: DashboardHorizontalPanel;
+  body?: DashboardBodyPanel;
+  areas?: DashboardArea[][];
 };
 
 export type DashboardTogglerProps = {
-  area: DashboardArea;
+  area: DashboardVerticalArea;
+};
+
+export type DashboardVerticalArea = 'left' | 'right';
+
+export type DashboardVerticalPanel = {
+  area: DashboardVerticalArea;
+  className?: string;
+  collapse: boolean;
+  collapseWidth: string | 0;
+  floating: boolean;
+  width: string | 0;
+};
+
+export type DashboardVerticalPanelComponentProps = React.InputHTMLAttributes<HTMLDivElement> &
+  DashboardState & {
+    className?: string;
+    panel: DashboardVerticalPanel;
+  };
+
+export type DashboardVerticalPanelProps = {
+  className?: string;
+  initialCollapse?: boolean;
+  initialCollapseWidth?: string | 0;
+  initialFloating?: boolean;
+  initialWidth?: string | 0;
 };

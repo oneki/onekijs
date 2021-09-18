@@ -1,38 +1,28 @@
-import { theme } from 'onekijs-ui';
+import '@fontsource/roboto';
 import { App } from 'onekijs';
-import React, { useEffect } from 'react';
+import { theme } from 'onekijs-ui';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import { Link, Route, Switch } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 import { AjaxListPage } from './pages/ajaxList';
 import { ButtonPage } from './pages/button';
-import { TablePage } from './pages/table';
+import { DashboardPage } from './pages/dashboard';
 import { InputPage } from './pages/input';
 import { ListPage } from './pages/list';
 import { SelectPage } from './pages/select';
-import "@fontsource/roboto";
+import { TablePage } from './pages/table';
 
 const customTheme = {};
-
-const Child: React.FC = () => {
-  return <div></div>
-}
-
-Child.displayName = "DashboardHeader"
-
-const Parent: React.FC = ({ children }) => {
-  useEffect(() => {
-    console.log(children);
-  })
-  return <div></div>
-}
 
 ReactDOM.render(
   <App>
     <ThemeProvider theme={theme(customTheme)}>
-      <div style={{
-        fontFamily: 'Roboto',
-      }}>
+      <div
+        style={{
+          fontFamily: 'Roboto',
+        }}
+      >
         <div
           style={{
             backgroundColor: '#EEE',
@@ -42,9 +32,8 @@ ReactDOM.render(
         >
           <Link to="/">Home</Link> | <Link to="/button">Button</Link> | <Link to="/select">Select</Link> |{' '}
           <Link to="/list">List</Link> | <Link to="/ajaxList">Ajax List</Link> | <Link to="/table">Table</Link> |{' '}
-          <Link to="/input">Input</Link>
+          <Link to="/input">Input</Link> | <Link to="/dashboard">Dashboard</Link>
         </div>
-        <Parent><Child /></Parent>
         <Switch>
           <Route path="/button">
             <ButtonPage />
@@ -63,6 +52,9 @@ ReactDOM.render(
           </Route>
           <Route path="/input">
             <InputPage />
+          </Route>
+          <Route path="/dashboard">
+            <DashboardPage />
           </Route>
           <Route>
             <div>This is the main page</div>

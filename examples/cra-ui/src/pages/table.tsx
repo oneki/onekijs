@@ -1,5 +1,5 @@
-import { FormSubmitCallback, SubmitButton, useForm } from 'onekijs';
-import { Button, ComponentStyle, FormTable, useTable, useInputColumn, useSelectColumn } from 'onekijs-ui';
+import { FormSubmitCallback, useForm } from 'onekijs';
+import { ComponentStyle, FormTable, useTable } from 'onekijs-ui';
 import React from 'react';
 import styled, { css } from 'styled-components';
 import { users } from '../data/users';
@@ -19,74 +19,76 @@ const addresses = [
   },
 ];
 
-const u = [  {
-  id: 1,
-  firstname: 'Alyce',
-  lastname: 'Warren',
-  address: {
-    street: 'Abbey Court',
-    postalCode: 4517,
-    city: 'Zortman',
+const u = [
+  {
+    id: 1,
+    firstname: 'Alyce',
+    lastname: 'Warren',
+    address: {
+      street: 'Abbey Court',
+      postalCode: 4517,
+      city: 'Zortman',
+    },
+    phones: ['+32 (941) 540-2562', '+32 (804) 558-2088', '+32 (844) 418-3245'],
   },
-  phones: ['+32 (941) 540-2562', '+32 (804) 558-2088', '+32 (844) 418-3245'],
-},
-{
-  id: 2,
-  firstname: 'Hale',
-  lastname: 'Stuart',
-  address: {
-    street: 'Fillmore Avenue',
-    postalCode: 2166,
-    city: 'Winston',
+  {
+    id: 2,
+    firstname: 'Hale',
+    lastname: 'Stuart',
+    address: {
+      street: 'Fillmore Avenue',
+      postalCode: 2166,
+      city: 'Winston',
+    },
+    phones: [],
   },
-  phones: [],
-}];
+];
 
 const Page: React.FC<{ className?: string }> = ({ className }) => {
   const onSubmit: FormSubmitCallback = (data) => {
     console.log(data);
   };
-  const { Form, values } = useForm(onSubmit, {
+  const { Form } = useForm(onSubmit, {
     initialValues: {
       addresses,
       users: u,
     },
   });
 
-  const streetColumn = useInputColumn({
-    id: 'street',
-    title: 'Street',
-    required: true,
-  });
+  // const streetColumn = useInputColumn({
+  //   id: 'street',
+  //   title: 'Street',
+  //   required: true,
+  // });
 
-  const stateColumn = useSelectColumn({
-    id: 'state',
-    dataSource: [
-      { id: 1, text: 'Alabama' },
-      { id: 2, text: 'California' },
-      { id: 2, text: 'NY' },
-    ],
-    title: 'State',
-  });
+  // const stateColumn = useSelectColumn({
+  //   id: 'state',
+  //   dataSource: [
+  //     { id: 1, text: 'Alabama' },
+  //     { id: 2, text: 'California' },
+  //     { id: 2, text: 'NY' },
+  //   ],
+  //   title: 'State',
+  // });
 
-  const addFilter = () => {
-    stateColumn.broker.addFilter({
-      id: 'state',
-      operator: 'eq',
-      not: true,
-      value: 'California',
-      field: 'text',
-    });
-  };
+  // const addFilter = () => {
+  //   stateColumn.broker.addFilter({
+  //     id: 'state',
+  //     operator: 'eq',
+  //     not: true,
+  //     value: 'California',
+  //     field: 'text',
+  //   });
+  // };
 
-  const removeFilter = () => {
-    stateColumn.broker.removeFilter('state');
-  };
+  // const removeFilter = () => {
+  //   stateColumn.broker.removeFilter('state');
+  // };
 
-  const controller = useTable({
-    columns: [streetColumn, stateColumn],
-    //grow: 'address.city'
-  });
+  // const controller = useTable({
+  //   columns: [streetColumn, stateColumn],
+  //   //grow: 'address.city'
+  // });
 
   const controller2 = useTable({
     dataSource: users,

@@ -2,7 +2,7 @@ import styled, { css } from 'styled-components';
 import { ComponentStyle } from '../../..';
 import { DashboardOverlayProps } from '../typings';
 
-export const overlayStyle: ComponentStyle<DashboardOverlayProps> = ({ show }) => {
+export const dashboardOverlayStyle: ComponentStyle<DashboardOverlayProps> = ({ show }) => {
   return css`
     background-color: rgba(0, 0, 0, 0.4);
     z-index: 1000;
@@ -18,7 +18,7 @@ export const overlayStyle: ComponentStyle<DashboardOverlayProps> = ({ show }) =>
 };
 
 const DashboardOverlay = styled.div`
-  ${overlayStyle}
+  ${dashboardOverlayStyle}
 `;
 
 export default DashboardOverlay;

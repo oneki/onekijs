@@ -11,7 +11,7 @@ const IconComponent: FC<React.InputHTMLAttributes<HTMLDivElement>> = ({ classNam
   );
 };
 
-export default styled(IconComponent)`
+const CrossIcon = styled(IconComponent)`
   .o-icon-close-svg {
     display: inline-block;
     width: ${(props) => props.width || '32px'};
@@ -24,3 +24,5 @@ export default styled(IconComponent)`
     opacity: 0.6;
   }
 `;
+
+export default CrossIcon;
