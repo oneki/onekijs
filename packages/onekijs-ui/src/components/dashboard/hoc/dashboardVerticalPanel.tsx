@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import Resizer from '../../resizer';
 import useDashboardService from '../hooks/useDashboardService';
 import useDashboardState from '../hooks/useDashboardState';
 import {
@@ -73,6 +74,16 @@ const StyledComponent = styled(Component)`
     height: ${(props) => getHeight('large', props)};
     transform: translate(${(props) => getTranslateX('large', props)}, ${(props) => getTranslateY('large', props)});
   }
+  .o-resizer-vertical-splitter {
+    width: 4px;
+    background: transparent;
+    height: 100%;
+    cursor: e-resize;
+    transition: background 0.1s ease-out;
+    &.o-resizer-active {
+      background: red;
+    }
+  }
 `;
 
 const dashboardVerticalPanel = (area: DashboardVerticalArea): React.FC<DashboardVerticalPanelProps> => {
@@ -90,9 +101,15 @@ const dashboardVerticalPanel = (area: DashboardVerticalArea): React.FC<Dashboard
       return null;
     }
 
+    const onResize = (width?: string | number, height?: string | number) => {
+      console.log(width, height);
+    };
+
     return (
       <StyledComponent {...state} panel={panel} className={props.className}>
-        {props.children}
+        <Resizer onResize={onResize} handles={['e']}>
+          {props.children}
+        </Resizer>
       </StyledComponent>
     );
   };

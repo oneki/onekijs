@@ -52,6 +52,7 @@ export type DashboardHorizontalPanelProps = {
   initialCollapseHeight?: string | 0;
   initialFloating?: boolean;
   initialHeight?: string | 0;
+  resizable?: boolean;
 };
 
 export type DashboardProps = {
@@ -102,4 +103,5 @@ export type DashboardVerticalPanelProps = {
   initialCollapseWidth?: string | 0;
   initialFloating?: boolean;
   initialWidth?: string | 0;
+  resizable?: boolean;
 };

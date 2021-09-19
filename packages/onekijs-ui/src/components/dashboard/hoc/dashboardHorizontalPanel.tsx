@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import Resizer from '../../resizer';
 import useDashboardService from '../hooks/useDashboardService';
 import useDashboardState from '../hooks/useDashboardState';
 import {
@@ -90,9 +91,13 @@ const dashboardHorizontalPanel = (area: DashboardHorizontalArea): React.FC<Dashb
       return null;
     }
 
+    const onResize = (width?: string | number, height?: string | number) => {
+      console.log(width, height);
+    };
+
     return (
       <StyledComponent {...state} panel={panel} className={props.className}>
-        {props.children}
+        <Resizer onResize={onResize}>{props.children}</Resizer>
       </StyledComponent>
     );
   };
