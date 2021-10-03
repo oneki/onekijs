@@ -39,7 +39,8 @@ const useLocalReducer = <S extends State, T extends Service<S>>(service: T, init
           }
         }
       } else {
-        setTimeout(() => channelRef.current.put(a), 0);
+        // setTimeout(() => channelRef.current.put(a), 0);
+        channelRef.current.put(a);
       }
     },
     [service],
