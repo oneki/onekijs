@@ -1,12 +1,12 @@
 {
   "name": "step02-navigation",
-  "version": "0.14.4",
+  "version": "0.14.5",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.1",
     "@testing-library/react": "^10.4.7",
     "@testing-library/user-event": "^12.1.0",
-    "onekijs": "^0.14.4",
+    "onekijs": "^0.14.5",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
