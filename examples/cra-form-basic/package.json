@@ -1,12 +1,12 @@
 {
   "name": "cra-form-basic",
-  "version": "0.14.5",
+  "version": "0.14.6",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
-    "onekijs": "^0.14.5",
+    "onekijs": "^0.14.6",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3"
