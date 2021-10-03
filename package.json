@@ -125,12 +125,12 @@
       "prettier --write"
     ]
   },
+  "dependencies": {
+    "reflect-metadata": "^0.1.13"
+  },
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
-  },
-  "dependencies": {
-    "reflect-metadata": "^0.1.13"
   }
 }
