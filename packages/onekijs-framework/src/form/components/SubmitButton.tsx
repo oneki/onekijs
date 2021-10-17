@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
-import useSubmit from '../useSubmit';
 import { SubmitButtonProps, ValidationCode } from '../typings';
+import useSubmit from '../useSubmit';
 
 const SubmitButton: FC<SubmitButtonProps> = React.memo((opts) => {
   const { submitting, code, fields } = useSubmit();
