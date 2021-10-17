@@ -1,5 +1,5 @@
 import { AnonymousObject, get } from 'onekijs-framework';
-import { Formatter } from '../styles/typings';
+import { ColorPropertyTheme, Formatter } from '../styles/typings';
 import { hexToRgb } from './color';
 
 export const booleanFormatter: Formatter<boolean> = (value): '0' | '1' => (value ? '1' : '0');
@@ -12,11 +12,11 @@ export const themeFormatter = (category: string): Formatter<string | number> => 
 
 export const colorFormatter = (key: string, opacityKey?: string): Formatter<string> => {
   return (value, theme) => {
-    if (Object.keys(theme.kind).includes(value)) {
-      value = theme.kind[value];
+    if (Object.keys(theme.colors).includes(value)) {
+      value = theme.colors[value as ColorPropertyTheme];
     }
     let result = '';
-    value = get(theme, `colors.${value}`, String(value));
+    value = get(theme, `palette.colors.${value}`, String(value));
     if (opacityKey) {
       result = `--${opacityKey}: 1;`;
     }

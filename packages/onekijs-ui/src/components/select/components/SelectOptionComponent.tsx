@@ -49,7 +49,7 @@ const SelectOptionComponent: FC<SelectOptionProps> = React.memo(
         {/* {multiple && <div className="o-select-option-icon">{meta?.selected? <>&#10003;</>:<></>}</div> } */}
         {multiple && (
           <Checkbox
-            checked={meta?.selected ? true : false}
+            value={meta?.selected ? true : false}
             onChange={() => undefined}
             color={meta?.highlighted ? 'white' : undefined}
           ></Checkbox>

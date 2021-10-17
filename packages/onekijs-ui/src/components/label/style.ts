@@ -4,18 +4,19 @@ import { display, visibility } from '../../styles/display';
 import { width } from '../../styles/size';
 import { marginLeft, marginRight, marginY, paddingY } from '../../styles/spacing';
 import { ComponentStyle } from '../../styles/typings';
-import { color, fontSize, fontVariant, fontWeight } from '../../styles/typography';
-import { preflight } from '../../utils/style';
+import { color, fontSize, fontWeight, letterSpacing, textTransform } from '../../styles/typography';
 import { LabelProps } from './typings';
 
-const labelStyle: ComponentStyle<LabelProps> = ({ width: labelWidth }) => {
+const labelStyle: ComponentStyle<LabelProps> = ({ theme, width: labelWidth }) => {
+  const t = theme.label;
   return css`
-      ${preflight()}
       ${display('flex')}
       .o-label-text {
-        ${fontWeight('medium')}
-        ${fontVariant('small-caps')}
-        ${color('blue-700')}
+        ${fontWeight(t.fontWeight)}
+        ${t.fontCase === 'uppercase' ? textTransform('uppercase') : ''}
+        ${color(t.fontColor)}
+        ${fontSize(t.fontSize)}
+        ${letterSpacing(t.letterSpacing)}
       }      
       &.o-label-vertical {
         ${alignContent('center')}
@@ -29,25 +30,25 @@ const labelStyle: ComponentStyle<LabelProps> = ({ width: labelWidth }) => {
           ${paddingY(0)}
         }
         &.o-label-small {
-          ${paddingY(1)}
+          ${paddingY('xs')}
         }                   
         &.o-label-medium {
-          ${paddingY(2)}
+          ${paddingY('sm')}
         }
         &.o-label-large {
-          ${paddingY(3)}
+          ${paddingY('md')}
         }  
         &.o-label-xlarge {
-          ${paddingY(4)}
+          ${paddingY('lg')}
         }  
         .o-marker-required, .o-marker-optional {
-          ${marginRight(4)}
+          ${marginRight('lg')}
         }                 
       }      
       .o-marker-required, .o-marker-optional {
-        ${color('danger')}
-        ${fontWeight('bold')}
-        ${marginLeft(1)} 
+        ${color(t.requiredColor)}
+        ${fontWeight(t.requiredWeight)}
+        ${marginLeft(t.requiredMarginLeft)} 
       }
       .o-marker-optional {
         ${visibility(false)}
@@ -55,8 +56,8 @@ const labelStyle: ComponentStyle<LabelProps> = ({ width: labelWidth }) => {
 
       .o-helper-icon {
         ${fontSize('xl')}
-        ${color('primary')}
-        ${marginLeft(2)}
+        ${color(t.helperIconColor)}
+        ${marginLeft(t.helperMarginLeft)}
       }   
 
     `;

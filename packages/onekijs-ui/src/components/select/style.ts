@@ -13,7 +13,7 @@ import { verticalAlign } from '../../styles/table';
 import { transitionDuration, transitionProperty, transitionTimingFunction } from '../../styles/transition';
 import { ComponentStyle } from '../../styles/typings';
 import { color, fontFamily, fontSize, fontWeight, whiteSpace } from '../../styles/typography';
-import { deriveColor } from '../../utils/color';
+import { lighten } from '../../utils/color';
 import { preflight } from '../../utils/style';
 import { SelectProps } from './typings';
 
@@ -46,54 +46,54 @@ const selectStyle: ComponentStyle<SelectProps> = ({ multiple, theme }) => {
     }      
     &.o-select-size-small {
       .o-select-input-wrapper {
-        ${paddingY(1)}
+        ${paddingY('xs')}
       }
       .o-select-input {
-        ${paddingY(1)} 
+        ${paddingY('xs')} 
         ${fontSize('sm')}
       }   
       .o-select-token {
         ${paddingY(0)}
-        ${marginY(1)}
+        ${marginY('xs')}
       }              
     }       
     &.o-select-size-medium {
       .o-select-input-wrapper {
-        ${paddingY(2)}
+        ${paddingY('sm')}
       }     
       .o-select-input {
-        ${paddingY(2)}  
+        ${paddingY('sm')}  
         ${fontSize('base')} 
       }  
       .o-select-token {
-        ${paddingY(1)}
-        ${marginY(1)}
+        ${paddingY('xs')}
+        ${marginY('xs')}
       }               
     }
     &.o-select-size-large {
       .o-select-input-wrapper {
-        ${paddingY(3)}
+        ${paddingY('md')}
       }   
       .o-select-input {
-        ${paddingY(3)}  
+        ${paddingY('md')}  
         ${fontSize('base')}    
       }
       .o-select-token {
-        ${paddingY(2)}
-        ${marginY(1)}
+        ${paddingY('sm')}
+        ${marginY('xs')}
       }                  
     }
     &.o-select-size-xlarge {
       .o-select-input-wrapper {
-        ${paddingY(4)}
+        ${paddingY('lg')}
       }  
       .o-select-input {
-        ${paddingY(4)}   
+        ${paddingY('lg')}   
         ${fontSize('lg')}     
       }    
       .o-select-token {
-        ${paddingY(3)}
-        ${marginY(1)}
+        ${paddingY('md')}
+        ${marginY('xs')}
       }        
     }    
     .o-select-input-container {
@@ -102,7 +102,7 @@ const selectStyle: ComponentStyle<SelectProps> = ({ multiple, theme }) => {
       ${alignItems('stretch')}
       ${borderWidth(1)}
       ${borderColor('gray-300')}
-      ${borderRadius('default')}
+      ${borderRadius('md')}
       ${cursor('pointer')}
       ${padding('1px')}
       &.o-select-input-focus {
@@ -121,7 +121,7 @@ const selectStyle: ComponentStyle<SelectProps> = ({ multiple, theme }) => {
       ${flexGrow(1)}
       ${flexWrap('wrap')}
       ${alignItems('center')}
-      ${paddingX(2)}
+      ${paddingX('sm')}
       .o-select-input-wrapper {
         ${flexGrow(1)}
         ${color('gray-800')}
@@ -176,19 +176,19 @@ const selectStyle: ComponentStyle<SelectProps> = ({ multiple, theme }) => {
         ${whiteSpace('pre')}
         ${backgroundColor('primary')}
         ${color('white')}
-        ${marginRight(2)}
-        ${borderRadius('default')}
+        ${marginRight('sm')}
+        ${borderRadius('md')}
         ${fontSize('sm')}
         ${display('flex')}
         .o-select-token-text {
           ${flexGrow(1)}
-          ${paddingLeft(2)}
+          ${paddingLeft('sm')}
         }
         .o-select-token-remove {
           ${cursor('pointer')}
           ${color('white', { hover: 'danger' })}
           ${fontFamily('Arial')}
-          ${paddingX(2)}
+          ${paddingX('sm')}
         }
       }
     }
@@ -197,8 +197,8 @@ const selectStyle: ComponentStyle<SelectProps> = ({ multiple, theme }) => {
       ${color('primary')}
       ${cursor('pointer')}
       ${width(8)}
-      ${paddingY(1)}
-      ${paddingX(1)}
+      ${paddingY('xs')}
+      ${paddingX('xs')}
       ${display('flex')}
       ${alignItems('center')}
       ${borderColor('gray-200')}
@@ -223,23 +223,23 @@ const selectStyle: ComponentStyle<SelectProps> = ({ multiple, theme }) => {
 
     .o-select-options {
       scrollbar-width: thin;
-      scrollbar-color: ${(props) => props.theme.colors[props.theme.kind.primary]} ${(props) =>
+      scrollbar-color: ${(props) => props.theme.palette.colors[props.theme.colors.primary]} ${(props) =>
     props.theme.colors['gray-200']};
       &::-webkit-scrollbar {
         width: 12px;
       }
       &::-webkit-scrollbar-track {
-        background: ${(props) => props.theme.colors['gray-200']};
+        background: ${(props) => props.theme.palette.colors['gray-200']};
       }
       &::-webkit-scrollbar-thumb {
-        background-color: ${(props) => props.theme.colors[props.theme.kind.primary]};
-        border: 3px solid ${(props) => props.theme.colors['gray-200']};
+        background-color: ${(props) => props.theme.palette.colors[props.theme.colors.primary]};
+        border: 3px solid ${(props) => props.theme.palette.colors['gray-200']};
       }   
       ${backgroundColor('white')}     
       .o-select-option {
         ${width('full')}
-        ${paddingX(4)}
-        ${paddingY(2)}
+        ${paddingX('lg')}
+        ${paddingY('sm')}
         ${display('flex')}
         ${alignItems('center')}
         ${backgroundColor('transparent', { hover: 'gray-200' })}
@@ -248,8 +248,8 @@ const selectStyle: ComponentStyle<SelectProps> = ({ multiple, theme }) => {
           ${cursor('pointer')}
         }
         &.o-select-option-selected {
-          ${backgroundColor(multiple ? deriveColor(theme.kind.primary, -300, false) : 'primary', {
-            hover: multiple ? deriveColor(theme.kind.primary, -300, false) : 'primary',
+          ${backgroundColor(multiple ? lighten(theme.colors.primary, 300) : 'primary', {
+            hover: multiple ? lighten(theme.colors.primary, 300) : 'primary',
           })}
           ${color(multiple ? 'inherits' : 'white', { hover: multiple ? 'inherits' : 'white' })}
         }         

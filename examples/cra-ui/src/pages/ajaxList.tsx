@@ -1,20 +1,19 @@
 import {
-  Collection,
-  CollectionState,
+  Collection, CollectionService, CollectionState,
   Fetcher,
   HttpMethod,
   ItemMeta,
-  LoadingStatus,
-  CollectionService,
-  Query,
-  toCollectionItem,
-  useCollection,
-  useService,
-  List2
+  LoadingStatus, Query, useCollection,
+  useService
 } from 'onekijs';
+import {
+  List
+} from 'onekijs-ui';
 import React, { useCallback } from 'react';
 import { User, userAdapter, users, userSearcher } from '../data/users';
 import Spinner from './spinner';
+
+
 
 const isLoading = (collection: Collection<User, ItemMeta>): boolean => {
   return collection.status === LoadingStatus.Loading || collection.status === LoadingStatus.PartialLoading;
@@ -25,7 +24,7 @@ export const AjaxListPage = () => {
     CollectionState<User, ItemMeta>,
     CollectionService<User, ItemMeta, CollectionState<User, ItemMeta>>
   >(CollectionService, {
-    db: users.map((u) => toCollectionItem(u)),
+    dataSource: users,
     adapter: userAdapter,
     searcher: userSearcher,
   } as CollectionState<User, ItemMeta>);
@@ -70,7 +69,7 @@ export const AjaxListPage = () => {
         {isLoading(remoteCollection) && <Spinner />}
       </div>
       <div style={{ width: '300px', border: '1px solid black', padding: '5px' }}>
-        <List2 height={200} items={remoteCollection} preload={100} increment={100} />
+        <List height={200} items={remoteCollection} preload={100} increment={100} />
       </div>
     </div>
   );

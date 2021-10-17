@@ -1,6 +1,7 @@
 import React from 'react';
 import { users, userAdapter } from '../data/users';
-import { useCollection, List2 } from 'onekijs';
+import { useCollection } from 'onekijs';
+import { List } from 'onekijs-ui';
 
 export const ListPage = () => {
   const collection = useCollection(users, {
@@ -9,7 +10,7 @@ export const ListPage = () => {
   return (
     <div style={{display: 'flex', justifyContent: 'center'}}>
       <div style={{width: '300px'}}>
-        <List2 height={200} items={collection} />
+        <List height={200} items={collection} />
       </div>
     </div>
   );

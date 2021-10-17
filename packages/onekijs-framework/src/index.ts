@@ -392,6 +392,7 @@ export {
   set,
   shallowEqual,
   simpleMergeDeep,
+  toArray,
   toPayload,
   update,
   useShallowEqual,

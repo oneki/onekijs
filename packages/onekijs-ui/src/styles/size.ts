@@ -6,12 +6,13 @@ import {
   OverscrollBehaviorYProperty,
 } from 'csstype';
 import { cssProperty } from '../utils/style';
-import { Formatter, SizeProperty, Theme } from './typings';
+import { Formatter, SizePropertyTheme, Theme } from './typings';
 import { pxFormatter } from '../utils/formatter';
+import { get } from 'onekijs';
 
-const sizeFormatter = (type: 'width' | 'height', value: SizeProperty, theme: Theme) => {
-  if (theme.sizes[value] !== undefined) {
-    return theme.sizes[value];
+const sizeFormatter = (type: 'width' | 'height', value: SizePropertyTheme, theme: Theme) => {
+  if (get(theme.sizes, `${value}`) !== undefined) {
+    return get(theme.sizes, `${value}`);
   }
   if (value === 'auto') return 'auto';
   if (value === 'none') return 'none';
@@ -28,27 +29,27 @@ const sizeFormatter = (type: 'width' | 'height', value: SizeProperty, theme: The
   return pxFormatter(value, theme);
 };
 
-const widthFormatter: Formatter<SizeProperty> = (value, theme) => {
+const widthFormatter: Formatter<SizePropertyTheme> = (value, theme) => {
   return sizeFormatter('width', value, theme);
 };
 
-const heightFormatter: Formatter<SizeProperty> = (value, theme) => {
+const heightFormatter: Formatter<SizePropertyTheme> = (value, theme) => {
   return sizeFormatter('height', value, theme);
 };
 
 // spacing or fraction or auto or full or screen
-export const width = cssProperty<SizeProperty>('width', widthFormatter);
+export const width = cssProperty<SizePropertyTheme>('width', widthFormatter);
 
 // spacing or fraction or auto or full or screen
-export const minWidth = cssProperty<SizeProperty>('min-width', widthFormatter);
+export const minWidth = cssProperty<SizePropertyTheme>('min-width', widthFormatter);
 
-export const maxWidth = cssProperty<SizeProperty>('max-width', widthFormatter);
+export const maxWidth = cssProperty<SizePropertyTheme>('max-width', widthFormatter);
 
-export const height = cssProperty<SizeProperty>('height', heightFormatter);
+export const height = cssProperty<SizePropertyTheme>('height', heightFormatter);
 
-export const minHeight = cssProperty<SizeProperty>('min-height', heightFormatter);
+export const minHeight = cssProperty<SizePropertyTheme>('min-height', heightFormatter);
 
-export const maxHeight = cssProperty<SizeProperty>('max-height', heightFormatter);
+export const maxHeight = cssProperty<SizePropertyTheme>('max-height', heightFormatter);
 
 export const overscrollBehavior = cssProperty<OverscrollBehaviorProperty>('overscroll-behavior');
 
