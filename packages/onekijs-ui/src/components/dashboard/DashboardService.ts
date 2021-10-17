@@ -1,4 +1,5 @@
 import { DefaultService, get, isFalse, isMobile, isTrue, reducer, service, set } from 'onekijs';
+import React from 'react';
 import {
   DashboardArea,
   DashboardBodyPanel,
@@ -56,13 +57,18 @@ export class DashboardService extends DefaultService<DashboardState> {
   }
 
   @reducer
-  initHorizontalPanel(area: 'footer' | 'header', props: DashboardHorizontalPanelProps): void {
+  initHorizontalPanel(
+    area: 'footer' | 'header',
+    props: DashboardHorizontalPanelProps,
+    ref: React.RefObject<HTMLDivElement>,
+  ): void {
     const dashboardPanel: DashboardHorizontalPanel = {
       area,
       collapse: props.initialCollapse ?? isMobile(),
       collapseHeight: props.initialCollapseHeight ?? '50px',
       floating: props.initialFloating || isMobile(),
       height: props.initialHeight ?? '200px',
+      ref,
     };
 
     this._fillRow(area === 'header' ? 0 : 2, area);
@@ -71,18 +77,40 @@ export class DashboardService extends DefaultService<DashboardState> {
   }
 
   @reducer
-  initVerticalPanel(area: 'left' | 'right', props: DashboardVerticalPanelProps): void {
+  initVerticalPanel(
+    area: 'left' | 'right',
+    props: DashboardVerticalPanelProps,
+    ref: React.RefObject<HTMLDivElement>,
+  ): void {
     const dashboardPanel: DashboardVerticalPanel = {
       area,
       collapse: props.initialCollapse ?? isMobile(),
       collapseWidth: props.initialCollapseWidth ?? '50px',
       floating: props.initialFloating || isMobile(),
       width: props.initialWidth ?? '200px',
+      ref,
     };
 
     this._fillColumn(area === 'left' ? 0 : 2, area);
 
     this.state[area] = dashboardPanel;
+  }
+
+  @reducer
+  resizeHeight(area: DashboardHorizontalArea, nextHeight: string | 0): void {
+    const panel = this.state[area];
+    if (panel !== undefined) {
+      panel.height = nextHeight;
+    }
+  }
+
+  @reducer
+  resizeWidth(area: DashboardVerticalArea, nextWidth: number): void {
+    const panel = this.state[area];
+    if (panel !== undefined && panel.ref.current !== null) {
+      console.log(panel.ref.current);
+      panel.ref.current.style.width = `${nextWidth}px`;
+    }
   }
 
   showOverlay(): boolean {

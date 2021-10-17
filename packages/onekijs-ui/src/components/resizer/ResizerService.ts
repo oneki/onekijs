@@ -1,16 +1,19 @@
 import { cancel, delay, fork } from '@redux-saga/core/effects';
 import { Task } from '@redux-saga/types';
 import { DefaultService, reducer, saga, SagaEffect, service, useService } from 'onekijs';
-import { ResizerState } from './typings';
+import { ResizerHandler, ResizerState } from './typings';
 
 @service
 export class ResizerService extends DefaultService<ResizerState> {
   protected hoverTask: Task | null = null;
 
   @reducer
-  setSize(width: number, height: number): void {
+  setSize(width: number, height: number, lastX: number, lastY: number): void {
     this.state.width = width;
     this.state.height = height;
+    this.state.lastX = lastX;
+    this.state.lastY = lastY;
+    this.state.handler(width, height);
   }
 
   @reducer
@@ -38,25 +41,22 @@ export class ResizerService extends DefaultService<ResizerState> {
     this.setHover(false);
   }
 
-  @saga(SagaEffect.Throttle, 100)
-  *onResize(x: number, y: number) {
+  @saga(SagaEffect.Latest)
+  *onResize(e: MouseEvent) {
     if (
       this.state.lastX !== undefined &&
       this.state.lastY !== undefined &&
       this.state.width !== undefined &&
       this.state.height !== undefined
     ) {
-      const nextWidth = this.state.width + (x - this.state.lastX);
-      const nextHeight = this.state.height + (y - this.state.lastY);
-      yield this.setSize(nextWidth, nextHeight);
+      const nextWidth = this.state.width + (e.screenX - this.state.lastX);
+      const nextHeight = this.state.height + (e.screenY - this.state.lastY);
+      yield this.setSize(nextWidth, nextHeight, e.screenX, e.screenY);
     }
   }
 
   @reducer
   startResize(target: React.RefObject<HTMLDivElement>, x: number, y: number): void {
-    console.log('onStart');
-    // register the onMouseUp on the document
-    document.addEventListener('mouseup', this.stopResize);
     this.state.active = true;
     if (target.current !== null) {
       this.state.width = target.current.offsetWidth;
@@ -64,6 +64,7 @@ export class ResizerService extends DefaultService<ResizerState> {
     }
     this.state.lastX = x;
     this.state.lastY = y;
+    document.addEventListener('mouseup', this.stopResize);
   }
 
   @reducer
@@ -77,6 +78,6 @@ export class ResizerService extends DefaultService<ResizerState> {
   }
 }
 
-export const useResizerService = (): [ResizerState, ResizerService] => {
-  return useService(ResizerService, {} as ResizerState);
+export const useResizerService = (handler: ResizerHandler): [ResizerState, ResizerService] => {
+  return useService(ResizerService, { handler } as ResizerState);
 };

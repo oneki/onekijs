@@ -1,5 +1,5 @@
 import { FormSubmitCallback, useForm } from 'onekijs';
-import { ComponentStyle, FormTable, useTable } from 'onekijs-ui';
+import { ComponentStyle, FormTable, useInputColumn, useSelectColumn, useTable } from 'onekijs-ui';
 import React from 'react';
 import styled, { css } from 'styled-components';
 import { users } from '../data/users';
@@ -55,40 +55,40 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
     },
   });
 
-  // const streetColumn = useInputColumn({
-  //   id: 'street',
-  //   title: 'Street',
-  //   required: true,
-  // });
+  const streetColumn = useInputColumn({
+    id: 'street',
+    title: 'Street',
+    required: true,
+  });
 
-  // const stateColumn = useSelectColumn({
-  //   id: 'state',
-  //   dataSource: [
-  //     { id: 1, text: 'Alabama' },
-  //     { id: 2, text: 'California' },
-  //     { id: 2, text: 'NY' },
-  //   ],
-  //   title: 'State',
-  // });
+  const stateColumn = useSelectColumn({
+    id: 'state',
+    dataSource: [
+      { id: 1, text: 'Alabama' },
+      { id: 2, text: 'California' },
+      { id: 2, text: 'NY' },
+    ],
+    title: 'State',
+  });
 
-  // const addFilter = () => {
-  //   stateColumn.broker.addFilter({
-  //     id: 'state',
-  //     operator: 'eq',
-  //     not: true,
-  //     value: 'California',
-  //     field: 'text',
-  //   });
-  // };
+  const addFilter = () => {
+    stateColumn.broker.addFilter({
+      id: 'state',
+      operator: 'eq',
+      not: true,
+      value: 'California',
+      field: 'text',
+    });
+  };
 
-  // const removeFilter = () => {
-  //   stateColumn.broker.removeFilter('state');
-  // };
+  const removeFilter = () => {
+    stateColumn.broker.removeFilter('state');
+  };
 
-  // const controller = useTable({
-  //   columns: [streetColumn, stateColumn],
-  //   //grow: 'address.city'
-  // });
+  const controller = useTable({
+    columns: [streetColumn, stateColumn],
+    //grow: 'address.city'
+  });
 
   const controller2 = useTable({
     dataSource: users,
@@ -132,10 +132,10 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
 
   return (
     <Form>
-      {/* <FormTable name="addresses" controller={controller} className={className} />
-      <Button onClick={addFilter}>Add Filter</Button> <Button onClick={removeFilter}>Remove Filter</Button>{' '}
-      <SubmitButton>Submit</SubmitButton> */}
-      <FormTable name="users" controller={controller2} className={className} />
+      <FormTable name="addresses" controller={controller} className={className} />
+      {/* <Button onClick={addFilter}>Add Filter</Button> <Button onClick={removeFilter}>Remove Filter</Button>{' '}
+      <SubmitButton>Submit</SubmitButton>  */}
+      {/* <FormTable name="users" controller={controller2} className={className} /> */}
       {/* <pre>{JSON.stringify(values, null, 2)}</pre> */}
     </Form>
   );

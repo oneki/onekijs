@@ -38,6 +38,7 @@ export type DashboardHorizontalPanel = {
   collapseHeight: string | 0;
   floating: boolean;
   height: string | 0;
+  ref: React.RefObject<HTMLDivElement>;
 };
 
 export type DashboardHorizontalPanelComponentProps = React.InputHTMLAttributes<HTMLDivElement> &
@@ -88,13 +89,14 @@ export type DashboardVerticalPanel = {
   collapse: boolean;
   collapseWidth: string | 0;
   floating: boolean;
+  ref: React.RefObject<HTMLDivElement>;
   width: string | 0;
 };
 
 export type DashboardVerticalPanelComponentProps = React.InputHTMLAttributes<HTMLDivElement> &
   DashboardState & {
     className?: string;
-    panel: DashboardVerticalPanel;
+    panel?: DashboardVerticalPanel;
   };
 
 export type DashboardVerticalPanelProps = {
