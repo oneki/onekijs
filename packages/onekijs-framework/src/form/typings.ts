@@ -189,8 +189,9 @@ export type ValidatorsType = {
   validators?: Validator[];
 };
 
-export type ValidatorFunction = ValidatorSyncFunction | ((value: any) => Promise<ValidationResult>);
+export type ValidatorFunction = ValidatorSyncFunction | ValidatorAsyncFunction;
 export type ValidatorSyncFunction = (value: any) => ValidationResult;
+export type ValidatorAsyncFunction = (value: any) => Promise<ValidationResult>;
 
 export type Validator =
   | ValidatorFunction

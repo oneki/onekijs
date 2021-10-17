@@ -9,6 +9,7 @@ import {
   reducers,
   run,
   sagas,
+  sagasFromReducers,
   Service,
   stop,
   types,
@@ -62,6 +63,7 @@ export default class DefaultService<S extends State = AnyState> implements Servi
   public [dispatch]: any;
   public [combinedReducers]: (state: any, action: any) => any;
   public [inReducer]: boolean;
+  public [sagasFromReducers]: any;
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   public state: S = null!;
   [k: string]: any;
@@ -71,6 +73,7 @@ export default class DefaultService<S extends State = AnyState> implements Servi
     this[types] = {};
     this[sagas] = {};
     this[inReducer] = false;
+    this[sagasFromReducers] = {};
     this.state = initialState;
 
     const createProperty = (property: string) => {
@@ -137,6 +140,16 @@ export default class DefaultService<S extends State = AnyState> implements Servi
     };
   }
 
+  /**
+   * @param type name of the property
+   * @param saga function with an additional value in the prototype : {
+   *   saga: {
+   *     effect: latest
+   *     delay: 10
+   *     defaultDelay: 20
+   *   }
+   * }
+   */
   private [createSaga](type: string, saga: any): void {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
@@ -199,9 +212,18 @@ export default class DefaultService<S extends State = AnyState> implements Servi
       type: 'saga',
       actionType,
     };
-    this[type] = saga;
     this[type] = function* (...args: any[]) {
       yield saga.apply(self, args);
+    };
+    this[sagasFromReducers][type] = function (...args: any[]) {
+      return new Promise((resolve, reject) => {
+        self[dispatch]({
+          type: actionType,
+          payload: toPayload(args),
+          resolve,
+          reject,
+        });
+      });
     };
   }
 
@@ -225,5 +247,9 @@ export default class DefaultService<S extends State = AnyState> implements Servi
 
   [stop](): void {
     this[combinedReducers] = (state: any) => state;
+  }
+
+  callSaga(sagaName: string, ...args: any[]): void {
+    return this[sagasFromReducers][sagaName](args);
   }
 }

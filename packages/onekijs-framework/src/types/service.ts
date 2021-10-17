@@ -12,6 +12,7 @@ export const run = Symbol('service.run');
 export const stop = Symbol('service.stop');
 export const serviceClass = Symbol('onekijs.serviceClass');
 export const create = Symbol('service.create');
+export const sagasFromReducers = Symbol('service.sagasFromReducers');
 
 /*  public [reducers]: any;
   public [types]: any;
@@ -32,6 +33,7 @@ export interface Service<S extends State = AnyState> {
   [create](initialState: S): void;
   [run](): void;
   [stop](): void;
+  [sagasFromReducers]: any;
 }
 
 export interface AppService<S> extends Service<S> {
