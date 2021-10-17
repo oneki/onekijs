@@ -1,6 +1,7 @@
 {
   "name": "onekijs-framework",
-  "version": "0.14.4",
+  "author": "Oneki",
+  "version": "0.14.6",
   "description": "Opiniated React framework built on top of Redux and React Router",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -21,7 +22,6 @@
     "build:fast": "microbundle -f es --jsx React.createElement --no-compress",
     "start": "microbundle watch -f es --jsx React.createElement --max-old-space-size=8192 --no-compress"
   },
-  "author": "Oneki",
   "license": "MIT",
   "dependencies": {
     "history": "^4.10.1",

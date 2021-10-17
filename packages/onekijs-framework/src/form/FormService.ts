@@ -1,5 +1,4 @@
 import { Task } from 'redux-saga';
-import { fork } from 'redux-saga/effects';
 import { reducer, saga, service } from '../core/annotations';
 import DefaultService from '../core/Service';
 import { ValidationStatus } from '../types/form';
@@ -19,8 +18,8 @@ import {
   FormWarningCallback,
   ValidationCode,
   ValidationResult,
-  Validator,
-  ValidatorFunction,
+  ValidatorAsyncFunction,
+  ValidatorSyncFunction,
 } from './typings';
 
 @service
@@ -138,7 +137,7 @@ export default class FormService extends DefaultService<FormState> {
 
   protected _getRelatedWatchs(watch: string): string[] {
     let result: string[] = [];
-    const index = get(this.watchIndex, watch);
+    const index = watch === '' ? this.watchIndex[''] : get(this.watchIndex, watch);
     if (index) {
       if (Array.isArray(index)) {
         for (const i in index) {
@@ -202,13 +201,16 @@ export default class FormService extends DefaultService<FormState> {
 
   onChange(type: FormListenerType, listener: FormListener, watchs: string[] | string, once: boolean): void {
     watchs = Array.isArray(watchs) ? watchs : [watchs];
-
     for (const watch of watchs) {
       this.listeners[type][watch] = this.listeners[type][watch] || [];
       this.listeners[type][watch].push({ listener, watchs, once });
-      const current = get(this.watchIndex, watch, undefined);
+      const current = watch === '' ? this.watchIndex[''] : get(this.watchIndex, watch, undefined);
       if (current === undefined) {
-        set(this.watchIndex, watch, true);
+        if (watch === '') {
+          this.watchIndex[''] = true;
+        } else {
+          set(this.watchIndex, watch, true);
+        }
       }
     }
   }
@@ -292,8 +294,19 @@ export default class FormService extends DefaultService<FormState> {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @reducer
-  private _setValues(values: AnonymousObject = {}, validations: AnonymousObject<FieldValidation> = {}): void {
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  setValue(fieldName: string, value: any): void {
+    this.setValues({
+      [fieldName]: value,
+    });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  @reducer
+  setValues(values: AnonymousObject<any>): void {
+    const validations = this.validateAll(values);
     Object.keys(values).forEach((key) => {
       const field = this.fields[key];
       if (field && field.touchOn === 'change' && !field.touched) {
@@ -308,29 +321,8 @@ export default class FormService extends DefaultService<FormState> {
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Every)
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  *setValue(fieldName: string, value: any) {
-    const async: string[] = yield this.validateAll({
-      [fieldName]: value,
-    });
-    if (async.length > 0) {
-      yield this.compileValidations(async);
-    }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Latest)
-  *setValues(values: AnonymousObject<any>) {
-    const async: string[] = yield this.validateAll(values);
-    if (async.length > 0) {
-      yield this.compileValidations(async);
-    }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Leading)
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   *submit(
     values: AnonymousObject,
     validations: AnonymousObject<FieldValidation>,
@@ -386,33 +378,45 @@ export default class FormService extends DefaultService<FormState> {
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  *validate(
+  validateSync(
     fieldName: string,
     validatorName: string,
-    validator: Validator,
+    validator: ValidatorSyncFunction,
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     value: any,
-    async: boolean,
-  ) {
-    const validatorFunction: ValidatorFunction = typeof validator === 'object' ? validator.validator : validator;
-    const result: ValidationResult = yield validatorFunction(value);
-    if (async) {
-      yield this.clearValidation(fieldName, validatorName, ValidationCode.Loading, false);
-    }
+  ): void {
+    const result: ValidationResult = validator(value);
     if (result.valid) {
-      yield this.clearValidation(fieldName, validatorName, ValidationCode.Error, false);
+      this.clearValidation(fieldName, validatorName, ValidationCode.Error, false);
     } else {
-      yield this.setValidation(fieldName, validatorName, ValidationCode.Error, result.message, false);
+      this.setValidation(fieldName, validatorName, ValidationCode.Error, result.message, false);
+    }
+  }
+
+  @saga(SagaEffect.Latest)
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  *validateAsync(
+    fieldName: string,
+    validatorName: string,
+    validator: ValidatorAsyncFunction,
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+    value: any,
+  ) {
+    const result: ValidationResult = yield validator(value);
+    yield this.clearValidation(fieldName, validatorName, ValidationCode.Loading, false);
+    if (result.valid) {
+      yield this.clearValidation(fieldName, validatorName, ValidationCode.Error, true);
+    } else {
+      yield this.setValidation(fieldName, validatorName, ValidationCode.Error, result.message, true);
     }
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  *validateAll(values: AnonymousObject<any>) {
+  validateAll(values: AnonymousObject<any>): AnonymousObject<FieldValidation> {
     // do all validations
     const tasks: AnonymousObject<Task[]> = {};
     const validations: AnonymousObject<FieldValidation> = {};
     const keys = Object.keys(values);
-    const async: Set<string> = new Set();
 
     for (const key of keys) {
       // we need to find all sub fields (if any) and do the validations for these fields
@@ -425,23 +429,24 @@ export default class FormService extends DefaultService<FormState> {
           const validatorName = `__validator_${i}`;
           const validator = validators[i];
           if (typeof validator === 'object' && validator.async === true) {
-            async.add(fieldName);
             this.setValidation(fieldName, validatorName, ValidationCode.Loading, '', false);
-            yield fork(
-              [this, this.validate],
+            this.callSaga(
+              'validateAsync',
               fieldName,
               validatorName,
-              validator,
+              validator.validator as ValidatorAsyncFunction,
               get(values[key], fieldName.substr(key.length + 1)),
-              true,
             );
           } else {
-            yield this.validate(
+            const validatorSync: ValidatorSyncFunction =
+              typeof validator === 'object'
+                ? (validator.validator as ValidatorSyncFunction)
+                : (validator as ValidatorSyncFunction);
+            this.validateSync(
               fieldName,
               validatorName,
-              validator,
+              validatorSync,
               get(values[key], fieldName.substr(key.length + 1)),
-              false,
             );
           }
         }
@@ -452,7 +457,6 @@ export default class FormService extends DefaultService<FormState> {
       validations[fieldName] = this.getValidation(fieldName);
     });
 
-    yield this._setValues(values, validations);
-    return Array.from(async);
+    return validations;
   }
 }
