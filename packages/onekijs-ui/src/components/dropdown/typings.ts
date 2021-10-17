@@ -1,11 +1,11 @@
 import { AnyFunction } from 'onekijs-framework';
-import { SizeProperty } from '../../styles/typings';
+import { SizePropertyTheme } from '../../styles/typings';
 
 export interface DropdownProps {
   className?: string;
   refElement: HTMLElement | null;
   open: boolean;
-  height?: SizeProperty;
+  height?: SizePropertyTheme;
   skidding?: number;
   distance?: number;
   onUpdate?: AnyFunction<void>;

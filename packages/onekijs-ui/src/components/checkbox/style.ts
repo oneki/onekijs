@@ -1,6 +1,6 @@
 import { css, keyframes } from 'styled-components';
-import { backgroundColor } from '../../styles/background';
 import { borderColor, borderRadius, borderStyle, borderWidth } from '../../styles/border';
+import { opacity } from '../../styles/effects';
 import { overflow } from '../../styles/overflow';
 import { left, position, top } from '../../styles/position';
 import { height, width } from '../../styles/size';
@@ -8,7 +8,6 @@ import { margin, padding } from '../../styles/spacing';
 import { stroke } from '../../styles/svg';
 import { ComponentStyle } from '../../styles/typings';
 import { color } from '../../styles/typography';
-import { deriveColor } from '../../utils/color';
 import { calcSize } from '../../utils/size';
 import { CheckboxProps } from './typings';
 
@@ -27,8 +26,8 @@ const checkboxStyle: ComponentStyle<CheckboxProps> = ({
   theme,
   color: cssColor,
 }) => {
-  const checkboxCheckedColor = cssColor ?? theme.colors[theme.kind.primary];
-  const checkboxColor = cssColor ?? deriveColor(theme.kind.primary, -200, false);
+  const t = theme.checkbox;
+  const checkboxColor = cssColor ?? t.color;
   const checkboxHeight = isNaN(cssHeight as any) ? `${cssHeight}` : `${cssHeight}px`;
   const checkboxWidth = isNaN(cssHeight as any) ? `${cssWidth}` : `${cssWidth}px`;
   const svgWidth = calcSize(checkboxWidth, () => 10);
@@ -51,15 +50,15 @@ const checkboxStyle: ComponentStyle<CheckboxProps> = ({
   input:checked + label > svg {
     ${height(svgHeigth)};
     animation: ${checkedKeyframes} ease-in-out 0.2s forwards;
-    ${stroke(checkboxCheckedColor)}
   }
     
-  label:active::after {
-    ${backgroundColor('gray-200')}
+  input:checked + label {
+    ${opacity(1)}
   }
     
   label {
     ${color(checkboxColor)}
+    ${opacity(0.6)}
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -72,17 +71,13 @@ const checkboxStyle: ComponentStyle<CheckboxProps> = ({
       float: left;
       ${borderWidth('2px')}
       ${borderStyle('solid')}
-      ${borderColor(checkboxColor)}
-      ${borderRadius('default')}
-      margin-right: 1rem;
+      ${borderColor('currentColor')}
+      ${borderRadius('md')}
       transition: 0.15s all ease-out;      
     }
   }
-  input:checked + label:after {
-    ${borderColor(checkboxCheckedColor)}
-  }
   svg {
-    ${stroke(checkboxColor)}
+    ${stroke('currentColor')}
     stroke-width: 6px;
     height: 0; //Firefox fix
     ${width(svgWidth)};

@@ -1,29 +1,48 @@
 export { default as Button } from './components/button';
-export { default as Grid } from './components/grid';
+export { default as Dashboard } from './components/dashboard';
+export { default as DashboardBody } from './components/dashboard/components/DashboardBody';
+export { default as DashboardContainer } from './components/dashboard/components/DashboardContainer';
+export { default as DashboardFooter } from './components/dashboard/components/DashboardFooter';
+export { default as DashboardHeader } from './components/dashboard/components/DashboardHeader';
+export { default as DashboardLeft } from './components/dashboard/components/DashboardLeft';
+export { dashboardOverlayStyle, default as DashboardOverlay } from './components/dashboard/components/DashboardOverlay';
+export { default as DashboardRight } from './components/dashboard/components/DashboardRight';
+export { default as DashboardToggler } from './components/dashboard/components/DashboardToggler';
+export { DashboardService } from './components/dashboard/DashboardService';
+export { default as useDashboardPanel } from './components/dashboard/hooks/useDashboardHorizontalPanel';
 export {
-  GridBodyCellProps,
-  GridBodyProps,
-  GridBodyRowProps,
-  GridColumn,
-  GridColumnSpec,
-  GridItem,
-  GridItemMeta,
-  GridItems,
-  GridProps,
-  GridState,
-  UseGridOptions,
-} from './components/grid/typings';
-export { default as useGrid } from './components/grid/useGrid';
+  DashboardServiceContext,
+  default as useDashboardService,
+} from './components/dashboard/hooks/useDashboardService';
+export { DashboardStateContext, default as useDashboardState } from './components/dashboard/hooks/useDashboardState';
+export {
+  DashboardArea,
+  DashboardBodyComponentProps,
+  DashboardBodyPanel,
+  DashboardBodyPanelProps,
+  DashboardContainerProps,
+  DashboardHorizontalArea,
+  DashboardHorizontalPanel,
+  DashboardHorizontalPanelProps,
+  DashboardOverlayProps,
+  DashboardProps,
+  DashboardSize,
+  DashboardState,
+  DashboardTogglerProps,
+  DashboardVerticalArea,
+  DashboardVerticalPanel,
+  DashboardVerticalPanelProps,
+} from './components/dashboard/typings';
 export { default as CrossIcon } from './components/icon/CrossIcon';
 export { default as LoadingIcon } from './components/icon/LoadingIcon';
 export { default as SearchIcon } from './components/icon/SearchIcon';
-export { default as Input2 } from './components/input';
+export { default as Input } from './components/input';
 export { default as InputComponent } from './components/input/components/InputComponent';
-export { InputProps as InputProps2 } from './components/input/typings';
+export { InputProps } from './components/input/typings';
 export { default as Label } from './components/label';
-export { default as List2 } from './components/list';
+export { default as List } from './components/list';
 export { ListItemHandler, ListItemProps, ListItems, ListProps, ListStatus } from './components/list/typings';
-export { default as Select2 } from './components/select';
+export { default as Select } from './components/select';
 export { default as SelectComponent } from './components/select/components/SelectComponent';
 export { default as FormSelect } from './components/select/FormSelect';
 export {
@@ -34,8 +53,26 @@ export {
   SelectOptionMeta,
   SelectOptionProps,
   SelectOptionsProps,
-  SelectProps as SelectProps2,
+  SelectProps,
 } from './components/select/typings';
+export { default as Table } from './components/table';
+export { default as useInputColumn } from './components/table/columns/useInputColumn';
+export { default as useSelectColumn } from './components/table/columns/useSelectColumn';
+export { default as FormTable } from './components/table/FormTable';
+export {
+  TableBodyCellProps,
+  TableBodyProps,
+  TableBodyRowProps,
+  TableColumn,
+  TableColumnSpec,
+  TableItem,
+  TableItemMeta,
+  TableItems,
+  TableProps,
+  TableState,
+  UseTableOptions,
+} from './components/table/typings';
+export { default as useTable } from './components/table/useTable';
 export { default as Tooltip } from './components/tooltip';
 export * from './styles/alignment';
 export * from './styles/animation';

@@ -13,7 +13,7 @@ const dropdownStyle: ComponentStyle<DropdownProps> = () => {
   return css`
     ${preflight()}
     ${width(64)}
-    ${borderRadius('default')}
+    ${borderRadius('md')}
     ${boxShadow('lg')}
     ${overflowY('auto')}
     ${zIndex(1000)}
