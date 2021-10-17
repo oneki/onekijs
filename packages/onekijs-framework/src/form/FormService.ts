@@ -135,21 +135,32 @@ export default class FormService extends DefaultService<FormState> {
     return result;
   }
 
-  protected _getSubWatchs(watch: string): string[] {
+  protected _getRelatedWatchs(watch: string): string[] {
     let result: string[] = [];
-
-    const index = get(this.watchIndex, watch);
+    const index = watch === '' ? this.watchIndex[''] : get(this.watchIndex, watch);
     if (index) {
       if (Array.isArray(index)) {
         for (const i in index) {
-          result = result.concat(this._getSubWatchs(`${watch}.${i}`));
+          result = result.concat(this._getRelatedWatchs(`${watch}.${i}`));
         }
       } else if (isObject(index)) {
         Object.keys(index).forEach((childWatch) => {
-          result = result.concat(this._getSubWatchs(`${watch}.${childWatch}`));
+          result = result.concat(this._getRelatedWatchs(`${watch}.${childWatch}`));
         });
       }
       result.push(watch);
+    }
+    const parts = watch.split('.');
+    while (parts.length > 1) {
+      parts.pop();
+      const related = parts.join('.');
+      if (get(this.watchIndex, related)) {
+        result.push(related);
+      }
+    }
+
+    if (this.watchIndex['']) {
+      result.push('');
     }
     return result;
   }
@@ -190,22 +201,26 @@ export default class FormService extends DefaultService<FormState> {
 
   onChange(type: FormListenerType, listener: FormListener, watchs: string[] | string, once: boolean): void {
     watchs = Array.isArray(watchs) ? watchs : [watchs];
-
     for (const watch of watchs) {
       this.listeners[type][watch] = this.listeners[type][watch] || [];
       this.listeners[type][watch].push({ listener, watchs, once });
-      if (type === 'valueChange') {
-        set(this.watchIndex, watch, true, false);
+      const current = watch === '' ? this.watchIndex[''] : get(this.watchIndex, watch, undefined);
+      if (current === undefined) {
+        if (watch === '') {
+          this.watchIndex[''] = true;
+        } else {
+          set(this.watchIndex, watch, true);
+        }
       }
     }
   }
 
   offSubmittingChange(listener: FormListener): void {
-    this.offChange('submittingChange', listener, '');
+    this.offChange('submittingChange', listener, '__submit__');
   }
 
   onSubmittingChange(listener: FormListener, once = false): void {
-    this.onChange('submittingChange', listener, '', once);
+    this.onChange('submittingChange', listener, '__submit__', once);
   }
 
   offValidationChange(listener: FormListener, watchs: string[] | string): void {
@@ -298,7 +313,7 @@ export default class FormService extends DefaultService<FormState> {
         field.touched = true;
       }
       set(this.state, `values.${key}`, values[key]);
-      this._getSubWatchs(key).forEach((key) => this.pendingDispatch.add(key));
+      this._getRelatedWatchs(key).forEach((key) => this.pendingDispatch.add(key));
     });
     Object.keys(validations).forEach((fieldName) => {
       set(this.state, `validations.${fieldName}`, validations[fieldName]);
