@@ -137,8 +137,7 @@ export default class FormService extends DefaultService<FormState> {
 
   protected _getSubWatchs(watch: string): string[] {
     let result: string[] = [];
-
-    const index = get(this.watchIndex, watch);
+    const index = watch === '' ? this.watchIndex[''] : get(this.watchIndex, watch);
     if (index) {
       if (Array.isArray(index)) {
         for (const i in index) {
@@ -190,12 +189,16 @@ export default class FormService extends DefaultService<FormState> {
 
   onChange(type: FormListenerType, listener: FormListener, watchs: string[] | string, once: boolean): void {
     watchs = Array.isArray(watchs) ? watchs : [watchs];
-
     for (const watch of watchs) {
       this.listeners[type][watch] = this.listeners[type][watch] || [];
       this.listeners[type][watch].push({ listener, watchs, once });
-      if (type === 'valueChange') {
-        set(this.watchIndex, watch, true, false);
+      const current = watch === '' ? this.watchIndex[''] : get(this.watchIndex, watch, undefined);
+      if (current === undefined) {
+        if (watch === '') {
+          this.watchIndex[''] = true;
+        } else {
+          set(this.watchIndex, watch, true);
+        }
       }
     }
   }
