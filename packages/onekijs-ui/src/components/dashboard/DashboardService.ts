@@ -1,5 +1,7 @@
 import { DefaultService, get, isFalse, isMobile, isTrue, reducer, service, set } from 'onekijs';
 import React from 'react';
+import { getTranslateXY } from '../../utils/dom';
+import { ResizeStep } from '../resizer/typings';
 import {
   DashboardArea,
   DashboardBodyPanel,
@@ -12,6 +14,7 @@ import {
   DashboardVerticalPanel,
   DashboardVerticalPanelProps,
 } from './typings';
+import { isAreaInColumn, isAreaInRow } from './utils/dashboardArea';
 
 @service
 export class DashboardService extends DefaultService<DashboardState> {
@@ -50,9 +53,9 @@ export class DashboardService extends DefaultService<DashboardState> {
   }
 
   @reducer
-  initBodyPanel(_props: DashboardBodyPanelProps): void {
+  initBodyPanel(_props: DashboardBodyPanelProps, ref: React.RefObject<HTMLDivElement>): void {
     this.areas[1][1] = 'body';
-    this.state.body = {};
+    this.state.body = { ref };
     this._compileAreas();
   }
 
@@ -70,10 +73,8 @@ export class DashboardService extends DefaultService<DashboardState> {
       height: props.initialHeight ?? '200px',
       ref,
     };
-
-    this._fillRow(area === 'header' ? 0 : 2, area);
-
     this.state[area] = dashboardPanel;
+    this._fillRow(area === 'header' ? 0 : 2, area);
   }
 
   @reducer
@@ -90,26 +91,139 @@ export class DashboardService extends DefaultService<DashboardState> {
       width: props.initialWidth ?? '200px',
       ref,
     };
-
-    this._fillColumn(area === 'left' ? 0 : 2, area);
-
     this.state[area] = dashboardPanel;
+    this._fillColumn(area === 'left' ? 0 : 2, area);
   }
 
   @reducer
-  resizeHeight(area: DashboardHorizontalArea, nextHeight: string | 0): void {
+  resizeHeight(area: DashboardHorizontalArea, nextHeight: number, step: ResizeStep): void {
     const panel = this.state[area];
-    if (panel !== undefined) {
-      panel.height = nextHeight;
+    const left = this.state.left;
+    const right = this.state.right;
+    const body = this.state.body;
+    const panelElement = panel !== undefined && panel.ref.current !== null ? panel.ref.current : undefined;
+    const bodyElement = body !== undefined && body.ref.current !== null ? body.ref.current : undefined;
+    // only touch the left panel if it's under the header panel or above the footer panel
+    const leftElement =
+      isAreaInColumn('first', area, this.state.areas) && left !== undefined && left.ref.current !== null
+        ? left.ref.current
+        : undefined;
+    // only touch the right panel if it's under the header panel or above the footer panel
+    const rightElement =
+      isAreaInColumn('last', area, this.state.areas) && right !== undefined && right.ref.current !== null
+        ? right.ref.current
+        : undefined;
+
+    switch (step) {
+      case 'start':
+        // deactivate transition animation during the resize
+        [panelElement, bodyElement, leftElement, rightElement].forEach((el) => {
+          if (el) el.style.transition = 'none';
+        });
+        break;
+      case 'stop':
+        // set the new height in the panel object. Will be used by styled to set the correct height via CSS
+        if (panel) panel.height = `${nextHeight}px`;
+        // remove any style added during the resize and let styled managed height and height via CSS
+        [panelElement, bodyElement, leftElement, rightElement].forEach((el) => {
+          if (el) {
+            ['transition', 'height', 'transform'].forEach((k) => {
+              el.style[k as any] = '';
+            });
+          }
+        });
+        break;
+      case 'run':
+        if (panelElement) {
+          // calculate the difference between the next height and the current height
+          const incrementHeight = nextHeight - panelElement.offsetHeight;
+          // force the new height via the style
+          panelElement.style.height = `${nextHeight}px`;
+          // if the resized panel is the footer one, we must translateY the panel in addition of changing the size
+          if (area === 'footer') {
+            const translate = getTranslateXY(panelElement);
+            panelElement.style.transform = `translate(${translate.x}px,${translate.y - incrementHeight}px)`;
+          }
+
+          [bodyElement, leftElement, rightElement].forEach((el) => {
+            if (el) {
+              // We must adapt the size of non horizontal panels if they are impacted by the resize
+              el.style.height = `${el.offsetHeight - incrementHeight}px`;
+              // If the resized panel is the header one, we must translateY non horizontal panels in addition of changing the size
+              if (area === 'header') {
+                const translate = getTranslateXY(el);
+                el.style.transform = `translate(${translate.x}px,${translate.y + incrementHeight}px)`;
+              }
+            }
+          });
+        }
+        break;
     }
   }
 
   @reducer
-  resizeWidth(area: DashboardVerticalArea, nextWidth: number): void {
+  resizeWidth(area: DashboardVerticalArea, nextWidth: number, step: ResizeStep): void {
     const panel = this.state[area];
-    if (panel !== undefined && panel.ref.current !== null) {
-      console.log(panel.ref.current);
-      panel.ref.current.style.width = `${nextWidth}px`;
+    const header = this.state.header;
+    const footer = this.state.footer;
+    const body = this.state.body;
+    const panelElement = panel !== undefined && panel.ref.current !== null ? panel.ref.current : undefined;
+    const bodyElement = body !== undefined && body.ref.current !== null ? body.ref.current : undefined;
+    // only touch the header panel if it's at the right of the left panel or at the left of the right panel
+    const headerElement =
+      isAreaInRow('first', area, this.state.areas) && header !== undefined && header.ref.current !== null
+        ? header.ref.current
+        : undefined;
+    // only touch the footer panel if it's at the right of the left panel or at the left of the right panel
+    const footerElement =
+      isAreaInRow('last', area, this.state.areas) && footer !== undefined && footer.ref.current !== null
+        ? footer.ref.current
+        : undefined;
+
+    switch (step) {
+      case 'start':
+        // deactivate transition animation during the resize
+        [panelElement, bodyElement, headerElement, footerElement].forEach((el) => {
+          if (el) el.style.transition = 'none';
+        });
+        break;
+      case 'stop':
+        // set the new width in the panel object. Will be used by styled to set the correct width via CSS
+        if (panel) panel.width = `${nextWidth}px`;
+        // remove any style added during the resize and let styled managed width and height via CSS
+        [panelElement, bodyElement, headerElement, footerElement].forEach((el) => {
+          if (el) {
+            ['transition', 'width', 'transform'].forEach((k) => {
+              el.style[k as any] = '';
+            });
+          }
+        });
+        break;
+      case 'run':
+        if (panelElement) {
+          // calculate the difference between the next width and the current width
+          const incrementWidth = nextWidth - panelElement.offsetWidth;
+          // force the new width via the style
+          panelElement.style.width = `${nextWidth}px`;
+          // if the resized panel is the right one, we must translateX the panel in addition of changing the size
+          if (area === 'right') {
+            const translate = getTranslateXY(panelElement);
+            panelElement.style.transform = `translate(${translate.x - incrementWidth}px,${translate.y}px)`;
+          }
+
+          [bodyElement, headerElement, footerElement].forEach((el) => {
+            if (el) {
+              // We must adapt the size of non vertical panels if they are impacted by the resize
+              el.style.width = `${el.offsetWidth - incrementWidth}px`;
+              // If the resized panel is the left one, we must translateX non vertical panels in addition of changing the size
+              if (area === 'left') {
+                const translate = getTranslateXY(el);
+                el.style.transform = `translate(${translate.x + incrementWidth}px,${translate.y}px)`;
+              }
+            }
+          });
+        }
+        break;
     }
   }
 

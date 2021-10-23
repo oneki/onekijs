@@ -9,7 +9,6 @@ export { dashboardOverlayStyle, default as DashboardOverlay } from './components
 export { default as DashboardRight } from './components/dashboard/components/DashboardRight';
 export { default as DashboardToggler } from './components/dashboard/components/DashboardToggler';
 export { DashboardService } from './components/dashboard/DashboardService';
-export { default as useDashboardPanel } from './components/dashboard/hooks/useDashboardHorizontalPanel';
 export {
   DashboardServiceContext,
   default as useDashboardService,

@@ -13,6 +13,7 @@ export type DashboardBodyComponentProps = {
 
 export type DashboardBodyPanel = {
   className?: string;
+  ref: React.RefObject<HTMLDivElement>;
 };
 
 export type DashboardBodyPanelProps = {
@@ -42,9 +43,10 @@ export type DashboardHorizontalPanel = {
 };
 
 export type DashboardHorizontalPanelComponentProps = React.InputHTMLAttributes<HTMLDivElement> &
-  DashboardState & {
-    className?: string;
-    panel: DashboardHorizontalPanel;
+  DashboardState &
+  DashboardHorizontalPanelProps & {
+    panel?: DashboardHorizontalPanel;
+    area: DashboardHorizontalArea;
   };
 
 export type DashboardHorizontalPanelProps = {
@@ -94,9 +96,10 @@ export type DashboardVerticalPanel = {
 };
 
 export type DashboardVerticalPanelComponentProps = React.InputHTMLAttributes<HTMLDivElement> &
-  DashboardState & {
-    className?: string;
+  DashboardState &
+  DashboardVerticalPanelProps & {
     panel?: DashboardVerticalPanel;
+    area: DashboardVerticalArea;
   };
 
 export type DashboardVerticalPanelProps = {

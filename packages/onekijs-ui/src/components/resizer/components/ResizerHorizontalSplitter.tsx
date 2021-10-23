@@ -1,21 +1,22 @@
 import { useEventListener } from 'onekijs';
 import React from 'react';
 import { useResizerService } from '../ResizerService';
-import { ResizerHandle, ResizeVerticalSplitterProps } from '../typings';
+import { ResizerHandle, ResizeHorizontalSplitterProps } from '../typings';
 
 const getClassNames = (handle: ResizerHandle, active?: boolean, hover?: boolean) => {
-  return `o-resizer-vertical-splitter o-resizer-${handle}-splitter${active || hover ? ' o-resizer-active' : ''}`;
+  return `o-resizer-horizontal-splitter o-resizer-${handle}-splitter${active || hover ? ' o-resizer-active' : ''}`;
 };
 
-const ResizerVerticalSplitter: React.FC<ResizeVerticalSplitterProps> = ({ children, target, handle, onResize }) => {
+const ResizerHorizontalSplitter: React.FC<ResizeHorizontalSplitterProps> = ({ children, target, handle, onResize }) => {
   const [resizerState, resizerService] = useResizerService(onResize);
   const style: React.CSSProperties = {
     position: 'absolute',
-    top: 0,
   };
 
-  if (handle === 'e') {
-    style.right = 0;
+  if (handle === 's') {
+    style.bottom = 0;
+  } else {
+    style.top = 0;
   }
 
   useEventListener('mousemove', (e) => resizerService.onResize(e));
@@ -34,4 +35,4 @@ const ResizerVerticalSplitter: React.FC<ResizeVerticalSplitterProps> = ({ childr
   );
 };
 
-export default ResizerVerticalSplitter;
+export default ResizerHorizontalSplitter;

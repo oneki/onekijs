@@ -1,11 +1,13 @@
 import { cancel, delay, fork } from '@redux-saga/core/effects';
 import { Task } from '@redux-saga/types';
 import { DefaultService, reducer, saga, SagaEffect, service, useService } from 'onekijs';
-import { ResizerHandler, ResizerState } from './typings';
+import { clearSelection, markBodyAsSelectable, markBodyAsUnselectable } from '../../utils/dom';
+import { ResizerHandle, ResizerHandler, ResizerState } from './typings';
 
 @service
 export class ResizerService extends DefaultService<ResizerState> {
   protected hoverTask: Task | null = null;
+  protected currentHandle?: ResizerHandle;
 
   @reducer
   setSize(width: number, height: number, lastX: number, lastY: number): void {
@@ -13,11 +15,12 @@ export class ResizerService extends DefaultService<ResizerState> {
     this.state.height = height;
     this.state.lastX = lastX;
     this.state.lastY = lastY;
-    this.state.handler(width, height);
+    this.state.handler('run', width, height);
   }
 
   @reducer
   setHover(hover: boolean): void {
+    console.log('setHover', hover);
     this.state.hover = hover;
   }
 
@@ -47,34 +50,48 @@ export class ResizerService extends DefaultService<ResizerState> {
       this.state.lastX !== undefined &&
       this.state.lastY !== undefined &&
       this.state.width !== undefined &&
-      this.state.height !== undefined
+      this.state.height !== undefined &&
+      this.currentHandle !== undefined
     ) {
-      const nextWidth = this.state.width + (e.screenX - this.state.lastX);
-      const nextHeight = this.state.height + (e.screenY - this.state.lastY);
+      const diffX = e.screenX - this.state.lastX;
+      const diffY = e.screenY - this.state.lastY;
+      const isEast = ['e', 'ne', 'se'].includes(this.currentHandle);
+      const isNorth = ['n', 'ne', 'nw'].includes(this.currentHandle);
+      const nextWidth = this.state.width + (isEast ? diffX : -diffX);
+      const nextHeight = this.state.height + (isNorth ? -diffY : diffY);
       yield this.setSize(nextWidth, nextHeight, e.screenX, e.screenY);
     }
   }
 
   @reducer
-  startResize(target: React.RefObject<HTMLDivElement>, x: number, y: number): void {
+  startResize(handle: ResizerHandle, target: React.RefObject<HTMLDivElement>, x: number, y: number): void {
+    this.currentHandle = handle;
     this.state.active = true;
+    this.state.lastX = x;
+    this.state.lastY = y;
     if (target.current !== null) {
       this.state.width = target.current.offsetWidth;
       this.state.height = target.current.offsetHeight;
+      this.state.handler('start', this.state.width, this.state.height);
     }
-    this.state.lastX = x;
-    this.state.lastY = y;
+    clearSelection();
+    markBodyAsUnselectable();
     document.addEventListener('mouseup', this.stopResize);
   }
 
   @reducer
   stopResize(): void {
+    this.currentHandle = undefined;
     console.log('onStop');
     document.removeEventListener('mouseup', this.stopResize);
+    markBodyAsSelectable();
     // ensure that the resize is active
     this.state.active = false;
     this.state.lastX = undefined;
     this.state.lastY = undefined;
+    if (this.state.width !== undefined && this.state.height !== undefined) {
+      this.state.handler('stop', this.state.width, this.state.height);
+    }
   }
 }
 

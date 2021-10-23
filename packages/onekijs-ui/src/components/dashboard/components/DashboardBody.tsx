@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import useDashboardService from '../hooks/useDashboardService';
 import useDashboardState from '../hooks/useDashboardState';
@@ -12,7 +12,19 @@ import {
 import { getWorkspacePanelLength } from '../utils/dashboardLength';
 
 const DashboardBodyComponent: React.FC<DashboardBodyComponentProps> = (props) => {
-  return <div className={props.className}>{props.children}</div>;
+  const ref = useRef<HTMLDivElement>(null);
+  const service = useDashboardService();
+
+  useEffect(() => {
+    service.initBodyPanel(props, ref);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <div className={props.className} ref={ref}>
+      {props.children}
+    </div>
+  );
 };
 
 const getLength = (type: 'width' | 'height', size: DashboardSize, props: DashboardBodyComponentProps): string => {
@@ -74,17 +86,9 @@ const StyledDashboardBody = styled(DashboardBodyComponent)`
 `;
 
 const DashboardBody: React.FC<DashboardBodyPanelProps> = (props) => {
-  const service = useDashboardService();
   const state = useDashboardState();
-  useEffect(() => {
-    service.initBodyPanel(props);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const panel = state.body;
-  if (!panel) {
-    return null;
-  }
 
   return (
     <StyledDashboardBody {...panel} {...state} className={props.className}>

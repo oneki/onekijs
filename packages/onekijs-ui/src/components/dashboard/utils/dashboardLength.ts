@@ -17,7 +17,7 @@ export const getDashboardPanelLength = (
     type === 'width' ? (panel as DashboardVerticalPanel)?.width : (panel as DashboardHorizontalPanel)?.height;
 
   if (!panel.floating && (size === 'small' || isTrue(panel.collapse))) {
-    return panelCollapseLength;
+    return parseFloat(`${panelCollapseLength}`) < parseFloat(`${panelLength}`) ? panelCollapseLength : panelLength;
   }
   return panelLength;
 };

@@ -1,6 +1,10 @@
-export type ResizerHandle = 'n' | 'e' | 's' | 'w' | 'se' | 'sw' | 'nw' | 'all';
+export type ResizerVerticalHandle = 'e' | 'w';
+export type ResizerHorizontallHandle = 'n' | 's';
+export type ResizerHandle = ResizerVerticalHandle | ResizerHorizontallHandle | 'se' | 'sw' | 'nw' | 'all';
 
-export type ResizerHandler = (nextWidth: number, nextHeight: number) => void;
+export type ResizeStep = 'start' | 'stop' | 'run';
+
+export type ResizerHandler = (step: ResizeStep, nextWidth: number, nextHeight: number) => void;
 
 export interface ResizerProps {
   className?: string;
@@ -13,9 +17,16 @@ export interface ResizerProps {
 }
 
 export interface ResizeSplitterProps {
-  handle: 'e' | 'w';
   onResize: ResizerHandler;
   target: React.RefObject<HTMLDivElement>;
+}
+
+export interface ResizeVerticalSplitterProps extends ResizeSplitterProps {
+  handle: ResizerVerticalHandle;
+}
+
+export interface ResizeHorizontalSplitterProps extends ResizeSplitterProps {
+  handle: ResizerHorizontallHandle;
 }
 
 export interface ResizerState {

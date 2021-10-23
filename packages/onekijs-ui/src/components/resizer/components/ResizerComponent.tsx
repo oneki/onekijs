@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { ResizerProps } from '../typings';
+import ResizerHorizontalSplitter from './ResizerHorizontalSplitter';
 import ResizerVerticalSplitter from './ResizerVerticalSplitter';
 
 const ResizerComponent: React.FC<ResizerProps> = ({ className, children, handles = [], onResize }) => {
@@ -9,6 +10,15 @@ const ResizerComponent: React.FC<ResizerProps> = ({ className, children, handles
       {children}
       {(handles.includes('e') || handles.includes('all')) && (
         <ResizerVerticalSplitter onResize={onResize} target={ref} handle="e" />
+      )}
+      {(handles.includes('w') || handles.includes('all')) && (
+        <ResizerVerticalSplitter onResize={onResize} target={ref} handle="w" />
+      )}
+      {(handles.includes('n') || handles.includes('all')) && (
+        <ResizerHorizontalSplitter onResize={onResize} target={ref} handle="n" />
+      )}
+      {(handles.includes('s') || handles.includes('all')) && (
+        <ResizerHorizontalSplitter onResize={onResize} target={ref} handle="s" />
       )}
     </div>
   );
