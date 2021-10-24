@@ -1,6 +1,11 @@
+import React from 'react';
 import styled, { css } from 'styled-components';
 import { ComponentStyle } from '../../..';
 import { DashboardOverlayProps } from '../typings';
+
+const DashboardOverlayComponent: React.FC<DashboardOverlayProps> = ({ show, ...props }) => {
+  return <div {...props}></div>;
+};
 
 export const dashboardOverlayStyle: ComponentStyle<DashboardOverlayProps> = ({ show }) => {
   return css`
@@ -12,12 +17,12 @@ export const dashboardOverlayStyle: ComponentStyle<DashboardOverlayProps> = ({ s
     right: 0;
     left: 0;
     opacity: ${show ? '1' : '0'};
-    transform: translateX(${show ? '0' : '-100%'});
+    transform: translateX(${show ? '0' : '-200%'});
     transition: opacity 0.6s ease-in ${show ? '' : ', transform 0s linear 0.6s'};
   `;
 };
 
-const DashboardOverlay = styled.div`
+const DashboardOverlay = styled(DashboardOverlayComponent)`
   ${dashboardOverlayStyle}
 `;
 

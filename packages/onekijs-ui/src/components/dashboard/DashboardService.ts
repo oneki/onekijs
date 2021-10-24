@@ -9,12 +9,14 @@ import {
   DashboardHorizontalArea,
   DashboardHorizontalPanel,
   DashboardHorizontalPanelProps,
+  DashboardSize,
   DashboardState,
   DashboardVerticalArea,
   DashboardVerticalPanel,
   DashboardVerticalPanelProps,
 } from './typings';
 import { isAreaInColumn, isAreaInRow } from './utils/dashboardArea';
+import { getCollapseKey, getFloatingKey } from './utils/dashboardLength';
 
 @service
 export class DashboardService extends DefaultService<DashboardState> {
@@ -25,19 +27,35 @@ export class DashboardService extends DefaultService<DashboardState> {
   ];
 
   @reducer
-  collapse(area: DashboardArea | 'all'): void {
+  collapse(area: DashboardArea | 'all', collapse = true): void {
     if (area === 'all') {
       ['left', 'right', 'header', 'footer'].forEach((area) => {
-        set(this.state, `${area}.collapse`, true);
+        set(this.state, `${area}.${this._getCollapseKey()}`, collapse);
       });
     } else {
-      set(this.state, `${area}.collapse`, true);
+      set(this.state, `${area}.${this._getCollapseKey()}`, collapse);
     }
   }
 
   @reducer
-  expand(area: DashboardArea): void {
-    set(this.state, `${area}.collapse`, false);
+  collapseFloating(): void {
+    ['left', 'right', 'header', 'footer'].forEach((area) => {
+      const panel = this.state[area as 'left' | 'right' | 'header' | 'footer'];
+      if (panel && panel[this._getFloatingKey()]) {
+        panel[this._getCollapseKey()] = true;
+      }
+    });
+  }
+
+  @reducer
+  float(area: DashboardArea | 'all', float = true): void {
+    if (area === 'all') {
+      ['left', 'right', 'header', 'footer'].forEach((area) => {
+        set(this.state, `${area}.${this._getFloatingKey()}`, float);
+      });
+    } else {
+      set(this.state, `${area}.${this._getFloatingKey()}`, float);
+    }
   }
 
   getBodyPanel(): DashboardBodyPanel | undefined {
@@ -60,6 +78,11 @@ export class DashboardService extends DefaultService<DashboardState> {
   }
 
   @reducer
+  initContainer(ref: React.RefObject<HTMLDivElement>): void {
+    this.state.container = { ref };
+  }
+
+  @reducer
   initHorizontalPanel(
     area: 'footer' | 'header',
     props: DashboardHorizontalPanelProps,
@@ -67,11 +90,19 @@ export class DashboardService extends DefaultService<DashboardState> {
   ): void {
     const dashboardPanel: DashboardHorizontalPanel = {
       area,
-      collapse: props.initialCollapse ?? isMobile(),
-      collapseHeight: props.initialCollapseHeight ?? '50px',
-      floating: props.initialFloating || isMobile(),
-      height: props.initialHeight ?? '200px',
+      className: props.className || '',
+      collapseHeight: props.collapseHeight ?? '50px',
+      collapseLarge: props.collapseLarge ?? false,
+      collapseMedium: props.collapseMedium ?? true,
+      collapseSmall: props.collapseSmall ?? true,
+      floatingLarge: props.floatingLarge ?? false,
+      floatingMedium: props.floatingMedium ?? false,
+      floatingSmall: props.floatingSmall ?? true,
+      minHeight: props.minHeight ?? 0,
+      height: props.height ?? '100px',
+      maxHeight: props.maxHeight ?? 0,
       ref,
+      resizable: props.resizable || false,
     };
     this.state[area] = dashboardPanel;
     this._fillRow(area === 'header' ? 0 : 2, area);
@@ -85,11 +116,19 @@ export class DashboardService extends DefaultService<DashboardState> {
   ): void {
     const dashboardPanel: DashboardVerticalPanel = {
       area,
-      collapse: props.initialCollapse ?? isMobile(),
-      collapseWidth: props.initialCollapseWidth ?? '50px',
-      floating: props.initialFloating || isMobile(),
-      width: props.initialWidth ?? '200px',
+      className: props.className || '',
+      collapseLarge: props.collapseLarge ?? false,
+      collapseMedium: props.collapseMedium ?? true,
+      collapseSmall: props.collapseSmall ?? true,
+      collapseWidth: props.collapseWidth ?? '50px',
+      floatingLarge: props.floatingLarge ?? false,
+      floatingMedium: props.floatingMedium ?? false,
+      floatingSmall: props.floatingSmall ?? true,
+      minWidth: props.minWidth ?? 0,
+      maxWidth: props.maxWidth ?? 0,
+      width: props.width ?? '200px',
       ref,
+      resizable: props.resizable || false,
     };
     this.state[area] = dashboardPanel;
     this._fillColumn(area === 'left' ? 0 : 2, area);
@@ -231,7 +270,10 @@ export class DashboardService extends DefaultService<DashboardState> {
     let result = false;
     const areas: ('right' | 'left' | 'header' | 'footer')[] = ['right', 'left', 'header', 'footer'];
     areas.forEach((area) => {
-      if (isTrue(this.state[area]?.floating) && isFalse(this.state[area]?.collapse)) {
+      if (
+        isTrue(get(this.state[area], this._getFloatingKey())) &&
+        isFalse(get(this.state[area], this._getCollapseKey()))
+      ) {
         result = true;
       }
     });
@@ -288,6 +330,25 @@ export class DashboardService extends DefaultService<DashboardState> {
       }
     });
     this._compileAreas();
+  }
+
+  _getCollapseKey(): 'collapseSmall' | 'collapseMedium' | 'collapseLarge' {
+    return getCollapseKey(this._getSize());
+  }
+
+  _getFloatingKey(): 'floatingSmall' | 'floatingMedium' | 'floatingLarge' {
+    return getFloatingKey(this._getSize());
+  }
+
+  _getSize(): DashboardSize {
+    if (!this.state.container || !this.state.container.ref.current) {
+      return isMobile() ? 'small' : 'large';
+    }
+    const dashboardWidth = this.state.container.ref.current.offsetWidth;
+    console.log('dashboardWidth', dashboardWidth);
+    if (dashboardWidth < 768) return 'small';
+    if (dashboardWidth < 992) return 'medium';
+    return 'large';
   }
 
   // When a "row" area component is found as a child of the dashboard component, it tries to take the maximum of space

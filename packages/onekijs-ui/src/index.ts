@@ -14,6 +14,7 @@ export {
   default as useDashboardService,
 } from './components/dashboard/hooks/useDashboardService';
 export { DashboardStateContext, default as useDashboardState } from './components/dashboard/hooks/useDashboardState';
+export { default as useDashboard } from './components/dashboard/hooks/useDashboard';
 export {
   DashboardArea,
   DashboardBodyComponentProps,

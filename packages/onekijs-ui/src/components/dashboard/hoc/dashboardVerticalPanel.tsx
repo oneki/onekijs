@@ -12,7 +12,7 @@ import {
   DashboardVerticalPanelProps,
 } from '../typings';
 import { isAreaInRow } from '../utils/dashboardArea';
-import { getDashboardPanelLength, getWorkspacePanelLength } from '../utils/dashboardLength';
+import { getDashboardPanelLength, getFloatingKey, getWorkspacePanelLength } from '../utils/dashboardLength';
 
 const getTranslateY = (size: DashboardSize, props: DashboardVerticalPanelComponentProps): string | 0 => {
   let translate: string | 0 = 0;
@@ -29,8 +29,10 @@ const getTranslateX = (size: DashboardSize, props: DashboardVerticalPanelCompone
   let translate: string | 0 = 0;
 
   // for the right panel, we have to translate backwards, otherwise it will not be visible
-  if (props.panel?.area === 'right') {
-    const width = getWorkspacePanelLength('width', size, props.panel);
+  if (props.panel && props.panel.area === 'right') {
+    const width = props.panel[getFloatingKey(size)]
+      ? getDashboardPanelLength('width', size, props.panel) // actual size of the panel
+      : getWorkspacePanelLength('width', size, props.panel); // size of the panel on the workspace (if floating, the workspace panel size is 0)
     if (width !== 0) {
       translate = `-${width}`;
     }
@@ -84,11 +86,21 @@ const style: ComponentStyle<DashboardVerticalPanelComponentProps> = (props) => {
     width: ${getDashboardPanelLength('width', 'small', props.panel)};
     height: ${getHeight('small', props)};
     transform: translate(${getTranslateX('small', props)}, ${getTranslateY('small', props)});
-    ${props.panel ? 'transition: transform 0.6s, width 0.6s, height 0.6s;' : ''}
-    @media only screen and (min-width: 46.875em) {
+    ${props.panel ? 'transition: transform 0.6s, width 0.6s, height 0.6s;' : 'z-index: ""'}
+    ${props.panel && props.panel[getFloatingKey('small')]
+      ? 'z-index: 1001;'
+      : ''}
+    @media only screen and (min-width: 768px) {
+      width: ${getDashboardPanelLength('width', 'medium', props.panel)};
+      height: ${getHeight('medium', props)};
+      transform: translate(${getTranslateX('medium', props)}, ${getTranslateY('medium', props)});
+      ${props.panel && props.panel[getFloatingKey('medium')] ? 'z-index: 1001;' : 'z-index: ""'}
+    }
+    @media only screen and (min-width: 992px) {
       width: ${getDashboardPanelLength('width', 'large', props.panel)};
       height: ${getHeight('large', props)};
       transform: translate(${getTranslateX('large', props)}, ${getTranslateY('large', props)});
+      ${props.panel && props.panel[getFloatingKey('medium')] ? 'z-index: 1001;' : 'z-index: ""'}
     }
   `;
 };

@@ -420,6 +420,7 @@ export {
   trim,
   trimEnd,
   trimStart,
+  ucfirst,
   wrap,
 } from './utils/string';
 export {

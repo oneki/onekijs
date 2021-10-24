@@ -12,7 +12,7 @@ import {
   DashboardSize,
 } from '../typings';
 import { isAreaInColumn } from '../utils/dashboardArea';
-import { getDashboardPanelLength, getWorkspacePanelLength } from '../utils/dashboardLength';
+import { getDashboardPanelLength, getFloatingKey, getWorkspacePanelLength } from '../utils/dashboardLength';
 
 const getTranslateX = (size: DashboardSize, props: DashboardHorizontalPanelComponentProps): string | 0 => {
   let translate: string | 0 = 0;
@@ -28,9 +28,10 @@ const getTranslateX = (size: DashboardSize, props: DashboardHorizontalPanelCompo
 const getTranslateY = (size: DashboardSize, props: DashboardHorizontalPanelComponentProps): string | 0 => {
   let translate: string | 0 = 0;
 
-  // for the footer panel, we have to translate upwards, otherwise it will not be visible
-  if (props.panel?.area === 'footer') {
-    const height = getWorkspacePanelLength('height', size, props.panel);
+  if (props.panel && props.panel.area === 'footer') {
+    const height = props.panel[getFloatingKey(size)]
+      ? getDashboardPanelLength('height', size, props.panel) // actual size of the panel
+      : getWorkspacePanelLength('height', size, props.panel); // size of the panel on the workspace (if floating, the workspace panel size is 0)
     if (height !== 0) {
       translate = `-${height}`;
     }
@@ -82,14 +83,24 @@ Component.displayName = 'DashboardHorizontalPanel';
 const style: ComponentStyle<DashboardHorizontalPanelComponentProps> = (props) => {
   return css`
     grid-area: ${props.area};
-    width: ${getDashboardPanelLength('height', 'small', props.panel)};
+    height: ${getDashboardPanelLength('height', 'small', props.panel)};
     width: ${getWidth('small', props)};
     transform: translate(${getTranslateX('small', props)}, ${getTranslateY('small', props)});
     ${props.panel ? 'transition: transform 0.6s, width 0.6s, height 0.6s;' : ''}
-    @media only screen and (min-width: 46.875em) {
+    ${props.panel && props.panel[getFloatingKey('small')]
+      ? 'z-index: 1001;'
+      : ''}
+    @media only screen and (min-width: 768px) {
+      height: ${getDashboardPanelLength('height', 'medium', props.panel)};
+      width: ${getWidth('medium', props)};
+      transform: translate(${getTranslateX('medium', props)}, ${getTranslateY('medium', props)});
+      ${props.panel && props.panel[getFloatingKey('medium')] ? 'z-index: 1001;' : 'z-index: ""'}
+    }
+    @media only screen and (min-width: 992px) {
       height: ${getDashboardPanelLength('height', 'large', props.panel)};
       width: ${getWidth('large', props)};
       transform: translate(${getTranslateX('large', props)}, ${getTranslateY('large', props)});
+      ${props.panel && props.panel[getFloatingKey('medium')] ? 'z-index: 1001;' : 'z-index: ""'}
     }
   `;
 };

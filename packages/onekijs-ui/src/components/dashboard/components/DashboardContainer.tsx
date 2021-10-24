@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { DashboardArea, DashboardContainerProps } from '../typings';
 
@@ -42,7 +42,16 @@ export const getDashboardTemplate = (dashboardContainerProps: DashboardContainer
 };
 
 const DashboardContainerComponent: React.FC<DashboardContainerProps> = (props) => {
-  return <div className={props.className}>{props.children}</div>;
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    props.onInit(ref);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return (
+    <div className={props.className} ref={ref}>
+      {props.children}
+    </div>
+  );
 };
 
 const DashboardContainer = styled(DashboardContainerComponent)`
