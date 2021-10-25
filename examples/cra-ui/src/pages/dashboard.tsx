@@ -38,9 +38,9 @@ export const DashboardPage = () => {
 
   return (
     <Dashboard>
-      <MyDashboardLeft resizable>Left</MyDashboardLeft>
+      <MyDashboardLeft resizable collapse={false} floating={false} collapseSmall={true} floatingSmall={true}>Left</MyDashboardLeft>
       <MyDashboardHeader height="100px" resizable>Header</MyDashboardHeader>
-      <MyDashboardRight collapseSmall={true} collapseMedium={true} collapseLarge={true} floatingSmall={true}  floatingMedium={true} floatingLarge={true}>Right</MyDashboardRight>
+      <MyDashboardRight collapse={true} floating={true}>Right</MyDashboardRight>
       <MyDashboardFooter resizable>Footer</MyDashboardFooter>
       <MyDashboardBody>
 

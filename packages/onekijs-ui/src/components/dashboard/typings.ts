@@ -38,7 +38,7 @@ export type DashboardContainerProps = {
 export type DashboardHorizontalArea = 'header' | 'footer';
 
 export type DashboardHorizontalPanel = DashboardSidePanel &
-  Required<DashboardHorizontalPanelProps> & {
+  Required<DashboardHorizontalProps> & {
     area: DashboardHorizontalArea;
   };
 
@@ -49,12 +49,14 @@ export type DashboardHorizontalPanelComponentProps = React.InputHTMLAttributes<H
     area: DashboardHorizontalArea;
   };
 
-export type DashboardHorizontalPanelProps = DashboardSidePanelProps & {
+type DashboardHorizontalProps = {
   collapseHeight?: string | 0;
   height?: string | 0;
   maxHeight?: string | 0;
   minHeight?: string | 0;
 };
+
+export type DashboardHorizontalPanelProps = DashboardSidePanelProps & DashboardHorizontalProps;
 
 export type DashboardProps = {
   ContainerComponent?: React.FC<DashboardContainerProps>;
@@ -65,15 +67,17 @@ export type DashboardOverlayProps = React.InputHTMLAttributes<HTMLDivElement> & 
   show: boolean;
 };
 
-export type DashboardSidePanel = Required<DashboardSidePanelProps> & {
+export type DashboardSidePanel = Omit<Required<DashboardSidePanelProps>, 'collapse' | 'floating'> & {
   ref: React.RefObject<HTMLDivElement>;
 };
 
 export type DashboardSidePanelProps = {
   className?: string;
+  collapse?: boolean;
   collapseSmall?: boolean;
   collapseMedium?: boolean;
   collapseLarge?: boolean;
+  floating?: boolean;
   floatingSmall?: boolean;
   floatingMedium?: boolean;
   floatingLarge?: boolean;
@@ -99,7 +103,7 @@ export type DashboardTogglerProps = {
 export type DashboardVerticalArea = 'left' | 'right';
 
 export type DashboardVerticalPanel = DashboardSidePanel &
-  Required<DashboardVerticalPanelProps> & {
+  Required<DashboardVerticalProps> & {
     area: DashboardVerticalArea;
   };
 
@@ -110,9 +114,11 @@ export type DashboardVerticalPanelComponentProps = React.InputHTMLAttributes<HTM
     area: DashboardVerticalArea;
   };
 
-export type DashboardVerticalPanelProps = DashboardSidePanelProps & {
+type DashboardVerticalProps = {
   collapseWidth?: string | 0;
   maxWidth?: string | 0;
   minWidth?: string | 0;
   width?: string | 0;
 };
+
+export type DashboardVerticalPanelProps = DashboardSidePanelProps & DashboardVerticalProps;
