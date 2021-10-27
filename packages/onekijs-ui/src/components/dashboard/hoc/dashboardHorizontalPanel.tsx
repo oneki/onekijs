@@ -86,21 +86,21 @@ const style: ComponentStyle<DashboardHorizontalPanelComponentProps> = (props) =>
     height: ${getDashboardPanelLength('height', 'small', props.panel)};
     width: ${getWidth('small', props)};
     transform: translate(${getTranslateX('small', props)}, ${getTranslateY('small', props)});
-    ${props.panel ? 'transition: transform 0.6s, width 0.6s, height 0.6s;' : ''}
+    ${props.panel ? 'transition: transform 0.6s, width 0.6s, height 0.6s;' : 'transition: none'}
     ${props.panel && props.panel[getFloatingKey('small')]
       ? 'z-index: 1001;'
-      : ''}
+      : 'auto'}
     @media only screen and (min-width: 768px) {
       height: ${getDashboardPanelLength('height', 'medium', props.panel)};
       width: ${getWidth('medium', props)};
       transform: translate(${getTranslateX('medium', props)}, ${getTranslateY('medium', props)});
-      ${props.panel && props.panel[getFloatingKey('medium')] ? 'z-index: 1001;' : 'z-index: ""'}
+      ${props.panel && props.panel[getFloatingKey('medium')] ? 'z-index: 1001;' : 'z-index: auto'}
     }
     @media only screen and (min-width: 992px) {
       height: ${getDashboardPanelLength('height', 'large', props.panel)};
       width: ${getWidth('large', props)};
       transform: translate(${getTranslateX('large', props)}, ${getTranslateY('large', props)});
-      ${props.panel && props.panel[getFloatingKey('medium')] ? 'z-index: 1001;' : 'z-index: ""'}
+      ${props.panel && props.panel[getFloatingKey('medium')] ? 'z-index: 1001;' : 'z-index: auto'}
     }
   `;
 };

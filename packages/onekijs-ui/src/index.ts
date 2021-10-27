@@ -36,6 +36,7 @@ export {
 export { default as CrossIcon } from './components/icon/CrossIcon';
 export { default as LoadingIcon } from './components/icon/LoadingIcon';
 export { default as SearchIcon } from './components/icon/SearchIcon';
+export { default as MenuIcon } from './components/icon/MenuIcon';
 export { default as Input } from './components/input';
 export { default as InputComponent } from './components/input/components/InputComponent';
 export { InputProps } from './components/input/typings';

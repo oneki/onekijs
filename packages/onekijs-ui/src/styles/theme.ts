@@ -70,7 +70,7 @@ export const palette: Palette = {
     'blue-600': '#3182ce',
     'blue-700': '#2b6cb0',
     'blue-800': '#2c5282',
-    'blue-900': '#2a4365',
+    'blue-900': '#2a3042',
     'indigo-100': '#ebf4ff',
     'indigo-200': '#c3dafe',
     'indigo-300': '#a3bffa',
@@ -121,7 +121,7 @@ export const theme = (customTheme: AnonymousObject = {}): Theme => {
       warning: 'yellow-500',
       danger: 'red-500',
       primary: 'blue-500',
-      secondary: 'gray-500',
+      secondary: 'blue-900',
     },
     palette,
     spacings: {
