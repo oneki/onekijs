@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { CSSProperties, useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
 import { ComponentStyle } from '../../../styles/typings';
 import Resizer from '../../resizer';
@@ -19,6 +19,7 @@ const getTranslateX = (size: DashboardSize, props: DashboardHorizontalPanelCompo
 
   // if the panel is not in the first column, we have to translateX the width of the left panel
   if (props.panel && !isAreaInColumn('first', props.area, props.areas)) {
+    console.log('translateX', props.panel.area, size, getWorkspacePanelLength('width', size, props.left));
     translate = getWorkspacePanelLength('width', size, props.left);
   }
 
@@ -65,15 +66,25 @@ const getWidth = (size: DashboardSize, props: DashboardHorizontalPanelComponentP
 const Component: React.FC<DashboardHorizontalPanelComponentProps> = (props) => {
   const ref = useRef<HTMLDivElement>(null);
   const service = useDashboardService();
+  const stepRef = useRef<'initializing' | 'initialized' | undefined>();
+  const style: CSSProperties = {};
+  if (stepRef.current !== 'initialized') {
+    style.transition = 'none';
+  }
 
   useEffect(() => {
-    service.initHorizontalPanel(props.area, props, ref);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (stepRef.current === undefined) {
+      stepRef.current = 'initializing';
+      service.initHorizontalPanel(props.area, props, ref);
+    } else if (stepRef.current === 'initializing' && ref.current) {
+      stepRef.current = 'initialized';
+      ref.current.style.transition = '';
+    }
+  });
 
   return (
-    <div className={props.className} ref={ref}>
-      {props.children}
+    <div className={props.className} ref={ref} style={style}>
+      {stepRef.current && props.children}
     </div>
   );
 };
@@ -89,7 +100,7 @@ const style: ComponentStyle<DashboardHorizontalPanelComponentProps> = (props) =>
     ${props.panel ? 'transition: transform 0.6s, width 0.6s, height 0.6s;' : 'transition: none'}
     ${props.panel && props.panel[getFloatingKey('small')]
       ? 'z-index: 1001;'
-      : 'auto'}
+      : 'auto;'}
     @media only screen and (min-width: 768px) {
       height: ${getDashboardPanelLength('height', 'medium', props.panel)};
       width: ${getWidth('medium', props)};

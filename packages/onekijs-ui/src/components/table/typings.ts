@@ -9,12 +9,17 @@ import {
   QueryFilterOrCriteria,
   QuerySortBy,
   UseCollectionOptions,
+  CollectionItemAdapter,
 } from 'onekijs-framework';
 import { ListItemProps, ListItems } from '../list/typings';
 import { SelectProps } from '../select/typings';
 import { InputProps } from '../input/typings';
 
-export type FormTableProps<T = any, M extends TableItemMeta = TableItemMeta> = TableProps<T, M> & {
+export type FormTableProps<
+  T = any,
+  M extends TableItemMeta = TableItemMeta,
+  I extends TableItem<T, M> = TableItem<T, M>
+> = TableProps<T, M, I> & {
   name: string;
   format?: 'id' | 'object' | 'auto';
 };
@@ -24,38 +29,50 @@ export type FormTableContext = FormContext & {
   onSelect: (item: TableItem, selected: boolean) => void;
 };
 
-export type TableBodyCellProps<T = any, M extends TableItemMeta = TableItemMeta> = {
+export type TableBodyCellProps<
+  T = any,
+  M extends TableItemMeta = TableItemMeta,
+  I extends TableItem<T, M> = TableItem<T, M>
+> = {
   colIndex: number;
-  column: TableColumn<T, M>;
+  column: TableColumn<T, M, I>;
   rowId?: string | number;
   rowIndex: number;
-  rowValue: TableItem<T>;
+  rowValue: I;
 };
 
-export type TableBodyProps<T = any, M extends TableItemMeta = TableItemMeta> = {
+export type TableBodyProps<
+  T = any,
+  M extends TableItemMeta = TableItemMeta,
+  I extends TableItem<T, M> = TableItem<T, M>
+> = {
   tableRef: React.RefObject<HTMLDivElement>;
   contentRef: React.RefObject<HTMLDivElement>;
-  controller: TableController<T, M>;
+  controller: TableController<T, M, I>;
 };
 
-export type TableBodyRowProps<T = any, M extends TableItemMeta = TableItemMeta> = ListItemProps<T, M> & {
-  columns: TableColumn<T, M>[];
-  CellComponent?: React.FC<TableBodyCellProps<T, M>>;
+export type TableBodyRowProps<
+  T = any,
+  M extends TableItemMeta = TableItemMeta,
+  I extends TableItem<T, M> = TableItem<T, M>
+> = ListItemProps<T, M, I> & {
+  columns: TableColumn<T, M, I>[];
+  CellComponent?: React.FC<TableBodyCellProps<T, M, I>>;
 };
 
-export type TableColumn<T = any, M extends TableItemMeta = TableItemMeta> = TableColumnSpec<T, M> & {
+export type TableColumn<T, M extends TableItemMeta, I extends TableItem<T, M>> = TableColumnSpec<T, M, I> & {
   computedWidth?: TableColumnComputedWidth;
 };
 
-export type TableColumnSpec<T = any, M extends TableItemMeta = TableItemMeta> = {
-  className?: string | ((rowData: T, column: TableColumn<T, M>, context: TableController<T, M>) => string);
-  CellComponent?: React.FC<TableBodyCellProps<T, M>>;
-  footerClassName?: string | ((column: TableColumn<T, M>, context: TableController<T, M>) => string);
-  FooterComponent?: React.FC<TableFooterCellProps<T, M>>;
+export type TableColumnSpec<T, M extends TableItemMeta, I extends TableItem<T, M>> = {
+  className?: string | ((rowData: T, column: TableColumn<T, M, I>, context: TableController<T, M, I>) => string);
+  CellComponent?: React.FC<TableBodyCellProps<T, M, I>>;
+  footerClassName?: string | ((column: TableColumn<T, M, I>, context: TableController<T, M, I>) => string);
+  FooterComponent?: React.FC<TableFooterCellProps<T, M, I>>;
   filterable?: boolean;
-  FilterComponent?: React.FC<TableFilterProps<T, M>>;
-  headerClassName?: string | ((column: TableColumn<T, M>, context: TableController<T, M>) => string);
-  HeaderComponent?: React.FC<TableHeaderCellProps<T, M>>;
+  FilterComponent?: React.FC<TableFilterProps<T, M, I>>;
+  headerClassName?: string | ((column: TableColumn<T, M, I>, context: TableController<T, M, I>) => string);
+  HeaderComponent?: React.FC<TableHeaderCellProps<T, M, I>>;
   id: string;
   maxWidth?: string;
   minWidth?: string;
@@ -77,10 +94,13 @@ export type TableColumnComputedWidth = {
   minWidth?: string;
 };
 
-export type TableController<T = any, M extends TableItemMeta = TableItemMeta> = Omit<Collection<T, M>, 'asService'> &
-  Readonly<_TableState<T, M>> & {
-    asService(): TableController<T, M>;
-    addColumn(column: TableColumn<T, M>, position?: number): void;
+export type TableController<T, M extends TableItemMeta, I extends TableItem<T, M>> = Omit<
+  Collection<T, M, I>,
+  'asService'
+> &
+  Readonly<_TableState<T, M, I>> & {
+    asService(): TableController<T, M, I>;
+    addColumn(column: TableColumn<T, M, I>, position?: number): void;
     addSelected(id: string | number | (string | number)[]): void;
     initCell(
       rowNumber: number | 'header-title' | 'header-filter' | 'footer',
@@ -91,46 +111,63 @@ export type TableController<T = any, M extends TableItemMeta = TableItemMeta> = 
     removeColumn(id: string): void;
     removeSelected(id: string | number | (string | number)[]): void;
     setFooter(footer?: boolean): void;
-    setFooterComponent(FooterComponent?: React.FC<TableFooterProps>): void;
+    setFooterComponent(FooterComponent?: React.FC<TableFooterProps<T, M, I>>): void;
     setHeader(header?: boolean): void;
-    setHeaderComponent(HeaderComponent?: React.FC<TableHeaderProps>): void;
+    setHeaderComponent(HeaderComponent?: React.FC<TableHeaderProps<T, M, I>>): void;
     setSelected(id: string | number | (string | number)[]): void;
     step: 'unmounted' | 'mounted' | 'initializing';
   };
 
-export type TableFilterProps<T = any, M extends TableItemMeta = TableItemMeta> = {
-  column: TableColumn<T, M>;
+export type TableFilterProps<
+  T = any,
+  M extends TableItemMeta = TableItemMeta,
+  I extends TableItem<T, M> = TableItem<T, M>
+> = {
+  column: TableColumn<T, M, I>;
   filter?: QueryFilterOrCriteria;
 };
 
-export type TableFooterCellProps<T = any, M extends TableItemMeta = TableItemMeta> = {
+export type TableFooterCellProps<
+  T = any,
+  M extends TableItemMeta = TableItemMeta,
+  I extends TableItem<T, M> = TableItem<T, M>
+> = {
   colIndex: number;
-  column: TableColumn<T, M>;
+  column: TableColumn<T, M, I>;
 };
 
-export type TableFooterProps<T = any, M extends TableItemMeta = TableItemMeta> = {
-  controller: TableController<T, M>;
+export type TableFooterProps<
+  T = any,
+  M extends TableItemMeta = TableItemMeta,
+  I extends TableItem<T, M> = TableItem<T, M>
+> = {
+  controller: TableController<T, M, I>;
 };
 
-export type TableHeaderCellProps<T = any, M extends TableItemMeta = TableItemMeta> = {
+export type TableHeaderCellProps<
+  T = any,
+  M extends TableItemMeta = TableItemMeta,
+  I extends TableItem<T, M> = TableItem<T, M>
+> = {
   colIndex: number;
-  column: TableColumn<T, M>;
+  column: TableColumn<T, M, I>;
   filter?: QueryFilterOrCriteria;
   filterable: boolean;
   sort?: QuerySortBy;
   sortable: boolean;
 };
 
-export type TableHeaderProps<T = any, M extends TableItemMeta = TableItemMeta> = {
-  controller: TableController<T, M>;
+export type TableHeaderProps<
+  T = any,
+  M extends TableItemMeta = TableItemMeta,
+  I extends TableItem<T, M> = TableItem<T, M>
+> = {
+  controller: TableController<T, M, I>;
 };
 
 export type TableItem<T = any, M extends TableItemMeta = TableItemMeta> = Item<T, M>;
 
-export type TableRowHandler<T = any, M extends TableItemMeta = TableItemMeta> = (
-  value: TableItem<T, M>,
-  index: number,
-) => void;
+export type TableRowHandler<T, M extends TableItemMeta, I extends TableItem<T, M>> = (value: I, index: number) => void;
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface TableItemMeta extends ItemMeta {
@@ -139,66 +176,76 @@ export interface TableItemMeta extends ItemMeta {
 
 export type TableItems<T = any, M extends TableItemMeta = TableItemMeta> = ListItems<T, M>;
 
-export type TableProps<T = any, M extends TableItemMeta = TableItemMeta> = {
-  controller: TableController<T, M>;
+export type TableProps<
+  T = any,
+  M extends TableItemMeta = TableItemMeta,
+  I extends TableItem<T, M> = TableItem<T, M>
+> = {
+  controller: TableController<T, M, I>;
   className?: string;
 };
 
-export type TableSortProps<T = any, M extends TableItemMeta = TableItemMeta> = {
-  column: TableColumn<T, M>;
+export type TableSortProps<
+  T = any,
+  M extends TableItemMeta = TableItemMeta,
+  I extends TableItem<T, M> = TableItem<T, M>
+> = {
+  column: TableColumn<T, M, I>;
   sort?: QuerySortBy;
 };
 
-type _TableState<T = any, M extends TableItemMeta = TableItemMeta> = {
-  bodyClassName?: string | ((context: TableController<T, M>) => string);
+type _TableState<T, M extends TableItemMeta, I extends TableItem<T, M>> = {
+  bodyClassName?: string | ((context: TableController<T, M, I>) => string);
   BodyComponent?: React.FC<TableBodyProps<T>>;
   bodyWidth?: string;
-  columns: TableColumn<T, M>[];
+  columns: TableColumn<T, M, I>[];
   filterable?: boolean;
   fit?: boolean;
   fixHeader?: boolean;
   footer?: boolean;
-  footerClassName?: string | ((context: TableController<T, M>) => string);
-  FooterComponent?: React.FC<TableHeaderProps>;
+  footerClassName?: string | ((context: TableController<T, M, I>) => string);
+  FooterComponent?: React.FC<TableHeaderProps<T, M, I>>;
   grow?: string;
   header?: boolean;
-  headerClassName?: string | ((context: TableController<T, M>) => string);
-  HeaderComponent?: React.FC<TableHeaderProps>;
+  headerClassName?: string | ((context: TableController<T, M, I>) => string);
+  HeaderComponent?: React.FC<TableHeaderProps<T, M, I>>;
   height?: string;
   highlightRow?: boolean;
-  onRowClick?: TableRowHandler<T, M>;
-  onRowEnter?: TableRowHandler<T, M>;
-  onRowLeave?: TableRowHandler<T, M>;
-  onRowOver?: TableRowHandler<T, M>;
-  onRowOut?: TableRowHandler<T, M>;
-  rowClassName?: string | ((rowData: T, context: TableController<T, M>) => string);
-  RowComponent?: React.FC<TableBodyRowProps<T, M>>;
+  onRowClick?: TableRowHandler<T, M, I>;
+  onRowEnter?: TableRowHandler<T, M, I>;
+  onRowLeave?: TableRowHandler<T, M, I>;
+  onRowOver?: TableRowHandler<T, M, I>;
+  onRowOut?: TableRowHandler<T, M, I>;
+  rowClassName?: string | ((rowData: T, context: TableController<T, M, I>) => string);
+  RowComponent?: React.FC<TableBodyRowProps<T, M, I>>;
   selected?: (string | number)[];
   sortable?: boolean;
   stripRows?: boolean;
 };
 
-export type TableState<T = any, M extends TableItemMeta = TableItemMeta> = CollectionState<T, M> & _TableState<T, M>;
+export type TableState<T, M extends TableItemMeta, I extends TableItem<T, M>> = CollectionState<T, M, I> &
+  _TableState<T, M, I>;
 
-export type InputColumn<T = any, M extends TableItemMeta = TableItemMeta> = TableColumn<T, M>;
+export type InputColumn<T, M extends TableItemMeta, I extends TableItem<T, M>> = TableColumn<T, M, I>;
 
-export type SelectColumn<T = any, M extends TableItemMeta = TableItemMeta> = TableColumn<T, M> & {
-  broker: CollectionBroker<T, M>;
+export type SelectColumn<T, M extends TableItemMeta, I extends TableItem<T, M>> = TableColumn<T, M, I> & {
+  broker: CollectionBroker<T, M, I>;
 };
 
-export type UseTableOptions<T = any, M extends TableItemMeta = TableItemMeta> = UseCollectionOptions<T, M> &
-  _TableState<T, M> & {
+export type UseTableOptions<T, M extends TableItemMeta, I extends TableItem<T, M>> = UseCollectionOptions<T, M> &
+  _TableState<T, M, I> & {
+    adapter?: CollectionItemAdapter<T, M, I>;
     dataSource?: T[] | string;
   };
 
-export type UseInputColumnOptions<T = any, M extends TableItemMeta = TableItemMeta> = Omit<
-  TableColumnSpec<T, M>,
+export type UseInputColumnOptions<T, M extends TableItemMeta, I extends TableItem<T, M>> = Omit<
+  TableColumnSpec<T, M, I>,
   'CellComponent'
 > &
   Omit<InputProps, 'className' | 'onFocus' | 'onChange' | 'onBlur'>;
 
-export type UseSelectColumnOptions<T = any, M extends TableItemMeta = TableItemMeta> = Omit<
-  TableColumnSpec<T, M>,
+export type UseSelectColumnOptions<T, M extends TableItemMeta, I extends TableItem<T, M>> = Omit<
+  TableColumnSpec<T, M, I>,
   'CellComponent'
 > &
   Omit<SelectProps, 'className' | 'onFocus' | 'onChange' | 'onBlur' | 'items'> &

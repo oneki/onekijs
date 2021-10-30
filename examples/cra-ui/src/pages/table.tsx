@@ -2,7 +2,6 @@ import { FormSubmitCallback, useForm } from 'onekijs';
 import { ComponentStyle, FormTable, useInputColumn, useSelectColumn, useTable } from 'onekijs-ui';
 import React from 'react';
 import styled, { css } from 'styled-components';
-import { users } from '../data/users';
 
 const tableStyle: ComponentStyle<{}> = () => {
   return css``;
@@ -71,64 +70,64 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
     title: 'State',
   });
 
-  const addFilter = () => {
-    stateColumn.broker.addFilter({
-      id: 'state',
-      operator: 'eq',
-      not: true,
-      value: 'California',
-      field: 'text',
-    });
-  };
+  // const addFilter = () => {
+  //   stateColumn.broker.addFilter({
+  //     id: 'state',
+  //     operator: 'eq',
+  //     not: true,
+  //     value: 'California',
+  //     field: 'text',
+  //   });
+  // };
 
-  const removeFilter = () => {
-    stateColumn.broker.removeFilter('state');
-  };
+  // const removeFilter = () => {
+  //   stateColumn.broker.removeFilter('state');
+  // };
 
   const controller = useTable({
     columns: [streetColumn, stateColumn],
     //grow: 'address.city'
   });
 
-  const controller2 = useTable({
-    dataSource: users,
-    columns: [
-      {
-        id: 'id',
-        minWidth: '50px',
-        maxWidth: '50px',
-        title: 'ID',
-      },
-      {
-        id: 'firstname',
-        width: '10px',
-        title: 'Firstname',
-      },
-      {
-        id: 'lastname',
-        width: '20px',
-        title: 'Lastname',
-      },
-      {
-        id: 'address.street',
-        width: '600px',
-        //title: 'Street',
-        filterable: true,
-        sortable: false,
-      },
-      {
-        id: 'address.postalCode',
-        title: 'Postal Code',
-      },
-      {
-        id: 'address.city',
-        title: 'City',
-      },
-    ],
-    //grow: 'address.city'
-    highlightRow: true,
-    stripRows: true,
-  });
+  // const controller2 = useTable({
+  //   dataSource: users,
+  //   columns: [
+  //     {
+  //       id: 'id',
+  //       minWidth: '50px',
+  //       maxWidth: '50px',
+  //       title: 'ID',
+  //     },
+  //     {
+  //       id: 'firstname',
+  //       width: '10px',
+  //       title: 'Firstname',
+  //     },
+  //     {
+  //       id: 'lastname',
+  //       width: '20px',
+  //       title: 'Lastname',
+  //     },
+  //     {
+  //       id: 'address.street',
+  //       width: '600px',
+  //       //title: 'Street',
+  //       filterable: true,
+  //       sortable: false,
+  //     },
+  //     {
+  //       id: 'address.postalCode',
+  //       title: 'Postal Code',
+  //     },
+  //     {
+  //       id: 'address.city',
+  //       title: 'City',
+  //     },
+  //   ],
+  //   //grow: 'address.city'
+  //   highlightRow: true,
+  //   stripRows: true,
+  // });
 
   return (
     <Form>

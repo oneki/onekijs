@@ -1,39 +1,41 @@
-import { Collection, Item, ItemMeta } from 'onekijs-framework';
+import { Collection, Item, ItemMeta, UseCollectionOptions, CollectionItemAdapter } from 'onekijs-framework';
 import React, { FC } from 'react';
 
-export type ListItems<T = any, M extends ItemMeta = ItemMeta> = T[] | Collection<T, M>;
+export type ListItems<T = any, M extends ItemMeta = ItemMeta, I extends Item<T, M> = Item<T, M>> =
+  | T[]
+  | Collection<T, M, I>;
 
-export type ListItemHandler<T = any, M extends ItemMeta = ItemMeta> = (item: Item<T, M>, index: number) => void;
+export type ListItemHandler<T, M extends ItemMeta, I extends Item<T, M>> = (item: I, index: number) => void;
 
-export interface ListItemProps<T = any, M extends ItemMeta = ItemMeta> {
+export interface ListItemProps<T = any, M extends ItemMeta = ItemMeta, I extends Item<T, M> = Item<T, M>> {
   index: number;
-  item: Item<T, M>;
-  onClick?: ListItemHandler<T, M>;
-  onMouseOver?: ListItemHandler<T, M>;
-  onMouseOut?: ListItemHandler<T, M>;
-  onMouseEnter?: ListItemHandler<T, M>;
-  onMouseLeave?: ListItemHandler<T, M>;
+  item: I;
+  onClick?: ListItemHandler<T, M, I>;
+  onMouseOver?: ListItemHandler<T, M, I>;
+  onMouseOut?: ListItemHandler<T, M, I>;
+  onMouseEnter?: ListItemHandler<T, M, I>;
+  onMouseLeave?: ListItemHandler<T, M, I>;
 }
 
-export interface ListProps<T = any, M extends ItemMeta = ItemMeta> {
+export interface ListProps<T = any, M extends ItemMeta = ItemMeta, I extends Item<T, M> = Item<T, M>> {
   className?: string;
   height?: number | string;
   increment?: number;
   items: ListItems<T, M>;
   ItemComponent?: FC<ListItemProps<T, M>>;
   itemHeight?: number | ((index: number) => number);
-  onItemClick?: ListItemHandler<T, M>;
-  onItemMouseOver?: ListItemHandler<T, M>;
-  onItemMouseOut?: ListItemHandler<T, M>;
-  onItemMouseEnter?: ListItemHandler<T, M>;
-  onItemMouseLeave?: ListItemHandler<T, M>;
+  onItemClick?: ListItemHandler<T, M, I>;
+  onItemMouseOver?: ListItemHandler<T, M, I>;
+  onItemMouseOut?: ListItemHandler<T, M, I>;
+  onItemMouseEnter?: ListItemHandler<T, M, I>;
+  onItemMouseLeave?: ListItemHandler<T, M, I>;
   overscan?: number;
   preload?: number;
   style?: React.CSSProperties;
   virtual?: boolean;
 }
 
-export type ListBodyProps<T = any, M extends ItemMeta = ItemMeta> = Pick<
+export type ListBodyProps<T = any, M extends ItemMeta = ItemMeta, I extends Item<T, M> = Item<T, M>> = Pick<
   ListProps<T, M>,
   | 'onItemClick'
   | 'onItemMouseEnter'
@@ -45,7 +47,7 @@ export type ListBodyProps<T = any, M extends ItemMeta = ItemMeta> = Pick<
 > & {
   bodyRef?: React.RefObject<HTMLDivElement>;
   className?: string;
-  ItemComponent: FC<ListItemProps<T, M>>;
+  ItemComponent: FC<ListItemProps<T, M, I>>;
   items: (Item<T, M> | undefined)[];
   parentRef?: React.RefObject<HTMLDivElement>;
   style?: React.CSSProperties;
@@ -63,12 +65,12 @@ export type ListHeaderProps = {
   style?: React.CSSProperties;
 };
 
-export type ListInternalProps<T = any, M extends ItemMeta = ItemMeta> = Omit<
+export type ListInternalProps<T = any, M extends ItemMeta = ItemMeta, I extends Item<T, M> = Item<T, M>> = Omit<
   ListProps<T, M>,
   'items' | 'BodyComponent'
 > & {
-  collection: Collection<T, M>;
-  BodyComponent: React.FC<ListBodyProps<T, M>>;
+  collection: Collection<T, M, I>;
+  BodyComponent: React.FC<ListBodyProps<T, M, I>>;
 };
 
 export enum ListStatus {
@@ -81,10 +83,14 @@ export enum ListStatus {
   Loaded = 'loaded',
 }
 
-export type StandardListProps<T = any, M extends ItemMeta = ItemMeta> = Omit<
-  ListInternalProps<T, M>,
+export type StandardListProps<T = any, M extends ItemMeta = ItemMeta, I extends Item<T, M> = Item<T, M>> = Omit<
+  ListInternalProps<T, M, I>,
   'height' | 'itemHeight'
 >;
+
+export type UseListOptions<T, M extends ItemMeta, I extends Item<T, M>> = UseCollectionOptions<T, M, I> & {
+  adapter?: CollectionItemAdapter<T, M, I>;
+};
 
 export type VirtualItem = {
   end: number;

@@ -17,10 +17,11 @@ import {
 } from './typings';
 import { isCollection } from './utils';
 
-const useCollectionState = <T = any, M extends ItemMeta = ItemMeta>(
-  dataSource?: T[] | string | Collection<T, M>,
+const useCollectionState = <T = any, M extends ItemMeta = ItemMeta, I extends Item<T, M> = Item<T, M>>(
+  dataSource: T[] | string | Collection<T, M, I> | undefined,
+  adapter: CollectionItemAdapter<T, M, I>,
   options: UseCollectionOptions<T, M> = {},
-): CollectionState<T, M> => {
+): CollectionState<T, M, I> => {
   const auth = useTryStore()?.getState().auth;
   let router = useTryRouter();
 
@@ -34,7 +35,7 @@ const useCollectionState = <T = any, M extends ItemMeta = ItemMeta>(
     dataOrUrl = dataSource || [];
   }
 
-  const stateRef = useLazyRef<CollectionState<T, M>>(() => {
+  const stateRef = useLazyRef<CollectionState<T, M, I>>(() => {
     if (!router || !options.mutateUrl) {
       router = new LocalRouter();
     }
@@ -63,22 +64,6 @@ const useCollectionState = <T = any, M extends ItemMeta = ItemMeta>(
         'throttle',
       ]),
     );
-
-    let adapter: CollectionItemAdapter<T, M> | undefined;
-    const optionAdapter = options.adapter;
-    if (optionAdapter !== undefined) {
-      adapter = (data) => {
-        if (data !== undefined) {
-          const result = optionAdapter(data);
-          result.id = result.id !== undefined ? String(result.id) : undefined;
-          return result as Partial<Item<T, M>>;
-        } else {
-          return {
-            meta: {},
-          } as Partial<Item<T, M>>;
-        }
-      };
-    }
 
     return {
       adapter,
@@ -113,7 +98,7 @@ const useCollectionState = <T = any, M extends ItemMeta = ItemMeta>(
       throttle: options.throttle,
       totalKey: options.totalKey || 'total',
       url: Array.isArray(dataOrUrl) ? undefined : dataOrUrl,
-    } as CollectionState<T, M>;
+    } as CollectionState<T, M, I>;
   });
   return stateRef.current;
 };

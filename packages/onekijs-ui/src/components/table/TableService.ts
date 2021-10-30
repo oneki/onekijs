@@ -56,9 +56,12 @@ export const parseColumnWidth = (width: string | number = 'auto'): TableColumnWi
 };
 
 @service
-class TableService<T = any, M extends TableItemMeta = TableItemMeta, S extends TableState<T, M> = TableState<T, M>>
-  extends CollectionService<T, M, S>
-  implements TableController<T, M> {
+class TableService<
+  T = any,
+  M extends TableItemMeta = TableItemMeta,
+  I extends TableItem<T, M> = TableItem<T, M>,
+  S extends TableState<T, M, I> = TableState<T, M, I>
+> extends CollectionService<T, M, I, S> implements TableController<T, M, I> {
   // The table has three init steps
   //  - unmounted => data are not yet loaded
   //  - initializing -> the first render (with real data) is in progress
@@ -74,13 +77,13 @@ class TableService<T = any, M extends TableItemMeta = TableItemMeta, S extends T
   // ref of the body container
   protected contentRef: React.RefObject<HTMLDivElement> | null = null;
 
-  adapt(data: T | undefined): TableItem<T, M> {
+  adapt(data: T | undefined): I {
     const item = super.adapt(data);
     set(item.meta, 'selected', this.state.selected && item.id !== undefined && this.state.selected.includes(item.id));
     return item;
   }
 
-  get bodyClassName(): string | ((context: TableController<T, M>) => string) | undefined {
+  get bodyClassName(): string | ((context: TableController<T, M, I>) => string) | undefined {
     return this.state.bodyClassName;
   }
 
@@ -88,7 +91,7 @@ class TableService<T = any, M extends TableItemMeta = TableItemMeta, S extends T
     return this.state.BodyComponent;
   }
 
-  get columns(): TableColumn<T, M>[] {
+  get columns(): TableColumn<T, M, I>[] {
     return this.state.columns;
   }
 
@@ -108,11 +111,11 @@ class TableService<T = any, M extends TableItemMeta = TableItemMeta, S extends T
     return this.state.footer;
   }
 
-  get footerClassName(): string | ((context: TableController<T, M>) => string) | undefined {
+  get footerClassName(): string | ((context: TableController<T, M, I>) => string) | undefined {
     return this.state.footerClassName;
   }
 
-  get FooterComponent(): React.FC<TableHeaderProps> | undefined {
+  get FooterComponent(): React.FC<TableHeaderProps<T, M, I>> | undefined {
     return this.state.FooterComponent;
   }
 
@@ -124,11 +127,11 @@ class TableService<T = any, M extends TableItemMeta = TableItemMeta, S extends T
     return this.state.header;
   }
 
-  get headerClassName(): string | ((context: TableController<T, M>) => string) | undefined {
+  get headerClassName(): string | ((context: TableController<T, M, I>) => string) | undefined {
     return this.state.headerClassName;
   }
 
-  get HeaderComponent(): React.FC<TableHeaderProps> | undefined {
+  get HeaderComponent(): React.FC<TableHeaderProps<T, M, I>> | undefined {
     return this.state.HeaderComponent;
   }
 
@@ -140,31 +143,31 @@ class TableService<T = any, M extends TableItemMeta = TableItemMeta, S extends T
     return this.state.highlightRow;
   }
 
-  get onRowClick(): TableRowHandler<T, M> | undefined {
+  get onRowClick(): TableRowHandler<T, M, I> | undefined {
     return this.state.onRowClick;
   }
 
-  get onRowEnter(): TableRowHandler<T, M> | undefined {
+  get onRowEnter(): TableRowHandler<T, M, I> | undefined {
     return this.state.onRowEnter;
   }
 
-  get onRowLeave(): TableRowHandler<T, M> | undefined {
+  get onRowLeave(): TableRowHandler<T, M, I> | undefined {
     return this.state.onRowLeave;
   }
 
-  get onRowOver(): TableRowHandler<T, M> | undefined {
+  get onRowOver(): TableRowHandler<T, M, I> | undefined {
     return this.state.onRowOver;
   }
 
-  get onRowOut(): TableRowHandler<T, M> | undefined {
+  get onRowOut(): TableRowHandler<T, M, I> | undefined {
     return this.state.onRowOut;
   }
 
-  get rowClassName(): string | ((rowData: T, context: TableController<T, M>) => string) | undefined {
+  get rowClassName(): string | ((rowData: T, context: TableController<T, M, I>) => string) | undefined {
     return this.state.rowClassName;
   }
 
-  get RowComponent(): React.FC<TableBodyRowProps<T, M>> | undefined {
+  get RowComponent(): React.FC<TableBodyRowProps<T, M, I>> | undefined {
     return this.state.RowComponent;
   }
 
@@ -184,12 +187,12 @@ class TableService<T = any, M extends TableItemMeta = TableItemMeta, S extends T
     return this.state.stripRows;
   }
 
-  asService(): TableService<T, M> {
+  asService(): TableService<T, M, I, S> {
     return this;
   }
 
   @reducer
-  addColumn(column: TableColumn<T, M>, position?: number): void {
+  addColumn(column: TableColumn<T, M, I>, position?: number): void {
     if (position === undefined) {
       this.state.columns.push(column);
     } else {
@@ -266,7 +269,7 @@ class TableService<T = any, M extends TableItemMeta = TableItemMeta, S extends T
   }
 
   @reducer
-  setFooterComponent(FooterComponent?: React.FC<TableFooterProps>): void {
+  setFooterComponent(FooterComponent?: React.FC<TableFooterProps<T, M, I>>): void {
     this.state.FooterComponent = FooterComponent;
   }
 
@@ -276,7 +279,7 @@ class TableService<T = any, M extends TableItemMeta = TableItemMeta, S extends T
   }
 
   @reducer
-  setHeaderComponent(HeaderComponent?: React.FC<TableHeaderProps>): void {
+  setHeaderComponent(HeaderComponent?: React.FC<TableHeaderProps<T, M, I>>): void {
     this.state.HeaderComponent = HeaderComponent;
   }
 

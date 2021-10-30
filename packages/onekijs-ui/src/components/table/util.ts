@@ -4,7 +4,11 @@ import { TableColumn, TableItem, TableItemMeta } from './typings';
 
 export const emptyTableItem: TableItem<any, TableItemMeta> = {};
 
-export const getCellWidth = (column: TableColumn<unknown>, fit?: boolean, grow?: string): CSSProperties => {
+export const getCellWidth = (
+  column: TableColumn<unknown, TableItemMeta, TableItem>,
+  fit?: boolean,
+  grow?: string,
+): CSSProperties => {
   const style: CSSProperties = {};
   if (column.computedWidth) {
     return column.computedWidth;

@@ -1,4 +1,4 @@
-import { Item, ItemMeta, LoadingStatus, toCollectionItem } from 'onekijs-framework';
+import { Item, ItemMeta, LoadingStatus } from 'onekijs-framework';
 import { RefObject, useCallback, useEffect, useMemo } from 'react';
 import { useVirtual } from 'react-virtual';
 import { ListInternalProps, VirtualItem } from '../typings';
@@ -10,7 +10,7 @@ const defaultPreload = 100;
 const defaultIncrement = 100;
 const defaultOverscan = 1;
 
-const useListView: <T = any, M extends ItemMeta = ItemMeta>(
+const useListView: <T = any, M extends ItemMeta = ItemMeta, I extends Item<T, M> = Item<T, M>>(
   props: Pick<
     ListInternalProps<T, M>,
     'collection' | 'height' | 'itemHeight' | 'overscan' | 'preload' | 'increment' | 'virtual'
@@ -19,7 +19,7 @@ const useListView: <T = any, M extends ItemMeta = ItemMeta>(
   },
 ) => {
   isVirtual: boolean;
-  items: (Item<T, M> | undefined)[];
+  items: (I | undefined)[];
   scrollToIndex: (index: number, options?: { align: 'start' | 'center' | 'end' | 'auto' }) => void;
   totalSize: number;
   virtualItems: VirtualItem[];
@@ -49,7 +49,7 @@ const useListView: <T = any, M extends ItemMeta = ItemMeta>(
     const status = getListStatus(collection);
 
     if (status === LoadingStatus.NotInitialized) {
-      return Array(preload).fill(toCollectionItem(undefined, collection.getAdapter()));
+      return Array(preload).fill(collection.adapt(undefined));
     } else {
       return collection.items || [];
     }

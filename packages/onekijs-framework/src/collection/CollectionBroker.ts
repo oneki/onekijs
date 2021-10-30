@@ -12,11 +12,13 @@ import {
   QueryFilterOrCriteria,
   QuerySortBy,
   QuerySortDir,
+  Item,
 } from './typings';
 import { formatFilter, formatSortBy, rootFilterId } from './utils';
 
-export default class DefaultCollectionBroker<T = any, M extends ItemMeta = ItemMeta> implements CollectionBroker<T, M> {
-  protected subscribers: Collection<T, M>[] = [];
+export default class DefaultCollectionBroker<T = any, M extends ItemMeta = ItemMeta, I extends Item<T, M> = Item<T, M>>
+  implements CollectionBroker<T, M, I> {
+  protected subscribers: Collection<T, M, I>[] = [];
   protected filters: {
     parentFilterId: QueryFilterId;
     filter: QueryFilter;
@@ -77,7 +79,7 @@ export default class DefaultCollectionBroker<T = any, M extends ItemMeta = ItemM
     this.subscribers.forEach((s) => s.addSortBy(sortBy, prepend));
   }
 
-  addSubscriber(subscriber: Collection<T, M>): void {
+  addSubscriber(subscriber: Collection<T, M, I>): void {
     const service = subscriber.asService();
     const index = this.subscribers.indexOf(service);
     if (index === -1) {
@@ -147,7 +149,7 @@ export default class DefaultCollectionBroker<T = any, M extends ItemMeta = ItemM
     this.subscribers.forEach((s) => s.removeSortBy(id));
   }
 
-  removeSubscriber(subscriber: Collection<T, M>): void {
+  removeSubscriber(subscriber: Collection<T, M, I>): void {
     const service = subscriber.asService();
     this.subscribers = this.subscribers.filter((s) => s !== service);
   }

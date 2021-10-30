@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { CSSProperties, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import useDashboardService from '../hooks/useDashboardService';
 import useDashboardState from '../hooks/useDashboardState';
@@ -8,15 +8,25 @@ import { getDashboardPanelLength, getFloatingKey, getWorkspacePanelLength } from
 const DashboardBodyComponent: React.FC<DashboardBodyComponentProps> = (props) => {
   const ref = useRef<HTMLDivElement>(null);
   const service = useDashboardService();
+  const stepRef = useRef<'initializing' | 'initialized' | undefined>();
+  const style: CSSProperties = {};
+  if (stepRef.current !== 'initialized') {
+    style.transition = 'none';
+  }
 
   useEffect(() => {
-    service.initBodyPanel(props, ref);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (stepRef.current === undefined) {
+      stepRef.current = 'initializing';
+      service.initBodyPanel(props, ref);
+    } else if (stepRef.current === 'initializing' && ref.current) {
+      stepRef.current = 'initialized';
+      ref.current.style.transition = '';
+    }
+  });
 
   return (
-    <div className={props.className} ref={ref}>
-      {props.children}
+    <div className={props.className} ref={ref} style={style}>
+      {stepRef.current && props.children}
     </div>
   );
 };
@@ -84,7 +94,7 @@ const StyledDashboardBody = styled(DashboardBodyComponent)`
   grid-area: body;
   width: ${(props) => getLength('width', 'small', props)};
   height: ${(props) => getLength('height', 'small', props)};
-  transition: transform 0.6s, width 0.6s, height 0.6s;
+  transition: ${(props) => (props.panel ? 'transform 0.6s, width 0.6s, height 0.6s' : 'none')};
   transform: translate(${(props) => getTranslateX('small', props)}, ${(props) => getTranslateY('small', props)});
   @media only screen and (min-width: 768px) {
     width: ${(props) => getLength('width', 'medium', props)};
@@ -102,9 +112,8 @@ const DashboardBody: React.FC<DashboardBodyPanelProps> = (props) => {
   const state = useDashboardState();
 
   const panel = state.body;
-
   return (
-    <StyledDashboardBody {...panel} {...state} className={props.className}>
+    <StyledDashboardBody {...state} panel={panel} className={props.className}>
       {props.children}
     </StyledDashboardBody>
   );

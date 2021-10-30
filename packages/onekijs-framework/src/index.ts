@@ -112,9 +112,7 @@ export {
   CollectionState,
   CollectionStatus,
   Item,
-  ItemAdapter,
   ItemMeta,
-  List,
   LoadingItemStatus,
   LoadingStatus,
   LocalQuery,
@@ -139,7 +137,6 @@ export {
 export { collectionProxyProps, default as useCollection } from './collection/useCollection';
 export { default as useCollectionService } from './collection/useCollectionService';
 export { default as useCollectionState } from './collection/useCollectionState';
-export { default as useList } from './collection/useList';
 export {
   defaultComparator,
   defaultSerializer,

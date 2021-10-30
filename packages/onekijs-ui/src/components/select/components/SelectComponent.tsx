@@ -1,13 +1,12 @@
 import {
   AnonymousObject,
   Collection,
-  useCollection,
-  useEventListener,
   get,
   isCollectionFetching,
   isCollectionLoading,
   Item,
   toCollectionItem,
+  useEventListener,
   useIsomorphicLayoutEffect,
   ValidationStatus,
 } from 'onekijs-framework';
@@ -17,11 +16,21 @@ import { addClassname } from '../../../utils/style';
 import Dropdown from '../../dropdown';
 import ListBodyComponent from '../../list/components/ListBodyComponent';
 import useListView from '../../list/hooks/useListView';
-import { SelectOptionHandler, SelectOptionMeta, SelectOptionSelectionHandler, SelectProps } from '../typings';
+import useSelect from '../hooks/useSelect';
+import {
+  SelectItem,
+  SelectOptionHandler,
+  SelectOptionMeta,
+  SelectOptionSelectionHandler,
+  SelectProps,
+} from '../typings';
 import SelectInputComponent from './SelectInputComponent';
 import SelectOptionComponent, { MultiSelectOptionComponent } from './SelectOptionComponent';
 
-const findItem = (collection: Collection<any, SelectOptionMeta>, pattern: string): any => {
+const findItem = (
+  collection: Collection<any, SelectOptionMeta, SelectItem<any, SelectOptionMeta>>,
+  pattern: string,
+): any => {
   if (collection.items === undefined) {
     return undefined;
   }
@@ -36,7 +45,10 @@ const findItem = (collection: Collection<any, SelectOptionMeta>, pattern: string
   });
 };
 
-const findItemIndex = (collection: Collection<any, SelectOptionMeta>, item?: Item<any, SelectOptionMeta>): number => {
+const findItemIndex = (
+  collection: Collection<any, SelectOptionMeta, SelectItem<any, SelectOptionMeta>>,
+  item?: Item<any, SelectOptionMeta>,
+): number => {
   if (collection.items === undefined) {
     return -1;
   }
@@ -93,7 +105,7 @@ const diffItems = (
   };
 };
 
-const SelectComponent: FC<SelectProps<any>> = ({
+const SelectComponent: FC<SelectProps> = ({
   className = '',
   placeholder,
   items,
@@ -109,17 +121,17 @@ const SelectComponent: FC<SelectProps<any>> = ({
   status = ValidationStatus.None,
   size = 'medium',
 }) => {
-  const collection = useCollection(items);
+  const collection = useSelect(items);
   const [open, _setOpen] = useState(false);
   const [focus, setFocus] = useState(false);
   const stateRef = useRef<AnonymousObject>({});
-  const currentProxyItem = useRef<Item<any, SelectOptionMeta> | undefined>();
+  const currentProxyItem = useRef<SelectItem | undefined>();
 
-  const currentScrollItem = useRef<Item<any, SelectOptionMeta> | undefined>();
+  const currentScrollItem = useRef<SelectItem | undefined>();
   const currentScrollIndex = useRef<number | undefined>();
   const scrollToRef = useRef<{ index: number; align: 'start' | 'center' | 'end' | 'auto' } | undefined>();
-  const [keyboardItem, setKeyboardItem] = useState<Item<any, SelectOptionMeta> | undefined>();
-  const arrowItemRef = useRef<Item<any, SelectOptionMeta> | undefined>();
+  const [keyboardItem, setKeyboardItem] = useState<SelectItem | undefined>();
+  const arrowItemRef = useRef<SelectItem | undefined>();
 
   const loading = isCollectionLoading(collection);
   const fetching = isCollectionFetching(collection);
@@ -230,7 +242,7 @@ const SelectComponent: FC<SelectProps<any>> = ({
     };
   };
 
-  const onRemoveToken: SelectOptionHandler = useCallback(
+  const onRemoveToken: SelectOptionHandler<any, SelectOptionMeta, SelectItem<any, SelectOptionMeta>> = useCallback(
     (item) => {
       if (onChange) {
         const nextValue = Array.isArray(tokens)
@@ -242,7 +254,7 @@ const SelectComponent: FC<SelectProps<any>> = ({
     [tokens, onChange],
   );
 
-  const onSelect: SelectOptionSelectionHandler = useCallback(
+  const onSelect: SelectOptionSelectionHandler<any, SelectOptionMeta, SelectItem<any, SelectOptionMeta>> = useCallback(
     (item, index, close) => {
       if (close === undefined) {
         close = !(multiple && !collection.getSearch());

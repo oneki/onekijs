@@ -9,7 +9,6 @@ export const clearSelection = (): void => {
 };
 
 export const forceCursor = (cursor?: CursorProperty): void => {
-  console.log('forceCurosr', cursor ? `${cursor} !important` : '');
   document.body.style.cursor = cursor ? `${cursor}` : '';
 };
 

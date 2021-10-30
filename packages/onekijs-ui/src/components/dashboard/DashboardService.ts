@@ -1,6 +1,6 @@
 import { AnonymousObject, DefaultService, get, isFalse, isMobile, isTrue, reducer, service, set } from 'onekijs';
 import React from 'react';
-import { getTranslateXY } from '../../utils/dom';
+import { clearSelection, forceCursor, getTranslateXY } from '../../utils/dom';
 import { ResizeStep } from '../resizer/typings';
 import {
   DashboardArea,
@@ -162,12 +162,15 @@ export class DashboardService extends DefaultService<DashboardState> {
     switch (step) {
       case 'start':
         // deactivate transition animation during the resize
+        clearSelection();
+        forceCursor('n-resize');
         ['panel', 'body', 'left', 'right'].forEach((_area) => {
           const el = elements[_area];
           if (el) el.style.transition = 'none';
         });
         break;
       case 'stop':
+        forceCursor(undefined);
         // set the new height in the panel object. Will be used by styled to set the correct height via CSS
         if (panel) panel.height = `${nextHeight}px`;
         // remove any style added during the resize and let styled managed height and height via CSS
@@ -244,6 +247,8 @@ export class DashboardService extends DefaultService<DashboardState> {
 
     switch (step) {
       case 'start':
+        clearSelection();
+        forceCursor('e-resize');
         // deactivate transition animation during the resize
         ['panel', 'body', 'header', 'footer'].forEach((_area) => {
           const el = elements[_area];
@@ -251,6 +256,7 @@ export class DashboardService extends DefaultService<DashboardState> {
         });
         break;
       case 'stop':
+        forceCursor(undefined);
         // set the new width in the panel object. Will be used by styled to set the correct width via CSS
         if (panel) panel.width = `${nextWidth}px`;
         // remove any style added during the resize and let styled managed width and height via CSS

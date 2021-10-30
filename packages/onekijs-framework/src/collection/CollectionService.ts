@@ -62,15 +62,16 @@ const defaultSearcher = 'i_like';
 export default class CollectionService<
   T = any,
   M extends ItemMeta = ItemMeta,
-  S extends CollectionState<T, M> = CollectionState<T, M>
-> extends DefaultService<S> implements Collection<T, M> {
+  I extends Item<T, M> = Item<T, M>,
+  S extends CollectionState<T, M, I> = CollectionState<T, M, I>
+> extends DefaultService<S> implements Collection<T, M, I> {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   protected initialState: S = null!;
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   // router: Router = null!;
   protected cache: AnonymousObject<any> = {};
   protected itemMeta: AnonymousObject<M | undefined> = {};
-  protected db?: Item<T, M>[];
+  protected db?: I[];
 
   init(): void {
     this.initialState = this.state;
@@ -85,9 +86,7 @@ export default class CollectionService<
     // retrieve params from URL and initiate filter, sort ... with these values
     this._setQuery(this._parseLocation(this.state.router.location), false);
 
-    this.db = Array.isArray(this.state.dataSource)
-      ? this.state.dataSource.map((entry) => this.adapt(entry))
-      : undefined;
+    this.initDb(this.state.dataSource);
 
     if (this.state.local === undefined) {
       this.state.local = Array.isArray(this.state.dataSource) || this.state.fetchOnce === true;
@@ -98,7 +97,11 @@ export default class CollectionService<
     }
   }
 
-  adapt(data: T | undefined): Item<T, M> {
+  initDb(dataSource: T[] | string | undefined): void {
+    this.db = Array.isArray(dataSource) ? dataSource.map((entry) => this.adapt(entry)) : undefined;
+  }
+
+  adapt(data: T | undefined): I {
     return toCollectionItem(data, this.state.adapter);
   }
 
@@ -139,7 +142,7 @@ export default class CollectionService<
     this.refresh(query);
   }
 
-  asService(): CollectionService<T, M> {
+  asService(): CollectionService<T, M, I> {
     return this;
   }
 
@@ -259,7 +262,7 @@ export default class CollectionService<
     return this.state.url || '';
   }
 
-  getAdapter(): CollectionItemAdapter<T, M> | undefined {
+  getAdapter(): CollectionItemAdapter<T, M, I> {
     return this.state.adapter;
   }
 
@@ -867,7 +870,7 @@ export default class CollectionService<
       yield this._fetchError(e);
 
       if (onError) {
-        yield onError(e);
+        yield onError(DefaultBasicError.of(e));
       } else {
         throw e;
       }

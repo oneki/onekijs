@@ -1,6 +1,6 @@
-import { useCollection } from 'onekijs-framework';
 import React, { FC, useRef } from 'react';
 import { addClassname } from '../../../utils/style';
+import useList from '../hooks/useList';
 import useListView from '../hooks/useListView';
 import { ListProps } from '../typings';
 import ListBodyComponent from './ListBodyComponent';
@@ -22,7 +22,7 @@ const ListComponent: FC<ListProps> = ({
   virtual,
   style,
 }) => {
-  const collection = useCollection(items);
+  const collection = useList(items);
   const ref = useRef<HTMLDivElement>(null);
 
   const { items: listItems, isVirtual, totalSize, virtualItems } = useListView({

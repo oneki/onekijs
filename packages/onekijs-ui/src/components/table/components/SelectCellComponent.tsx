@@ -1,19 +1,20 @@
-import { useCollection, CollectionBroker, useField, extractValidators } from 'onekijs-framework';
+import { CollectionBroker, useField, extractValidators } from 'onekijs-framework';
 import React, { useEffect } from 'react';
 import Select from '../../select';
+import useSelect from '../../select/hooks/useSelect';
 import { TableBodyCellProps, UseSelectColumnOptions } from '../typings';
 import useFormTableContext from '../useFormTableContext';
 
 const SelectCellComponent = (
-  options: UseSelectColumnOptions<any, any>,
-  broker: CollectionBroker<any, any>,
+  options: UseSelectColumnOptions<any, any, any>,
+  broker: CollectionBroker<any, any, any>,
 ): React.FC<TableBodyCellProps<any, any>> => {
   const SelectCellComponent: React.FC<TableBodyCellProps<any, any>> = ({ column, rowIndex }) => {
     const { tableName } = useFormTableContext();
     const [validators] = extractValidators(options);
     const field = useField(`${tableName}.${rowIndex}.${column.id}`, validators);
 
-    const collection = useCollection(options.dataSource, options);
+    const collection = useSelect(options.dataSource, options);
     const service = collection.asService();
 
     useEffect(() => {

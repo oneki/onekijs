@@ -4,6 +4,7 @@ import { Collection, CollectionState, ItemMeta, UseCollectionOptions } from './t
 import useCollectionService from './useCollectionService';
 import useCollectionState from './useCollectionState';
 import { isCollection } from './utils';
+import { Item, CollectionItemAdapter } from './typings';
 
 export const collectionProxyProps = {
   pick: [
@@ -52,18 +53,21 @@ export const collectionProxyProps = {
   mutables: ['data', 'hasMore', 'items', 'status', 'total'],
 };
 
-const useCollection = <T = any, M extends ItemMeta = ItemMeta>(
-  dataSource?: T[] | string | Collection<T, M>,
+const useCollection = <T = any, M extends ItemMeta = ItemMeta, I extends Item<T, M> = Item<T, M>>(
+  dataSource: T[] | string | Collection<T, M, I> | undefined,
+  adapter: CollectionItemAdapter<T, M, I>,
   options: UseCollectionOptions<T, M> = {},
-): Collection<T, M> => {
-  const initialState = useCollectionState(dataSource, options);
-  const [, service] = useCollectionService<T, M, CollectionState<T, M>, CollectionService<T, M, CollectionState<T, M>>>(
-    dataSource,
-    CollectionService,
-    initialState,
-  );
+): Collection<T, M, I> => {
+  const initialState = useCollectionState(dataSource, adapter, options);
+  const [, service] = useCollectionService<
+    T,
+    M,
+    I,
+    CollectionState<T, M, I>,
+    CollectionService<T, M, I, CollectionState<T, M, I>>
+  >(dataSource, CollectionService, initialState);
 
-  const collection = useObjectProxy<Collection<T, M>>(service, collectionProxyProps);
+  const collection = useObjectProxy<Collection<T, M, I>>(service, collectionProxyProps);
 
   return isCollection(dataSource) ? dataSource : collection;
 };

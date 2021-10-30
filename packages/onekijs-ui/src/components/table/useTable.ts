@@ -1,6 +1,6 @@
 import { collectionProxyProps, useObjectProxy } from 'onekijs-framework';
 import TableService from './TableService';
-import { TableController, TableItemMeta, TableState, UseTableOptions } from './typings';
+import { TableController, TableItem, TableItemMeta, TableState, UseTableOptions } from './typings';
 import useTableService from './useTableService';
 import useTableState from './useTableState';
 
@@ -49,11 +49,11 @@ export const tableCollectionProps = {
   ]),
 };
 
-const useTable = <T = any, M extends TableItemMeta = TableItemMeta>(
-  options: UseTableOptions<T, M>,
-): TableController<T, M> => {
-  const tableState = useTableState<T, M>(options);
-  const [, service] = useTableService<T, M, TableState<T, M>, TableService<T, M, TableState<T, M>>>(
+const useTable = <T = any, M extends TableItemMeta = TableItemMeta, I extends TableItem<T, M> = TableItem<T, M>>(
+  options: UseTableOptions<T, M, I>,
+): TableController<T, M, I> => {
+  const tableState = useTableState<T, M, I>(options);
+  const [, service] = useTableService<T, M, I, TableState<T, M, I>, TableService<T, M, I, TableState<T, M, I>>>(
     options.dataSource,
     TableService,
     tableState,

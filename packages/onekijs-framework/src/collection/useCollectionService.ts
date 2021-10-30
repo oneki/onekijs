@@ -4,16 +4,17 @@ import { asyncHttp } from '../core/xhr';
 import { Fetcher, HttpMethod } from '../types/fetch';
 import { Class } from '../types/object';
 import CollectionService from './CollectionService';
-import { Collection, CollectionFetcherResult, CollectionState, ItemMeta, LoadingStatus, Query } from './typings';
+import { Collection, CollectionFetcherResult, CollectionState, ItemMeta, Item, LoadingStatus, Query } from './typings';
 import { isCollection } from './utils';
 
 const useCollectionService = <
   T,
   M extends ItemMeta = ItemMeta,
-  S extends CollectionState<T, M> = CollectionState<T, M>,
-  C extends CollectionService<T, M, S> = CollectionService<T, M, S>
+  I extends Item<T, M> = Item<T, M>,
+  S extends CollectionState<T, M, I> = CollectionState<T, M, I>,
+  C extends CollectionService<T, M, I, S> = CollectionService<T, M, I, S>
 >(
-  dataSource: T[] | string | Collection<T, M> | undefined,
+  dataSource: T[] | string | Collection<T, M, I> | undefined,
   ctor: Class<C>,
   initialState: S,
 ): [S, C] => {

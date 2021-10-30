@@ -1,14 +1,14 @@
-import { CollectionService, CollectionState, Fetcher, Query, useCollection, useForm, useService } from 'onekijs';
-import { FormSelect, SelectOptionMeta } from 'onekijs-ui';
+import { CollectionService, CollectionState, Fetcher, Query, useForm, useService } from 'onekijs';
+import { FormSelect, SelectItem, SelectOptionMeta, useSelect } from 'onekijs-ui';
 import React, { useCallback } from 'react';
 import { User, userAdapter, users, userSearcher } from '../data/users';
 
 export const SelectPage = () => {
-  const [, service] = useService<CollectionState<User, SelectOptionMeta>, CollectionService<User, SelectOptionMeta, CollectionState<User, SelectOptionMeta>>>(CollectionService, {
+  const [, service] = useService<CollectionState<User, SelectOptionMeta, SelectItem<User, SelectOptionMeta>>, CollectionService<User, SelectOptionMeta, SelectItem<User, SelectOptionMeta>, CollectionState<User, SelectOptionMeta, SelectItem<User, SelectOptionMeta>>>>(CollectionService, {
     dataSource: users,
     adapter: userAdapter, 
     searcher: userSearcher
-  } as CollectionState<User, SelectOptionMeta>)
+  } as CollectionState<User, SelectOptionMeta, SelectItem<User, SelectOptionMeta>>)
 
   const fetcher: Fetcher = useCallback(
     async (url, method, body, options) => {
@@ -31,12 +31,12 @@ export const SelectPage = () => {
   );
 
 
-  const collection = useCollection<User, SelectOptionMeta>('http://localhost', {
+  const collection = useSelect<User>('http://localhost', {
     adapter: userAdapter,
     fetcher 
   });
 
-  const collection2 = useCollection<User, SelectOptionMeta>('http://localhost', {
+  const collection2 = useSelect<User>('http://localhost', {
     adapter: userAdapter,
     fetcher 
   });  

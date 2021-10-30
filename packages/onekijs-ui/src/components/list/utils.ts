@@ -47,13 +47,17 @@ import { Collection, CollectionStatus, isCollection, Item, ItemMeta, LoadingStat
 
 export const emptyListItem: Item<any, ItemMeta> = {};
 
-export const canFetchMore = (collection: any[] | Collection<any, ItemMeta>): boolean => {
-  return isCollection(collection) && (collection as Collection<any, ItemMeta>).status === LoadingStatus.PartialLoaded;
+export const canFetchMore = <T, M extends ItemMeta, I extends Item<T, M>>(
+  collection: T[] | Collection<T, M, I>,
+): boolean => {
+  return isCollection(collection) && (collection as Collection<T, M, I>).status === LoadingStatus.PartialLoaded;
 };
 
-export const getListStatus = (collection: any[] | Collection<any, ItemMeta>): CollectionStatus => {
+export const getListStatus = <T, M extends ItemMeta, I extends Item<T, M>>(
+  collection: T[] | Collection<T, M, I>,
+): CollectionStatus => {
   if (isCollection(collection)) {
-    return (collection as Collection<any, ItemMeta>).status;
+    return (collection as Collection<T, M, I>).status;
   }
   return LoadingStatus.Loaded;
 };

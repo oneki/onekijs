@@ -9,6 +9,7 @@ export type DashboardBodyComponentProps = {
   header?: DashboardHorizontalPanel;
   left?: DashboardVerticalPanel;
   right?: DashboardVerticalPanel;
+  panel?: DashboardBodyPanel;
 };
 
 export type DashboardBodyPanel = {

@@ -1,33 +1,33 @@
 import {
-  Collection, CollectionService, CollectionState,
+  Collection,
+  CollectionService,
+  CollectionState,
   Fetcher,
   HttpMethod,
+  Item,
   ItemMeta,
-  LoadingStatus, Query, useCollection,
-  useService
+  LoadingStatus,
+  Query,
+  useService,
 } from 'onekijs';
-import {
-  List
-} from 'onekijs-ui';
+import { List, useList } from 'onekijs-ui';
 import React, { useCallback } from 'react';
 import { User, userAdapter, users, userSearcher } from '../data/users';
 import Spinner from './spinner';
 
-
-
-const isLoading = (collection: Collection<User, ItemMeta>): boolean => {
+const isLoading = (collection: Collection<User, ItemMeta, Item<User, ItemMeta>>): boolean => {
   return collection.status === LoadingStatus.Loading || collection.status === LoadingStatus.PartialLoading;
 };
 
 export const AjaxListPage = () => {
   const [, service] = useService<
-    CollectionState<User, ItemMeta>,
-    CollectionService<User, ItemMeta, CollectionState<User, ItemMeta>>
+    CollectionState<User, ItemMeta, Item<User, ItemMeta>>,
+    CollectionService<User, ItemMeta, Item<User, ItemMeta>, CollectionState<User, ItemMeta, Item<User, ItemMeta>>>
   >(CollectionService, {
     dataSource: users,
     adapter: userAdapter,
     searcher: userSearcher,
-  } as CollectionState<User, ItemMeta>);
+  } as CollectionState<User, ItemMeta, Item<User, ItemMeta>>);
 
   const fetcher: Fetcher = useCallback(
     async (url, method, body, options) => {
@@ -42,7 +42,7 @@ export const AjaxListPage = () => {
     [service],
   );
 
-  const remoteCollection = useCollection<User>('http://localhost', {
+  const remoteCollection = useList<User>('http://localhost', {
     adapter: userAdapter,
     fetcher,
     method: HttpMethod.Post,

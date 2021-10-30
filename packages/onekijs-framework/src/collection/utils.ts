@@ -65,15 +65,15 @@ export const generateFilterId = (): number => {
   return ++filterUid;
 };
 
-export const isCollectionLoading = <T, M>(collection: Collection<T, M>): boolean => {
+export const isCollectionLoading = <T, M, I>(collection: Collection<T, M, I>): boolean => {
   return !!(collection && ['partial_loading', 'loading'].includes(collection.status));
 };
 
-export const isCollectionFetching = <T, M>(collection: Collection<T, M>): boolean => {
+export const isCollectionFetching = <T, M, I>(collection: Collection<T, M, I>): boolean => {
   return !!(collection && ['partial_fetching', 'partial_loading', 'loading', 'fetching'].includes(collection.status));
 };
 
-export const isCollectionInitializing = <T, M>(collection: Collection<T, M>): boolean => {
+export const isCollectionInitializing = <T, M, I>(collection: Collection<T, M, I>): boolean => {
   return !!(collection && collection.status === 'not_initialized');
 };
 
@@ -558,13 +558,16 @@ export const visitFilter = (filter: QueryFilter, visitor: (filter: QueryFilter) 
   return stop;
 };
 
-export const isCollection = <T, M extends ItemMeta>(
-  data?: T[] | Collection<T, M> | string,
-): data is Collection<T, M> => {
+export const isCollection = <T, M extends ItemMeta, I extends Item<T, M>>(
+  data?: T[] | Collection<T, M, I> | string,
+): data is Collection<T, M, I> => {
   return data !== undefined && !Array.isArray(data) && !(typeof data === 'string');
 };
 
-export const toCollectionItem = <T, M>(data?: T, adapter?: CollectionItemAdapter<T, M>): Item<T, M> => {
+export const toCollectionItem = <T, M extends ItemMeta, I extends Item<T, M>>(
+  data: T | undefined,
+  adapter: CollectionItemAdapter<T, M, I>,
+): I => {
   const getId = (data: any) => {
     if (isNull(data)) {
       return undefined;
@@ -587,19 +590,12 @@ export const toCollectionItem = <T, M>(data?: T, adapter?: CollectionItemAdapter
       return undefined;
     }
   };
-  if (adapter) {
-    const adaptee = adapter(data);
-    return Object.assign({ data }, adaptee, {
-      id: adaptee.id === undefined ? getId(data) : String(adaptee.id),
-    });
-  }
 
-  return {
-    data,
-    meta: undefined,
-    id: getId(data),
-    text: getText(data),
-  };
+  const adaptee = adapter(data);
+  return Object.assign({ data }, adaptee, {
+    id: adaptee.id === undefined ? getId(data) : String(adaptee.id),
+    text: adaptee.id === undefined ? getText(data) : String(adaptee.text),
+  });
 };
 
 export const dummyLogMetadata = (): void => {

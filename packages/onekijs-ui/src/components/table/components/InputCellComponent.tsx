@@ -4,7 +4,7 @@ import Input from '../../input';
 import { TableBodyCellProps, UseInputColumnOptions } from '../typings';
 import useFormTableContext from '../useFormTableContext';
 
-const InputCellComponent = (options: UseInputColumnOptions<any, any>): React.FC<TableBodyCellProps<any, any>> => {
+const InputCellComponent = (options: UseInputColumnOptions<any, any, any>): React.FC<TableBodyCellProps<any, any>> => {
   const InputCellComponent: React.FC<TableBodyCellProps<any, any>> = ({ column, rowIndex, rowValue }) => {
     const { tableName, init } = useFormTableContext();
     const [validators] = extractValidators(options);

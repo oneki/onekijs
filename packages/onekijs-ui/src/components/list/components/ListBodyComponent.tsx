@@ -3,7 +3,7 @@ import { addStyle } from '../../../utils/style';
 import { ListBodyProps } from '../typings';
 import { emptyListItem } from '../utils';
 
-const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
+const ListBodyComponent: React.FC<ListBodyProps<any, any, any>> = ({
   bodyRef,
   className,
   height,

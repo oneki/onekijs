@@ -20,7 +20,6 @@ export class ResizerService extends DefaultService<ResizerState> {
 
   @reducer
   setHover(hover: boolean): void {
-    console.log('setHover', hover);
     this.state.hover = hover;
   }
 
@@ -31,13 +30,11 @@ export class ResizerService extends DefaultService<ResizerState> {
 
   @saga(SagaEffect.Every)
   *onEnter() {
-    console.log('onEnter');
     this.hoverTask = yield fork([this, this.delayEnter], 250);
   }
 
   @saga(SagaEffect.Every)
   *onLeave() {
-    console.log('onLeave');
     if (this.hoverTask !== null) {
       yield cancel(this.hoverTask);
     }
@@ -82,7 +79,6 @@ export class ResizerService extends DefaultService<ResizerState> {
   @reducer
   stopResize(): void {
     this.currentHandle = undefined;
-    console.log('onStop');
     document.removeEventListener('mouseup', this.stopResize);
     markBodyAsSelectable();
     // ensure that the resize is active

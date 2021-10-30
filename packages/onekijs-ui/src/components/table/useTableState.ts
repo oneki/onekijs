@@ -1,12 +1,20 @@
 import { useCollectionState, useLazyRef } from 'onekijs-framework';
-import { TableItemMeta, TableState, UseTableOptions } from './typings';
+import { TableItem, TableItemMeta, TableState, UseTableOptions } from './typings';
 
-const useTableState = <T = any, M extends TableItemMeta = TableItemMeta>(
-  options: UseTableOptions<T, M>,
-): TableState<T, M> => {
-  const collectionState = useCollectionState(options.dataSource, options);
+const useTableState = <T, M extends TableItemMeta, I extends TableItem<T, M>>(
+  options: UseTableOptions<T, M, I>,
+): TableState<T, M, I> => {
+  let adapter = options.adapter;
+  if (!adapter) {
+    adapter = () => {
+      return {} as I;
+    };
+  }
+  delete options['adapter'];
 
-  const stateRef = useLazyRef<TableState<T, M>>(() => {
+  const collectionState = useCollectionState(options.dataSource, adapter, options);
+
+  const stateRef = useLazyRef<TableState<T, M, I>>(() => {
     return Object.assign(
       {
         columns: options.columns,

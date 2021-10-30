@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, CSSProperties } from 'react';
 import styled, { css } from 'styled-components';
 import { ComponentStyle } from '../../../styles/typings';
 import Resizer from '../../resizer';
@@ -67,15 +67,25 @@ const getHeight = (size: DashboardSize, props: DashboardVerticalPanelComponentPr
 const Component: React.FC<DashboardVerticalPanelComponentProps> = (props) => {
   const ref = useRef<HTMLDivElement>(null);
   const service = useDashboardService();
+  const stepRef = useRef<'initializing' | 'initialized' | undefined>();
+  const style: CSSProperties = {};
+  if (stepRef.current !== 'initialized') {
+    style.transition = 'none';
+  }
 
   useEffect(() => {
-    service.initVerticalPanel(props.area, props, ref);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (stepRef.current === undefined) {
+      stepRef.current = 'initializing';
+      service.initVerticalPanel(props.area, props, ref);
+    } else if (stepRef.current === 'initializing' && ref.current) {
+      stepRef.current = 'initialized';
+      ref.current.style.transition = '';
+    }
+  });
 
   return (
-    <div className={props.className} ref={ref}>
-      {props.children}
+    <div className={props.className} ref={ref} style={style}>
+      {stepRef.current && props.children}
     </div>
   );
 };
@@ -86,10 +96,8 @@ const style: ComponentStyle<DashboardVerticalPanelComponentProps> = (props) => {
     width: ${getDashboardPanelLength('width', 'small', props.panel)};
     height: ${getHeight('small', props)};
     transform: translate(${getTranslateX('small', props)}, ${getTranslateY('small', props)});
-    ${props.panel ? 'transition: transform 0.6s, width 0.6s, height 0.6s;' : 'transition: none'}
-    ${props.panel && props.panel[getFloatingKey('small')]
-      ? 'z-index: 1001;'
-      : 'auto'}
+    transition: transform 0.6s, width 0.6s, height 0.6s;
+    ${props.panel && props.panel[getFloatingKey('small')] ? 'z-index: 1001;' : 'auto;'}
     @media only screen and (min-width: 768px) {
       width: ${getDashboardPanelLength('width', 'medium', props.panel)};
       height: ${getHeight('medium', props)};
