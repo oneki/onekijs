@@ -1,11 +1,11 @@
 import { Collection, useCollection } from 'onekijs-framework';
 import { UseListOptions } from '../../list/typings';
-import { SelectItem, SelectOptionMeta } from '../typings';
+import { SelectItem } from '../typings';
 
 const useSelect = <T = any>(
-  dataSource: T[] | string | Collection<T, SelectOptionMeta, SelectItem<T, SelectOptionMeta>>,
-  options: UseListOptions<T, SelectOptionMeta, SelectItem<T, SelectOptionMeta>> = {},
-): Collection<T, SelectOptionMeta, SelectItem<T, SelectOptionMeta>> => {
+  dataSource: T[] | string | Collection<T, SelectItem<T>>,
+  options: UseListOptions<T, SelectItem<T>> = {},
+): Collection<T, SelectItem<T>> => {
   let adapter = options.adapter;
   if (!adapter) {
     adapter = () => {
@@ -14,7 +14,7 @@ const useSelect = <T = any>(
   }
   delete options['adapter'];
 
-  return useCollection<T, SelectOptionMeta, SelectItem<T, SelectOptionMeta>>(dataSource, adapter, options);
+  return useCollection<T, SelectItem<T>>(dataSource, adapter, options);
 };
 
 export default useSelect;

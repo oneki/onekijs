@@ -3,7 +3,6 @@ import {
   ChangeHandler,
   FormFieldProps,
   Item,
-  ItemMeta,
   ValidationStatus,
   CollectionItemAdapter,
 } from 'onekijs-framework';
@@ -11,23 +10,19 @@ import React, { FC } from 'react';
 import { FieldLayoutProps, FieldSize } from '../field/typings';
 import { ListItemHandler, ListItemProps, ListProps } from '../list/typings';
 
-export type FormSelectProps<
-  T = any,
-  M extends SelectOptionMeta = SelectOptionMeta,
-  I extends SelectItem<T, M> = SelectItem<T, M>
-> = SelectProps<T, M, I> &
+export type FormSelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = SelectProps<T, I> &
   FormFieldProps &
   FieldLayoutProps & {
     defaultValue?: T | T[] | null;
     FieldComponent?: React.FC<SelectProps>;
   };
 
-export type SelectAdapter<
-  T,
-  M extends SelectOptionMeta = SelectOptionMeta,
-  I extends SelectItem<T, M> = SelectItem<T, M>
-> = CollectionItemAdapter<T, M, I>;
-export type SelectItem<T = any, M extends SelectOptionMeta = SelectOptionMeta> = Item<T, M>;
+export type SelectAdapter<T, I extends SelectItem<T> = SelectItem<T>> = CollectionItemAdapter<T, I>;
+
+export type SelectItem<T> = Item<T> & {
+  selected?: boolean;
+  highlighted?: boolean;
+};
 
 export interface SelectIconProps {
   open: boolean;
@@ -36,40 +31,29 @@ export interface SelectIconProps {
   onClick: AnyFunction<void>;
 }
 
-export interface SelectInputProps<
-  T = any,
-  M extends SelectOptionMeta = SelectOptionMeta,
-  I extends SelectItem<T, M> = SelectItem<T, M>
-> extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> {
+export interface SelectInputProps<T = any, I extends SelectItem<T> = SelectItem<T>>
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> {
   IconComponent?: FC<SelectIconProps>;
   focus: boolean;
   value?: string;
-  tokens?: SelectItem[];
+  tokens?: SelectItem<T>[];
   open: boolean;
   loading: boolean;
   fetching: boolean;
   setOpen: (open: boolean) => void;
   onChange: (nextValue: string) => void;
   multiple: boolean;
-  onRemove: SelectOptionHandler<T, M, I>;
+  onRemove: SelectOptionHandler<T, I>;
 }
 
-export interface SelectTokensProps<
-  T = any,
-  M extends SelectOptionMeta = SelectOptionMeta,
-  I extends SelectItem<T, M> = SelectItem<T, M>
-> {
+export interface SelectTokensProps<T = any, I extends SelectItem<T> = SelectItem<T>> {
   tokens?: I[];
-  onRemove: SelectOptionHandler<T, M, I>;
+  onRemove: SelectOptionHandler<T, I>;
 }
 
-export interface SelectTokenProps<
-  T = any,
-  M extends SelectOptionMeta = SelectOptionMeta,
-  I extends SelectItem<T, M> = SelectItem<T, M>
-> {
+export interface SelectTokenProps<T = any, I extends SelectItem<T> = SelectItem<T>> {
   token: I;
-  onRemove: SelectOptionHandler<T, M, I>;
+  onRemove: SelectOptionHandler<T, I>;
   index: number;
 }
 
@@ -77,40 +61,23 @@ export interface SelectTokenProps<
 //   collection: Collection<T, M>;
 // };
 
-export type SelectOptionHandler<T, M extends SelectOptionMeta, I extends SelectItem<T, M>> = ListItemHandler<T, M, I>;
-export type SelectOptionSelectionHandler<T, M extends SelectOptionMeta, I extends SelectItem<T, M>> = (
+export type SelectOptionHandler<T, I extends SelectItem<T> = SelectItem<T>> = ListItemHandler<T, I>;
+export type SelectOptionSelectionHandler<T, I extends SelectItem<T> = SelectItem<T>> = (
   item: I,
   index: number,
   close?: boolean,
 ) => void;
 
-export interface SelectOptionMeta extends ItemMeta {
-  selected?: boolean;
-  highlighted?: boolean;
-}
-
-export type SelectOptionProps<
-  T = any,
-  M extends SelectOptionMeta = SelectOptionMeta,
-  I extends SelectItem<T, M> = SelectItem<T, M>
-> = ListItemProps<T, M, I> & {
+export type SelectOptionProps<T = any, I extends SelectItem<T> = SelectItem<T>> = ListItemProps<T, I> & {
   multiple?: boolean;
 };
 
-export interface SelectOptionsProps<
-  T = any,
-  M extends SelectOptionMeta = SelectOptionMeta,
-  I extends SelectItem<T, M> = SelectItem<T, M>
-> extends ListProps<T, M, I> {
+export interface SelectOptionsProps<T = any, I extends SelectItem<T> = SelectItem<T>> extends ListProps<T, I> {
   search?: string;
 }
 
-export interface SelectProps<
-  T = any,
-  M extends SelectOptionMeta = SelectOptionMeta,
-  I extends SelectItem<T, M> = SelectItem<T, M>
-> extends ListProps<T, M, I> {
-  InputComponent?: FC<SelectInputProps<T, M, I>>;
+export interface SelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> extends ListProps<T, I> {
+  InputComponent?: FC<SelectInputProps<T, I>>;
   IconComponent?: FC<SelectIconProps>;
   placeholder?: string;
   value?: T | T[] | null;

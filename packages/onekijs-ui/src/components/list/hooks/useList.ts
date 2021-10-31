@@ -1,10 +1,10 @@
-import { ItemMeta, Item, Collection, useCollection } from 'onekijs-framework';
+import { Item, Collection, useCollection } from 'onekijs-framework';
 import { UseListOptions } from '../typings';
 
 const useList = <T = any>(
-  dataSource: T[] | string | Collection<T, ItemMeta, Item<T, ItemMeta>>,
-  options: UseListOptions<T, ItemMeta, Item<T, ItemMeta>> = {},
-): Collection<T, ItemMeta, Item<T, ItemMeta>> => {
+  dataSource: T[] | string | Collection<T, Item<T>>,
+  options: UseListOptions<T, Item<T>> = {},
+): Collection<T, Item<T>> => {
   let adapter = options.adapter;
   if (!adapter) {
     adapter = () => {
@@ -13,7 +13,7 @@ const useList = <T = any>(
   }
   delete options['adapter'];
 
-  return useCollection<T, ItemMeta, Item<T, ItemMeta>>(dataSource, adapter, options);
+  return useCollection<T, Item<T>>(dataSource, adapter, options);
 };
 
 export default useList;

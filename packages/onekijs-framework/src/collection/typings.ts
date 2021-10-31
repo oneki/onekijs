@@ -5,22 +5,18 @@ import { Router } from '../types/router';
 
 export type ChangeHandler<T> = (value: T) => void;
 
-export type Collection<T, M extends ItemMeta, I extends Item<T, M>> = Omit<
-  CollectionBroker<T, M, I>,
-  'addSubscriber' | 'removeSubscriber'
-> & {
+export type Collection<T, I extends Item<T>> = Omit<CollectionBroker<T, I>, 'addSubscriber' | 'removeSubscriber'> & {
   adapt(data: T | undefined): I;
-  asService(): Collection<T, M, I>;
+  asService(): Collection<T, I>;
   readonly data?: (T | undefined)[];
   readonly dataSource?: T[] | string;
-  readonly items?: (I | undefined)[];
-  getAdapter(): CollectionItemAdapter<T, M, I>;
+  readonly items: (I | undefined)[];
+  getAdapter(): CollectionItemAdapter<T, I>;
   getItem(id: string | number): I | undefined;
   getFields(): string[] | undefined;
   getFilter(): QueryFilter | undefined;
   getFilterById(id: QueryFilterId): QueryFilterOrCriteria | undefined;
   getLimit(): number | undefined;
-  getMeta(id: string | number): M | undefined;
   getOffset(): number | undefined;
   getParam(key: string): any;
   getParams(): AnonymousObject | undefined;
@@ -34,13 +30,13 @@ export type Collection<T, M extends ItemMeta, I extends Item<T, M>> = Omit<
   query(query: Query): void;
   refresh(query?: Query): void;
   reset(): void;
-  setMeta(item: I, key: keyof M, value: any): void;
-  setMetaById(id: Primitive, key: keyof M, value: any): void;
+  setMeta<K extends keyof I>(item: I, key: K, value: I[K]): void;
+  setMetaByUid<K extends keyof I>(uid: string, key: K, value: I[K]): void;
   readonly status: CollectionStatus;
   readonly total?: number;
 };
 
-export type CollectionBroker<T, M extends ItemMeta, I extends Item<T, M>> = {
+export type CollectionBroker<T, I extends Item<T>> = {
   addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId?: QueryFilterId): void;
   addFilterCriteria(
     field: string,
@@ -51,7 +47,7 @@ export type CollectionBroker<T, M extends ItemMeta, I extends Item<T, M>> = {
     parentFilterId?: QueryFilterId,
   ): void;
   addSortBy(sortBy: QuerySortBy, prepend?: boolean): void;
-  addSubscriber(collection: Collection<T, M, I>): void;
+  addSubscriber(collection: Collection<T, I>): void;
   clearFields(): void;
   clearFilter(): void;
   clearParams(): void;
@@ -62,7 +58,7 @@ export type CollectionBroker<T, M extends ItemMeta, I extends Item<T, M>> = {
   filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | null): void;
   removeFilter(filterId: QueryFilterId): void;
   removeSortBy(id: string): void;
-  removeSubscriber(collection: Collection<T, M, I>): void;
+  removeSubscriber(collection: Collection<T, I>): void;
   search(search: Primitive): void;
   setData(data: T[]): void;
   setFields(fields: string[]): void;
@@ -80,9 +76,9 @@ export type CollectionFetchOptions<R = any, T = any> = Omit<FetchOptions<R, T>, 
   auth?: AnonymousObject<any> | boolean;
 };
 
-export type CollectionItemAdapter<T, M extends ItemMeta, I extends Item<T, M>> = (data: T | undefined) => I;
+export type CollectionItemAdapter<T, I extends Item<T>> = (data: T | undefined) => Omit<I, 'loadingStatus' | 'uid'>;
 
-export interface CollectionOptions<T, M extends ItemMeta, I extends Item<T, M>> {
+export interface CollectionOptions<T, I extends Item<T>> {
   autoload?: boolean;
   comparator?: QuerySortComparator;
   comparators?: AnonymousObject<QuerySortComparator>;
@@ -100,15 +96,15 @@ export interface CollectionOptions<T, M extends ItemMeta, I extends Item<T, M>> 
   initialSortBy?: string | QuerySortBy | QuerySortBy[];
   method?: HttpMethod;
   mutateUrl?: boolean;
-  queryEngine?: QueryEngine<T, M, I>;
+  queryEngine?: QueryEngine<T, I>;
   searcher?: QuerySearcher<T>;
   serializer?: QuerySerializer;
   throttle?: number;
   totalKey?: string;
 }
 
-export interface CollectionState<T, M extends ItemMeta, I extends Item<T, M>> extends FetchState {
-  adapter: CollectionItemAdapter<T, M, I>;
+export interface CollectionState<T, I extends Item<T>> extends FetchState {
+  adapter: CollectionItemAdapter<T, I>;
   autoload?: boolean;
   comparator?: QuerySortComparator;
   comparators?: AnonymousObject<QuerySortComparator>;
@@ -126,7 +122,7 @@ export interface CollectionState<T, M extends ItemMeta, I extends Item<T, M>> ex
   limit?: number;
   offset?: number;
   params?: AnonymousObject;
-  queryEngine?: QueryEngine<T, M, I>;
+  queryEngine?: QueryEngine<T, I>;
   router: Router;
   search?: Primitive;
   searcher?: QuerySearcher<T>;
@@ -149,18 +145,15 @@ export type CollectionStatus =
   | 'partial_fetching'
   | 'partial_loaded';
 
-export interface Item<T, M extends ItemMeta> {
-  data?: T;
-  meta?: M;
-  id?: string | number;
-  text?: string;
+export interface Item<T> {
+  data?: T; // data can be undefined if the item is fetching or loading
+  id?: string | number; // id can be undefined if the item is fetching or loading
+  text?: string; // text can be undefined if the item is fetching or loading
+  loadingStatus: LoadingItemStatus;
+  uid: string; // this is a internal ID never visible from the outside
 }
 
-export type ItemMeta = {
-  loadingStatus?: LoadingItemStatus;
-};
-
-export type LoadingItemStatus = 'loading' | 'fetching' | 'loaded';
+export type LoadingItemStatus = 'not_initialized' | 'loading' | 'fetching' | 'loaded';
 
 export enum LoadingStatus {
   NotInitialized = 'not_initialized',
@@ -185,7 +178,7 @@ export interface Query {
   sort?: QuerySortDir;
 }
 
-export type QueryEngine<T, M extends ItemMeta, I extends Item<T, M>> = (
+export type QueryEngine<T, I extends Item<T>> = (
   items: I[],
   query: LocalQuery,
   comparator: QuerySortComparator,
@@ -259,6 +252,6 @@ export type QuerySortComparator = <T>(a: T | null | undefined, b: T | null | und
 
 export type QuerySortDir = 'asc' | 'desc';
 
-export interface UseCollectionOptions<T, M extends ItemMeta, I extends Item<T, M>>
-  extends CollectionOptions<T, M, I>,
+export interface UseCollectionOptions<T, I extends Item<T>>
+  extends CollectionOptions<T, I>,
     CollectionFetchOptions<CollectionFetcherResult<T>, Query | undefined> {}

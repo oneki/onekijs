@@ -112,7 +112,6 @@ export {
   CollectionState,
   CollectionStatus,
   Item,
-  ItemMeta,
   LoadingItemStatus,
   LoadingStatus,
   LocalQuery,
@@ -152,7 +151,6 @@ export {
   isCollectionFetching,
   isCollectionInitializing,
   isCollectionLoading,
-  isItem,
   isItemFetching,
   isItemLoading,
   isQueryFilter,
@@ -182,7 +180,6 @@ export {
   serializeSubFilter,
   serializeValue,
   shouldResetData,
-  toCollectionItem,
   urlSerializer,
   visitFilter,
 } from './collection/utils';

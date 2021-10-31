@@ -1,4 +1,4 @@
-import { Item, ItemMeta, LoadingStatus } from 'onekijs-framework';
+import { Item, LoadingStatus } from 'onekijs-framework';
 import { RefObject, useCallback, useEffect, useMemo } from 'react';
 import { useVirtual } from 'react-virtual';
 import { ListInternalProps, VirtualItem } from '../typings';
@@ -10,9 +10,9 @@ const defaultPreload = 100;
 const defaultIncrement = 100;
 const defaultOverscan = 1;
 
-const useListView: <T = any, M extends ItemMeta = ItemMeta, I extends Item<T, M> = Item<T, M>>(
+const useListView: <T = any, I extends Item<T> = Item<T>>(
   props: Pick<
-    ListInternalProps<T, M>,
+    ListInternalProps<T, I>,
     'collection' | 'height' | 'itemHeight' | 'overscan' | 'preload' | 'increment' | 'virtual'
   > & {
     ref: RefObject<HTMLDivElement>;

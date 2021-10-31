@@ -1,14 +1,8 @@
 import { isQueryFilterCriteria, QueryFilterOrCriteria } from 'onekijs-framework';
 import { CSSProperties } from 'react';
-import { TableColumn, TableItem, TableItemMeta } from './typings';
+import { TableColumn, TableItem } from './typings';
 
-export const emptyTableItem: TableItem<any, TableItemMeta> = {};
-
-export const getCellWidth = (
-  column: TableColumn<unknown, TableItemMeta, TableItem>,
-  fit?: boolean,
-  grow?: string,
-): CSSProperties => {
+export const getCellWidth = (column: TableColumn<any, TableItem<any>>, fit?: boolean, grow?: string): CSSProperties => {
   const style: CSSProperties = {};
   if (column.computedWidth) {
     return column.computedWidth;

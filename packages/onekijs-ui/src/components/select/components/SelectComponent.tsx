@@ -5,7 +5,6 @@ import {
   isCollectionFetching,
   isCollectionLoading,
   Item,
-  toCollectionItem,
   useEventListener,
   useIsomorphicLayoutEffect,
   ValidationStatus,
@@ -17,20 +16,11 @@ import Dropdown from '../../dropdown';
 import ListBodyComponent from '../../list/components/ListBodyComponent';
 import useListView from '../../list/hooks/useListView';
 import useSelect from '../hooks/useSelect';
-import {
-  SelectItem,
-  SelectOptionHandler,
-  SelectOptionMeta,
-  SelectOptionSelectionHandler,
-  SelectProps,
-} from '../typings';
+import { SelectItem, SelectOptionHandler, SelectOptionSelectionHandler, SelectProps } from '../typings';
 import SelectInputComponent from './SelectInputComponent';
 import SelectOptionComponent, { MultiSelectOptionComponent } from './SelectOptionComponent';
 
-const findItem = (
-  collection: Collection<any, SelectOptionMeta, SelectItem<any, SelectOptionMeta>>,
-  pattern: string,
-): any => {
+const findItem = (collection: Collection<any, SelectItem<any>>, pattern: string): any => {
   if (collection.items === undefined) {
     return undefined;
   }
@@ -45,10 +35,7 @@ const findItem = (
   });
 };
 
-const findItemIndex = (
-  collection: Collection<any, SelectOptionMeta, SelectItem<any, SelectOptionMeta>>,
-  item?: Item<any, SelectOptionMeta>,
-): number => {
+const findItemIndex = (collection: Collection<any, SelectItem<any>>, item?: Item<any>): number => {
   if (collection.items === undefined) {
     return -1;
   }
@@ -64,9 +51,9 @@ const findItemIndex = (
 };
 
 const diffItems = (
-  previousItems: Item<any, SelectOptionMeta>[] | undefined,
-  nextItems: Item<any, SelectOptionMeta>[] | undefined,
-): { removed: Item<any, SelectOptionMeta>[]; added: Item<any, SelectOptionMeta>[] } => {
+  previousItems: Item<any>[] | undefined,
+  nextItems: Item<any>[] | undefined,
+): { removed: Item<any>[]; added: Item<any>[] } => {
   if (previousItems === undefined && nextItems === undefined) {
     return {
       added: [],
@@ -125,13 +112,13 @@ const SelectComponent: FC<SelectProps> = ({
   const [open, _setOpen] = useState(false);
   const [focus, setFocus] = useState(false);
   const stateRef = useRef<AnonymousObject>({});
-  const currentProxyItem = useRef<SelectItem | undefined>();
+  const currentProxyItem = useRef<SelectItem<any> | undefined>();
 
-  const currentScrollItem = useRef<SelectItem | undefined>();
+  const currentScrollItem = useRef<SelectItem<any> | undefined>();
   const currentScrollIndex = useRef<number | undefined>();
   const scrollToRef = useRef<{ index: number; align: 'start' | 'center' | 'end' | 'auto' } | undefined>();
-  const [keyboardItem, setKeyboardItem] = useState<SelectItem | undefined>();
-  const arrowItemRef = useRef<SelectItem | undefined>();
+  const [keyboardItem, setKeyboardItem] = useState<SelectItem<any> | undefined>();
+  const arrowItemRef = useRef<SelectItem<any> | undefined>();
 
   const loading = isCollectionLoading(collection);
   const fetching = isCollectionFetching(collection);
@@ -139,13 +126,11 @@ const SelectComponent: FC<SelectProps> = ({
   const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
 
   const tokens = useMemo(() => {
-    return multiple && Array.isArray(value)
-      ? value.map((v) => toCollectionItem(v, collection.getAdapter()) || '')
-      : undefined;
+    return multiple && Array.isArray(value) ? value.map((v) => collection.adapt(v)) : undefined;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
-  const previousTokensRef = useRef<Item<any, SelectOptionMeta>[] | undefined>();
+  const previousTokensRef = useRef<Item<any>[] | undefined>();
 
   const proxyItem = useMemo(() => {
     const search = collection.getSearch();
@@ -160,7 +145,7 @@ const SelectComponent: FC<SelectProps> = ({
       }
       return item;
     } else if (!multiple) {
-      return toCollectionItem(value, collection.getAdapter());
+      return collection.adapt(value);
     }
   }, [focus, collection, value, keyboardItem, multiple]);
 
@@ -242,19 +227,19 @@ const SelectComponent: FC<SelectProps> = ({
     };
   };
 
-  const onRemoveToken: SelectOptionHandler<any, SelectOptionMeta, SelectItem<any, SelectOptionMeta>> = useCallback(
+  const onRemoveToken: SelectOptionHandler<any, SelectItem<any>> = useCallback(
     (item) => {
       if (onChange) {
         const nextValue = Array.isArray(tokens)
-          ? tokens.filter((v) => v.id !== item.id).map((v) => v.data)
-          : [item.data];
+          ? tokens.filter((v) => v.id !== item?.id).map((v) => v.data)
+          : [item?.data];
         onChange(nextValue);
       }
     },
     [tokens, onChange],
   );
 
-  const onSelect: SelectOptionSelectionHandler<any, SelectOptionMeta, SelectItem<any, SelectOptionMeta>> = useCallback(
+  const onSelect: SelectOptionSelectionHandler<any, SelectItem<any>> = useCallback(
     (item, index, close) => {
       if (close === undefined) {
         close = !(multiple && !collection.getSearch());
@@ -273,7 +258,7 @@ const SelectComponent: FC<SelectProps> = ({
       }
       if (onChange) {
         if (multiple) {
-          if (item.meta?.selected) {
+          if (item.selected) {
             onRemoveToken(item, index);
           } else {
             const nextValue = Array.isArray(value) ? value.concat([item.data]) : [item.data];
@@ -312,7 +297,7 @@ const SelectComponent: FC<SelectProps> = ({
           ? findItemIndex(collection, arrowItemRef.current)
           : findItemIndex(collection, proxyItem);
       let nextIndex: number | undefined;
-      let nextItem: Item<any, SelectOptionMeta> | undefined;
+      let nextItem: Item<any> | undefined;
       switch (e.key) {
         case 'ArrowDown':
           if (open) {
@@ -378,7 +363,7 @@ const SelectComponent: FC<SelectProps> = ({
         currentProxyItem.current = undefined;
         collection.setMeta(item, multiple ? 'highlighted' : 'selected', false);
       }
-      if (proxyItem !== undefined && proxyItem.id !== undefined && collection.getMeta(proxyItem.id)) {
+      if (proxyItem !== undefined && proxyItem.id !== undefined) {
         currentProxyItem.current = proxyItem;
         collection.setMeta(proxyItem, multiple ? 'highlighted' : 'selected', true);
       }

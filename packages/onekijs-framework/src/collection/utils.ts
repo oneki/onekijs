@@ -5,9 +5,7 @@ import { AnonymousObject } from '../types/object';
 import { isNull, shallowEqual, toArray } from '../utils/object';
 import {
   Collection,
-  CollectionItemAdapter,
   Item,
-  ItemMeta,
   LoadingStatus,
   Query,
   QueryFilter,
@@ -65,46 +63,27 @@ export const generateFilterId = (): number => {
   return ++filterUid;
 };
 
-export const isCollectionLoading = <T, M, I>(collection: Collection<T, M, I>): boolean => {
+export const isCollectionLoading = <T, I extends Item<T>>(collection: Collection<T, I>): boolean => {
   return !!(collection && ['partial_loading', 'loading'].includes(collection.status));
 };
 
-export const isCollectionFetching = <T, M, I>(collection: Collection<T, M, I>): boolean => {
+export const isCollectionFetching = <T, I extends Item<T>>(collection: Collection<T, I>): boolean => {
   return !!(collection && ['partial_fetching', 'partial_loading', 'loading', 'fetching'].includes(collection.status));
 };
 
-export const isCollectionInitializing = <T, M, I>(collection: Collection<T, M, I>): boolean => {
+export const isCollectionInitializing = <T, I extends Item<T>>(collection: Collection<T, I>): boolean => {
   return !!(collection && collection.status === 'not_initialized');
 };
 
-export const isItem = <T, M extends ItemMeta>(itemOrMeta: Item<T, M> | M): itemOrMeta is Item<T, M> => {
-  return (itemOrMeta as any).meta !== undefined;
-};
-
-export const isItemLoading = <T, M extends ItemMeta>(itemOrMeta?: Item<T, M> | M): boolean => {
-  if (itemOrMeta === undefined) {
+export const isItemLoading = <T, I extends Item<T>>(item?: I): boolean => {
+  if (item === undefined) {
     return false;
   }
-  if (isItem(itemOrMeta)) {
-    return !!(itemOrMeta.meta && itemOrMeta.meta.loadingStatus === LoadingStatus.Loading);
-  } else {
-    return itemOrMeta.loadingStatus === LoadingStatus.Loading;
-  }
+  return item.loadingStatus === LoadingStatus.Loading;
 };
 
-export const isItemFetching = <T, M extends ItemMeta>(itemOrMeta?: Item<T, M> | M): boolean => {
-  if (itemOrMeta === undefined) {
-    return false;
-  }
-  if (isItem(itemOrMeta)) {
-    return !!(
-      itemOrMeta.meta &&
-      (itemOrMeta.meta.loadingStatus === LoadingStatus.Loading ||
-        itemOrMeta.meta.loadingStatus === LoadingStatus.Fetching)
-    );
-  } else {
-    return itemOrMeta.loadingStatus === LoadingStatus.Loading || itemOrMeta.loadingStatus === LoadingStatus.Fetching;
-  }
+export const isItemFetching = <T, I extends Item<T>>(item?: I): boolean => {
+  return !!(item && (item.loadingStatus === LoadingStatus.Loading || item.loadingStatus === LoadingStatus.Fetching));
 };
 
 export const isQueryFilter = (value: QueryFilterOrCriteria | QueryFilterOrCriteria[]): value is QueryFilter => {
@@ -558,17 +537,14 @@ export const visitFilter = (filter: QueryFilter, visitor: (filter: QueryFilter) 
   return stop;
 };
 
-export const isCollection = <T, M extends ItemMeta, I extends Item<T, M>>(
-  data?: T[] | Collection<T, M, I> | string,
-): data is Collection<T, M, I> => {
+export const isCollection = <T, I extends Item<T>>(
+  data?: T[] | Collection<T, I> | string,
+): data is Collection<T, I> => {
   return data !== undefined && !Array.isArray(data) && !(typeof data === 'string');
 };
 
-export const toCollectionItem = <T, M extends ItemMeta, I extends Item<T, M>>(
-  data: T | undefined,
-  adapter: CollectionItemAdapter<T, M, I>,
-): I => {
-  const getId = (data: any) => {
+export const defaultCollectionAdapter = <T, I extends Item<T>>(data: T | undefined): Partial<I> => {
+  const getId = (data: any): string | number | undefined => {
     if (isNull(data)) {
       return undefined;
     }
@@ -578,7 +554,7 @@ export const toCollectionItem = <T, M extends ItemMeta, I extends Item<T, M>>(
       return undefined;
     }
   };
-  const getText = (data: any) => {
+  const getText = (data: any): string | undefined => {
     if (isNull(data)) {
       return undefined;
     }
@@ -591,11 +567,11 @@ export const toCollectionItem = <T, M extends ItemMeta, I extends Item<T, M>>(
     }
   };
 
-  const adaptee = adapter(data);
-  return Object.assign({ data }, adaptee, {
-    id: adaptee.id === undefined ? getId(data) : String(adaptee.id),
-    text: adaptee.id === undefined ? getText(data) : String(adaptee.text),
-  });
+  return {
+    data,
+    id: getId(data),
+    text: getText(data),
+  } as Partial<I>;
 };
 
 export const dummyLogMetadata = (): void => {

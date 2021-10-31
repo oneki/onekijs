@@ -1,14 +1,14 @@
 import { CollectionBroker, DefaultCollectionBroker, useLazyRef } from 'onekijs-framework';
 import SelectCellComponent from '../components/SelectCellComponent';
-import { TableItemMeta, SelectColumn, UseSelectColumnOptions } from '../typings';
+import { SelectColumn, UseSelectColumnOptions, TableItem } from '../typings';
 
-const useSelectColumn = <T = any, M extends TableItemMeta = TableItemMeta>(
-  options: UseSelectColumnOptions<T, M>,
-): SelectColumn<T, M> => {
-  const broker = useLazyRef<CollectionBroker<T, M>>(() => {
+const useSelectColumn = <T = any, I extends TableItem<T> = TableItem<T>>(
+  options: UseSelectColumnOptions<T, I>,
+): SelectColumn<T, I> => {
+  const broker = useLazyRef<CollectionBroker<T, I>>(() => {
     return new DefaultCollectionBroker();
   });
-  const optionsRef = useLazyRef<SelectColumn<T, M>>(() => {
+  const optionsRef = useLazyRef<SelectColumn<T, I>>(() => {
     return Object.assign(
       {
         filterable: false,

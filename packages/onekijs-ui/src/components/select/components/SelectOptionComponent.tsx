@@ -11,16 +11,15 @@ MultiSelectOptionComponent.displayName = 'MultiSelectOptionComponent';
 
 const SelectOptionComponent: FC<SelectOptionProps> = React.memo(
   ({ item, index, onClick, onMouseOver, onMouseEnter, onMouseLeave, onMouseOut, multiple = false }) => {
-    const { data, text, meta } = item;
     let content = '';
     let clickable = !!onClick;
     let hoverable = true;
-    if (data === undefined && meta?.loadingStatus === LoadingStatus.Loading) {
+    if (item?.data === undefined && item?.loadingStatus === LoadingStatus.Loading) {
       content = 'loading';
       clickable = false;
       hoverable = false;
     } else {
-      content = text || '';
+      content = item?.text || '';
     }
 
     const classNames = useMemo(() => {
@@ -28,14 +27,14 @@ const SelectOptionComponent: FC<SelectOptionProps> = React.memo(
       if (clickable) {
         classNames.push('o-select-option-clickable');
       }
-      if (hoverable && meta?.highlighted) {
+      if (hoverable && item?.highlighted) {
         classNames.push('o-select-option-highlighted');
       }
-      if (meta?.selected) {
+      if (item?.selected) {
         classNames.push('o-select-option-selected');
       }
       return classNames.join(' ');
-    }, [meta, clickable, hoverable]);
+    }, [item, clickable, hoverable]);
 
     return (
       <div
@@ -49,13 +48,13 @@ const SelectOptionComponent: FC<SelectOptionProps> = React.memo(
         {/* {multiple && <div className="o-select-option-icon">{meta?.selected? <>&#10003;</>:<></>}</div> } */}
         {multiple && (
           <Checkbox
-            value={meta?.selected ? true : false}
+            value={item?.selected ? true : false}
             onChange={() => undefined}
-            color={meta?.highlighted ? 'white' : undefined}
+            color={item?.highlighted ? 'white' : undefined}
           ></Checkbox>
         )}
         <div className="o-select-option-data">
-          {data === undefined && meta?.loadingStatus === LoadingStatus.Loading ? 'loading' : content}
+          {item?.data === undefined && item?.loadingStatus === LoadingStatus.Loading ? 'loading' : content}
         </div>
       </div>
     );

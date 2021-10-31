@@ -6,8 +6,8 @@ import { TableBodyCellProps, UseSelectColumnOptions } from '../typings';
 import useFormTableContext from '../useFormTableContext';
 
 const SelectCellComponent = (
-  options: UseSelectColumnOptions<any, any, any>,
-  broker: CollectionBroker<any, any, any>,
+  options: UseSelectColumnOptions<any, any>,
+  broker: CollectionBroker<any, any>,
 ): React.FC<TableBodyCellProps<any, any>> => {
   const SelectCellComponent: React.FC<TableBodyCellProps<any, any>> = ({ column, rowIndex }) => {
     const { tableName } = useFormTableContext();

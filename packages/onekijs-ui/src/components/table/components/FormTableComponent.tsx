@@ -17,7 +17,7 @@ const DeleteRowComponent: React.FC<TableBodyCellProps> = ({ rowIndex }) => {
 
 const SelectRowComponent: React.FC<TableBodyCellProps> = ({ rowValue }) => {
   const { onSelect } = useFormTableContext();
-  const selected = rowValue.meta?.selected;
+  const selected = rowValue?.selected;
   const toggle = (selected: boolean) => onSelect(rowValue, selected);
   return <Checkbox value={selected || false} onChange={toggle} />;
 };
@@ -35,7 +35,12 @@ const FooterComponent: React.FC<TableFooterProps> = () => {
   );
 };
 
-const FormTableComponent: React.FC<FormTableProps> = ({ controller, className, name, format = 'auto' }) => {
+const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = ({
+  controller,
+  className,
+  name,
+  format = 'auto',
+}) => {
   const formContext = useFormContext();
   const { value, onChange } = useField(name);
   const formatRef = useLazyRef<'id' | 'object'>(() => {
@@ -46,7 +51,7 @@ const FormTableComponent: React.FC<FormTableProps> = ({ controller, className, n
   });
 
   const formTableContext = useLazyRef<FormTableContext>(() => {
-    const onSelect = (item: TableItem, selected: boolean) => {
+    const onSelect = (item: TableItem<any>, selected: boolean) => {
       const getId = (v: any) => {
         return formatRef.current === 'id' ? v : v.id;
       };

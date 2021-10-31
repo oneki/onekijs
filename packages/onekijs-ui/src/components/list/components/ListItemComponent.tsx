@@ -1,11 +1,11 @@
-import { ItemMeta, LoadingStatus } from 'onekijs-framework';
+import { Item, LoadingStatus } from 'onekijs-framework';
 import React, { FC } from 'react';
 import { ListItemProps } from '../typings';
 
-const ListItemComponent: FC<ListItemProps<any, ItemMeta>> = React.memo(({ item }) => {
+const ListItemComponent: FC<ListItemProps<any, Item<any>>> = React.memo(({ item }) => {
   return (
     <div className="o-list-item">
-      {item.data === undefined && item.meta?.loadingStatus === LoadingStatus.Loading ? 'loading' : item.text}
+      {item?.data === undefined && item?.loadingStatus === LoadingStatus.Loading ? 'loading' : item?.text}
     </div>
   );
 });

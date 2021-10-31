@@ -1,9 +1,8 @@
 import React from 'react';
 import { addStyle } from '../../../utils/style';
 import { ListBodyProps } from '../typings';
-import { emptyListItem } from '../utils';
 
-const ListBodyComponent: React.FC<ListBodyProps<any, any, any>> = ({
+const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
   bodyRef,
   className,
   height,
@@ -60,7 +59,7 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any, any>> = ({
                 <ItemComponent
                   key={`item-${index}`}
                   index={index}
-                  item={listItem || emptyListItem}
+                  item={listItem}
                   onClick={onItemClick}
                   onMouseOver={onItemMouseOver}
                   onMouseOut={onItemMouseOut}
@@ -91,7 +90,7 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any, any>> = ({
             <ItemComponent
               key={`item-${index}`}
               index={index}
-              item={item || emptyListItem}
+              item={item}
               onClick={onItemClick}
               onMouseOver={onItemMouseOver}
               onMouseOut={onItemMouseOut}

@@ -1,5 +1,6 @@
 import { Task } from '@redux-saga/types';
 import { cancel, delay, fork } from 'redux-saga/effects';
+import { generateUniqueId } from '../utils/string';
 import { reducer, saga } from '../core/annotations';
 import DefaultBasicError from '../core/BasicError';
 import DefaultService from '../core/Service';
@@ -20,12 +21,10 @@ import {
   CollectionState,
   CollectionStatus,
   Item,
-  ItemMeta,
   LoadingItemStatus,
   LoadingStatus,
   LocalQuery,
   Query,
-  QueryEngine,
   QueryFilter,
   QueryFilterCriteria,
   QueryFilterCriteriaOperator,
@@ -52,7 +51,6 @@ import {
   parseQuery,
   rootFilterId,
   shouldResetData,
-  toCollectionItem,
   urlSerializer,
   visitFilter,
 } from './utils';
@@ -61,16 +59,14 @@ const defaultSearcher = 'i_like';
 
 export default class CollectionService<
   T = any,
-  M extends ItemMeta = ItemMeta,
-  I extends Item<T, M> = Item<T, M>,
-  S extends CollectionState<T, M, I> = CollectionState<T, M, I>
-> extends DefaultService<S> implements Collection<T, M, I> {
+  I extends Item<T> = Item<T>,
+  S extends CollectionState<T, I> = CollectionState<T, I>
+> extends DefaultService<S> implements Collection<T, I> {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   protected initialState: S = null!;
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  // router: Router = null!;
   protected cache: AnonymousObject<any> = {};
-  protected itemMeta: AnonymousObject<M | undefined> = {};
+  protected itemsById: AnonymousObject<I> = {};
+  protected itemsByUid: AnonymousObject<I> = {};
   protected db?: I[];
 
   init(): void {
@@ -102,7 +98,25 @@ export default class CollectionService<
   }
 
   adapt(data: T | undefined): I {
-    return toCollectionItem(data, this.state.adapter);
+    const adaptee = this.state.adapter(data);
+    if (adaptee.id !== undefined) {
+      const currentItem = this.itemsById[String(adaptee.id)];
+      if (currentItem) {
+        return Object.assign(currentItem, adaptee);
+      }
+    }
+    const item = Object.assign(
+      {
+        uid: generateUniqueId(),
+        loadingStatus: adaptee.id !== undefined ? LoadingStatus.Loaded : LoadingStatus.NotInitialized,
+      },
+      adaptee,
+    ) as I;
+    this.itemsByUid[item.uid] = item;
+    if (item.id !== undefined) {
+      this.itemsById[item.id] = item;
+    }
+    return item;
   }
 
   @reducer
@@ -142,7 +156,7 @@ export default class CollectionService<
     this.refresh(query);
   }
 
-  asService(): CollectionService<T, M, I> {
+  asService(): CollectionService<T, I, S> {
     return this;
   }
 
@@ -242,8 +256,8 @@ export default class CollectionService<
     return this.state.hasMore || false;
   }
 
-  get items(): (Item<T, M> | undefined)[] | undefined {
-    return this.state.items;
+  get items(): (I | undefined)[] {
+    return this.state.items || [];
   }
 
   get status(): CollectionStatus {
@@ -262,7 +276,7 @@ export default class CollectionService<
     return this.state.url || '';
   }
 
-  getAdapter(): CollectionItemAdapter<T, M, I> {
+  getAdapter(): CollectionItemAdapter<T, I> {
     return this.state.adapter;
   }
 
@@ -295,23 +309,11 @@ export default class CollectionService<
     return result;
   }
 
-  getItem(id: string | number): Item<T, M> | undefined {
+  getItem(id: string | number): I | undefined {
     if (this.state.items) {
       return this.state.items.find((stateItem) => id === stateItem?.id);
     }
     return undefined;
-  }
-
-  getMeta(id: string | number): M | undefined {
-    if (this.state.local) {
-      const item = this.getItem(id);
-      if (item !== undefined) {
-        return item.meta;
-      }
-      return undefined;
-    } else {
-      return this.itemMeta[String(id)];
-    }
   }
 
   getOffset(): number | undefined {
@@ -468,43 +470,22 @@ export default class CollectionService<
   }
 
   @reducer
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  setMeta(item: Item<T, M>, key: keyof M, value: any): void {
-    if (this.state.local && this.state.items && item.id !== undefined) {
-      const stateItem = this.state.items.find((stateItem) => item.id === stateItem?.id);
-      if (stateItem && item.meta) {
-        stateItem.meta = Object.assign({}, item.meta, { [key]: value });
-      }
-    } else if (!this.state.local && item.id !== undefined) {
-      const meta = Object.assign({}, this.itemMeta[String(item.id)] ?? item.meta, { [key]: value });
-      this.itemMeta[String(item.id)] = meta;
-
-      if (this.state.items) {
-        const stateItem = this.state.items.find((stateItem) => item.id === stateItem?.id);
-        if (stateItem) {
-          stateItem.meta = this.itemMeta[String(item.id)];
-        }
-      }
-    }
+  setMeta<K extends keyof I>(item: I, key: K, value: I[K]): void {
+    this.setMetaByUid(item.uid, key, value);
   }
 
   @reducer
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  setMetaById(id: string | number, key: keyof M, value: any): void {
-    if (this.state.local && this.state.items) {
-      const stateItem = this.state.items.find((stateItem) => id === stateItem?.id);
-      if (stateItem) {
-        stateItem.meta = Object.assign({}, stateItem.meta, { [key]: value });
-      }
-    } else if (!this.state.local) {
-      const meta = Object.assign({}, this.itemMeta[String(id)], { [key]: value });
-      this.itemMeta[String(id)] = meta;
+  setMetaByUid<K extends keyof I>(uid: string, key: K, value: I[K]): void {
+    const uidItem = this.itemsByUid[uid];
+    if (!uidItem) {
+      throw new DefaultBasicError(`Cannot find item with UID ${uid}`, 'item_not_found');
+    }
+    uidItem[key] = value;
 
-      if (this.state.items) {
-        const stateItem = this.state.items.find((stateItem) => id === stateItem?.id);
-        if (stateItem) {
-          stateItem.meta = this.itemMeta[String(id)];
-        }
+    if (this.state.items) {
+      const stateItem = this.state.items.find((stateItem) => stateItem && uid === stateItem.uid);
+      if (stateItem) {
+        stateItem[key] = value;
       }
     }
   }
@@ -582,7 +563,7 @@ export default class CollectionService<
     query.sortBy = currentSortBy;
   }
 
-  protected _applyCriteria(item: Item<T, M>, criteria: QueryFilterCriteria): boolean {
+  protected _applyCriteria(item: I, criteria: QueryFilterCriteria): boolean {
     const operator = criteria.operator || 'eq';
     const value = criteria.value;
     const source = get(item.data, criteria.field);
@@ -591,7 +572,7 @@ export default class CollectionService<
     return not ? !result : result;
   }
 
-  protected _applyFields(items: Item<T, M>[], fields?: string[]): Item<T, M>[] {
+  protected _applyFields(items: I[], fields?: string[]): I[] {
     if (fields && fields.length > 0) {
       return items.map((item) => {
         const { data, ...nextItem } = item;
@@ -600,7 +581,7 @@ export default class CollectionService<
             accumulator.data = accumulator.data || {};
             accumulator.data[field] = (item as any).data[field];
             return accumulator;
-          }, nextItem as any) as Item<T, M>;
+          }, nextItem as any) as I;
         }
         return item;
       });
@@ -608,7 +589,7 @@ export default class CollectionService<
     return items;
   }
 
-  protected _applyFilter(item: Item<T, M>, filter?: QueryFilter): boolean {
+  protected _applyFilter(item: I, filter?: QueryFilter): boolean {
     let result = true;
 
     if (filter) {
@@ -659,7 +640,7 @@ export default class CollectionService<
     }
   }
 
-  protected _applySearch(item: Item<T, M>, search?: QueryFilterCriteriaValue): boolean {
+  protected _applySearch(item: I, search?: QueryFilterCriteriaValue): boolean {
     const searcher = this.state.searcher || defaultSearcher;
     if (item.data === undefined) {
       return false;
@@ -670,9 +651,9 @@ export default class CollectionService<
     return this._applyOperator(searcher, item, search);
   }
 
-  protected _applySort(items: Item<T, M>[], dir: QuerySortDir, comparator: QuerySortComparator): Item<T, M>[] {
+  protected _applySort(items: I[], dir: QuerySortDir, comparator: QuerySortComparator): I[] {
     if (dir) {
-      const itemComparator = function (a: Item<T, M>, b: Item<T, M>): number {
+      const itemComparator = function (a: I, b: I): number {
         const reverse = dir === 'desc' ? -1 : 1;
         return reverse * comparator(a.data, b.data);
       };
@@ -682,14 +663,10 @@ export default class CollectionService<
     return items;
   }
 
-  protected _applySortBy(
-    items: Item<T, M>[],
-    sortBy: QuerySortBy[],
-    comparators: AnonymousObject<QuerySortComparator>,
-  ): Item<T, M>[] {
+  protected _applySortBy(items: I[], sortBy: QuerySortBy[], comparators: AnonymousObject<QuerySortComparator>): I[] {
     if (sortBy.length > 0) {
       const comparator = function () {
-        return function (a: Item<T, M>, b: Item<T, M>): number {
+        return function (a: I, b: I): number {
           let result = 0;
           sort_loop: for (const sort of sortBy) {
             let s: QuerySortByMultiFields | undefined;
@@ -790,11 +767,11 @@ export default class CollectionService<
   }
 
   protected _execute(
-    items: Item<T, M>[],
+    items: I[],
     query: LocalQuery,
     comparator: QuerySortComparator,
     comparators: AnonymousObject<QuerySortComparator>,
-  ): Item<T, M>[] {
+  ): I[] {
     // apply filters to data
     let result = items;
     if (query.filter) {
@@ -820,8 +797,8 @@ export default class CollectionService<
     return result;
   }
 
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   protected *_fetch(query: Query, resetData: boolean) {
     let loadingTask: Task | null = null;
     const options = this.state.fetchOptions || {};
@@ -916,7 +893,7 @@ export default class CollectionService<
     this.state.total = undefined;
 
     if (same) {
-      // we have marked old items as loading. We need to mark them as loaded (even if they are not more in the list)
+      // we have marked old items as loading. We need to mark them as loaded (even if they are no more in the list)
       this._setLoading({
         resetLimit: false,
         resetData,
@@ -925,14 +902,9 @@ export default class CollectionService<
         status: LoadingStatus.Loaded,
       });
       // update metadata
-      const itemResult: Item<T, M>[] = data.map((itemData) => {
+      const itemResult: I[] = data.map((itemData) => {
         const item = this.adapt(itemData);
-        const id = item.id;
-        if (id !== undefined) {
-          const meta = Object.assign({}, this.itemMeta[id] ?? item.meta, { loadingStatus: LoadingStatus.Loaded });
-          this.itemMeta[id] = meta;
-          item.meta = meta;
-        }
+        item.loadingStatus = LoadingStatus.Loaded;
         return item;
       });
 
@@ -940,6 +912,16 @@ export default class CollectionService<
 
       if (limit) {
         items = items || Array(limit + offset);
+        items
+          .slice(offset, offset + limit)
+          .filter((item) => item && item.id === undefined)
+          .forEach(
+            (item) =>
+              item &&
+              this.itemsByUid[item.uid] &&
+              this.itemsByUid[item.uid].id === undefined &&
+              delete this.itemsByUid[item.uid],
+          );
         items.splice(offset, limit, ...itemResult.slice(0, limit));
 
         this._setItems(items);
@@ -947,6 +929,18 @@ export default class CollectionService<
           this.state.total = this.state.items?.length;
         }
       } else {
+        if (items) {
+          items
+            .filter((item) => item && item.id === undefined)
+            .forEach(
+              (item) =>
+                item &&
+                this.itemsByUid[item.uid] &&
+                this.itemsByUid[item.uid].id === undefined &&
+                delete this.itemsByUid[item.uid],
+            );
+        }
+
         this._setItems(itemResult);
         this.state.total = this.state.items?.length;
       }
@@ -965,13 +959,9 @@ export default class CollectionService<
       this.state.status = hasMore ? LoadingStatus.PartialLoaded : LoadingStatus.Loaded;
     } else {
       // need to calculate the status as we cannot be sure that there is not another running request
-      if (
-        Object.values(this.itemMeta).find((itemMeta) => itemMeta && itemMeta.loadingStatus === LoadingStatus.Loading)
-      ) {
+      if (Object.values(this.itemsByUid).find((item) => item.loadingStatus === LoadingStatus.Loading)) {
         this.state.status = LoadingStatus.PartialLoading;
-      } else if (
-        Object.values(this.itemMeta).find((itemMeta) => itemMeta && itemMeta.loadingStatus === LoadingStatus.Fetching)
-      ) {
+      } else if (Object.values(this.itemsByUid).find((item) => item.loadingStatus === LoadingStatus.Fetching)) {
         this.state.status = LoadingStatus.PartialFetching;
       } else {
         this.state.status = hasMore ? LoadingStatus.PartialLoaded : LoadingStatus.Loaded;
@@ -991,7 +981,7 @@ export default class CollectionService<
       if (location.relativeurl && this.cache[location.relativeurl]) {
         this._setItems(this.cache[location.relativeurl]);
       } else {
-        const queryEngine: QueryEngine<T, M> = this.state.queryEngine || this._execute.bind(this);
+        const queryEngine = this.state.queryEngine || this._execute.bind(this);
         this._setItems(
           queryEngine(
             this.db || [],
@@ -1059,7 +1049,7 @@ export default class CollectionService<
     query.filter = formatFilter(filter);
   }
 
-  protected _setItems(items: (Item<T, M> | undefined)[]): void {
+  protected _setItems(items: (I | undefined)[]): void {
     this.state.items = items;
   }
 
@@ -1096,26 +1086,11 @@ export default class CollectionService<
             : LoadingStatus.Loading;
       }
 
-      const setItemStatus = (item: Item<T, M> | undefined): Item<T, M> => {
-        let meta = undefined;
+      const setItemStatus = (item: I | undefined, status: LoadingItemStatus): I => {
         if (item === undefined) {
           item = this.adapt(undefined);
-          meta = item.meta;
-        } else if (item.id) {
-          meta = this.itemMeta[item.id];
-        } else {
-          meta = this.adapt(item.data).meta;
         }
-
-        if (meta !== undefined) {
-          meta = Object.assign({}, meta, { loadingStatus: options.status });
-          if (item) {
-            item.meta = meta;
-            if (item.id) {
-              this.itemMeta[item.id] = meta;
-            }
-          }
-        }
+        item.loadingStatus = status;
         return item;
       };
 
@@ -1128,12 +1103,12 @@ export default class CollectionService<
       if (this.state.items) {
         if (options.limit && !resetData) {
           for (let i = offset; i < options.limit + offset; i++) {
-            this.state.items[i] = setItemStatus(this.state.items[i]);
+            this.state.items[i] = setItemStatus(this.state.items[i], options.status);
           }
           this.state.status = `${resetData ? '' : 'partial_'}${options.status}` as CollectionStatus;
         } else {
           for (const i in this.state.items) {
-            this.state.items[i] = setItemStatus(this.state.items[i]);
+            this.state.items[i] = setItemStatus(this.state.items[i], options.status);
           }
           this.state.status = options.status;
         }
@@ -1141,7 +1116,7 @@ export default class CollectionService<
         if (options.limit) {
           this.state.items = Array(offset + options.limit);
           for (let i = offset; i < offset + options.limit; i++) {
-            this.state.items[i] = setItemStatus(undefined);
+            this.state.items[i] = setItemStatus(this.state.items[i], options.status);
           }
           this.state.status = `${resetData ? '' : 'partial_'}${options.status}` as CollectionStatus;
         } else {

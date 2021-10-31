@@ -10,18 +10,17 @@ import {
   CollectionItemAdapter,
   CollectionState,
   Item,
-  ItemMeta,
   LoadingStatus,
   Query,
   UseCollectionOptions,
 } from './typings';
 import { isCollection } from './utils';
 
-const useCollectionState = <T = any, M extends ItemMeta = ItemMeta, I extends Item<T, M> = Item<T, M>>(
-  dataSource: T[] | string | Collection<T, M, I> | undefined,
-  adapter: CollectionItemAdapter<T, M, I>,
-  options: UseCollectionOptions<T, M> = {},
-): CollectionState<T, M, I> => {
+const useCollectionState = <T = any, I extends Item<T> = Item<T>>(
+  dataSource: T[] | string | Collection<T, I> | undefined,
+  adapter: CollectionItemAdapter<T, I>,
+  options: UseCollectionOptions<T, I> = {},
+): CollectionState<T, I> => {
   const auth = useTryStore()?.getState().auth;
   let router = useTryRouter();
 
@@ -35,7 +34,7 @@ const useCollectionState = <T = any, M extends ItemMeta = ItemMeta, I extends It
     dataOrUrl = dataSource || [];
   }
 
-  const stateRef = useLazyRef<CollectionState<T, M, I>>(() => {
+  const stateRef = useLazyRef<CollectionState<T, I>>(() => {
     if (!router || !options.mutateUrl) {
       router = new LocalRouter();
     }
@@ -98,7 +97,7 @@ const useCollectionState = <T = any, M extends ItemMeta = ItemMeta, I extends It
       throttle: options.throttle,
       totalKey: options.totalKey || 'total',
       url: Array.isArray(dataOrUrl) ? undefined : dataOrUrl,
-    } as CollectionState<T, M, I>;
+    } as CollectionState<T, I>;
   });
   return stateRef.current;
 };
