@@ -1,24 +1,33 @@
-import { App, Link, Route, Switch } from 'onekijs';
+import { App, Link, Route, Switch, AnonymousObject } from 'onekijs';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { UserForm } from './components/UserForm';
 import { produce } from 'immer';
 
 const item = {
-  id: 5,
-  text: 'toto',
+  id: 1,
+  text: 'item1',
 };
 
-const db = [item];
+const item2 = {
+  id: 2,
+  text: 'item2',
+};
 
-const db2 = produce(db, (draftDb) => {
-  const stateItem = draftDb.find((i) => i.id === 5);
-  if (stateItem) {
-    stateItem.text = 'toto2';
-  }
+const db = [item, item2];
+let state: AnonymousObject<any> = {};
+
+state = produce(state, (draftState) => {
+  draftState.db = db;
+  draftState.items = db.filter((i) => i.text === 'item1');
 });
 
-console.log('db === db2', db === db2, db2[0].text, db[0].text, item.text);
+state = produce(state, (draftState) => {
+  draftState.db[0].text = 'item1-bis';
+  draftState.items[0].text = 'item1-bis';
+});
+
+console.log(state.db[0] === state.items[0], state.db[0].text, state.items[0].text);
 
 ReactDOM.render(
   <App>

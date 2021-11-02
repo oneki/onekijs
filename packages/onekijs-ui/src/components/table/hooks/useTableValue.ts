@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { TableItem } from './typings';
+import { TableItem } from '../typings';
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 export const TableValueContext = React.createContext<(any | undefined)[] | undefined>(undefined);

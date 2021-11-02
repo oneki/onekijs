@@ -1,6 +1,6 @@
 import { useCollectionService, Class } from 'onekijs-framework';
-import TableService from './TableService';
-import { TableItem, TableState } from './typings';
+import TableService from '../TableService';
+import { TableItem, TableState } from '../typings';
 
 const useTableService = <
   T,
@@ -12,7 +12,7 @@ const useTableService = <
   ctor: Class<C>,
   initialState: S,
 ): [S, C] => {
-  return useCollectionService<T, I, S, C>(dataSource || [], ctor, initialState);
+  return useCollectionService<T, I, S, C>(dataSource, ctor, initialState);
 };
 
 export default useTableService;

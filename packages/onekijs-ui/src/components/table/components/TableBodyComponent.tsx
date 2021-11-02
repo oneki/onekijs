@@ -1,38 +1,40 @@
 import React from 'react';
-import { useLazyRef } from 'onekijs';
+import { useLazyRef } from 'onekijs-framework';
 import { addClassname } from '../../../utils/style';
 import ListBodyComponent from '../../list/components/ListBodyComponent';
 import useListView from '../../list/hooks/useListView';
 import { ListItemProps } from '../../list/typings';
 import { TableBodyProps } from '../typings';
-import useTableColumns from '../useTableColumns';
+import useTableColumns from '../hooks/useTableColumns';
 import TableBodyRowComponent from './TableBodyRowComponent';
+import useTableController from '../hooks/useTableController';
 
-const TableBodyComponent: React.FC<TableBodyProps> = ({ controller, tableRef, contentRef }) => {
+const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, contentRef }) => {
+  const controller = useTableController();
   const {
-    bodyClassName,
+    height,
     onRowClick,
     onRowEnter,
     onRowLeave,
     onRowOut,
     onRowOver,
     RowComponent = TableBodyRowComponent,
-    step,
-  } = controller;
-
-  const className = typeof bodyClassName === 'function' ? bodyClassName(controller) : bodyClassName;
+  } = controller.state;
 
   const { items, isVirtual, totalSize, virtualItems } = useListView({
     collection: controller,
-    height: controller.height,
+    height: height,
     ref: tableRef,
-    overscan: step === 'mounted' ? 1 : 20,
+    overscan: controller.step === 'mounted' ? 1 : 20,
   });
 
   const ItemComponentRef = useLazyRef<React.FC<ListItemProps<any, any>>>(() => {
     const Component = (props: ListItemProps<any, any>) => {
       const columns = useTableColumns();
-      return <RowComponent {...props} columns={columns} />;
+      const { rowClassName } = useTableController().state;
+      const className =
+        typeof rowClassName === 'function' ? rowClassName(props.item, props.index, columns) : rowClassName;
+      return <RowComponent {...props} columns={columns} className={className} />;
     };
     Component.displayName = 'TableBodyRow';
     return Component;
@@ -41,7 +43,7 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ controller, tableRef, co
   return (
     <ListBodyComponent
       className={addClassname('o-table-body', className)}
-      height={controller.height}
+      height={height}
       ItemComponent={ItemComponentRef.current}
       items={items}
       onItemClick={onRowClick}

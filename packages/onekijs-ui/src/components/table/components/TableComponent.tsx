@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import { addClassname } from '../../../utils/style';
 import { TableProps } from '../typings';
-import { TableColumnsContext } from '../useTableColumns';
-import { TableContext } from '../useTableController';
-import { TableValueContext } from '../useTableValue';
+import { TableControllerContext } from '../hooks/useTableController';
+import { TableColumnsContext } from '../hooks/useTableColumns';
+import { TableValueContext } from '../hooks/useTableValue';
 import TableBodyComponent from './TableBodyComponent';
 import TableFooterComponent from './TableFooterComponent';
 import TableHeaderComponent from './TableHeaderComponent';
@@ -11,13 +11,18 @@ import TableHeaderComponent from './TableHeaderComponent';
 const TableComponent: React.FC<TableProps> = ({ controller, className }) => {
   const classNames = addClassname('o-table', className);
   const {
+    bodyClassName,
     BodyComponent = TableBodyComponent,
     FooterComponent = TableFooterComponent,
+    footerClassName,
     header = true,
+    headerClassName,
     HeaderComponent = TableHeaderComponent,
     footer = false,
     height,
-  } = controller;
+    columns,
+    items,
+  } = controller.state;
 
   const contentRef = useRef<HTMLDivElement>(null);
   const tableRef = useRef<HTMLDivElement>(null);
@@ -27,9 +32,9 @@ const TableComponent: React.FC<TableProps> = ({ controller, className }) => {
   });
 
   return (
-    <TableContext.Provider value={controller.asService()}>
-      <TableColumnsContext.Provider value={controller.columns}>
-        <TableValueContext.Provider value={controller.items}>
+    <TableControllerContext.Provider value={controller.asService()}>
+      <TableColumnsContext.Provider value={columns}>
+        <TableValueContext.Provider value={items}>
           <div
             className={classNames}
             ref={tableRef}
@@ -38,13 +43,19 @@ const TableComponent: React.FC<TableProps> = ({ controller, className }) => {
               overflow: 'auto',
             }}
           >
-            {header && <HeaderComponent controller={controller} />}
-            <BodyComponent controller={controller} tableRef={tableRef} contentRef={contentRef} />
-            {footer && <FooterComponent controller={controller} />}
+            {header && <HeaderComponent columns={columns} className={headerClassName} />}
+            <BodyComponent
+              items={items || []}
+              columns={columns}
+              tableRef={tableRef}
+              contentRef={contentRef}
+              className={bodyClassName}
+            />
+            {footer && <FooterComponent columns={columns} className={footerClassName} />}
           </div>
         </TableValueContext.Provider>
       </TableColumnsContext.Provider>
-    </TableContext.Provider>
+    </TableControllerContext.Provider>
   );
 };
 

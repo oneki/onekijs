@@ -1,6 +1,6 @@
 import { cancel, delay, fork } from '@redux-saga/core/effects';
 import { Task } from '@redux-saga/types';
-import { DefaultService, reducer, saga, SagaEffect, service, useService } from 'onekijs';
+import { DefaultService, reducer, saga, SagaEffect, service, useService } from 'onekijs-framework';
 import { clearSelection, markBodyAsSelectable, markBodyAsUnselectable } from '../../utils/dom';
 import { ResizerHandle, ResizerHandler, ResizerState } from './typings';
 

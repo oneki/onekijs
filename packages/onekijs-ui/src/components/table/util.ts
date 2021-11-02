@@ -1,6 +1,15 @@
-import { isQueryFilterCriteria, QueryFilterOrCriteria } from 'onekijs-framework';
+import {
+  isQueryFilterCriteria,
+  QueryFilterOrCriteria,
+  CollectionAdaptedValue,
+  defaultItemAdapter,
+} from 'onekijs-framework';
 import { CSSProperties } from 'react';
 import { TableColumn, TableItem } from './typings';
+
+export const defaultTableItemAdapter = <T>(data: T | undefined): CollectionAdaptedValue<TableItem<T>> => {
+  return defaultItemAdapter(data);
+};
 
 export const getCellWidth = (column: TableColumn<any, TableItem<any>>, fit?: boolean, grow?: string): CSSProperties => {
   const style: CSSProperties = {};

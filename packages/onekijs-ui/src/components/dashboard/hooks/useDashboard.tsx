@@ -1,4 +1,4 @@
-import { useLazyRef, useService } from 'onekijs';
+import { useLazyRef, useService } from 'onekijs-framework';
 import React, { FC } from 'react';
 import DashboardComponent from '../components/DashboardComponent';
 import { DashboardService } from '../DashboardService';

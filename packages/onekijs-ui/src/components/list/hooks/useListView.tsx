@@ -1,8 +1,8 @@
 import { Item, LoadingStatus } from 'onekijs-framework';
-import { RefObject, useCallback, useEffect, useMemo } from 'react';
+import { RefObject, useCallback, useEffect } from 'react';
 import { useVirtual } from 'react-virtual';
 import { ListInternalProps, VirtualItem } from '../typings';
-import { canFetchMore, getListStatus } from '../utils';
+import { canFetchMore } from '../utils';
 
 const defaultHeight = '100%';
 const defaultItemHeight = 37;
@@ -45,18 +45,10 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
     [itemHeight],
   );
 
-  const items = useMemo(() => {
-    const status = getListStatus(collection);
-
-    if (status === LoadingStatus.NotInitialized) {
-      return Array(preload).fill(collection.adapt(undefined));
-    } else {
-      return collection.items || [];
-    }
-  }, [collection, preload]);
+  const state = collection.state;
 
   const { totalSize, virtualItems, scrollToIndex } = useVirtual({
-    size: items.length,
+    size: state.items?.length || 0,
     estimateSize: estimatedItemHeight,
     parentRef: ref,
     overscan: overscan,
@@ -64,22 +56,22 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
 
   useEffect(() => {
     if (isVirtual) {
-      if (collection.status === LoadingStatus.NotInitialized) {
+      if (state.status === LoadingStatus.NotInitialized) {
         collection.load(preload);
       } else if (canFetchMore(collection)) {
         const lastVirtualItem = virtualItems[virtualItems.length - 1];
         const lastVirtualItemIndex = lastVirtualItem ? lastVirtualItem.index : 0;
-        if (lastVirtualItemIndex >= items.length - preload / 2) {
-          collection.load(increment, (collection.items as any[]).length);
+        if (lastVirtualItemIndex >= (state.items?.length || 0) - preload / 2) {
+          collection.load(increment, ((state.items || []) as any[]).length);
         }
       }
     } else if (collection.status === LoadingStatus.NotInitialized) {
       collection.load();
     }
-  }, [collection, preload, virtualItems, increment, items, isVirtual]);
+  }, [collection, state, preload, virtualItems, increment, isVirtual]);
 
   return {
-    items,
+    items: state.items || [],
     isVirtual,
     scrollToIndex,
     totalSize,

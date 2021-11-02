@@ -1,17 +1,12 @@
-import { Collection, useCollection } from 'onekijs-framework';
+import { useCollection, defaultItemAdapter } from 'onekijs-framework';
 import { UseListOptions } from '../../list/typings';
-import { SelectItem } from '../typings';
+import { SelectCollection, SelectItem } from '../typings';
 
 const useSelect = <T = any>(
-  dataSource: T[] | string | Collection<T, SelectItem<T>>,
+  dataSource: T[] | string | SelectCollection<T, SelectItem<T>>,
   options: UseListOptions<T, SelectItem<T>> = {},
-): Collection<T, SelectItem<T>> => {
-  let adapter = options.adapter;
-  if (!adapter) {
-    adapter = () => {
-      return {};
-    };
-  }
+): SelectCollection<T, SelectItem<T>> => {
+  const adapter = options.adapter || defaultItemAdapter;
   delete options['adapter'];
 
   return useCollection<T, SelectItem<T>>(dataSource, adapter, options);

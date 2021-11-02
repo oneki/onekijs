@@ -1,4 +1,4 @@
-import { Item } from 'onekijs';
+import { Item } from 'onekijs-framework';
 import React from 'react';
 
 export type TreeItem<T = any, M extends TreeItemMeta = TreeItemMeta> = Item<T, M> & {

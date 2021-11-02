@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import Select from '../../select';
 import useSelect from '../../select/hooks/useSelect';
 import { TableBodyCellProps, UseSelectColumnOptions } from '../typings';
-import useFormTableContext from '../useFormTableContext';
+import useFormTableContext from '../hooks/useFormTableContext';
 
 const SelectCellComponent = (
   options: UseSelectColumnOptions<any, any>,
@@ -15,14 +15,13 @@ const SelectCellComponent = (
     const field = useField(`${tableName}.${rowIndex}.${column.id}`, validators);
 
     const collection = useSelect(options.dataSource, options);
-    const service = collection.asService();
 
     useEffect(() => {
-      broker.addSubscriber(service);
+      broker.addSubscriber(collection);
       return () => {
-        broker.removeSubscriber(service);
+        broker.removeSubscriber(collection);
       };
-    }, [service]);
+    }, [collection]);
 
     return <Select {...options} {...field} items={collection} className={'o-table-select'} />;
   };

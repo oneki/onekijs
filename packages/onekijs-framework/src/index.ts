@@ -132,10 +132,14 @@ export {
   QuerySortComparator,
   QuerySortDir,
   UseCollectionOptions,
+  CollectionBy,
+  CollectionAdaptedValue,
+  CollectionProxy,
 } from './collection/typings';
-export { collectionProxyProps, default as useCollection } from './collection/useCollection';
+export { default as useCollection } from './collection/useCollection';
 export { default as useCollectionService } from './collection/useCollectionService';
-export { default as useCollectionState } from './collection/useCollectionState';
+export { default as useCollectionProxy } from './collection/useCollectionProxy';
+export { default as useCollectionInitialState } from './collection/useCollectionInitialState';
 export {
   defaultComparator,
   defaultSerializer,
@@ -182,6 +186,7 @@ export {
   shouldResetData,
   urlSerializer,
   visitFilter,
+  defaultItemAdapter,
 } from './collection/utils';
 export {
   asReducer,

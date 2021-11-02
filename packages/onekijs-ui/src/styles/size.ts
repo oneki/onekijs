@@ -8,7 +8,7 @@ import {
 import { cssProperty } from '../utils/style';
 import { Formatter, SizePropertyTheme, Theme } from './typings';
 import { pxFormatter } from '../utils/formatter';
-import { get } from 'onekijs';
+import { get } from 'onekijs-framework';
 
 const sizeFormatter = (type: 'width' | 'height', value: SizePropertyTheme, theme: Theme) => {
   if (get(theme.sizes, `${value}`) !== undefined) {

@@ -1,10 +1,13 @@
 import { __metadata } from 'tslib';
+import { CollectionState } from '..';
 import DefaultBasicError from '../core/BasicError';
 import { Primitive } from '../types/core';
 import { AnonymousObject } from '../types/object';
 import { isNull, shallowEqual, toArray } from '../utils/object';
 import {
   Collection,
+  CollectionAdaptedValue,
+  CollectionProxy,
   Item,
   LoadingStatus,
   Query,
@@ -537,13 +540,13 @@ export const visitFilter = (filter: QueryFilter, visitor: (filter: QueryFilter) 
   return stop;
 };
 
-export const isCollection = <T, I extends Item<T>>(
-  data?: T[] | Collection<T, I> | string,
-): data is Collection<T, I> => {
+export const isCollection = <T, I extends Item<T>, S extends CollectionState<T, I>, C extends Collection<T, I, S>>(
+  data?: T[] | CollectionProxy<T, I, S, C> | string,
+): data is CollectionProxy<T, I, S, C> => {
   return data !== undefined && !Array.isArray(data) && !(typeof data === 'string');
 };
 
-export const defaultCollectionAdapter = <T, I extends Item<T>>(data: T | undefined): Partial<I> => {
+export const defaultItemAdapter = <T>(data: T | undefined): CollectionAdaptedValue<Item<T>> => {
   const getId = (data: any): string | number | undefined => {
     if (isNull(data)) {
       return undefined;
@@ -571,7 +574,7 @@ export const defaultCollectionAdapter = <T, I extends Item<T>>(data: T | undefin
     data,
     id: getId(data),
     text: getText(data),
-  } as Partial<I>;
+  };
 };
 
 export const dummyLogMetadata = (): void => {

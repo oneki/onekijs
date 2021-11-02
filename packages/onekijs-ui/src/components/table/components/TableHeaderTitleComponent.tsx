@@ -1,16 +1,16 @@
 import React, { FC, useEffect, useRef } from 'react';
 import { addClassname } from '../../../utils/style';
 import { TableHeaderCellProps } from '../typings';
-import useTableController from '../useTableController';
+import useTableController from '../hooks/useTableController';
 import { getCellWidth } from '../util';
 import TableSortComponent from './TableSortComponent';
 
 export const DefaultTableHeaderTitleComponent: FC<TableHeaderCellProps> = ({ column, sort }) => {
-  const { sortable, sortBy } = useTableController();
-  const isSortable = column.sortable || (column.sortable === undefined && sortable !== false);
+  const controller = useTableController();
+  const isSortable = column.sortable || (column.sortable === undefined && controller.state.sortable !== false);
   const onSort = () => {
     if (isSortable) {
-      sortBy({
+      controller.sortBy({
         id: column.id,
         field: column.id,
         dir: sort && sort.dir !== 'desc' ? 'desc' : 'asc',
@@ -29,18 +29,18 @@ export const DefaultTableHeaderTitleComponent: FC<TableHeaderCellProps> = ({ col
 const TableHeaderTitleComponent: FC<TableHeaderCellProps> = React.memo((props) => {
   const { column, sortable } = props;
   const controller = useTableController();
-  const { initCell, fit, grow } = controller;
+  const { fit, grow } = controller.state;
   const ref = useRef<HTMLDivElement>(null);
   const initializedRef = useRef<boolean>(false);
 
   const className =
-    typeof column.headerClassName === 'function' ? column.headerClassName(column, controller) : column.headerClassName;
+    typeof column.headerClassName === 'function' ? column.headerClassName(column) : column.headerClassName;
 
   const Component = column.HeaderComponent || DefaultTableHeaderTitleComponent;
 
   useEffect(() => {
     if (!initializedRef.current && ref.current !== null) {
-      initializedRef.current = initCell('header-title', column.id, ref);
+      initializedRef.current = controller.initCell('header-title', column.id, ref);
     }
   });
 

@@ -1,7 +1,8 @@
-import { FormSubmitCallback, useForm } from 'onekijs';
-import { ComponentStyle, FormTable, useInputColumn, useSelectColumn, useTable } from 'onekijs-ui';
+import { FormSubmitCallback, useForm, SubmitButton } from 'onekijs';
+import { Button, ComponentStyle, FormTable, useInputColumn, useSelectColumn, useTable } from 'onekijs-ui';
 import React from 'react';
 import styled, { css } from 'styled-components';
+import { users } from '../data/users';
 
 const tableStyle: ComponentStyle<{}> = () => {
   return css``;
@@ -47,7 +48,7 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
   const onSubmit: FormSubmitCallback = (data) => {
     console.log(data);
   };
-  const { Form } = useForm(onSubmit, {
+  const { Form, values } = useForm(onSubmit, {
     initialValues: {
       addresses,
       users: u,
@@ -70,72 +71,72 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
     title: 'State',
   });
 
-  // const addFilter = () => {
-  //   stateColumn.broker.addFilter({
-  //     id: 'state',
-  //     operator: 'eq',
-  //     not: true,
-  //     value: 'California',
-  //     field: 'text',
-  //   });
-  // };
+  const addFilter = () => {
+    stateColumn.broker.addFilter({
+      id: 'state',
+      operator: 'eq',
+      not: true,
+      value: 'California',
+      field: 'text',
+    });
+  };
 
-  // const removeFilter = () => {
-  //   stateColumn.broker.removeFilter('state');
-  // };
+  const removeFilter = () => {
+    stateColumn.broker.removeFilter('state');
+  };
 
   const controller = useTable({
     columns: [streetColumn, stateColumn],
     //grow: 'address.city'
   });
 
-  // const controller2 = useTable({
-  //   dataSource: users,
-  //   columns: [
-  //     {
-  //       id: 'id',
-  //       minWidth: '50px',
-  //       maxWidth: '50px',
-  //       title: 'ID',
-  //     },
-  //     {
-  //       id: 'firstname',
-  //       width: '10px',
-  //       title: 'Firstname',
-  //     },
-  //     {
-  //       id: 'lastname',
-  //       width: '20px',
-  //       title: 'Lastname',
-  //     },
-  //     {
-  //       id: 'address.street',
-  //       width: '600px',
-  //       //title: 'Street',
-  //       filterable: true,
-  //       sortable: false,
-  //     },
-  //     {
-  //       id: 'address.postalCode',
-  //       title: 'Postal Code',
-  //     },
-  //     {
-  //       id: 'address.city',
-  //       title: 'City',
-  //     },
-  //   ],
-  //   //grow: 'address.city'
-  //   highlightRow: true,
-  //   stripRows: true,
-  // });
+  const controller2 = useTable({
+    dataSource: users,
+    columns: [
+      {
+        id: 'id',
+        minWidth: '50px',
+        maxWidth: '50px',
+        title: 'ID',
+      },
+      {
+        id: 'firstname',
+        width: '10px',
+        title: 'Firstname',
+      },
+      {
+        id: 'lastname',
+        width: '20px',
+        title: 'Lastname',
+      },
+      {
+        id: 'address.street',
+        width: '600px',
+        //title: 'Street',
+        filterable: true,
+        sortable: false,
+      },
+      {
+        id: 'address.postalCode',
+        title: 'Postal Code',
+      },
+      {
+        id: 'address.city',
+        title: 'City',
+      },
+    ],
+    //grow: 'address.city'
+    highlightRow: true,
+    stripRows: true,
+  });
 
   return (
     <Form>
       <FormTable name="addresses" controller={controller} className={className} />
-      {/* <Button onClick={addFilter}>Add Filter</Button> <Button onClick={removeFilter}>Remove Filter</Button>{' '}
-      <SubmitButton>Submit</SubmitButton>  */}
-      {/* <FormTable name="users" controller={controller2} className={className} /> */}
-      {/* <pre>{JSON.stringify(values, null, 2)}</pre> */}
+      <Button onClick={addFilter}>Add Filter</Button> <Button onClick={removeFilter}>Remove Filter</Button>{' '}
+      <SubmitButton>Submit</SubmitButton>
+      <FormTable name="users" controller={controller2} className={className} />
+      <pre>{JSON.stringify(values, null, 2)}</pre>
     </Form>
   );
 };

@@ -12,10 +12,11 @@ import { AnonymousObject } from '../types/object';
 import { Location } from '../types/router';
 import { SagaEffect } from '../types/saga';
 import { dispatch, types } from '../types/service';
-import { get, toPayload } from '../utils/object';
+import { get, toPayload, toArray } from '../utils/object';
 import { urlBuilder } from '../utils/router';
 import {
   Collection,
+  CollectionBy,
   CollectionFetcherResult,
   CollectionItemAdapter,
   CollectionState,
@@ -61,12 +62,13 @@ export default class CollectionService<
   T = any,
   I extends Item<T> = Item<T>,
   S extends CollectionState<T, I> = CollectionState<T, I>
-> extends DefaultService<S> implements Collection<T, I> {
+> extends DefaultService<S> implements Collection<T, I, S> {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   protected initialState: S = null!;
   protected cache: AnonymousObject<any> = {};
-  protected itemsById: AnonymousObject<I> = {};
-  protected itemsByUid: AnonymousObject<I> = {};
+  protected idIndex: AnonymousObject<I> = {};
+  protected uidIndex: AnonymousObject<I> = {};
+  protected positionIndex: AnonymousObject<number> = {};
   protected db?: I[];
 
   init(): void {
@@ -85,38 +87,24 @@ export default class CollectionService<
     this.initDb(this.state.dataSource);
 
     if (this.state.local === undefined) {
-      this.state.local = Array.isArray(this.state.dataSource) || this.state.fetchOnce === true;
+      this.state.local =
+        this.state.dataSource === undefined || Array.isArray(this.state.dataSource) || this.state.fetchOnce === true;
     }
 
-    if (this.state.local) {
+    if (this.state.local && this.state.dataSource !== undefined) {
       this.refresh();
     }
   }
 
   initDb(dataSource: T[] | string | undefined): void {
-    this.db = Array.isArray(dataSource) ? dataSource.map((entry) => this.adapt(entry)) : undefined;
+    if (Array.isArray(dataSource)) {
+      this.db = [];
+      dataSource.map((entry, index) => this._adapt(entry, index));
+    }
   }
 
   adapt(data: T | undefined): I {
-    const adaptee = this.state.adapter(data);
-    if (adaptee.id !== undefined) {
-      const currentItem = this.itemsById[String(adaptee.id)];
-      if (currentItem) {
-        return Object.assign(currentItem, adaptee);
-      }
-    }
-    const item = Object.assign(
-      {
-        uid: generateUniqueId(),
-        loadingStatus: adaptee.id !== undefined ? LoadingStatus.Loaded : LoadingStatus.NotInitialized,
-      },
-      adaptee,
-    ) as I;
-    this.itemsByUid[item.uid] = item;
-    if (item.id !== undefined) {
-      this.itemsById[item.id] = item;
-    }
-    return item;
+    return this._adapt(data);
   }
 
   @reducer
@@ -156,7 +144,7 @@ export default class CollectionService<
     this.refresh(query);
   }
 
-  asService(): CollectionService<T, I, S> {
+  asService(): this {
     return this;
   }
 
@@ -240,10 +228,16 @@ export default class CollectionService<
     this.refresh(query);
   }
 
-  get data(): (T | undefined)[] | undefined {
+  get data(): T[] | undefined {
     const items = this.state.items;
     if (items !== undefined) {
-      return items.map((item) => item?.data);
+      const result: T[] = items.reduce((accumulator, item) => {
+        if (item?.data !== undefined) {
+          accumulator.push(item.data);
+        }
+        return accumulator;
+      }, [] as T[]);
+      return result;
     }
     return undefined;
   }
@@ -455,9 +449,13 @@ export default class CollectionService<
       throw new DefaultBasicError('Call to unsupported method setData of a remote collection');
     }
     this.cache = {};
+    this.idIndex = {};
+    this.uidIndex = {};
+    this.positionIndex = {};
+    this.state.items = undefined;
     const query = this.getQuery();
     this._clearOffset(query);
-    this.db = data.map((d) => this.adapt(d));
+    this.initDb(data);
     this.refresh(query);
   }
 
@@ -470,24 +468,39 @@ export default class CollectionService<
   }
 
   @reducer
-  setMeta<K extends keyof I>(item: I, key: K, value: I[K]): void {
-    this.setMetaByUid(item.uid, key, value);
-  }
-
-  @reducer
-  setMetaByUid<K extends keyof I>(uid: string, key: K, value: I[K]): void {
-    const uidItem = this.itemsByUid[uid];
-    if (!uidItem) {
-      throw new DefaultBasicError(`Cannot find item with UID ${uid}`, 'item_not_found');
+  setMeta<B extends keyof CollectionBy<T, I>, K extends keyof I>(
+    by: B,
+    target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
+    key: K,
+    value: I[K],
+  ): I[] {
+    let items: I[] = [];
+    target = toArray(target);
+    switch (by) {
+      case 'id':
+        items = target.map((t) => this.idIndex[String(t)]).filter((t) => t !== undefined);
+        break;
+      case 'uid':
+        items = target.map((t) => this.uidIndex[String(t)]).filter((t) => t !== undefined);
+        break;
+      case 'item':
+        items = target.map((t) => this.uidIndex[(t as I).uid]).filter((t) => t !== undefined);
+        break;
+      case 'value':
+        items = target.map((t) => this.adapt(t as T));
+        break;
     }
-    uidItem[key] = value;
-
-    if (this.state.items) {
-      const stateItem = this.state.items.find((stateItem) => stateItem && uid === stateItem.uid);
-      if (stateItem) {
-        stateItem[key] = value;
+    items.forEach((item) => {
+      item = Object.assign({}, item, { [key]: value });
+      this._indexItem(item);
+      if (this.state.items) {
+        const stateItem = this.state.items.find((stateItem) => stateItem && item.uid === stateItem.uid);
+        if (stateItem) {
+          stateItem[key] = value;
+        }
       }
-    }
+    });
+    return items;
   }
 
   @reducer
@@ -526,6 +539,26 @@ export default class CollectionService<
     this._setLoading({ limit: this.state.limit, offset: 0 });
     this._setSortBy(query, sortBy);
     this.refresh(query);
+  }
+
+  protected _adapt(data: T | undefined, position?: number): I {
+    // open the index
+    let item: I;
+    const adaptee = this.state.adapter(data);
+    const currentItem = this.idIndex[String(adaptee.id)];
+    if (currentItem !== undefined) {
+      item = Object.assign({}, currentItem, adaptee);
+    } else {
+      item = Object.assign(
+        {
+          uid: generateUniqueId(),
+          loadingStatus: adaptee.data !== undefined ? LoadingStatus.Loaded : LoadingStatus.NotInitialized,
+        },
+        adaptee,
+      ) as I;
+    }
+    this._indexItem(item, position);
+    return item;
   }
 
   protected _addFilter(
@@ -793,7 +826,6 @@ export default class CollectionService<
     if (query.fields && query.fields.length > 0) {
       result = this._applyFields(result, query.fields);
     }
-
     return result;
   }
 
@@ -844,7 +876,7 @@ export default class CollectionService<
       if (loadingTask !== null) {
         yield cancel(loadingTask);
       }
-      yield this._fetchError(e);
+      yield this._fetchError(e, query);
 
       if (onError) {
         yield onError(DefaultBasicError.of(e));
@@ -856,8 +888,16 @@ export default class CollectionService<
 
   @reducer
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  protected _fetchError(e: any): void {
+  protected _fetchError(e: any, query: Query): void {
     this.state.error = e;
+    this._setLoading({
+      resetLimit: false,
+      resetData: false,
+      limit: query.limit,
+      offset: query.offset,
+      status: LoadingStatus.Error,
+    });
+    this.state.status = LoadingStatus.Error;
   }
 
   @reducer
@@ -905,7 +945,7 @@ export default class CollectionService<
       const itemResult: I[] = data.map((itemData) => {
         const item = this.adapt(itemData);
         item.loadingStatus = LoadingStatus.Loaded;
-        return item;
+        return Object.assign({}, item);
       });
 
       let items = resetData ? [] : this.state.items;
@@ -918,9 +958,9 @@ export default class CollectionService<
           .forEach(
             (item) =>
               item &&
-              this.itemsByUid[item.uid] &&
-              this.itemsByUid[item.uid].id === undefined &&
-              delete this.itemsByUid[item.uid],
+              this.uidIndex[item.uid] &&
+              this.uidIndex[item.uid].id === undefined &&
+              delete this.uidIndex[item.uid],
           );
         items.splice(offset, limit, ...itemResult.slice(0, limit));
 
@@ -935,9 +975,9 @@ export default class CollectionService<
             .forEach(
               (item) =>
                 item &&
-                this.itemsByUid[item.uid] &&
-                this.itemsByUid[item.uid].id === undefined &&
-                delete this.itemsByUid[item.uid],
+                this.uidIndex[item.uid] &&
+                this.uidIndex[item.uid].id === undefined &&
+                delete this.uidIndex[item.uid],
             );
         }
 
@@ -959,9 +999,9 @@ export default class CollectionService<
       this.state.status = hasMore ? LoadingStatus.PartialLoaded : LoadingStatus.Loaded;
     } else {
       // need to calculate the status as we cannot be sure that there is not another running request
-      if (Object.values(this.itemsByUid).find((item) => item.loadingStatus === LoadingStatus.Loading)) {
+      if (Object.values(this.uidIndex).find((item) => item.loadingStatus === LoadingStatus.Loading)) {
         this.state.status = LoadingStatus.PartialLoading;
-      } else if (Object.values(this.itemsByUid).find((item) => item.loadingStatus === LoadingStatus.Fetching)) {
+      } else if (Object.values(this.uidIndex).find((item) => item.loadingStatus === LoadingStatus.Fetching)) {
         this.state.status = LoadingStatus.PartialFetching;
       } else {
         this.state.status = hasMore ? LoadingStatus.PartialLoaded : LoadingStatus.Loaded;
@@ -971,6 +1011,19 @@ export default class CollectionService<
 
   protected _getId(data: T): string | number | undefined {
     return this.adapt(data).id;
+  }
+
+  protected _indexItem(item: I, position?: number): void {
+    this.uidIndex[item.uid] = item;
+    if (item.id !== undefined) {
+      this.idIndex[item.id] = item;
+    }
+    if (position !== undefined) {
+      this.positionIndex[item.uid] = position;
+    }
+    if (this.positionIndex[item.uid] !== undefined && this.db) {
+      this.db[this.positionIndex[item.uid]] = item;
+    }
   }
 
   @reducer
@@ -1091,7 +1144,7 @@ export default class CollectionService<
           item = this.adapt(undefined);
         }
         item.loadingStatus = status;
-        return item;
+        return Object.assign({}, item);
       };
 
       if (resetLimit) {

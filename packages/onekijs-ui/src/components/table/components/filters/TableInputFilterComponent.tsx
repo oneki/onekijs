@@ -12,7 +12,7 @@ import SearchIcon from '../../../icon/SearchIcon';
 import Input from '../../../input';
 import { InputProps } from '../../../input/typings';
 import { TableFilterProps } from '../../typings';
-import useTableController from '../../useTableController';
+import useTableController from '../../hooks/useTableController';
 import { getValueFromFilter } from '../../util';
 
 const SearchComponent: React.FC<InputProps> = ({ className }) => {

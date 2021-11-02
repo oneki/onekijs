@@ -1,4 +1,4 @@
-import { isTrue, ucfirst } from 'onekijs';
+import { isTrue, ucfirst } from 'onekijs-framework';
 import { DashboardHorizontalPanel, DashboardSize, DashboardVerticalPanel } from '../typings';
 
 export const getCollapseKey = (size: DashboardSize): 'collapseSmall' | 'collapseMedium' | 'collapseLarge' => {

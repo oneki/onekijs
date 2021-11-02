@@ -109,6 +109,7 @@ const SelectComponent: FC<SelectProps> = ({
   size = 'medium',
 }) => {
   const collection = useSelect(items);
+  console.log('refresh select', collection.items[0]);
   const [open, _setOpen] = useState(false);
   const [focus, setFocus] = useState(false);
   const stateRef = useRef<AnonymousObject>({});
@@ -361,11 +362,11 @@ const SelectComponent: FC<SelectProps> = ({
       if (currentProxyItem.current !== undefined) {
         const item = currentProxyItem.current;
         currentProxyItem.current = undefined;
-        collection.setMeta(item, multiple ? 'highlighted' : 'selected', false);
+        collection.setMeta('item', item, multiple ? 'highlighted' : 'selected', false);
       }
       if (proxyItem !== undefined && proxyItem.id !== undefined) {
         currentProxyItem.current = proxyItem;
-        collection.setMeta(proxyItem, multiple ? 'highlighted' : 'selected', true);
+        collection.setMeta('item', proxyItem, multiple ? 'highlighted' : 'selected', true);
       }
     }
 
@@ -373,12 +374,12 @@ const SelectComponent: FC<SelectProps> = ({
       const diffTokens = diffItems(previousTokensRef.current, tokens);
       diffTokens.removed.forEach((token) => {
         if (token.id !== undefined) {
-          collection.setMeta(token, 'selected', false);
+          collection.setMeta('item', token, 'selected', false);
         }
       });
       diffTokens.added.forEach((token) => {
         if (token.id !== undefined) {
-          collection.setMeta(token, 'selected', true);
+          collection.setMeta('item', token, 'selected', true);
         }
       });
       previousTokensRef.current = tokens;

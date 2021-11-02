@@ -16,7 +16,7 @@ import {
 } from './typings';
 import { isCollection } from './utils';
 
-const useCollectionState = <T = any, I extends Item<T> = Item<T>>(
+const useCollectionInitialState = <T = any, I extends Item<T> = Item<T>>(
   dataSource: T[] | string | Collection<T, I> | undefined,
   adapter: CollectionItemAdapter<T, I>,
   options: UseCollectionOptions<T, I> = {},
@@ -24,14 +24,14 @@ const useCollectionState = <T = any, I extends Item<T> = Item<T>>(
   const auth = useTryStore()?.getState().auth;
   let router = useTryRouter();
 
-  let dataOrUrl: T[] | string;
+  let dataOrUrl: T[] | string | undefined;
 
   if (isCollection(dataSource)) {
     // we are going to create a fake collection (because hooks cannot be conditionals)
     dataOrUrl = [];
     options = {};
   } else {
-    dataOrUrl = dataSource || [];
+    dataOrUrl = dataSource;
   }
 
   const stateRef = useLazyRef<CollectionState<T, I>>(() => {
@@ -70,7 +70,7 @@ const useCollectionState = <T = any, I extends Item<T> = Item<T>>(
       comparator: options.comparator,
       comparators: options.comparators,
       dataKey: options.dataKey || 'data',
-      dataSource,
+      dataSource: dataOrUrl,
       fetchOptions,
       fields: options.initialFields,
       filter: options.initialFilter,
@@ -102,4 +102,4 @@ const useCollectionState = <T = any, I extends Item<T> = Item<T>>(
   return stateRef.current;
 };
 
-export default useCollectionState;
+export default useCollectionInitialState;

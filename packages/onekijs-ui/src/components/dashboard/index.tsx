@@ -1,4 +1,4 @@
-import { useService } from 'onekijs';
+import { useService } from 'onekijs-framework';
 import React from 'react';
 import DashboardComponent from './components/DashboardComponent';
 import { DashboardService } from './DashboardService';

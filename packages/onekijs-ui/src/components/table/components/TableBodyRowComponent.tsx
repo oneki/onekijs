@@ -1,40 +1,50 @@
 import React, { FC } from 'react';
 import { useState } from 'react';
 import { TableBodyRowProps } from '../typings';
-import useTableController from '../useTableController';
+import useTableController from '../hooks/useTableController';
 import TableBodyCellComponent from './TableBodyCellComponent';
+import { addClassname } from '../../../utils/style';
 
 const TableBodyRowComponent: FC<TableBodyRowProps> = ({
   item,
   index,
   columns,
   CellComponent = TableBodyCellComponent,
+  className,
 }) => {
   const [hover, setHover] = useState(false);
-  const { highlightRow, stripRows } = useTableController();
+  const { highlightRow, stripRows } = useTableController().state;
 
   if (item === undefined) {
     return null;
   }
 
+  const rowClassName = addClassname(
+    `o-table-body-row${hover ? ' o-table-body-row-hover' : ''}${
+      stripRows ? ` o-table-body-row-${index % 2 === 0 ? 'even' : 'odd'}` : ''
+    }`,
+    className,
+  );
+
   return (
     <div
-      className={`o-table-body-row${hover ? ' o-table-body-row-hover' : ''}${
-        stripRows ? ` o-table-body-row-${index % 2 === 0 ? 'even' : 'odd'}` : ''
-      }`}
+      className={rowClassName}
       onMouseEnter={highlightRow ? () => setHover(true) : undefined}
       onMouseLeave={highlightRow ? () => setHover(false) : undefined}
       style={{ display: 'flex' }}
     >
       {columns.map((column, colIndex) => {
+        const cellClassName =
+          typeof column.className === 'function' ? column.className(item, column, index) : column.className;
         return (
           <CellComponent
             column={column}
             colIndex={colIndex}
             rowIndex={index}
             rowId={item.id}
-            rowValue={item}
+            item={item}
             key={`cell-${colIndex}`}
+            className={cellClassName}
           />
         );
       })}

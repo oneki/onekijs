@@ -1,16 +1,11 @@
-import { useCollectionState, useLazyRef } from 'onekijs-framework';
-import { TableItem, TableState, UseTableOptions } from './typings';
+import { useCollectionInitialState, useLazyRef, CollectionItemAdapter } from 'onekijs-framework';
+import { TableItem, TableState, UseTableOptions } from '../typings';
 
-const useTableState = <T, I extends TableItem<T>>(options: UseTableOptions<T, I>): TableState<T, I> => {
-  let adapter = options.adapter;
-  if (!adapter) {
-    adapter = () => {
-      return {} as I;
-    };
-  }
-  delete options['adapter'];
-
-  const collectionState = useCollectionState(options.dataSource, adapter, options);
+const useTableState = <T, I extends TableItem<T>>(
+  adapter: CollectionItemAdapter<T, I>,
+  options: Omit<UseTableOptions<T, I>, 'adapter'>,
+): TableState<T, I> => {
+  const collectionState = useCollectionInitialState(options.dataSource, adapter, options);
 
   const stateRef = useLazyRef<TableState<T, I>>(() => {
     return Object.assign(

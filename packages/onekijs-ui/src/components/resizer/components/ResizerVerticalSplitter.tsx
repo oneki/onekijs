@@ -1,4 +1,4 @@
-import { useEventListener } from 'onekijs';
+import { useEventListener } from 'onekijs-framework';
 import React from 'react';
 import { useResizerService } from '../ResizerService';
 import { ResizerHandle, ResizeVerticalSplitterProps } from '../typings';

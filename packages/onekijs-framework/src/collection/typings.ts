@@ -5,10 +5,12 @@ import { Router } from '../types/router';
 
 export type ChangeHandler<T> = (value: T) => void;
 
-export type Collection<T, I extends Item<T>> = Omit<CollectionBroker<T, I>, 'addSubscriber' | 'removeSubscriber'> & {
+export type Collection<T, I extends Item<T> = Item<T>, S extends CollectionState<T, I> = CollectionState<T, I>> = Omit<
+  CollectionBroker<T, I, S>,
+  'addSubscriber' | 'removeSubscriber'
+> & {
   adapt(data: T | undefined): I;
-  asService(): Collection<T, I>;
-  readonly data?: (T | undefined)[];
+  readonly data?: T[];
   readonly dataSource?: T[] | string;
   readonly items: (I | undefined)[];
   getAdapter(): CollectionItemAdapter<T, I>;
@@ -30,13 +32,24 @@ export type Collection<T, I extends Item<T>> = Omit<CollectionBroker<T, I>, 'add
   query(query: Query): void;
   refresh(query?: Query): void;
   reset(): void;
-  setMeta<K extends keyof I>(item: I, key: K, value: I[K]): void;
-  setMetaByUid<K extends keyof I>(uid: string, key: K, value: I[K]): void;
+  setMeta<B extends keyof CollectionBy<T, I>, K extends keyof I>(
+    by: B,
+    target: CollectionBy<T, I>[B],
+    key: K,
+    value: I[K],
+  ): I[];
+  readonly state: S;
   readonly status: CollectionStatus;
   readonly total?: number;
 };
 
-export type CollectionBroker<T, I extends Item<T>> = {
+export type CollectionAdaptedValue<I> = Omit<I, 'loadingStatus' | 'uid'>;
+
+export type CollectionBroker<
+  T,
+  I extends Item<T> = Item<T>,
+  S extends CollectionState<T, I> = CollectionState<T, I>
+> = {
   addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId?: QueryFilterId): void;
   addFilterCriteria(
     field: string,
@@ -47,7 +60,7 @@ export type CollectionBroker<T, I extends Item<T>> = {
     parentFilterId?: QueryFilterId,
   ): void;
   addSortBy(sortBy: QuerySortBy, prepend?: boolean): void;
-  addSubscriber(collection: Collection<T, I>): void;
+  addSubscriber(collection: Collection<T, I, S>): void;
   clearFields(): void;
   clearFilter(): void;
   clearParams(): void;
@@ -58,7 +71,7 @@ export type CollectionBroker<T, I extends Item<T>> = {
   filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | null): void;
   removeFilter(filterId: QueryFilterId): void;
   removeSortBy(id: string): void;
-  removeSubscriber(collection: Collection<T, I>): void;
+  removeSubscriber(collection: Collection<T, I, S>): void;
   search(search: Primitive): void;
   setData(data: T[]): void;
   setFields(fields: string[]): void;
@@ -66,6 +79,13 @@ export type CollectionBroker<T, I extends Item<T>> = {
   setParams(params: AnonymousObject): void;
   sort(dir: QuerySortDir): void;
   sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void;
+};
+
+export type CollectionBy<T, I extends Item<T> = Item<T>> = {
+  id: string | number;
+  item: I;
+  uid: string;
+  value: T;
 };
 
 export type CollectionFetcher<T> = Fetcher<CollectionFetcherResult<T>, Query | undefined>;
@@ -102,6 +122,15 @@ export interface CollectionOptions<T, I extends Item<T>> {
   throttle?: number;
   totalKey?: string;
 }
+
+export type CollectionProxy<
+  T,
+  I extends Item<T> = Item<T>,
+  S extends CollectionState<T, I> = CollectionState<T, I>,
+  C extends Collection<T, I, S> = Collection<T, I, S>
+> = C & {
+  asService(): C;
+};
 
 export interface CollectionState<T, I extends Item<T>> extends FetchState {
   adapter: CollectionItemAdapter<T, I>;
@@ -143,7 +172,8 @@ export type CollectionStatus =
   | 'loaded'
   | 'partial_loading'
   | 'partial_fetching'
-  | 'partial_loaded';
+  | 'partial_loaded'
+  | 'error';
 
 export interface Item<T> {
   data?: T; // data can be undefined if the item is fetching or loading
@@ -153,7 +183,7 @@ export interface Item<T> {
   uid: string; // this is a internal ID never visible from the outside
 }
 
-export type LoadingItemStatus = 'not_initialized' | 'loading' | 'fetching' | 'loaded';
+export type LoadingItemStatus = 'not_initialized' | 'loading' | 'fetching' | 'loaded' | 'error';
 
 export enum LoadingStatus {
   NotInitialized = 'not_initialized',
@@ -163,6 +193,7 @@ export enum LoadingStatus {
   PartialLoading = 'partial_loading',
   PartialFetching = 'partial_fetching',
   PartialLoaded = 'partial_loaded',
+  Error = 'error',
 }
 
 export type LocalQuery = Omit<Query, 'offset' | 'limit'>;

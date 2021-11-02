@@ -1,7 +1,9 @@
 import { Collection, Item, UseCollectionOptions, CollectionItemAdapter } from 'onekijs-framework';
 import React, { FC } from 'react';
 
-export type ListItems<T, I extends Item<T> = Item<T>> = T[] | Collection<T, I>;
+export type ListCollection<T, I extends Item<T> = Item<T>> = Collection<T, I>;
+
+export type ListItems<T, I extends Item<T> = Item<T>> = T[] | ListCollection<T, I>;
 
 export type ListItemHandler<T, I extends Item<T> = Item<T>> = (item: I | undefined, index: number) => void;
 

@@ -5,6 +5,7 @@ import {
   Item,
   ValidationStatus,
   CollectionItemAdapter,
+  Collection,
 } from 'onekijs-framework';
 import React, { FC } from 'react';
 import { FieldLayoutProps, FieldSize } from '../field/typings';
@@ -18,6 +19,8 @@ export type FormSelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = 
   };
 
 export type SelectAdapter<T, I extends SelectItem<T> = SelectItem<T>> = CollectionItemAdapter<T, I>;
+
+export type SelectCollection<T, I extends SelectItem<T> = SelectItem<T>> = Collection<T, I>;
 
 export type SelectItem<T> = Item<T> & {
   selected?: boolean;

@@ -17,8 +17,7 @@ export const userAdapter: CollectionItemAdapter<User, SelectItem<User>> = (data?
   return {
     id: data ? String(data.id) : undefined,
     text: data ? `${data.firstname} ${data.lastname}` : '',
-    data,
-    meta: {},
+    data
   };
 };
 
