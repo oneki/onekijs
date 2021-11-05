@@ -1,6 +1,9 @@
 import { useMemo } from 'react';
-import { CollectionState, Item } from '..';
-import { Collection, CollectionProxy } from './typings';
+import useCollectionService from './useCollectionService';
+import { Class } from '../types/object';
+import { Collection, CollectionProxy, CollectionState, Item } from './typings';
+import CollectionService from './CollectionService';
+import { isCollection } from './utils';
 
 const handler = {
   get: function <T, I extends Item<T>, S extends CollectionState<T, I>, C extends Collection<T, I, S>>(
@@ -16,14 +19,30 @@ const handler = {
   },
 };
 
-const useCollectionProxy = <T, I extends Item<T>, S extends CollectionState<T, I>, C extends Collection<T, I, S>>(
-  collection: C,
+const useCollectionProxy = <
+  T,
+  I extends Item<T> = Item<T>,
+  S extends CollectionState<T, I> = CollectionState<T, I>,
+  C extends CollectionService<T, I, S> = CollectionService<T, I, S>
+>(
+  dataSource:
+    | T[]
+    | string
+    | CollectionProxy<T, I, CollectionState<T, I>, Collection<T, I, CollectionState<T, I>>>
+    | undefined,
+  ctor: Class<C>,
+  initialState: S,
 ): CollectionProxy<T, I, S, C> => {
+  const [, service] = useCollectionService<T, I, S, C>(ctor, initialState);
+
   return useMemo(() => {
-    const proxy = new Proxy(collection, handler);
+    if (isCollection(dataSource)) {
+      return dataSource as CollectionProxy<T, I, S, C>;
+    }
+    const proxy = new Proxy(service, handler);
     return proxy as CollectionProxy<T, I, S, C>;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [collection.state]);
+  }, [dataSource, service.state]);
 };
 
 export default useCollectionProxy;

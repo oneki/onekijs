@@ -104,14 +104,18 @@ export {
   ChangeHandler,
   Collection,
   CollectionBroker,
+  CollectionBy,
   CollectionFetcher,
   CollectionFetcherResult,
   CollectionFetchOptions,
   CollectionItemAdapter,
   CollectionOptions,
+  CollectionProxy,
   CollectionState,
   CollectionStatus,
   Item,
+  ItemAdaptee,
+  ItemAdapter,
   LoadingItemStatus,
   LoadingStatus,
   LocalQuery,
@@ -132,14 +136,11 @@ export {
   QuerySortComparator,
   QuerySortDir,
   UseCollectionOptions,
-  CollectionBy,
-  CollectionAdaptedValue,
-  CollectionProxy,
 } from './collection/typings';
 export { default as useCollection } from './collection/useCollection';
-export { default as useCollectionService } from './collection/useCollectionService';
-export { default as useCollectionProxy } from './collection/useCollectionProxy';
 export { default as useCollectionInitialState } from './collection/useCollectionInitialState';
+export { default as useCollectionProxy } from './collection/useCollectionProxy';
+export { default as useCollectionService } from './collection/useCollectionService';
 export {
   defaultComparator,
   defaultSerializer,
@@ -186,7 +187,6 @@ export {
   shouldResetData,
   urlSerializer,
   visitFilter,
-  defaultItemAdapter,
 } from './collection/utils';
 export {
   asReducer,
@@ -377,6 +377,7 @@ export {
   deepFreeze,
   del,
   diffArrays,
+  ensureFieldValue,
   find,
   fromPayload,
   get,

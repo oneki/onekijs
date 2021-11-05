@@ -13,7 +13,7 @@ const defaultOverscan = 1;
 const useListView: <T = any, I extends Item<T> = Item<T>>(
   props: Pick<
     ListInternalProps<T, I>,
-    'collection' | 'height' | 'itemHeight' | 'overscan' | 'preload' | 'increment' | 'virtual'
+    'controller' | 'height' | 'itemHeight' | 'overscan' | 'preload' | 'increment' | 'virtual'
   > & {
     ref: RefObject<HTMLDivElement>;
   },
@@ -24,7 +24,7 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
   totalSize: number;
   virtualItems: VirtualItem[];
 } = ({
-  collection,
+  controller,
   height = defaultHeight,
   itemHeight = defaultItemHeight,
   overscan = defaultOverscan,
@@ -45,7 +45,7 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
     [itemHeight],
   );
 
-  const state = collection.state;
+  const state = controller.state;
 
   const { totalSize, virtualItems, scrollToIndex } = useVirtual({
     size: state.items?.length || 0,
@@ -57,18 +57,18 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
   useEffect(() => {
     if (isVirtual) {
       if (state.status === LoadingStatus.NotInitialized) {
-        collection.load(preload);
-      } else if (canFetchMore(collection)) {
+        controller.load(preload);
+      } else if (canFetchMore(controller)) {
         const lastVirtualItem = virtualItems[virtualItems.length - 1];
         const lastVirtualItemIndex = lastVirtualItem ? lastVirtualItem.index : 0;
         if (lastVirtualItemIndex >= (state.items?.length || 0) - preload / 2) {
-          collection.load(increment, ((state.items || []) as any[]).length);
+          controller.load(increment, ((state.items || []) as any[]).length);
         }
       }
-    } else if (collection.status === LoadingStatus.NotInitialized) {
-      collection.load();
+    } else if (controller.status === LoadingStatus.NotInitialized) {
+      controller.load();
     }
-  }, [collection, state, preload, virtualItems, increment, isVirtual]);
+  }, [controller, state, preload, virtualItems, increment, isVirtual]);
 
   return {
     items: state.items || [],

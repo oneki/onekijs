@@ -13,7 +13,6 @@ export type Collection<T, I extends Item<T> = Item<T>, S extends CollectionState
   readonly data?: T[];
   readonly dataSource?: T[] | string;
   readonly items: (I | undefined)[];
-  getAdapter(): CollectionItemAdapter<T, I>;
   getItem(id: string | number): I | undefined;
   getFields(): string[] | undefined;
   getFilter(): QueryFilter | undefined;
@@ -42,8 +41,6 @@ export type Collection<T, I extends Item<T> = Item<T>, S extends CollectionState
   readonly status: CollectionStatus;
   readonly total?: number;
 };
-
-export type CollectionAdaptedValue<I> = Omit<I, 'loadingStatus' | 'uid'>;
 
 export type CollectionBroker<
   T,
@@ -96,9 +93,10 @@ export type CollectionFetchOptions<R = any, T = any> = Omit<FetchOptions<R, T>, 
   auth?: AnonymousObject<any> | boolean;
 };
 
-export type CollectionItemAdapter<T, I extends Item<T>> = (data: T | undefined) => Omit<I, 'loadingStatus' | 'uid'>;
+export type CollectionItemAdapter<T, I extends Item<T>> = (data: T | undefined, currentItems: AnonymousObject<I>) => I;
 
 export interface CollectionOptions<T, I extends Item<T>> {
+  adapter?: ItemAdapter<T>;
   autoload?: boolean;
   comparator?: QuerySortComparator;
   comparators?: AnonymousObject<QuerySortComparator>;
@@ -133,7 +131,7 @@ export type CollectionProxy<
 };
 
 export interface CollectionState<T, I extends Item<T>> extends FetchState {
-  adapter: CollectionItemAdapter<T, I>;
+  adapter?: ItemAdapter<T>;
   autoload?: boolean;
   comparator?: QuerySortComparator;
   comparators?: AnonymousObject<QuerySortComparator>;
@@ -175,13 +173,20 @@ export type CollectionStatus =
   | 'partial_loaded'
   | 'error';
 
-export interface Item<T> {
+export type Item<T> = {
   data?: T; // data can be undefined if the item is fetching or loading
   id?: string | number; // id can be undefined if the item is fetching or loading
   text?: string; // text can be undefined if the item is fetching or loading
   loadingStatus: LoadingItemStatus;
   uid: string; // this is a internal ID never visible from the outside
-}
+};
+
+export type ItemAdaptee = {
+  id?: string | number;
+  text?: string;
+};
+
+export type ItemAdapter<T> = (data: T) => ItemAdaptee;
 
 export type LoadingItemStatus = 'not_initialized' | 'loading' | 'fetching' | 'loaded' | 'error';
 
@@ -283,6 +288,6 @@ export type QuerySortComparator = <T>(a: T | null | undefined, b: T | null | und
 
 export type QuerySortDir = 'asc' | 'desc';
 
-export interface UseCollectionOptions<T, I extends Item<T>>
+export interface UseCollectionOptions<T, I extends Item<T> = Item<T>>
   extends CollectionOptions<T, I>,
     CollectionFetchOptions<CollectionFetcherResult<T>, Query | undefined> {}

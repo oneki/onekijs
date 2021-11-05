@@ -1,19 +1,23 @@
-import { Item, Collection, useCollection } from 'onekijs-framework';
-import { ListCollection, UseListOptions } from '../typings';
+import {
+  CollectionProxy,
+  CollectionService,
+  Item,
+  useCollectionInitialState,
+  useCollectionProxy,
+} from 'onekijs-framework';
+import { ListItem, ListState, UseListOptions } from '../typings';
 
 const useList = <T = any>(
-  dataSource: T[] | string | Collection<T, Item<T>>,
+  dataSource: T[] | string | CollectionProxy<T, Item<T>>,
   options: UseListOptions<T, Item<T>> = {},
-): ListCollection<T, Item<T>> => {
-  let adapter = options.adapter;
-  if (!adapter) {
-    adapter = () => {
-      return {};
-    };
-  }
-  delete options['adapter'];
-
-  return useCollection<T, Item<T>>(dataSource, adapter, options);
+): CollectionProxy<
+  T,
+  ListItem<T>,
+  ListState<T, ListItem<T>>,
+  CollectionService<T, ListItem<T>, ListState<T, ListItem<T>>>
+> => {
+  const initialState = useCollectionInitialState(dataSource, options);
+  return useCollectionProxy(dataSource, CollectionService, initialState);
 };
 
 export default useList;

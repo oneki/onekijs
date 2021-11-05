@@ -1,8 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { addClassname } from '../../../utils/style';
 import { TableProps } from '../typings';
-import { TableControllerContext } from '../hooks/useTableController';
-import { TableColumnsContext } from '../hooks/useTableColumns';
+import { TableImmutableControllerContext, TableMutableControllerContext } from '../hooks/useTableController';
 import { TableValueContext } from '../hooks/useTableValue';
 import TableBodyComponent from './TableBodyComponent';
 import TableFooterComponent from './TableFooterComponent';
@@ -32,8 +31,8 @@ const TableComponent: React.FC<TableProps> = ({ controller, className }) => {
   });
 
   return (
-    <TableControllerContext.Provider value={controller.asService()}>
-      <TableColumnsContext.Provider value={columns}>
+    <TableImmutableControllerContext.Provider value={controller.asService()}>
+      <TableMutableControllerContext.Provider value={controller}>
         <TableValueContext.Provider value={items}>
           <div
             className={classNames}
@@ -54,8 +53,8 @@ const TableComponent: React.FC<TableProps> = ({ controller, className }) => {
             {footer && <FooterComponent columns={columns} className={footerClassName} />}
           </div>
         </TableValueContext.Provider>
-      </TableColumnsContext.Provider>
-    </TableControllerContext.Provider>
+      </TableMutableControllerContext.Provider>
+    </TableImmutableControllerContext.Provider>
   );
 };
 

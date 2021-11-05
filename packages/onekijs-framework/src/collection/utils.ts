@@ -1,13 +1,12 @@
 import { __metadata } from 'tslib';
-import { CollectionState } from '..';
 import DefaultBasicError from '../core/BasicError';
 import { Primitive } from '../types/core';
 import { AnonymousObject } from '../types/object';
-import { isNull, shallowEqual, toArray } from '../utils/object';
+import { shallowEqual, toArray } from '../utils/object';
 import {
   Collection,
-  CollectionAdaptedValue,
   CollectionProxy,
+  CollectionState,
   Item,
   LoadingStatus,
   Query,
@@ -544,37 +543,6 @@ export const isCollection = <T, I extends Item<T>, S extends CollectionState<T, 
   data?: T[] | CollectionProxy<T, I, S, C> | string,
 ): data is CollectionProxy<T, I, S, C> => {
   return data !== undefined && !Array.isArray(data) && !(typeof data === 'string');
-};
-
-export const defaultItemAdapter = <T>(data: T | undefined): CollectionAdaptedValue<Item<T>> => {
-  const getId = (data: any): string | number | undefined => {
-    if (isNull(data)) {
-      return undefined;
-    }
-    if (!isNull(data.id)) {
-      return data.id;
-    } else {
-      return undefined;
-    }
-  };
-  const getText = (data: any): string | undefined => {
-    if (isNull(data)) {
-      return undefined;
-    }
-    if (!isNull(data.text)) {
-      return String(data.text);
-    } else if (typeof data === 'string') {
-      return data;
-    } else {
-      return undefined;
-    }
-  };
-
-  return {
-    data,
-    id: getId(data),
-    text: getText(data),
-  };
 };
 
 export const dummyLogMetadata = (): void => {

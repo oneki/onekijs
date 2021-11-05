@@ -7,7 +7,7 @@ import { omit } from '../utils/object';
 import {
   Collection,
   CollectionFetcherResult,
-  CollectionItemAdapter,
+  CollectionProxy,
   CollectionState,
   Item,
   LoadingStatus,
@@ -17,8 +17,11 @@ import {
 import { isCollection } from './utils';
 
 const useCollectionInitialState = <T = any, I extends Item<T> = Item<T>>(
-  dataSource: T[] | string | Collection<T, I> | undefined,
-  adapter: CollectionItemAdapter<T, I>,
+  dataSource:
+    | T[]
+    | string
+    | CollectionProxy<T, I, CollectionState<T, I>, Collection<T, I, CollectionState<T, I>>>
+    | undefined,
   options: UseCollectionOptions<T, I> = {},
 ): CollectionState<T, I> => {
   const auth = useTryStore()?.getState().auth;
@@ -65,7 +68,7 @@ const useCollectionInitialState = <T = any, I extends Item<T> = Item<T>>(
     );
 
     return {
-      adapter,
+      adapter: options.adapter,
       autoload: options.autoload,
       comparator: options.comparator,
       comparators: options.comparators,

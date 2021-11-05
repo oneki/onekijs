@@ -1,9 +1,21 @@
-import { Collection, Item, UseCollectionOptions, CollectionItemAdapter } from 'onekijs-framework';
+import {
+  Collection,
+  CollectionProxy,
+  CollectionState,
+  Item,
+  ItemAdaptee,
+  ItemAdapter,
+  UseCollectionOptions,
+} from 'onekijs-framework';
 import React, { FC } from 'react';
 
-export type ListCollection<T, I extends Item<T> = Item<T>> = Collection<T, I>;
+export type ListController<
+  T,
+  I extends ListItem<T> = ListItem<T>,
+  S extends ListState<T, I> = ListState<T, I>
+> = Collection<T, I, S>;
 
-export type ListItems<T, I extends Item<T> = Item<T>> = T[] | ListCollection<T, I>;
+export type ListItems<T, I extends Item<T> = Item<T>> = T[] | ListController<T, I>;
 
 export type ListItemHandler<T, I extends Item<T> = Item<T>> = (item: I | undefined, index: number) => void;
 
@@ -17,13 +29,19 @@ export interface ListItemProps<T = any, I extends Item<T> = Item<T>> {
   onMouseLeave?: ListItemHandler<T, I>;
 }
 
-export interface ListProps<T = any, I extends Item<T> = Item<T>> {
+export type ListProps<
+  T = any,
+  I extends Item<T> = Item<T>,
+  S extends ListState<T, I> = ListState<T, I>,
+  C extends ListController<T, I, S> = ListController<T, I, S>
+> = {
+  controller?: CollectionProxy<T, I, S, C>;
   className?: string;
   height?: number | string;
   increment?: number;
-  items: ListItems<T>;
   ItemComponent?: FC<ListItemProps<T, I>>;
   itemHeight?: number | ((index: number) => number);
+  items?: T[];
   onItemClick?: ListItemHandler<T, I>;
   onItemMouseOver?: ListItemHandler<T, I>;
   onItemMouseOut?: ListItemHandler<T, I>;
@@ -33,7 +51,7 @@ export interface ListProps<T = any, I extends Item<T> = Item<T>> {
   preload?: number;
   style?: React.CSSProperties;
   virtual?: boolean;
-}
+};
 
 export type ListBodyProps<T = any, I extends Item<T> = Item<T>> = Pick<
   ListProps<T, I>,
@@ -65,10 +83,21 @@ export type ListHeaderProps = {
   style?: React.CSSProperties;
 };
 
-export type ListInternalProps<T = any, I extends Item<T> = Item<T>> = Omit<ListProps<T>, 'items' | 'BodyComponent'> & {
-  collection: Collection<T, I>;
+export type ListInternalProps<T = any, I extends Item<T> = Item<T>> = Omit<
+  ListProps<T>,
+  'items' | 'BodyComponent' | 'controller'
+> & {
+  controller: ListController<T, I>;
   BodyComponent: React.FC<ListBodyProps<T, I>>;
 };
+
+export type ListItem<T> = Item<T>;
+
+export type ListItemAdaptee = ItemAdaptee;
+
+export type ListItemAdapter<T> = ItemAdapter<T>;
+
+export type ListState<T, I extends ListItem<T> = ListItem<T>> = CollectionState<T, I>;
 
 export enum ListStatus {
   NotInitialized = 'not initialized',
@@ -86,7 +115,7 @@ export type StandardListProps<T = any, I extends Item<T> = Item<T>> = Omit<
 >;
 
 export type UseListOptions<T, I extends Item<T> = Item<T>> = UseCollectionOptions<T, I> & {
-  adapter?: CollectionItemAdapter<T, I>;
+  adapter?: ListItemAdapter<T>;
 };
 
 export type VirtualItem = {

@@ -394,3 +394,14 @@ export const toArray = <T>(a: T | T[]): T[] => {
   if (Array.isArray(a)) return a;
   return [a];
 };
+
+export const ensureFieldValue = <T, K extends keyof T>(object: T, field: K, value?: T[K]): T => {
+  if (object[field] === undefined) {
+    if (value === undefined) {
+      delete object[field];
+    } else {
+      object[field] = value;
+    }
+  }
+  return object;
+};

@@ -8,9 +8,9 @@ import {
   QueryFilterOrCriteria,
   QuerySortBy,
   UseCollectionOptions,
-  CollectionItemAdapter,
   CollectionBy,
   CollectionProxy,
+  ItemAdaptee,
 } from 'onekijs-framework';
 import { ListItemProps, ListItems } from '../list/typings';
 import { SelectProps } from '../select/typings';
@@ -149,6 +149,10 @@ export type TableItem<T> = Item<T> & {
   selected?: boolean;
 };
 
+export type TableItemAdaptee = ItemAdaptee;
+
+export type TableItemAdapter<T> = (data: T) => TableItemAdaptee;
+
 export type TableRowHandler<T, I extends TableItem<T> = TableItem<T>> = (item: I, index: number) => void;
 
 export type TableItems<T = any> = ListItems<T>;
@@ -207,7 +211,7 @@ export type SelectColumn<T, I extends TableItem<T> = TableItem<T>> = TableColumn
 
 export type UseTableOptions<T, I extends TableItem<T>> = UseCollectionOptions<T, I> &
   _TableState<T, I> & {
-    adapter?: CollectionItemAdapter<T, I>;
+    adapter?: TableItemAdapter<T>;
     dataSource?: T[] | string;
   };
 

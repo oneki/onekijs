@@ -1,6 +1,7 @@
 import React, { FC, useRef } from 'react';
 import { addClassname } from '../../../utils/style';
 import useList from '../hooks/useList';
+import { ListImmutableControllerContext, ListMutableControllerContext } from '../hooks/useListController';
 import useListView from '../hooks/useListView';
 import { ListProps } from '../typings';
 import ListBodyComponent from './ListBodyComponent';
@@ -8,10 +9,11 @@ import ListItemComponent from './ListItemComponent';
 
 const ListComponent: FC<ListProps> = ({
   className,
+  controller,
   height,
   ItemComponent = ListItemComponent,
-  items,
   itemHeight,
+  items,
   preload,
   increment,
   onItemClick,
@@ -22,11 +24,11 @@ const ListComponent: FC<ListProps> = ({
   virtual,
   style,
 }) => {
-  const collection = useList(items);
+  const listController = useList(controller || items || []);
   const ref = useRef<HTMLDivElement>(null);
 
   const { items: listItems, isVirtual, totalSize, virtualItems } = useListView({
-    collection,
+    controller: listController,
     height,
     itemHeight,
     preload,
@@ -36,21 +38,25 @@ const ListComponent: FC<ListProps> = ({
   });
 
   return (
-    <ListBodyComponent
-      className={addClassname('o-list', className)}
-      height={height}
-      ItemComponent={ItemComponent}
-      items={listItems}
-      bodyRef={ref}
-      onItemClick={onItemClick}
-      onItemMouseEnter={onItemMouseEnter}
-      onItemMouseLeave={onItemMouseLeave}
-      onItemMouseOut={onItemMouseOut}
-      onItemMouseOver={onItemMouseOver}
-      style={style}
-      totalSize={totalSize}
-      virtualItems={isVirtual ? virtualItems : undefined}
-    />
+    <ListImmutableControllerContext.Provider value={listController.asService()}>
+      <ListMutableControllerContext.Provider value={listController}>
+        <ListBodyComponent
+          className={addClassname('o-list', className)}
+          height={height}
+          ItemComponent={ItemComponent}
+          items={listItems}
+          bodyRef={ref}
+          onItemClick={onItemClick}
+          onItemMouseEnter={onItemMouseEnter}
+          onItemMouseLeave={onItemMouseLeave}
+          onItemMouseOut={onItemMouseOut}
+          onItemMouseOver={onItemMouseOver}
+          style={style}
+          totalSize={totalSize}
+          virtualItems={isVirtual ? virtualItems : undefined}
+        />
+      </ListMutableControllerContext.Provider>
+    </ListImmutableControllerContext.Provider>
   );
 };
 

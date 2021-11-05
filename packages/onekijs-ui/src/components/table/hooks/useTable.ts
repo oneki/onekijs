@@ -1,29 +1,24 @@
+import { CollectionProxy, useCollectionProxy } from 'onekijs-framework';
 import TableService from '../TableService';
-import { TableController, TableItem, TableState, UseTableOptions } from '../typings';
-import useTableService from './useTableService';
+import { TableItem, TableState, UseTableOptions } from '../typings';
 import useTableInitialState from './useTableInitialState';
-import { defaultTableItemAdapter } from '../util';
-import { useCollectionProxy } from 'onekijs-framework';
 
-const useTable = <T>(options: UseTableOptions<T, TableItem<T>>): TableController<T, TableItem<T>> => {
-  const adapter = options.adapter || defaultTableItemAdapter;
-  delete options['adapter'];
-
-  const tableState = useTableInitialState<T, TableItem<T>>(adapter, options);
-
-  const [, service] = useTableService<
-    T,
-    TableItem<T>,
-    TableState<T, TableItem<T>>,
-    TableService<T, TableItem<T>, TableState<T, TableItem<T>>>
-  >(options.dataSource, TableService, tableState);
+const useTable = <T>(
+  options: UseTableOptions<T, TableItem<T>>,
+): CollectionProxy<
+  T,
+  TableItem<T>,
+  TableState<T, TableItem<T>>,
+  TableService<T, TableItem<T>, TableState<T, TableItem<T>>>
+> => {
+  const tableState = useTableInitialState<T, TableItem<T>>(options);
 
   return useCollectionProxy<
     T,
     TableItem<T>,
     TableState<T, TableItem<T>>,
-    TableController<T, TableItem<T>, TableState<T, TableItem<T>>>
-  >(service);
+    TableService<T, TableItem<T>, TableState<T, TableItem<T>>>
+  >(options.dataSource, TableService, tableState);
 };
 
 export default useTable;

@@ -1,6 +1,5 @@
 import { Task } from '@redux-saga/types';
 import { cancel, delay, fork } from 'redux-saga/effects';
-import { generateUniqueId } from '../utils/string';
 import { reducer, saga } from '../core/annotations';
 import DefaultBasicError from '../core/BasicError';
 import DefaultService from '../core/Service';
@@ -12,13 +11,13 @@ import { AnonymousObject } from '../types/object';
 import { Location } from '../types/router';
 import { SagaEffect } from '../types/saga';
 import { dispatch, types } from '../types/service';
-import { get, toPayload, toArray } from '../utils/object';
+import { ensureFieldValue, get, isNull, toArray, toPayload } from '../utils/object';
 import { urlBuilder } from '../utils/router';
+import { generateUniqueId } from '../utils/string';
 import {
   Collection,
   CollectionBy,
   CollectionFetcherResult,
-  CollectionItemAdapter,
   CollectionState,
   CollectionStatus,
   Item,
@@ -268,10 +267,6 @@ export default class CollectionService<
       throw new DefaultBasicError('URL is required for a remote collection');
     }
     return this.state.url || '';
-  }
-
-  getAdapter(): CollectionItemAdapter<T, I> {
-    return this.state.adapter;
   }
 
   getFields(): string[] | undefined {
@@ -542,21 +537,38 @@ export default class CollectionService<
   }
 
   protected _adapt(data: T | undefined, position?: number): I {
-    // open the index
-    let item: I;
-    const adaptee = this.state.adapter(data);
+    const adaptee = this.state.adapter === undefined || data === undefined ? {} : this.state.adapter(data);
+
+    const getId = (data: any): string | number | undefined => {
+      if (isNull(data)) {
+        return undefined;
+      }
+      if (!isNull(data.id)) {
+        return data.id;
+      } else {
+        return undefined;
+      }
+    };
+    const getText = (data: any): string | undefined => {
+      if (isNull(data)) {
+        return undefined;
+      }
+      if (!isNull(data.text)) {
+        return String(data.text);
+      } else if (typeof data === 'string') {
+        return data;
+      } else {
+        return undefined;
+      }
+    };
+
+    ensureFieldValue(adaptee, 'id', getId(data));
+    ensureFieldValue(adaptee, 'text', getText(data));
+
     const currentItem = this.idIndex[String(adaptee.id)];
-    if (currentItem !== undefined) {
-      item = Object.assign({}, currentItem, adaptee);
-    } else {
-      item = Object.assign(
-        {
-          uid: generateUniqueId(),
-          loadingStatus: adaptee.data !== undefined ? LoadingStatus.Loaded : LoadingStatus.NotInitialized,
-        },
-        adaptee,
-      ) as I;
-    }
+    const item: I =
+      currentItem !== undefined ? Object.assign({}, currentItem, adaptee) : this._formatItem(data, adaptee);
+
     this._indexItem(item, position);
     return item;
   }
@@ -1007,6 +1019,17 @@ export default class CollectionService<
         this.state.status = hasMore ? LoadingStatus.PartialLoaded : LoadingStatus.Loaded;
       }
     }
+  }
+
+  protected _formatItem(data: T | undefined, adaptee: unknown): I {
+    return Object.assign(
+      {
+        data,
+        uid: generateUniqueId(),
+        loadingStatus: data !== undefined ? LoadingStatus.Loaded : LoadingStatus.NotInitialized,
+      },
+      adaptee,
+    ) as I;
   }
 
   protected _getId(data: T): string | number | undefined {
