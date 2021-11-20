@@ -1,5 +1,5 @@
 {
-  "name": "next-app-basic",
+  "name": "next-app-custom-store",
   "version": "0.14.7",
   "private": true,
   "scripts": {
@@ -14,5 +14,8 @@
     "onekijs-next": "^0.14.7",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-decorators": "^7.16.4"
   }
 }
