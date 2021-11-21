@@ -42,22 +42,21 @@ export { default as InputComponent } from './components/input/components/InputCo
 export { InputProps } from './components/input/typings';
 export { default as Label } from './components/label';
 export { default as List } from './components/list';
-export { default as useList } from './components/list/hooks/useList';
+export { default as useListDataSource } from './components/list/hooks/useListDataSource';
 export { ListItemHandler, ListItemProps, ListItems, ListProps, ListStatus } from './components/list/typings';
 export { default as Select } from './components/select';
-export { default as SelectComponent } from './components/select/components/SelectComponent';
+export { default as CollectionSelectComponent } from './components/select/components/CollectionSelectComponent';
 export { default as FormSelect } from './components/select/FormSelect';
-export { default as useSelect } from './components/select/hooks/useSelect';
+export { default as useSelectDataSource } from './components/select/hooks/useSelectDataSource';
 export {
   FormSelectProps,
-  SelectAdapter,
+  SelectItemAdapter as SelectAdapter,
   SelectIconProps,
   SelectInputProps,
   SelectItem,
   SelectOptionHandler,
   SelectOptionProps,
   SelectOptionSelectionHandler,
-  SelectOptionsProps,
   SelectProps,
   SelectTokenProps,
   SelectTokensProps,
@@ -74,7 +73,7 @@ export {
   TableBodyCellProps,
   TableBodyProps,
   TableBodyRowProps,
-  TableController,
+  TableCollection as TableController,
   TableColumn,
   TableColumnComputedWidth,
   TableColumnSpec,

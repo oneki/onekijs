@@ -1,9 +1,9 @@
 import styled from 'styled-components';
-import TreeComponent from './components/TreeComponent';
-import { treeStyle } from './style';
+import TableComponent from './components/TableComponent';
+import { tableStyle } from './style';
 
-const Tree = styled(TreeComponent)`
-  ${treeStyle}
+const Tree = styled(TableComponent)`
+  ${tableStyle}
 `;
 
 export default Tree;

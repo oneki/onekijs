@@ -1,7 +1,7 @@
 import { Item, LoadingStatus } from 'onekijs-framework';
 import { RefObject, useCallback, useEffect } from 'react';
 import { useVirtual } from 'react-virtual';
-import { ListInternalProps, VirtualItem } from '../typings';
+import { ListComponentProps, VirtualItem } from '../typings';
 import { canFetchMore } from '../utils';
 
 const defaultHeight = '100%';
@@ -12,8 +12,8 @@ const defaultOverscan = 1;
 
 const useListView: <T = any, I extends Item<T> = Item<T>>(
   props: Pick<
-    ListInternalProps<T, I>,
-    'controller' | 'height' | 'itemHeight' | 'overscan' | 'preload' | 'increment' | 'virtual'
+    ListComponentProps<T, I>,
+    'dataSource' | 'height' | 'itemHeight' | 'overscan' | 'preload' | 'increment' | 'virtual'
   > & {
     ref: RefObject<HTMLDivElement>;
   },
@@ -24,7 +24,7 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
   totalSize: number;
   virtualItems: VirtualItem[];
 } = ({
-  controller,
+  dataSource,
   height = defaultHeight,
   itemHeight = defaultItemHeight,
   overscan = defaultOverscan,
@@ -45,7 +45,7 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
     [itemHeight],
   );
 
-  const state = controller.state;
+  const state = dataSource.state;
 
   const { totalSize, virtualItems, scrollToIndex } = useVirtual({
     size: state.items?.length || 0,
@@ -57,18 +57,18 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
   useEffect(() => {
     if (isVirtual) {
       if (state.status === LoadingStatus.NotInitialized) {
-        controller.load(preload);
-      } else if (canFetchMore(controller)) {
+        dataSource.load(preload);
+      } else if (canFetchMore(dataSource)) {
         const lastVirtualItem = virtualItems[virtualItems.length - 1];
         const lastVirtualItemIndex = lastVirtualItem ? lastVirtualItem.index : 0;
         if (lastVirtualItemIndex >= (state.items?.length || 0) - preload / 2) {
-          controller.load(increment, ((state.items || []) as any[]).length);
+          dataSource.load(increment, ((state.items || []) as any[]).length);
         }
       }
-    } else if (controller.status === LoadingStatus.NotInitialized) {
-      controller.load();
+    } else if (dataSource.status === LoadingStatus.NotInitialized) {
+      dataSource.load();
     }
-  }, [controller, state, preload, virtualItems, increment, isVirtual]);
+  }, [dataSource, state, preload, virtualItems, increment, isVirtual]);
 
   return {
     items: state.items || [],

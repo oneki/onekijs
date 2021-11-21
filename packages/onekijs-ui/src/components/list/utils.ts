@@ -1,12 +1,23 @@
-import { Collection, CollectionStatus, isCollection, Item, LoadingStatus } from 'onekijs-framework';
+import {
+  CollectionProxy,
+  CollectionState,
+  CollectionStatus,
+  isCollection,
+  Item,
+  LoadingStatus,
+} from 'onekijs-framework';
 
-export const canFetchMore = <T, I extends Item<T>>(collection: T[] | Collection<T, I>): boolean => {
-  return isCollection(collection) && (collection as Collection<T, I>).status === LoadingStatus.PartialLoaded;
+export const canFetchMore = <T, I extends Item<T>, S extends CollectionState<T, I>>(
+  collection: T[] | CollectionProxy<T, I, S>,
+): boolean => {
+  return isCollection(collection) && (collection as CollectionProxy<T, I, S>).status === LoadingStatus.PartialLoaded;
 };
 
-export const getListStatus = <T, I extends Item<T>>(collection: T[] | Collection<T, I>): CollectionStatus => {
+export const getListStatus = <T, I extends Item<T>, S extends CollectionState<T, I>>(
+  collection: T[] | CollectionProxy<T, I, S>,
+): CollectionStatus => {
   if (isCollection(collection)) {
-    return (collection as Collection<T, I>).status;
+    return (collection as CollectionProxy<T, I, S>).status;
   }
   return LoadingStatus.Loaded;
 };

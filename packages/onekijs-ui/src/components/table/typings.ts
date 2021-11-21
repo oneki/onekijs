@@ -1,26 +1,56 @@
-import React from 'react';
 import {
   Collection,
   CollectionBroker,
-  CollectionState,
+  CollectionBy,
+  CollectionProxy,
   FormContext,
   Item,
+  ItemAdaptee,
   QueryFilterOrCriteria,
   QuerySortBy,
   UseCollectionOptions,
-  CollectionBy,
-  CollectionProxy,
-  ItemAdaptee,
 } from 'onekijs-framework';
-import { ListItemProps, ListItems } from '../list/typings';
-import { SelectProps } from '../select/typings';
+import React from 'react';
 import { InputProps } from '../input/typings';
+import { ListItemProps, ListItems, ListState, UseListOptions } from '../list/typings';
+import { SelectProps } from '../select/typings';
+
+export type ArrayTableProps<T = any, I extends TableItem<T> = TableItem<T>> = _TableProps<T, I> & {
+  columns: TableColumn<T, I>[] | TableColumnsCollection<T, I>;
+  dataSource: T[] | string;
+  adapter?: TableItemAdapter<T>;
+  selected?: T[];
+};
+
+export type ArrayColumnsTableProps<
+  T = any,
+  I extends TableItem<T> = TableItem<T>,
+  S extends TableState<T, I> = TableState<T, I>,
+  C extends TableCollection<T, I, S> = TableCollection<T, I, S>
+> = _TableProps<T, I> & {
+  columns: TableColumn<T, I>[] | TableColumnsCollection<T, I>;
+  dataSource: CollectionProxy<T, I, S, C>;
+  adapter?: TableItemAdapter<T>;
+  selected?: T[];
+};
+
+export type CollectionTableProps<
+  T = any,
+  I extends TableItem<T> = TableItem<T>,
+  S extends TableState<T, I> = TableState<T, I>,
+  C extends TableCollection<T, I, S> = TableCollection<T, I, S>
+> = _TableProps<T, I> & {
+  columns: TableColumn<T, I>[] | TableColumnsCollection<T, I>;
+  dataSource: CollectionProxy<T, I, S, C>;
+  adapter?: TableItemAdapter<T>;
+  selected?: T[];
+};
 
 export type FormTableProps<
   T = any,
   I extends TableItem<T> = TableItem<T>,
   S extends TableState<T, I> = TableState<T, I>,
-  C extends TableController<T, I, S> = TableController<T, I, S>
+  C extends TableCollection<T, I, S> = TableCollection<T, I, S>
 > = TableProps<T, I, S, C> & {
   name: string;
   format?: 'id' | 'object' | 'auto';
@@ -54,8 +84,8 @@ export type TableBodyRowProps<T = any, I extends TableItem<T> = TableItem<T>> = 
   columns: TableColumn<T, I>[];
 };
 
-export type TableController<
-  T,
+export type TableCollection<
+  T = any,
   I extends TableItem<T> = TableItem<T>,
   S extends TableState<T, I> = TableState<T, I>
 > = Collection<T, I, S> & {
@@ -78,6 +108,12 @@ export type TableController<
   setHeaderComponent(HeaderComponent?: React.FC<TableHeaderProps<T, I>>): void;
   setSelected<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
   step: 'unmounted' | 'mounted' | 'initializing';
+};
+
+export type TableColumnsCollection<T = any, I extends TableItem<T> = TableItem<T>> = {
+  columns: TableColumn<T, I>[];
+  addColumn(column: TableColumn<T, I>, position?: number): void;
+  removeColumn(id: string): void;
 };
 
 export type TableColumn<T, I extends TableItem<T> = TableItem<T>> = TableColumnSpec<T, I> & {
@@ -112,6 +148,18 @@ export type TableColumnWidth = {
 export type TableColumnComputedWidth = {
   width?: string;
   minWidth?: string;
+};
+
+export type TableComponentProps<
+  T = any,
+  I extends TableItem<T> = TableItem<T>,
+  S extends TableState<T, I> = TableState<T, I>,
+  C extends TableCollection<T, I, S> = TableCollection<T, I, S>
+> = _TableProps<T, I> & {
+  columns: TableColumnsCollection<T, I>;
+  dataSource: CollectionProxy<T, I, S, C>;
+  adapter?: TableItemAdapter<T>;
+  selected?: T[];
 };
 
 export type TableFilterProps<T = any, I extends TableItem<T> = TableItem<T>> = {
@@ -157,26 +205,11 @@ export type TableRowHandler<T, I extends TableItem<T> = TableItem<T>> = (item: I
 
 export type TableItems<T = any> = ListItems<T>;
 
-export type TableProps<
-  T = any,
-  I extends TableItem<T> = TableItem<T>,
-  S extends TableState<T, I> = TableState<T, I>,
-  C extends TableController<T, I, S> = TableController<T, I, S>
-> = {
+export type _TableProps<T, I extends TableItem<T>> = {
   className?: string;
-  controller: CollectionProxy<T, I, S, C>;
-};
-
-export type TableSortProps<T = any, I extends TableItem<T> = TableItem<T>> = {
-  column: TableColumn<T, I>;
-  sort?: QuerySortBy;
-};
-
-type _TableState<T, I extends TableItem<T>> = {
   bodyClassName?: string;
   BodyComponent?: React.FC<TableBodyProps<T, I>>;
   bodyWidth?: string;
-  columns: TableColumn<T, I>[];
   filterable?: boolean;
   fit?: boolean;
   fixHeader?: boolean;
@@ -196,12 +229,31 @@ type _TableState<T, I extends TableItem<T>> = {
   onRowOut?: TableRowHandler<T, I>;
   rowClassName?: string | ((item: I | undefined, rowIndex: number, columns: TableColumn<T, I>[]) => string);
   RowComponent?: React.FC<TableBodyRowProps<T, I>>;
-  selected?: string[];
   sortable?: boolean;
   stripRows?: boolean;
 };
 
-export type TableState<T, I extends TableItem<T> = TableItem<T>> = CollectionState<T, I> & _TableState<T, I>;
+export type TableProps<
+  T = any,
+  I extends TableItem<T> = TableItem<T>,
+  S extends TableState<T, I> = TableState<T, I>,
+  C extends TableCollection<T, I, S> = TableCollection<T, I, S>
+> = ArrayTableProps<T, I> | CollectionTableProps<T, I, S, C>;
+
+export type TableSortProps<T = any, I extends TableItem<T> = TableItem<T>> = {
+  column: TableColumn<T, I>;
+  sort?: QuerySortBy;
+};
+
+export type TableState<T, I extends TableItem<T> = TableItem<T>> = ListState<T, I> & {
+  adapter?: TableItemAdapter<T>;
+  dataSource?: T[] | string;
+  selected?: string[];
+};
+
+export type TableColumnsState<T, I extends TableItem<T> = TableItem<T>> = {
+  columns: TableColumn<T, I>[];
+};
 
 export type InputColumn<T, I extends TableItem<T> = TableItem<T>> = TableColumn<T, I>;
 
@@ -209,11 +261,11 @@ export type SelectColumn<T, I extends TableItem<T> = TableItem<T>> = TableColumn
   broker: CollectionBroker<T, I>;
 };
 
-export type UseTableOptions<T, I extends TableItem<T>> = UseCollectionOptions<T, I> &
-  _TableState<T, I> & {
-    adapter?: TableItemAdapter<T>;
-    dataSource?: T[] | string;
-  };
+export type UseTableOptions<T, I extends TableItem<T>> = UseListOptions<T, I> & {
+  adapter?: TableItemAdapter<T>;
+  dataSource?: T[] | string;
+  selected?: T[];
+};
 
 export type UseInputColumnOptions<T, I extends TableItem<T> = TableItem<T>> = Omit<
   TableColumnSpec<T, I>,

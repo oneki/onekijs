@@ -1,15 +1,27 @@
 import {
   AnyFunction,
   ChangeHandler,
-  FormFieldProps,
-  Item,
-  ValidationStatus,
-  CollectionItemAdapter,
   Collection,
+  CollectionProxy,
+  FormFieldProps,
+  ValidationStatus,
 } from 'onekijs-framework';
 import React, { FC } from 'react';
 import { FieldLayoutProps, FieldSize } from '../field/typings';
-import { ListItemHandler, ListItemProps, ListProps } from '../list/typings';
+import {
+  ListItem,
+  ListItemAdaptee,
+  ListItemAdapter,
+  ListItemHandler,
+  ListItemProps,
+  ListState,
+  _ListProps,
+} from '../list/typings';
+
+export type ArraySelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = _SelectProps<T, I> & {
+  dataSource: T[] | string;
+  adapter?: SelectItemAdapter<T>;
+};
 
 export type FormSelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = SelectProps<T, I> &
   FormFieldProps &
@@ -18,14 +30,20 @@ export type FormSelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = 
     FieldComponent?: React.FC<SelectProps>;
   };
 
-export type SelectAdapter<T, I extends SelectItem<T> = SelectItem<T>> = CollectionItemAdapter<T, I>;
-
-export type SelectCollection<T, I extends SelectItem<T> = SelectItem<T>> = Collection<T, I>;
-
-export type SelectItem<T> = Item<T> & {
-  selected?: boolean;
-  highlighted?: boolean;
+export type SelectComponentProps<
+  T = any,
+  I extends SelectItem<T> = SelectItem<T>,
+  S extends SelectState<T, I> = SelectState<T, I>,
+  C extends SelectCollection<T, I, S> = SelectCollection<T, I, S>
+> = _SelectProps<T, I> & {
+  dataSource: CollectionProxy<T, I, S, C>;
 };
+
+export type SelectCollection<
+  T,
+  I extends SelectItem<T> = SelectItem<T>,
+  S extends SelectState<T, I> = SelectState<T, I>
+> = Collection<T, I, S>;
 
 export interface SelectIconProps {
   open: boolean;
@@ -49,16 +67,14 @@ export interface SelectInputProps<T = any, I extends SelectItem<T> = SelectItem<
   onRemove: SelectOptionHandler<T, I>;
 }
 
-export interface SelectTokensProps<T = any, I extends SelectItem<T> = SelectItem<T>> {
-  tokens?: I[];
-  onRemove: SelectOptionHandler<T, I>;
-}
+export type SelectItem<T> = ListItem<T> & {
+  selected?: boolean;
+  highlighted?: boolean;
+};
 
-export interface SelectTokenProps<T = any, I extends SelectItem<T> = SelectItem<T>> {
-  token: I;
-  onRemove: SelectOptionHandler<T, I>;
-  index: number;
-}
+export type SelectItemAdaptee = ListItemAdaptee;
+
+export type SelectItemAdapter<T> = ListItemAdapter<T>;
 
 // export type SelectInternalProps<T = any, M extends ItemMeta = SelectOptionMeta> = Omit<SelectProps, 'items'> & {
 //   collection: Collection<T, M>;
@@ -75,11 +91,14 @@ export type SelectOptionProps<T = any, I extends SelectItem<T> = SelectItem<T>> 
   multiple?: boolean;
 };
 
-export interface SelectOptionsProps<T = any, I extends SelectItem<T> = SelectItem<T>> extends ListProps<T, I> {
-  search?: string;
-}
+export type SelectProps<
+  T = any,
+  I extends SelectItem<T> = SelectItem<T>,
+  S extends SelectState<T, I> = SelectState<T, I>,
+  C extends SelectCollection<T, I, S> = SelectCollection<T, I, S>
+> = ArraySelectProps<T, I> | SelectComponentProps<T, I, S, C>;
 
-export interface SelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> extends ListProps<T, I> {
+export type _SelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = _ListProps<T, I> & {
   InputComponent?: FC<SelectInputProps<T, I>>;
   IconComponent?: FC<SelectIconProps>;
   placeholder?: string;
@@ -93,4 +112,17 @@ export interface SelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> e
   status?: ValidationStatus;
   name?: string;
   size?: FieldSize;
+};
+
+export type SelectState<T = any, I extends SelectItem<T> = SelectItem<T>> = ListState<T, I>;
+
+export interface SelectTokensProps<T = any, I extends SelectItem<T> = SelectItem<T>> {
+  tokens?: I[];
+  onRemove: SelectOptionHandler<T, I>;
+}
+
+export interface SelectTokenProps<T = any, I extends SelectItem<T> = SelectItem<T>> {
+  token: I;
+  onRemove: SelectOptionHandler<T, I>;
+  index: number;
 }

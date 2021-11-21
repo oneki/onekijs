@@ -1,5 +1,7 @@
+//#region -- system import
 import React, { FC } from 'react';
 import styled from 'styled-components';
+//#endregion
 
 const IconComponent: FC<React.InputHTMLAttributes<HTMLDivElement>> = ({ className }) => {
   return (

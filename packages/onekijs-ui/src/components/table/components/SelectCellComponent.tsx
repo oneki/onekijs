@@ -1,7 +1,7 @@
 import { CollectionBroker, useField, extractValidators } from 'onekijs-framework';
 import React, { useEffect } from 'react';
 import Select from '../../select';
-import useSelect from '../../select/hooks/useSelect';
+import useSelectDataSource from '../../select/hooks/useSelectDataSource';
 import { TableBodyCellProps, UseSelectColumnOptions } from '../typings';
 import useFormTableContext from '../hooks/useFormTableContext';
 
@@ -14,7 +14,7 @@ const SelectCellComponent = (
     const [validators] = extractValidators(options);
     const field = useField(`${tableName}.${rowIndex}.${column.id}`, validators);
 
-    const collection = useSelect(options.dataSource, options);
+    const collection = useSelectDataSource(options.dataSource, options);
 
     useEffect(() => {
       broker.addSubscriber(collection);
