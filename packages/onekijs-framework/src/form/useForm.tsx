@@ -418,7 +418,8 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
                           }
                         } else {
                           prev = prevValidationsRef.current[w];
-                          next = validationsRef.current[w];
+                          const nextValidations = service.state.validations || {};
+                          next = nextValidations[w];
                           if (prev !== next) {
                             changed = true;
                           }
@@ -426,8 +427,8 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
                         watchs.push(next);
                       });
                     } else if (type === 'submittingChange') {
-                      changed = prevSubmittingRef.current !== submittingRef.current;
-                      watchs.push(submittingRef.current);
+                      changed = prevSubmittingRef.current !== service.state.submitting;
+                      watchs.push(service.state.submitting);
                     }
 
                     if (changed) {
@@ -442,9 +443,9 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
             }
           }
           service.pendingDispatch.clear();
-          prevValuesRef.current = valuesRef.current;
-          prevValidationsRef.current = validationsRef.current;
-          prevSubmittingRef.current = submittingRef.current;
+          prevValuesRef.current = service.state.values || {};
+          prevValidationsRef.current = service.state.validations || {};
+          prevSubmittingRef.current = service.state.submitting || false;
         });
 
         return (
