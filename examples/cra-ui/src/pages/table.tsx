@@ -1,5 +1,6 @@
 import { FormSubmitCallback, useForm, SubmitButton } from 'onekijs';
 import { Button, ComponentStyle, FormTable, useInputColumn, useSelectColumn, useTable } from 'onekijs-ui';
+import useTableController from 'onekijs-ui/dist/components/table/hooks/useTableController';
 import React from 'react';
 import styled, { css } from 'styled-components';
 import { users } from '../data/users';
@@ -85,14 +86,15 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
     stateColumn.broker.removeFilter('state');
   };
 
-  const controller = useTable({
-    columns: [streetColumn, stateColumn],
+  const controller = useTableController(
+    undefined,
+    [streetColumn, stateColumn],
     //grow: 'address.city'
-  });
+);
 
-  const controller2 = useTable({
-    dataSource: users,
-    columns: [
+  const controller2 = useTableController(
+    users,
+    [
       {
         id: 'id',
         minWidth: '50px',
@@ -126,16 +128,14 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
       },
     ],
     //grow: 'address.city'
-    highlightRow: true,
-    stripRows: true,
-  });
+  );
 
   return (
     <Form>
       <FormTable name="addresses" controller={controller} className={className} />
       <Button onClick={addFilter}>Add Filter</Button> <Button onClick={removeFilter}>Remove Filter</Button>{' '}
       <SubmitButton>Submit</SubmitButton>
-      <FormTable name="users" controller={controller2} className={className} />
+      <FormTable name="users" controller={controller2} className={className} height="500px" />
       <pre>{JSON.stringify(values, null, 2)}</pre>
     </Form>
   );

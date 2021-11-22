@@ -1,13 +1,26 @@
-import React, { useContext } from 'react';
-import { TableCollection, TableItem } from '../typings';
+import { CollectionProxy, useCollectionProxy } from 'onekijs-framework';
+import TableService from '../TableService';
+import { TableColumn, TableItem, TableState, UseTableOptions } from '../typings';
+import useTableInitialState from './useTableInitialState';
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-export const TableImmutableControllerContext = React.createContext<TableCollection<any, any>>(null!);
-export const useTableController = <T = any, I extends TableItem<T> = TableItem<T>>(): TableCollection<T, I> => {
-  return useContext(TableImmutableControllerContext);
+const useTableController = <T>(
+  dataSource: string | T[] | undefined,
+  columns: TableColumn<T, TableItem<T>>[],
+  options: UseTableOptions<T, TableItem<T>> = {},
+): CollectionProxy<
+  T,
+  TableItem<T>,
+  TableState<T, TableItem<T>>,
+  TableService<T, TableItem<T>, TableState<T, TableItem<T>>>
+> => {
+  const tableState = useTableInitialState<T, TableItem<T>>(dataSource, columns, options);
+
+  return useCollectionProxy<
+    T,
+    TableItem<T>,
+    TableState<T, TableItem<T>>,
+    TableService<T, TableItem<T>, TableState<T, TableItem<T>>>
+  >(dataSource, TableService, tableState);
 };
 
-export const TableMutableControllerContext = React.createContext<TableCollection<any, any>>(null!);
-export const useMutableTableController = <T = any, I extends TableItem<T> = TableItem<T>>(): TableCollection<T, I> => {
-  return useContext(TableMutableControllerContext);
-};
+export default useTableController;

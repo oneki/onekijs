@@ -1,7 +1,7 @@
 import { Item, LoadingStatus } from 'onekijs-framework';
 import { RefObject, useCallback, useEffect } from 'react';
 import { useVirtual } from 'react-virtual';
-import { ListComponentProps, VirtualItem } from '../typings';
+import { CollectionListProps, ListCollection, VirtualItem } from '../typings';
 import { canFetchMore } from '../utils';
 
 const defaultHeight = '100%';
@@ -11,11 +11,9 @@ const defaultIncrement = 100;
 const defaultOverscan = 1;
 
 const useListView: <T = any, I extends Item<T> = Item<T>>(
-  props: Pick<
-    ListComponentProps<T, I>,
-    'dataSource' | 'height' | 'itemHeight' | 'overscan' | 'preload' | 'increment' | 'virtual'
-  > & {
+  props: Pick<CollectionListProps<T, I>, 'height' | 'itemHeight' | 'overscan' | 'preload' | 'increment' | 'virtual'> & {
     ref: RefObject<HTMLDivElement>;
+    dataSource: ListCollection<T, I>;
   },
 ) => {
   isVirtual: boolean;

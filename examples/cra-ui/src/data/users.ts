@@ -1,5 +1,5 @@
-import { CollectionItemAdapter, QuerySearcher } from 'onekijs';
-import { SelectItem } from 'onekijs-ui';
+import { QuerySearcher } from 'onekijs';
+import { SelectItemAdapter } from 'onekijs-ui/dist/components/select/typings';
 
 export interface User {
   id: number,
@@ -13,7 +13,7 @@ export interface User {
   phones: string[],
 }
 
-export const userAdapter: CollectionItemAdapter<User, SelectItem<User>> = (data?: User) => {
+export const userAdapter: SelectItemAdapter<User> = (data?: User) => {
   return {
     id: data ? String(data.id) : undefined,
     text: data ? `${data.firstname} ${data.lastname}` : '',

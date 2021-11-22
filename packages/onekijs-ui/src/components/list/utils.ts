@@ -1,4 +1,5 @@
 import {
+  Collection,
   CollectionProxy,
   CollectionState,
   CollectionStatus,
@@ -8,9 +9,9 @@ import {
 } from 'onekijs-framework';
 
 export const canFetchMore = <T, I extends Item<T>, S extends CollectionState<T, I>>(
-  collection: T[] | CollectionProxy<T, I, S>,
+  collection: T[] | Collection<T, I, S>,
 ): boolean => {
-  return isCollection(collection) && (collection as CollectionProxy<T, I, S>).status === LoadingStatus.PartialLoaded;
+  return isCollection(collection) && (collection as Collection<T, I, S>).status === LoadingStatus.PartialLoaded;
 };
 
 export const getListStatus = <T, I extends Item<T>, S extends CollectionState<T, I>>(

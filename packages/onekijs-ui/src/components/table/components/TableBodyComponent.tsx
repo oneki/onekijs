@@ -1,16 +1,17 @@
-import React from 'react';
 import { useLazyRef } from 'onekijs-framework';
+import React from 'react';
 import { addClassname } from '../../../utils/style';
 import ListBodyComponent from '../../list/components/ListBodyComponent';
 import useListView from '../../list/hooks/useListView';
 import { ListItemProps } from '../../list/typings';
-import { TableBodyProps } from '../typings';
 import useTableColumns from '../hooks/useTableColumns';
+import { useTableConfig } from '../hooks/useTableConfig';
+import useTableService from '../hooks/useTableService';
+import { TableBodyProps } from '../typings';
 import TableBodyRowComponent from './TableBodyRowComponent';
-import useTableController from '../hooks/useTableController';
 
 const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, contentRef }) => {
-  const controller = useTableController();
+  const service = useTableService();
   const {
     height,
     onRowClick,
@@ -19,19 +20,19 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
     onRowOut,
     onRowOver,
     RowComponent = TableBodyRowComponent,
-  } = controller.state;
+    rowClassName,
+  } = useTableConfig();
 
   const { items, isVirtual, totalSize, virtualItems } = useListView({
-    collection: controller,
+    dataSource: service,
     height: height,
     ref: tableRef,
-    overscan: controller.step === 'mounted' ? 1 : 20,
+    overscan: service.step === 'mounted' ? 1 : 20,
   });
 
   const ItemComponentRef = useLazyRef<React.FC<ListItemProps<any, any>>>(() => {
     const Component = (props: ListItemProps<any, any>) => {
       const columns = useTableColumns();
-      const { rowClassName } = useTableController().state;
       const className =
         typeof rowClassName === 'function' ? rowClassName(props.item, props.index, columns) : rowClassName;
       return <RowComponent {...props} columns={columns} className={className} />;

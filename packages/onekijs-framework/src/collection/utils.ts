@@ -5,7 +5,6 @@ import { AnonymousObject } from '../types/object';
 import { shallowEqual, toArray } from '../utils/object';
 import {
   Collection,
-  CollectionProxy,
   CollectionState,
   Item,
   LoadingStatus,
@@ -539,9 +538,9 @@ export const visitFilter = (filter: QueryFilter, visitor: (filter: QueryFilter) 
   return stop;
 };
 
-export const isCollection = <T, I extends Item<T>, S extends CollectionState<T, I>, C extends Collection<T, I, S>>(
-  data?: T[] | CollectionProxy<T, I, S, C> | string,
-): data is CollectionProxy<T, I, S, C> => {
+export const isCollection = <T, I extends Item<T>, S extends CollectionState<T, I>>(
+  data?: T[] | Collection<T, I, S> | string,
+): data is Collection<T, I, S> => {
   return data !== undefined && !Array.isArray(data) && !(typeof data === 'string');
 };
 

@@ -1,8 +1,8 @@
 import styled from 'styled-components';
-import TableComponent from './components/TableComponent';
+import ControllerTableComponent from './components/ControllerTableComponent';
 import { tableStyle } from './style';
 
-const Tree = styled(TableComponent)`
+const Tree = styled(ControllerTableComponent)`
   ${tableStyle}
 `;
 

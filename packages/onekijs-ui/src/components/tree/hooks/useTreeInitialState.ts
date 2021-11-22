@@ -1,4 +1,4 @@
-import { useCollectionInitialState, useLazyRef, CollectionItemAdapter } from 'onekijs-framework';
+import { useCollectionInitialState, useLazyRef } from 'onekijs-framework';
 import { TreeItem, TreeState, UseTreeOptions } from '../typings';
 
 const useTreeInitialState = <T>(

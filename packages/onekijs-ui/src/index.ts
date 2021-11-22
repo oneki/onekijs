@@ -50,10 +50,10 @@ export { default as FormSelect } from './components/select/FormSelect';
 export { default as useSelectDataSource } from './components/select/hooks/useSelectDataSource';
 export {
   FormSelectProps,
-  SelectItemAdapter as SelectAdapter,
   SelectIconProps,
   SelectInputProps,
   SelectItem,
+  SelectItemAdapter as SelectAdapter,
   SelectOptionHandler,
   SelectOptionProps,
   SelectOptionSelectionHandler,
@@ -65,7 +65,10 @@ export { default as Table } from './components/table';
 export { default as useInputColumn } from './components/table/columns/useInputColumn';
 export { default as useSelectColumn } from './components/table/columns/useSelectColumn';
 export { default as FormTable } from './components/table/FormTable';
+export { default as useTable } from './components/table/hooks/useTableController';
 export {
+  ArrayTableProps,
+  ControllerTableProps,
   FormTableContext,
   FormTableProps,
   InputColumn,
@@ -73,17 +76,20 @@ export {
   TableBodyCellProps,
   TableBodyProps,
   TableBodyRowProps,
-  TableCollection as TableController,
   TableColumn,
   TableColumnComputedWidth,
   TableColumnSpec,
+  TableColumnsState,
   TableColumnWidth,
+  TableController,
   TableFilterProps,
   TableFooterCellProps,
   TableFooterProps,
   TableHeaderCellProps,
   TableHeaderProps,
   TableItem,
+  TableItemAdaptee,
+  TableItemAdapter,
   TableItems,
   TableProps,
   TableRowHandler,
@@ -93,7 +99,6 @@ export {
   UseSelectColumnOptions,
   UseTableOptions,
 } from './components/table/typings';
-export { default as useTable } from './components/table/hooks/useTable';
 export { default as Tooltip } from './components/tooltip';
 export * from './styles/alignment';
 export * from './styles/animation';

@@ -1,9 +1,8 @@
-import React, { FC } from 'react';
-import { useState } from 'react';
-import { TableBodyRowProps } from '../typings';
-import useTableController from '../hooks/useTableController';
-import TableBodyCellComponent from './TableBodyCellComponent';
+import React, { FC, useState } from 'react';
 import { addClassname } from '../../../utils/style';
+import { useTableConfig } from '../hooks/useTableConfig';
+import { TableBodyRowProps } from '../typings';
+import TableBodyCellComponent from './TableBodyCellComponent';
 
 const TableBodyRowComponent: FC<TableBodyRowProps> = ({
   item,
@@ -13,7 +12,7 @@ const TableBodyRowComponent: FC<TableBodyRowProps> = ({
   className,
 }) => {
   const [hover, setHover] = useState(false);
-  const { highlightRow, stripRows } = useTableController().state;
+  const { highlightRow, stripRows } = useTableConfig();
 
   if (item === undefined) {
     return null;

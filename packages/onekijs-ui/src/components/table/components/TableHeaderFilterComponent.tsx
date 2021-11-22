@@ -1,19 +1,20 @@
 import React, { FC, useEffect, useRef } from 'react';
 import { TableHeaderCellProps } from '../typings';
-import useTableController from '../hooks/useTableController';
+import useTableService from '../hooks/useTableService';
 import { getCellWidth } from '../util';
 import TableInputFilterComponent from './filters/TableInputFilterComponent';
+import { useTableConfig } from '../hooks/useTableConfig';
 
 const TableHeaderFilterComponent: FC<TableHeaderCellProps> = React.memo(({ column, filter, filterable }) => {
-  const controller = useTableController();
-  const { fit, grow } = controller.state;
+  const service = useTableService();
+  const { fit, grow } = useTableConfig();
   const ref = useRef<HTMLDivElement>(null);
   const initializedRef = useRef<boolean>(false);
   const Component = column.FilterComponent || TableInputFilterComponent;
 
   useEffect(() => {
     if (!initializedRef.current && ref.current !== null) {
-      initializedRef.current = controller.initCell('header-filter', column.id, ref);
+      initializedRef.current = service.initCell('header-filter', column.id, ref);
     }
   });
 

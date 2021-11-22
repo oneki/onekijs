@@ -2,9 +2,9 @@ import { useField, useFormContext, useLazyRef } from 'onekijs-framework';
 import React, { useEffect } from 'react';
 import Button from '../../button';
 import Checkbox from '../../checkbox';
-import { FormTableContext, FormTableProps, TableBodyCellProps, TableFooterProps, TableItem } from '../typings';
 import useFormTableContext, { DefaultFormTableContext } from '../hooks/useFormTableContext';
-import TableComponent from './TableComponent';
+import { FormTableContext, FormTableProps, TableBodyCellProps, TableFooterProps, TableItem } from '../typings';
+import ControllerTableComponent from './ControllerTableComponent';
 
 const DeleteRowComponent: React.FC<TableBodyCellProps> = ({ rowIndex }) => {
   const { remove, tableName } = useFormTableContext();
@@ -36,7 +36,7 @@ const FooterComponent: React.FC<TableFooterProps> = () => {
 };
 
 const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.memo(
-  ({ controller, className, name, format = 'auto' }) => {
+  ({ controller, className, name, format = 'auto', ...props }) => {
     const formContext = useFormContext();
     const service = controller.asService();
     const { value, onChange } = useField(name);
@@ -96,14 +96,18 @@ const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.
           },
           0,
         );
-        service.setFooterComponent(FooterComponent);
-        service.setFooter(true);
       }
     }, [service]);
 
     return (
       <DefaultFormTableContext.Provider value={formTableContext.current}>
-        <TableComponent controller={controller} className={className} />
+        <ControllerTableComponent
+          controller={controller}
+          className={className}
+          FooterComponent={service.dataSource ? undefined : FooterComponent}
+          footer={service.dataSource ? false : true}
+          {...props}
+        />
       </DefaultFormTableContext.Provider>
     );
   },

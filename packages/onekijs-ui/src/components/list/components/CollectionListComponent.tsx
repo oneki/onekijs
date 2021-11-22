@@ -3,11 +3,11 @@ import { addClassname } from '../../../utils/style';
 import { ListCollectionContext } from '../hooks/useListCollection';
 import { ListItemsContext } from '../hooks/useListItems';
 import useListView from '../hooks/useListView';
-import { ListComponentProps } from '../typings';
+import { CollectionListProps } from '../typings';
 import ListBodyComponent from './ListBodyComponent';
 import ListItemComponent from './ListItemComponent';
 
-const CollectionListComponent: FC<ListComponentProps> = ({
+const CollectionListComponent: FC<CollectionListProps> = ({
   className,
   dataSource,
   height,

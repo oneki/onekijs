@@ -8,15 +8,7 @@ import {
   service,
 } from 'onekijs-framework';
 import React from 'react';
-import {
-  TableCollection,
-  TableColumn,
-  TableColumnWidth,
-  TableFooterProps,
-  TableHeaderProps,
-  TableItem,
-  TableState,
-} from './typings';
+import { TableController, TableColumn, TableColumnWidth, TableItem, TableState } from './typings';
 
 export const parseColumnWidth = (width: string | number = 'auto'): TableColumnWidth => {
   const regex = /^\s*(auto|(?:(?:([0-9]+)|(?:([0-9]+)\s*(px|%)))\s*(grow|force)?)|(grow))\s*$/;
@@ -53,7 +45,7 @@ export const parseColumnWidth = (width: string | number = 'auto'): TableColumnWi
 @service
 class TableService<T = any, I extends TableItem<T> = TableItem<T>, S extends TableState<T, I> = TableState<T, I>>
   extends CollectionService<T, I, S>
-  implements TableCollection<T, I> {
+  implements TableController<T, I> {
   // The table has three init steps
   //  - unmounted => data are not yet loaded
   //  - initializing -> the first render (with real data) is in progress
@@ -153,26 +145,6 @@ class TableService<T = any, I extends TableItem<T> = TableItem<T>, S extends Tab
       column.computedWidth = undefined;
     });
     this._step = 'initializing';
-  }
-
-  @reducer
-  setFooter(footer?: boolean): void {
-    this.state.footer = footer;
-  }
-
-  @reducer
-  setFooterComponent(FooterComponent?: React.FC<TableFooterProps<T, I>>): void {
-    this.state.FooterComponent = FooterComponent;
-  }
-
-  @reducer
-  setHeader(header?: boolean): void {
-    this.state.header = header;
-  }
-
-  @reducer
-  setHeaderComponent(HeaderComponent?: React.FC<TableHeaderProps<T, I>>): void {
-    this.state.HeaderComponent = HeaderComponent;
   }
 
   @reducer

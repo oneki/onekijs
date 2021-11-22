@@ -1,24 +1,17 @@
 import { useCollectionInitialState, useLazyRef } from 'onekijs-framework';
-import { TableItem, TableState, UseTableOptions } from '../typings';
+import { TableColumn, TableItem, TableState, UseTableOptions } from '../typings';
 
-const useTableState = <T, I extends TableItem<T>>(options: UseTableOptions<T, I>): TableState<T, I> => {
-  const collectionState = useCollectionInitialState(options.dataSource, options);
+const useTableInitialState = <T, I extends TableItem<T>>(
+  dataSource: string | T[] | undefined,
+  columns: TableColumn<T, I>[],
+  options: UseTableOptions<T, I>,
+): TableState<T, I> => {
+  const collectionState = useCollectionInitialState(dataSource, options);
 
   const stateRef = useLazyRef<TableState<T, I>>(() => {
     return Object.assign(
       {
-        columns: options.columns,
-        bodyClassName: options.bodyClassName,
-        BodyComponent: options.BodyComponent,
-        fit: options.fit,
-        fixHeader: options.fixHeader,
-        grow: options.grow,
-        HeaderComponent: options.HeaderComponent,
-        height: options.height || '500px',
-        highlightRow: options.highlightRow,
-        rowClassName: options.rowClassName,
-        RowComponent: options.RowComponent,
-        stripRows: options.stripRows,
+        columns: columns,
       },
       collectionState,
     );
@@ -26,4 +19,4 @@ const useTableState = <T, I extends TableItem<T>>(options: UseTableOptions<T, I>
   return stateRef.current;
 };
 
-export default useTableState;
+export default useTableInitialState;

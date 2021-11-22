@@ -1,9 +1,9 @@
 import { TableItem } from '../typings';
-import { useMutableTableController } from './useTableController';
+import { useTableState } from './useTableState';
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const useTableItems = <T = any, I extends TableItem<T> = TableItem<T>>(): (I | undefined)[] => {
-  return useMutableTableController<T, I>().state.items || [];
+  return useTableState<T, I>().items || [];
 };
 
 export default useTableItems;

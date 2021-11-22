@@ -3,15 +3,16 @@ import { addClassname } from '../../../utils/style';
 import { TableHeaderProps } from '../typings';
 import TableHeaderTitleComponent from './TableHeaderTitleComponent';
 import TableHeaderFilterComponent from './TableHeaderFilterComponent';
-import useTableController from '../hooks/useTableController';
+import useTableService from '../hooks/useTableService';
+import { useTableConfig } from '../hooks/useTableConfig';
 
 const TableHeaderComponent: React.FC<TableHeaderProps> = ({ columns, className }) => {
   const headerStyle: CSSProperties = {
     display: 'flex',
   };
 
-  const controller = useTableController();
-  const { fixHeader = true, filterable, sortable } = controller.state;
+  const service = useTableService();
+  const { fixHeader = true, filterable, sortable } = useTableConfig();
 
   if (fixHeader) {
     headerStyle.position = 'sticky';
@@ -32,8 +33,8 @@ const TableHeaderComponent: React.FC<TableHeaderProps> = ({ columns, className }
         {columns.map((column, colIndex) => {
           const isFilterable = column.filterable || (column.filterable === undefined && filterable !== false);
           const isSortable = column.sortable || (column.sortable === undefined && sortable !== false);
-          const filter = controller.getFilterById(column.id);
-          const sort = controller.getSortById(column.id);
+          const filter = service.getFilterById(column.id);
+          const sort = service.getSortById(column.id);
           const cellClassName =
             typeof column.headerClassName === 'function' ? column.headerClassName(column) : column.headerClassName;
           return (
@@ -55,8 +56,8 @@ const TableHeaderComponent: React.FC<TableHeaderProps> = ({ columns, className }
           {columns.map((column, colIndex) => {
             const isFilterable = column.filterable || (column.filterable === undefined && filterable !== false);
             const isSortable = column.sortable || (column.sortable === undefined && sortable !== false);
-            const filter = controller.getFilterById(column.id);
-            const sort = controller.getSortById(column.id);
+            const filter = service.getFilterById(column.id);
+            const sort = service.getSortById(column.id);
             return (
               <TableHeaderFilterComponent
                 column={column}

@@ -1,4 +1,3 @@
-import { AnyFunction } from 'onekijs-framework';
 import React from 'react';
 
 export type DashboardArea = DashboardHorizontalArea | DashboardVerticalArea | 'body' | 'none';

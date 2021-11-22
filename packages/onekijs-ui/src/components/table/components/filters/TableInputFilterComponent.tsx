@@ -12,7 +12,7 @@ import SearchIcon from '../../../icon/SearchIcon';
 import Input from '../../../input';
 import { InputProps } from '../../../input/typings';
 import { TableFilterProps } from '../../typings';
-import useTableController from '../../hooks/useTableController';
+import useTableController from '../../hooks/useTableService';
 import { getValueFromFilter } from '../../util';
 
 const SearchComponent: React.FC<InputProps> = ({ className }) => {
@@ -32,8 +32,8 @@ const StyledSearchComponent = styled(SearchComponent)`
       ${justifyContent('center')}
       ${cursor('pointer')}
       ${backgroundColor('inherit')}
-      ${color('primary')}   
-      ${userSelect('none')} 
+      ${color('primary')}
+      ${userSelect('none')}
   `}
 `;
 

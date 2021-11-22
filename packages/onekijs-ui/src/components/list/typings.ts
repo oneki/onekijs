@@ -34,7 +34,7 @@ export type ListBodyProps<T = any, I extends ListItem<T> = ListItem<T>> = Pick<
   virtualItems?: VirtualItem[];
 };
 
-export type ListComponentProps<
+export type CollectionListProps<
   T = any,
   I extends ListItem<T> = ListItem<T>,
   S extends ListState<T, I> = ListState<T, I>,
@@ -101,7 +101,7 @@ export type ListProps<
   I extends ListItem<T> = ListItem<T>,
   S extends ListState<T, I> = ListState<T, I>,
   C extends ListCollection<T, I, S> = ListCollection<T, I, S>
-> = ArrayListProps<T, I> | ListComponentProps<T, I, S, C>;
+> = ArrayListProps<T, I> | CollectionListProps<T, I, S, C>;
 
 export type ListState<T, I extends ListItem<T> = ListItem<T>> = CollectionState<T, I>;
 

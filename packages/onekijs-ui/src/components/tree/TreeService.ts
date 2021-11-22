@@ -5,16 +5,22 @@ import { TreeController, TreeItem, TreeItemAdaptee, TreeState } from './typings'
 class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeState<T, I> = TreeState<T, I>>
   extends CollectionService<T, I, S>
   implements TreeController<T, I> {
-  addSelected<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[] {
-    throw new Error('Method not implemented.');
-  }
-  removeSelected<B extends keyof CollectionBy<T, I>>(
-    by: B,
-    target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
+  addSelected<B extends keyof CollectionBy<T, I>>(
+    _by: B,
+    _target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
   ): I[] {
     throw new Error('Method not implemented.');
   }
-  setSelected<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[] {
+  removeSelected<B extends keyof CollectionBy<T, I>>(
+    _by: B,
+    _target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
+  ): I[] {
+    throw new Error('Method not implemented.');
+  }
+  setSelected<B extends keyof CollectionBy<T, I>>(
+    _by: B,
+    _target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
+  ): I[] {
     throw new Error('Method not implemented.');
   }
 

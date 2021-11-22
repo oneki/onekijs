@@ -9,7 +9,7 @@ import {
   Query,
   useService,
 } from 'onekijs';
-import { List, useList } from 'onekijs-ui';
+import { List, useListDataSource } from 'onekijs-ui';
 import React, { useCallback } from 'react';
 import { User, userAdapter, users, userSearcher } from '../data/users';
 import Spinner from './spinner';
@@ -41,7 +41,7 @@ export const AjaxListPage = () => {
     [service],
   );
 
-  const remoteCollection = useList<User>('http://localhost', {
+  const remoteCollection = useListDataSource<User>('http://localhost', {
     adapter: userAdapter,
     fetcher,
     method: HttpMethod.Post,
@@ -68,7 +68,7 @@ export const AjaxListPage = () => {
         {isLoading(remoteCollection) && <Spinner />}
       </div>
       <div style={{ width: '300px', border: '1px solid black', padding: '5px' }}>
-        <List height={200} items={remoteCollection} preload={100} increment={100} />
+        <List height={200} dataSource={remoteCollection} preload={100} increment={100} />
       </div>
     </div>
   );
