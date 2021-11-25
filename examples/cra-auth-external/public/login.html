@@ -1,0 +1,38 @@
+<html>
+    <body>
+
+        <p>
+        Two profiles are available
+        <ul>
+            <li>Admin profile: username = admin / password = admin</li>
+            <li>User profile: username = user / password = user</li>
+        </ul>
+        </p>
+        <div>
+        <label>Username</label>
+        <input id="username" type="text" name="username" />
+        </div>
+        <div>
+        <label>Password</label>
+        <input id="password" type="password" name="password" />
+        </div>            
+        <button onclick="onSubmit()">Submit</button>
+
+
+        <script>
+            function onSubmit() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const redirectUri = urlParams.get('redirect_uri');
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                if (username === "user" && password === "user") {
+                    window.location.replace(`${redirectUri}?token=AAAAA11111`);
+                } else if (username === "admin" && password === "admin") {
+                    window.location.replace(`${redirectUri}?token=AAAAA00000`);
+                } else {
+                    window.location.replace(`${redirectUri}?status=error`);
+                }
+            }
+        </script>
+    </body>
+</html>
