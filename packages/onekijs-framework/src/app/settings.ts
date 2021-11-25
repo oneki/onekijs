@@ -89,6 +89,7 @@ export const defaultIdpSettings: AnonymousObject = {
     oidc: false,
     postLoginRedirectKey: 'redirect_uri',
     postLogoutRedirectKey: 'redirect_uri',
+    persist: 'memory',
   },
   form: {
     callback: null,
@@ -101,6 +102,7 @@ export const defaultIdpSettings: AnonymousObject = {
     passwordKey: 'password',
     rememberMeKey: 'rememberMe',
     usernameKey: 'username',
+    persist: 'memory',
   },
   oauth2_browser: {
     callback: null,

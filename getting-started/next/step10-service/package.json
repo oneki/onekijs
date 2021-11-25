@@ -1,6 +1,6 @@
 {
   "name": "next-step10-service",
-  "version": "0.14.6",
+  "version": "0.14.7",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "next": "11.0.1",
-    "onekijs-next": "^0.14.6",
-    "onekijs-ssr": "^0.14.6",
+    "onekijs-next": "^0.14.7",
+    "onekijs-ssr": "^0.14.7",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },

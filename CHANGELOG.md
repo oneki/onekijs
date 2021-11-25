@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.14.7](https://github.com/oneki/onekijs/compare/v0.14.6...v0.14.7) (2021-10-17)
+
+
+### Bug Fixes
+
+* async validations and async set values ([903b52f](https://github.com/oneki/onekijs/commit/903b52f80fb53650cd0ef05e98e7a8e641158203))
+* formService ([#29](https://github.com/oneki/onekijs/issues/29)) ([b493d56](https://github.com/oneki/onekijs/commit/b493d565a76c0c5e52a9df9a597874530ac636cb))
+
+
+### Features
+
+* add checkbox form grid component ([fd0c336](https://github.com/oneki/onekijs/commit/fd0c336d9135ab8aba9467487f01614cdc3617a0))
+* add typings for theme ([52753cb](https://github.com/oneki/onekijs/commit/52753cbaddbb58d945d7513caff47d50a0ced7b9))
+
+
+
+
+
 ## [0.14.6](https://github.com/oneki/onekijs/compare/v0.14.5...v0.14.6) (2021-10-03)
 
 **Note:** Version bump only for package root

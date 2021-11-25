@@ -135,32 +135,20 @@ export default class FormService extends DefaultService<FormState> {
     return result;
   }
 
-  protected _getRelatedWatchs(watch: string): string[] {
+  protected _getSubWatchs(watch: string): string[] {
     let result: string[] = [];
     const index = watch === '' ? this.watchIndex[''] : get(this.watchIndex, watch);
     if (index) {
       if (Array.isArray(index)) {
         for (const i in index) {
-          result = result.concat(this._getRelatedWatchs(`${watch}.${i}`));
+          result = result.concat(this._getSubWatchs(`${watch}.${i}`));
         }
       } else if (isObject(index)) {
         Object.keys(index).forEach((childWatch) => {
-          result = result.concat(this._getRelatedWatchs(`${watch}.${childWatch}`));
+          result = result.concat(this._getSubWatchs(`${watch}.${childWatch}`));
         });
       }
       result.push(watch);
-    }
-    const parts = watch.split('.');
-    while (parts.length > 1) {
-      parts.pop();
-      const related = parts.join('.');
-      if (get(this.watchIndex, related)) {
-        result.push(related);
-      }
-    }
-
-    if (this.watchIndex['']) {
-      result.push('');
     }
     return result;
   }
@@ -216,11 +204,11 @@ export default class FormService extends DefaultService<FormState> {
   }
 
   offSubmittingChange(listener: FormListener): void {
-    this.offChange('submittingChange', listener, '__submit__');
+    this.offChange('submittingChange', listener, '');
   }
 
   onSubmittingChange(listener: FormListener, once = false): void {
-    this.onChange('submittingChange', listener, '__submit__', once);
+    this.onChange('submittingChange', listener, '', once);
   }
 
   offValidationChange(listener: FormListener, watchs: string[] | string): void {
@@ -313,7 +301,7 @@ export default class FormService extends DefaultService<FormState> {
         field.touched = true;
       }
       set(this.state, `values.${key}`, values[key]);
-      this._getRelatedWatchs(key).forEach((key) => this.pendingDispatch.add(key));
+      this._getSubWatchs(key).forEach((key) => this.pendingDispatch.add(key));
     });
     Object.keys(validations).forEach((fieldName) => {
       set(this.state, `validations.${fieldName}`, validations[fieldName]);
