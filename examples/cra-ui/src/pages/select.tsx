@@ -43,7 +43,7 @@ export const SelectPage = () => {
   // const [value, setValue] = useState(users[1]);
   // const [value2, setValue2] = useState([users[2],users[1]]);
   const { Form, } = useForm(() => {});
-  console.log('external', collection.items[0])
+
   return (
     <Form>
     <div style={{display: 'flex', justifyContent: 'center'}}>
