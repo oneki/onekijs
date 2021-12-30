@@ -98,7 +98,7 @@ export default class CollectionService<
   initDb(dataSource: T[] | string | undefined): void {
     if (Array.isArray(dataSource)) {
       this.db = [];
-      dataSource.map((entry, index) => this._adapt(entry, index));
+      dataSource.map((entry, index) => this._adapt(entry, { position: index }));
     }
   }
 
@@ -298,11 +298,8 @@ export default class CollectionService<
     return result;
   }
 
-  getItem(id: string | number): I | undefined {
-    if (this.state.items) {
-      return this.state.items.find((stateItem) => id === stateItem?.id);
-    }
-    return undefined;
+  getItem(uid: string): I | undefined {
+    return this.uidIndex[uid];
   }
 
   getOffset(): number | undefined {
@@ -536,39 +533,12 @@ export default class CollectionService<
     this.refresh(query);
   }
 
-  protected _adapt(data: T | undefined, position?: number): I {
+  protected _adapt(data: T | undefined, context?: { position?: number }): I {
     const adaptee = this.state.adapter === undefined || data === undefined ? {} : this.state.adapter(data);
-
-    const getId = (data: any): string | number | undefined => {
-      if (isNull(data)) {
-        return undefined;
-      }
-      if (!isNull(data.id)) {
-        return data.id;
-      } else {
-        return undefined;
-      }
-    };
-    const getText = (data: any): string | undefined => {
-      if (isNull(data)) {
-        return undefined;
-      }
-      if (!isNull(data.text)) {
-        return String(data.text);
-      } else if (typeof data === 'string') {
-        return data;
-      } else {
-        return undefined;
-      }
-    };
-
-    ensureFieldValue(adaptee, 'id', getId(data));
-    ensureFieldValue(adaptee, 'text', getText(data));
+    const position = context?.position;
 
     const currentItem = this.idIndex[String(adaptee.id)];
-    const item: I =
-      currentItem !== undefined ? Object.assign({}, currentItem, adaptee) : this._formatItem(data, adaptee);
-
+    const item: I = this._buildItem(currentItem, data, adaptee, context);
     this._indexItem(item, position);
     return item;
   }
@@ -1021,15 +991,45 @@ export default class CollectionService<
     }
   }
 
-  protected _formatItem(data: T | undefined, adaptee: unknown): I {
-    return Object.assign(
-      {
-        data,
-        uid: generateUniqueId(),
-        loadingStatus: data !== undefined ? LoadingStatus.Loaded : LoadingStatus.NotInitialized,
-      },
-      adaptee,
-    ) as I;
+  protected _buildItem(currentItem: I, data: T | undefined, adaptee: unknown, _context?: { position?: number }): I {
+    const result = adaptee as I;
+
+    const getId = (data: any): string | number | undefined => {
+      if (isNull(data)) {
+        return undefined;
+      }
+      if (!isNull(data.id)) {
+        return data.id;
+      } else {
+        return undefined;
+      }
+    };
+    const getText = (data: any): string | undefined => {
+      if (isNull(data)) {
+        return undefined;
+      }
+      if (!isNull(data.text)) {
+        return String(data.text);
+      } else {
+        return undefined;
+      }
+    };
+
+    ensureFieldValue(result, 'id', getId(data));
+    ensureFieldValue(result, 'text', getText(data));
+
+    if (currentItem !== undefined) {
+      return Object.assign({}, currentItem, result);
+    } else {
+      return Object.assign(
+        {
+          data,
+          uid: generateUniqueId(),
+          loadingStatus: data !== undefined ? LoadingStatus.Loaded : LoadingStatus.NotInitialized,
+        },
+        result,
+      );
+    }
   }
 
   protected _getId(data: T): string | number | undefined {
@@ -1219,6 +1219,14 @@ export default class CollectionService<
 
   protected _setOffset(query: Query, offset: number): void {
     query.offset = offset;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  protected _setParam(query: Query, key: string, value: any): void {
+    if (!query.params) {
+      query.params = {};
+    }
+    query.params[key] = value;
   }
 
   protected _setParams(query: Query, params: AnonymousObject): void {

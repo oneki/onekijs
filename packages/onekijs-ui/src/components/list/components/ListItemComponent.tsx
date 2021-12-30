@@ -5,7 +5,7 @@ import { ListItemProps } from '../typings';
 const ListItemComponent: FC<ListItemProps<any, Item<any>>> = React.memo(({ item }) => {
   return (
     <div className="o-list-item">
-      {item?.data === undefined && item?.loadingStatus === LoadingStatus.Loading ? 'loading' : item?.text}
+      {item?.data === undefined && item?.loadingStatus === LoadingStatus.Loading ? 'loading' : item?.text || ''}
     </div>
   );
 });

@@ -1,6 +1,7 @@
 import { Item, LoadingStatus } from 'onekijs-framework';
 import { RefObject, useCallback, useEffect } from 'react';
-import { useVirtual } from 'react-virtual';
+import { useVirtual } from '../../../vendor/reactVirtual';
+//import { useVirtual } from 'react-virtual';
 import { CollectionListProps, ListCollection, VirtualItem } from '../typings';
 import { canFetchMore } from '../utils';
 
@@ -14,13 +15,16 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
   props: Pick<CollectionListProps<T, I>, 'height' | 'itemHeight' | 'overscan' | 'preload' | 'increment' | 'virtual'> & {
     ref: RefObject<HTMLDivElement>;
     dataSource: ListCollection<T, I>;
+    scrollToFn?: (offset: number, defaultScrollToFn?: (offset: number) => void) => void;
   },
 ) => {
   isVirtual: boolean;
   items: (I | undefined)[];
   scrollToIndex: (index: number, options?: { align: 'start' | 'center' | 'end' | 'auto' }) => void;
+  scrollToOffset: (offsetInPixels: number, options?: { align: 'start' | 'center' | 'end' | 'auto' }) => void;
   totalSize: number;
   virtualItems: VirtualItem[];
+  measure: () => void;
 } = ({
   dataSource,
   height = defaultHeight,
@@ -45,7 +49,7 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
 
   const state = dataSource.state;
 
-  const { totalSize, virtualItems, scrollToIndex } = useVirtual({
+  const { totalSize, virtualItems, scrollToIndex, scrollToOffset, measure } = useVirtual({
     size: state.items?.length || 0,
     estimateSize: estimatedItemHeight,
     parentRef: ref,
@@ -72,6 +76,8 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
     items: state.items || [],
     isVirtual,
     scrollToIndex,
+    scrollToOffset,
+    measure,
     totalSize,
     virtualItems,
   };

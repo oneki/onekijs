@@ -354,6 +354,15 @@ const CollectionSelectComponent: FC<SelectComponentProps> = ({
     [dataSource, proxyItem, keyboardItem, onSelect, open, setOpen, focus, multiple],
   );
 
+  const [dropping, setDropping] = useState(false);
+  const [collapsing, setCollapsing] = useState(false);
+
+  const style: React.CSSProperties = {};
+
+  if (dropping || collapsing) {
+    style['zIndex'] = 1001;
+  }
+
   useEffect(() => {
     if (proxyItem?.id !== currentProxyItem.current?.id) {
       if (currentProxyItem.current !== undefined) {
@@ -439,8 +448,26 @@ const CollectionSelectComponent: FC<SelectComponentProps> = ({
         multiple={multiple}
         onRemove={onRemoveToken}
         autoFocus={autoFocus}
+        style={style}
       />
-      <Dropdown refElement={containerRef} open={open} distance={5} onUpdate={onDropDownUpdate}>
+      <Dropdown
+        refElement={containerRef}
+        open={open}
+        distance={0}
+        onUpdate={onDropDownUpdate}
+        onDropStart={() => {
+          setDropping(true);
+        }}
+        onCollapseStart={() => {
+          setCollapsing(true);
+        }}
+        onDropDone={() => {
+          setDropping(false);
+        }}
+        onCollapseDone={() => {
+          setCollapsing(false);
+        }}
+      >
         <ListBodyComponent
           className="o-select-options"
           bodyRef={optionsRef}

@@ -1,12 +1,13 @@
 import observeRect from '@reach/observe-rect';
+import { useIsomorphicLayoutEffect } from 'onekijs-framework';
 import React, { FC, useRef, useState } from 'react';
 import { usePopper } from 'react-popper';
 import { CSSTransition } from 'react-transition-group';
-import { useIsomorphicLayoutEffect } from 'onekijs-framework';
 import { sameWidthPopperModifier } from '../../../utils/popper';
+import { addClassname } from '../../../utils/style';
 import { DropdownProps } from '../typings';
 
-const TooltipComponent: FC<DropdownProps> = ({
+const DropdownComponent: FC<DropdownProps> = ({
   className,
   refElement,
   open,
@@ -14,6 +15,12 @@ const TooltipComponent: FC<DropdownProps> = ({
   skidding = 0,
   distance = 0,
   onUpdate,
+  onDropDone,
+  onDropStart,
+  onCollapseDone,
+  onCollapseStart,
+  onDropping,
+  onCollapsing,
 }) => {
   const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
   const { forceUpdate, styles, attributes } = usePopper(refElement, popperElement, {
@@ -50,25 +57,31 @@ const TooltipComponent: FC<DropdownProps> = ({
   }, [refElement, forceUpdate]);
 
   return (
-    <CSSTransition
-      in={open}
-      timeout={300}
-      classNames="o-dropdown"
-      mountOnEnter={true}
-      appear={true}
-      unmountOnExit={true}
+    <div
+      style={styles.popper}
+      {...attributes.popper}
+      ref={setPopperElement}
+      key="dropdown-container"
+      className={addClassname('o-dropdown-container', className)}
     >
-      <div
-        style={styles.popper}
-        {...attributes.popper}
-        ref={setPopperElement}
-        key="dropdown-container"
-        className={className}
+      <CSSTransition
+        in={open}
+        classNames="o-dropdown"
+        timeout={200}
+        mountOnEnter={true}
+        appear={false}
+        unmountOnExit={true}
+        onEnter={onDropStart}
+        onEntering={onDropping}
+        onEntered={onDropDone}
+        onExit={onCollapseStart}
+        onExited={onCollapseDone}
+        onExiting={onCollapsing}
       >
         {children}
-      </div>
-    </CSSTransition>
+      </CSSTransition>
+    </div>
   );
 };
 
-export default TooltipComponent;
+export default DropdownComponent;

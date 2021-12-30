@@ -253,6 +253,7 @@ export type Theme = {
     tdStripBgColor: ColorPropertyTheme | BackgroundColorProperty;
     tdHoverBgColor: ColorPropertyTheme | BackgroundColorProperty;
     tdHoverFontColor: ColorPropertyTheme | ColorProperty;
+    tdExpandedBgColor: ColorPropertyTheme | BackgroundColorProperty;
   };
 
   input: {

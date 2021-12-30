@@ -3,9 +3,9 @@ import styled, { css } from 'styled-components';
 import { color } from '../../styles/typography';
 import { alignItems } from '../../styles/alignment';
 import { display } from '../../styles/display';
-import { SearchIconProps } from './typings';
+import { IconProps } from './typings';
 
-const IconComponent: FC<SearchIconProps> = ({ className }) => {
+const IconComponent: FC<IconProps> = ({ className }) => {
   return (
     <div className={className}>
       <svg className="o-icon-search-svg" viewBox="0 0 118.783 118.783">

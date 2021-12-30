@@ -19,8 +19,9 @@ import {
 } from '../list/typings';
 
 export type ArraySelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = _SelectProps<T, I> & {
-  dataSource: T[] | string;
   adapter?: SelectItemAdapter<T>;
+  dataSource: T[] | string;
+  fetchOnce?: boolean;
 };
 
 export type FormSelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = SelectProps<T, I> &
@@ -65,23 +66,24 @@ export interface SelectInputProps<T = any, I extends SelectItem<T> = SelectItem<
   onChange: (nextValue: string) => void;
   multiple: boolean;
   onRemove: SelectOptionHandler<T, I>;
+  style?: React.CSSProperties;
 }
 
-export type SelectItem<T> = ListItem<T> & {
+export type SelectItem<T = any> = ListItem<T> & {
   selected?: boolean;
   highlighted?: boolean;
 };
 
 export type SelectItemAdaptee = ListItemAdaptee;
 
-export type SelectItemAdapter<T> = ListItemAdapter<T>;
+export type SelectItemAdapter<T = any> = ListItemAdapter<T>;
 
 // export type SelectInternalProps<T = any, M extends ItemMeta = SelectOptionMeta> = Omit<SelectProps, 'items'> & {
 //   collection: Collection<T, M>;
 // };
 
-export type SelectOptionHandler<T, I extends SelectItem<T> = SelectItem<T>> = ListItemHandler<T, I>;
-export type SelectOptionSelectionHandler<T, I extends SelectItem<T> = SelectItem<T>> = (
+export type SelectOptionHandler<T = any, I extends SelectItem<T> = SelectItem<T>> = ListItemHandler<T, I>;
+export type SelectOptionSelectionHandler<T = any, I extends SelectItem<T> = SelectItem<T>> = (
   item: I,
   index: number,
   close?: boolean,

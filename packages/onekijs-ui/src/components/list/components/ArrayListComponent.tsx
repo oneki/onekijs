@@ -4,7 +4,7 @@ import { ArrayListProps } from '../typings';
 import CollectionListComponent from './CollectionListComponent';
 
 const ArrayListComponent: FC<ArrayListProps> = (props) => {
-  const collection = useListDataSource(props.dataSource, { adapter: props.adapter });
+  const collection = useListDataSource(props.dataSource, { adapter: props.adapter, fetchOnce: props.fetchOnce });
   return <CollectionListComponent {...props} dataSource={collection} />;
 };
 

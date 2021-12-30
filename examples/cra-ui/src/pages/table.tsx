@@ -1,6 +1,5 @@
-import { FormSubmitCallback, useForm, SubmitButton } from 'onekijs';
-import { Button, ComponentStyle, FormTable, useInputColumn, useSelectColumn, useTable } from 'onekijs-ui';
-import useTableController from 'onekijs-ui/dist/components/table/hooks/useTableController';
+import { FormSubmitCallback, SubmitButton, useForm } from 'onekijs';
+import { Button, ComponentStyle, FormTable, useInputColumn, useSelectColumn, useTableController } from 'onekijs-ui';
 import React from 'react';
 import styled, { css } from 'styled-components';
 import { users } from '../data/users';
@@ -45,6 +44,10 @@ const u = [
   },
 ];
 
+const ExpandedComponent = () => {
+  return <div></div>
+}
+
 const Page: React.FC<{ className?: string }> = ({ className }) => {
   const onSubmit: FormSubmitCallback = (data) => {
     console.log(data);
@@ -86,15 +89,13 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
     stateColumn.broker.removeFilter('state');
   };
 
-  const controller = useTableController(
-    undefined,
-    [streetColumn, stateColumn],
-    //grow: 'address.city'
-);
+  const controller = useTableController({
+    columns: [streetColumn, stateColumn],
+  });
 
-  const controller2 = useTableController(
-    users,
-    [
+  const controller2 = useTableController({
+    dataSource: users,
+    columns: [
       {
         id: 'id',
         minWidth: '50px',
@@ -128,14 +129,14 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
       },
     ],
     //grow: 'address.city'
-  );
+  });
 
   return (
     <Form>
       <FormTable name="addresses" controller={controller} className={className} />
       <Button onClick={addFilter}>Add Filter</Button> <Button onClick={removeFilter}>Remove Filter</Button>{' '}
       <SubmitButton>Submit</SubmitButton>
-      <FormTable name="users" controller={controller2} className={className} height="500px" />
+      <FormTable name="users" controller={controller2} className={className} height="500px" ExpandedComponent={ExpandedComponent} />
       <pre>{JSON.stringify(values, null, 2)}</pre>
     </Form>
   );

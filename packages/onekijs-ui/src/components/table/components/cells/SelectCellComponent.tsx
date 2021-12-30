@@ -1,13 +1,14 @@
 import { CollectionBroker, useField, extractValidators } from 'onekijs-framework';
 import React, { useEffect } from 'react';
-import Select from '../../select';
-import useSelectDataSource from '../../select/hooks/useSelectDataSource';
-import { TableBodyCellProps, TableItem, UseSelectColumnOptions } from '../typings';
-import useFormTableContext from '../hooks/useFormTableContext';
+import Select from '../../../select';
+import useSelectDataSource from '../../../select/hooks/useSelectDataSource';
+import { TableBodyCellProps, UseSelectColumnOptions } from '../../typings';
+import useFormTableContext from '../../hooks/useFormTableContext';
+import { SelectItem } from '../../../select/typings';
 
 const SelectCellComponent = (
-  options: UseSelectColumnOptions<any, TableItem<any>>,
-  broker: CollectionBroker<any, TableItem<any>>,
+  options: UseSelectColumnOptions<any, SelectItem<any>>,
+  broker: CollectionBroker<any, SelectItem<any>>,
 ): React.FC<TableBodyCellProps> => {
   const SelectCellComponent: React.FC<TableBodyCellProps> = ({ column, rowIndex }) => {
     const { tableName } = useFormTableContext();

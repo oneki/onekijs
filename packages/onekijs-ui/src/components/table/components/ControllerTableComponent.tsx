@@ -4,6 +4,7 @@ import { TableConfigContext } from '../hooks/useTableConfig';
 import { TableServiceContext } from '../hooks/useTableService';
 import { TableStateContext } from '../hooks/useTableState';
 import { ControllerTableProps, TableConfig } from '../typings';
+import ExpandedCellComponent from './cells/ExpandedCellComponent';
 import TableBodyComponent from './TableBodyComponent';
 import TableFooterComponent from './TableFooterComponent';
 import TableHeaderComponent from './TableHeaderComponent';
@@ -13,6 +14,7 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
   className,
   bodyClassName,
   BodyComponent = TableBodyComponent,
+  ExpandedComponent,
   filterable,
   fit = true,
   fixHeader = true,
@@ -40,6 +42,7 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
 
   const contentRef = useRef<HTMLDivElement>(null);
   const tableRef = useRef<HTMLDivElement>(null);
+  const service = controller.asService();
 
   useEffect(() => {
     controller.onMount(tableRef, contentRef);
@@ -98,6 +101,23 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
     sortable,
     stripRows,
   ]);
+
+  useEffect(() => {
+    if (ExpandedComponent) {
+      service.addColumn(
+        {
+          id: 'system.expander',
+          minWidth: '45px',
+          maxWidth: '45px',
+          filterable: false,
+          sortable: false,
+          CellComponent: ExpandedCellComponent,
+          className: 'o-table-cell-expander',
+        },
+        0,
+      );
+    }
+  }, [service, ExpandedComponent]);
 
   return (
     <TableServiceContext.Provider value={controller.asService()}>

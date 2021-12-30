@@ -1,5 +1,5 @@
 import { useLazyRef } from 'onekijs-framework';
-import InputCellComponent from '../components/InputCellComponent';
+import InputCellComponent from '../components/cells/InputCellComponent';
 import { InputColumn, UseInputColumnOptions, TableItem } from '../typings';
 
 const useInputColumn = <T = any, I extends TableItem<T> = TableItem<T>>(

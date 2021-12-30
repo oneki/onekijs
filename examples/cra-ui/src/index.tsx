@@ -12,6 +12,7 @@ import { InputPage } from './pages/input';
 import { ListPage } from './pages/list';
 import { SelectPage } from './pages/select';
 import { TablePage } from './pages/table';
+import { TreePage } from './pages/tree';
 
 const customTheme = {};
 
@@ -32,7 +33,7 @@ ReactDOM.render(
         >
           <Link to="/">Home</Link> | <Link to="/button">Button</Link> | <Link to="/select">Select</Link> |{' '}
           <Link to="/list">List</Link> | <Link to="/ajaxList">Ajax List</Link> | <Link to="/table">Table</Link> |{' '}
-          <Link to="/input">Input</Link> | <Link to="/dashboard">Dashboard</Link>
+          <Link to="/input">Input</Link> | <Link to="/dashboard">Dashboard</Link> | <Link to="/tree">Tree</Link>
         </div>
         <Switch>
           <Route path="/button">
@@ -55,6 +56,9 @@ ReactDOM.render(
           </Route>
           <Route path="/dashboard">
             <DashboardPage />
+          </Route>
+          <Route path="/tree">
+            <TreePage />
           </Route>
           <Route>
             <div>This is the main page</div>

@@ -1,14 +1,25 @@
-import React, { useContext } from 'react';
-import { TreeController, TreeItem } from '../typings';
+import { CollectionProxy, useCollectionProxy } from 'onekijs-framework';
+import TreeService from '../TreeService';
+import { TreeItem, TreeState, UseTreeOptions } from '../typings';
+import useTreeInitialState from './useTreeInitialState';
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-export const TreeImmutableControllerContext = React.createContext<TreeController<any, any>>(null!);
-export const useTreeController = <T = any, I extends TreeItem<T> = TreeItem<T>>(): TreeController<T, I> => {
-  return useContext(TreeImmutableControllerContext);
+const useTreeController = <T>(
+  dataSource: string | T[] | undefined,
+  options: UseTreeOptions<T, TreeItem<T>> = {},
+): CollectionProxy<
+  T,
+  TreeItem<T>,
+  TreeState<T, TreeItem<T>>,
+  TreeService<T, TreeItem<T>, TreeState<T, TreeItem<T>>>
+> => {
+  const tableState = useTreeInitialState<T, TreeItem<T>>(dataSource, options);
+
+  return useCollectionProxy<
+    T,
+    TreeItem<T>,
+    TreeState<T, TreeItem<T>>,
+    TreeService<T, TreeItem<T>, TreeState<T, TreeItem<T>>>
+  >(dataSource, TreeService, tableState);
 };
 
-export const TreeMutableControllerContext = React.createContext<TreeController<any, any>>(null!);
-
-export const useMutableTreeController = <T = any, I extends TreeItem<T> = TreeItem<T>>(): TreeController<T, I> => {
-  return useContext(TreeMutableControllerContext);
-};
+export default useTreeController;

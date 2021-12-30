@@ -16443,10 +16443,10 @@ react-transition-group@^4.4.1:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-virtual@^2.6.2:
-  version "2.8.0"
-  resolved "https://registry.yarnpkg.com/react-virtual/-/react-virtual-2.8.0.tgz#d05d9a5e0c9c594708ce4ce88bb33e2b0b66487e"
-  integrity sha512-VATjk/+4fk8daERyz/hOcZ20yMErSh/v9g9Ayqp+zcNgPAT1pnjpnUmZGscp87TP1aqLKMbl05+mcUbg65pJAg==
+react-virtual@^2.10.0:
+  version "2.10.0"
+  resolved "https://registry.yarnpkg.com/react-virtual/-/react-virtual-2.10.0.tgz#110cc0f48bb6edffd253f532123a074e6bbec4cb"
+  integrity sha512-Mgy//1Ty0YMcELTooFq5mMrEb4dLRzS9PbPrgDbpdgGRgG9RuQrXBxgPCm1vNBonoiNZjbsGSEPLuJ7MuHLvLg==
   dependencies:
     "@reach/observe-rect" "^1.1.0"
 

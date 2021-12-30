@@ -1,5 +1,5 @@
 import { CollectionBroker, DefaultCollectionBroker, useLazyRef } from 'onekijs-framework';
-import SelectCellComponent from '../components/SelectCellComponent';
+import SelectCellComponent from '../components/cells/SelectCellComponent';
 import { SelectColumn, TableItem, UseSelectColumnOptions } from '../typings';
 
 const useSelectColumn = <T = any>(options: UseSelectColumnOptions<T, TableItem<T>>): SelectColumn<T, TableItem<T>> => {

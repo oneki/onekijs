@@ -45,7 +45,7 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
             return (
               <div
                 className="o-virtual-item"
-                key={`virtual-item-${index}`}
+                key={`virtual-item-${listItem?.uid || index}`}
                 ref={measureRef}
                 style={{
                   position: 'absolute',
@@ -57,7 +57,7 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
                 }}
               >
                 <ItemComponent
-                  key={`item-${index}`}
+                  key={`item-${listItem?.uid || index}`}
                   index={index}
                   item={listItem}
                   onClick={onItemClick}

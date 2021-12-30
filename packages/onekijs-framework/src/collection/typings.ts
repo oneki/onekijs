@@ -13,7 +13,7 @@ export type Collection<T, I extends Item<T> = Item<T>, S extends CollectionState
   readonly data?: T[];
   readonly dataSource?: T[] | string;
   readonly items: (I | undefined)[];
-  getItem(id: string | number): I | undefined;
+  getItem(uid: string): I | undefined;
   getFields(): string[] | undefined;
   getFilter(): QueryFilter | undefined;
   getFilterById(id: QueryFilterId): QueryFilterOrCriteria | undefined;
@@ -173,7 +173,7 @@ export type CollectionStatus =
   | 'partial_loaded'
   | 'error';
 
-export type Item<T> = {
+export type Item<T = any> = {
   data?: T; // data can be undefined if the item is fetching or loading
   id?: string | number; // id can be undefined if the item is fetching or loading
   text?: string; // text can be undefined if the item is fetching or loading
@@ -186,7 +186,7 @@ export type ItemAdaptee = {
   text?: string;
 };
 
-export type ItemAdapter<T> = (data: T) => ItemAdaptee;
+export type ItemAdapter<T = any> = (data: T) => ItemAdaptee;
 
 export type LoadingItemStatus = 'not_initialized' | 'loading' | 'fetching' | 'loaded' | 'error';
 

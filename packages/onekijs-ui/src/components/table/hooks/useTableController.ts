@@ -1,11 +1,9 @@
 import { CollectionProxy, useCollectionProxy } from 'onekijs-framework';
 import TableService from '../TableService';
-import { TableColumn, TableItem, TableState, UseTableOptions } from '../typings';
+import { TableItem, TableState, UseTableOptions } from '../typings';
 import useTableInitialState from './useTableInitialState';
 
 const useTableController = <T>(
-  dataSource: string | T[] | undefined,
-  columns: TableColumn<T, TableItem<T>>[],
   options: UseTableOptions<T, TableItem<T>> = {},
 ): CollectionProxy<
   T,
@@ -13,14 +11,14 @@ const useTableController = <T>(
   TableState<T, TableItem<T>>,
   TableService<T, TableItem<T>, TableState<T, TableItem<T>>>
 > => {
-  const tableState = useTableInitialState<T, TableItem<T>>(dataSource, columns, options);
+  const tableState = useTableInitialState<T, TableItem<T>>(options);
 
   return useCollectionProxy<
     T,
     TableItem<T>,
     TableState<T, TableItem<T>>,
     TableService<T, TableItem<T>, TableState<T, TableItem<T>>>
-  >(dataSource, TableService, tableState);
+  >(options.dataSource, TableService, tableState);
 };
 
 export default useTableController;

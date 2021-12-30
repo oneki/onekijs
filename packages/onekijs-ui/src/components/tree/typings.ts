@@ -4,33 +4,66 @@ import {
   CollectionProxy,
   CollectionState,
   Item,
-  UseCollectionOptions,
   ItemAdaptee,
+  UseCollectionOptions,
 } from 'onekijs-framework';
 import React from 'react';
 import { ListItemProps } from '../list/typings';
 
+export type ArrayTreeProps<T = any, I extends TreeItem<T> = TreeItem<T>> = TreeConfig<T, I> & {
+  adapter?: TreeItemAdapter<T>;
+  dataSource?: string | T[];
+  fetchOnce?: boolean;
+  selected?: T[];
+};
+
+export type ControllerTreeProps<
+  T = any,
+  I extends TreeItem<T> = TreeItem<T>,
+  S extends TreeState<T, I> = TreeState<T, I>,
+  C extends TreeController<T, I, S> = TreeController<T, I, S>
+> = TreeConfig<T, I> & {
+  controller: CollectionProxy<T, I, S, C>;
+};
+
+export type TreeConfig<T = any, I extends TreeItem<T> = TreeItem<T>> = {
+  className?: string;
+  itemClassName?: string | ((item: I) => string);
+  ItemComponent?: React.FC<TreeItemProps<T, I>>;
+  onActivate?: TreeItemHandler<T, I>;
+  onCollapse?: TreeItemHandler<T, I>;
+  onExpand?: TreeItemHandler<T, I>;
+  onSelect?: TreeItemHandler<T, I>;
+};
+
 export type TreeController<
-  T,
+  T = any,
   I extends TreeItem<T> = TreeItem<T>,
   S extends TreeState<T, I> = TreeState<T, I>
 > = Collection<T, I, S> & {
   addSelected<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
+  activate: TreeItemHandler<T, I>;
+  collapse: TreeItemHandler<T, I>;
+  expand: TreeItemHandler<T, I>;
   removeSelected<B extends keyof CollectionBy<T, I>>(
     by: B,
     target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
   ): I[];
+  select: TreeItemHandler<T, I>;
   setSelected<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
 };
 
-export type TreeItem<T> = Item<T> & {
-  selected?: boolean;
+export type TreeItem<T = any> = Item<T> & {
   active?: boolean;
-  expanded?: boolean;
-  children?: TreeItem<T>[]; // list of uids
-  parent?: TreeItem<T>[];
-  icon?: string;
+  activable?: boolean;
+  children?: string[];
   disabled?: boolean;
+  expanded?: boolean;
+  icon?: string;
+  level: number;
+  parent?: string;
+  selectable?: boolean;
+  selected?: boolean;
   type?: 'folder' | 'leaf';
 };
 
@@ -45,31 +78,41 @@ export type TreeItemHandler<T, I extends TreeItem<T> = TreeItem<T>> = (item: I) 
 
 export type TreeItemProps<T = any, I extends TreeItem<T> = TreeItem<T>> = ListItemProps<T, I> & {
   className?: string;
-  level: number;
+  onActivate: TreeItemHandler<T, I>;
+  onCollapse: TreeItemHandler<T, I>;
+  onExpand: TreeItemHandler<T, I>;
+  onSelect: TreeItemHandler<T, I>;
 };
+
+export type TreeItemToggleProps<T = any, I extends TreeItem<T> = TreeItem<T>> = Pick<
+  TreeItemProps<T, I>,
+  'item' | 'onExpand' | 'onCollapse'
+>;
 
 export type TreeProps<
   T = any,
   I extends TreeItem<T> = TreeItem<T>,
   S extends TreeState<T, I> = TreeState<T, I>,
   C extends TreeController<T, I, S> = TreeController<T, I, S>
-> = {
-  className?: string;
-  controller: CollectionProxy<T, I, S, C>;
+> = TreeConfig<T, I> & {
+  adapter?: TreeItemAdapter<T>;
+  controller?: CollectionProxy<T, I, S, C>;
+  dataSource?: string | T[];
+  fetchOnce?: boolean;
+  selected?: T[];
 };
 
-type _TreeState<T, I extends TreeItem<T>> = {
-  onItemClick?: TreeItemHandler<T, I>;
-  ItemComponent?: React.FC<TreeItemProps<T, I>>;
-  itemClassName?: string | ((item: I) => string);
-  selected?: string[];
+export type TreeState<T, I extends TreeItem<T> = TreeItem<T>> = CollectionState<T, I> & {
   active?: string;
+  adapter?: TreeItemAdapter<T>;
+  dataSource?: T[] | string;
+  expanded?: string[];
+  selected?: string[];
 };
 
-export type TreeState<T, I extends TreeItem<T> = TreeItem<T>> = CollectionState<T, I> & _TreeState<T, I>;
-
-export type UseTreeOptions<T, I extends TreeItem<T>> = UseCollectionOptions<T, I> &
-  _TreeState<T, I> & {
-    adapter?: TreeItemAdapter<T>;
-    dataSource?: T[] | string;
-  };
+export type UseTreeOptions<T, I extends TreeItem<T>> = UseCollectionOptions<T, I> & {
+  active?: T;
+  adapter?: TreeItemAdapter<T>;
+  dataSource?: T[] | string;
+  selected?: T[];
+};

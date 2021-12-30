@@ -277,6 +277,7 @@ export const theme = (customTheme: AnonymousObject = {}): Theme => {
       tdStripBgColor: 'lightest',
       tdHoverBgColor: 'primary',
       tdHoverFontColor: 'white',
+      tdExpandedBgColor: 'lightest',
     },
 
     input: {

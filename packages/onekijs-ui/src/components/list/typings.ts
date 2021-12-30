@@ -10,8 +10,9 @@ import {
 import React, { FC } from 'react';
 
 export type ArrayListProps<T = any, I extends ListItem<T> = ListItem<T>> = _ListProps<T, I> & {
-  dataSource: T[] | string;
   adapter?: ListItemAdapter<T>;
+  dataSource: T[] | string;
+  fetchOnce?: boolean;
 };
 
 export type ListBodyProps<T = any, I extends ListItem<T> = ListItem<T>> = Pick<
@@ -59,13 +60,16 @@ export type ListHeaderProps = {
   style?: React.CSSProperties;
 };
 
-export type ListItem<T> = Item<T>;
+export type ListItem<T = any> = Item<T>;
 
 export type ListItemAdaptee = ItemAdaptee;
 
-export type ListItemAdapter<T> = ItemAdapter<T>;
+export type ListItemAdapter<T = any> = ItemAdapter<T>;
 
-export type ListItemHandler<T, I extends ListItem<T> = ListItem<T>> = (item: I | undefined, index: number) => void;
+export type ListItemHandler<T = any, I extends ListItem<T> = ListItem<T>> = (
+  item: I | undefined,
+  index: number,
+) => void;
 
 export interface ListItemProps<T = any, I extends ListItem<T> = ListItem<T>> {
   index: number;
@@ -77,7 +81,7 @@ export interface ListItemProps<T = any, I extends ListItem<T> = ListItem<T>> {
   onMouseLeave?: ListItemHandler<T, I>;
 }
 
-export type ListItems<T, I extends ListItem<T> = ListItem<T>> = T[] | ListCollection<T, I>;
+export type ListItems<T = any, I extends ListItem<T> = ListItem<T>> = T[] | ListCollection<T, I>;
 
 export type _ListProps<T = any, I extends ListItem<T> = ListItem<T>> = {
   className?: string;

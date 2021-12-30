@@ -3,10 +3,10 @@ import styled, { css } from 'styled-components';
 import { color } from '../../styles/typography';
 import { alignItems } from '../../styles/alignment';
 import { display } from '../../styles/display';
-import { MenuIconProps } from './typings';
+import { IconProps } from './typings';
 import { cursor } from '../../styles/interactivity';
 
-const IconComponent: FC<MenuIconProps> = (props) => {
+const IconComponent: FC<IconProps> = (props) => {
   return (
     <div {...props}>
       <svg className="o-icon-menu-svg" viewBox="0 0 100 100">

@@ -13,6 +13,7 @@ import { transitionDuration, transitionProperty, transitionTimingFunction } from
 import { ComponentStyle } from '../../styles/typings';
 import { color, fontSize, fontWeight, textTransform } from '../../styles/typography';
 import { TableProps } from './typings';
+import { overflowY } from '../../styles/overflow';
 
 export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme }) => {
   const t = theme.table;
@@ -23,19 +24,37 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme }) => {
     .o-table-body {
       ${overflowX('auto')}
     }
+    .o-table-body-row-container {
+      ${borderBottomColor(t.tdBorderBottomColor)}
+      ${borderBottomWidth(t.tdBorderBottomWidth)}
+      ${borderBottomStyle(t.tdBorderBottomStyle)}
+    }
+    .o-table-body-row-expanded {
+      .o-table-body-row {
+        ${backgroundColor(t.tdExpandedBgColor)}
+      }
+    }
+
+    .o-table-body-row-expanded-content {
+      ${backgroundColor(t.tdExpandedBgColor)}
+      ${overflowY('hidden')}
+      ${transitionDuration('150ms')}
+      ${transitionProperty('height,opacity')}
+      ${transitionTimingFunction('ease-out')}
+    }
+
+
+
     .o-table-body-row {
       ${display('flex')}
       ${flexDirection('row')}
       ${color(t.tdFontColor)}
+
       .o-table-body-cell {
         ${paddingX(t.tdPaddingX)}
         ${paddingY(t.tdPaddingY)}
         ${boxSizing('border-box')}
-        ${borderBottomColor(t.tdBorderBottomColor)}
-        ${borderBottomWidth(t.tdBorderBottomWidth)}
-        ${borderBottomStyle(t.tdBorderBottomStyle)}
 
-        
       }
       &.o-table-body-row-hover {
         ${backgroundColor(t.tdHoverBgColor)}
@@ -49,7 +68,7 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme }) => {
     .o-table-body-row-even {
       ${backgroundColor(t.tdStripBgColor)}
     }
-    
+
     .o-table-header {
       ${display('flex')}
       ${flexDirection('column')}
@@ -59,8 +78,8 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme }) => {
 
       &.o-table-header-filterable {
         .o-table-header-title-container {
-          ${borderBottomWidth(0)} 
-          ${paddingBottom(0)} 
+          ${borderBottomWidth(0)}
+          ${paddingBottom(0)}
         }
       }
 
@@ -72,24 +91,24 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme }) => {
       }
 
       .o-table-header-title-container, .o-table-header-filter {
-        ${boxSizing('border-box')}      
+        ${boxSizing('border-box')}
         ${display('flex')}
         ${flexDirection('row')}
         ${alignItems('center')}
-        ${paddingX(t.thPaddingX)}        
+        ${paddingX(t.thPaddingX)}
       }
 
       .o-table-header-title-container {
-        ${paddingY(t.thPaddingY)}  
-        ${borderBottomWidth(t.thBorderBottomWidth)} 
+        ${paddingY(t.thPaddingY)}
+        ${borderBottomWidth(t.thBorderBottomWidth)}
         ${borderBottomColor(t.thBorderBottomColor)}
 
         .o-table-header-title {
           ${color(t.thFontColor)}
           ${fontWeight(t.thFontWeigth)}
           ${fontSize(t.thFontSize)}
-          ${textTransform(t.thFontCase)} 
-        }        
+          ${textTransform(t.thFontCase)}
+        }
       }
 
       .o-table-sort-container {
@@ -115,13 +134,13 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme }) => {
           ${transitionDuration('.5s')}
           ${transitionProperty('all')}
           ${transitionTimingFunction('ease-in-out')}
-        }        
+        }
       }
 
       .o-table-header-filter {
-        ${borderBottomWidth(t.thBorderBottomWidth)} 
-        ${borderBottomColor(t.thBorderBottomColor)}  
-        ${paddingBottom(t.thPaddingY)}          
+        ${borderBottomWidth(t.thBorderBottomWidth)}
+        ${borderBottomColor(t.thBorderBottomColor)}
+        ${paddingBottom(t.thPaddingY)}
         .o-table-filter-input {
           ${marginTop('xs')}
           ${backgroundColor(t.thFilterInputBgColor)}
@@ -130,10 +149,13 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme }) => {
             ${paddingY(t.thFilterInputPaddingY)}
             ${paddingX(t.thFilterInputPaddingX)}
             ${fontSize(t.thFilterInputFontSize)}
-          }            
+          }
         }
-      }      
-    } 
+      }
+    }
+    .o-table-cell-expander {
+      ${cursor('pointer')}
+    }
 
   `;
 };

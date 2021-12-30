@@ -88,6 +88,10 @@ class TableService<T = any, I extends TableItem<T> = TableItem<T>, S extends Tab
     return items;
   }
 
+  get columns(): TableColumn<T, I>[] {
+    return this.state.columns;
+  }
+
   @reducer
   initCell(
     rowNumber: number | 'header-title' | 'header-filter' | 'footer',
@@ -154,6 +158,11 @@ class TableService<T = any, I extends TableItem<T> = TableItem<T>, S extends Tab
     const items = this.setMeta(by, target, 'selected', true);
     this.state.selected = items.map((item) => item.uid);
     return items;
+  }
+
+  @reducer
+  toggle(item: I): void {
+    this.setMeta('item', item, 'expanded', !item.expanded);
   }
 
   @reducer

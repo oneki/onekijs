@@ -20,6 +20,7 @@ const SelectInputComponent: FC<SelectInputProps> = ({
   multiple,
   tokens,
   autoFocus,
+  style,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const autoSizeRef = useRef<HTMLSpanElement>(null);
@@ -174,7 +175,7 @@ const SelectInputComponent: FC<SelectInputProps> = ({
   }, [autoFocus]);
 
   return (
-    <div className={className}>
+    <div className={className} style={style}>
       <div className="o-select-input-data">
         {multiple && <SelectTokensComponent tokens={tokens} onRemove={onRemove} />}
         <div className="o-select-input-wrapper">

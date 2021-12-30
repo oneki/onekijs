@@ -85,15 +85,16 @@ export const borderTopLeftRadius = cssProperty<BorderTopLeftRadiusProperty<TLeng
   'border-top-left-radius',
   themeFormatter('radius'),
 );
-export const borderBottomRadius = cssProperty<BorderBottomLeftRadiusProperty<TLength>>(
+
+export const borderBottomLeftRadius = cssProperty<BorderBottomLeftRadiusProperty<TLength>>(
   'border-bottom-left-radius',
   themeFormatter('radius'),
 );
-export const borderLeftRadius = cssProperty<BorderTopRightRadiusProperty<TLength>>(
+export const borderTopRightRadius = cssProperty<BorderTopRightRadiusProperty<TLength>>(
   'border-top-right-radius',
   themeFormatter('radius'),
 );
-export const borderRightRadius = cssProperty<BorderBottomRightRadiusProperty<TLength>>(
+export const borderBottomRightRadius = cssProperty<BorderBottomRightRadiusProperty<TLength>>(
   'border-bottom-right-radius',
   themeFormatter('radius'),
 );

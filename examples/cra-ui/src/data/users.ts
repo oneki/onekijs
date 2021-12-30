@@ -11,6 +11,7 @@ export interface User {
     city: string,
   }
   phones: string[],
+  children?: User[],
 }
 
 export const userAdapter: SelectItemAdapter<User> = (data?: User) => {

@@ -1,4 +1,4 @@
-import { CollectionService, CollectionState, Fetcher, Query, useForm, useService, Collection } from 'onekijs';
+import { CollectionService, CollectionState, Fetcher, Query, useForm, useService } from 'onekijs';
 import { FormSelect, SelectItem, useSelectDataSource } from 'onekijs-ui';
 import React, { useCallback } from 'react';
 import { User, userAdapter, users, userSearcher } from '../data/users';
@@ -35,10 +35,10 @@ export const SelectPage = () => {
     fetcher
   });
 
-  const collection2 = useSelectDataSource<User>('http://localhost', {
-    adapter: userAdapter,
-    fetcher
-  });
+  // const collection2 = useSelectDataSource<User>('http://localhost', {
+  //   adapter: userAdapter,
+  //   fetcher
+  // });
 
   // const [value, setValue] = useState(users[1]);
   // const [value2, setValue2] = useState([users[2],users[1]]);
@@ -49,7 +49,7 @@ export const SelectPage = () => {
     <div style={{display: 'flex', justifyContent: 'center'}}>
       <div style={{width: '800px', padding: '10px'}}>
 
-          <FormSelect label="Simple select" size="xsmall" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" dataSource={collection} name="simple" required /><br/>
+          <FormSelect label="Simple select" size="medium" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" dataSource={collection} name="simple" required /><br/>
           {/* <FormSelect label="Simple select" size="small" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" items={collection} name="simple" required /><br/>
           <FormSelect label="Simple select" help="this is the help" size="medium" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" items={collection} name="simple" required /><br/>
           <FormSelect label="Simple select" size="large" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" items={collection} name="simple" required /><br/>
