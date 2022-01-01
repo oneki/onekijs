@@ -11,12 +11,25 @@ import {
 } from 'onekijs';
 import { List, useListController } from 'onekijs-ui';
 import React, { useCallback } from 'react';
+import styled from 'styled-components';
 import { User, userAdapter, users, userSearcher } from '../data/users';
 import Spinner from './spinner';
 
 const isLoading = (collection: Collection<User, Item<User>>): boolean => {
   return collection.status === LoadingStatus.Loading || collection.status === LoadingStatus.PartialLoading;
 };
+
+const AjaxList = styled(List)`
+.o-list-item-highlighted {
+  background: yellow
+}
+.o-list-item-active {
+  background: blue
+}
+.o-list-item-selected {
+  background: red
+}
+`
 
 export const AjaxListPage = () => {
   const [, service] = useService<
@@ -52,6 +65,8 @@ export const AjaxListPage = () => {
     remoteCollection.search(e.target.value);
   };
 
+
+
   return (
     <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', width: '100%' }}>
       <div
@@ -68,7 +83,7 @@ export const AjaxListPage = () => {
         {isLoading(remoteCollection) && <Spinner />}
       </div>
       <div style={{ width: '300px', border: '1px solid black', padding: '5px' }}>
-        <List height={200} controller={remoteCollection} preload={100} increment={100} />
+        <AjaxList height={200} controller={remoteCollection} preload={100} increment={100} keyboardNavigable={true} />
       </div>
     </div>
   );

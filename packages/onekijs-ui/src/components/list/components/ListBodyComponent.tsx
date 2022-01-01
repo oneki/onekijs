@@ -35,6 +35,7 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
   onItemHighlight,
   onItemUnhighlight,
   parentRef,
+  scrollToIndex,
   style,
   totalSize,
   virtualItems,
@@ -82,11 +83,24 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
         if (onItemUnhighlight) {
           onItemUnhighlight(item, index);
         } else {
-          service.setHighlighted('item', []);
+          service.removeHighlighted('item', item);
         }
       }
     },
     [onItemUnhighlight, service],
+  );
+
+  const scrollToItem = useCallback(
+    (item) => {
+      if (scrollToIndex) {
+        const index = findItemIndex(state.items, item.uid);
+        console.log('scoll to', index);
+        if (index !== undefined) {
+          scrollToIndex(index, { align: 'auto' });
+        }
+      }
+    },
+    [state.items, scrollToIndex],
   );
 
   const onKeyDown = useCallback(
@@ -109,6 +123,7 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
             if (onItemActivate) {
               onItemActivate(nextItem, nextIndex);
             } else {
+              scrollToItem(nextItem);
               service.setActive('item', nextItem);
             }
           }
@@ -125,6 +140,7 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
             if (onItemActivate) {
               onItemActivate(nextItem, nextIndex);
             } else {
+              scrollToItem(nextItem);
               service.setActive('item', nextItem);
             }
           }

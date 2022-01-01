@@ -1,8 +1,8 @@
 import {
   Collection,
   CollectionProxy,
-  CollectionState,
   Item,
+  CollectionState,
   ItemAdaptee,
   ItemAdapter,
   UseCollectionOptions,
@@ -35,6 +35,7 @@ export type ListBodyProps<T = any, I extends ListItem<T> = ListItem<T>> = Pick<
   parentRef?: React.RefObject<HTMLDivElement>;
   style?: React.CSSProperties;
   totalSize?: number;
+  scrollToIndex: (index: number, options?: { align: 'start' | 'center' | 'end' | 'auto' }) => void;
   virtualItems?: VirtualItem[];
 };
 
@@ -109,7 +110,7 @@ export type ListProps<
 > = ListConfig<T, I> & {
   adapter?: ListItemAdapter<T>;
   controller?: CollectionProxy<T, I, S, C>;
-  dataSource: T[] | string;
+  dataSource?: T[] | string;
   fetchOnce?: boolean;
 };
 

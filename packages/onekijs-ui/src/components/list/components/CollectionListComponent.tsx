@@ -28,7 +28,7 @@ const CollectionListComponent: FC<CollectionListProps> = ({
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
-  const { items, isVirtual, totalSize, virtualItems } = useListView({
+  const { items, isVirtual, totalSize, virtualItems, scrollToIndex } = useListView({
     dataSource: controller,
     height,
     itemHeight,
@@ -55,6 +55,7 @@ const CollectionListComponent: FC<CollectionListProps> = ({
           onItemSelect={onItemSelect}
           onItemUnselect={onItemUnselect}
           multiSelect={multiSelect}
+          scrollToIndex={scrollToIndex}
           style={style}
           totalSize={totalSize}
           virtualItems={isVirtual ? virtualItems : undefined}
