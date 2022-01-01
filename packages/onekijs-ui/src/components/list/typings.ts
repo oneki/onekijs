@@ -35,7 +35,7 @@ export type ListBodyProps<T = any, I extends ListItem<T> = ListItem<T>> = Pick<
   parentRef?: React.RefObject<HTMLDivElement>;
   style?: React.CSSProperties;
   totalSize?: number;
-  scrollToIndex: (index: number, options?: { align: 'start' | 'center' | 'end' | 'auto' }) => void;
+  scrollToIndex?: (index: number, options?: { align: 'start' | 'center' | 'end' | 'auto' }) => void;
   virtualItems?: VirtualItem[];
 };
 
