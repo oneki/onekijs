@@ -17,8 +17,6 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
     onRowClick,
     onRowEnter,
     onRowLeave,
-    onRowOut,
-    onRowOver,
     RowComponent = TableBodyRowComponent,
     rowClassName,
   } = useTableConfig();
@@ -49,7 +47,17 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
       const className =
         typeof rowClassName === 'function' ? rowClassName(props.item, props.index, columns) : rowClassName;
       return (
-        <RowComponent {...props} columns={columns} className={className} onExpand={measure} onExpanding={measure} />
+        <RowComponent
+          {...props}
+          columns={columns}
+          className={className}
+          onExpand={measure}
+          onExpanding={measure}
+          onExpanded={measure}
+          onCollapse={measure}
+          onCollapsed={measure}
+          onCollapsing={measure}
+        />
       );
     };
     Component.displayName = 'TableBodyRow';
@@ -62,11 +70,9 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
       height={height}
       ItemComponent={ItemComponentRef.current}
       items={items}
-      onItemClick={onRowClick}
-      onItemMouseEnter={onRowEnter}
-      onItemMouseLeave={onRowLeave}
-      onItemMouseOut={onRowOut}
-      onItemMouseOver={onRowOver}
+      onItemSelect={onRowClick}
+      onItemHighlight={onRowEnter}
+      onItemUnhighlight={onRowLeave}
       parentRef={tableRef}
       bodyRef={contentRef}
       totalSize={totalSize}

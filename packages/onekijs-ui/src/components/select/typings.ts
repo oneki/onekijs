@@ -15,7 +15,7 @@ import {
   ListItemHandler,
   ListItemProps,
   ListState,
-  _ListProps,
+  ListConfig,
 } from '../list/typings';
 
 export type ArraySelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = _SelectProps<T, I> & {
@@ -69,10 +69,7 @@ export interface SelectInputProps<T = any, I extends SelectItem<T> = SelectItem<
   style?: React.CSSProperties;
 }
 
-export type SelectItem<T = any> = ListItem<T> & {
-  selected?: boolean;
-  highlighted?: boolean;
-};
+export type SelectItem<T = any> = ListItem<T>;
 
 export type SelectItemAdaptee = ListItemAdaptee;
 
@@ -100,7 +97,7 @@ export type SelectProps<
   C extends SelectCollection<T, I, S> = SelectCollection<T, I, S>
 > = ArraySelectProps<T, I> | SelectComponentProps<T, I, S, C>;
 
-export type _SelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = _ListProps<T, I> & {
+export type _SelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = ListConfig<T, I> & {
   InputComponent?: FC<SelectInputProps<T, I>>;
   IconComponent?: FC<SelectIconProps>;
   placeholder?: string;

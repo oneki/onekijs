@@ -9,4 +9,5 @@ export type TogglerIconProps = IconProps & {
   open?: boolean;
   loading?: boolean;
   visible?: boolean;
+  model?: 'arrow' | 'plus';
 };

@@ -13,7 +13,12 @@ const TableBodyRowComponent: FC<TableBodyRowProps> = ({
   columns,
   CellComponent = TableBodyCellComponent,
   className,
+  onExpand,
   onExpanding,
+  onExpanded,
+  onCollapse,
+  onCollapsing,
+  onCollapsed,
 }) => {
   const [hover, setHover] = useState(false);
   const { highlightRow, stripRows } = useTableConfig();
@@ -25,35 +30,22 @@ const TableBodyRowComponent: FC<TableBodyRowProps> = ({
     node.style.height = `${height}px`;
     node.style.height = '0';
     node.style.opacity = '0';
-    for (let i = 0; i <= timeout; i += 50) {
-      setTimeout(() => onExpanding(item, index), i);
+    for (let i = 0; i <= timeout; i += 20) {
+      setTimeout(() => onCollapsing && onCollapsing(item, index), i);
     }
   };
 
-  const onEnter = (node: HTMLElement) => {
-    expandedHeightRef.current = node.getBoundingClientRect().height;
-
-    //onExpand(item, index);
-  };
-
   const onEntering = (node: HTMLElement) => {
+    expandedHeightRef.current = node.getBoundingClientRect().height;
     node.style.height = '0px';
     node.style.opacity = '0';
     setTimeout(() => {
       node.style.height = `${expandedHeightRef.current}px`;
       node.style.opacity = '1';
     }, 0);
-    for (let i = 0; i <= timeout; i += 50) {
-      setTimeout(() => onExpanding(item, index), i);
+    for (let i = 0; i <= timeout; i += 20) {
+      setTimeout(() => onExpanding && onExpanding(item, index), i);
     }
-  };
-
-  const onEntered = () => {
-    onExpanding(item, index);
-  };
-
-  const onExited = () => {
-    onExpanding(item, index);
   };
 
   if (item === undefined) {
@@ -100,12 +92,12 @@ const TableBodyRowComponent: FC<TableBodyRowProps> = ({
         mountOnEnter={true}
         appear={false}
         unmountOnExit={true}
-        onEnter={onEnter}
+        onEnter={() => onExpand && onExpand(item, index)}
         onEntering={onEntering}
-        onEntered={onEntered}
+        onEntered={() => onExpanded && onExpanded(item, index)}
         onExiting={onExiting}
-        //onExit={onExit}
-        onExited={onExited}
+        onExit={() => onCollapse && onCollapse(item, index)}
+        onExited={() => onCollapsed && onCollapsed(item, index)}
       >
         <div className="o-table-body-row-expanded-content">
           <div style={{ height: '200px', padding: '10px' }}>expanded</div>

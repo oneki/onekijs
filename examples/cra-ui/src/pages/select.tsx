@@ -35,10 +35,10 @@ export const SelectPage = () => {
     fetcher
   });
 
-  // const collection2 = useSelectDataSource<User>('http://localhost', {
-  //   adapter: userAdapter,
-  //   fetcher
-  // });
+  const collection2 = useSelectDataSource<User>('http://localhost', {
+    adapter: userAdapter,
+    fetcher
+  });
 
   // const [value, setValue] = useState(users[1]);
   // const [value2, setValue2] = useState([users[2],users[1]]);
@@ -57,6 +57,7 @@ export const SelectPage = () => {
 
       </div>
       <div style={{width: '800px', padding: '10px'}}>
+          <FormSelect label="Multi select" help={<>this is the help<br/><a href="https://www.google.fr">Second Line</a></>} layout='horizontal' size="medium" description="Multiple entries are permitted" multiple={true} placeholder="Search..." dataSource={collection2} name="multi" required /><br/>
           {/* <FormSelect label="Multi select" layout='horizontal' size="xsmall" description="Multiple entries are permitted" multiple={true} placeholder="Search..." items={collection2} name="multi" /><br/>
           <FormSelect label="Multi select" layout='horizontal' size="small" description="Multiple entries are permitted" multiple={true} placeholder="Search..." items={collection2} name="multi" /><br/>
           <FormSelect label="Multi select" help={<>this is the help<br/><a href="https://www.google.fr">Second Line</a></>} layout='horizontal' size="medium" description="Multiple entries are permitted" multiple={true} placeholder="Search..." items={collection2} name="multi" required /><br/>

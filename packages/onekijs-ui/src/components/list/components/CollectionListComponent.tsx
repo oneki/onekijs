@@ -1,7 +1,7 @@
 import React, { FC, useRef } from 'react';
 import { addClassname } from '../../../utils/style';
-import { ListCollectionContext } from '../hooks/useListCollection';
-import { ListItemsContext } from '../hooks/useListItems';
+import { ListServiceContext } from '../hooks/useListService';
+import { ListStateContext } from '../hooks/useListState';
 import useListView from '../hooks/useListView';
 import { CollectionListProps } from '../typings';
 import ListBodyComponent from './ListBodyComponent';
@@ -9,24 +9,27 @@ import ListItemComponent from './ListItemComponent';
 
 const CollectionListComponent: FC<CollectionListProps> = ({
   className,
-  dataSource,
+  controller,
   height,
   ItemComponent = ListItemComponent,
   itemHeight,
   preload,
+  keyboardNavigable,
   increment,
-  onItemClick,
-  onItemMouseOver,
-  onItemMouseOut,
-  onItemMouseEnter,
-  onItemMouseLeave,
+  multiSelect,
+  onItemActivate,
+  onItemHighlight,
+  onItemSelect,
+  onItemDeactivate,
+  onItemUnhighlight,
+  onItemUnselect,
   virtual,
   style,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
   const { items, isVirtual, totalSize, virtualItems } = useListView({
-    dataSource,
+    dataSource: controller,
     height,
     itemHeight,
     preload,
@@ -36,25 +39,28 @@ const CollectionListComponent: FC<CollectionListProps> = ({
   });
 
   return (
-    <ListCollectionContext.Provider value={dataSource.asService()}>
-      <ListItemsContext.Provider value={dataSource.items}>
+    <ListServiceContext.Provider value={controller.asService()}>
+      <ListStateContext.Provider value={controller.state}>
         <ListBodyComponent
           className={addClassname('o-list', className)}
           height={height}
           ItemComponent={ItemComponent}
           items={items}
+          keyboardNavigable={keyboardNavigable}
           bodyRef={ref}
-          onItemClick={onItemClick}
-          onItemMouseEnter={onItemMouseEnter}
-          onItemMouseLeave={onItemMouseLeave}
-          onItemMouseOut={onItemMouseOut}
-          onItemMouseOver={onItemMouseOver}
+          onItemActivate={onItemActivate}
+          onItemDeactivate={onItemDeactivate}
+          onItemHighlight={onItemHighlight}
+          onItemUnhighlight={onItemUnhighlight}
+          onItemSelect={onItemSelect}
+          onItemUnselect={onItemUnselect}
+          multiSelect={multiSelect}
           style={style}
           totalSize={totalSize}
           virtualItems={isVirtual ? virtualItems : undefined}
         />
-      </ListItemsContext.Provider>
-    </ListCollectionContext.Provider>
+      </ListStateContext.Provider>
+    </ListServiceContext.Provider>
   );
 };
 

@@ -15,4 +15,5 @@ export interface DropdownProps {
   onCollapseStart?: (node: HTMLElement) => void;
   onCollapseDone?: (node: HTMLElement) => void;
   onCollapsing?: (node: HTMLElement) => void;
+  animationTimeout?: number;
 }

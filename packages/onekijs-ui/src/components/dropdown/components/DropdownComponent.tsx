@@ -8,6 +8,7 @@ import { addClassname } from '../../../utils/style';
 import { DropdownProps } from '../typings';
 
 const DropdownComponent: FC<DropdownProps> = ({
+  animationTimeout = 0,
   className,
   refElement,
   open,
@@ -67,7 +68,7 @@ const DropdownComponent: FC<DropdownProps> = ({
       <CSSTransition
         in={open}
         classNames="o-dropdown"
-        timeout={200}
+        timeout={animationTimeout}
         mountOnEnter={true}
         appear={false}
         unmountOnExit={true}

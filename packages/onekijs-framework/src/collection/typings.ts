@@ -10,6 +10,13 @@ export type Collection<T, I extends Item<T> = Item<T>, S extends CollectionState
   'addSubscriber' | 'removeSubscriber'
 > & {
   adapt(data: T | undefined): I;
+  addActive<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
+  addDisabled<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
+  addHighlighted<B extends keyof CollectionBy<T, I>>(
+    by: B,
+    target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
+  ): I[];
+  addSelected<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
   readonly data?: T[];
   readonly dataSource?: T[] | string;
   readonly items: (I | undefined)[];
@@ -30,6 +37,19 @@ export type Collection<T, I extends Item<T> = Item<T>, S extends CollectionState
   load(limit?: number, offset?: number): void;
   query(query: Query): void;
   refresh(query?: Query): void;
+  removeActive<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
+  removeDisabled<B extends keyof CollectionBy<T, I>>(
+    by: B,
+    target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
+  ): I[];
+  removeHighlighted<B extends keyof CollectionBy<T, I>>(
+    by: B,
+    target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
+  ): I[];
+  removeSelected<B extends keyof CollectionBy<T, I>>(
+    by: B,
+    target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
+  ): I[];
   reset(): void;
   setMeta<B extends keyof CollectionBy<T, I>, K extends keyof I>(
     by: B,
@@ -37,6 +57,13 @@ export type Collection<T, I extends Item<T> = Item<T>, S extends CollectionState
     key: K,
     value: I[K],
   ): I[];
+  setActive<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
+  setDisabled<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
+  setHighlighted<B extends keyof CollectionBy<T, I>>(
+    by: B,
+    target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
+  ): I[];
+  setSelected<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
   readonly state: S;
   readonly status: CollectionStatus;
   readonly total?: number;
@@ -96,14 +123,17 @@ export type CollectionFetchOptions<R = any, T = any> = Omit<FetchOptions<R, T>, 
 export type CollectionItemAdapter<T, I extends Item<T>> = (data: T | undefined, currentItems: AnonymousObject<I>) => I;
 
 export interface CollectionOptions<T, I extends Item<T>> {
+  active?: T[];
   adapter?: ItemAdapter<T>;
   autoload?: boolean;
   comparator?: QuerySortComparator;
   comparators?: AnonymousObject<QuerySortComparator>;
   dataKey?: string;
+  disabled?: T[];
   fetcher?: CollectionFetcher<T>;
   fetchOnce?: boolean;
   hasMoreKey?: string;
+  highlighted?: T[];
   initialFields?: string[];
   initialFilter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[];
   initialLimit?: number;
@@ -116,6 +146,7 @@ export interface CollectionOptions<T, I extends Item<T>> {
   mutateUrl?: boolean;
   queryEngine?: QueryEngine<T, I>;
   searcher?: QuerySearcher<T>;
+  selected?: T[];
   serializer?: QuerySerializer;
   throttle?: number;
   totalKey?: string;
@@ -131,18 +162,21 @@ export type CollectionProxy<
 };
 
 export interface CollectionState<T, I extends Item<T>> extends FetchState {
+  active?: string[];
   adapter?: ItemAdapter<T>;
   autoload?: boolean;
   comparator?: QuerySortComparator;
   comparators?: AnonymousObject<QuerySortComparator>;
   dataKey: string;
   dataSource?: T[] | string;
+  disabled?: string[];
   fetchOnce?: boolean;
   fetchOptions?: FetchOptions<CollectionFetcherResult<T>, Query | undefined>;
   fields?: string[];
   filter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[];
   hasMore?: boolean;
   hasMoreKey: string;
+  highlighted?: string[];
   items?: (I | undefined)[];
   method?: HttpMethod;
   local: boolean;
@@ -153,6 +187,7 @@ export interface CollectionState<T, I extends Item<T>> extends FetchState {
   router: Router;
   search?: Primitive;
   searcher?: QuerySearcher<T>;
+  selected?: string[];
   serializer?: QuerySerializer;
   sort?: QuerySortDir;
   sortBy?: string | QuerySortBy | QuerySortBy[];
@@ -179,11 +214,19 @@ export type Item<T = any> = {
   text?: string; // text can be undefined if the item is fetching or loading
   loadingStatus: LoadingItemStatus;
   uid: string; // this is a internal ID never visible from the outside
+  selected?: boolean;
+  highlighted?: boolean;
+  active?: boolean;
+  disabled?: boolean;
 };
 
 export type ItemAdaptee = {
   id?: string | number;
   text?: string;
+  selected?: boolean;
+  highlighted?: boolean;
+  active?: boolean;
+  disabled?: boolean;
 };
 
 export type ItemAdapter<T = any> = (data: T) => ItemAdaptee;

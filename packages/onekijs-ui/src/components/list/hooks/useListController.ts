@@ -1,7 +1,7 @@
 import { CollectionProxy, CollectionService, useCollectionInitialState, useCollectionProxy } from 'onekijs-framework';
 import { ListItem, ListState, UseListOptions } from '../typings';
 
-const useListDataSource = <T = any>(
+const useListController = <T = any>(
   dataSource: T[] | string,
   options: UseListOptions<T, ListItem<T>> = {},
 ): CollectionProxy<
@@ -16,4 +16,4 @@ const useListDataSource = <T = any>(
   return collection;
 };
 
-export default useListDataSource;
+export default useListController;

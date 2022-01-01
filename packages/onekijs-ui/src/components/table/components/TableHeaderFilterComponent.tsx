@@ -5,7 +5,8 @@ import { getCellWidth } from '../util';
 import TableInputFilterComponent from './filters/TableInputFilterComponent';
 import { useTableConfig } from '../hooks/useTableConfig';
 
-const TableHeaderFilterComponent: FC<TableHeaderCellProps> = React.memo(({ column, filter, filterable }) => {
+const TableHeaderFilterComponent: FC<TableHeaderCellProps> = React.memo((props) => {
+  const { column, filterable } = props;
   const service = useTableService();
   const { fit, grow } = useTableConfig();
   const ref = useRef<HTMLDivElement>(null);
@@ -20,7 +21,7 @@ const TableHeaderFilterComponent: FC<TableHeaderCellProps> = React.memo(({ colum
 
   return (
     <div className="o-table-header-filter" style={getCellWidth(column, fit, grow)} ref={ref}>
-      {filterable && <Component column={column} filter={filter} />}
+      {filterable && <Component {...props} />}
     </div>
   );
 });

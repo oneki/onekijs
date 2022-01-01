@@ -42,7 +42,7 @@ export { default as InputComponent } from './components/input/components/InputCo
 export { InputProps } from './components/input/typings';
 export { default as Label } from './components/label';
 export { default as List } from './components/list';
-export { default as useListDataSource } from './components/list/hooks/useListDataSource';
+export { default as useListController } from './components/list/hooks/useListController';
 export {
   ArrayListProps,
   CollectionListProps,
@@ -103,7 +103,7 @@ export {
   TableColumnWidth,
   TableConfig,
   TableController,
-  TableFilterProps,
+  TableExpandedProps,
   TableFooterCellProps,
   TableFooterProps,
   TableHeaderCellProps,

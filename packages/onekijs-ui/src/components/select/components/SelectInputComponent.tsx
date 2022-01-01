@@ -194,6 +194,7 @@ const SelectInputComponent: FC<SelectInputProps> = ({
             autoCapitalize="none"
             autoComplete="off"
             autoCorrect="off"
+            spellCheck="false"
           />
         </div>
       </div>

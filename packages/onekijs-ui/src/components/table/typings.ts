@@ -1,5 +1,4 @@
 import {
-  AnyFunction,
   Collection,
   CollectionBroker,
   CollectionBy,
@@ -7,7 +6,6 @@ import {
   FormContext,
   Item,
   ItemAdaptee,
-  LoadingItemStatus,
   QueryFilterOrCriteria,
   QuerySortBy,
   UseCollectionOptions,
@@ -70,8 +68,12 @@ export type TableBodyRowProps<T = any, I extends TableItem<T> = TableItem<T>> = 
   className?: string;
   CellComponent?: React.FC<TableBodyCellProps<T, I>>;
   columns: TableColumn<T, I>[];
-  onExpand: (item: I | undefined, index: number) => void;
-  onExpanding: (item: I | undefined, index: number) => void;
+  onExpand?: (item: I | undefined, index: number) => void;
+  onExpanding?: (item: I | undefined, index: number) => void;
+  onExpanded?: (item: I | undefined, index: number) => void;
+  onCollapse?: (item: I | undefined, index: number) => void;
+  onCollapsing?: (item: I | undefined, index: number) => void;
+  onCollapsed?: (item: I | undefined, index: number) => void;
 };
 
 export type TableConfig<T = any, I extends TableItem<T> = TableItem<T>> = {
@@ -136,14 +138,14 @@ export type TableColumnSpec<T, I extends TableItem<T> = TableItem<T>> = {
   footerClassName?: string | ((column: TableColumn<T, I>) => string);
   FooterComponent?: React.FC<TableFooterCellProps<T, I>>;
   filterable?: boolean;
-  FilterComponent?: React.FC<TableFilterProps<T, I>>;
+  FilterComponent?: React.FC<TableHeaderCellProps<T, I>>;
   headerClassName?: string | ((column: TableColumn<T, I>) => string);
-  HeaderComponent?: React.FC<TableHeaderCellProps<T, I>>;
   id: string;
   maxWidth?: string;
   minWidth?: string;
   sortable?: boolean;
   title?: string;
+  TitleComponent?: React.FC<TableHeaderCellProps<T, I>>;
   width?: string;
 };
 
@@ -164,11 +166,6 @@ export type TableExpandedProps<T = any, I extends TableItem<T> = TableItem<T>> =
   item: I;
   rowId?: string | number;
   rowIndex: number;
-};
-
-export type TableFilterProps<T = any, I extends TableItem<T> = TableItem<T>> = {
-  column: TableColumn<T, I>;
-  filter?: QueryFilterOrCriteria;
 };
 
 export type TableFooterCellProps<T = any, I extends TableItem<T> = TableItem<T>> = {
@@ -198,7 +195,6 @@ export type TableHeaderProps<T = any, I extends TableItem<T> = TableItem<T>> = {
 };
 
 export type TableItem<T = any> = Item<T> & {
-  selected?: boolean;
   expanded?: boolean;
 };
 

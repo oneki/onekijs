@@ -10,7 +10,7 @@ export const MultiSelectOptionComponent: FC<SelectOptionProps> = React.memo((pro
 MultiSelectOptionComponent.displayName = 'MultiSelectOptionComponent';
 
 const SelectOptionComponent: FC<SelectOptionProps> = React.memo(
-  ({ item, index, onClick, onMouseOver, onMouseEnter, onMouseLeave, onMouseOut, multiple = false }) => {
+  ({ item, index, onClick, onMouseEnter, onMouseLeave, multiple = false }) => {
     let content = '';
     let clickable = !!onClick;
     let hoverable = true;
@@ -39,11 +39,9 @@ const SelectOptionComponent: FC<SelectOptionProps> = React.memo(
     return (
       <div
         className={classNames}
-        onMouseOver={() => hoverable && onMouseOver && onMouseOver(item, index)}
-        onMouseEnter={() => hoverable && onMouseEnter && onMouseEnter(item, index)}
-        onMouseLeave={() => hoverable && onMouseLeave && onMouseLeave(item, index)}
-        onMouseOut={() => hoverable && onMouseOut && onMouseOut(item, index)}
-        onClick={() => clickable && onClick && onClick(item, index)}
+        onMouseEnter={() => hoverable && onMouseEnter && item && onMouseEnter(item, index)}
+        onMouseLeave={() => hoverable && onMouseLeave && item && onMouseLeave(item, index)}
+        onClick={() => clickable && onClick && item && onClick(item, index)}
       >
         {/* {multiple && <div className="o-select-option-icon">{meta?.selected? <>&#10003;</>:<></>}</div> } */}
         {multiple && (

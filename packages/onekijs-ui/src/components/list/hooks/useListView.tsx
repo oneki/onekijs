@@ -1,7 +1,7 @@
 import { Item, LoadingStatus } from 'onekijs-framework';
-import { RefObject, useCallback, useEffect } from 'react';
-import { useVirtual } from '../../../vendor/reactVirtual';
-//import { useVirtual } from 'react-virtual';
+import { RefObject, useCallback, useEffect, useReducer } from 'react';
+//import { useVirtual } from '../../../vendor/reactVirtual';
+import { useVirtual } from 'react-virtual';
 import { CollectionListProps, ListCollection, VirtualItem } from '../typings';
 import { canFetchMore } from '../utils';
 
@@ -11,11 +11,14 @@ const defaultPreload = 100;
 const defaultIncrement = 100;
 const defaultOverscan = 1;
 
+const defaultKeyExtractor = (index: number) => index;
+
 const useListView: <T = any, I extends Item<T> = Item<T>>(
   props: Pick<CollectionListProps<T, I>, 'height' | 'itemHeight' | 'overscan' | 'preload' | 'increment' | 'virtual'> & {
     ref: RefObject<HTMLDivElement>;
     dataSource: ListCollection<T, I>;
     scrollToFn?: (offset: number, defaultScrollToFn?: (offset: number) => void) => void;
+    keyExtractor?: (index: number) => number | string;
   },
 ) => {
   isVirtual: boolean;
@@ -32,10 +35,12 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
   overscan = defaultOverscan,
   preload = defaultPreload,
   increment = defaultIncrement,
+  keyExtractor,
   ref,
   virtual,
 }) => {
   const isVirtual = virtual === undefined ? height !== undefined : virtual;
+  const [force, forceMeasure] = useReducer((x) => x + 1, 0);
 
   const estimatedItemHeight = useCallback(
     (index: number) => {
@@ -44,16 +49,29 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
       }
       return itemHeight;
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [itemHeight],
+  );
+
+  // Trick for force recalcutate position without losing measurementCache
+  // In the react-virtual code, the position are recalculate if the forceExtractor function change
+  const forceKeyExtractor = useCallback(
+    (index) => {
+      const fn = keyExtractor || defaultKeyExtractor;
+      return fn(index);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [keyExtractor, force],
   );
 
   const state = dataSource.state;
 
-  const { totalSize, virtualItems, scrollToIndex, scrollToOffset, measure } = useVirtual({
+  const { totalSize, virtualItems, scrollToIndex, scrollToOffset } = useVirtual({
     size: state.items?.length || 0,
     estimateSize: estimatedItemHeight,
     parentRef: ref,
     overscan: overscan,
+    keyExtractor: forceKeyExtractor,
   });
 
   useEffect(() => {
@@ -77,7 +95,7 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
     isVirtual,
     scrollToIndex,
     scrollToOffset,
-    measure,
+    measure: forceMeasure,
     totalSize,
     virtualItems,
   };

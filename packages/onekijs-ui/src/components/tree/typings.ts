@@ -1,6 +1,5 @@
 import {
   Collection,
-  CollectionBy,
   CollectionProxy,
   CollectionState,
   Item,
@@ -41,16 +40,8 @@ export type TreeController<
   I extends TreeItem<T> = TreeItem<T>,
   S extends TreeState<T, I> = TreeState<T, I>
 > = Collection<T, I, S> & {
-  addSelected<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
-  activate: TreeItemHandler<T, I>;
   collapse: TreeItemHandler<T, I>;
   expand: TreeItemHandler<T, I>;
-  removeSelected<B extends keyof CollectionBy<T, I>>(
-    by: B,
-    target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
-  ): I[];
-  select: TreeItemHandler<T, I>;
-  setSelected<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
 };
 
 export type TreeItem<T = any> = Item<T> & {
@@ -78,10 +69,8 @@ export type TreeItemHandler<T, I extends TreeItem<T> = TreeItem<T>> = (item: I) 
 
 export type TreeItemProps<T = any, I extends TreeItem<T> = TreeItem<T>> = ListItemProps<T, I> & {
   className?: string;
-  onActivate: TreeItemHandler<T, I>;
   onCollapse: TreeItemHandler<T, I>;
   onExpand: TreeItemHandler<T, I>;
-  onSelect: TreeItemHandler<T, I>;
 };
 
 export type TreeItemToggleProps<T = any, I extends TreeItem<T> = TreeItem<T>> = Pick<
@@ -103,7 +92,7 @@ export type TreeProps<
 };
 
 export type TreeState<T, I extends TreeItem<T> = TreeItem<T>> = CollectionState<T, I> & {
-  active?: string;
+  active?: string[];
   adapter?: TreeItemAdapter<T>;
   dataSource?: T[] | string;
   expanded?: string[];
@@ -111,7 +100,7 @@ export type TreeState<T, I extends TreeItem<T> = TreeItem<T>> = CollectionState<
 };
 
 export type UseTreeOptions<T, I extends TreeItem<T>> = UseCollectionOptions<T, I> & {
-  active?: T;
+  active?: T[];
   adapter?: TreeItemAdapter<T>;
   dataSource?: T[] | string;
   selected?: T[];

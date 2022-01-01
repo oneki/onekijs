@@ -5,11 +5,10 @@ import ArrayListComponent from './ArrayListComponent';
 import CollectionListComponent from './CollectionListComponent';
 
 const ListComponent: React.FC<ListProps> = React.memo((props) => {
-  const dataSource = props.dataSource;
-  if (isCollection(dataSource)) {
-    return <CollectionListComponent {...props} dataSource={dataSource} />;
+  if (isCollection(props.controller)) {
+    return <CollectionListComponent {...props} controller={props.controller} />;
   } else {
-    return <ArrayListComponent {...props} dataSource={dataSource} />;
+    return <ArrayListComponent {...props} dataSource={props.dataSource || []} />;
   }
 });
 

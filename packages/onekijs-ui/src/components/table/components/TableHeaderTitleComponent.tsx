@@ -38,7 +38,7 @@ const TableHeaderTitleComponent: FC<TableHeaderCellProps> = React.memo((props) =
   const className =
     typeof column.headerClassName === 'function' ? column.headerClassName(column) : column.headerClassName;
 
-  const Component = column.HeaderComponent || DefaultTableHeaderTitleComponent;
+  const Component = column.TitleComponent || DefaultTableHeaderTitleComponent;
 
   useEffect(() => {
     if (!initializedRef.current && ref.current !== null) {

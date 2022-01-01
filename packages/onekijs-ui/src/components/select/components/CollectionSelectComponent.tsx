@@ -455,6 +455,7 @@ const CollectionSelectComponent: FC<SelectComponentProps> = ({
         open={open}
         distance={0}
         onUpdate={onDropDownUpdate}
+        animationTimeout={200}
         onDropStart={() => {
           setDropping(true);
         }}
@@ -474,7 +475,7 @@ const CollectionSelectComponent: FC<SelectComponentProps> = ({
           height={height}
           ItemComponent={ItemComponent ? ItemComponent : multiple ? MultiSelectOptionComponent : SelectOptionComponent}
           items={selectItems}
-          onItemClick={onSelect}
+          onItemSelect={onSelect}
           totalSize={totalSize}
           virtualItems={isVirtual ? virtualItems : undefined}
         />

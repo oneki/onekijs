@@ -1,6 +1,5 @@
 import {
   AnonymousObject,
-  CollectionBy,
   CollectionService,
   isCollectionFetching,
   isCollectionInitializing,
@@ -8,7 +7,7 @@ import {
   service,
 } from 'onekijs-framework';
 import React from 'react';
-import { TableController, TableColumn, TableColumnWidth, TableItem, TableState } from './typings';
+import { TableColumn, TableColumnWidth, TableController, TableItem, TableState } from './typings';
 
 export const parseColumnWidth = (width: string | number = 'auto'): TableColumnWidth => {
   const regex = /^\s*(auto|(?:(?:([0-9]+)|(?:([0-9]+)\s*(px|%)))\s*(grow|force)?)|(grow))\s*$/;
@@ -81,13 +80,6 @@ class TableService<T = any, I extends TableItem<T> = TableItem<T>, S extends Tab
     this.resetWidth();
   }
 
-  @reducer
-  addSelected<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[] {
-    const items = this.setMeta(by, target, 'selected', true);
-    this.state.selected = [...new Set((this.state.selected || []).concat(items.map((item) => item.uid)))];
-    return items;
-  }
-
   get columns(): TableColumn<T, I>[] {
     return this.state.columns;
   }
@@ -133,31 +125,11 @@ class TableService<T = any, I extends TableItem<T> = TableItem<T>, S extends Tab
   }
 
   @reducer
-  removeSelected<B extends keyof CollectionBy<T, I>>(
-    by: B,
-    target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
-  ): I[] {
-    const items = this.setMeta(by, target, 'selected', false);
-    const removeUids = items.map((item) => item.uid);
-    this.state.selected = (this.state.selected || []).filter((s) => !removeUids.includes(s));
-    return items;
-  }
-
-  @reducer
   resetWidth(): void {
     this.state.columns.forEach((column) => {
       column.computedWidth = undefined;
     });
     this._step = 'initializing';
-  }
-
-  @reducer
-  setSelected<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[] {
-    const current = this.state.selected || [];
-    this.setMeta('uid', current, 'selected', false);
-    const items = this.setMeta(by, target, 'selected', true);
-    this.state.selected = items.map((item) => item.uid);
-    return items;
   }
 
   @reducer

@@ -1,6 +1,5 @@
 import {
   AnonymousObject,
-  CollectionBy,
   CollectionService,
   ensureFieldValue,
   isNull,
@@ -15,25 +14,8 @@ import { TreeController, TreeItem, TreeItemAdaptee, TreeState } from './typings'
 class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeState<T, I> = TreeState<T, I>>
   extends CollectionService<T, I, S>
   implements TreeController<T, I> {
-  @reducer
-  activate(item: I): void {
-    if (this.state.active) {
-      this.setMeta('item', this.uidIndex[this.state.active], 'active', false);
-    }
-    this.state.active = item.uid;
-    this.setMeta('item', item, 'active', true);
-  }
-
   adapt(data: T | undefined): I {
     return this._adapt(data);
-  }
-
-  @reducer
-  addSelected<B extends keyof CollectionBy<T, I>>(
-    _by: B,
-    _target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
-  ): I[] {
-    throw new Error('Method not implemented.');
   }
 
   @reducer
@@ -67,26 +49,6 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
         this._adapt(entry, context);
       });
     }
-  }
-
-  removeSelected<B extends keyof CollectionBy<T, I>>(
-    _by: B,
-    _target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
-  ): I[] {
-    throw new Error('Method not implemented.');
-  }
-
-  @reducer
-  select(item: I): void {
-    this.addSelected('item', item);
-    this.setMeta('item', item, 'selected', true);
-  }
-
-  setSelected<B extends keyof CollectionBy<T, I>>(
-    _by: B,
-    _target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
-  ): I[] {
-    throw new Error('Method not implemented.');
   }
 
   protected _adapt(data: T | undefined, context?: { position?: number; level: number }): I {

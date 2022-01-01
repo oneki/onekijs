@@ -258,6 +258,7 @@ export function useVirtual({
     pendingMeasuredCacheIndexesRef.current = [];
 
     const measurements = latestRef.current.measurements.slice(0, min);
+    console.log('measureCache', measuredCache);
 
     for (let i = min; i < size; i++) {
       const key = keyExtractor(i);
@@ -306,11 +307,9 @@ export function useVirtual({
 
             if (measuredSize !== item.size) {
               const { scrollOffset } = latestRef.current;
-              console.log(item);
               if (item.start < scrollOffset) {
                 const delta = measuredSize - item.size;
                 scrollOffsetWithAdjustmentsRef.current += delta;
-                console.log(item.start, scrollOffset);
                 defaultScrollToFn(scrollOffsetWithAdjustmentsRef.current, 'SizeChanged');
               }
 

@@ -13,28 +13,11 @@ const TreeBodyComponent: React.FC<ControllerTreeProps> = ({ className }) => {
   const ItemComponentRef = useLazyRef<React.FC<ListItemProps<any, any>>>(() => {
     const Component = (props: ListItemProps<any, any>) => {
       const service = useTreeService();
-      const activate = useMemo(() => service.activate, [service]);
       const collapse = useMemo(() => service.collapse, [service]);
       const expand = useMemo(() => service.expand, [service]);
-      const select = useMemo(() => service.select, [service]);
-      const {
-        onActivate = activate,
-        onCollapse = collapse,
-        onExpand = expand,
-        onSelect = select,
-        itemClassName,
-      } = useTreeConfig();
+      const { onCollapse = collapse, onExpand = expand, itemClassName } = useTreeConfig();
       const className = typeof itemClassName === 'function' ? itemClassName(props.item) : itemClassName;
-      return (
-        <TreeItemComponent
-          {...props}
-          className={className}
-          onActivate={onActivate}
-          onCollapse={onCollapse}
-          onExpand={onExpand}
-          onSelect={onSelect}
-        />
-      );
+      return <TreeItemComponent {...props} className={className} onCollapse={onCollapse} onExpand={onExpand} />;
     };
     Component.displayName = 'TreeItemComponent';
     return Component;

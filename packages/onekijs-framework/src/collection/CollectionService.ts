@@ -107,6 +107,16 @@ export default class CollectionService<
   }
 
   @reducer
+  addActive<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[] {
+    return this._addByMeta('active', by, target);
+  }
+
+  @reducer
+  addDisabled<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[] {
+    return this._addByMeta('disabled', by, target);
+  }
+
+  @reducer
   addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId: QueryFilterId = rootFilterId): void {
     const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
@@ -133,6 +143,19 @@ export default class CollectionService<
       },
       parentFilterId,
     );
+  }
+
+  @reducer
+  addHighlighted<B extends keyof CollectionBy<T, I>>(
+    by: B,
+    target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
+  ): I[] {
+    return this._addByMeta('highlighted', by, target);
+  }
+
+  @reducer
+  addSelected<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[] {
+    return this._addByMeta('selected', by, target);
   }
 
   @reducer
@@ -400,11 +423,43 @@ export default class CollectionService<
   }
 
   @reducer
+  removeActive<B extends keyof CollectionBy<T, I>>(
+    by: B,
+    target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
+  ): I[] {
+    return this._removeByMeta('active', by, target);
+  }
+
+  @reducer
+  removeDisabled<B extends keyof CollectionBy<T, I>>(
+    by: B,
+    target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
+  ): I[] {
+    return this._removeByMeta('disabled', by, target);
+  }
+
+  @reducer
   removeFilter(filterId: QueryFilterId): void {
     const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
     this._removeFilter(query, filterId);
     this.refresh(query);
+  }
+
+  @reducer
+  removeHighlighted<B extends keyof CollectionBy<T, I>>(
+    by: B,
+    target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
+  ): I[] {
+    return this._removeByMeta('highlighted', by, target);
+  }
+
+  @reducer
+  removeSelected<B extends keyof CollectionBy<T, I>>(
+    by: B,
+    target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
+  ): I[] {
+    return this._removeByMeta('selected', by, target);
   }
 
   @reducer
@@ -436,6 +491,11 @@ export default class CollectionService<
   }
 
   @reducer
+  setActive<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[] {
+    return this._setByMeta('active', by, target);
+  }
+
+  @reducer
   setData(data: T[]): void {
     if (!this.state.local) {
       throw new DefaultBasicError('Call to unsupported method setData of a remote collection');
@@ -452,11 +512,24 @@ export default class CollectionService<
   }
 
   @reducer
+  setDisabled<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[] {
+    return this._setByMeta('disabled', by, target);
+  }
+
+  @reducer
   setFields(fields: string[]): void {
     const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
     this._setFields(query, fields);
     this.refresh(query);
+  }
+
+  @reducer
+  setHighlighted<B extends keyof CollectionBy<T, I>>(
+    by: B,
+    target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
+  ): I[] {
+    return this._setByMeta('highlighted', by, target);
   }
 
   @reducer
@@ -513,6 +586,11 @@ export default class CollectionService<
   }
 
   @reducer
+  setSelected<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[] {
+    return this._setByMeta('selected', by, target);
+  }
+
+  @reducer
   setStatus(status: LoadingStatus): void {
     this.state.status = status;
   }
@@ -541,6 +619,16 @@ export default class CollectionService<
     const item: I = this._buildItem(currentItem, data, adaptee, context);
     this._indexItem(item, position);
     return item;
+  }
+
+  protected _addByMeta<B extends keyof CollectionBy<T, I>>(
+    field: 'active' | 'disabled' | 'highlighted' | 'selected',
+    by: B,
+    target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
+  ): I[] {
+    const items = this.setMeta(by, target, field, true);
+    this.state[field] = [...new Set((this.state[field] || []).concat(items.map((item) => item.uid)))];
+    return items;
   }
 
   protected _addFilter(
@@ -1087,6 +1175,18 @@ export default class CollectionService<
     return parseQuery(location.query || {});
   }
 
+  @reducer
+  protected _removeByMeta<B extends keyof CollectionBy<T, I>>(
+    field: 'active' | 'disabled' | 'highlighted' | 'selected',
+    by: B,
+    target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
+  ): I[] {
+    const items = this.setMeta(by, target, field, false);
+    const removeUids = items.map((item) => item.uid);
+    this.state[field] = (this.state[field] || []).filter((s) => !removeUids.includes(s));
+    return items;
+  }
+
   protected _removeFilter(query: Query, filterId: QueryFilterId): void {
     const filter = formatFilter(query.filter);
     if (filter) {
@@ -1115,6 +1215,18 @@ export default class CollectionService<
     if (sortBy) {
       query.sortBy = sortBy.filter((sort) => sort.id !== id);
     }
+  }
+
+  protected _setByMeta<B extends keyof CollectionBy<T, I>>(
+    field: 'active' | 'disabled' | 'highlighted' | 'selected',
+    by: B,
+    target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
+  ): I[] {
+    const current = this.state[field] || [];
+    this.setMeta('uid', current, field, false);
+    const items = this.setMeta(by, target, field, true);
+    this.state[field] = items.map((item) => item.uid);
+    return items;
   }
 
   protected _setFields(query: Query, fields: string[]): void {
