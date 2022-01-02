@@ -26,7 +26,7 @@ const TreeBodyComponent: React.FC<ControllerTreeProps> = ({ className }) => {
   const service = useTreeService();
   const ref = useRef<HTMLDivElement>(null);
   const { items, isVirtual, totalSize, virtualItems } = useListView({
-    dataSource: service,
+    controller: service,
     ref,
   });
 
@@ -39,6 +39,8 @@ const TreeBodyComponent: React.FC<ControllerTreeProps> = ({ className }) => {
       bodyRef={ref}
       totalSize={totalSize}
       virtualItems={isVirtual ? virtualItems : undefined}
+      service={service}
+      state={service.state}
     />
   );
 };

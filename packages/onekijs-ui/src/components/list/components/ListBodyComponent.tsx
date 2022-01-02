@@ -1,8 +1,6 @@
-import { get, Item, last, useEventListener } from 'onekijs-framework';
+import { get, Item, last, useEventListener, useIsomorphicLayoutEffect } from 'onekijs-framework';
 import React, { useCallback } from 'react';
 import { addStyle } from '../../../utils/style';
-import useListService from '../hooks/useListService';
-import useListState from '../hooks/useListState';
 import { ListBodyProps } from '../typings';
 
 const findItemIndex = (items?: (Item<unknown> | undefined)[], uid?: string): number => {
@@ -36,13 +34,12 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
   onItemUnhighlight,
   parentRef,
   scrollToIndex,
+  service,
+  state,
   style,
   totalSize,
   virtualItems,
 }) => {
-  const service = useListService();
-  const state = useListState();
-
   const onItemClick = useCallback(
     (item: any, index: number) => {
       if (item !== undefined && !item.disabled) {
@@ -94,7 +91,6 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
     (item) => {
       if (scrollToIndex) {
         const index = findItemIndex(state.items, item.uid);
-        console.log('scoll to', index);
         if (index !== undefined) {
           scrollToIndex(index, { align: 'auto' });
         }
@@ -162,8 +158,28 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
           break;
       }
     },
-    [keyboardNavigable, onItemActivate, onItemDeactivate, onItemClick, service, state.active, state.items],
+    [
+      keyboardNavigable,
+      onItemActivate,
+      onItemDeactivate,
+      onItemClick,
+      scrollToItem,
+      service,
+      state.active,
+      state.items,
+    ],
   );
+
+  useIsomorphicLayoutEffect(() => {
+    if (scrollToIndex) {
+      const activeUid = state.active === undefined ? undefined : state.active[0];
+      const activeIndex = findItemIndex(state.items, activeUid);
+
+      if (activeIndex >= 0) {
+        scrollToIndex(activeIndex, { align: 'center' });
+      }
+    }
+  }, []);
 
   useEventListener('keydown', onKeyDown, false);
 

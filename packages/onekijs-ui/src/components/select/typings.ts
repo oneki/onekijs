@@ -18,10 +18,19 @@ import {
   ListConfig,
 } from '../list/typings';
 
-export type ArraySelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = _SelectProps<T, I> & {
+export type ArraySelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = SelectConfig<T, I> & {
   adapter?: SelectItemAdapter<T>;
   dataSource: T[] | string;
   fetchOnce?: boolean;
+};
+
+export type CollectionSelectProps<
+  T = any,
+  I extends SelectItem<T> = SelectItem<T>,
+  S extends SelectState<T, I> = SelectState<T, I>,
+  C extends SelectCollection<T, I, S> = SelectCollection<T, I, S>
+> = SelectConfig<T, I> & {
+  controller: CollectionProxy<T, I, S, C>;
 };
 
 export type FormSelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = SelectProps<T, I> &
@@ -30,15 +39,6 @@ export type FormSelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = 
     defaultValue?: T | T[] | null;
     FieldComponent?: React.FC<SelectProps>;
   };
-
-export type SelectComponentProps<
-  T = any,
-  I extends SelectItem<T> = SelectItem<T>,
-  S extends SelectState<T, I> = SelectState<T, I>,
-  C extends SelectCollection<T, I, S> = SelectCollection<T, I, S>
-> = _SelectProps<T, I> & {
-  dataSource: CollectionProxy<T, I, S, C>;
-};
 
 export type SelectCollection<
   T,
@@ -95,9 +95,14 @@ export type SelectProps<
   I extends SelectItem<T> = SelectItem<T>,
   S extends SelectState<T, I> = SelectState<T, I>,
   C extends SelectCollection<T, I, S> = SelectCollection<T, I, S>
-> = ArraySelectProps<T, I> | SelectComponentProps<T, I, S, C>;
+> = SelectConfig<T, I> & {
+  adapter?: SelectItemAdapter<T>;
+  controller?: CollectionProxy<T, I, S, C>;
+  dataSource?: T[] | string;
+  fetchOnce?: boolean;
+};
 
-export type _SelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = ListConfig<T, I> & {
+export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = ListConfig<T, I> & {
   InputComponent?: FC<SelectInputProps<T, I>>;
   IconComponent?: FC<SelectIconProps>;
   placeholder?: string;

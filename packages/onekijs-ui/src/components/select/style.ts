@@ -26,7 +26,7 @@ import { lighten } from '../../utils/color';
 import { preflight } from '../../utils/style';
 import { SelectProps } from './typings';
 
-const selectStyle: ComponentStyle<SelectProps> = ({ multiple, theme }) => {
+const selectStyle: ComponentStyle<SelectProps> = ({ theme }) => {
   return css`
     ${preflight()}
     ${width('100%')}
@@ -293,15 +293,18 @@ const selectStyle: ComponentStyle<SelectProps> = ({ multiple, theme }) => {
         &.o-select-option-clickable {
           ${cursor('pointer')}
         }
-        &.o-select-option-selected {
-          ${backgroundColor(multiple ? lighten(theme.colors.primary, 300) : 'primary', {
-            hover: multiple ? lighten(theme.colors.primary, 300) : 'primary',
-          })}
-          ${color(multiple ? 'inherits' : 'white', { hover: multiple ? 'inherits' : 'white' })}
-        }
         &.o-select-option-highlighted {
-          ${backgroundColor(multiple ? 'primary' : 'gray-200', { hover: multiple ? 'primary' : 'gray-200' })}
-          ${color(multiple ? 'white' : 'inherits')}
+          ${backgroundColor('gray-200')}
+          ${color('inherit')}
+        }
+        &.o-select-option-selected {
+          ${backgroundColor('primary')}
+          ${color('white')}
+        }
+
+        &.o-select-option-active {
+          ${backgroundColor(lighten(theme.colors.primary, 300))}
+          ${color('inherit')}
         }
 
 

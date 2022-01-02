@@ -2,7 +2,7 @@ import { CollectionProxy, CollectionService, useCollectionInitialState, useColle
 import { UseListOptions } from '../../list/typings';
 import { SelectItem, SelectState } from '../typings';
 
-const useSelectDataSource = <T = any>(
+const useSelectController = <T = any>(
   dataSource: T[] | string,
   options: UseListOptions<T, SelectItem<T>> = {},
 ): CollectionProxy<
@@ -17,4 +17,4 @@ const useSelectDataSource = <T = any>(
   return collection;
 };
 
-export default useSelectDataSource;
+export default useSelectController;

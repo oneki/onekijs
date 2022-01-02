@@ -1,8 +1,8 @@
 import {
   Collection,
   CollectionProxy,
-  Item,
   CollectionState,
+  Item,
   ItemAdaptee,
   ItemAdapter,
   UseCollectionOptions,
@@ -15,8 +15,13 @@ export type ArrayListProps<T = any, I extends ListItem<T> = ListItem<T>> = ListC
   fetchOnce?: boolean;
 };
 
-export type ListBodyProps<T = any, I extends ListItem<T> = ListItem<T>> = Pick<
-  ListProps<T, I>,
+export type ListBodyProps<
+  T = any,
+  I extends ListItem<T> = ListItem<T>,
+  S extends ListState<T, I> = ListState<T, I>,
+  C extends ListCollection<T, I, S> = ListCollection<T, I, S>
+> = Pick<
+  CollectionListProps<T, I>,
   | 'onItemSelect'
   | 'onItemUnselect'
   | 'onItemActivate'
@@ -33,6 +38,8 @@ export type ListBodyProps<T = any, I extends ListItem<T> = ListItem<T>> = Pick<
   ItemComponent: FC<ListItemProps<T, I>>;
   items: (Item<T> | undefined)[];
   parentRef?: React.RefObject<HTMLDivElement>;
+  service: C;
+  state: S;
   style?: React.CSSProperties;
   totalSize?: number;
   scrollToIndex?: (index: number, options?: { align: 'start' | 'center' | 'end' | 'auto' }) => void;

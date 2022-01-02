@@ -5,11 +5,11 @@ import ArraySelectComponent from './ArraySelectComponent';
 import CollectionSelectComponent from './CollectionSelectComponent';
 
 const SelectComponent: React.FC<SelectProps> = React.memo((props) => {
-  const dataSource = props.dataSource;
-  if (isCollection(dataSource)) {
-    return <CollectionSelectComponent {...props} dataSource={dataSource} />;
+  const controller = props.controller;
+  if (isCollection(controller)) {
+    return <CollectionSelectComponent {...props} controller={controller} />;
   } else {
-    return <ArraySelectComponent {...props} dataSource={dataSource} />;
+    return <ArraySelectComponent {...props} dataSource={props.dataSource || []} />;
   }
 });
 

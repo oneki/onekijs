@@ -12,7 +12,7 @@ MultiSelectOptionComponent.displayName = 'MultiSelectOptionComponent';
 const SelectOptionComponent: FC<SelectOptionProps> = React.memo(
   ({ item, index, onClick, onMouseEnter, onMouseLeave, multiple = false }) => {
     let content = '';
-    let clickable = !!onClick;
+    let clickable = !!onClick && !item?.disabled;
     let hoverable = true;
     if (item?.data === undefined && item?.loadingStatus === LoadingStatus.Loading) {
       content = 'loading';
@@ -24,6 +24,9 @@ const SelectOptionComponent: FC<SelectOptionProps> = React.memo(
 
     const classNames = useMemo(() => {
       const classNames = ['o-select-option'];
+      if (item?.disabled) {
+        classNames.push('o-select-option-disabled');
+      }
       if (clickable) {
         classNames.push('o-select-option-clickable');
       }
@@ -33,6 +36,10 @@ const SelectOptionComponent: FC<SelectOptionProps> = React.memo(
       if (item?.selected) {
         classNames.push('o-select-option-selected');
       }
+      if (item?.active) {
+        classNames.push('o-select-option-active');
+      }
+
       return classNames.join(' ');
     }, [item, clickable, hoverable]);
 

@@ -1,5 +1,5 @@
 import { CollectionService, CollectionState, Fetcher, Query, useForm, useService } from 'onekijs';
-import { FormSelect, SelectItem, useSelectDataSource } from 'onekijs-ui';
+import { FormSelect, SelectItem, useSelectController } from 'onekijs-ui';
 import React, { useCallback } from 'react';
 import { User, userAdapter, users, userSearcher } from '../data/users';
 
@@ -30,12 +30,12 @@ export const SelectPage = () => {
     [service],
   );
 
-  const collection = useSelectDataSource<User>('http://localhost', {
+  const collection = useSelectController<User>('http://localhost', {
     adapter: userAdapter,
     fetcher
   });
 
-  const collection2 = useSelectDataSource<User>('http://localhost', {
+  const collection2 = useSelectController<User>('http://localhost', {
     adapter: userAdapter,
     fetcher
   });
@@ -49,7 +49,7 @@ export const SelectPage = () => {
     <div style={{display: 'flex', justifyContent: 'center'}}>
       <div style={{width: '800px', padding: '10px'}}>
 
-          <FormSelect label="Simple select" size="medium" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" dataSource={collection} name="simple" required /><br/>
+          <FormSelect label="Simple select" size="medium" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" controller={collection} name="simple" required /><br/>
           {/* <FormSelect label="Simple select" size="small" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" items={collection} name="simple" required /><br/>
           <FormSelect label="Simple select" help="this is the help" size="medium" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" items={collection} name="simple" required /><br/>
           <FormSelect label="Simple select" size="large" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" items={collection} name="simple" required /><br/>
@@ -57,7 +57,7 @@ export const SelectPage = () => {
 
       </div>
       <div style={{width: '800px', padding: '10px'}}>
-          <FormSelect label="Multi select" help={<>this is the help<br/><a href="https://www.google.fr">Second Line</a></>} layout='horizontal' size="medium" description="Multiple entries are permitted" multiple={true} placeholder="Search..." dataSource={collection2} name="multi" required /><br/>
+          <FormSelect label="Multi select" help={<>this is the help<br/><a href="https://www.google.fr">Second Line</a></>} layout='horizontal' size="medium" description="Multiple entries are permitted" multiple={true} placeholder="Search..." controller={collection2} name="multi" required /><br/>
           {/* <FormSelect label="Multi select" layout='horizontal' size="xsmall" description="Multiple entries are permitted" multiple={true} placeholder="Search..." items={collection2} name="multi" /><br/>
           <FormSelect label="Multi select" layout='horizontal' size="small" description="Multiple entries are permitted" multiple={true} placeholder="Search..." items={collection2} name="multi" /><br/>
           <FormSelect label="Multi select" help={<>this is the help<br/><a href="https://www.google.fr">Second Line</a></>} layout='horizontal' size="medium" description="Multiple entries are permitted" multiple={true} placeholder="Search..." items={collection2} name="multi" required /><br/>

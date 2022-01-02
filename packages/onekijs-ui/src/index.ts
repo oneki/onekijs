@@ -65,7 +65,7 @@ export {
 export { default as Select } from './components/select';
 export { default as CollectionSelectComponent } from './components/select/components/CollectionSelectComponent';
 export { default as FormSelect } from './components/select/FormSelect';
-export { default as useSelectDataSource } from './components/select/hooks/useSelectDataSource';
+export { default as useSelectController } from './components/select/hooks/useSelectController';
 export {
   FormSelectProps,
   SelectIconProps,

@@ -1,7 +1,7 @@
 import { CollectionBroker, useField, extractValidators } from 'onekijs-framework';
 import React, { useEffect } from 'react';
 import Select from '../../../select';
-import useSelectDataSource from '../../../select/hooks/useSelectDataSource';
+import useSelectController from '../../../select/hooks/useSelectController';
 import { TableBodyCellProps, UseSelectColumnOptions } from '../../typings';
 import useFormTableContext from '../../hooks/useFormTableContext';
 import { SelectItem } from '../../../select/typings';
@@ -15,16 +15,16 @@ const SelectCellComponent = (
     const [validators] = extractValidators(options);
     const field = useField(`${tableName}.${rowIndex}.${column.id}`, validators);
 
-    const collection = useSelectDataSource(options.dataSource, options);
+    const controller = useSelectController(options.dataSource, options);
 
     useEffect(() => {
-      broker.addSubscriber(collection);
+      broker.addSubscriber(controller);
       return () => {
-        broker.removeSubscriber(collection);
+        broker.removeSubscriber(controller);
       };
-    }, [collection]);
+    }, [controller]);
 
-    return <Select {...options} {...field} dataSource={collection} className={'o-table-select'} />;
+    return <Select {...options} {...field} controller={controller} className={'o-table-select'} />;
   };
   SelectCellComponent.displayName = 'SelectCellComponent';
   return SelectCellComponent;

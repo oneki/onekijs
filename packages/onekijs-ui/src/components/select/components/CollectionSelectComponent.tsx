@@ -1,29 +1,31 @@
 import {
   AnonymousObject,
   Collection,
+  first,
   get,
   isCollectionFetching,
   isCollectionLoading,
   Item,
+  last,
   useEventListener,
-  useIsomorphicLayoutEffect,
+  useLazyRef,
   ValidationStatus,
 } from 'onekijs-framework';
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
 import { useClickOutside, useFocusOutside } from '../../../utils/event';
 import { addClassname } from '../../../utils/style';
 import Dropdown from '../../dropdown';
 import ListBodyComponent from '../../list/components/ListBodyComponent';
 import useListView from '../../list/hooks/useListView';
-import { SelectComponentProps, SelectItem, SelectOptionHandler, SelectOptionSelectionHandler } from '../typings';
+import { CollectionSelectProps, SelectItem, SelectOptionHandler } from '../typings';
 import SelectInputComponent from './SelectInputComponent';
 import SelectOptionComponent, { MultiSelectOptionComponent } from './SelectOptionComponent';
 
-const findItem = (dataSource: Collection<any, SelectItem<any>>, pattern: string): any => {
-  if (dataSource.items === undefined) {
+const findItem = (controller: Collection<any, SelectItem<any>>, pattern: string): any => {
+  if (controller.items === undefined) {
     return undefined;
   }
-  return dataSource.items.find((i) => {
+  return controller.items.find((i) => {
     if (i === undefined) {
       return false;
     }
@@ -34,11 +36,11 @@ const findItem = (dataSource: Collection<any, SelectItem<any>>, pattern: string)
   });
 };
 
-const findItemIndex = (dataSource: Collection<any, SelectItem<any>>, item?: Item<any>): number => {
-  if (dataSource.items === undefined) {
+const findItemIndex = (controller: Collection<any, SelectItem<any>>, item?: Item<any>): number => {
+  if (controller.items === undefined) {
     return -1;
   }
-  return dataSource.items.findIndex((i) => {
+  return controller.items.findIndex((i) => {
     if (i === undefined) {
       return false;
     }
@@ -49,52 +51,24 @@ const findItemIndex = (dataSource: Collection<any, SelectItem<any>>, item?: Item
   });
 };
 
-const diffItems = (
-  previousItems: Item<any>[] | undefined,
-  nextItems: Item<any>[] | undefined,
-): { removed: Item<any>[]; added: Item<any>[] } => {
-  if (previousItems === undefined && nextItems === undefined) {
-    return {
-      added: [],
-      removed: [],
-    };
+const scrollToSelected = (controller: Collection<any, SelectItem<any>>) => {
+  const scrollTo: { index: number; align: 'start' | 'center' | 'end' | 'auto' } = { index: 0, align: 'start' };
+  const selectedUid = first(controller.state.selected);
+  if (selectedUid !== undefined) {
+    const selectedItem = controller.getItem(selectedUid);
+    const selectedIndex = findItemIndex(controller, selectedItem);
+    if (selectedIndex > 0) {
+      scrollTo.index = selectedIndex;
+      scrollTo.align = 'center';
+    }
   }
-
-  if (previousItems === undefined && nextItems !== undefined) {
-    return {
-      added: nextItems,
-      removed: [],
-    };
-  }
-
-  if (previousItems !== undefined && nextItems === undefined) {
-    return {
-      added: [],
-      removed: previousItems,
-    };
-  }
-
-  if (previousItems !== undefined && nextItems !== undefined) {
-    const previousItemIds = previousItems.map((previousItem) => previousItem.id);
-    const nextItemIds = nextItems.map((nextItem) => nextItem.id);
-    const added = nextItems.filter((nextItem) => !previousItemIds.includes(nextItem.id));
-    const removed = previousItems.filter((previousItem) => !nextItemIds.includes(previousItem.id));
-    return {
-      added,
-      removed,
-    };
-  }
-
-  return {
-    added: [],
-    removed: [],
-  };
+  return scrollTo;
 };
 
-const CollectionSelectComponent: FC<SelectComponentProps> = ({
+const CollectionSelectComponent: FC<CollectionSelectProps> = ({
   className = '',
   placeholder,
-  dataSource,
+  controller,
   InputComponent = SelectInputComponent,
   ItemComponent,
   autoFocus,
@@ -107,82 +81,46 @@ const CollectionSelectComponent: FC<SelectComponentProps> = ({
   status = ValidationStatus.None,
   size = 'medium',
 }) => {
-  const [open, _setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [focus, setFocus] = useState(false);
   const stateRef = useRef<AnonymousObject>({});
-  const currentProxyItem = useRef<SelectItem<any> | undefined>();
+  const service = controller.asService();
 
-  const currentScrollItem = useRef<SelectItem<any> | undefined>();
-  const currentScrollIndex = useRef<number | undefined>();
-  const scrollToRef = useRef<{ index: number; align: 'start' | 'center' | 'end' | 'auto' } | undefined>();
-  const [keyboardItem, setKeyboardItem] = useState<SelectItem<any> | undefined>();
-  const arrowItemRef = useRef<SelectItem<any> | undefined>();
-
-  const loading = isCollectionLoading(dataSource);
-  const fetching = isCollectionFetching(dataSource);
+  const loading = isCollectionLoading(controller);
+  const fetching = isCollectionFetching(controller);
 
   const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
+  const scrollToRef = useLazyRef<{ index: number; align: 'start' | 'center' | 'end' | 'auto' } | undefined>(() => {
+    return scrollToSelected(controller);
+  });
 
-  const tokens = useMemo(() => {
-    return multiple && Array.isArray(value) ? value.map((v) => dataSource.adapt(v)) : undefined;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
-
-  const previousTokensRef = useRef<Item<any>[] | undefined>();
+  const tokens = useMemo<SelectItem<any>[]>(() => {
+    return (controller.state.selected || [])
+      .map((uid) => service.getItem(uid))
+      .filter((item) => item !== undefined) as SelectItem<any>[];
+  }, [controller.state.selected, service]);
 
   const proxyItem = useMemo(() => {
-    const search = dataSource.getSearch();
+    const search = controller.getSearch();
 
-    if (keyboardItem !== undefined) {
-      return keyboardItem;
+    if (controller.state.active !== undefined && controller.state.active?.length > 0) {
+      return controller.state.active[0];
     }
     if (focus && search) {
-      const item = findItem(dataSource, search.toString());
-      if (item === undefined && !isCollectionFetching(dataSource)) {
-        return get(dataSource, 'items.0');
+      const item = findItem(controller, search.toString());
+      if (item === undefined && !isCollectionFetching(controller)) {
+        return get(controller, 'items.0');
       }
       return item;
     } else if (!multiple) {
-      return dataSource.adapt(value);
+      return controller.adapt(value);
     }
-  }, [focus, dataSource, value, keyboardItem, multiple]);
-
-  // const highlightItem = useCallback((item: SelectItem|undefined, highlight: boolean = true) => {
-  //   if (highlight && currentHighlightedItem.current !== undefined) {
-  //     dataSource.setMeta(currentHighlightedItem.current, 'highlighted', false);
-  //   }
-  //   currentHighlightedItem.current = highlight ? item : undefined;
-  //   if (item != undefined) {
-  //     dataSource.setMeta(item, 'highlighted', highlight);
-  //   }
-  // }, [dataSource])
-
-  const setOpen = useCallback(
-    (open) => {
-      if (open) {
-        arrowItemRef.current = undefined;
-        const index = findItemIndex(dataSource, proxyItem);
-        if (index !== undefined) {
-          scrollToRef.current = {
-            index,
-            align: 'center',
-          };
-        }
-      } else {
-        currentScrollItem.current = undefined;
-      }
-      _setOpen(open);
-    },
-    [dataSource, proxyItem],
-  );
+  }, [focus, controller, value, multiple]);
 
   const onBlur = useCallback(() => {
     if (!stateRef.current.keepFocus) {
-      if (dataSource.getSearch()) {
-        dataSource.clearSearch();
-      }
-      if (keyboardItem !== undefined) {
-        setKeyboardItem(undefined);
+      if (service.getSearch()) {
+        service.clearSearch();
       }
       if (open) {
         setOpen(false);
@@ -194,7 +132,7 @@ const CollectionSelectComponent: FC<SelectComponentProps> = ({
         }
       }
     }
-  }, [open, keyboardItem, dataSource, forwardBlur, setOpen, focus]);
+  }, [open, service, forwardBlur, setOpen, focus]);
 
   const onFocus = useCallback(() => {
     if (!focus) {
@@ -214,52 +152,53 @@ const CollectionSelectComponent: FC<SelectComponentProps> = ({
   });
 
   const onInputChange = (nextValue: string) => {
+    service.search(nextValue);
+    if (service.items.length > 0 && service.items[0] !== undefined) {
+      service.setActive('item', service.items[0]);
+    }
+    scrollToRef.current = { index: 0, align: 'start' };
     if (!open) {
       setOpen(true);
     }
-    setKeyboardItem(undefined);
-    dataSource.search(nextValue);
-    scrollToRef.current = {
-      index: 0,
-      align: 'start',
-    };
   };
 
   const onRemoveToken: SelectOptionHandler<any, SelectItem<any>> = useCallback(
     (item) => {
+      service.removeSelected('item', item);
       if (onChange) {
-        const nextValue = Array.isArray(tokens)
-          ? tokens.filter((v) => v.id !== item?.id).map((v) => v.data)
-          : [item?.data];
+        const nextValue = (service.state.selected || []).map((uid) => service.getItem(uid)?.data);
         onChange(nextValue);
       }
     },
-    [tokens, onChange],
+    [service, onChange],
   );
 
-  const onSelect: SelectOptionSelectionHandler<any, SelectItem<any>> = useCallback(
-    (item, index, close) => {
-      if (close === undefined) {
-        close = !(multiple && !dataSource.getSearch());
+  const onSelect = useCallback(
+    (item: Item, index: number) => {
+      if (multiple && !item.selected) {
+        service.addSelected('item', item);
+      } else if (multiple && item.selected) {
+        service.removeSelected('item', item);
+      } else if (!item.selected) {
+        service.setSelected('item', item);
+      } else {
+        service.setSelected('item', []);
       }
-      if (close) {
+
+      if (service.getSearch()) {
+        service.clearSearch();
+      }
+
+      if (!multiple) {
         setOpen(false);
       }
-      if (keyboardItem !== undefined) {
-        if (!close) {
-          arrowItemRef.current = keyboardItem;
-        }
-        setKeyboardItem(undefined);
-      }
-      if (dataSource.getSearch()) {
-        dataSource.clearSearch();
-      }
+
       if (onChange) {
         if (multiple) {
           if (item.selected) {
             onRemoveToken(item, index);
           } else {
-            const nextValue = Array.isArray(value) ? value.concat([item.data]) : [item.data];
+            const nextValue = (service.state.selected || []).map((uid) => service.getItem(uid)?.data);
             onChange(nextValue);
           }
         } else {
@@ -267,20 +206,8 @@ const CollectionSelectComponent: FC<SelectComponentProps> = ({
         }
       }
     },
-    [onChange, dataSource, multiple, onRemoveToken, keyboardItem, value, setOpen],
+    [onChange, service, multiple, onRemoveToken, setOpen],
   );
-
-  // const onItemEnter: SelectOptionHandler = useCallback((item) => {
-  //   if (item !== undefined && item.id !== undefined && dataSource.getMeta(item.id)) {
-  //     highlightItem(item, true);
-  //   }
-  // }, [dataSource, highlightItem])
-
-  // const onItemLeave: SelectOptionHandler = useCallback((item) => {
-  //   if (item !== undefined && item.id !== undefined && dataSource.getMeta(item.id)) {
-  //     highlightItem(item, false);
-  //   }
-  // }, [dataSource, false])
 
   const onKeyDownCapture = useCallback((e: KeyboardEvent) => {
     if (['ArrowDown', 'ArrowUp', 'Enter', 'Escape'].includes(e.key)) {
@@ -290,47 +217,47 @@ const CollectionSelectComponent: FC<SelectComponentProps> = ({
 
   const onKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      const currentIndex =
-        keyboardItem === undefined && arrowItemRef.current
-          ? findItemIndex(dataSource, arrowItemRef.current)
-          : findItemIndex(dataSource, proxyItem);
-      let nextIndex: number | undefined;
-      let nextItem: Item<any> | undefined;
       switch (e.key) {
         case 'ArrowDown':
-          if (open) {
-            nextIndex = currentIndex === -1 ? 0 : currentIndex + 1;
-            nextItem = get(dataSource.items, nextIndex.toString());
-            if (nextItem !== undefined) {
-              setKeyboardItem(nextItem);
-            }
-          } else if (!open && focus) {
-            setOpen(true);
-          }
-          stateRef.current.keepFocus = false;
-          break;
-
         case 'ArrowUp':
-          if (open) {
-            nextIndex = currentIndex <= 0 ? 0 : currentIndex - 1;
-            nextItem = get(dataSource.items, nextIndex.toString());
-
-            if (nextItem !== undefined) {
-              setKeyboardItem(nextItem);
+          if (!open && focus) {
+            // check if there is a selected item and if so, activate the next item
+            // for it's a multiselect or there is no selected item, activate the first one
+            let nextIndex = 0;
+            if (multiple || !service.state.selected || service.state.selected.length === 0) {
+              nextIndex =
+                e.key === 'ArrowDown'
+                  ? 0
+                  : Math.max(0, service.state.selected === undefined ? 0 : service.state.selected.length - 1);
+            } else {
+              const selectedUid = e.key === 'ArrowDown' ? first(service.state.selected) : last(service.state.selected);
+              if (selectedUid !== undefined) {
+                const selectedItem = service.getItem(selectedUid);
+                const selectedIndex = findItemIndex(service, selectedItem);
+                if (selectedIndex !== undefined) {
+                  nextIndex =
+                    e.key === 'ArrowDown'
+                      ? Math.min(selectedIndex + 1, service.items.length)
+                      : Math.max(0, selectedIndex - 1);
+                }
+              }
             }
-          } else if (!open && focus) {
+            console.log('nextIndex', nextIndex);
+            const nextItem = service.items[nextIndex];
+            if (nextItem !== undefined) {
+              scrollToRef.current = {
+                index: nextIndex,
+                align: 'auto',
+              };
+              service.setActive('item', nextItem);
+            }
             setOpen(true);
           }
           stateRef.current.keepFocus = false;
           break;
 
         case 'Enter':
-          if (open && currentIndex !== -1) {
-            nextItem = get(dataSource.items, currentIndex.toString());
-            if (nextItem !== undefined) {
-              onSelect(nextItem, currentIndex, !(multiple && !dataSource.getSearch()));
-            }
-          } else if (!open && focus) {
+          if (!open && focus) {
             setOpen(true);
           }
           stateRef.current.keepFocus = false;
@@ -341,17 +268,15 @@ const CollectionSelectComponent: FC<SelectComponentProps> = ({
             if (open) {
               setOpen(false);
             }
-            setKeyboardItem(undefined);
-            if (dataSource.getSearch()) {
-              dataSource.clearSearch();
+            if (service.getSearch()) {
+              service.clearSearch();
             }
           }
-
           stateRef.current.keepFocus = false;
           break;
       }
     },
-    [dataSource, proxyItem, keyboardItem, onSelect, open, setOpen, focus, multiple],
+    [service, open, setOpen, focus, multiple, scrollToRef],
   );
 
   const [dropping, setDropping] = useState(false);
@@ -363,35 +288,6 @@ const CollectionSelectComponent: FC<SelectComponentProps> = ({
     style['zIndex'] = 1001;
   }
 
-  useEffect(() => {
-    if (proxyItem?.id !== currentProxyItem.current?.id) {
-      if (currentProxyItem.current !== undefined) {
-        const item = currentProxyItem.current;
-        currentProxyItem.current = undefined;
-        dataSource.setMeta('item', item, multiple ? 'highlighted' : 'selected', false);
-      }
-      if (proxyItem !== undefined && proxyItem.id !== undefined) {
-        currentProxyItem.current = proxyItem;
-        dataSource.setMeta('item', proxyItem, multiple ? 'highlighted' : 'selected', true);
-      }
-    }
-
-    if (multiple) {
-      const diffTokens = diffItems(previousTokensRef.current, tokens);
-      diffTokens.removed.forEach((token) => {
-        if (token.id !== undefined) {
-          dataSource.setMeta('item', token, 'selected', false);
-        }
-      });
-      diffTokens.added.forEach((token) => {
-        if (token.id !== undefined) {
-          dataSource.setMeta('item', token, 'selected', true);
-        }
-      });
-      previousTokensRef.current = tokens;
-    }
-  }, [value, dataSource, proxyItem, tokens, multiple]);
-
   const classNames = addClassname(
     `o-select o-select-size-${size} o-select-${open ? 'open' : 'close'}${
       status ? ' o-select-status-' + status.toLowerCase() : ''
@@ -401,27 +297,27 @@ const CollectionSelectComponent: FC<SelectComponentProps> = ({
 
   const optionsRef = useRef<HTMLDivElement>(null);
   const { items: selectItems, isVirtual, totalSize, virtualItems, scrollToIndex } = useListView({
-    dataSource,
+    controller,
     height: height,
     ref: optionsRef,
   });
 
-  const onDropDownUpdate = useCallback(() => undefined, []);
-
-  useIsomorphicLayoutEffect(() => {
-    if (open && scrollToIndex) {
-      const previousItem = currentScrollItem.current;
-      const previousIndex = currentScrollIndex.current;
-      currentScrollItem.current = proxyItem;
-      const index = findItemIndex(dataSource, proxyItem);
-      currentScrollIndex.current = index;
-
-      if ((proxyItem?.id !== previousItem?.id || previousIndex !== index) && index >= 0) {
-        const align = keyboardItem ? 'auto' : 'center';
-        scrollToIndex(index, { align: align });
-      }
+  const onOpen = useCallback(() => {
+    if (scrollToRef.current === undefined) {
+      scrollToRef.current = scrollToSelected(service);
     }
-  }, [dataSource, scrollToIndex, open, proxyItem, keyboardItem]);
+    scrollToIndex(scrollToRef.current.index, { align: scrollToRef.current.align });
+    scrollToRef.current = undefined;
+    setDropping(true);
+  }, [service, scrollToRef, scrollToIndex]);
+
+  const onClosed = useCallback(() => {
+    scrollToRef.current = undefined;
+    service.setActive('item', []);
+    setCollapsing(false);
+  }, [scrollToRef, service]);
+
+  const onDropDownUpdate = useCallback(() => undefined, []);
 
   useEventListener('keydown', onKeyDownCapture, true);
   useEventListener('keydown', onKeyDown, false);
@@ -456,18 +352,12 @@ const CollectionSelectComponent: FC<SelectComponentProps> = ({
         distance={0}
         onUpdate={onDropDownUpdate}
         animationTimeout={200}
-        onDropStart={() => {
-          setDropping(true);
-        }}
+        onDropStart={onOpen}
         onCollapseStart={() => {
           setCollapsing(true);
         }}
-        onDropDone={() => {
-          setDropping(false);
-        }}
-        onCollapseDone={() => {
-          setCollapsing(false);
-        }}
+        onDropDone={() => setDropping(false)}
+        onCollapseDone={onClosed}
       >
         <ListBodyComponent
           className="o-select-options"
@@ -478,6 +368,11 @@ const CollectionSelectComponent: FC<SelectComponentProps> = ({
           onItemSelect={onSelect}
           totalSize={totalSize}
           virtualItems={isVirtual ? virtualItems : undefined}
+          scrollToIndex={scrollToIndex}
+          service={controller.asService()}
+          state={controller.state}
+          keyboardNavigable={true}
+          multiSelect={multiple}
         />
       </Dropdown>
     </div>

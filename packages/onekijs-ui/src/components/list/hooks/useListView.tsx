@@ -16,7 +16,7 @@ const defaultKeyExtractor = (index: number) => index;
 const useListView: <T = any, I extends Item<T> = Item<T>>(
   props: Pick<CollectionListProps<T, I>, 'height' | 'itemHeight' | 'overscan' | 'preload' | 'increment' | 'virtual'> & {
     ref: RefObject<HTMLDivElement>;
-    dataSource: ListCollection<T, I>;
+    controller: ListCollection<T, I>;
     scrollToFn?: (offset: number, defaultScrollToFn?: (offset: number) => void) => void;
     keyExtractor?: (index: number) => number | string;
   },
@@ -29,7 +29,7 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
   virtualItems: VirtualItem[];
   measure: () => void;
 } = ({
-  dataSource,
+  controller,
   height = defaultHeight,
   itemHeight = defaultItemHeight,
   overscan = defaultOverscan,
@@ -64,7 +64,7 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
     [keyExtractor, force],
   );
 
-  const state = dataSource.state;
+  const state = controller.state;
 
   const { totalSize, virtualItems, scrollToIndex, scrollToOffset } = useVirtual({
     size: state.items?.length || 0,
@@ -77,18 +77,18 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
   useEffect(() => {
     if (isVirtual) {
       if (state.status === LoadingStatus.NotInitialized) {
-        dataSource.load(preload);
-      } else if (canFetchMore(dataSource)) {
+        controller.load(preload);
+      } else if (canFetchMore(controller)) {
         const lastVirtualItem = virtualItems[virtualItems.length - 1];
         const lastVirtualItemIndex = lastVirtualItem ? lastVirtualItem.index : 0;
         if (lastVirtualItemIndex >= (state.items?.length || 0) - preload / 2) {
-          dataSource.load(increment, ((state.items || []) as any[]).length);
+          controller.load(increment, ((state.items || []) as any[]).length);
         }
       }
-    } else if (dataSource.status === LoadingStatus.NotInitialized) {
-      dataSource.load();
+    } else if (controller.status === LoadingStatus.NotInitialized) {
+      controller.load();
     }
-  }, [dataSource, state, preload, virtualItems, increment, isVirtual]);
+  }, [controller, state, preload, virtualItems, increment, isVirtual]);
 
   return {
     items: state.items || [],
