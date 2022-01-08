@@ -1,5 +1,5 @@
-import { get, Item, last, useEventListener, useIsomorphicLayoutEffect } from 'onekijs-framework';
-import React, { useCallback } from 'react';
+import { get, Item, last, useEventListener } from 'onekijs-framework';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { addStyle } from '../../../utils/style';
 import { ListBodyProps } from '../typings';
 
@@ -40,6 +40,9 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
   totalSize,
   virtualItems,
 }) => {
+  const scrollAlignRef = useRef<'center' | 'auto'>('center');
+  const lastActiveItemUid = useRef<string>();
+
   const onItemClick = useCallback(
     (item: any, index: number) => {
       if (item !== undefined && !item.disabled) {
@@ -87,99 +90,74 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
     [onItemUnhighlight, service],
   );
 
-  const scrollToItem = useCallback(
-    (item) => {
-      if (scrollToIndex) {
-        const index = findItemIndex(state.items, item.uid);
-        if (index !== undefined) {
-          scrollToIndex(index, { align: 'auto' });
-        }
-      }
-    },
-    [state.items, scrollToIndex],
-  );
-
   const onKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (!keyboardNavigable) return;
-      const activeUid = last(state.active);
-      const activeItem = activeUid !== undefined ? service.getItem(activeUid) : undefined;
-      const currentIndex = findItemIndex(state.items, activeUid);
       let nextIndex: number | undefined;
       let nextItem: Item<any> | undefined;
-      switch (e.key) {
-        case 'ArrowDown':
-          nextIndex = currentIndex === -1 ? 0 : currentIndex + 1;
-          do {
-            nextItem = get(state.items, nextIndex.toString());
-            nextIndex++;
-          } while (nextItem !== undefined && nextItem.disabled);
-
-          if (nextItem !== undefined) {
-            if (onItemActivate) {
-              onItemActivate(nextItem, nextIndex);
+      if (['ArrowDown', 'ArrowUp', 'Enter', 'Escape'].includes(e.key)) {
+        const activeUid = last(state.active);
+        const activeItem = activeUid !== undefined ? service.getItem(activeUid) : undefined;
+        const activeIndex = findItemIndex(state.items, activeUid);
+        switch (e.key) {
+          case 'ArrowDown':
+          case 'ArrowUp':
+            if (e.key === 'ArrowDown') {
+              nextIndex = activeIndex === -1 ? 0 : activeIndex + 1;
             } else {
-              scrollToItem(nextItem);
-              service.setActive('item', nextItem);
+              nextIndex = activeIndex <= 0 ? 0 : activeIndex - 1;
             }
-          }
-          break;
+            do {
+              nextItem = get(state.items, nextIndex.toString());
+              if (e.key === 'ArrowDown') {
+                nextIndex++;
+              } else {
+                nextIndex--;
+              }
+            } while (nextItem !== undefined && nextItem.disabled);
 
-        case 'ArrowUp':
-          nextIndex = currentIndex <= 0 ? 0 : currentIndex - 1;
-          do {
-            nextItem = get(state.items, nextIndex.toString());
-            nextIndex--;
-          } while (nextItem !== undefined && nextItem.disabled);
+            if (nextItem !== undefined) {
+              scrollAlignRef.current = 'auto';
+              if (onItemActivate) {
+                onItemActivate(nextItem, nextIndex);
+              } else {
+                service.setActive('item', nextItem);
+              }
+            }
+            break;
+          case 'Enter':
+            if (activeIndex !== -1) {
+              nextItem = get(state.items, activeIndex.toString());
+              onItemClick(nextItem, activeIndex);
+            }
+            break;
 
-          if (nextItem !== undefined) {
-            if (onItemActivate) {
-              onItemActivate(nextItem, nextIndex);
+          case 'Escape':
+            if (onItemDeactivate) {
+              onItemDeactivate(activeItem, activeIndex);
             } else {
-              scrollToItem(nextItem);
-              service.setActive('item', nextItem);
+              service.setActive('item', []);
             }
-          }
-          break;
-
-        case 'Enter':
-          if (currentIndex !== -1) {
-            nextItem = get(state.items, currentIndex.toString());
-            onItemClick(nextItem, currentIndex);
-          }
-          break;
-
-        case 'Escape':
-          if (onItemDeactivate) {
-            onItemDeactivate(activeItem, currentIndex);
-          } else {
-            service.setActive('item', []);
-          }
-          break;
+            break;
+        }
       }
     },
-    [
-      keyboardNavigable,
-      onItemActivate,
-      onItemDeactivate,
-      onItemClick,
-      scrollToItem,
-      service,
-      state.active,
-      state.items,
-    ],
+    [keyboardNavigable, onItemActivate, onItemDeactivate, onItemClick, service, state.active, state.items],
   );
 
-  useIsomorphicLayoutEffect(() => {
+  useEffect(() => {
     if (scrollToIndex) {
       const activeUid = state.active === undefined ? undefined : state.active[0];
-      const activeIndex = findItemIndex(state.items, activeUid);
+      if (activeUid !== lastActiveItemUid.current) {
+        lastActiveItemUid.current = activeUid;
+        const activeIndex = findItemIndex(state.items, activeUid);
 
-      if (activeIndex >= 0) {
-        scrollToIndex(activeIndex, { align: 'center' });
+        if (activeIndex >= 0) {
+          scrollToIndex(activeIndex, { align: scrollAlignRef.current });
+        }
       }
     }
-  }, []);
+  });
 
   useEventListener('keydown', onKeyDown, false);
 

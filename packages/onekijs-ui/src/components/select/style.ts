@@ -1,4 +1,5 @@
 import { css } from 'styled-components';
+import { lighten } from '../../utils/color';
 import { alignItems } from '../../styles/alignment';
 import { backgroundColor } from '../../styles/background';
 import {
@@ -22,7 +23,6 @@ import { verticalAlign } from '../../styles/table';
 import { transitionDuration, transitionProperty, transitionTimingFunction } from '../../styles/transition';
 import { ComponentStyle } from '../../styles/typings';
 import { color, fontFamily, fontSize, fontWeight, whiteSpace } from '../../styles/typography';
-import { lighten } from '../../utils/color';
 import { preflight } from '../../utils/style';
 import { SelectProps } from './typings';
 
@@ -233,6 +233,22 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme }) => {
       }
     }
 
+    &.o-select-multiple {
+      .o-select-options {
+        .o-select-option {
+          &.o-select-option-active {
+            ${backgroundColor(lighten(theme.colors.primary, 300))}
+            ${color('inherit')}
+          }
+          &.o-select-option-selected {
+            ${backgroundColor('primary')}
+            ${color('white')}
+          }
+        }
+      }
+
+    }
+
 
     .o-select-options {
       scrollbar-width: thin;
@@ -297,16 +313,10 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme }) => {
           ${backgroundColor('gray-200')}
           ${color('inherit')}
         }
-        &.o-select-option-selected {
+        &.o-select-option-active {
           ${backgroundColor('primary')}
           ${color('white')}
         }
-
-        &.o-select-option-active {
-          ${backgroundColor(lighten(theme.colors.primary, 300))}
-          ${color('inherit')}
-        }
-
 
         .o-select-option-icon {
           ${width(6)}
@@ -316,6 +326,10 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme }) => {
 
         .o-select-option-data {
           ${flexGrow(1)}
+        }
+
+        .o-select-option-multiple-checkbox {
+         ${marginRight('sm')}
         }
       }
     }

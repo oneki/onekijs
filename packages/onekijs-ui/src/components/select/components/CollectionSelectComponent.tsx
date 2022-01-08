@@ -7,11 +7,11 @@ import {
   isCollectionLoading,
   Item,
   last,
+  Primitive,
   useEventListener,
-  useLazyRef,
   ValidationStatus,
 } from 'onekijs-framework';
-import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useClickOutside, useFocusOutside } from '../../../utils/event';
 import { addClassname } from '../../../utils/style';
 import Dropdown from '../../dropdown';
@@ -21,19 +21,23 @@ import { CollectionSelectProps, SelectItem, SelectOptionHandler } from '../typin
 import SelectInputComponent from './SelectInputComponent';
 import SelectOptionComponent, { MultiSelectOptionComponent } from './SelectOptionComponent';
 
-const findItem = (controller: Collection<any, SelectItem<any>>, pattern: string): any => {
+const findItem = (controller: Collection<any, SelectItem<any>>, pattern: string): SelectItem<any> | undefined => {
+  let result = undefined;
   if (controller.items === undefined) {
     return undefined;
   }
-  return controller.items.find((i) => {
-    if (i === undefined) {
-      return false;
+  for (const item of controller.items) {
+    if (item === undefined || item.text === undefined) {
+      continue;
     }
-    if (i.text === undefined) {
-      return false;
+    if (item.text.toLowerCase().startsWith(pattern.toLowerCase())) {
+      return item;
     }
-    return i.text.toLowerCase().startsWith(pattern.toLowerCase());
-  });
+    if (result === undefined && item.text.toLowerCase().includes(pattern.toLowerCase())) {
+      result = item;
+    }
+  }
+  return result;
 };
 
 const findItemIndex = (controller: Collection<any, SelectItem<any>>, item?: Item<any>): number => {
@@ -49,20 +53,6 @@ const findItemIndex = (controller: Collection<any, SelectItem<any>>, item?: Item
     }
     return i.id === item?.id;
   });
-};
-
-const scrollToSelected = (controller: Collection<any, SelectItem<any>>) => {
-  const scrollTo: { index: number; align: 'start' | 'center' | 'end' | 'auto' } = { index: 0, align: 'start' };
-  const selectedUid = first(controller.state.selected);
-  if (selectedUid !== undefined) {
-    const selectedItem = controller.getItem(selectedUid);
-    const selectedIndex = findItemIndex(controller, selectedItem);
-    if (selectedIndex > 0) {
-      scrollTo.index = selectedIndex;
-      scrollTo.align = 'center';
-    }
-  }
-  return scrollTo;
 };
 
 const CollectionSelectComponent: FC<CollectionSelectProps> = ({
@@ -90,9 +80,8 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
   const fetching = isCollectionFetching(controller);
 
   const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
-  const scrollToRef = useLazyRef<{ index: number; align: 'start' | 'center' | 'end' | 'auto' } | undefined>(() => {
-    return scrollToSelected(controller);
-  });
+
+  const previousSearchRef = useRef<Primitive>();
 
   const tokens = useMemo<SelectItem<any>[]>(() => {
     return (controller.state.selected || [])
@@ -102,17 +91,16 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
 
   const proxyItem = useMemo(() => {
     const search = controller.getSearch();
-
-    if (controller.state.active !== undefined && controller.state.active?.length > 0) {
-      return controller.state.active[0];
-    }
     if (focus && search) {
       const item = findItem(controller, search.toString());
       if (item === undefined && !isCollectionFetching(controller)) {
         return get(controller, 'items.0');
       }
       return item;
-    } else if (!multiple) {
+    } else if (controller.state.active && controller.state.active.length > 0) {
+      return controller.getItem(controller.state.active[0]);
+    }
+    if (!multiple) {
       return controller.adapt(value);
     }
   }, [focus, controller, value, multiple]);
@@ -151,12 +139,22 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
     onBlur();
   });
 
+  useEffect(() => {
+    const search = controller.getSearch();
+    if (open && focus && search && search !== previousSearchRef.current) {
+      const item = findItem(controller, search.toString());
+      const activated = get<string>(controller.state.active, '0');
+      if (item !== undefined && !isCollectionFetching(controller)) {
+        previousSearchRef.current = search;
+        if (item.uid !== activated) {
+          controller.setActive('item', item);
+        }
+      }
+    }
+  }, [controller, focus, open]);
+
   const onInputChange = (nextValue: string) => {
     service.search(nextValue);
-    if (service.items.length > 0 && service.items[0] !== undefined) {
-      service.setActive('item', service.items[0]);
-    }
-    scrollToRef.current = { index: 0, align: 'start' };
     if (!open) {
       setOpen(true);
     }
@@ -242,13 +240,8 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
                 }
               }
             }
-            console.log('nextIndex', nextIndex);
             const nextItem = service.items[nextIndex];
             if (nextItem !== undefined) {
-              scrollToRef.current = {
-                index: nextIndex,
-                align: 'auto',
-              };
               service.setActive('item', nextItem);
             }
             setOpen(true);
@@ -257,8 +250,8 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
           break;
 
         case 'Enter':
-          if (!open && focus) {
-            setOpen(true);
+          if (focus) {
+            setOpen(!open);
           }
           stateRef.current.keepFocus = false;
           break;
@@ -276,7 +269,7 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
           break;
       }
     },
-    [service, open, setOpen, focus, multiple, scrollToRef],
+    [service, open, setOpen, focus, multiple],
   );
 
   const [dropping, setDropping] = useState(false);
@@ -291,7 +284,7 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
   const classNames = addClassname(
     `o-select o-select-size-${size} o-select-${open ? 'open' : 'close'}${
       status ? ' o-select-status-' + status.toLowerCase() : ''
-    }`,
+    }${multiple ? ' o-select-multiple' : ''}`,
     className,
   );
 
@@ -303,19 +296,25 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
   });
 
   const onOpen = useCallback(() => {
-    if (scrollToRef.current === undefined) {
-      scrollToRef.current = scrollToSelected(service);
+    const scrollTo: { index: number; align: 'start' | 'center' | 'end' | 'auto' } = { index: 0, align: 'start' };
+    const selectedUid = first(service.state.selected);
+    if (selectedUid !== undefined) {
+      const selectedItem = service.getItem(selectedUid);
+      const selectedIndex = findItemIndex(service, selectedItem);
+      if (selectedItem !== undefined && selectedIndex > 0) {
+        scrollTo.index = selectedIndex;
+        scrollTo.align = 'center';
+        service.setActive('item', selectedItem);
+      }
     }
-    scrollToIndex(scrollToRef.current.index, { align: scrollToRef.current.align });
-    scrollToRef.current = undefined;
+    scrollToIndex(scrollTo.index, { align: scrollTo.align });
     setDropping(true);
-  }, [service, scrollToRef, scrollToIndex]);
+  }, [service, scrollToIndex]);
 
   const onClosed = useCallback(() => {
-    scrollToRef.current = undefined;
     service.setActive('item', []);
     setCollapsing(false);
-  }, [scrollToRef, service]);
+  }, [service]);
 
   const onDropDownUpdate = useCallback(() => undefined, []);
 

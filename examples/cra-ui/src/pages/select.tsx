@@ -10,9 +10,11 @@ export const SelectPage = () => {
     searcher: userSearcher
   } as CollectionState<User, SelectItem<User>>)
 
+
   const fetcher: Fetcher = useCallback(
     async (url, method, body, options) => {
-      await new Promise((r) => setTimeout(r, 1000 + Math.floor(Math.random() * Math.floor(300))));
+      // await new Promise((r) => setTimeout(r, delay + Math.floor(Math.random() * Math.floor(300))));
+      await new Promise((r) => setTimeout(r, 0));
       const query = body as Query;
       if (service.getSearch() !== body.search) {
         query.search = body.search || '';
@@ -46,6 +48,7 @@ export const SelectPage = () => {
 
   return (
     <Form>
+
     <div style={{display: 'flex', justifyContent: 'center'}}>
       <div style={{width: '800px', padding: '10px'}}>
 

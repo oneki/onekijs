@@ -79,9 +79,6 @@ const SelectInputComponent: FC<SelectInputProps> = ({
         } else {
           inputRef.current && inputRef.current.blur();
         }
-        if (!open) {
-          setOpen(true);
-        }
       } else if (['Escape'].includes(e.key)) {
         partialValueRef.current = undefined;
         showSelectedRef.current = true;
@@ -93,7 +90,7 @@ const SelectInputComponent: FC<SelectInputProps> = ({
         }
       }
     },
-    [open, multiple, proxyValue, tokens, onRemove, setOpen],
+    [multiple, proxyValue, tokens, onRemove],
   );
 
   const handleKeyUp = useCallback(
