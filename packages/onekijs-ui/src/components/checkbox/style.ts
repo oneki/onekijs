@@ -38,11 +38,11 @@ const checkboxStyle: ComponentStyle<CheckboxProps> = ({
   return css`
   input {
     ${borderWidth(0)}
-    clip: rect(0 0 0 0); 
+    clip: rect(0 0 0 0);
     ${height('1px')}
     ${margin('-1px')};
     ${overflow('hidden')};
-    ${padding(0)} 
+    ${padding(0)}
     ${position('absolute')}
     ${width('1px')}
   }
@@ -51,14 +51,13 @@ const checkboxStyle: ComponentStyle<CheckboxProps> = ({
     ${height(svgHeigth)};
     animation: ${checkedKeyframes} ease-in-out 0.2s forwards;
   }
-    
+
   input:checked + label {
     ${opacity(1)}
   }
-    
+
   label {
     ${color(checkboxColor)}
-    ${opacity(0.6)}
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -73,7 +72,7 @@ const checkboxStyle: ComponentStyle<CheckboxProps> = ({
       ${borderStyle('solid')}
       ${borderColor('currentColor')}
       ${borderRadius('md')}
-      transition: 0.15s all ease-out;      
+      transition: 0.15s all ease-out;
     }
   }
   svg {

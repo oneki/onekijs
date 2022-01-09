@@ -70,6 +70,7 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
   multiple = false,
   status = ValidationStatus.None,
   size = 'medium',
+  nullable = true,
 }) => {
   const [open, setOpen] = useState(false);
   const [focus, setFocus] = useState(false);
@@ -153,10 +154,14 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
     }
   }, [controller, focus, open]);
 
-  const onInputChange = (nextValue: string) => {
-    service.search(nextValue);
-    if (!open) {
-      setOpen(true);
+  const onInputChange = (nextValue: string | null) => {
+    if (nextValue === null) {
+      onSelect(null);
+    } else {
+      service.search(nextValue);
+      if (!open) {
+        setOpen(true);
+      }
     }
   };
 
@@ -172,12 +177,12 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
   );
 
   const onSelect = useCallback(
-    (item: Item, index: number) => {
-      if (multiple && !item.selected) {
+    (item: Item | null, index = 0) => {
+      if (multiple && item && !item.selected) {
         service.addSelected('item', item);
-      } else if (multiple && item.selected) {
+      } else if (multiple && item && item.selected) {
         service.removeSelected('item', item);
-      } else if (!item.selected) {
+      } else if (item && !item.selected) {
         service.setSelected('item', item);
       } else {
         service.setSelected('item', []);
@@ -193,14 +198,14 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
 
       if (onChange) {
         if (multiple) {
-          if (item.selected) {
+          if (item && item.selected) {
             onRemoveToken(item, index);
           } else {
             const nextValue = (service.state.selected || []).map((uid) => service.getItem(uid)?.data);
             onChange(nextValue);
           }
         } else {
-          onChange(item.data);
+          onChange(item ? item.data : null);
         }
       }
     },
@@ -251,7 +256,9 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
 
         case 'Enter':
           if (focus) {
-            setOpen(!open);
+            if (!open || (open && !multiple)) {
+              setOpen(!open);
+            }
           }
           stateRef.current.keepFocus = false;
           break;
@@ -344,6 +351,7 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
         onRemove={onRemoveToken}
         autoFocus={autoFocus}
         style={style}
+        nullable={nullable}
       />
       <Dropdown
         refElement={containerRef}

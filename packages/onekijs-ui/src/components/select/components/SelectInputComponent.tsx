@@ -21,6 +21,7 @@ const SelectInputComponent: FC<SelectInputProps> = ({
   tokens,
   autoFocus,
   style,
+  nullable,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const autoSizeRef = useRef<HTMLSpanElement>(null);
@@ -165,6 +166,10 @@ const SelectInputComponent: FC<SelectInputProps> = ({
     [open, forwardFocus, setOpen],
   );
 
+  const onNullify = useCallback(() => {
+    onChange(null);
+  }, [onChange]);
+
   useEffect(() => {
     if (autoFocus && inputRef.current) {
       inputRef.current.focus();
@@ -195,6 +200,11 @@ const SelectInputComponent: FC<SelectInputProps> = ({
           />
         </div>
       </div>
+      {!multiple && nullable && value && (
+        <div className="o-select-remover" onClick={onNullify}>
+          &#10006;
+        </div>
+      )}
       <IconComponent onClick={onIconClick} open={open} loading={loading} fetching={fetching} />
     </div>
   );

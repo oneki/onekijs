@@ -1,5 +1,4 @@
 import { css } from 'styled-components';
-import { lighten } from '../../utils/color';
 import { alignItems } from '../../styles/alignment';
 import { backgroundColor } from '../../styles/background';
 import {
@@ -17,12 +16,13 @@ import { flexGrow, flexWrap } from '../../styles/flex';
 import { appearance, cursor, outline, userSelect } from '../../styles/interactivity';
 import { overflowY } from '../../styles/overflow';
 import { bottom, left, position, right, top, zIndex } from '../../styles/position';
-import { height, maxWidth, minWidth, width } from '../../styles/size';
+import { height, minWidth, width } from '../../styles/size';
 import { margin, marginRight, marginY, padding, paddingLeft, paddingX, paddingY } from '../../styles/spacing';
 import { verticalAlign } from '../../styles/table';
 import { transitionDuration, transitionProperty, transitionTimingFunction } from '../../styles/transition';
 import { ComponentStyle } from '../../styles/typings';
 import { color, fontFamily, fontSize, fontWeight, whiteSpace } from '../../styles/typography';
+import { lighten } from '../../utils/color';
 import { preflight } from '../../utils/style';
 import { SelectProps } from './typings';
 
@@ -32,7 +32,7 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme }) => {
     ${width('100%')}
     ${position('relative')}
     &.o-select-status-error {
-      .o-select-input-container {
+      .o-select-input-container, .o-select-input-container.o-select-input-focus {
         ${borderColor('danger')}
       }
       .o-select-icon-container {
@@ -77,7 +77,7 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme }) => {
       }
       .o-select-token {
         ${paddingY('xs')}
-        ${marginY('xs')}
+        ${marginY('2xs')}
       }
     }
     &.o-select-size-large {
@@ -110,7 +110,7 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme }) => {
     .o-select-input-container {
       ${backgroundColor('white')}
       ${display('flex')}
-      ${alignItems('stretch')}
+      ${alignItems('center')}
       ${borderWidth(1)}
       ${borderColor('gray-300')}
       ${borderRadius('md')}
@@ -122,10 +122,23 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme }) => {
         ${borderWidth(2)}
         ${padding(0)}
       }
+      .o-select-remover {
+        ${cursor('pointer')}
+        ${color('light')}
+        ${fontFamily('Arial')}
+        ${paddingX('sm')}
+      }
     }
     &.o-select-close {
       .o-select-input{
         ${cursor('pointer')}
+      }
+    }
+    &.o-select-open {
+      .o-dropdown-container{
+        ${transitionDuration('0.15s')}
+        ${transitionProperty('transform')}
+        ${transitionTimingFunction('ease-in-out')}
       }
     }
     .o-select-input-data {
@@ -156,31 +169,6 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme }) => {
           ${width('full')}
           ${color('gray-800', { placeholder: 'gray-400' })}
         }
-      }
-
-      .o-select-token-animation-enter {
-        ${opacity(0)}
-        ${maxWidth(0)}
-      }
-
-      .o-select-token-animation-enter-active {
-        ${transitionDuration('0.3s')}
-        ${transitionProperty('max-width,opacity')}
-        ${transitionTimingFunction('ease-in-out')}
-        ${opacity(1)}
-        ${maxWidth('100%')}
-      }
-
-      .o-select-token-animation-exit {
-        ${maxWidth('100%')}
-      }
-
-      .o-select-token-animation-exit-active {
-        ${transitionDuration('0.3s')}
-        ${transitionProperty('max-width,opacity')}
-        ${transitionTimingFunction('ease-in-out')}
-        ${opacity(0)}
-        ${maxWidth(0)}
       }
 
       .o-select-token {
@@ -243,6 +231,9 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme }) => {
           &.o-select-option-selected {
             ${backgroundColor('primary')}
             ${color('white')}
+            .o-select-option-multiple-checkbox {
+              ${color(lighten(theme.colors.primary, 400))}
+            }
           }
         }
       }
@@ -329,7 +320,8 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme }) => {
         }
 
         .o-select-option-multiple-checkbox {
-         ${marginRight('sm')}
+          ${marginRight('sm')}
+          ${color('primary')}
         }
       }
     }

@@ -44,7 +44,8 @@ export const SelectPage = () => {
 
   // const [value, setValue] = useState(users[1]);
   // const [value2, setValue2] = useState([users[2],users[1]]);
-  const { Form, } = useForm(() => {});
+  const { Form, values } = useForm(() => {});
+  console.log(values);
 
   return (
     <Form>

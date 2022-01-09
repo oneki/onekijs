@@ -46,6 +46,7 @@ export enum BreakpointKeys {
 
 export enum SpacingKeys {
   none = 'none',
+  '2xs' = '2xs',
   xs = 'xs',
   sm = 'sm',
   md = 'md',

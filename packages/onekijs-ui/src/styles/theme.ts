@@ -112,7 +112,7 @@ export const theme = (customTheme: AnonymousObject = {}): Theme => {
     colors: {
       white: 'white',
       lightest: 'gray-100',
-      light: 'gray-300',
+      light: 'gray-400',
       dark: 'gray-700',
       darkest: 'gray-900',
       black: 'black',
@@ -126,6 +126,7 @@ export const theme = (customTheme: AnonymousObject = {}): Theme => {
     palette,
     spacings: {
       none: '0',
+      '2xs': '0.125rem',
       xs: '0.25rem',
       sm: '0.5rem',
       md: '0.75rem',

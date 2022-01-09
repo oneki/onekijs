@@ -627,7 +627,14 @@ export default class CollectionService<
     target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
   ): I[] {
     const items = this.setMeta(by, target, field, true);
-    this.state[field] = [...new Set((this.state[field] || []).concat(items.map((item) => item.uid)))];
+    const arr = this.state[field] || [];
+    items.forEach((item) => {
+      if (!arr.includes(item.uid)) {
+        arr.push(item.uid);
+      }
+    });
+    // this.state[field] = [...new Set((this.state[field] || []).concat(items.map((item) => item.uid)))];
+    this.state[field] = arr;
     return items;
   }
 

@@ -55,7 +55,7 @@ const SelectOptionComponent: FC<SelectOptionProps> = React.memo(
           <Checkbox
             value={item?.selected ? true : false}
             onChange={() => undefined}
-            color={item?.highlighted || item?.selected || item?.active ? 'currentColor' : undefined}
+            color="currentColor"
             className="o-select-option-multiple-checkbox"
           ></Checkbox>
         )}

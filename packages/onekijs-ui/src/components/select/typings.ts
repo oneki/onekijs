@@ -9,13 +9,13 @@ import {
 import React, { FC } from 'react';
 import { FieldLayoutProps, FieldSize } from '../field/typings';
 import {
+  ListConfig,
   ListItem,
   ListItemAdaptee,
   ListItemAdapter,
   ListItemHandler,
   ListItemProps,
   ListState,
-  ListConfig,
 } from '../list/typings';
 
 export type ArraySelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = SelectConfig<T, I> & {
@@ -63,10 +63,11 @@ export interface SelectInputProps<T = any, I extends SelectItem<T> = SelectItem<
   loading: boolean;
   fetching: boolean;
   setOpen: (open: boolean) => void;
-  onChange: (nextValue: string) => void;
+  onChange: (nextValue: string | null) => void;
   multiple: boolean;
   onRemove: SelectOptionHandler<T, I>;
   style?: React.CSSProperties;
+  nullable?: boolean;
 }
 
 export type SelectItem<T = any> = ListItem<T>;
@@ -116,6 +117,7 @@ export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Lis
   status?: ValidationStatus;
   name?: string;
   size?: FieldSize;
+  nullable?: boolean;
 };
 
 export type SelectState<T = any, I extends SelectItem<T> = SelectItem<T>> = ListState<T, I>;
