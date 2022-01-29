@@ -7,7 +7,7 @@ import {
   UseCollectionOptions,
 } from 'onekijs-framework';
 import React from 'react';
-import { ListItemProps } from '../list/typings';
+import { ListItemProps, VirtualListProps, ListItemHandler } from '../list/typings';
 
 export type ArrayTreeProps<T = any, I extends TreeItem<T> = TreeItem<T>> = TreeConfig<T, I> & {
   adapter?: TreeItemAdapter<T>;
@@ -65,7 +65,7 @@ export type TreeItemAdaptee<T> = ItemAdaptee & {
 
 export type TreeItemAdapter<T> = (data: T) => TreeItemAdaptee<T>;
 
-export type TreeItemHandler<T, I extends TreeItem<T> = TreeItem<T>> = (item: I) => void;
+export type TreeItemHandler<T = any, I extends TreeItem<T> = TreeItem<T>> = ListItemHandler<T, I>;
 
 export type TreeItemProps<T = any, I extends TreeItem<T> = TreeItem<T>> = ListItemProps<T, I> & {
   className?: string;
@@ -75,7 +75,7 @@ export type TreeItemProps<T = any, I extends TreeItem<T> = TreeItem<T>> = ListIt
 
 export type TreeItemToggleProps<T = any, I extends TreeItem<T> = TreeItem<T>> = Pick<
   TreeItemProps<T, I>,
-  'item' | 'onExpand' | 'onCollapse'
+  'item' | 'onExpand' | 'onCollapse' | 'index'
 >;
 
 export type TreeProps<
@@ -91,7 +91,7 @@ export type TreeProps<
   selected?: T[];
 };
 
-export type TreeState<T, I extends TreeItem<T> = TreeItem<T>> = CollectionState<T, I> & {
+export type TreeState<T = any, I extends TreeItem<T> = TreeItem<T>> = CollectionState<T, I> & {
   active?: string[];
   adapter?: TreeItemAdapter<T>;
   dataSource?: T[] | string;
@@ -99,9 +99,11 @@ export type TreeState<T, I extends TreeItem<T> = TreeItem<T>> = CollectionState<
   selected?: string[];
 };
 
-export type UseTreeOptions<T, I extends TreeItem<T>> = UseCollectionOptions<T, I> & {
+export type UseTreeOptions<T = any, I extends TreeItem<T> = TreeItem<T>> = UseCollectionOptions<T, I> & {
   active?: T[];
   adapter?: TreeItemAdapter<T>;
   dataSource?: T[] | string;
   selected?: T[];
 };
+
+export type VirtualTreeListProps<T = any, I extends TreeItem<T> = TreeItem<T>> = VirtualListProps<T, I>;

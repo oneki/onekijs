@@ -30,17 +30,12 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
   const previousItemHeightRef = useRef(itemHeight);
   previousItemHeightRef.current = itemHeight;
 
-  const scrollToFn = React.useCallback((offset, defaultScrollTo) => {
-    console.log(offset, defaultScrollTo);
-  }, []);
-
   const { items, isVirtual, totalSize, virtualItems, measure } = useListView({
     controller: service,
     height: height,
     ref: tableRef,
     overscan: service.step === 'mounted' ? 1 : 20,
     itemHeight,
-    scrollToFn,
   });
 
   const ItemComponentRef = useLazyRef<React.FC<ListItemProps<any, any>>>(() => {

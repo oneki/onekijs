@@ -21,6 +21,10 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
   @reducer
   collapse(item: I): void {
     this.setMeta('item', item, 'expanded', false);
+    if (this.state.expanded) {
+      this.state.expanded = this.state.expanded.filter((uid) => uid !== item.uid);
+      this.setParam('expanded', this.state.expanded.join(','));
+    }
     this.refresh();
   }
 

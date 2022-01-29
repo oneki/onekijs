@@ -36,7 +36,7 @@ export type ListBodyProps<
   bodyRef?: React.RefObject<HTMLDivElement>;
   className?: string;
   ItemComponent: FC<ListItemProps<T, I>>;
-  items: (Item<T> | undefined)[];
+  items: (I | undefined)[];
   parentRef?: React.RefObject<HTMLDivElement>;
   service: C;
   state: S;
@@ -44,6 +44,7 @@ export type ListBodyProps<
   totalSize?: number;
   scrollToIndex?: (index: number, options?: { align: 'start' | 'center' | 'end' | 'auto' }) => void;
   virtualItems?: VirtualItem[];
+  VirtualListComponent?: FC<VirtualListProps<T, I>>;
 };
 
 export type CollectionListProps<
@@ -143,4 +144,14 @@ export type VirtualItem = {
   start: number;
   size: number;
   measureRef: (el: HTMLElement | null) => void;
+};
+
+export type VirtualListProps<T = any, I extends ListItem<T> = ListItem<T>> = Pick<
+  ListBodyProps<T, I>,
+  'items' | 'ItemComponent'
+> & {
+  onItemClick?: ListItemHandler<T, I>;
+  onItemMouseEnter?: ListItemHandler<T, I>;
+  onItemMouseLeave?: ListItemHandler<T, I>;
+  virtualItems: VirtualItem[];
 };

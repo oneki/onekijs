@@ -8,8 +8,9 @@ import { useTreeConfig } from '../hooks/useTreeConfig';
 import useTreeService from '../hooks/useTreeService';
 import { ControllerTreeProps } from '../typings';
 import TreeItemComponent from './TreeItemComponent';
+import VirtualTreeListComponent from './VirtualTreeListComponent';
 
-const TreeBodyComponent: React.FC<ControllerTreeProps> = ({ className }) => {
+const TreeBodyComponent: React.FC<ControllerTreeProps> = ({ className, controller }) => {
   const ItemComponentRef = useLazyRef<React.FC<ListItemProps<any, any>>>(() => {
     const Component = (props: ListItemProps<any, any>) => {
       const service = useTreeService();
@@ -26,7 +27,7 @@ const TreeBodyComponent: React.FC<ControllerTreeProps> = ({ className }) => {
   const service = useTreeService();
   const ref = useRef<HTMLDivElement>(null);
   const { items, isVirtual, totalSize, virtualItems } = useListView({
-    controller: service,
+    controller,
     ref,
   });
 
@@ -41,6 +42,7 @@ const TreeBodyComponent: React.FC<ControllerTreeProps> = ({ className }) => {
       virtualItems={isVirtual ? virtualItems : undefined}
       service={service}
       state={service.state}
+      VirtualListComponent={VirtualTreeListComponent}
     />
   );
 };

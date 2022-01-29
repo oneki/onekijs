@@ -555,6 +555,7 @@ export default class CollectionService<
         items = target.map((t) => this.adapt(t as T));
         break;
     }
+    const result: I[] = [];
     items.forEach((item) => {
       item = Object.assign({}, item, { [key]: value });
       this._indexItem(item);
@@ -564,8 +565,9 @@ export default class CollectionService<
           stateItem[key] = value;
         }
       }
+      result.push(item);
     });
-    return items;
+    return result;
   }
 
   @reducer

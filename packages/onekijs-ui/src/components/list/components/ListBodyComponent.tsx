@@ -2,6 +2,7 @@ import { get, Item, last, useEventListener } from 'onekijs-framework';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { addStyle } from '../../../utils/style';
 import { ListBodyProps } from '../typings';
+import DefaultVirtualListComponent from './VirtualListComponent';
 
 const findItemIndex = (items?: (Item<unknown> | undefined)[], uid?: string): number => {
   if (items === undefined) {
@@ -39,6 +40,7 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
   style,
   totalSize,
   virtualItems,
+  VirtualListComponent = DefaultVirtualListComponent,
 }) => {
   const scrollAlignRef = useRef<'center' | 'auto'>('center');
   const lastActiveItemUid = useRef<string>();
@@ -183,33 +185,14 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
             position: 'relative',
           }}
         >
-          {virtualItems.map(({ index, measureRef, start }) => {
-            const listItem = items[index];
-            return (
-              <div
-                className="o-virtual-item"
-                key={`virtual-item-${listItem?.uid || index}`}
-                ref={measureRef}
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  minHeight: '20px',
-                  transform: `translateY(${start}px)`,
-                }}
-              >
-                <ItemComponent
-                  key={`item-${listItem?.uid || index}`}
-                  index={index}
-                  item={listItem}
-                  onClick={onItemClick}
-                  onMouseEnter={onItemMouseEnter}
-                  onMouseLeave={onItemMouseLeave}
-                />
-              </div>
-            );
-          })}
+          <VirtualListComponent
+            items={items}
+            ItemComponent={ItemComponent}
+            virtualItems={virtualItems}
+            onItemMouseEnter={onItemMouseEnter}
+            onItemMouseLeave={onItemMouseLeave}
+            onItemClick={onItemClick}
+          />
         </div>
       </div>
     );
