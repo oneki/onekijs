@@ -12,7 +12,11 @@ const Toggler: React.FC<TreeItemToggleProps> = ({ item, onExpand, onCollapse, in
 
   const handler = item.expanded ? onCollapse : onExpand;
 
-  return <div>{<TogglerIcon onClick={() => handler(item, index)} open={item.expanded} visible={isFolder} />}</div>;
+  return (
+    <div>
+      {<TogglerIcon onClick={() => item && handler && handler(item, index)} open={item.expanded} visible={isFolder} />}
+    </div>
+  );
 };
 
 const TreeItemComponent: FC<TreeItemProps> = React.memo(

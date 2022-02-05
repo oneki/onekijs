@@ -28,7 +28,7 @@ const CollectionListComponent: FC<CollectionListProps> = ({
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
-  const { items, isVirtual, totalSize, virtualItems, scrollToIndex } = useListView({
+  const { items, isVirtual, totalSize, virtualItems, scrollToIndex, measure } = useListView({
     controller,
     height,
     itemHeight,
@@ -49,6 +49,7 @@ const CollectionListComponent: FC<CollectionListProps> = ({
           keyboardNavigable={keyboardNavigable}
           bodyRef={ref}
           onItemActivate={onItemActivate}
+          onItemAnimate={measure}
           onItemDeactivate={onItemDeactivate}
           onItemHighlight={onItemHighlight}
           onItemUnhighlight={onItemUnhighlight}

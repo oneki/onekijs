@@ -2,6 +2,7 @@ import { get, Item, last, useEventListener } from 'onekijs-framework';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { addStyle } from '../../../utils/style';
 import { ListBodyProps } from '../typings';
+import ListItemComponent from './ListItemComponent';
 import DefaultVirtualListComponent from './VirtualListComponent';
 
 const findItemIndex = (items?: (Item<unknown> | undefined)[], uid?: string): number => {
@@ -24,9 +25,10 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
   className,
   height,
   items,
-  ItemComponent,
+  ItemComponent = ListItemComponent,
   keyboardNavigable,
   multiSelect,
+  onItemAnimate,
   onItemActivate,
   onItemDeactivate,
   onItemSelect,
@@ -189,6 +191,7 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
             items={items}
             ItemComponent={ItemComponent}
             virtualItems={virtualItems}
+            onItemAnimate={onItemAnimate}
             onItemMouseEnter={onItemMouseEnter}
             onItemMouseLeave={onItemMouseLeave}
             onItemClick={onItemClick}

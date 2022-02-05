@@ -35,8 +35,9 @@ export type ListBodyProps<
 > & {
   bodyRef?: React.RefObject<HTMLDivElement>;
   className?: string;
-  ItemComponent: FC<ListItemProps<T, I>>;
+  ItemComponent?: FC<ListItemProps<T, I>>;
   items: (I | undefined)[];
+  onItemAnimate?: ListItemHandler<T, I>;
   parentRef?: React.RefObject<HTMLDivElement>;
   service: C;
   state: S;
@@ -83,6 +84,7 @@ export type ListItemHandler<T = any, I extends ListItem<T> = ListItem<T>> = (ite
 export interface ListItemProps<T = any, I extends ListItem<T> = ListItem<T>> {
   index: number;
   item?: I;
+  onAnimate?: ListItemHandler<T, I>;
   onClick?: ListItemHandler<T, I>;
   onMouseEnter?: ListItemHandler<T, I>;
   onMouseLeave?: ListItemHandler<T, I>;
@@ -150,6 +152,7 @@ export type VirtualListProps<T = any, I extends ListItem<T> = ListItem<T>> = Pic
   ListBodyProps<T, I>,
   'items' | 'ItemComponent'
 > & {
+  onItemAnimate?: ListItemHandler<T, I>;
   onItemClick?: ListItemHandler<T, I>;
   onItemMouseEnter?: ListItemHandler<T, I>;
   onItemMouseLeave?: ListItemHandler<T, I>;

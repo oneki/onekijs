@@ -7,6 +7,8 @@ import { marginLeft } from '../../styles/spacing';
 import { ComponentStyle } from '../../styles/typings';
 import { color } from '../../styles/typography';
 import { TreeProps } from './typings';
+import { overflowY } from '../../styles/overflow';
+import { transitionDuration, transitionProperty, transitionTimingFunction } from '../../styles/transition';
 
 export const treeStyle: ComponentStyle<TreeProps<any>> = () => {
   return css`
@@ -29,6 +31,12 @@ export const treeStyle: ComponentStyle<TreeProps<any>> = () => {
       }
       .o-tree-item-text {
         ${marginLeft('sm')}
+      }
+      .o-tree-item-children {
+        ${overflowY('hidden')}
+        ${transitionDuration('150ms')}
+        ${transitionProperty('height,opacity')}
+        ${transitionTimingFunction('ease-out')}
       }
     }
   `;
