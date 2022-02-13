@@ -258,7 +258,6 @@ export function useVirtual({
     pendingMeasuredCacheIndexesRef.current = [];
 
     const measurements = latestRef.current.measurements.slice(0, min);
-    console.log('measureCache', measuredCache);
 
     for (let i = min; i < size; i++) {
       const key = keyExtractor(i);

@@ -1,5 +1,5 @@
 import { AnonymousObject } from 'onekijs-framework';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { VirtualItem } from '../../list/typings';
 import { useTreeConfig } from '../hooks/useTreeConfig';
@@ -7,7 +7,7 @@ import useTreeService from '../hooks/useTreeService';
 import { TreeItem, TreeItemHandler, TreeItemProps, VirtualTreeListProps } from '../typings';
 import TreeItemComponent from './TreeItemComponent';
 
-const timeout = 200;
+const timeout = 1500;
 
 type VirtualTreeItem<T = any, I extends TreeItem<T> = TreeItem<T>> = VirtualItem & {
   item?: I;
@@ -24,6 +24,7 @@ type VirtualTreeListItemProps<T = any, I extends TreeItem<T> = TreeItem<T>> = {
   onClick?: TreeItemHandler<T, I>;
   onMouseEnter?: TreeItemHandler<T, I>;
   onMouseLeave?: TreeItemHandler<T, I>;
+  measure?: boolean;
 };
 
 const VirtualTreeListItemComponent: React.FC<VirtualTreeListItemProps> = ({
@@ -34,106 +35,126 @@ const VirtualTreeListItemComponent: React.FC<VirtualTreeListItemProps> = ({
   onClick,
   onMouseEnter,
   onMouseLeave,
+  measure = true,
 }) => {
-  const { index, measureRef, start, children, item, offset } = virtualItem;
+  const { index, measureRef, children, item } = virtualItem;
   const className = typeof itemClassName !== 'function' ? itemClassName : item ? itemClassName(item) : undefined;
   const service = useTreeService();
   const { onExpand, onCollapse } = useTreeConfig();
+  const previousExpandedRef = useRef(false);
+  const previousChildrenRef = useRef<VirtualTreeItem[]>([]);
+  const exitingRef = useRef(false);
+  exitingRef.current =
+    exitingRef.current || (previousExpandedRef.current && previousExpandedRef.current !== !!item?.expanded);
+
+  useEffect(() => {
+    previousExpandedRef.current = !!item?.expanded;
+    if (!exitingRef.current) {
+      previousChildrenRef.current = children;
+    }
+  });
 
   const expandedHeightRef = useRef<number>(0);
 
   const expand: TreeItemHandler<any, TreeItem<any>> = (item, index) => {
-    onAnimate && onAnimate(item, index);
     onExpand ? onExpand(item, index) : service.expand(item, index);
   };
 
   const collapse: TreeItemHandler<any, TreeItem<any>> = (item, index) => {
-    onAnimate && onAnimate(item, index);
     onCollapse ? onCollapse(item, index) : service.collapse(item, index);
   };
 
   const onExiting = (node: HTMLElement) => {
-    if (onAnimate && true && item) {
-      const height = node.getBoundingClientRect().height;
-      node.style.height = `${height}px`;
-      node.style.height = '0';
-      node.style.opacity = '0';
-      for (let i = 0; i <= timeout; i += 20) {
-        setTimeout(() => onAnimate(item, index), i);
-      }
+    if (item) {
+      node.style.height = `${node.getBoundingClientRect().height}px`;
+      setTimeout(() => {
+        node.style.height = '0';
+      }, 0);
     }
   };
 
   const onEntering = (node: HTMLElement) => {
-    if (onAnimate && true && item) {
+    if (item) {
       expandedHeightRef.current = node.getBoundingClientRect().height;
       node.style.height = '0px';
-      console.log('set node height', node, 0);
       node.style.opacity = '0';
       setTimeout(() => {
         node.style.height = `${expandedHeightRef.current}px`;
-        console.log('set node height', node, `${expandedHeightRef.current}px`);
         node.style.opacity = '1';
       }, 0);
-      for (let i = 0; i <= timeout; i += 20) {
-        setTimeout(() => onAnimate(item, index), i);
-      }
     }
   };
 
+  const onEntered = (node: HTMLElement) => {
+    if (item) {
+      node.style.height = '';
+    }
+  };
+
+  const onExited = () => {
+    exitingRef.current = false;
+  };
+
+  const ref = measure ? measureRef : undefined;
+  const sub = exitingRef.current ? previousChildrenRef.current : children;
+
   return (
-    <div
-      className="o-virtual-item"
-      key={`virtual-item-${item?.uid || index}`}
-      ref={measureRef}
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        minHeight: '20px',
-        transform: `translateY(${start - offset}px)`,
-      }}
-    >
-      <ItemComponent
-        key={`item-${item?.uid || index}`}
-        className={className}
-        index={index}
-        item={item}
-        onClick={onClick}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
-        onExpand={expand}
-        onCollapse={collapse}
+    <>
+      <div
+        className="o-virtual-item"
+        key={`virtual-item-${item?.uid || index}`}
+        ref={ref}
+        // style={{
+        //   position: 'absolute',
+        //   top: 0,
+        //   left: 0,
+        //   width: '100%',
+        //   minHeight: '20px',
+        //   transform: `translateY(${start - offset}px)`,
+        // }}
       >
-        <CSSTransition
-          in={item && item.expanded}
-          classNames="o-tree-item-children"
-          timeout={timeout}
-          mountOnEnter={true}
-          appear={false}
-          unmountOnExit={true}
-          onEntering={onEntering}
-          onExiting={onExiting}
-        >
-          <div className="o-tree-item-children">
-            {children.map((child) => {
-              return (
-                <VirtualTreeListItemComponent
-                  key={`virtual-item-${child.item?.uid || child.index}`}
-                  virtualItem={child}
-                  ItemComponent={ItemComponent}
-                  onClick={onClick}
-                  onMouseEnter={onMouseEnter}
-                  onMouseLeave={onMouseLeave}
-                  onAnimate={onAnimate}
-                />
-              );
-            })}
-          </div>
-        </CSSTransition>
-      </ItemComponent>
-    </div>
+        <ItemComponent
+          key={`item-${item?.uid || index}`}
+          className={className}
+          index={index}
+          item={item}
+          onClick={onClick}
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
+          onExpand={expand}
+          onCollapse={collapse}
+        />
+      </div>
+      <CSSTransition
+        in={item && item.expanded}
+        classNames="o-tree-item-children"
+        timeout={timeout}
+        mountOnEnter={true}
+        appear={false}
+        unmountOnExit={true}
+        onEntering={onEntering}
+        onExiting={onExiting}
+        onEntered={onEntered}
+        onExited={onExited}
+      >
+        <div className="o-tree-item-children">
+          {sub.map((child) => {
+            return (
+              <VirtualTreeListItemComponent
+                key={`virtual-item-${child.item?.uid || child.index}`}
+                virtualItem={child}
+                ItemComponent={ItemComponent}
+                onClick={onClick}
+                onMouseEnter={onMouseEnter}
+                onMouseLeave={onMouseLeave}
+                onAnimate={onAnimate}
+                measure={exitingRef.current || !measure ? false : true}
+              />
+            );
+          })}
+        </div>
+      </CSSTransition>
+    </>
   );
 };
 

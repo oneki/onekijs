@@ -32,12 +32,12 @@ export const treeStyle: ComponentStyle<TreeProps<any>> = () => {
       .o-tree-item-text {
         ${marginLeft('sm')}
       }
-      .o-tree-item-children {
-        ${overflowY('hidden')}
-        ${transitionDuration('150ms')}
-        ${transitionProperty('height,opacity')}
-        ${transitionTimingFunction('ease-out')}
-      }
+    }
+    .o-tree-item-children {
+      ${overflowY('hidden')}
+      ${transitionDuration('1500ms')}
+      ${transitionProperty('height,opacity')}
+      ${transitionTimingFunction('linear')}
     }
   `;
 };

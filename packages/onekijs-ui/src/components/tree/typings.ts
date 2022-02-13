@@ -49,7 +49,9 @@ export type TreeItem<T = any> = Item<T> & {
   activable?: boolean;
   children?: string[];
   disabled?: boolean;
+  collapsing?: boolean;
   expanded?: boolean;
+  expanding?: boolean;
   icon?: string;
   level: number;
   parent?: string;

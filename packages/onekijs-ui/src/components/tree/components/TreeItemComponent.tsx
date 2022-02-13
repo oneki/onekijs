@@ -19,31 +19,28 @@ const Toggler: React.FC<TreeItemToggleProps> = ({ item, onExpand, onCollapse, in
   );
 };
 
-const TreeItemComponent: FC<TreeItemProps> = React.memo(
-  ({ className, item, onExpand, onCollapse, index, children }) => {
-    const ref = useRef<AnonymousObject>({});
-    ref.current.item = item;
-    const itemClassName = addClassname('o-tree-item', className);
-    if (item === undefined) {
-      return <div className={itemClassName}></div>;
-    }
+const TreeItemComponent: FC<TreeItemProps> = React.memo(({ className, item, onExpand, onCollapse, index }) => {
+  const ref = useRef<AnonymousObject>({});
+  ref.current.item = item;
+  const itemClassName = addClassname('o-tree-item', className);
+  if (item === undefined) {
+    return <div className={itemClassName}></div>;
+  }
 
-    const style = {
-      paddingLeft: `${item.level * 20}px`,
-    };
+  const style = {
+    paddingLeft: `${item.level * 20}px`,
+  };
 
-    return (
-      <>
-        <div className={itemClassName} style={style}>
-          <Toggler item={item} onExpand={onExpand} onCollapse={onCollapse} index={index} />
-          <FolderIcon />
-          <span className="o-tree-item-text">{item.text || ''}</span>
-        </div>
-        {children}
-      </>
-    );
-  },
-);
+  return (
+    <>
+      <div className={itemClassName} style={style}>
+        <Toggler item={item} onExpand={onExpand} onCollapse={onCollapse} index={index} />
+        <FolderIcon />
+        <span className="o-tree-item-text">{item.text || ''}</span>
+      </div>
+    </>
+  );
+});
 
 TreeItemComponent.displayName = 'TreeItemComponent';
 

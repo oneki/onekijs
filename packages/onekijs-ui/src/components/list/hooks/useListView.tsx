@@ -1,7 +1,7 @@
 import { Item, LoadingStatus } from 'onekijs-framework';
 import { RefObject, useCallback, useEffect, useReducer } from 'react';
-//import { useVirtual } from '../../../vendor/reactVirtual';
-import { useVirtual } from 'react-virtual';
+import { useVirtual } from '../../../vendor/reactVirtual';
+//import { useVirtual } from 'react-virtual';
 import { CollectionListProps, ListCollection, VirtualItem } from '../typings';
 import { canFetchMore } from '../utils';
 
