@@ -1,6 +1,7 @@
 import { AnonymousObject } from 'onekijs-framework';
 import React, { useEffect, useRef } from 'react';
 import { CSSTransition } from 'react-transition-group';
+import useIsomorphicLayoutEffect from '../../../vendor/useIsomorphicLayoutEffect';
 import { VirtualItem } from '../../list/typings';
 import { useTreeConfig } from '../hooks/useTreeConfig';
 import useTreeService from '../hooks/useTreeService';
@@ -25,6 +26,7 @@ type VirtualTreeListItemProps<T = any, I extends TreeItem<T> = TreeItem<T>> = {
   onMouseEnter?: TreeItemHandler<T, I>;
   onMouseLeave?: TreeItemHandler<T, I>;
   measure?: boolean;
+  defer?: () => void;
 };
 
 const VirtualTreeListItemComponent: React.FC<VirtualTreeListItemProps> = ({
@@ -36,70 +38,96 @@ const VirtualTreeListItemComponent: React.FC<VirtualTreeListItemProps> = ({
   onMouseEnter,
   onMouseLeave,
   measure = true,
+  defer,
 }) => {
   const { index, measureRef, children, item } = virtualItem;
   const className = typeof itemClassName !== 'function' ? itemClassName : item ? itemClassName(item) : undefined;
   const service = useTreeService();
-  const { onExpand, onCollapse } = useTreeConfig();
-  const previousExpandedRef = useRef(false);
-  const previousChildrenRef = useRef<VirtualTreeItem[]>([]);
-  const exitingRef = useRef(false);
-  exitingRef.current =
-    exitingRef.current || (previousExpandedRef.current && previousExpandedRef.current !== !!item?.expanded);
-
-  useEffect(() => {
-    previousExpandedRef.current = !!item?.expanded;
-    if (!exitingRef.current) {
-      previousChildrenRef.current = children;
-    }
-  });
 
   const expandedHeightRef = useRef<number>(0);
+  const animateRef = useRef(virtualItem.animate);
+  const deferRenderRef = useRef(false);
+  const nodeRef = useRef<HTMLElement>();
+  deferRenderRef.current = false;
+
+  const deferRender = () => {
+    if (item?.expanding) {
+      deferRenderRef.current = true;
+    } else if (defer) {
+      defer();
+    }
+  };
 
   const expand: TreeItemHandler<any, TreeItem<any>> = (item, index) => {
-    onExpand ? onExpand(item, index) : service.expand(item, index);
+    service.expanding(item, index);
   };
 
   const collapse: TreeItemHandler<any, TreeItem<any>> = (item, index) => {
-    onCollapse ? onCollapse(item, index) : service.collapse(item, index);
+    service.collapsing(item, index);
   };
 
   const onExiting = (node: HTMLElement) => {
-    if (item) {
-      node.style.height = `${node.getBoundingClientRect().height}px`;
-      setTimeout(() => {
-        node.style.height = '0';
-      }, 0);
-    }
+    node.style.height = `${node.getBoundingClientRect().height}px`;
+    setTimeout(() => {
+      node.style.height = '0';
+    }, 0);
   };
 
   const onEntering = (node: HTMLElement) => {
-    if (item) {
-      expandedHeightRef.current = node.getBoundingClientRect().height;
-      node.style.height = '0px';
-      node.style.opacity = '0';
+    expandedHeightRef.current = node.getBoundingClientRect().height;
+    nodeRef.current = node;
+    node.style.height = '0px';
+    if (!deferRenderRef.current) {
       setTimeout(() => {
         node.style.height = `${expandedHeightRef.current}px`;
-        node.style.opacity = '1';
       }, 0);
     }
   };
 
   const onEntered = (node: HTMLElement) => {
+    node.style.height = '';
     if (item) {
-      node.style.height = '';
+      service.expanded(item, index);
     }
   };
 
   const onExited = () => {
-    exitingRef.current = false;
+    animateRef.current = true;
+    if (item) {
+      service.collpased(item, index);
+    }
   };
 
-  const ref = measure ? measureRef : undefined;
-  const sub = exitingRef.current ? previousChildrenRef.current : children;
+  const ref = measure && !item?.collapsing ? measureRef : undefined;
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useIsomorphicLayoutEffect(() => {
+    if (containerRef.current && defer) {
+      const height = containerRef.current.getBoundingClientRect().height;
+      if (height !== virtualItem.size) {
+        defer();
+      }
+    }
+  });
+
+  useEffect(() => {
+    if (
+      !deferRenderRef.current &&
+      nodeRef.current &&
+      expandedHeightRef.current &&
+      nodeRef.current.getBoundingClientRect().height === 0
+    ) {
+      nodeRef.current.style.height = `${expandedHeightRef.current}px`;
+      setTimeout(() => {
+        if (nodeRef.current) nodeRef.current.style.height = '';
+      }, 1500);
+    }
+  });
+
+  const expanded = !!(item && item.expanded && !item.collapsing);
 
   return (
-    <>
+    <div ref={containerRef}>
       <div
         className="o-virtual-item"
         key={`virtual-item-${item?.uid || index}`}
@@ -126,10 +154,10 @@ const VirtualTreeListItemComponent: React.FC<VirtualTreeListItemProps> = ({
         />
       </div>
       <CSSTransition
-        in={item && item.expanded}
+        in={expanded}
         classNames="o-tree-item-children"
         timeout={timeout}
-        mountOnEnter={true}
+        mountOnEnter={false}
         appear={false}
         unmountOnExit={true}
         onEntering={onEntering}
@@ -138,7 +166,7 @@ const VirtualTreeListItemComponent: React.FC<VirtualTreeListItemProps> = ({
         onExited={onExited}
       >
         <div className="o-tree-item-children">
-          {sub.map((child) => {
+          {children.map((child) => {
             return (
               <VirtualTreeListItemComponent
                 key={`virtual-item-${child.item?.uid || child.index}`}
@@ -148,13 +176,13 @@ const VirtualTreeListItemComponent: React.FC<VirtualTreeListItemProps> = ({
                 onMouseEnter={onMouseEnter}
                 onMouseLeave={onMouseLeave}
                 onAnimate={onAnimate}
-                measure={exitingRef.current || !measure ? false : true}
+                defer={deferRender}
               />
             );
           })}
         </div>
       </CSSTransition>
-    </>
+    </div>
   );
 };
 
@@ -212,8 +240,9 @@ const VirtualTreeListComponent: React.FC<VirtualTreeListProps> = ({
         offset: node.offset,
         animate:
           !!item &&
-          expandedStatusRef.current[item.uid] !== undefined &&
-          !!item.expanded !== !!expandedStatusRef.current[item.uid],
+          (!item.expanded ||
+            (expandedStatusRef.current[item.uid] !== undefined &&
+              !!item.expanded !== !!expandedStatusRef.current[item.uid])),
       },
       virtualItem,
     );
@@ -249,13 +278,13 @@ const VirtualTreeListComponent: React.FC<VirtualTreeListProps> = ({
         nextParentNode = nextParentNode.parentNode;
       }
       node.parentItem.children.push(treeItem);
+      node.child = treeItem;
     }
   });
 
   expandedStatusRef.current = nextExpandedStatus;
-
   return (
-    <>
+    <div style={{ position: 'absolute', top: rootItem.children[0]?.start }}>
       {rootItem.children.map((virtualTreeItem) => {
         return (
           <VirtualTreeListItemComponent
@@ -269,7 +298,7 @@ const VirtualTreeListComponent: React.FC<VirtualTreeListProps> = ({
           />
         );
       })}
-    </>
+    </div>
   );
 };
 

@@ -5,23 +5,14 @@ import { TreeStateContext } from '../hooks/useTreeState';
 import { ControllerTreeProps, TreeConfig } from '../typings';
 import TreeBodyComponent from './TreeBodyComponent';
 
-const ControllerTreeComponent: React.FC<ControllerTreeProps> = ({
-  controller,
-  className,
-  onActivate,
-  onCollapse,
-  onExpand,
-  onSelect,
-}) => {
+const ControllerTreeComponent: React.FC<ControllerTreeProps> = ({ controller, className, onActivate, onSelect }) => {
   const config: TreeConfig = useMemo(() => {
     return {
       className,
       onActivate,
-      onCollapse,
-      onExpand,
       onSelect,
     };
-  }, [className, onActivate, onCollapse, onExpand, onSelect]);
+  }, [className, onActivate, onSelect]);
 
   return (
     <TreeServiceContext.Provider value={controller.asService()}>

@@ -37,7 +37,7 @@ export const treeStyle: ComponentStyle<TreeProps<any>> = () => {
       ${overflowY('hidden')}
       ${transitionDuration('1500ms')}
       ${transitionProperty('height,opacity')}
-      ${transitionTimingFunction('linear')}
+      ${transitionTimingFunction('ease-in-out')}
     }
   `;
 };

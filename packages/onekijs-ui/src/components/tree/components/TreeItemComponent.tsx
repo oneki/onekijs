@@ -10,11 +10,17 @@ const Toggler: React.FC<TreeItemToggleProps> = ({ item, onExpand, onCollapse, in
 
   const isFolder = item.type !== 'leaf' && (item.children === undefined || item.children.length > 0);
 
-  const handler = item.expanded ? onCollapse : onExpand;
+  const handler = item.expanded && !item.collapsing ? onCollapse : onExpand;
 
   return (
     <div>
-      {<TogglerIcon onClick={() => item && handler && handler(item, index)} open={item.expanded} visible={isFolder} />}
+      {
+        <TogglerIcon
+          onClick={() => item && handler && handler(item, index)}
+          open={item.expanded && !item.collapsing}
+          visible={isFolder}
+        />
+      }
     </div>
   );
 };

@@ -30,8 +30,6 @@ export type TreeConfig<T = any, I extends TreeItem<T> = TreeItem<T>> = {
   itemClassName?: string | ((item: I) => string);
   ItemComponent?: React.FC<TreeItemProps<T, I>>;
   onActivate?: TreeItemHandler<T, I>;
-  onCollapse?: TreeItemHandler<T, I>;
-  onExpand?: TreeItemHandler<T, I>;
   onSelect?: TreeItemHandler<T, I>;
 };
 
@@ -41,7 +39,11 @@ export type TreeController<
   S extends TreeState<T, I> = TreeState<T, I>
 > = Collection<T, I, S> & {
   collapse: TreeItemHandler<T, I>;
+  collapsing: TreeItemHandler<T, I>;
+  collpased: TreeItemHandler<T, I>;
   expand: TreeItemHandler<T, I>;
+  expanding: TreeItemHandler<T, I>;
+  expanded: TreeItemHandler<T, I>;
 };
 
 export type TreeItem<T = any> = Item<T> & {
@@ -97,7 +99,9 @@ export type TreeState<T = any, I extends TreeItem<T> = TreeItem<T>> = Collection
   active?: string[];
   adapter?: TreeItemAdapter<T>;
   dataSource?: T[] | string;
+  collapsing?: string[];
   expanded?: string[];
+  expanding?: string[];
   selected?: string[];
 };
 
