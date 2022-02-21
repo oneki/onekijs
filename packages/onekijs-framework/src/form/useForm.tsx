@@ -49,12 +49,25 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
         validations: {},
         submitting: false,
       });
-      initialState.values = initialState.initialValues;
+      if (typeof formOptions.initialValues === 'object') {
+        initialState.values = initialState.initialValues as AnonymousObject;
+        initialState.fetching = false;
+      } else {
+        initialState.values = {};
+        initialState.fetching = true;
+      }
       return initialState;
     },
   );
 
-  const { values = {}, validations = {}, submitting = false } = state;
+  useEffect(() => {
+    if (formOptions.initialValues && typeof formOptions.initialValues !== 'object') {
+      service.loadInitialValues(formOptions.initialValues);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const { values = {}, validations = {}, submitting = false, loading, fetching } = state;
   const defaultValuesRef = useRef<AnonymousObject>({});
 
   // we put values in a ref object. For some features, we don't need to force a rerender if a value is changed
@@ -462,10 +475,12 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
     return {
       add,
       clearValidation: clearLevelValidation,
+      fetching: fetching || false,
       field,
       Form: FormRef.current,
       getValue,
       getValidation,
+      loading: loading || false,
       remove,
       reset: service.reset.bind(service),
       setError,
@@ -483,9 +498,11 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
   }, [
     add,
     clearLevelValidation,
+    fetching,
     field,
     getValidation,
     getValue,
+    loading,
     FormRef,
     remove,
     setError,

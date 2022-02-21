@@ -69,11 +69,12 @@ export type FormListenerType = 'valueChange' | 'validationChange' | 'submittingC
 
 export interface FormOptions {
   touchOn?: TouchOnType;
-  initialValues?: AnonymousObject;
+  initialValues?: AnonymousObject | string | (() => AnonymousObject | Promise<AnonymousObject>);
   onError?: FormErrorCallback;
   onWarning?: FormWarningCallback;
   labelWidth?: FormLabelWidth;
   layout?: FormLayout;
+  delayLoading?: number;
 }
 
 export type FormProps = Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onSubmit'>;
@@ -85,6 +86,8 @@ export interface FormState extends State, FormOptions {
   values?: AnonymousObject;
   submitting?: boolean;
   resetting?: boolean;
+  loading?: boolean;
+  fetching?: boolean;
 }
 
 export type FormWarningCallback = (fields: Field[], values: AnonymousObject) => void;
@@ -148,6 +151,7 @@ export type TextareaProps = React.InputHTMLAttributes<HTMLInputElement> & Valida
 export interface UseForm {
   add: (fieldArrayName: string, initialValue?: any) => void;
   clearValidation: (fieldName: string, validatorName: string, code: ValidationCode) => void;
+  fetching: boolean;
   field: (name: string, validators?: Validator[], options?: FieldOptions) => FieldProps;
   Form: FC<FormProps>;
   getValue<T = any>(fieldName: string): T | undefined;
@@ -156,6 +160,7 @@ export interface UseForm {
   getValue<T = any>(fieldName: string, defaultValue: T): T;
   getValue(fieldName?: string, defaultValue?: any): any;
   getValidation: (fieldName?: string, touchedOnly?: boolean) => FieldValidation | ContainerValidation;
+  loading: boolean;
   remove: (fieldArrayName: string, index: number) => void;
   reset: () => void;
   setError: (fieldName: string, validatorName: string, message?: string, match?: boolean) => boolean;

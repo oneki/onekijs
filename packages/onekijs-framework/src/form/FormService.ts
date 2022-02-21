@@ -1,4 +1,7 @@
 import { Task } from 'redux-saga';
+import { Task as TaskType } from '@redux-saga/types';
+import { cancel, delay, fork } from 'redux-saga/effects';
+import { asyncGet } from '../core/xhr';
 import { reducer, saga, service } from '../core/annotations';
 import DefaultService from '../core/Service';
 import { ValidationStatus } from '../types/form';
@@ -79,6 +82,15 @@ export default class FormService extends DefaultService<FormState> {
         }
       }
     });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  *delayLoading(delay_ms?: number) {
+    yield this.setLoading(delay_ms ? false : true, true);
+    if (delay_ms) {
+      yield delay(delay_ms);
+      yield this.setLoading(true, true);
+    }
   }
 
   getContainerFieldValidation(
@@ -179,6 +191,33 @@ export default class FormService extends DefaultService<FormState> {
     return false;
   }
 
+  @saga(SagaEffect.Leading)
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  *loadInitialValues(fetcher: string | (() => AnonymousObject | Promise<AnonymousObject>)) {
+    let initialValues: AnonymousObject = {};
+    let loadingTask: TaskType | null = null;
+    try {
+      loadingTask = yield fork([this, this.delayLoading], this.state.delayLoading || 0);
+      if (typeof fetcher === 'string') {
+        initialValues = yield asyncGet(fetcher);
+      } else {
+        initialValues = yield fetcher();
+      }
+      yield cancel(loadingTask as TaskType);
+      this.setInitialValues(initialValues);
+      this.setValues(initialValues);
+      this.setLoading(false, false);
+    } catch (e) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Fetch error', e);
+      }
+      if (loadingTask) {
+        yield cancel(loadingTask);
+      }
+      throw e;
+    }
+  }
+
   offChange(type: FormListenerType, listener: FormListener, watchs: string[] | string): void {
     watchs = Array.isArray(watchs) ? watchs : [watchs];
     for (const watch of watchs) {
@@ -241,7 +280,9 @@ export default class FormService extends DefaultService<FormState> {
     this.pendingDispatch = new Set<string>();
     this.fieldIndex = {};
     this.watchIndex = {};
-    this.state.values = this.state.initialValues;
+    if (this.state.initialValues && typeof this.state.initialValues === 'object') {
+      this.state.values = this.state.initialValues as AnonymousObject;
+    }
     this.state.validations = {};
     this.setResetting(true);
   }
@@ -264,6 +305,18 @@ export default class FormService extends DefaultService<FormState> {
       default:
         return ValidationStatus.None;
     }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  @reducer
+  setInitialValues(values: AnonymousObject<any>): void {
+    this.state.initialValues = values;
+  }
+
+  @reducer
+  setLoading(loading: boolean, fetching: boolean): void {
+    this.state.loading = loading;
+    this.state.fetching = fetching;
   }
 
   @reducer

@@ -4,7 +4,7 @@ import { UserType } from '../dto/user';
 
 const getUserHandler = rest.get<UserType>('/users/:userId', (req, res, ctx) => {
   const { userId } = req.params;
-  return res(ctx.json(getUser(userId)));
+  return res(ctx.delay(500), ctx.json(getUser(userId)));
 });
 
 const listUsersHandler = rest.get<UserType>('/users', (req, res, ctx) => {

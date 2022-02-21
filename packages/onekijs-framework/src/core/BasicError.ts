@@ -9,4 +9,13 @@ export default class DefaultBasicError extends Error implements BasicError {
     this.code = code || 'default';
     this.payload = payload;
   }
+  static of(error: unknown): BasicError {
+    if (error instanceof Error) {
+      return new DefaultBasicError(error.message, error.name, { stack: error.stack });
+    }
+    if ((error as any).constructor === Object) {
+      return new DefaultBasicError((error as any)['message'], (error as any)['code'], (error as any)['payload']);
+    }
+    return new DefaultBasicError('Unexpected exception', 'unexpected', { original: error });
+  }
 }

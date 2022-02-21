@@ -5,6 +5,7 @@ import AppLayout from '../modules/core/layouts/AppLayout';
 import CreateUserPage from './create-user';
 import CreateUserFormPage from './create-user-form';
 import CreateUserSuccessRedirectPage from './create-user-success-redirect';
+import EditUserPage from './edit-user';
 import EditUserSuccessRedirectPage from './edit-user-success-redirect';
 import ListUsersPage from './list-users';
 import ListUsersCachePage from './list-users-cache';
@@ -46,6 +47,9 @@ const RootRouter = (): JSX.Element => {
         </Route>
         <Route path="/edit-user/:userId">
           <EditUserSuccessRedirectPage />
+        </Route>
+        <Route path="/edit-user2/:userId">
+          <EditUserPage />
         </Route>
         <Route path="/">
           <IndexPage />
