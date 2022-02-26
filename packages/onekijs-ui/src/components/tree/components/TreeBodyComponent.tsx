@@ -12,7 +12,7 @@ const TreeBodyComponent: React.FC<ControllerTreeProps> = ({ className, controlle
   const { items, totalSize, virtualItems, measure } = useListView({
     controller,
     ref,
-    overscan: 2,
+    overscan: 50,
   });
 
   return (

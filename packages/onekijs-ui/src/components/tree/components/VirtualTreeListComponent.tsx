@@ -1,4 +1,4 @@
-import { AnonymousObject } from 'onekijs-framework';
+import { AnonymousObject, useGlobalProp } from 'onekijs-framework';
 import React, { useEffect, useRef } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import useIsomorphicLayoutEffect from '../../../vendor/useIsomorphicLayoutEffect';
@@ -8,12 +8,11 @@ import useTreeService from '../hooks/useTreeService';
 import { TreeItem, TreeItemHandler, TreeItemProps, VirtualTreeListProps } from '../typings';
 import TreeItemComponent from './TreeItemComponent';
 
-const timeout = 1500;
+const timeout = 150;
 
 type VirtualTreeItem<T = any, I extends TreeItem<T> = TreeItem<T>> = VirtualItem & {
   item?: I;
   children: VirtualTreeItem<T, I>[];
-  offset: number;
   animate: boolean;
 };
 
@@ -44,10 +43,8 @@ const VirtualTreeListItemComponent: React.FC<VirtualTreeListItemProps> = ({
   const className = typeof itemClassName !== 'function' ? itemClassName : item ? itemClassName(item) : undefined;
   const service = useTreeService();
 
-  const expandedHeightRef = useRef<number>(0);
   const animateRef = useRef(virtualItem.animate);
   const deferRenderRef = useRef(false);
-  const nodeRef = useRef<HTMLElement>();
   deferRenderRef.current = false;
 
   const deferRender = () => {
@@ -67,28 +64,14 @@ const VirtualTreeListItemComponent: React.FC<VirtualTreeListItemProps> = ({
   };
 
   const onExiting = (node: HTMLElement) => {
-    node.style.height = `${node.getBoundingClientRect().height}px`;
+    if (childrenAnimateRef.current) {
+      childrenAnimateRef.current.style.height = `${node.getBoundingClientRect().height}px`;
+    }
     setTimeout(() => {
-      node.style.height = '0';
+      if (childrenAnimateRef.current) {
+        childrenAnimateRef.current.style.height = '0px';
+      }
     }, 0);
-  };
-
-  const onEntering = (node: HTMLElement) => {
-    expandedHeightRef.current = node.getBoundingClientRect().height;
-    nodeRef.current = node;
-    node.style.height = '0px';
-    if (!deferRenderRef.current) {
-      setTimeout(() => {
-        node.style.height = `${expandedHeightRef.current}px`;
-      }, 0);
-    }
-  };
-
-  const onEntered = (node: HTMLElement) => {
-    node.style.height = '';
-    if (item) {
-      service.expanded(item, index);
-    }
   };
 
   const onExited = () => {
@@ -99,35 +82,41 @@ const VirtualTreeListItemComponent: React.FC<VirtualTreeListItemProps> = ({
   };
 
   const ref = measure && !item?.collapsing ? measureRef : undefined;
-  const containerRef = useRef<HTMLDivElement>(null);
+  const childrenAnimateRef = useRef<HTMLDivElement>(null);
+  const childrenRef = useRef<HTMLDivElement>(null);
+  const itemRef = useRef<HTMLDivElement>(null);
 
   useIsomorphicLayoutEffect(() => {
-    if (containerRef.current && defer) {
-      const height = containerRef.current.getBoundingClientRect().height;
+    if (itemRef.current && defer) {
+      const height = itemRef.current.getBoundingClientRect().height;
       if (height !== virtualItem.size) {
         defer();
       }
     }
   });
 
+  const expanded = !!(item && item.expanded && !item.collapsing);
+
   useEffect(() => {
-    if (
-      !deferRenderRef.current &&
-      nodeRef.current &&
-      expandedHeightRef.current &&
-      nodeRef.current.getBoundingClientRect().height === 0
-    ) {
-      nodeRef.current.style.height = `${expandedHeightRef.current}px`;
+    if (!deferRenderRef.current && childrenRef.current && childrenAnimateRef.current && item?.expanding) {
+      const currentHeight = childrenRef.current.getBoundingClientRect().height;
+      childrenAnimateRef.current.style.height = '0px';
       setTimeout(() => {
-        if (nodeRef.current) nodeRef.current.style.height = '';
-      }, 1500);
+        if (childrenAnimateRef.current) childrenAnimateRef.current.style.height = `${currentHeight}px`;
+      }, 0);
+      setTimeout(() => {
+        if (item) {
+          service.expanded(item, index);
+        }
+      }, timeout);
+    }
+    if (childrenRef.current && childrenAnimateRef.current && !item?.expanding && item?.expanded && !item.collapsing) {
+      childrenAnimateRef.current.style.height = '';
     }
   });
 
-  const expanded = !!(item && item.expanded && !item.collapsing);
-
   return (
-    <div ref={containerRef}>
+    <div ref={itemRef}>
       <div
         className="o-virtual-item"
         key={`virtual-item-${item?.uid || index}`}
@@ -160,26 +149,31 @@ const VirtualTreeListItemComponent: React.FC<VirtualTreeListItemProps> = ({
         mountOnEnter={false}
         appear={false}
         unmountOnExit={true}
-        onEntering={onEntering}
         onExiting={onExiting}
-        onEntered={onEntered}
         onExited={onExited}
       >
-        <div className="o-tree-item-children">
-          {children.map((child) => {
-            return (
-              <VirtualTreeListItemComponent
-                key={`virtual-item-${child.item?.uid || child.index}`}
-                virtualItem={child}
-                ItemComponent={ItemComponent}
-                onClick={onClick}
-                onMouseEnter={onMouseEnter}
-                onMouseLeave={onMouseLeave}
-                onAnimate={onAnimate}
-                defer={deferRender}
-              />
-            );
-          })}
+        <div
+          ref={childrenAnimateRef}
+          className={`o-tree-item-children${item?.expanding ? ' o-tree-item-children-expanding' : ''}${
+            item?.collapsing ? ' o-tree-item-children-collapsing' : ''
+          }`}
+        >
+          <div ref={childrenRef}>
+            {children.map((child) => {
+              return (
+                <VirtualTreeListItemComponent
+                  key={`virtual-item-${child.item?.uid || child.index}`}
+                  virtualItem={child}
+                  ItemComponent={ItemComponent}
+                  onClick={onClick}
+                  onMouseEnter={onMouseEnter}
+                  onMouseLeave={onMouseLeave}
+                  onAnimate={onAnimate}
+                  defer={deferRender}
+                />
+              );
+            })}
+          </div>
         </div>
       </CSSTransition>
     </div>
@@ -189,9 +183,8 @@ const VirtualTreeListItemComponent: React.FC<VirtualTreeListItemProps> = ({
 type NodeItem = {
   parentNode?: NodeItem;
   parentItem: { children: VirtualTreeItem[] };
-  child?: VirtualTreeItem;
+  childItem?: VirtualTreeItem;
   level: number;
-  offset: number;
 };
 
 const VirtualTreeListComponent: React.FC<VirtualTreeListProps> = ({
@@ -202,6 +195,7 @@ const VirtualTreeListComponent: React.FC<VirtualTreeListProps> = ({
   onItemMouseLeave,
   virtualItems,
 }) => {
+  const debug = useGlobalProp<boolean>('debug');
   // we keep a reference of the expanded status of virtualItems
   const expandedStatusRef = useRef<AnonymousObject<boolean>>({});
   const nextExpandedStatus: AnonymousObject<boolean> = {};
@@ -219,7 +213,6 @@ const VirtualTreeListComponent: React.FC<VirtualTreeListProps> = ({
   let node: NodeItem = {
     parentItem: rootItem,
     level: virtualItems && virtualItems.length > 0 ? items[virtualItems[0].index]?.level || 0 : 0,
-    offset: virtualItems && virtualItems.length > 0 ? virtualItems[0].start || 0 : 0,
   };
 
   // convert a flat list structure to a tree structure. Note that the first element is not necessarly at level=0 because of the "virtual" feature of the tree
@@ -237,7 +230,6 @@ const VirtualTreeListComponent: React.FC<VirtualTreeListProps> = ({
       {
         children: [],
         item,
-        offset: node.offset,
         animate:
           !!item &&
           (!item.expanded ||
@@ -249,38 +241,54 @@ const VirtualTreeListComponent: React.FC<VirtualTreeListProps> = ({
 
     if (itemLevel === node.level) {
       // this item is a sibling of the previous item
+      if (debug) console.log('current node equal level', Object.assign({}, node), 'item', item);
       node.parentItem.children.push(treeItem);
-      node.child = treeItem;
+      node.childItem = treeItem;
+      if (debug) console.log('next node equal level', Object.assign({}, node), 'item', item);
     } else if (itemLevel > node.level) {
+      if (debug) console.log('current node greater level', Object.assign({}, node), 'item', item);
       // this item is a child of the previous item (saved in node.child)
-      if (node.child) {
-        node.child.children.push(treeItem);
+      if (node.childItem) {
+        node.childItem.children.push(treeItem);
         node = {
           // change the current context
           parentNode: node,
-          parentItem: node.child,
-          child: treeItem,
+          parentItem: node.childItem,
+          childItem: treeItem,
           level: treeItem.item?.level || 0,
-          offset: node.child.start,
         };
-        treeItem.offset = node.offset;
       }
+      if (debug) console.log('next node greater level', Object.assign({}, node), 'item', item);
     } else {
+      if (debug) console.log('current node lower level', Object.assign({}, node), 'item', item);
       // this item is the uncle (or xGrand uncle) of the previous item
       // try to find the correct context by finding an ancester nodecommon to the previous item and the current item
       let nextParentNode = node.parentNode;
       while (nextParentNode) {
         if (nextParentNode.level === itemLevel) {
           node = nextParentNode;
-          treeItem.offset = node.offset;
           break;
         }
         nextParentNode = nextParentNode.parentNode;
       }
       node.parentItem.children.push(treeItem);
-      node.child = treeItem;
+      node.childItem = treeItem;
+      node.level = Math.min(itemLevel, node.level);
+      if (debug) console.log('next node lower level', Object.assign({}, node), 'item', item);
     }
   });
+
+  const printNode = (nodes: VirtualTreeItem[], level = 0, parentNode: VirtualTreeItem | undefined = undefined) => {
+    nodes.forEach((node) => {
+      console.log(`${'  '.repeat(level || 0)}${node.item?.text}`);
+      console.log('parentNode =', Object.assign({}, parentNode));
+      printNode(node.children, level + 1, node);
+    });
+  };
+  if (debug) {
+    console.log('-----------------');
+    printNode(rootItem.children);
+  }
 
   expandedStatusRef.current = nextExpandedStatus;
   return (
