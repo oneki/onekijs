@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { addStyle } from '../../../utils/style';
 import { ListBodyProps } from '../typings';
 import ListItemComponent from './ListItemComponent';
+import StandardListComponent from './StandardListComponent';
 import DefaultVirtualListComponent from './VirtualListComponent';
 
 const findItemIndex = (items?: (Item<unknown> | undefined)[], uid?: string): number => {
@@ -27,8 +28,8 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
   items,
   ItemComponent = ListItemComponent,
   keyboardNavigable,
+  ListComponent = StandardListComponent,
   multiSelect,
-  onItemAnimate,
   onItemActivate,
   onItemDeactivate,
   onItemSelect,
@@ -191,7 +192,6 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
             items={items}
             ItemComponent={ItemComponent}
             virtualItems={virtualItems}
-            onItemAnimate={onItemAnimate}
             onItemMouseEnter={onItemMouseEnter}
             onItemMouseLeave={onItemMouseLeave}
             onItemClick={onItemClick}
@@ -200,30 +200,24 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
       </div>
     );
   } else {
+    if (height !== undefined) {
+      style = addStyle(
+        {
+          maxHeight: `${typeof height === 'string' ? height : `${height}px`}`,
+          overflow: 'auto',
+        },
+        style,
+      );
+    }
     return (
-      <div
-        ref={bodyRef}
-        className={className}
-        style={addStyle(
-          {
-            maxHeight: `${typeof height === 'string' ? height : `${height}px`}`,
-            overflow: 'auto',
-          },
-          style,
-        )}
-      >
-        {items.map((item: any, index: number) => {
-          return (
-            <ItemComponent
-              key={`item-${index}`}
-              index={index}
-              item={item}
-              onClick={onItemClick}
-              onMouseEnter={onItemMouseEnter}
-              onMouseLeave={onItemMouseLeave}
-            />
-          );
-        })}
+      <div ref={bodyRef} className={className} style={style}>
+        <ListComponent
+          items={items}
+          ItemComponent={ItemComponent}
+          onItemMouseEnter={onItemMouseEnter}
+          onItemMouseLeave={onItemMouseLeave}
+          onItemClick={onItemClick}
+        />
       </div>
     );
   }

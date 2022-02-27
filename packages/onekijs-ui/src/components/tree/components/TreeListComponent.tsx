@@ -1,8 +1,6 @@
 import { AnonymousObject, useGlobalProp } from 'onekijs-framework';
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { CSSTransition } from 'react-transition-group';
-import useIsomorphicLayoutEffect from '../../../vendor/useIsomorphicLayoutEffect';
-import { VirtualItem } from '../../list/typings';
 import { useTreeConfig } from '../hooks/useTreeConfig';
 import useTreeService from '../hooks/useTreeService';
 import { TreeItem, TreeItemHandler, TreeItemProps, VirtualTreeListProps } from '../typings';
@@ -10,13 +8,9 @@ import TreeItemComponent from './TreeItemComponent';
 
 const timeout = 150;
 
-type VirtualTreeItem<T = any, I extends TreeItem<T> = TreeItem<T>> = VirtualItem & {
-  item?: I;
-  children: VirtualTreeItem<T, I>[];
-};
-
-type VirtualTreeListItemProps<T = any, I extends TreeItem<T> = TreeItem<T>> = {
-  virtualItem: VirtualTreeItem;
+type TreeListItemProps<T = any, I extends TreeItem<T> = TreeItem<T>> = {
+  item: I;
+  index: number;
   itemClassName?: string | ((item: I) => string);
   ItemComponent: React.FC<TreeItemProps<T, I>>;
   onClick?: TreeItemHandler<T, I>;
@@ -25,29 +19,17 @@ type VirtualTreeListItemProps<T = any, I extends TreeItem<T> = TreeItem<T>> = {
   defer?: () => void;
 };
 
-const VirtualTreeListItemComponent: React.FC<VirtualTreeListItemProps> = ({
+const TreeListItemComponent: React.FC<TreeListItemProps> = ({
+  index,
+  item,
   itemClassName,
   ItemComponent,
-  virtualItem,
   onClick,
   onMouseEnter,
   onMouseLeave,
-  defer,
 }) => {
-  const { index, measureRef, children, item } = virtualItem;
   const className = typeof itemClassName !== 'function' ? itemClassName : item ? itemClassName(item) : undefined;
   const service = useTreeService();
-
-  const deferRenderRef = useRef(false);
-  deferRenderRef.current = false;
-
-  const deferRender = () => {
-    if (item?.expanding) {
-      deferRenderRef.current = true;
-    } else if (defer) {
-      defer();
-    }
-  };
 
   const expand: TreeItemHandler<any, TreeItem<any>> = (item, index) => {
     service.expanding(item, index);
@@ -57,14 +39,27 @@ const VirtualTreeListItemComponent: React.FC<VirtualTreeListItemProps> = ({
     service.collapsing(item, index);
   };
 
-  const onExiting = (node: HTMLElement) => {
-    if (childrenAnimateRef.current) {
-      childrenAnimateRef.current.style.height = `${node.getBoundingClientRect().height}px`;
+  const onEntering = (node: HTMLElement) => {
+    if (item?.expanding) {
+      const currentHeight = node.getBoundingClientRect().height;
+      node.style.height = '0px';
+      setTimeout(() => {
+        node.style.height = `${currentHeight}px`;
+      }, 0);
     }
+  };
+
+  const onEntered = (node: HTMLElement) => {
+    node.style.height = '';
+    if (item && item.expanding) {
+      service.expanded(item, index);
+    }
+  };
+
+  const onExiting = (node: HTMLElement) => {
+    node.style.height = `${node.getBoundingClientRect().height}px`;
     setTimeout(() => {
-      if (childrenAnimateRef.current) {
-        childrenAnimateRef.current.style.height = '0px';
-      }
+      node.style.height = '0px';
     }, 0);
   };
 
@@ -74,55 +69,12 @@ const VirtualTreeListItemComponent: React.FC<VirtualTreeListItemProps> = ({
     }
   };
 
-  const ref = !item?.collapsing ? measureRef : undefined;
-  const childrenAnimateRef = useRef<HTMLDivElement>(null);
-  const childrenRef = useRef<HTMLDivElement>(null);
-  const itemRef = useRef<HTMLDivElement>(null);
-
-  useIsomorphicLayoutEffect(() => {
-    if (itemRef.current && defer) {
-      const height = itemRef.current.getBoundingClientRect().height;
-      if (height !== virtualItem.size) {
-        defer();
-      }
-    }
-  });
-
   const expanded = !!(item && item.expanded && !item.collapsing);
-
-  useEffect(() => {
-    if (!deferRenderRef.current && childrenRef.current && childrenAnimateRef.current && item?.expanding) {
-      const currentHeight = childrenRef.current.getBoundingClientRect().height;
-      childrenAnimateRef.current.style.height = '0px';
-      setTimeout(() => {
-        if (childrenAnimateRef.current) childrenAnimateRef.current.style.height = `${currentHeight}px`;
-      }, 0);
-      setTimeout(() => {
-        if (item) {
-          service.expanded(item, index);
-        }
-      }, timeout);
-    }
-    if (childrenRef.current && childrenAnimateRef.current && !item?.expanding && item?.expanded && !item.collapsing) {
-      childrenAnimateRef.current.style.height = '';
-    }
-  });
+  const children = item?.children || [];
 
   return (
-    <div ref={itemRef}>
-      <div
-        className="o-virtual-item"
-        key={`virtual-item-${item?.uid || index}`}
-        ref={ref}
-        // style={{
-        //   position: 'absolute',
-        //   top: 0,
-        //   left: 0,
-        //   width: '100%',
-        //   minHeight: '20px',
-        //   transform: `translateY(${start - offset}px)`,
-        // }}
-      >
+    <div>
+      <div className="o-virtual-item" key={`virtual-item-${item?.uid || index}`}>
         <ItemComponent
           key={`item-${item?.uid || index}`}
           className={className}
@@ -142,41 +94,34 @@ const VirtualTreeListItemComponent: React.FC<VirtualTreeListItemProps> = ({
         mountOnEnter={false}
         appear={false}
         unmountOnExit={true}
+        onEntering={onEntering}
+        onEntered={onEntered}
         onExiting={onExiting}
         onExited={onExited}
       >
         <div
-          ref={childrenAnimateRef}
           className={`o-tree-item-children${item?.expanding ? ' o-tree-item-children-expanding' : ''}${
             item?.collapsing ? ' o-tree-item-children-collapsing' : ''
           }`}
         >
-          <div ref={childrenRef}>
-            {children.map((child) => {
-              return (
-                <VirtualTreeListItemComponent
-                  key={`virtual-item-${child.item?.uid || child.index}`}
-                  virtualItem={child}
-                  ItemComponent={ItemComponent}
-                  onClick={onClick}
-                  onMouseEnter={onMouseEnter}
-                  onMouseLeave={onMouseLeave}
-                  defer={deferRender}
-                />
-              );
-            })}
-          </div>
+          {children.map((child, childIndex) => {
+            const childItem = service.getItem(child);
+            return (
+              <TreeListItemComponent
+                key={`virtual-item-${childItem?.uid || childIndex}`}
+                index={childIndex}
+                item={childItem as TreeItem}
+                ItemComponent={ItemComponent}
+                onClick={onClick}
+                onMouseEnter={onMouseEnter}
+                onMouseLeave={onMouseLeave}
+              />
+            );
+          })}
         </div>
       </CSSTransition>
     </div>
   );
-};
-
-type NodeItem = {
-  parentNode?: NodeItem;
-  parentItem: { children: VirtualTreeItem[] };
-  childItem?: VirtualTreeItem;
-  level: number;
 };
 
 const VirtualTreeListComponent: React.FC<VirtualTreeListProps> = ({

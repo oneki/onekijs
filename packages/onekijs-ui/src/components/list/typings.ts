@@ -37,7 +37,7 @@ export type ListBodyProps<
   className?: string;
   ItemComponent?: FC<ListItemProps<T, I>>;
   items: (I | undefined)[];
-  onItemAnimate?: ListItemHandler<T, I>;
+  ListComponent?: FC<StandardListProps<T, I>>;
   parentRef?: React.RefObject<HTMLDivElement>;
   service: C;
   state: S;
@@ -84,7 +84,6 @@ export type ListItemHandler<T = any, I extends ListItem<T> = ListItem<T>> = (ite
 export interface ListItemProps<T = any, I extends ListItem<T> = ListItem<T>> {
   index: number;
   item?: I;
-  onAnimate?: ListItemHandler<T, I>;
   onClick?: ListItemHandler<T, I>;
   onMouseEnter?: ListItemHandler<T, I>;
   onMouseLeave?: ListItemHandler<T, I>;
@@ -136,6 +135,15 @@ export enum ListStatus {
   Loaded = 'loaded',
 }
 
+export type StandardListProps<T = any, I extends ListItem<T> = ListItem<T>> = Pick<
+  ListBodyProps<T, I>,
+  'items' | 'ItemComponent'
+> & {
+  onItemClick?: ListItemHandler<T, I>;
+  onItemMouseEnter?: ListItemHandler<T, I>;
+  onItemMouseLeave?: ListItemHandler<T, I>;
+};
+
 export type UseListOptions<T, I extends ListItem<T> = ListItem<T>> = UseCollectionOptions<T, I> & {
   adapter?: ListItemAdapter<T>;
 };
@@ -148,13 +156,6 @@ export type VirtualItem = {
   measureRef: (el: HTMLElement | null) => void;
 };
 
-export type VirtualListProps<T = any, I extends ListItem<T> = ListItem<T>> = Pick<
-  ListBodyProps<T, I>,
-  'items' | 'ItemComponent'
-> & {
-  onItemAnimate?: ListItemHandler<T, I>;
-  onItemClick?: ListItemHandler<T, I>;
-  onItemMouseEnter?: ListItemHandler<T, I>;
-  onItemMouseLeave?: ListItemHandler<T, I>;
+export type VirtualListProps<T = any, I extends ListItem<T> = ListItem<T>> = StandardListProps<T, I> & {
   virtualItems: VirtualItem[];
 };

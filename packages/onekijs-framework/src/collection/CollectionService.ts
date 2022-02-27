@@ -14,6 +14,7 @@ import { dispatch, types } from '../types/service';
 import { ensureFieldValue, get, isNull, toArray, toPayload } from '../utils/object';
 import { urlBuilder } from '../utils/router';
 import { generateUniqueId } from '../utils/string';
+import { set } from '../utils/object';
 import {
   Collection,
   CollectionBy,
@@ -67,7 +68,7 @@ export default class CollectionService<
   protected cache: AnonymousObject<any> = {};
   protected idIndex: AnonymousObject<I> = {};
   protected uidIndex: AnonymousObject<I> = {};
-  protected positionIndex: AnonymousObject<number> = {};
+  protected positionIndex: AnonymousObject<string> = {};
   protected db?: I[];
 
   init(): void {
@@ -97,7 +98,6 @@ export default class CollectionService<
 
   initDb(dataSource: T[] | string | undefined): void {
     if (Array.isArray(dataSource)) {
-      this.db = [];
       dataSource.map((entry, index) => this._adapt(entry, { position: index }));
     }
   }
@@ -613,13 +613,12 @@ export default class CollectionService<
     this.refresh(query);
   }
 
-  protected _adapt(data: T | undefined, context?: { position?: number }): I {
+  protected _adapt(data: T | undefined, context?: AnonymousObject): I {
     const adaptee = this.state.adapter === undefined || data === undefined ? {} : this.state.adapter(data);
-    const position = context?.position;
 
     const currentItem = this.idIndex[String(adaptee.id)];
     const item: I = this._buildItem(currentItem, data, adaptee, context);
-    this._indexItem(item, position);
+    this._indexItem(item, context);
     return item;
   }
 
@@ -1133,17 +1132,34 @@ export default class CollectionService<
     return this.adapt(data).id;
   }
 
-  protected _indexItem(item: I, position?: number): void {
-    this.uidIndex[item.uid] = item;
+  protected _indexDb(item: I, _context?: AnonymousObject): void {
+    if (this.positionIndex[item.uid] !== undefined && this.db) {
+      console.log('set db', this.positionIndex[item.uid]);
+      set(this.db, this.positionIndex[item.uid], item);
+    }
+  }
+
+  protected _indexId(item: I, _context?: AnonymousObject): void {
     if (item.id !== undefined) {
       this.idIndex[item.id] = item;
     }
-    if (position !== undefined) {
-      this.positionIndex[item.uid] = position;
+  }
+
+  protected _indexItem(item: I, context?: AnonymousObject): void {
+    this._indexUid(item, context);
+    this._indexId(item, context);
+    this._indexPosition(item, context);
+    this._indexDb(item, context);
+  }
+
+  protected _indexPosition(item: I, context?: AnonymousObject): void {
+    if (context?.position !== undefined) {
+      this.positionIndex[item.uid] = `${context.position}`;
     }
-    if (this.positionIndex[item.uid] !== undefined && this.db) {
-      this.db[this.positionIndex[item.uid]] = item;
-    }
+  }
+
+  protected _indexUid(item: I, _context?: AnonymousObject): void {
+    this.uidIndex[item.uid] = item;
   }
 
   @reducer

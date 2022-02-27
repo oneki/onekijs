@@ -5,7 +5,6 @@ import ListItemComponent from './ListItemComponent';
 const VirtualListComponent: React.FC<VirtualListProps<any, any>> = ({
   items,
   ItemComponent = ListItemComponent,
-  onItemAnimate,
   onItemClick,
   onItemMouseEnter,
   onItemMouseLeave,
@@ -33,7 +32,6 @@ const VirtualListComponent: React.FC<VirtualListProps<any, any>> = ({
               key={`item-${listItem?.uid || index}`}
               index={index}
               item={listItem}
-              onAnimate={onItemAnimate}
               onClick={onItemClick}
               onMouseEnter={onItemMouseEnter}
               onMouseLeave={onItemMouseLeave}

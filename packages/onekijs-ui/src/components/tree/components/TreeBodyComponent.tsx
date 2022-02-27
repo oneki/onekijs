@@ -9,7 +9,7 @@ import VirtualTreeListComponent from './VirtualTreeListComponent';
 const TreeBodyComponent: React.FC<ControllerTreeProps> = ({ className, controller }) => {
   const service = useTreeService();
   const ref = useRef<HTMLDivElement>(null);
-  const { items, totalSize, virtualItems, measure } = useListView({
+  const { items, totalSize, virtualItems } = useListView({
     controller,
     ref,
     overscan: 50,
@@ -26,7 +26,6 @@ const TreeBodyComponent: React.FC<ControllerTreeProps> = ({ className, controlle
       service={service}
       state={service.state}
       VirtualListComponent={VirtualTreeListComponent}
-      onItemAnimate={measure}
       height={'400px'}
     />
   );
