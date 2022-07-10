@@ -1,6 +1,7 @@
-import React, { FC, SyntheticEvent, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { SyntheticEvent, useCallback, useEffect, useMemo, useRef } from 'react';
 import useLazyRef from '../core/useLazyRef';
 import useService from '../core/useService';
+import { FCC } from '../types/core';
 import { AnonymousObject } from '../types/object';
 import { get } from '../utils/object';
 import ContainerValidation from './ContainerValidation';
@@ -152,7 +153,7 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
    *                    - onBlur
    */
   const field = useCallback(
-    (name: string, validators: Validator[] = [], options = {}): FieldProps => {
+    (name: string, validators: Validator[] = [], options: AnonymousObject = {}): FieldProps => {
       const field = init(name, validators, options);
       field.value = get(values, name, options.defaultValue === undefined ? '' : options.defaultValue);
       return field;
@@ -367,9 +368,9 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
   ]);
   formContextRef.current = formContext;
 
-  const FormRef = useLazyRef<FC<FormProps>>(
-    (): FC<FormProps> => {
-      const Form: FC<FormProps> = (props) => {
+  const FormRef = useLazyRef<FCC<FormProps>>(
+    (): FCC<FormProps> => {
+      const Form: FCC<FormProps> = (props) => {
         const prevValuesRef = useRef({});
         const prevValidationsRef = useRef<AnonymousObject<FieldValidation>>({});
         const prevSubmittingRef = useRef(false);

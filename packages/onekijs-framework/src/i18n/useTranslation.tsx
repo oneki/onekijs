@@ -1,7 +1,8 @@
-import React, { FC, useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import useAppContext from '../app/useAppContext';
 import useGlobalProp from '../app/useGlobalProp';
 import DefaultBasicError from '../core/BasicError';
+import { FCC } from '../types/core';
 import { AnonymousObject } from '../types/object';
 import { stringifyJsx } from '../utils/jsx';
 import { get } from '../utils/object';
@@ -12,7 +13,7 @@ import { buildJsx } from './utils';
 
 const useTranslation = (
   namespaces: string | string[] = [],
-): [FC<TranslationProps>, (content: string | JSX.Element, alias?: string, count?: number) => any, string, boolean] => {
+): [FCC<TranslationProps>, (content: string | JSX.Element, alias?: string, count?: number) => any, string, boolean] => {
   const locale: string = useLocale();
   const appContextTranslations = get(useAppContext(), 'i18n.translations');
   const reduxTranslations = useGlobalProp(`i18n.translations.${locale}`);
@@ -110,7 +111,7 @@ const useTranslation = (
     [fetching, translations, nsRequired, i18nService, locale],
   );
 
-  const T = useCallback<FC<TranslationProps>>(
+  const T = useCallback<FCC<TranslationProps>>(
     ({ alias, count, children }) => {
       return t(<>{children}</>, alias, count) as any;
     },

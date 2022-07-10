@@ -1,4 +1,4 @@
-import { useGlobalState } from 'onekijs-framework';
+import { LogLevel, useGlobalState } from 'onekijs-framework';
 import { ComponentStyle, Tree, useTreeController } from 'onekijs-ui';
 import React from 'react';
 import styled, { css } from 'styled-components';
@@ -15,15 +15,20 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
     adapter: userAdapter,
   });
 
-  const [debug, setDebug] = useGlobalState<boolean>('debug');
+  const [logLevel, setLogLevel] = useGlobalState<LogLevel | undefined>('logLevel');
 
   const toggleDebug = () => {
-    setDebug(!debug);
+    if (logLevel) {
+      setLogLevel(undefined);
+    } else {
+      setLogLevel('debug');
+    }
+
   }
 
   return (
     <>
-      <button onClick={toggleDebug}>{debug ? 'Disable Debug' : 'Activate Debug'}</button>
+      <button onClick={toggleDebug}>{logLevel ? 'Disable Debug' : 'Activate Debug'}</button>
       <Tree controller={controller} />
     </>
   );

@@ -1,11 +1,11 @@
-import { AppState, DefaultLoadingComponent, simpleMergeDeep, useLazyRef } from 'onekijs-framework';
+import { AppState, DefaultLoadingComponent, FCC, simpleMergeDeep, useLazyRef } from 'onekijs-framework';
 import React, { FC, useEffect, useMemo } from 'react';
 import { SS_KEY_404 } from './404';
 import NextRouter from './router/NextRouter';
 import { useRouterSync } from './router/useRouterSync';
 import { AppProps } from './typings';
 
-const Router: FC<{ router: NextRouter }> = ({ router, children }) => {
+const Router: FCC<{ router: NextRouter }> = ({ router, children }) => {
   useRouterSync(router);
   return <>{children}</>;
 };

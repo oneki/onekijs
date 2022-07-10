@@ -1,4 +1,4 @@
-import { AnonymousObject, useGlobalProp } from 'onekijs-framework';
+import { AnonymousObject, useLogger, useLogLevel } from 'onekijs-framework';
 import React, { useEffect, useRef } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import useIsomorphicLayoutEffect from '../../../vendor/useIsomorphicLayoutEffect';
@@ -186,7 +186,9 @@ const VirtualTreeListComponent: React.FC<VirtualTreeListProps> = ({
   onItemMouseLeave,
   virtualItems,
 }) => {
-  const debug = useGlobalProp<boolean>('debug');
+  const logLevel = useLogLevel();
+  const logger = useLogger();
+  logger.debug('virtualItems', virtualItems);
   // we keep a reference of the expanded status of virtualItems
   const expandedStatusRef = useRef<AnonymousObject<boolean>>({});
   const nextExpandedStatus: AnonymousObject<boolean> = {};
@@ -232,12 +234,12 @@ const VirtualTreeListComponent: React.FC<VirtualTreeListProps> = ({
 
     if (itemLevel === node.level) {
       // this item is a sibling of the previous item
-      if (debug) console.log('current node equal level', Object.assign({}, node), 'item', item);
+      logger.debug('current node equal level', Object.assign({}, node), 'item', item);
       node.parentItem.children.push(treeItem);
       node.childItem = treeItem;
-      if (debug) console.log('next node equal level', Object.assign({}, node), 'item', item);
+      logger.debug('next node equal level', Object.assign({}, node), 'item', item);
     } else if (itemLevel > node.level) {
-      if (debug) console.log('current node greater level', Object.assign({}, node), 'item', item);
+      logger.debug('current node greater level', Object.assign({}, node), 'item', item);
       // this item is a child of the previous item (saved in node.child)
       if (node.childItem) {
         node.childItem.children.push(treeItem);
@@ -249,9 +251,9 @@ const VirtualTreeListComponent: React.FC<VirtualTreeListProps> = ({
           level: treeItem.item?.level || 0,
         };
       }
-      if (debug) console.log('next node greater level', Object.assign({}, node), 'item', item);
+      logger.debug('next node greater level', Object.assign({}, node), 'item', item);
     } else {
-      if (debug) console.log('current node lower level', Object.assign({}, node), 'item', item);
+      logger.debug('current node lower level', Object.assign({}, node), 'item', item);
       // this item is the uncle (or xGrand uncle) of the previous item
       // try to find the correct context by finding an ancester nodecommon to the previous item and the current item
       let nextParentNode = node.parentNode;
@@ -265,18 +267,18 @@ const VirtualTreeListComponent: React.FC<VirtualTreeListProps> = ({
       node.parentItem.children.push(treeItem);
       node.childItem = treeItem;
       node.level = Math.min(itemLevel, node.level);
-      if (debug) console.log('next node lower level', Object.assign({}, node), 'item', item);
+      logger.debug('next node lower level', Object.assign({}, node), 'item', item);
     }
   });
 
   const printNode = (nodes: VirtualTreeItem[], level = 0, parentNode: VirtualTreeItem | undefined = undefined) => {
     nodes.forEach((node) => {
       console.log(`${'  '.repeat(level || 0)}${node.item?.text}`);
-      console.log('parentNode =', Object.assign({}, parentNode));
+      console.log('parentNode =', Object.assign({}, parentNode), 'children =', node.children);
       printNode(node.children, level + 1, node);
     });
   };
-  if (debug) {
+  if (logLevel === 'debug') {
     console.log('-----------------');
     printNode(rootItem.children);
   }

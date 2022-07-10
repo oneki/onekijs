@@ -7,7 +7,7 @@ import {
   UseCollectionOptions,
 } from 'onekijs-framework';
 import React from 'react';
-import { ListItemProps, VirtualListProps, ListItemHandler } from '../list/typings';
+import { ListItemHandler, ListItemProps, StandardListProps, VirtualListProps } from '../list/typings';
 
 export type ArrayTreeProps<T = any, I extends TreeItem<T> = TreeItem<T>> = TreeConfig<T, I> & {
   adapter?: TreeItemAdapter<T>;
@@ -27,10 +27,12 @@ export type ControllerTreeProps<
 
 export type TreeConfig<T = any, I extends TreeItem<T> = TreeItem<T>> = {
   className?: string;
+  height?: number;
   itemClassName?: string | ((item: I) => string);
   ItemComponent?: React.FC<TreeItemProps<T, I>>;
   onActivate?: TreeItemHandler<T, I>;
   onSelect?: TreeItemHandler<T, I>;
+  virtual?: boolean;
 };
 
 export type TreeController<
@@ -81,6 +83,8 @@ export type TreeItemToggleProps<T = any, I extends TreeItem<T> = TreeItem<T>> = 
   TreeItemProps<T, I>,
   'item' | 'onExpand' | 'onCollapse' | 'index'
 >;
+
+export type TreeListProps<T = any, I extends TreeItem<T> = TreeItem<T>> = StandardListProps<T, I>;
 
 export type TreeProps<
   T = any,

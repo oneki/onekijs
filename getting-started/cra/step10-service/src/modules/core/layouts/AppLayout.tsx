@@ -1,13 +1,16 @@
-import React from 'react';
+import { Outlet } from 'onekijs';
+import React, { FC } from 'react';
 import Navbar from '../components/Navbar';
 import NotificationCenter from '../components/NotificationCenter';
 
-const AppLayout: React.FC = ({ children }) => {
+const AppLayout: FC = () => {
   return (
     <div>
       <NotificationCenter />
       <Navbar />
-      <div className="container">{children}</div>
+      <div className="container">
+        <Outlet />
+      </div>
     </div>
   );
 };

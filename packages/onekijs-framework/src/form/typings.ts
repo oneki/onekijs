@@ -1,4 +1,5 @@
-import { FC, MutableRefObject, SyntheticEvent } from 'react';
+import { MutableRefObject, SyntheticEvent } from 'react';
+import { FCC } from '../types/core';
 import { FormLayout } from '../types/form';
 import { AnonymousObject } from '../types/object';
 import { State } from '../types/state';
@@ -149,7 +150,7 @@ export interface UseForm {
   add: (fieldArrayName: string, initialValue?: any) => void;
   clearValidation: (fieldName: string, validatorName: string, code: ValidationCode) => void;
   field: (name: string, validators?: Validator[], options?: FieldOptions) => FieldProps;
-  Form: FC<FormProps>;
+  Form: FCC<FormProps>;
   getValue<T = any>(fieldName: string): T | undefined;
   getValue<T = any>(fieldName: string, defaultValue: undefined): T | undefined;
   getValue<T = any>(fieldName: string, defaultValue: null): T | null;

@@ -30,6 +30,7 @@ export type ListBodyProps<
   | 'onItemUnhighlight'
   | 'multiSelect'
   | 'ItemComponent'
+  | 'NotFoundComponent'
   | 'height'
   | 'keyboardNavigable'
 > & {
@@ -96,6 +97,7 @@ export type ListConfig<T = any, I extends ListItem<T> = ListItem<T>> = {
   height?: number | string;
   increment?: number;
   ItemComponent?: FC<ListItemProps<T, I>>;
+  NotFoundComponent?: FC<ListNotFoundProps>;
   itemHeight?: number | ((index: number) => number);
   keyboardNavigable?: boolean;
   multiSelect?: boolean;
@@ -109,6 +111,10 @@ export type ListConfig<T = any, I extends ListItem<T> = ListItem<T>> = {
   preload?: number;
   style?: React.CSSProperties;
   virtual?: boolean;
+};
+
+export type ListNotFoundProps = {
+  text?: string;
 };
 
 export type ListProps<

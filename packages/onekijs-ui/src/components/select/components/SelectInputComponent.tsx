@@ -1,5 +1,5 @@
 import { useIsomorphicLayoutEffect } from 'onekijs-framework';
-import React, { FC, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { SelectInputProps } from '../typings';
 import SelectIconComponent from './SelectIconComponent';
 import SelectTokensComponent from './SelectTokensComponent';
@@ -22,6 +22,8 @@ const SelectInputComponent: FC<SelectInputProps> = ({
   autoFocus,
   style,
   nullable,
+  clickable,
+  minChars,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const autoSizeRef = useRef<HTMLSpanElement>(null);
@@ -31,6 +33,8 @@ const SelectInputComponent: FC<SelectInputProps> = ({
   const showSelectedRef = useRef(true);
 
   const partialValue = partialValueRef.current ?? value ?? '';
+
+  const [_, refresh] = useReducer((x) => x + 1, 0);
 
   // value that is actually shown in the input.
   // This value is set to the partial value (that is the unselected part of the value) if the value is pending loading or we don't
@@ -55,14 +59,19 @@ const SelectInputComponent: FC<SelectInputProps> = ({
     if (input) {
       const currentSelectionStart = input.selectionStart;
       const currentSelectionEnd = input.selectionEnd;
-      if (currentSelectionStart && currentSelectionStart !== currentSelectionEnd) {
+      if (currentSelectionStart && currentSelectionStart !== currentSelectionEnd && currentSelectionStart >= minChars) {
         partialValueRef.current = input.value.substring(0, currentSelectionStart);
       } else {
         partialValueRef.current = input.value;
       }
     }
-    onChange(partialValueRef.current || '');
-  }, [onChange]);
+    if ((partialValueRef.current?.length || 0) >= minChars) {
+      onChange(partialValueRef.current || '');
+    } else {
+      setOpen(false);
+      refresh();
+    }
+  }, [onChange, minChars, setOpen]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -133,13 +142,13 @@ const SelectInputComponent: FC<SelectInputProps> = ({
   }, [focus]);
 
   const onClick = useCallback(() => {
-    if (!open) {
+    if (!open && clickable) {
       setOpen(true);
     }
-  }, [open, setOpen]);
+  }, [open, setOpen, clickable]);
 
   const onFocus = useCallback(
-    (e) => {
+    (e: React.FocusEvent<HTMLInputElement, Element>) => {
       inputRef.current && inputRef.current.select();
       forwardFocus && forwardFocus(e);
     },
@@ -147,7 +156,7 @@ const SelectInputComponent: FC<SelectInputProps> = ({
   );
 
   const onBlur = useCallback(
-    (e) => {
+    (e: React.FocusEvent<HTMLInputElement, Element>) => {
       partialValueRef.current = undefined;
       showSelectedRef.current = true;
       forwardBlur && forwardBlur(e);
@@ -156,7 +165,7 @@ const SelectInputComponent: FC<SelectInputProps> = ({
   );
 
   const onIconClick = useCallback(
-    (e) => {
+    (e: any) => {
       if (!open) {
         inputRef.current && inputRef.current.select();
       }

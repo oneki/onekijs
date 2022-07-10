@@ -34,7 +34,7 @@ export function toLocation(url: string, settings: AppSettings): Location {
     }
     const tokens = pathname.split('/');
     const locale = tokens[1];
-    if (locale && isLocalePath(settings)) {
+    if (settings.i18n && locale && isLocalePath(settings)) {
       if (indexedLocales(settings)[locale] !== localeNoPathSymbol) {
         location.pathlocale = indexedLocales(settings)[locale];
       }

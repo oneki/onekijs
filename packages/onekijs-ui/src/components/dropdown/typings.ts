@@ -1,11 +1,10 @@
+import { Placement } from '@popperjs/core';
 import { AnyFunction } from 'onekijs-framework';
-import { SizePropertyTheme } from '../../styles/typings';
 
 export interface DropdownProps {
   className?: string;
-  refElement: HTMLElement | null;
-  open: boolean;
-  height?: SizePropertyTheme;
+  refElement?: HTMLElement | null;
+  open?: boolean;
   skidding?: number;
   distance?: number;
   onUpdate?: AnyFunction<void>;
@@ -16,4 +15,5 @@ export interface DropdownProps {
   onCollapseDone?: (node: HTMLElement) => void;
   onCollapsing?: (node: HTMLElement) => void;
   animationTimeout?: number;
+  placement?: Placement;
 }

@@ -6,7 +6,7 @@ import { asyncHttp, asyncPost } from '../core/xhr';
 import NotificationService from '../notification/NotificationService';
 import { OidcToken } from '../types/auth';
 import { SuccessCallback } from '../types/callback';
-import { ErrorCallback } from '../types/error';
+import { BasicError, ErrorCallback } from '../types/error';
 import { AnonymousObject } from '../types/object';
 import { SagaEffect } from '../types/saga';
 import { sha256 } from '../utils/crypt';
@@ -154,11 +154,11 @@ export default class LoginService extends DefaultLocalService<LoginState> {
       if (process.env.NODE_ENV === 'development') {
         console.error('Form login error', e);
       }
-      yield this.onError(e);
+      yield this.onError(e as BasicError);
       if (onError) {
         // the caller is not an async or generator function and manages error
         // via a callback
-        yield onError(e);
+        yield onError(e as BasicError);
       } else {
         // the caller is an async or generator function and manages error
         // via a try/catch
@@ -270,11 +270,11 @@ export default class LoginService extends DefaultLocalService<LoginState> {
       if (process.env.NODE_ENV === 'development') {
         console.error('External login error', e);
       }
-      yield this.onError(e);
+      yield this.onError(e as BasicError);
       if (onError) {
         // the caller is not an async or generator function and manages error
         // via a callback
-        yield onError(e);
+        yield onError(e as BasicError);
       } else {
         // the caller is an async or generator function and manages error
         // via a try/catch
@@ -420,11 +420,11 @@ export default class LoginService extends DefaultLocalService<LoginState> {
       if (process.env.NODE_ENV === 'development') {
         console.error('External login callback error', e);
       }
-      yield this.onError(e);
+      yield this.onError(e as BasicError);
       if (onError) {
         // the caller is not an async or generator function and manages error
         // via a callback
-        yield onError(e);
+        yield onError(e as BasicError);
       } else {
         // the caller is an async or generator function and manages error
         // via a try/catch
@@ -490,11 +490,11 @@ export default class LoginService extends DefaultLocalService<LoginState> {
       if (process.env.NODE_ENV === 'development') {
         console.error('Success login error', e);
       }
-      yield this.onError(e);
+      yield this.onError(e as BasicError);
       if (onError) {
         // the caller is not an async or generator function and manages error
         // via a callback
-        yield onError(e);
+        yield onError(e as BasicError);
       } else {
         // the caller is an async or generator function and manages error
         // via a try/catch
@@ -545,7 +545,7 @@ export default class LoginService extends DefaultLocalService<LoginState> {
         // to the caller
         // for any business error (40X), we bypass the error (it's likely an
         // unauthenticate error, so we continue the login process)
-        if (e.code >= 500) {
+        if ((e as BasicError).code >= 500) {
           throw e;
         }
       }
@@ -558,11 +558,11 @@ export default class LoginService extends DefaultLocalService<LoginState> {
       if (process.env.NODE_ENV === 'development') {
         console.error('Login error', e);
       }
-      yield this.onError(e);
+      yield this.onError(e as BasicError);
       if (onError) {
         // the caller is not an async or generator function and manages error
         // via a callback
-        yield onError(e);
+        yield onError(e as BasicError);
       } else {
         // the caller is an async or generator function and manages error
         // via a try/catch

@@ -1,4 +1,4 @@
-import { useEventListener } from 'onekijs-framework';
+import { FCC, useEventListener } from 'onekijs-framework';
 import React from 'react';
 import { useResizerService } from '../ResizerService';
 import { ResizerHandle, ResizeVerticalSplitterProps } from '../typings';
@@ -7,7 +7,7 @@ const getClassNames = (handle: ResizerHandle, active?: boolean, hover?: boolean)
   return `o-resizer-vertical-splitter o-resizer-${handle}-splitter${active || hover ? ' o-resizer-active' : ''}`;
 };
 
-const ResizerVerticalSplitter: React.FC<ResizeVerticalSplitterProps> = ({ children, target, handle, onResize }) => {
+const ResizerVerticalSplitter: FCC<ResizeVerticalSplitterProps> = ({ children, target, handle, onResize }) => {
   const [resizerState, resizerService] = useResizerService(onResize);
   const style: React.CSSProperties = {
     position: 'absolute',

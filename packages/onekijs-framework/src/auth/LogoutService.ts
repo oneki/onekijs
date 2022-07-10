@@ -5,7 +5,7 @@ import DefaultBasicError from '../core/BasicError';
 import { asyncHttp } from '../core/xhr';
 import NotificationService from '../notification/NotificationService';
 import { SuccessCallback } from '../types/callback';
-import { ErrorCallback } from '../types/error';
+import { BasicError, ErrorCallback } from '../types/error';
 import { SagaEffect } from '../types/saga';
 import { get } from '../utils/object';
 import { absoluteUrl } from '../utils/router';
@@ -120,11 +120,11 @@ export default class LogoutService extends DefaultLocalService<LogoutState> {
         yield this.successLogout(onError, onSuccess);
       }
     } catch (e) {
-      yield this.onError(e);
+      yield this.onError(e as BasicError);
       if (onError) {
         // the caller is not an async or generator function and manages error
         // via a callback
-        yield onError(e);
+        yield onError(e as BasicError);
       } else {
         // the caller is an async or generator function and manages error
         // via a try/catch
@@ -155,11 +155,11 @@ export default class LogoutService extends DefaultLocalService<LogoutState> {
       if (process.env.NODE_ENV === 'development') {
         console.error('Form login error', e);
       }
-      yield this.onError(e);
+      yield this.onError(e as BasicError);
       if (onError) {
         // the caller is not an async or generator function and manages error
         // via a callback
-        yield onError(e);
+        yield onError(e as BasicError);
       } else {
         // the caller is an async or generator function and manages error
         // via a try/catch

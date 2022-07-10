@@ -1,5 +1,6 @@
 import { Task } from '@redux-saga/types';
 import { call, cancel, delay, fork, spawn } from 'redux-saga/effects';
+import { BasicError } from '../types/error';
 import { FetchMethod, FetchOptions, FetchState, HttpMethod } from '../types/fetch';
 import { SagaEffect } from '../types/saga';
 import { reducer, saga } from './annotations';
@@ -63,7 +64,7 @@ export default class FetchService<S extends FetchState = FetchState> extends Def
       yield this.fetchError(e);
       const onError = options.onError;
       if (onError) {
-        yield call(onError, e);
+        yield call(onError, e as BasicError);
       } else {
         throw e;
       }

@@ -5,6 +5,7 @@ import { ErrorBoundaryComponentProps } from './typings';
 export type AppErrorBoundaryProps = {
   ErrorBoundaryComponent: React.ComponentType<ErrorBoundaryComponentProps>;
   context: AppContext;
+  children?: React.ReactNode;
 };
 
 type AppErrorBoundaryState = {

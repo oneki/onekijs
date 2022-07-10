@@ -15,7 +15,7 @@ function useGlobalState(key: string, defaultValue?: any): [any, (value?: any) =>
   value = value === undefined ? defaultValue : value;
   const service = useGlobalService(GlobalStateService);
   const setValue = useCallback(
-    (value) => {
+    (value: unknown) => {
       service.setState(key, value);
     },
     [service, key],

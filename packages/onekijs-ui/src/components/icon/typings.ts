@@ -10,4 +10,6 @@ export type TogglerIconProps = IconProps & {
   loading?: boolean;
   visible?: boolean;
   model?: 'arrow' | 'plus';
+  closeArrowPosition?: 'e' | 'w' | 'n' | 's';
+  openArrowPosition?: 'e' | 'w' | 'n' | 's';
 };

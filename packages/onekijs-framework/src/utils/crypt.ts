@@ -111,13 +111,7 @@ export async function sha256(message?: string): Promise<string> {
 export async function verify(
   token: string,
   jwKey: JsonWebKey,
-  alg:
-    | AlgorithmIdentifier
-    | RsaHashedImportParams
-    | EcKeyImportParams
-    | HmacImportParams
-    | DhImportKeyParams
-    | AesKeyAlgorithm,
+  alg: AlgorithmIdentifier | RsaHashedImportParams | EcKeyImportParams | HmacImportParams | AesKeyAlgorithm,
 ): Promise<boolean> {
   try {
     switch (alg) {

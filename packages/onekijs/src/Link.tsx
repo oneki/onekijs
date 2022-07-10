@@ -1,5 +1,5 @@
 import { LinkProps, toI18nLocation, toRelativeUrl, toUrl, useI18n, useLocation, useSettings } from 'onekijs-framework';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Link as ReactRouterLink, NavLink } from 'react-router-dom';
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
@@ -32,20 +32,23 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
       );
     }
 
-    const LinkComponent = isActive || activeClassName || activeStyle ? NavLink : ReactRouterLink;
-
-    return (
-      <LinkComponent
-        {...anchorProps}
-        activeClassName={activeClassName}
-        activeStyle={activeStyle}
-        component={Component}
-        to={toRelativeUrl(nextLocation)}
-        ref={ref}
-      >
-        {children}
-      </LinkComponent>
-    );
+    if (isActive || activeClassName || activeStyle) {
+      const className = (props: { isActive: boolean }) =>
+        isActive || props.isActive ? activeClassName || anchorProps.className : anchorProps.className;
+      const style = (props: { isActive: boolean }) =>
+        isActive || props.isActive ? activeStyle || {} : anchorProps.style || {};
+      return (
+        <NavLink {...anchorProps} className={className} style={style} to={toRelativeUrl(nextLocation)} ref={ref}>
+          {children as ReactNode}
+        </NavLink>
+      );
+    } else {
+      return (
+        <ReactRouterLink {...anchorProps} to={toRelativeUrl(nextLocation)} ref={ref}>
+          {children}
+        </ReactRouterLink>
+      );
+    }
   },
 );
 

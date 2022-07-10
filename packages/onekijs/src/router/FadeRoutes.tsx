@@ -1,9 +1,10 @@
-import React, { FC } from 'react';
-import { Switch as RouterSwitch, useLocation } from 'react-router-dom';
+import { FCC } from 'onekijs-framework';
+import React from 'react';
+import { Routes as RouterRoutes, RoutesProps, useLocation } from 'react-router-dom';
 import { SwitchTransition, Transition } from 'react-transition-group';
 import { TransitionStatus } from 'react-transition-group/Transition';
 
-type FadeSwitchProps = {
+type FadeRoutesProps = RoutesProps & {
   duration?: number;
   fadeOn?: 'pathnameChange' | 'urlChange';
 };
@@ -11,7 +12,12 @@ type FadeSwitchProps = {
 const defaultDuration = 150; //TODO get that via useSetting
 const defaultFadeOn = 'pathnameChange'; //TODO get that via useSetting
 
-const FadeSwitch: FC<FadeSwitchProps> = ({ duration = defaultDuration, children, fadeOn = defaultFadeOn }) => {
+const FadeRoutes: FCC<FadeRoutesProps> = ({
+  duration = defaultDuration,
+  children,
+  fadeOn = defaultFadeOn,
+  ...routeProps
+}) => {
   const location = useLocation();
   const key = fadeOn === 'pathnameChange' ? location.pathname : `${location.pathname}${location.search}`;
 
@@ -20,7 +26,9 @@ const FadeSwitch: FC<FadeSwitchProps> = ({ duration = defaultDuration, children,
       <Transition key={key} appear={true} timeout={duration}>
         {(state) => (
           <div style={transitionStyles(state, duration)}>
-            <RouterSwitch location={location}>{children}</RouterSwitch>
+            <RouterRoutes {...routeProps} location={location}>
+              {children}
+            </RouterRoutes>
           </div>
         )}
       </Transition>
@@ -56,4 +64,4 @@ const transitionStyles = (state: TransitionStatus, duration = defaultDuration) =
   }
 };
 
-export default FadeSwitch;
+export default FadeRoutes;

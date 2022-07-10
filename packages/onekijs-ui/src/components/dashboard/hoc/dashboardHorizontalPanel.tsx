@@ -1,3 +1,4 @@
+import { FCC } from 'onekijs-framework';
 import React, { CSSProperties, useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
 import { ComponentStyle } from '../../../styles/typings';
@@ -120,8 +121,8 @@ const StyledComponent = styled(Component)`
   ${style}
 `;
 
-const dashboardHorizontalPanel = (area: DashboardHorizontalArea): React.FC<DashboardHorizontalPanelProps> => {
-  const Panel: React.FC<DashboardHorizontalPanelProps> = (props) => {
+const dashboardHorizontalPanel = (area: DashboardHorizontalArea): FCC<DashboardHorizontalPanelProps> => {
+  const Panel: FCC<DashboardHorizontalPanelProps> = (props) => {
     const service = useDashboardService();
     const state = useDashboardState();
 

@@ -1,5 +1,6 @@
-import React, { ComponentPropsWithoutRef, ElementType, FC, memo } from 'react';
+import React, { ComponentPropsWithoutRef, ElementType, memo } from 'react';
 import useGlobalProp from '../app/useGlobalProp';
+import { FCC } from '../types/core';
 import DefaultAuthErrorComponent from './DefaultAuthErrorComponent';
 import useSecurityContext from './useSecurityContext';
 
@@ -7,8 +8,8 @@ export const secure = (
   Component: ElementType,
   validator?: (securityContext: any) => boolean,
   options: { ErrorComponent?: ElementType } = {},
-): FC<ComponentPropsWithoutRef<typeof Component>> => {
-  const SecureComponent: FC<ComponentPropsWithoutRef<typeof Component>> = memo((props) => {
+): FCC<ComponentPropsWithoutRef<typeof Component>> => {
+  const SecureComponent: FCC<ComponentPropsWithoutRef<typeof Component>> = memo((props) => {
     const [securityContext, loading] = useSecurityContext();
     const auth = useGlobalProp('auth');
     // const [error, setError] = useState(null);

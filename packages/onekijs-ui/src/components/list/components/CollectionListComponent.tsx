@@ -12,6 +12,7 @@ const CollectionListComponent: FC<CollectionListProps> = ({
   controller,
   height,
   ItemComponent = ListItemComponent,
+  NotFoundComponent,
   itemHeight,
   preload,
   keyboardNavigable,
@@ -45,6 +46,7 @@ const CollectionListComponent: FC<CollectionListProps> = ({
           className={addClassname('o-list', className)}
           height={height}
           ItemComponent={ItemComponent}
+          NotFoundComponent={NotFoundComponent}
           items={items}
           keyboardNavigable={keyboardNavigable}
           bodyRef={ref}

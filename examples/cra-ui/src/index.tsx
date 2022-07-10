@@ -1,9 +1,8 @@
 import '@fontsource/roboto';
-import { App } from 'onekijs';
+import { App, Link, Route, Routes } from 'onekijs';
 import { theme } from 'onekijs-ui';
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { Link, Route, Switch } from 'react-router-dom';
+import { createRoot } from 'react-dom/client';
 import { ThemeProvider } from 'styled-components';
 import { AjaxListPage } from './pages/ajaxList';
 import { ButtonPage } from './pages/button';
@@ -16,7 +15,10 @@ import { TreePage } from './pages/tree';
 
 const customTheme = {};
 
-ReactDOM.render(
+const container = document.getElementById('root');
+const root = createRoot(container!); // createRoot(container!) if you use TypeScript
+
+root.render(
   <App>
     <ThemeProvider theme={theme(customTheme)}>
       <div
@@ -31,41 +33,22 @@ ReactDOM.render(
             marginBottom: '10px',
           }}
         >
-          <Link to="/">Home</Link> | <Link to="/button">Button</Link> | <Link to="/select">Select</Link> |{' '}
-          <Link to="/list">List</Link> | <Link to="/ajaxList">Ajax List</Link> | <Link to="/table">Table</Link> |{' '}
-          <Link to="/input">Input</Link> | <Link to="/dashboard">Dashboard</Link> | <Link to="/tree">Tree</Link>
+          <Link href="/">Home</Link> | <Link href="/button">Button</Link> | <Link href="/select">Select</Link> |{' '}
+          <Link href="/list">List</Link> | <Link href="/ajaxList">Ajax List</Link> | <Link href="/table">Table</Link> |{' '}
+          <Link href="/input">Input</Link> | <Link href="/dashboard">Dashboard</Link> | <Link href="/tree">Tree</Link>
         </div>
-        <Switch>
-          <Route path="/button">
-            <ButtonPage />
-          </Route>
-          <Route path="/select">
-            <SelectPage />
-          </Route>
-          <Route path="/list">
-            <ListPage />
-          </Route>
-          <Route path="/ajaxList">
-            <AjaxListPage />
-          </Route>
-          <Route path="/table">
-            <TablePage />
-          </Route>
-          <Route path="/input">
-            <InputPage />
-          </Route>
-          <Route path="/dashboard">
-            <DashboardPage />
-          </Route>
-          <Route path="/tree">
-            <TreePage />
-          </Route>
-          <Route>
-            <div>This is the main page</div>
-          </Route>
-        </Switch>
+        <Routes>
+          <Route path="/button" element={<ButtonPage />}/>
+          <Route path="/select" element={<SelectPage />}/>
+          <Route path="/list" element={<ListPage />}/>
+          <Route path="/ajaxList" element={<AjaxListPage />}/>
+          <Route path="/table" element={<TablePage />}/>
+          <Route path="/input" element={<InputPage />}/>
+          <Route path="/dashboard" element={<DashboardPage />}/>
+          <Route path="/tree" element={<TreePage />}/>
+        </Routes>
       </div>
     </ThemeProvider>
   </App>,
-  document.getElementById('root'),
+
 );

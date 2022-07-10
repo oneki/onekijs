@@ -7,7 +7,7 @@ const useTryLocation = (): Location | undefined => {
   const router = useTryAppContext()?.router;
   const [, setLocation] = useState(router?.location);
   const listener = useCallback(
-    (location) => {
+    (location: Location) => {
       setLocation(location);
     },
     [setLocation],

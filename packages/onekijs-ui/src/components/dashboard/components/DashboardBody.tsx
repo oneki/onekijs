@@ -1,3 +1,4 @@
+import { FCC } from 'onekijs-framework';
 import React, { CSSProperties, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import useDashboardService from '../hooks/useDashboardService';
@@ -5,7 +6,7 @@ import useDashboardState from '../hooks/useDashboardState';
 import { DashboardBodyComponentProps, DashboardBodyPanelProps, DashboardSize } from '../typings';
 import { getDashboardPanelLength, getFloatingKey, getWorkspacePanelLength } from '../utils/dashboardLength';
 
-const DashboardBodyComponent: React.FC<DashboardBodyComponentProps> = (props) => {
+const DashboardBodyComponent: FCC<DashboardBodyComponentProps> = (props) => {
   const ref = useRef<HTMLDivElement>(null);
   const service = useDashboardService();
   const stepRef = useRef<'initializing' | 'initialized' | undefined>();
@@ -108,7 +109,7 @@ const StyledDashboardBody = styled(DashboardBodyComponent)`
   }
 `;
 
-const DashboardBody: React.FC<DashboardBodyPanelProps> = (props) => {
+const DashboardBody: FCC<DashboardBodyPanelProps> = (props) => {
   const state = useDashboardState();
 
   const panel = state.body;

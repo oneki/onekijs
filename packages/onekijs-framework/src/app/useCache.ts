@@ -13,17 +13,17 @@ const useCache = <T = any>(
     return options;
   });
 
-  const service = useGlobalService(CacheEntryService);
+  const service = useGlobalService<CacheEntryService<T>>(CacheEntryService);
 
   const refresh = useCallback(() => {
     if (url) {
-      service.fetch(url, optionsRef.current as CacheOptions<T>, true);
+      service.fetch(url, optionsRef.current, true);
     }
   }, [url, service, optionsRef]);
 
   useEffect(() => {
     if (url) {
-      service.fetch(url, optionsRef.current as CacheOptions<T>, false);
+      service.fetch(url, optionsRef.current, false);
     }
   }, [url, optionsRef, service]);
 

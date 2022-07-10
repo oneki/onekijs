@@ -1,12 +1,25 @@
 import React, { FC } from 'react';
 import styled, { css } from 'styled-components';
 import { alignItems } from '../../styles/alignment';
+import { backgroundColor } from '../../styles/background';
 import { display } from '../../styles/display';
 import { color } from '../../styles/typography';
 import { addClassname } from '../../utils/style';
 import LoadingIcon from './LoadingIcon';
 import { TogglerIconProps } from './typings';
-import { backgroundColor } from '../../styles/background';
+
+const toDegree = (position: 'n' | 's' | 'w' | 'e'): string => {
+  switch (position) {
+    case 'e':
+      return '90';
+    case 'w':
+      return '270';
+    case 's':
+      return '180';
+    case 'n':
+      return '0';
+  }
+};
 
 const IconComponent: FC<TogglerIconProps> = ({
   className,
@@ -15,6 +28,8 @@ const IconComponent: FC<TogglerIconProps> = ({
   loading,
   visible = true,
   model = 'arrow',
+  closeArrowPosition = 'e',
+  openArrowPosition = 's',
 }) => {
   const iconClassName = addClassname('o-toggler-icon-container', className);
   if (!visible) {
@@ -28,7 +43,7 @@ const IconComponent: FC<TogglerIconProps> = ({
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
-              transform={`rotate(${open ? '180' : '90'})`}
+              transform={`rotate(${open ? toDegree(openArrowPosition) : toDegree(closeArrowPosition)})`}
               className="o-toggler-arrow"
             >
               <polyline points="18 15 12 9 6 15"></polyline>
@@ -56,7 +71,7 @@ const TogglerIcon = styled(IconComponent)`
   ${({ width = '24px', height = '24px', color: cssColor = 'inherit' }) => css`
     width: ${width};
     height: ${height};
-    ${display('flex')};
+    ${display('inline-flex')};
     ${alignItems('center')};
     ${color(cssColor)}
     .o-toggler-icon {

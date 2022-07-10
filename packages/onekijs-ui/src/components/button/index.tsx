@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import ButtonComponent from './component';
+import ButtonComponent from './components/ButtonComponent';
 import buttonStyle from './style';
 
 const Button = styled(ButtonComponent)`

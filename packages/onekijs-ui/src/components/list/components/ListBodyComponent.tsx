@@ -27,6 +27,7 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
   height,
   items,
   ItemComponent = ListItemComponent,
+  NotFoundComponent,
   keyboardNavigable,
   ListComponent = StandardListComponent,
   multiSelect,
@@ -168,6 +169,13 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
 
   const overflow = parentRef && parentRef !== bodyRef ? 'visible' : 'auto';
   if (virtualItems !== undefined) {
+    if (virtualItems.length === 0 && NotFoundComponent) {
+      return (
+        <div className={className}>
+          <NotFoundComponent />
+        </div>
+      );
+    }
     return (
       <div
         ref={bodyRef}
@@ -200,6 +208,13 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
       </div>
     );
   } else {
+    if (items.length === 0 && NotFoundComponent) {
+      return (
+        <div className={className}>
+          <NotFoundComponent />
+        </div>
+      );
+    }
     if (height !== undefined) {
       style = addStyle(
         {

@@ -51,7 +51,7 @@ export const SelectPage = () => {
     <Form>
 
     <div style={{display: 'flex', justifyContent: 'center'}}>
-      <div style={{width: '800px', padding: '10px'}}>
+      <div style={{width: '800px', paddingTop: '600px'}}>
 
           <FormSelect label="Simple select" size="medium" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" controller={collection} name="simple" required /><br/>
           {/* <FormSelect label="Simple select" size="small" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" items={collection} name="simple" required /><br/>

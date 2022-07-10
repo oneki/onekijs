@@ -12,7 +12,7 @@ import {
 } from '../../styles/border';
 import { display, visibility } from '../../styles/display';
 import { opacity } from '../../styles/effects';
-import { flexGrow, flexWrap } from '../../styles/flex';
+import { flexDirection, flexGrow, flexWrap } from '../../styles/flex';
 import { appearance, cursor, outline, userSelect } from '../../styles/interactivity';
 import { overflowY } from '../../styles/overflow';
 import { bottom, left, position, right, top, zIndex } from '../../styles/position';
@@ -26,7 +26,7 @@ import { lighten } from '../../utils/color';
 import { preflight } from '../../utils/style';
 import { SelectProps } from './typings';
 
-const selectStyle: ComponentStyle<SelectProps> = ({ theme }) => {
+const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
   return css`
     ${preflight()}
     ${width('100%')}
@@ -114,7 +114,7 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme }) => {
       ${borderWidth(1)}
       ${borderColor('gray-300')}
       ${borderRadius('md')}
-      ${cursor('pointer')}
+      ${clickable ? cursor('pointer') : ''}
       ${padding('1px')}
       ${position('relative')}
       &.o-select-input-focus {
@@ -131,7 +131,7 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme }) => {
     }
     &.o-select-close {
       .o-select-input{
-        ${cursor('pointer')}
+        ${clickable ? cursor('pointer') : ''}
       }
     }
     &.o-select-open {
@@ -240,6 +240,25 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme }) => {
 
     }
 
+    .o-select-not-found {
+      ${display('flex')}
+      ${flexDirection('column')}
+      ${alignItems('center')}
+      ${padding('4xl')}
+      ${color('primary')}
+    }
+    .o-select-options, .o-select-not-found {
+      ${borderRadius('md')}
+      ${borderTopLeftRadius(0)}
+      ${borderTopRightRadius(0)}
+      ${boxShadow('lg')}
+      ${zIndex(1000)}
+      ${backgroundColor('white')}
+      ${borderWidth(1)}
+      ${borderColor('light')}
+      ${borderTopWidth(0)}
+    }
+
 
     .o-select-options {
       scrollbar-width: thin;
@@ -255,16 +274,7 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme }) => {
         background-color: ${(props) => props.theme.palette.colors[props.theme.colors.primary]};
         border: 3px solid ${(props) => props.theme.palette.colors['gray-200']};
       }
-      ${borderRadius('md')}
-      ${borderTopLeftRadius(0)}
-      ${borderTopRightRadius(0)}
-      ${boxShadow('lg')}
       ${overflowY('hidden')}
-      ${zIndex(1000)}
-      ${backgroundColor('white')}
-      ${borderWidth(1)}
-      ${borderColor('light')}
-      ${borderTopWidth(0)}
       ${opacity(0)}
       transform: translateY(-40px);
 

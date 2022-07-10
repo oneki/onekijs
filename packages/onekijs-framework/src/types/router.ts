@@ -78,7 +78,6 @@ export interface Router {
   back(delta?: number): void;
   deleteOrigin(): void;
   forward(delta?: number): void;
-  getReactContext(): React.Context<any>;
   getLinkComponent(
     props: LinkProps,
     ref: ((instance: HTMLAnchorElement | null) => void) | MutableRefObject<HTMLAnchorElement | null> | null,

@@ -1,9 +1,10 @@
-import React, { FC, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import useRouter from '../app/useRouter';
 import useSetting from '../app/useSetting';
+import { FCC } from '../types/core';
 import { AuthErrorProps } from './typings';
 
-const DefaultAuthErrorComponent: FC<AuthErrorProps> = ({ error }) => {
+const DefaultAuthErrorComponent: FCC<AuthErrorProps> = ({ error }) => {
   const router = useRouter();
   const loginRoute = useSetting('routes.login', '/login');
 

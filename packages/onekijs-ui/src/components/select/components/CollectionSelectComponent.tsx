@@ -19,6 +19,7 @@ import ListBodyComponent from '../../list/components/ListBodyComponent';
 import useListView from '../../list/hooks/useListView';
 import { CollectionSelectProps, SelectItem, SelectOptionHandler } from '../typings';
 import SelectInputComponent from './SelectInputComponent';
+import SelectNotFoundComponent from './SelectNotFoundComponent';
 import SelectOptionComponent, { MultiSelectOptionComponent } from './SelectOptionComponent';
 
 const findItem = (controller: Collection<any, SelectItem<any>>, pattern: string): SelectItem<any> | undefined => {
@@ -60,7 +61,9 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
   placeholder,
   controller,
   InputComponent = SelectInputComponent,
+  IconComponent,
   ItemComponent,
+  NotFoundComponent = SelectNotFoundComponent,
   autoFocus,
   value,
   onChange,
@@ -71,6 +74,9 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
   status = ValidationStatus.None,
   size = 'medium',
   nullable = true,
+  minChars = 0,
+  openOnFocus = false,
+  clickable = true,
 }) => {
   const [open, setOpen] = useState(false);
   const [focus, setFocus] = useState(false);
@@ -90,9 +96,13 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
       .filter((item) => item !== undefined) as SelectItem<any>[];
   }, [controller.state.selected, service]);
 
+  const showActiveRef = useRef(false);
+
   const proxyItem = useMemo(() => {
     const search = controller.getSearch();
-    if (focus && search) {
+    if (showActiveRef.current && controller.state.active && controller.state.active.length > 0) {
+      return controller.getItem(controller.state.active[0]);
+    } else if (focus && search) {
       const item = findItem(controller, search.toString());
       if (item === undefined && !isCollectionFetching(controller)) {
         return get(controller, 'items.0');
@@ -126,11 +136,14 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
   const onFocus = useCallback(() => {
     if (!focus) {
       setFocus(true);
+      if (openOnFocus && !open) {
+        setOpen(true);
+      }
       if (forwardFocus) {
         forwardFocus();
       }
     }
-  }, [focus, forwardFocus]);
+  }, [focus, forwardFocus, openOnFocus, open]);
 
   useClickOutside(containerRef, () => {
     onBlur();
@@ -155,10 +168,12 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
   }, [controller, focus, open]);
 
   const onInputChange = (nextValue: string | null) => {
+    showActiveRef.current = false;
     if (nextValue === null) {
       onSelect(null);
     } else {
       service.search(nextValue);
+      console.log('onInputChange', open);
       if (!open) {
         setOpen(true);
       }
@@ -176,8 +191,25 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
     [service, onChange],
   );
 
+  const onActivate = useCallback(
+    (item: Item) => {
+      showActiveRef.current = true;
+      service.setActive('item', item);
+    },
+    [service],
+  );
+
   const onSelect = useCallback(
     (item: Item | null, index = 0) => {
+      if (!multiple) {
+        setOpen(false);
+        service.setActive('item', []);
+      }
+
+      if (service.getSearch()) {
+        service.clearSearch();
+      }
+
       if (multiple && item && !item.selected) {
         service.addSelected('item', item);
       } else if (multiple && item && item.selected) {
@@ -186,14 +218,6 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
         service.setSelected('item', item);
       } else {
         service.setSelected('item', []);
-      }
-
-      if (service.getSearch()) {
-        service.clearSearch();
-      }
-
-      if (!multiple) {
-        setOpen(false);
       }
 
       if (onChange) {
@@ -352,6 +376,9 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
         autoFocus={autoFocus}
         style={style}
         nullable={nullable}
+        IconComponent={IconComponent}
+        clickable={clickable}
+        minChars={minChars}
       />
       <Dropdown
         refElement={containerRef}
@@ -365,12 +392,14 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
         }}
         onDropDone={() => setDropping(false)}
         onCollapseDone={onClosed}
+        placement="bottom"
       >
         <ListBodyComponent
           className="o-select-options"
           bodyRef={optionsRef}
           height={height}
           ItemComponent={ItemComponent ? ItemComponent : multiple ? MultiSelectOptionComponent : SelectOptionComponent}
+          NotFoundComponent={NotFoundComponent}
           items={selectItems}
           onItemSelect={onSelect}
           totalSize={totalSize}
@@ -380,6 +409,7 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
           state={controller.state}
           keyboardNavigable={true}
           multiSelect={multiple}
+          onItemActivate={onActivate}
         />
       </Dropdown>
     </div>

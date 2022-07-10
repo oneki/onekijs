@@ -15,6 +15,7 @@ import {
   ListItemAdapter,
   ListItemHandler,
   ListItemProps,
+  ListNotFoundProps,
   ListState,
 } from '../list/typings';
 
@@ -68,6 +69,8 @@ export interface SelectInputProps<T = any, I extends SelectItem<T> = SelectItem<
   onRemove: SelectOptionHandler<T, I>;
   style?: React.CSSProperties;
   nullable?: boolean;
+  clickable: boolean;
+  minChars: number;
 }
 
 export type SelectItem<T = any> = ListItem<T>;
@@ -79,6 +82,8 @@ export type SelectItemAdapter<T = any> = ListItemAdapter<T>;
 // export type SelectInternalProps<T = any, M extends ItemMeta = SelectOptionMeta> = Omit<SelectProps, 'items'> & {
 //   collection: Collection<T, M>;
 // };
+
+export type SelectNotFoundProps = ListNotFoundProps;
 
 export type SelectOptionHandler<T = any, I extends SelectItem<T> = SelectItem<T>> = ListItemHandler<T, I>;
 export type SelectOptionSelectionHandler<T = any, I extends SelectItem<T> = SelectItem<T>> = (
@@ -106,6 +111,7 @@ export type SelectProps<
 export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = ListConfig<T, I> & {
   InputComponent?: FC<SelectInputProps<T, I>>;
   IconComponent?: FC<SelectIconProps>;
+  NotFoundComponent?: FC<SelectNotFoundProps>;
   placeholder?: string;
   value?: T | T[] | null;
   onChange?: ChangeHandler<T>;
@@ -118,6 +124,9 @@ export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Lis
   name?: string;
   size?: FieldSize;
   nullable?: boolean;
+  minChars?: number;
+  openOnFocus?: boolean;
+  clickable?: boolean;
 };
 
 export type SelectState<T = any, I extends SelectItem<T> = SelectItem<T>> = ListState<T, I>;

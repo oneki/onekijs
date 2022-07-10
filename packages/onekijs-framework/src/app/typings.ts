@@ -1,5 +1,4 @@
 import { ComponentType, ElementType, ErrorInfo } from 'react';
-import { DefaultRootState } from 'react-redux';
 import DefaultBasicError from '../core/BasicError';
 import DefaultService from '../core/Service';
 import { AppContext, AppSettings, AppStore } from '../types/app';
@@ -57,7 +56,18 @@ export type ErrorBoundaryComponentProps = {
   error?: Error;
   errorInfo?: ErrorInfo;
   context: AppContext;
+  children?: React.ReactNode;
 };
 export type GlobalModifierFunction = (key: string, value: unknown) => void;
-export type GlobalSelectorFunction = (state: DefaultRootState) => unknown;
+export type GlobalSelectorFunction = (state: unknown) => unknown;
+export type LogLevel = 'error' | 'warning' | 'info' | 'debug' | 'trace';
+export type Logger = {
+  error: (...args: any[]) => void;
+  warn: (...args: any[]) => void;
+  info: (...args: any[]) => void;
+  debug: (...args: any[]) => void;
+  trace: (...args: any[]) => void;
+  log: (...args: any[]) => void;
+};
 export type SetGlobalStateFunction<T> = (value?: T | null | undefined) => void;
+export type UseLogger = () => Logger;

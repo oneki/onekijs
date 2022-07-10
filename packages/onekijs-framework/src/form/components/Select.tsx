@@ -1,9 +1,10 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { extractValidators } from '../utils';
 import useField from '../useField';
 import { SelectProps } from '../typings';
+import { FCC } from '../../types/core';
 
-const Select: FC<SelectProps> = React.memo((props) => {
+const Select: FCC<SelectProps> = React.memo((props) => {
   const [validators, wrappedProps] = extractValidators(props);
   const { name, defaultValue, ...selectProps } = wrappedProps;
   const field = useField(name, validators, {

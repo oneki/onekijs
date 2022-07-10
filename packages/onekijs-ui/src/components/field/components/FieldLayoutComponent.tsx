@@ -1,4 +1,4 @@
-import { useFormContext, useTrySetting, FormLayout } from 'onekijs-framework';
+import { useFormContext, useTrySetting, FormLayout, FCC } from 'onekijs-framework';
 import React from 'react';
 import { GridSize } from '../../../styles/typings';
 import { gridSize } from '../../../utils/size';
@@ -8,7 +8,7 @@ import FieldDescription from '../FieldDescription';
 import FieldHelp from '../FieldHelp';
 import { FieldLayoutProps } from '../typings';
 
-const FieldLayoutComponent: React.FC<FieldLayoutProps> = React.memo(
+const FieldLayoutComponent: FCC<FieldLayoutProps> = React.memo(
   ({
     className,
     description,

@@ -1,4 +1,14 @@
-import { AnonymousObject, DefaultService, get, isFalse, isMobile, isTrue, reducer, service, set } from 'onekijs-framework';
+import {
+  AnonymousObject,
+  DefaultService,
+  get,
+  isFalse,
+  isMobile,
+  isTrue,
+  reducer,
+  service,
+  set,
+} from 'onekijs-framework';
 import React from 'react';
 import { clearSelection, forceCursor, getTranslateXY } from '../../utils/dom';
 import { ResizeStep } from '../resizer/typings';

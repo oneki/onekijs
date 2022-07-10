@@ -1,26 +1,33 @@
-import { createBrowserHistory } from 'history';
-import { AppState, DefaultLoadingComponent, useLazyRef } from 'onekijs-framework';
+import { AppState, DefaultLoadingComponent, FCC, useLazyRef } from 'onekijs-framework';
 import React, { FC, Suspense } from 'react';
-import { Router } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { ReactRouter } from './router/ReactRouter';
+import { useRouterSync } from './router/useRouterSync';
 import { AppProps } from './typings';
 
-export const App: FC<AppProps> = React.memo(({ history, LoadingComponent = DefaultLoadingComponent, ...appProps }) => {
-  const appHistoryRef = useLazyRef(() => {
-    if (!history) {
-      history = createBrowserHistory();
-    }
-    return history;
-  });
-  const routerRef = useLazyRef(() => {
-    return new ReactRouter(appHistoryRef.current);
-  });
+const AppRouterSync: FC = () => {
+  useRouterSync();
+  return null;
+};
 
+const AppRouter: FCC = ({ children }) => {
   return (
-    <AppState {...appProps} LoadingComponent={LoadingComponent} router={routerRef.current}>
-      <Router history={appHistoryRef.current}>
-        <Suspense fallback={<LoadingComponent />}>{appProps.children}</Suspense>
-      </Router>
+    <BrowserRouter>
+      <AppRouterSync />
+      {children}
+    </BrowserRouter>
+  );
+};
+
+export const App: FCC<AppProps> = React.memo(({ LoadingComponent = DefaultLoadingComponent, children, ...props }) => {
+  const router = useLazyRef<ReactRouter>(() => {
+    return new ReactRouter();
+  });
+  return (
+    <AppState {...props} router={router.current}>
+      <AppRouter>
+        <Suspense fallback={<LoadingComponent />}>{children}</Suspense>
+      </AppRouter>
     </AppState>
   );
 });

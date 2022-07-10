@@ -11,10 +11,9 @@ import { AnonymousObject } from '../types/object';
 import { Location } from '../types/router';
 import { SagaEffect } from '../types/saga';
 import { dispatch, types } from '../types/service';
-import { ensureFieldValue, get, isNull, toArray, toPayload } from '../utils/object';
+import { ensureFieldValue, get, isNull, set, toArray, toPayload } from '../utils/object';
 import { urlBuilder } from '../utils/router';
 import { generateUniqueId } from '../utils/string';
-import { set } from '../utils/object';
 import {
   Collection,
   CollectionBy,
@@ -98,6 +97,7 @@ export default class CollectionService<
 
   initDb(dataSource: T[] | string | undefined): void {
     if (Array.isArray(dataSource)) {
+      this.db = [];
       dataSource.map((entry, index) => this._adapt(entry, { position: index }));
     }
   }
@@ -1104,7 +1104,10 @@ export default class CollectionService<
       if (isNull(data)) {
         return undefined;
       }
-      if (!isNull(data.text)) {
+      console.log('DATA', data, typeof data);
+      if (typeof data === 'string') {
+        return data as string;
+      } else if (!isNull(data.text)) {
         return String(data.text);
       } else {
         return undefined;
@@ -1134,7 +1137,6 @@ export default class CollectionService<
 
   protected _indexDb(item: I, _context?: AnonymousObject): void {
     if (this.positionIndex[item.uid] !== undefined && this.db) {
-      console.log('set db', this.positionIndex[item.uid]);
       set(this.db, this.positionIndex[item.uid], item);
     }
   }

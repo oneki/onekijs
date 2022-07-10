@@ -56,7 +56,7 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
   // Trick for force recalcutate position without losing measurementCache
   // In the react-virtual code, the position are recalculate if the forceExtractor function change
   const forceKeyExtractor = useCallback(
-    (index) => {
+    (index: number) => {
       const fn = keyExtractor || defaultKeyExtractor;
       return fn(index);
     },

@@ -1,6 +1,5 @@
-import { useTranslation } from 'onekijs';
+import { Link, useTranslation } from 'onekijs';
 import React from 'react';
-import { Link } from 'onekijs';
 import { CartType } from '../../../__server__/api/dto/cart';
 import { currency } from '../libs/format';
 
@@ -37,7 +36,7 @@ const Cart: React.FC<CartProps> = ({ cart }) => {
       {nbItems > 0 && (
         <h4>
           <T count={nbItems}>
-            There is <u>{{ nbItems }} item</u> in the shopping cart !
+            There are <u>{{ nbItems }} items</u> in the shopping cart !
           </T>
         </h4>
       )}

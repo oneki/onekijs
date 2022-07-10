@@ -1,9 +1,9 @@
-import { toLocation, useSettings } from 'onekijs-framework';
-import React, { FC } from 'react';
+import { FCC, toLocation, useSettings } from 'onekijs-framework';
+import React from 'react';
 import { useLocation } from 'react-router';
-import { Switch as ReactRouterSwitch } from 'react-router-dom';
+import { Routes as ReactRouterRoutes } from 'react-router-dom';
 
-const Switch: FC = ({ children }) => {
+const Routes: FCC = ({ children }) => {
   const location = useLocation();
   const settings = useSettings();
   const onekiLocation = toLocation(location.pathname, settings);
@@ -20,7 +20,7 @@ const Switch: FC = ({ children }) => {
   //   }
   // }
 
-  return <ReactRouterSwitch location={switchLocation}>{children}</ReactRouterSwitch>;
+  return <ReactRouterRoutes location={switchLocation}>{children}</ReactRouterRoutes>;
 };
 
-export default Switch;
+export default Routes;

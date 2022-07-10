@@ -109,13 +109,17 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
   initDb(dataSource: T[] | string | undefined): void {
     if (Array.isArray(dataSource)) {
       this.db = [];
-      const context: AnonymousObject = {};
-      dataSource.forEach((entry, index) => {
+      const context: AnonymousObject = {
+        nextPosition: 0,
+      };
+      dataSource.forEach((entry) => {
+        context.position = context.nextPosition;
+        context.nextPosition = context.position + 1;
         context.level = 0;
-        context.position = `${index}`;
         this._adapt(entry, context);
       });
     }
+    console.log(dataSource, this.db);
   }
 
   protected _adapt(data: T | undefined, context?: AnonymousObject): I {
@@ -128,6 +132,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
   }
 
   protected _buildItem(currentItem: I, data: T | undefined, adaptee: unknown, context?: AnonymousObject): I {
+    context = context || {};
     const getChildren = (data: any): T[] | undefined => {
       if (isNull(data)) {
         return undefined;
@@ -153,8 +158,8 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     ensureFieldValue(treeAdaptee, 'children', getChildren(data));
     ensureFieldValue(treeAdaptee, 'icon', getIcon(data));
 
-    const level = context?.level || 0;
-    const position = context?.position;
+    const level = context.level || 0;
+    const position = context.position || 0;
 
     const result = super._buildItem(currentItem, data, treeAdaptee, context) as I;
     const children =
@@ -162,25 +167,25 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
         ? this.state.local
           ? []
           : undefined
-        : treeAdaptee.children.map((child, childIndex) => {
+        : treeAdaptee.children.map((child) => {
             if (context !== undefined) {
               context.level = level + 1;
-              if (position !== undefined) {
-                context.position = `${position}.${childIndex}`;
-              }
-            } else {
-              context = { level: 1 };
+              context.position = context.nextPosition;
+              context.nextPosition = context.position + 1;
             }
             const adaptedChild = this._adapt(child, context);
             adaptedChild.parent = result.uid;
             return adaptedChild.uid;
           });
 
-    if (context !== undefined && position !== undefined) {
+    // reset level
+    if (context !== undefined) {
+      context.level = level;
       context.position = position;
     }
     ensureFieldValue(result, 'level', level);
-    ensureFieldValue(result, 'children', children);
+    // ensureFieldValue(result, 'children', children);
+    result.children = children;
 
     return result;
   }
@@ -208,6 +213,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     } else {
       result = items;
     }
+
     return super._execute(result, query, comparator, comparators);
   }
 }

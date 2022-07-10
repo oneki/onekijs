@@ -5,6 +5,7 @@ import CollectionListComponent from './CollectionListComponent';
 
 const ArrayListComponent: FC<ArrayListProps> = (props) => {
   const controller = useListController(props.dataSource, { adapter: props.adapter, fetchOnce: props.fetchOnce });
+  console.log(controller.items);
   return <CollectionListComponent {...props} controller={controller} />;
 };
 

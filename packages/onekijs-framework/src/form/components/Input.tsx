@@ -1,11 +1,12 @@
-import React, { FC, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import useField from '../useField';
 import { InputProps } from '../typings';
 import { extractValidators } from '../utils';
 import useValidation from '../useValidation';
 import { mergeString } from '../../utils/string';
+import { FCC } from '../../types/core';
 
-const Input: FC<InputProps> = React.memo((props) => {
+const Input: FCC<InputProps> = React.memo((props) => {
   const [validators, wrappedProps] = extractValidators(props);
   const { name, defaultValue, className, touchOn, ...inputProps } = wrappedProps;
   const { value, onFocus, onBlur, onChange } = useField(name, validators, {
@@ -14,7 +15,7 @@ const Input: FC<InputProps> = React.memo((props) => {
   });
   const validation = useValidation(props.name);
   const onCheck = useCallback(
-    (event) => {
+    (event: any) => {
       onChange(event.target.checked);
     },
     [onChange],

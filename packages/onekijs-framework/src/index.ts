@@ -26,7 +26,9 @@ export {
   ErrorBoundaryComponentProps,
   GlobalModifierFunction,
   GlobalSelectorFunction,
+  LogLevel,
   SetGlobalStateFunction,
+  UseLogger,
 } from './app/typings';
 export { default as useAppContext } from './app/useAppContext';
 export { default as useAppService } from './app/useAppService';
@@ -40,7 +42,8 @@ export { default as useGlobalState } from './app/useGlobalState';
 export { default as useLocalService } from './app/useLocalService';
 export { useLocalState } from './app/useLocalState';
 export { default as useLocation } from './app/useLocation';
-export { default as useParams } from './app/useParams';
+export { default as useLogger } from './app/useLogger';
+export { default as useLogLevel } from './app/useLogLevel';
 export { default as useQuery } from './app/useQuery';
 export { default as useRouter } from './app/useRouter';
 export { default as useSetting } from './app/useSetting';
@@ -215,7 +218,6 @@ export { default as useService } from './core/useService';
 export { default as UseAppContext, default as useTryAppContext } from './core/useTryAppContext';
 export { default as useTryHistory } from './core/useTryHistory';
 export { default as useTryLocation } from './core/useTryLocation';
-export { default as useTryParams } from './core/useTryParams';
 export { default as useTryQuery } from './core/useTryQuery';
 export { default as useTryRouter } from './core/useTryRouter';
 export { default as useTrySetting } from './core/useTrySetting';
@@ -321,7 +323,7 @@ export { extractState, rebuildLocation, toLocation, toRelativeUrl, toRouteUrl, t
 export { AppContext, AppSettings, AppStore, reducersSymbol, sagasSymbol } from './types/app';
 export { Auth, BasicAuth, OidcToken, Token } from './types/auth';
 export { ResultCallback, SuccessCallback } from './types/callback';
-export { AnyFunction, Primitive } from './types/core';
+export { AnyFunction, FCC, Primitive } from './types/core';
 export { BasicError, ErrorCallback } from './types/error';
 export { Fetcher, FetchMethod, FetchOptions, FetchState, HttpMethod } from './types/fetch';
 export { FormLayout, ValidationStatus } from './types/form';
@@ -435,3 +437,9 @@ export {
   isPromise,
   isTrue,
 } from './utils/type';
+
+declare module 'react' {
+  interface HTMLAttributes<T> {
+    children?: React.ReactNode | Record<string, unknown> | (React.ReactNode | Record<string, unknown>)[];
+  }
+}

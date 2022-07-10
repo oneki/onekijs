@@ -1,13 +1,13 @@
 import observeRect from '@reach/observe-rect';
-import { useIsomorphicLayoutEffect } from 'onekijs-framework';
-import React, { FC, useRef, useState } from 'react';
+import { FCC, useIsomorphicLayoutEffect } from 'onekijs-framework';
+import React, { useRef, useState } from 'react';
 import { usePopper } from 'react-popper';
 import { CSSTransition } from 'react-transition-group';
 import { sameWidthPopperModifier } from '../../../utils/popper';
 import { addClassname } from '../../../utils/style';
 import { DropdownProps } from '../typings';
 
-const DropdownComponent: FC<DropdownProps> = ({
+const DropdownComponent: FCC<DropdownProps> = ({
   animationTimeout = 0,
   className,
   refElement,
@@ -22,9 +22,11 @@ const DropdownComponent: FC<DropdownProps> = ({
   onCollapseStart,
   onDropping,
   onCollapsing,
+  placement = 'auto',
 }) => {
   const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
   const { forceUpdate, styles, attributes } = usePopper(refElement, popperElement, {
+    placement,
     modifiers: [
       sameWidthPopperModifier,
       {
@@ -32,6 +34,10 @@ const DropdownComponent: FC<DropdownProps> = ({
         options: {
           offset: [skidding, distance],
         },
+      },
+      {
+        name: 'flip',
+        enabled: placement === 'auto',
       },
     ],
   });

@@ -1,4 +1,5 @@
-import React, { FC } from 'react';
+import { FCC } from 'onekijs-framework';
+import React from 'react';
 import { DashboardService } from '../DashboardService';
 import { DashboardServiceContext } from '../hooks/useDashboardService';
 import { DashboardStateContext } from '../hooks/useDashboardState';
@@ -6,7 +7,7 @@ import { DashboardProps } from '../typings';
 import DashboardContainer from './DashboardContainer';
 import DashboardOverlay from './DashboardOverlay';
 
-const DashboardComponent: FC<DashboardProps & { service: DashboardService }> = ({
+const DashboardComponent: FCC<DashboardProps & { service: DashboardService }> = ({
   ContainerComponent = DashboardContainer,
   OverlayComponent = DashboardOverlay,
   children,
