@@ -35,15 +35,14 @@ export {
   DashboardVerticalPanelProps,
 } from './components/dashboard/typings';
 export { default as Dropdown } from './components/dropdown';
-export { default as DropdownTrigger } from './components/dropdown/DropdownTrigger';
-export { default as DropdownContent } from './components/dropdown/DropdownContent';
+export { default as useDropdown } from './components/dropdown/hooks/useDropdown';
 export { default as dropdownStyle } from './components/dropdown/style';
 export { default as DropdownComponent } from './components/dropdown/components/DropdownComponent';
-export { default as DropdownComponent2 } from './components/dropdown/components/DropdownComponent2';
 export { default as CrossIcon } from './components/icon/CrossIcon';
 export { default as LoadingIcon } from './components/icon/LoadingIcon';
 export { default as MenuIcon } from './components/icon/MenuIcon';
 export { default as SearchIcon } from './components/icon/SearchIcon';
+export { default as TogglerIcon } from './components/icon/TogglerIcon';
 export { default as Input } from './components/input';
 export { default as InputComponent } from './components/input/components/InputComponent';
 export { InputProps } from './components/input/typings';

@@ -5,7 +5,7 @@ import { borderRadius, borderStyle } from '../../styles/border';
 import { display } from '../../styles/display';
 import { cursor } from '../../styles/interactivity';
 import { position } from '../../styles/position';
-import { paddingLeft, paddingX, paddingY } from '../../styles/spacing';
+import { paddingLeft, paddingTop, paddingX, paddingY } from '../../styles/spacing';
 import { ComponentStyle } from '../../styles/typings';
 import { color, fontWeight } from '../../styles/typography';
 import { ButtonProps } from './typings';
@@ -33,12 +33,9 @@ export const dropdownButtonStyle: ComponentStyle<ButtonProps> = () => {
     ${display('inline-flex')}
     ${position('relative')}
     ${alignItems('center')}
-    button {
-      ${display('inline-flex')}
-      ${alignItems('center')}
-      .o-button-dropdown-icon {
-        ${paddingLeft('xs')}
-      }
+    .o-button-dropdown-icon {
+      ${paddingLeft('xs')}
+      ${paddingTop('xs')}
     }
   `;
 };

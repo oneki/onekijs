@@ -44,15 +44,13 @@ export const SelectPage = () => {
 
   // const [value, setValue] = useState(users[1]);
   // const [value2, setValue2] = useState([users[2],users[1]]);
-  const { Form, values } = useForm(() => {});
-  console.log(values);
+  const { Form } = useForm(() => {});
 
   return (
     <Form>
 
     <div style={{display: 'flex', justifyContent: 'center'}}>
-      <div style={{width: '800px', paddingTop: '600px'}}>
-
+      <div style={{width: '800px', padding: '10px'}}>
           <FormSelect label="Simple select" size="medium" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" controller={collection} name="simple" required /><br/>
           {/* <FormSelect label="Simple select" size="small" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" items={collection} name="simple" required /><br/>
           <FormSelect label="Simple select" help="this is the help" size="medium" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" items={collection} name="simple" required /><br/>

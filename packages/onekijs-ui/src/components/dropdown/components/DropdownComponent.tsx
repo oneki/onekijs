@@ -1,13 +1,13 @@
 import observeRect from '@reach/observe-rect';
 import { FCC, useIsomorphicLayoutEffect } from 'onekijs-framework';
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { usePopper } from 'react-popper';
 import { CSSTransition } from 'react-transition-group';
 import { sameWidthPopperModifier } from '../../../utils/popper';
 import { addClassname } from '../../../utils/style';
-import { DropdownProps } from '../typings';
+import { DropdownComponentProps } from '../typings';
 
-const DropdownComponent: FCC<DropdownProps> = ({
+const DropdownComponent: FCC<DropdownComponentProps> = ({
   animationTimeout = 0,
   className,
   refElement,
@@ -23,6 +23,7 @@ const DropdownComponent: FCC<DropdownProps> = ({
   onDropping,
   onCollapsing,
   placement = 'auto',
+  zIndex = 1000,
 }) => {
   const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
   const { forceUpdate, styles, attributes } = usePopper(refElement, popperElement, {
@@ -42,6 +43,7 @@ const DropdownComponent: FCC<DropdownProps> = ({
     ],
   });
   const previousRectRef = useRef<DOMRect>();
+  const triggerZIndexRef = useRef<string>();
 
   useIsomorphicLayoutEffect(() => {
     if (!refElement) return;
@@ -63,13 +65,64 @@ const DropdownComponent: FCC<DropdownProps> = ({
     };
   }, [refElement, forceUpdate]);
 
+  const classNames = addClassname(`o-dropdown-${open ? 'open' : 'close'}`, className);
+
+  const onEnter = useCallback(
+    (node: HTMLElement, isAppearing: boolean) => {
+      if (refElement !== null && refElement !== undefined) {
+        triggerZIndexRef.current = refElement.style.zIndex;
+        refElement.style.zIndex = `${zIndex + 1}`;
+      }
+      if (onDropStart) {
+        onDropStart(node, isAppearing);
+      }
+    },
+    [onDropStart, refElement, zIndex],
+  );
+
+  const onEntered = useCallback(
+    (node: HTMLElement, isAppearing: boolean) => {
+      if (refElement !== null && refElement !== undefined) {
+        refElement.style.zIndex = triggerZIndexRef.current || '';
+      }
+      if (onDropDone) {
+        onDropDone(node, isAppearing);
+      }
+    },
+    [onDropDone, refElement],
+  );
+
+  const onExit = useCallback(
+    (node: HTMLElement) => {
+      if (refElement !== null && refElement !== undefined) {
+        refElement.style.zIndex = `${zIndex + 1}`;
+      }
+      if (onCollapseStart) {
+        onCollapseStart(node);
+      }
+    },
+    [onCollapseStart, refElement, zIndex],
+  );
+
+  const onExited = useCallback(
+    (node: HTMLElement) => {
+      if (refElement !== null && refElement !== undefined) {
+        refElement.style.zIndex = triggerZIndexRef.current || '';
+      }
+      if (onCollapseDone) {
+        onCollapseDone(node);
+      }
+    },
+    [onCollapseDone, refElement],
+  );
+
   return (
     <div
       style={styles.popper}
       {...attributes.popper}
       ref={setPopperElement}
       key="dropdown-container"
-      className={addClassname('o-dropdown-container', className)}
+      className={addClassname('o-dropdown-container', classNames)}
     >
       <CSSTransition
         in={open}
@@ -78,14 +131,14 @@ const DropdownComponent: FCC<DropdownProps> = ({
         mountOnEnter={true}
         appear={false}
         unmountOnExit={true}
-        onEnter={onDropStart}
+        onEnter={onEnter}
         onEntering={onDropping}
-        onEntered={onDropDone}
-        onExit={onCollapseStart}
-        onExited={onCollapseDone}
+        onEntered={onEntered}
+        onExit={onExit}
+        onExited={onExited}
         onExiting={onCollapsing}
       >
-        {children}
+        <div className="o-dropdown">{children}</div>
       </CSSTransition>
     </div>
   );

@@ -1,8 +1,10 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { ButtonProps } from '../typings';
 
-const ButtonComponent: FC<ButtonProps> = (props) => {
-  return <button {...props} />;
-};
+const ButtonComponent = React.forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+  return <button {...props} ref={ref} />;
+});
+
+ButtonComponent.displayName = 'Button';
 
 export default ButtonComponent;

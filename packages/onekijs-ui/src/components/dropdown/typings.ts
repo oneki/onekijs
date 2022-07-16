@@ -1,9 +1,8 @@
 import { Placement } from '@popperjs/core';
 import { AnyFunction } from 'onekijs-framework';
 
-export interface DropdownProps {
+export type DropdownProps = {
   className?: string;
-  refElement?: HTMLElement | null;
   open?: boolean;
   skidding?: number;
   distance?: number;
@@ -16,4 +15,9 @@ export interface DropdownProps {
   onCollapsing?: (node: HTMLElement) => void;
   animationTimeout?: number;
   placement?: Placement;
-}
+  zIndex?: number;
+};
+
+export type DropdownComponentProps = DropdownProps & {
+  refElement?: HTMLElement | null;
+};

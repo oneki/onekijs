@@ -11,7 +11,6 @@ import {
   boxShadow,
 } from '../../styles/border';
 import { display, visibility } from '../../styles/display';
-import { opacity } from '../../styles/effects';
 import { flexDirection, flexGrow, flexWrap } from '../../styles/flex';
 import { appearance, cursor, outline, userSelect } from '../../styles/interactivity';
 import { overflowY } from '../../styles/overflow';
@@ -134,13 +133,7 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
         ${clickable ? cursor('pointer') : ''}
       }
     }
-    &.o-select-open {
-      .o-dropdown-container{
-        ${transitionDuration('0.15s')}
-        ${transitionProperty('transform')}
-        ${transitionTimingFunction('ease-in-out')}
-      }
-    }
+
     .o-select-input-data {
       ${display('flex')}
       ${flexGrow(1)}
@@ -275,29 +268,6 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
         border: 3px solid ${(props) => props.theme.palette.colors['gray-200']};
       }
       ${overflowY('hidden')}
-      ${opacity(0)}
-      transform: translateY(-40px);
-
-      &.o-dropdown-enter-active {
-        ${opacity(1)}
-        transform: translateY(0);
-        ${transitionDuration('120ms')}
-        ${transitionProperty('opacity,transform')}
-        ${transitionTimingFunction('linear')}
-      }
-
-      &.o-dropdown-enter-done {
-        ${opacity(1)}
-        transform: translateY(0);
-      }
-
-      &.o-dropdown-exit-active {
-        ${opacity(0)}
-        transform: translateY(-40px);
-        ${transitionDuration('150ms')}
-        ${transitionProperty('opacity,transform')}
-        ${transitionTimingFunction('linear')}
-      }
 
       .o-select-option {
         ${width('full')}

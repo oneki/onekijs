@@ -14,7 +14,7 @@ import {
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useClickOutside, useFocusOutside } from '../../../utils/event';
 import { addClassname } from '../../../utils/style';
-import Dropdown from '../../dropdown';
+import useDropdown from '../../dropdown/hooks/useDropdown';
 import ListBodyComponent from '../../list/components/ListBodyComponent';
 import useListView from '../../list/hooks/useListView';
 import { CollectionSelectProps, SelectItem, SelectOptionHandler } from '../typings';
@@ -86,7 +86,7 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
   const loading = isCollectionLoading(controller);
   const fetching = isCollectionFetching(controller);
 
-  const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
+  const containerRef = useRef(null);
 
   const previousSearchRef = useRef<Primitive>();
 
@@ -145,11 +145,11 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
     }
   }, [focus, forwardFocus, openOnFocus, open]);
 
-  useClickOutside(containerRef, () => {
+  useClickOutside(containerRef.current, () => {
     onBlur();
   });
 
-  useFocusOutside(containerRef, () => {
+  useFocusOutside(containerRef.current, () => {
     onBlur();
   });
 
@@ -303,14 +303,7 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
     [service, open, setOpen, focus, multiple],
   );
 
-  const [dropping, setDropping] = useState(false);
-  const [collapsing, setCollapsing] = useState(false);
-
   const style: React.CSSProperties = {};
-
-  if (dropping || collapsing) {
-    style['zIndex'] = 1001;
-  }
 
   const classNames = addClassname(
     `o-select o-select-size-${size} o-select-${open ? 'open' : 'close'}${
@@ -339,15 +332,13 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
       }
     }
     scrollToIndex(scrollTo.index, { align: scrollTo.align });
-    setDropping(true);
   }, [service, scrollToIndex]);
 
   const onClosed = useCallback(() => {
     service.setActive('item', []);
-    setCollapsing(false);
   }, [service]);
 
-  const onDropDownUpdate = useCallback(() => undefined, []);
+  const [Dropdown, triggerRef] = useDropdown();
 
   useEventListener('keydown', onKeyDownCapture, true);
   useEventListener('keydown', onKeyDown, false);
@@ -355,7 +346,7 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
   return (
     <div
       className={classNames}
-      ref={setContainerRef}
+      ref={containerRef}
       onMouseDown={() => (stateRef.current.keepFocus = true)}
       onMouseUp={() => (stateRef.current.keepFocus = false)}
     >
@@ -379,18 +370,13 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
         IconComponent={IconComponent}
         clickable={clickable}
         minChars={minChars}
+        ref={triggerRef}
       />
       <Dropdown
-        refElement={containerRef}
         open={open}
         distance={0}
-        onUpdate={onDropDownUpdate}
         animationTimeout={200}
         onDropStart={onOpen}
-        onCollapseStart={() => {
-          setCollapsing(true);
-        }}
-        onDropDone={() => setDropping(false)}
         onCollapseDone={onClosed}
         placement="bottom"
       >
