@@ -1,9 +1,7 @@
-import '@fontsource/roboto';
 import { App, Link, Route, Routes } from 'onekijs';
-import { theme } from 'onekijs-ui';
+import { ClarityTheme } from 'onekijs-ui';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { ThemeProvider } from 'styled-components';
 import { AjaxListPage } from './pages/ajaxList';
 import { ButtonPage } from './pages/button';
 import { DashboardPage } from './pages/dashboard';
@@ -13,19 +11,13 @@ import { SelectPage } from './pages/select';
 import { TablePage } from './pages/table';
 import { TreePage } from './pages/tree';
 
-const customTheme = {};
-
 const container = document.getElementById('root');
 const root = createRoot(container!); // createRoot(container!) if you use TypeScript
 
 root.render(
   <App>
-    <ThemeProvider theme={theme(customTheme)}>
-      <div
-        style={{
-          fontFamily: 'Roboto',
-        }}
-      >
+    <ClarityTheme>
+      <div>
         <div
           style={{
             backgroundColor: '#EEE',
@@ -48,7 +40,7 @@ root.render(
           <Route path="/tree" element={<TreePage />}/>
         </Routes>
       </div>
-    </ThemeProvider>
+    </ClarityTheme>
   </App>,
 
 );

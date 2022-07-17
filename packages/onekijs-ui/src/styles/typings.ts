@@ -3,21 +3,31 @@ import {
   BackgroundColorProperty,
   BorderBottomStyleProperty,
   BorderColorProperty,
+  BorderStyleProperty,
   BorderWidthProperty,
   BoxShadowProperty,
   ColorProperty,
+  CursorProperty,
   FontSizeProperty,
   FontWeightProperty,
   Globals,
   LetterSpacingProperty,
+  LineHeightProperty,
   MarginProperty,
   OutlineProperty,
   PaddingProperty,
+  TextOverflowProperty,
   TextTransformProperty,
+  WhiteSpaceProperty,
   WidthProperty,
 } from 'csstype';
 import { AnonymousObject } from 'onekijs-framework';
-import { FlattenInterpolation, ThemedStyledProps, ThemeProps as SytledThemeProps } from 'styled-components';
+import {
+  FlattenInterpolation,
+  GlobalStyleComponent,
+  ThemedStyledProps,
+  ThemeProps as SytledThemeProps,
+} from 'styled-components';
 
 export type CssProperty<T> = (value: T, variants?: AnonymousObject) => FlattenInterpolation<SytledThemeProps<any>>;
 export type Formatter<T> = (value: T, theme: Theme) => string;
@@ -92,6 +102,8 @@ export enum FontLineHeightKeys {
   md = 'md',
   lg = 'lg',
   xl = 'xl',
+  '2xl' = '2xl',
+  '3xl' = '3xl',
 }
 
 export enum FontSizeKeys {
@@ -119,6 +131,7 @@ export enum FontSpacingKeys {
 
 export enum RadiusKeys {
   none = 'none',
+  '2xs' = '2xs',
   xs = 'xs',
   sm = 'sm',
   md = 'md',
@@ -177,6 +190,7 @@ export enum SizeKeys {
 }
 
 export type Theme = {
+  GlobalStyles: GlobalStyleComponent<any, any>;
   breakpoints: {
     [k in BreakpointKeys]: string;
   };
@@ -218,13 +232,55 @@ export type Theme = {
   buttons: {
     [k in ColorKeys]: {
       bgColor: ColorPropertyTheme | BackgroundColorProperty;
+      bgColorDisabled: ColorPropertyTheme | BackgroundColorProperty;
+      bgColorFlat: ColorPropertyTheme | BackgroundColorProperty;
+      bgColorFlatDisabled: ColorPropertyTheme | BackgroundColorProperty;
+      bgColorOutline: ColorPropertyTheme | BackgroundColorProperty;
+      bgColorOutlineDisabled: ColorPropertyTheme | BackgroundColorProperty;
+      borderColor: ColorPropertyTheme | BorderColorProperty;
+      borderColorDisabled: ColorPropertyTheme | BackgroundColorProperty;
+      borderColorFlat: ColorPropertyTheme | BackgroundColorProperty;
+      borderColorFlatDisabled: ColorPropertyTheme | BackgroundColorProperty;
+      borderColorOutline: ColorPropertyTheme | BackgroundColorProperty;
+      borderColorOutlineDisabled: ColorPropertyTheme | BackgroundColorProperty;
+      borderRadius: RadiusPropertyTheme | string;
+      borderStyle: BorderStyleProperty;
+      borderWidth: BorderWidthProperty<TLength>;
       color: ColorPropertyTheme | ColorProperty;
+      colorDisabled: ColorPropertyTheme | BackgroundColorProperty;
+      colorFlat: ColorPropertyTheme | BackgroundColorProperty;
+      colorFlatDisabled: ColorPropertyTheme | BackgroundColorProperty;
+      colorOutline: ColorPropertyTheme | BackgroundColorProperty;
+      colorOutlineDisabled: ColorPropertyTheme | BackgroundColorProperty;
+      cursor: CursorProperty;
+      cursorDisabled: CursorProperty;
+      fontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
       fontWeight: FontWeightPropertyTheme | FontWeightProperty;
       hoverBgColor: ColorPropertyTheme | BackgroundColorProperty;
+      hoverBgColorDisabled: ColorPropertyTheme | BackgroundColorProperty;
+      hoverBgColorFlat: ColorPropertyTheme | BackgroundColorProperty;
+      hoverBgColorFlatDisabled: ColorPropertyTheme | BackgroundColorProperty;
+      hoverBgColorOutline: ColorPropertyTheme | BackgroundColorProperty;
+      hoverBgColorOutlineDisabled: ColorPropertyTheme | BackgroundColorProperty;
+      hoverBorderColor: ColorPropertyTheme | BackgroundColorProperty;
+      hoverBorderColorDisabled: ColorPropertyTheme | BackgroundColorProperty;
+      hoverBorderColorFlat: ColorPropertyTheme | BackgroundColorProperty;
+      hoverBorderColorFlatDisabled: ColorPropertyTheme | BackgroundColorProperty;
+      hoverBorderColorOutline: ColorPropertyTheme | BackgroundColorProperty;
+      hoverBorderColorOutlineDisabled: ColorPropertyTheme | BackgroundColorProperty;
       hoverColor: ColorPropertyTheme | ColorProperty;
+      hoverColorDisabled: ColorPropertyTheme | BackgroundColorProperty;
+      hoverColorFlat: ColorPropertyTheme | BackgroundColorProperty;
+      hoverColorFlatDisabled: ColorPropertyTheme | BackgroundColorProperty;
+      hoverColorOutline: ColorPropertyTheme | BackgroundColorProperty;
+      hoverColorOutlineDisabled: ColorPropertyTheme | BackgroundColorProperty;
+      letterSpacing: LetterSpacingPropertyTheme | LetterSpacingProperty<TLength>;
+      lineHeight: LineHeightPropertyTheme | LineHeightProperty<TLength>;
       paddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
       paddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
-      radius: RadiusPropertyTheme | string;
+      textOverflow: TextOverflowProperty;
+      textTransform: TextTransformProperty;
+      whiteSpace: WhiteSpaceProperty;
     };
   };
 
@@ -292,7 +348,6 @@ export type Theme = {
     helperMarginLeft: SpacingPropertyTheme | MarginProperty<TLength>;
   };
 };
-export type ThemeProps = AnonymousObject; //TODO create a actual type
 export type Palette = AnonymousObject; //TODO create a actual type
 export type TLength = string | 0;
 export type SizePropertyTheme =
@@ -343,12 +398,16 @@ export type SizePropertyTheme =
   | 'screen-lg'
   | 'screen-xl';
 
+export type ThemeProps = {
+  theme?: Theme;
+};
+
 export type ColorPropertyTheme = keyof typeof ColorKeys;
 export type SpacingPropertyTheme = keyof typeof SpacingKeys;
 export type FontFamilyPropertyTheme = keyof typeof FontFamiliesKeys;
 export type FontSizePropertyTheme = keyof typeof FontSizeKeys;
 export type FontWeightPropertyTheme = keyof typeof FontWeightKeys | number;
-export type LineHeightPropertyTheme = keyof typeof FontLineHeightKeys | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+export type LineHeightPropertyTheme = keyof typeof FontLineHeightKeys | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 export type LetterSpacingPropertyTheme = keyof typeof FontSpacingKeys;
 export type RadiusPropertyTheme = keyof typeof RadiusKeys;
 export type ShadowPropertyTheme = keyof typeof ShadowKeys;

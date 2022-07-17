@@ -35,9 +35,9 @@ export {
   DashboardVerticalPanelProps,
 } from './components/dashboard/typings';
 export { default as Dropdown } from './components/dropdown';
+export { default as DropdownComponent } from './components/dropdown/components/DropdownComponent';
 export { default as useDropdown } from './components/dropdown/hooks/useDropdown';
 export { default as dropdownStyle } from './components/dropdown/style';
-export { default as DropdownComponent } from './components/dropdown/components/DropdownComponent';
 export { default as CrossIcon } from './components/icon/CrossIcon';
 export { default as LoadingIcon } from './components/icon/LoadingIcon';
 export { default as MenuIcon } from './components/icon/MenuIcon';
@@ -69,8 +69,8 @@ export {
   VirtualItem,
 } from './components/list/typings';
 export { default as Select } from './components/select';
-export { default as CollectionSelectComponent } from './components/select/components/CollectionSelectComponent';
 export { default as ArraySelectComponent } from './components/select/components/ArraySelectComponent';
+export { default as CollectionSelectComponent } from './components/select/components/CollectionSelectComponent';
 export { default as SelectComponent } from './components/select/components/SelectComponent';
 export { default as SelectIconComponent } from './components/select/components/SelectIconComponent';
 export { default as SelectInputComponent } from './components/select/components/SelectInputComponent';
@@ -167,11 +167,13 @@ export * from './styles/size';
 export * from './styles/spacing';
 export * from './styles/svg';
 export * from './styles/table';
-export { theme } from './styles/theme';
 export * from './styles/transform';
 export * from './styles/transition';
 export * from './styles/typings';
 export * from './styles/typography';
+export { baseTheme, BaseTheme } from './theme/base';
+export { clarityTheme, clarityPalette, ClarityTheme } from './theme/clarity';
+export { tailwindPalette, tailwindTheme, TailwindTheme } from './theme/tailwind';
 export * from './utils/color';
 export * from './utils/event';
 export * from './utils/formatter';
