@@ -3,6 +3,7 @@ import {
   BackgroundColorProperty,
   BorderBottomStyleProperty,
   BorderColorProperty,
+  BorderRadiusProperty,
   BorderStyleProperty,
   BorderWidthProperty,
   BoxShadowProperty,
@@ -14,6 +15,7 @@ import {
   LetterSpacingProperty,
   LineHeightProperty,
   MarginProperty,
+  OpacityProperty,
   OutlineProperty,
   PaddingProperty,
   TextOverflowProperty,
@@ -232,56 +234,48 @@ export type Theme = {
   buttons: {
     [k in ColorKeys]: {
       bgColor: ColorPropertyTheme | BackgroundColorProperty;
-      bgColorDisabled: ColorPropertyTheme | BackgroundColorProperty;
       bgColorFlat: ColorPropertyTheme | BackgroundColorProperty;
-      bgColorFlatDisabled: ColorPropertyTheme | BackgroundColorProperty;
       bgColorOutline: ColorPropertyTheme | BackgroundColorProperty;
-      bgColorOutlineDisabled: ColorPropertyTheme | BackgroundColorProperty;
       borderColor: ColorPropertyTheme | BorderColorProperty;
-      borderColorDisabled: ColorPropertyTheme | BackgroundColorProperty;
       borderColorFlat: ColorPropertyTheme | BackgroundColorProperty;
-      borderColorFlatDisabled: ColorPropertyTheme | BackgroundColorProperty;
       borderColorOutline: ColorPropertyTheme | BackgroundColorProperty;
-      borderColorOutlineDisabled: ColorPropertyTheme | BackgroundColorProperty;
       borderRadius: RadiusPropertyTheme | string;
       borderStyle: BorderStyleProperty;
       borderWidth: BorderWidthProperty<TLength>;
       color: ColorPropertyTheme | ColorProperty;
-      colorDisabled: ColorPropertyTheme | BackgroundColorProperty;
       colorFlat: ColorPropertyTheme | BackgroundColorProperty;
-      colorFlatDisabled: ColorPropertyTheme | BackgroundColorProperty;
       colorOutline: ColorPropertyTheme | BackgroundColorProperty;
-      colorOutlineDisabled: ColorPropertyTheme | BackgroundColorProperty;
       cursor: CursorProperty;
       cursorDisabled: CursorProperty;
       fontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
       fontWeight: FontWeightPropertyTheme | FontWeightProperty;
       hoverBgColor: ColorPropertyTheme | BackgroundColorProperty;
-      hoverBgColorDisabled: ColorPropertyTheme | BackgroundColorProperty;
       hoverBgColorFlat: ColorPropertyTheme | BackgroundColorProperty;
-      hoverBgColorFlatDisabled: ColorPropertyTheme | BackgroundColorProperty;
       hoverBgColorOutline: ColorPropertyTheme | BackgroundColorProperty;
-      hoverBgColorOutlineDisabled: ColorPropertyTheme | BackgroundColorProperty;
       hoverBorderColor: ColorPropertyTheme | BackgroundColorProperty;
-      hoverBorderColorDisabled: ColorPropertyTheme | BackgroundColorProperty;
       hoverBorderColorFlat: ColorPropertyTheme | BackgroundColorProperty;
-      hoverBorderColorFlatDisabled: ColorPropertyTheme | BackgroundColorProperty;
       hoverBorderColorOutline: ColorPropertyTheme | BackgroundColorProperty;
-      hoverBorderColorOutlineDisabled: ColorPropertyTheme | BackgroundColorProperty;
       hoverColor: ColorPropertyTheme | ColorProperty;
-      hoverColorDisabled: ColorPropertyTheme | BackgroundColorProperty;
       hoverColorFlat: ColorPropertyTheme | BackgroundColorProperty;
-      hoverColorFlatDisabled: ColorPropertyTheme | BackgroundColorProperty;
       hoverColorOutline: ColorPropertyTheme | BackgroundColorProperty;
-      hoverColorOutlineDisabled: ColorPropertyTheme | BackgroundColorProperty;
       letterSpacing: LetterSpacingPropertyTheme | LetterSpacingProperty<TLength>;
       lineHeight: LineHeightPropertyTheme | LineHeightProperty<TLength>;
+      opacity: OpacityProperty;
+      opacityDisabled: OpacityProperty;
       paddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
       paddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
       textOverflow: TextOverflowProperty;
       textTransform: TextTransformProperty;
       whiteSpace: WhiteSpaceProperty;
     };
+  };
+
+  fieldLayout: {
+    marginY: MarginProperty<TLength> | SpacingPropertyTheme;
+    helperMarginLeft: MarginProperty<TLength> | SpacingPropertyTheme;
+    helperColor: ColorProperty | ColorPropertyTheme;
+    descriptionFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
+    descriptionColor: ColorProperty | ColorPropertyTheme;
   };
 
   table: {
@@ -346,6 +340,20 @@ export type Theme = {
     requiredMarginLeft: SpacingPropertyTheme | MarginProperty<TLength>;
     helperIconColor: ColorPropertyTheme | ColorProperty;
     helperMarginLeft: SpacingPropertyTheme | MarginProperty<TLength>;
+  };
+
+  tooltip: {
+    [k in ColorKeys]: {
+      bgColor: ColorPropertyTheme | BackgroundColorProperty;
+      color: ColorPropertyTheme | ColorProperty;
+      borderColor: ColorPropertyTheme | BackgroundColorProperty;
+      borderRadius: BorderRadiusProperty<TLength> | RadiusPropertyTheme;
+      borderStyle: BorderStyleProperty;
+      borderWidth: BorderWidthProperty<TLength>;
+      boxShadow: ShadowPropertyTheme | BoxShadowProperty;
+      padding: SpacingPropertyTheme | PaddingProperty<TLength>;
+      fontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
+    };
   };
 };
 export type Palette = AnonymousObject; //TODO create a actual type

@@ -1104,7 +1104,6 @@ export default class CollectionService<
       if (isNull(data)) {
         return undefined;
       }
-      console.log('DATA', data, typeof data);
       if (typeof data === 'string') {
         return data as string;
       } else if (!isNull(data.text)) {

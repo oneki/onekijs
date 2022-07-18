@@ -1,8 +1,8 @@
 import { FCC, get, set, simpleMergeDeep } from 'onekijs-framework';
-import { ColorKeys, ShadowKeys, Theme, ThemeProps } from '../styles/typings';
-import { darken, lighten } from '../utils/color';
 import React from 'react';
 import { ThemeProvider } from 'styled-components';
+import { ColorKeys, ShadowKeys, Theme, ThemeProps } from '../styles/typings';
+import { darken, lighten } from '../utils/color';
 
 export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
   const theme: Partial<Theme> = {
@@ -158,6 +158,15 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
       'screen-lg': '1024px',
       'screen-xl': '1280px',
     },
+
+    fieldLayout: {
+      marginY: 'xs',
+      helperColor: 'primary',
+      helperMarginLeft: 'sm',
+      descriptionFontSize: 'sm',
+      descriptionColor: 'gray-600',
+    },
+
     table: {
       bgColor: 'white',
       shadow: ShadowKeys.default,
@@ -225,55 +234,51 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
   Object.keys(ColorKeys).forEach((kind) => {
     set(theme, `buttons.${kind}`, {
       bgColor: kind,
-      bgColorDisabled: lighten(get(theme.colors, kind, ''), 200),
       bgColorFlat: 'transparent',
-      bgColorFlatDisabled: 'transparent',
       bgColorOutline: 'transparent',
-      bgColorOutlineDisabled: 'transparent',
       borderColor: kind,
-      borderColorDisabled: lighten(get(theme.colors, kind, ''), 200),
       borderColorFlat: 'transparent',
-      borderColorFlatDisabled: 'transparent',
       borderColorOutline: kind,
-      borderColorOutlineDisabled: lighten(get(theme.colors, kind, ''), 200),
       borderRadius: 'sm',
       borderStyle: 'solid',
       borderWidth: 1,
       color: ['light', 'lightest', 'white'].includes(kind) ? 'darkest' : 'white',
-      colorDisabled: ['light', 'lightest', 'white'].includes(kind) ? 'darker' : 'lightest',
       colorFlat: kind,
-      colorFlatDisabled: lighten(get(theme.colors, kind, ''), 200),
       colorOutline: ['light', 'lightest', 'white'].includes(kind) ? 'darkest' : kind,
-      colorOutlineDisabled: lighten(get(theme.colors, kind, ''), 200),
       cursor: 'pointer',
       cursorDisabled: 'not-allowed',
       fontSize: 'md',
       fontWeight: 'bold',
       hoverColor: ['light', 'lightest', 'white'].includes(kind) ? 'black' : 'white',
-      hoverColorDisabled: ['light', 'lightest', 'white'].includes(kind) ? 'darker' : 'lightest',
       hoverColorFlat: lighten(get(theme.colors, kind, ''), 100),
-      hoverColorFlatDisabled: lighten(get(theme.colors, kind, ''), 200),
       hoverColorOutline: kind,
-      hoverColorOutlineDisabled: lighten(get(theme.colors, kind, ''), 200),
       hoverBgColor: darken(get(theme.colors, kind, ''), 100),
-      hoverBgColorDisabled: lighten(get(theme.colors, kind, ''), 200),
       hoverBgColorFlat: 'transparent',
-      hoverBgColorFlatDisabled: 'transparent',
       hoverBgColorOutline: lighten(get(theme.colors, kind, ''), 400),
-      hoverBgColorOutlineDisabled: 'transparent',
       hoverBorderColor: darken(get(theme.colors, kind, ''), 100),
-      hoverBorderColorDisabled: lighten(get(theme.colors, kind, ''), 200),
       hoverBorderColorFlat: 'transparent',
-      hoverBorderColorFlatDisabled: 'transparent',
       hoverBorderColorOutline: kind,
-      hoverBorderColorOutlineDisabled: lighten(get(theme.colors, kind, ''), 200),
       letterSpacing: 'normal',
       lineHeight: '3xl',
+      opacity: 1,
+      opacityDisabled: 0.6,
       paddingY: 'none',
       paddingX: 'lg',
       textOverflow: 'ellipsis',
       textTransform: 'none',
       whiteSpace: 'nowrap',
+    });
+
+    set(theme, `tooltip.${kind}`, {
+      bgColor: kind,
+      color: ['light', 'lightest', 'white'].includes(kind) ? 'darkest' : 'white',
+      borderColor: kind,
+      borderRadius: 'sm',
+      borderStyle: 'solid',
+      borderWidth: '1px',
+      boxShadow: 'lg',
+      padding: 'md',
+      fontSize: 'sm',
     });
   });
 

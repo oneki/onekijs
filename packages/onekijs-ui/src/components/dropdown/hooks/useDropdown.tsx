@@ -10,7 +10,6 @@ const useDropdown = (): [FCC<DropdownProps>, React.Dispatch<React.SetStateAction
   const DropdownRef = useLazyRef<FCC<DropdownProps>>(
     (): FCC<DropdownProps> => {
       const Component: FCC<DropdownProps> = (props) => {
-        console.log(elementRef.current);
         return <Dropdown {...props} refElement={elementRef.current} />;
       };
       return Component;

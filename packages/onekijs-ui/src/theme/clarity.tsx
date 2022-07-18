@@ -1,10 +1,10 @@
-import '@fontsource/metropolis';
+import '@fontsource/metropolis/all.css';
 import { FCC, get, set, simpleMergeDeep } from 'onekijs-framework';
 import React from 'react';
 import { createGlobalStyle } from 'styled-components';
 import { ColorKeys, Palette, Theme, ThemeProps } from '../styles/typings';
 import { darken, lighten } from '../utils/color';
-import { themeFormatter } from '../utils/formatter';
+import { colorFormatter, themeFormatter } from '../utils/formatter';
 import { preflight, toCss } from '../utils/style';
 import { BaseTheme, baseTheme } from './base';
 
@@ -19,6 +19,7 @@ const GlobalStyles = createGlobalStyle`
     ${toCss('font-family', themeFormatter('font.families'), 'sans', {})}
     line-height: 1.2rem;
     font-weight: 400;
+    ${toCss(null, colorFormatter('color'), 'gray-700', {})}
   }
 `;
 
@@ -261,6 +262,15 @@ export const clarityTheme = (customTheme: Partial<Theme> = {}): Theme => {
       'screen-xl': '1280px',
     },
 
+    fieldLayout: {
+      descriptionColor: 'gray-500',
+      descriptionFontSize: 'sm',
+    },
+
+    label: {
+      fontWeight: 600,
+    },
+
     GlobalStyles,
   };
 
@@ -280,17 +290,10 @@ Object.keys(ColorKeys).forEach((kind) => {
   set(theme, `buttons.${kind}.borderRadius`, 'xs');
   set(theme, `buttons.${kind}.paddingX`, 'md');
   set(theme, `buttons.${kind}.hoverBgColorOutline`, lighten(get(theme.colors, kind, ''), 700));
-  set(
-    theme,
-    `buttons.${kind}.colorDisabled`,
-    ['light', 'lightest', 'white', 'warning'].includes(kind) ? 'gray-500' : 'lightest',
-  );
-  set(
-    theme,
-    `buttons.${kind}.hoverColorDisabled`,
-    ['light', 'lightest', 'white', 'warning'].includes(kind) ? 'gray-500' : 'lightest',
-  );
+  set(theme, `tooltip.${kind}.color`, ['light', 'lightest', 'white'].includes(kind) ? 'darkest' : 'light');
 });
+
+console.log(theme);
 
 export const ClarityTheme: FCC<ThemeProps> = (props) => {
   return <BaseTheme theme={theme} {...props} />;

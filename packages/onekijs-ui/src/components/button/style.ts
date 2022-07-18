@@ -4,6 +4,7 @@ import { alignItems } from '../../styles/alignment';
 import { backgroundColor } from '../../styles/background';
 import { borderColor, borderRadius, borderStyle, borderWidth } from '../../styles/border';
 import { display } from '../../styles/display';
+import { opacity } from '../../styles/effects';
 import { cursor } from '../../styles/interactivity';
 import { position } from '../../styles/position';
 import { paddingLeft, paddingTop, paddingX, paddingY } from '../../styles/spacing';
@@ -20,25 +21,25 @@ import {
 } from '../../styles/typography';
 import { ButtonProps } from './typings';
 
-const getColor = (key: string, pattern: 'solid' | 'outline' | 'flat', disabled?: boolean): string => {
-  return `${key}${pattern === 'solid' ? '' : ucfirst(pattern)}${disabled ? 'Disabled' : ''}`;
+const getColor = (key: string, pattern: 'solid' | 'outline' | 'flat'): string => {
+  return `${key}${pattern === 'solid' ? '' : ucfirst(pattern)}`;
 };
 
 const buttonStyle: ComponentStyle<ButtonProps> = ({ kind = 'primary', pattern = 'solid', disabled, theme }) => {
   const t = theme.buttons[kind];
-  const bgColor = get(t, getColor('bgColor', pattern, disabled));
-  const hoverBgColor = get(t, getColor('hoverBgColor', pattern, disabled));
-  const fontColor = get(t, getColor('color', pattern, disabled));
-  const hoverFontColor = get(t, getColor('hoverColor', pattern, disabled));
-  const bColor = get(t, getColor('borderColor', pattern, disabled));
-  const hoverBorderColor = get(t, getColor('hoverBorderColor', pattern, disabled));
+  const bgColor = get(t, getColor('bgColor', pattern));
+  const hoverBgColor = get(t, getColor('hoverBgColor', pattern));
+  const fontColor = get(t, getColor('color', pattern));
+  const hoverFontColor = get(t, getColor('hoverColor', pattern));
+  const bColor = get(t, getColor('borderColor', pattern));
+  const hoverBorderColor = get(t, getColor('hoverBorderColor', pattern));
 
   return css`
     ${backgroundColor(bgColor, {
-      hover: hoverBgColor,
+      hover: disabled ? bgColor : hoverBgColor,
     })}
     ${color(fontColor, {
-      hover: hoverFontColor,
+      hover: disabled ? fontColor : hoverFontColor,
     })}
     ${fontWeight(t.fontWeight)}
     ${paddingX(t.paddingX)}
@@ -47,7 +48,7 @@ const buttonStyle: ComponentStyle<ButtonProps> = ({ kind = 'primary', pattern = 
     ${borderStyle(t.borderStyle)}
     ${borderWidth(t.borderWidth)}
     ${borderColor(bColor, {
-      hover: hoverBorderColor,
+      hover: disabled ? bColor : hoverBorderColor,
     })}
     ${cursor(disabled ? t.cursorDisabled : t.cursor)}
     ${whiteSpace(t.whiteSpace)}
@@ -56,6 +57,7 @@ const buttonStyle: ComponentStyle<ButtonProps> = ({ kind = 'primary', pattern = 
     ${letterSpacing(t.letterSpacing)}
     ${lineHeight(t.lineHeight)}
     ${fontSize(t.fontSize)}
+    ${opacity(disabled ? 0.6 : 1)}
   `;
 };
 

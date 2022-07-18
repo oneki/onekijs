@@ -17,9 +17,16 @@ export const ButtonPage = () => {
       <Button kind="warning" pattern="outline">Warning</Button> <Button kind="success" pattern="outline">Success</Button>{' '}
       <Button kind="secondary" pattern="outline">Secondary</Button> <Button kind="light" pattern="outline">Light</Button>
       <br />
+      <Button kind="primary" disabled pattern="outline">Primary</Button> <Button kind="info" disabled pattern="outline">Info</Button> <Button kind="danger" disabled pattern="outline">Danger</Button>{' '}
+      <Button kind="warning" disabled pattern="outline">Warning</Button> <Button kind="success" disabled pattern="outline">Success</Button>{' '}
+      <Button kind="secondary" disabled pattern="outline">Secondary</Button> <Button kind="light" disabled pattern="outline">Light</Button>
+      <br />
       <Button kind="primary" pattern="flat">Primary</Button> <Button kind="info" pattern="flat">Info</Button> <Button kind="danger" pattern="flat">Danger</Button>{' '}
       <Button kind="warning" pattern="flat">Warning</Button> <Button kind="success" pattern="flat">Success</Button>{' '}
-      <Button kind="secondary" pattern="flat">Secondary</Button> <Button kind="black" pattern="flat">Black</Button>
+      <Button kind="secondary" pattern="flat">Secondary</Button> <Button kind="black" pattern="flat">Black</Button><br/>
+      <Button kind="primary" disabled pattern="flat">Primary</Button> <Button kind="info" disabled pattern="flat">Info</Button> <Button kind="danger" disabled pattern="flat">Danger</Button>{' '}
+      <Button kind="warning" disabled pattern="flat">Warning</Button> <Button kind="success" disabled pattern="flat">Success</Button>{' '}
+      <Button kind="secondary" disabled pattern="flat">Secondary</Button> <Button kind="black" disabled pattern="flat">Black</Button>
     </>
   );
 };
