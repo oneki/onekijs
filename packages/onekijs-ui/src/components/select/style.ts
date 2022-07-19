@@ -2,6 +2,8 @@ import { css } from 'styled-components';
 import { alignItems } from '../../styles/alignment';
 import { backgroundColor } from '../../styles/background';
 import {
+  borderBottomLeftRadius,
+  borderBottomRightRadius,
   borderColor,
   borderRadius,
   borderTopLeftRadius,
@@ -116,6 +118,9 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
       ${clickable ? cursor('pointer') : ''}
       ${padding('1px')}
       ${position('relative')}
+      input {
+        ${backgroundColor('inherit')}
+      }
       &.o-select-input-focus {
         ${borderColor('primary')}
         ${borderWidth(2)}
@@ -131,6 +136,12 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
     &.o-select-close {
       .o-select-input{
         ${clickable ? cursor('pointer') : ''}
+      }
+    }
+    &.o-select-open {
+      .o-select-input-container {
+        ${borderBottomRightRadius(0)}
+        ${borderBottomLeftRadius(0)}
       }
     }
 

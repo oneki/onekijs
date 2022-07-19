@@ -274,27 +274,23 @@ export const clarityTheme = (customTheme: Partial<Theme> = {}): Theme => {
     GlobalStyles,
   };
 
+  Object.keys(ColorKeys).forEach((kind) => {
+    set(clarityTheme, `buttons.${kind}.fontWeight`, 'medium');
+    set(clarityTheme, `buttons.${kind}.hoverBgColor`, darken(get(clarityTheme.colors, kind, ''), 200));
+    set(clarityTheme, `buttons.${kind}.hoverBorderColor`, darken(get(clarityTheme.colors, kind, ''), 200));
+    set(clarityTheme, `buttons.${kind}.textTransform`, 'uppercase');
+    set(clarityTheme, `buttons.${kind}.letterSpacing`, '3xl');
+    set(clarityTheme, `buttons.${kind}.fontSize`, 'xs');
+    set(clarityTheme, `buttons.${kind}.lineHeight`, '2xl');
+    set(clarityTheme, `buttons.${kind}.borderRadius`, 'xs');
+    set(clarityTheme, `buttons.${kind}.paddingX`, 'md');
+    set(clarityTheme, `buttons.${kind}.hoverBgColorOutline`, lighten(get(clarityTheme.colors, kind, ''), 700));
+    set(clarityTheme, `tooltip.${kind}.color`, ['light', 'lightest', 'white'].includes(kind) ? 'darkest' : 'light');
+  });
+
   return baseTheme(simpleMergeDeep(customTheme, clarityTheme)) as Theme;
 };
 
-const theme = clarityTheme();
-
-Object.keys(ColorKeys).forEach((kind) => {
-  set(theme, `buttons.${kind}.fontWeight`, 'medium');
-  set(theme, `buttons.${kind}.hoverBgColor`, darken(get(theme.colors, kind, ''), 200));
-  set(theme, `buttons.${kind}.hoverBorderColor`, darken(get(theme.colors, kind, ''), 200));
-  set(theme, `buttons.${kind}.textTransform`, 'uppercase');
-  set(theme, `buttons.${kind}.letterSpacing`, '3xl');
-  set(theme, `buttons.${kind}.fontSize`, 'xs');
-  set(theme, `buttons.${kind}.lineHeight`, '2xl');
-  set(theme, `buttons.${kind}.borderRadius`, 'xs');
-  set(theme, `buttons.${kind}.paddingX`, 'md');
-  set(theme, `buttons.${kind}.hoverBgColorOutline`, lighten(get(theme.colors, kind, ''), 700));
-  set(theme, `tooltip.${kind}.color`, ['light', 'lightest', 'white'].includes(kind) ? 'darkest' : 'light');
-});
-
-console.log(theme);
-
 export const ClarityTheme: FCC<ThemeProps> = (props) => {
-  return <BaseTheme theme={theme} {...props} />;
+  return <BaseTheme theme={clarityTheme(props.theme)} {...props} />;
 };

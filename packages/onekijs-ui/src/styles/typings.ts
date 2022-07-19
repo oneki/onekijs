@@ -407,7 +407,7 @@ export type SizePropertyTheme =
   | 'screen-xl';
 
 export type ThemeProps = {
-  theme?: Theme;
+  theme?: Partial<Theme>;
 };
 
 export type ColorPropertyTheme = keyof typeof ColorKeys;

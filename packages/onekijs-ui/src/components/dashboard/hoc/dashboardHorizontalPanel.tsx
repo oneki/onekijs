@@ -20,7 +20,6 @@ const getTranslateX = (size: DashboardSize, props: DashboardHorizontalPanelCompo
 
   // if the panel is not in the first column, we have to translateX the width of the left panel
   if (props.panel && !isAreaInColumn('first', props.area, props.areas)) {
-    console.log('translateX', props.panel.area, size, getWorkspacePanelLength('width', size, props.left));
     translate = getWorkspacePanelLength('width', size, props.left);
   }
 
