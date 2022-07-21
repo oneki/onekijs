@@ -79,6 +79,7 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
         '4xl': '2.25rem',
         '5xl': '3rem',
         '6xl': '4rem',
+        default: '.0875rem',
       },
       spacings: {
         xs: '-0.05em',
@@ -231,6 +232,26 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
       bgColor: 'white',
     },
   };
+
+  theme.accordion = {
+    fontWeight: 'bold',
+    fontColor: 'inherit',
+    activeFontColor: 'lightest',
+    hoverFontColor: 'inherit',
+    fontSize: 'inherit',
+    togglerIconWidth: 'md',
+    togglerIconHeight: 'md',
+    bgColor: 'inherit',
+    activeBgColor: 'primary',
+    hoverBgColor: lighten(get(theme.colors, 'primary', ''), 400),
+    borderColor: 'light',
+    borderRadius: 'xl',
+    borderStyle: 'solid',
+    borderWidth: '1px',
+    paddingX: 'sm',
+    paddingY: 'sm',
+  };
+
   Object.keys(ColorKeys).forEach((kind) => {
     set(theme, `buttons.${kind}`, {
       bgColor: kind,

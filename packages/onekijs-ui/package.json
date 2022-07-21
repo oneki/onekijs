@@ -39,7 +39,7 @@
     "react-window": "^1.8.5",
     "react-window-infinite-loader": "^1.0.5",
     "styled-components": "^5.3.5",
-    "@fontsource/metropolis": "^4.5.3"
+    "@clr/city": "^1.1.0"
   },
   "devDependencies": {
     "@types/react-virtualized-auto-sizer": "^1.0.0",

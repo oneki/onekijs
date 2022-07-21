@@ -2,6 +2,7 @@ import { App, Link, Route, Routes } from 'onekijs';
 import { ClarityTheme } from 'onekijs-ui';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { AccordionPage } from './pages/accordion';
 import { AjaxListPage } from './pages/ajaxList';
 import { ButtonPage } from './pages/button';
 import { DashboardPage } from './pages/dashboard';
@@ -27,7 +28,7 @@ root.render(
         >
           <Link href="/">Home</Link> | <Link href="/button">Button</Link> | <Link href="/select">Select</Link> |{' '}
           <Link href="/list">List</Link> | <Link href="/ajaxList">Ajax List</Link> | <Link href="/table">Table</Link> |{' '}
-          <Link href="/input">Input</Link> | <Link href="/dashboard">Dashboard</Link> | <Link href="/tree">Tree</Link>
+          <Link href="/input">Input</Link> | <Link href="/dashboard">Dashboard</Link> | <Link href="/tree">Tree</Link>  | <Link href="/accordion">Accordion</Link>
         </div>
         <Routes>
           <Route path="/button" element={<ButtonPage />}/>
@@ -38,6 +39,7 @@ root.render(
           <Route path="/input" element={<InputPage />}/>
           <Route path="/dashboard" element={<DashboardPage />}/>
           <Route path="/tree" element={<TreePage />}/>
+          <Route path="/accordion" element={<AccordionPage />}/>
         </Routes>
       </div>
     </ClarityTheme>

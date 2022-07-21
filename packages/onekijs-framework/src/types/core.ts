@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, FC } from 'react';
+import { PropsWithChildren, FC } from 'react';
 export type AnyFunction<T = any> = (...args: any[]) => T;
 
 export type Primitive = string | number | boolean;

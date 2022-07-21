@@ -75,7 +75,7 @@ const TogglerIcon = styled(IconComponent)`
     ${alignItems('center')};
     ${color(cssColor)}
     .o-toggler-icon {
-      display: inline-block;
+      display: inline-flex;
       width: 100%;
       height: 100%;
       .o-toggler-arrow {

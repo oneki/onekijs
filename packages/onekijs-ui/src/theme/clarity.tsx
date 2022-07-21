@@ -1,4 +1,4 @@
-import '@fontsource/metropolis/all.css';
+import '@clr/city';
 import { FCC, get, set, simpleMergeDeep } from 'onekijs-framework';
 import React from 'react';
 import { createGlobalStyle } from 'styled-components';
@@ -15,7 +15,7 @@ const GlobalStyles = createGlobalStyle`
 
   }
   body {
-    font-size: 0.7rem;
+    ${toCss('font-size', themeFormatter('font.sizes'), 'default', {})}
     ${toCss('font-family', themeFormatter('font.families'), 'sans', {})}
     line-height: 1.2rem;
     font-weight: 400;
@@ -178,7 +178,7 @@ export const clarityTheme = (customTheme: Partial<Theme> = {}): Theme => {
     font: {
       families: {
         sans:
-          'Metropolis, Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
+          '"Clarity City", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
         serif: 'Georgia, Cambria, "Times New Roman", Times, serif',
         mono: 'Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
       },
@@ -204,6 +204,7 @@ export const clarityTheme = (customTheme: Partial<Theme> = {}): Theme => {
         '4xl': '1.6rem',
         '5xl': '1.8rem',
         '6xl': '2rem',
+        default: '.7rem',
       },
       spacings: {
         xs: '-0.04em',
@@ -269,6 +270,11 @@ export const clarityTheme = (customTheme: Partial<Theme> = {}): Theme => {
 
     label: {
       fontWeight: 600,
+    },
+
+    accordion: {
+      activeBgColor: 'lightest',
+      activeFontColor: 'primary',
     },
 
     GlobalStyles,

@@ -1,3 +1,15 @@
+export { default as Accordion } from './components/accordion';
+export { default as AccordionComponent } from './components/accordion/components/AccordionComponent';
+export { default as AccordionContainer } from './components/accordion/components/AccordionContainer';
+export { default as AccordionPanel } from './components/accordion/components/AccordionPanel';
+export { accordionStyle } from './components/accordion/style';
+export {
+  AccordionPanelProps,
+  AccordionPanelState,
+  AccordionPanelTitleProps,
+  AccordionProps,
+  AccordionState,
+} from './components/accordion/typings';
 export { default as Button } from './components/button';
 export { default as DropdownButton } from './components/button/DropdownButton';
 export { default as Dashboard } from './components/dashboard';
@@ -158,6 +170,7 @@ export * from './styles/effects';
 export * from './styles/flex';
 export * from './styles/fragmentation';
 export * from './styles/grid';
+export * from './styles/icon';
 export * from './styles/image';
 export * from './styles/interactivity';
 export * from './styles/list';
@@ -172,7 +185,7 @@ export * from './styles/transition';
 export * from './styles/typings';
 export * from './styles/typography';
 export { baseTheme, BaseTheme } from './theme/base';
-export { clarityTheme, clarityPalette, ClarityTheme } from './theme/clarity';
+export { clarityPalette, clarityTheme, ClarityTheme } from './theme/clarity';
 export { tailwindPalette, tailwindTheme, TailwindTheme } from './theme/tailwind';
 export * from './utils/color';
 export * from './utils/event';

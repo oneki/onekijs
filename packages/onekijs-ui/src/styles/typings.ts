@@ -120,6 +120,7 @@ export enum FontSizeKeys {
   '4xl' = '4xl',
   '5xl' = '5xl',
   '6xl' = '6xl',
+  default = 'default',
 }
 
 export enum FontSpacingKeys {
@@ -355,6 +356,25 @@ export type Theme = {
       fontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
     };
   };
+
+  accordion: {
+    fontWeight: FontWeightPropertyTheme | FontWeightProperty;
+    fontColor: ColorPropertyTheme | ColorProperty;
+    activeFontColor: ColorPropertyTheme | BackgroundColorProperty;
+    hoverFontColor: ColorPropertyTheme | BackgroundColorProperty;
+    fontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
+    togglerIconWidth: WidthProperty<TLength> | IconSizePropertyTheme;
+    togglerIconHeight: WidthProperty<TLength> | IconSizePropertyTheme;
+    bgColor: ColorPropertyTheme | BackgroundColorProperty;
+    activeBgColor: ColorPropertyTheme | BackgroundColorProperty;
+    hoverBgColor: ColorPropertyTheme | BackgroundColorProperty;
+    borderColor: ColorPropertyTheme | BackgroundColorProperty;
+    borderRadius: BorderRadiusProperty<TLength> | RadiusPropertyTheme;
+    borderStyle: BorderStyleProperty;
+    borderWidth: BorderWidthProperty<TLength>;
+    paddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
+    paddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
+  };
 };
 export type Palette = AnonymousObject; //TODO create a actual type
 export type TLength = string | 0;
@@ -414,6 +434,7 @@ export type ColorPropertyTheme = keyof typeof ColorKeys;
 export type SpacingPropertyTheme = keyof typeof SpacingKeys;
 export type FontFamilyPropertyTheme = keyof typeof FontFamiliesKeys;
 export type FontSizePropertyTheme = keyof typeof FontSizeKeys;
+export type IconSizePropertyTheme = keyof typeof FontSizeKeys;
 export type FontWeightPropertyTheme = keyof typeof FontWeightKeys | number;
 export type LineHeightPropertyTheme = keyof typeof FontLineHeightKeys | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 export type LetterSpacingPropertyTheme = keyof typeof FontSpacingKeys;

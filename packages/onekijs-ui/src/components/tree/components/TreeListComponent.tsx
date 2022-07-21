@@ -36,7 +36,6 @@ const TreeListItemComponent: React.FC<TreeListItemProps> = ({
   const itemRef = useRef<HTMLDivElement>(null);
 
   const expand: TreeItemHandler<any, TreeItem<any>> = (item, index) => {
-    console.log('expand', item.text);
     service.expanding(item, index);
   };
 
