@@ -104,11 +104,11 @@ const TreeListItemComponent: React.FC<TreeListItemProps> = ({
       >
         <div
           ref={childrenAnimateRef}
-          className={`o-tree-item-children${item?.expanding ? ' o-tree-item-children-expanding' : ''}${
-            item?.collapsing ? ' o-tree-item-children-collapsing' : ''
+          className={`o-tree-item-animate${item?.expanding ? ' o-tree-item-animate-expanding' : ''}${
+            item?.collapsing ? ' o-tree-item-animate-collapsing' : ''
           }`}
         >
-          <div ref={childrenRef}>
+          <div className="o-tree-item-children" ref={childrenRef}>
             {children.map((child, childIndex) => {
               const childItem = service.getItem(child);
               return (

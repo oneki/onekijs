@@ -25,7 +25,7 @@ export const accordionStyle: ComponentStyle<AccordionProps> = ({ border = false,
   const t = theme.accordion;
   const bWidth = border ? t.borderWidth : 0;
   return css`
-    .o-tree-item-children-enter-active, .o-tree-item-children-exit-active {
+    .o-accordion-animate-enter-active, .o-accordion-animate-exit-active {
       ${overflowY('hidden')}
       ${transitionDuration(`${animate}ms`)}
       ${transitionProperty('height,opacity')}
@@ -44,8 +44,11 @@ export const accordionStyle: ComponentStyle<AccordionProps> = ({ border = false,
 
     .o-accordion-panel-active {
       .o-accordion-panel-title {
-        ${backgroundColor(t.activeBgColor, { hover: t.activeBgColor })}
+        ${backgroundColor(t.activeBgColor, { hover: t.hoverBgColor })}
         ${color(t.activeFontColor, { hover: t.activeFontColor })}
+      }
+      .o-accordion-content {
+        ${backgroundColor(t.activeBgColor, { hover: t.activeBgColor })}
       }
     }
 

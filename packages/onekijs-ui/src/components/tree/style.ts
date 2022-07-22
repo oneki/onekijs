@@ -33,13 +33,13 @@ export const treeStyle: ComponentStyle<TreeProps<any>> = () => {
         ${marginLeft('sm')}
       }
     }
-    .o-tree-item-children-expanding, .o-tree-item-children-collapsing {
+    .o-tree-item-animate-expanding, .o-tree-item-animate-collapsing {
       ${overflowY('hidden')}
       ${transitionDuration('150ms')}
       ${transitionProperty('height,opacity')}
       ${transitionTimingFunction('linear')}
     }
-    .o-tree-item-children-expanding {
+    .o-tree-item-animate-expanding {
       ${height(0)}
     }
 

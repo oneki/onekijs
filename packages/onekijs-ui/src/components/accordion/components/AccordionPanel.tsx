@@ -27,7 +27,6 @@ const AccordionPanel: FCC<AccordionPanelProps<any>> = ({
   };
 
   const onEntering = (node: HTMLElement) => {
-    console.log(node);
     const currentHeight = node.getBoundingClientRect().height;
     node.style.height = '0px';
     setTimeout(() => {
@@ -55,7 +54,7 @@ const AccordionPanel: FCC<AccordionPanelProps<any>> = ({
       <Component title={title} active={panel.active} onClick={toggle} />
       <CSSTransition
         in={panel.active}
-        classNames="o-tree-item-children"
+        classNames="o-accordion-animate"
         timeout={animate}
         mountOnEnter={false}
         appear={false}
@@ -64,7 +63,9 @@ const AccordionPanel: FCC<AccordionPanelProps<any>> = ({
         onEntering={onEntering}
         onEntered={onEntered}
       >
-        <div className="o-tree-item-children">{children}</div>
+        <div>
+          <div className="o-accordion-content">{children}</div>
+        </div>
       </CSSTransition>
     </div>
   );
