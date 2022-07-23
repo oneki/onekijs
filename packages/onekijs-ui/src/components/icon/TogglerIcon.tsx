@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import styled, { css } from 'styled-components';
 import { alignItems } from '../../styles/alignment';
 import { backgroundColor } from '../../styles/background';
-import { display } from '../../styles/display';
+import { display, visibility } from '../../styles/display';
 import { color } from '../../styles/typography';
 import { addClassname } from '../../utils/style';
 import LoadingIcon from './LoadingIcon';
@@ -26,15 +26,12 @@ const IconComponent: FC<TogglerIconProps> = ({
   onClick,
   open,
   loading,
-  visible = true,
   model = 'arrow',
   closeArrowPosition = 'e',
   openArrowPosition = 's',
 }) => {
   const iconClassName = addClassname('o-toggler-icon-container', className);
-  if (!visible) {
-    return <div className={iconClassName}></div>;
-  } else if (!loading) {
+  if (!loading) {
     return (
       <div className={iconClassName} onClick={onClick}>
         <div className="o-toggler-icon">
@@ -68,7 +65,7 @@ const IconComponent: FC<TogglerIconProps> = ({
 };
 
 const TogglerIcon = styled(IconComponent)`
-  ${({ width = '24px', height = '24px', color: cssColor = 'inherit' }) => css`
+  ${({ width = '24px', height = '24px', color: cssColor = 'inherit', visible = true }) => css`
     width: ${width};
     height: ${height};
     ${display('inline-flex')};
@@ -78,6 +75,7 @@ const TogglerIcon = styled(IconComponent)`
       display: inline-flex;
       width: 100%;
       height: 100%;
+      ${visibility(visible)}
       .o-toggler-arrow {
         stroke-width: 2;
         stroke: currentColor;

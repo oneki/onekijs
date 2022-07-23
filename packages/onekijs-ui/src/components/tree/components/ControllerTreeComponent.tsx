@@ -13,6 +13,12 @@ const ControllerTreeComponent: React.FC<ControllerTreeProps> = ({
   onSelect,
   height,
   virtual,
+  gap,
+  ItemComponent,
+  itemClassName,
+  TogglerComponent,
+  paddingLeft,
+  paddingRight,
 }) => {
   const config: TreeConfig = useMemo(() => {
     return {
@@ -21,8 +27,26 @@ const ControllerTreeComponent: React.FC<ControllerTreeProps> = ({
       onSelect,
       height,
       virtual,
+      gap,
+      ItemComponent,
+      itemClassName,
+      TogglerComponent,
+      paddingLeft,
+      paddingRight,
     };
-  }, [className, onActivate, onSelect, height, virtual]);
+  }, [
+    className,
+    onActivate,
+    onSelect,
+    height,
+    virtual,
+    gap,
+    ItemComponent,
+    itemClassName,
+    TogglerComponent,
+    paddingLeft,
+    paddingRight,
+  ]);
 
   const BodyComponent = height || virtual ? VirtualTreeBodyComponent : TreeBodyComponent;
 

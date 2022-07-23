@@ -15,8 +15,10 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
     colors: {
       white: 'white',
       lightest: 'gray-100',
+      lighter: 'gray-200',
       light: 'gray-400',
-      dark: 'gray-700',
+      dark: 'gray-600',
+      darker: 'gray-700',
       darkest: 'gray-900',
       black: 'black',
       success: 'green-500',
@@ -177,7 +179,7 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
       thBorderBottomColor: 'lightest',
       thBgColor: 'light',
       thFontWeigth: 'medium',
-      thFontColor: 'dark',
+      thFontColor: 'darker',
       thFontCase: 'uppercase',
       thFontSize: 'xs',
       thLetterSpacing: 'xl',
@@ -217,7 +219,7 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
     label: {
       fontWeight: 'medium',
       fontCase: 'none',
-      fontColor: 'dark',
+      fontColor: 'darker',
       fontSize: 'inherit',
       letterSpacing: 'md',
       requiredColor: 'danger',
@@ -230,6 +232,24 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
     checkbox: {
       color: 'primary',
       bgColor: 'white',
+    },
+
+    dashboard: {
+      left: {
+        bgColor: 'lighter',
+      },
+      header: {
+        bgColor: 'secondary',
+      },
+      body: {
+        bgColor: 'white',
+      },
+      right: {
+        bgColor: 'lighter',
+      },
+      footer: {
+        bgColor: 'lighter',
+      },
     },
   };
 

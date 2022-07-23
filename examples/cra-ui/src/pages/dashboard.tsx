@@ -50,7 +50,7 @@ export const DashboardPage = () => {
   return (
     <Dashboard>
       <MyDashboardLeft resizable collapse={false} floating={false} collapseSmall={true} floatingSmall={true}>
-        Left
+        <div style={{height: '5000px'}}>Left</div>
       </MyDashboardLeft>
       <DashboardHeader resizable collapseSmall={true} collapseMedium={true} collapseLarge={false} floatingSmall={false}>
         <Header>

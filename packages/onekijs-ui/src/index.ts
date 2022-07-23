@@ -55,6 +55,8 @@ export { default as LoadingIcon } from './components/icon/LoadingIcon';
 export { default as MenuIcon } from './components/icon/MenuIcon';
 export { default as SearchIcon } from './components/icon/SearchIcon';
 export { default as TogglerIcon } from './components/icon/TogglerIcon';
+export { default as FileIcon } from './components/icon/FileIcon';
+export { default as FolderIcon } from './components/icon/FolderIcon';
 export { default as Input } from './components/input';
 export { default as InputComponent } from './components/input/components/InputComponent';
 export { InputProps } from './components/input/typings';
@@ -146,7 +148,23 @@ export {
 } from './components/table/typings';
 export { default as Tooltip } from './components/tooltip';
 export { default as Tree } from './components/tree';
+export { default as ArrayTreeComponent } from './components/tree/components/ArrayTreeComponent';
+export { default as ControllerTreeComponent } from './components/tree/components/ControllerTreeComponent';
+export { default as TreeBodyComponent } from './components/tree/components/TreeBodyComponent';
+export { default as TreeComponent } from './components/tree/components/TreeComponent';
+export {
+  default as TreeItemComponent,
+  TreeItemContent,
+  TreeItemToggler,
+} from './components/tree/components/TreeItemComponent';
+export { default as TreeListComponent } from './components/tree/components/TreeListComponent';
+export { default as VirtualTreeBodyComponent } from './components/tree/components/VirtualTreeBodyComponent';
+export { default as VirtualTreeListComponent } from './components/tree/components/VirtualTreeListComponent';
 export { default as useTreeController } from './components/tree/hooks/useTreeController';
+export { default as useTreeService, TreeServiceContext } from './components/tree/hooks/useTreeService';
+export { useTreeState, TreeStateContext } from './components/tree/hooks/useTreeState';
+export { useTreeConfig, TreeConfigContext } from './components/tree/hooks/useTreeConfig';
+export { default as useTreeInitialState } from './components/tree/hooks/useTreeInitialState';
 export {
   ArrayTreeProps,
   ControllerTreeProps,
@@ -157,9 +175,12 @@ export {
   TreeItemAdapter,
   TreeItemHandler,
   TreeItemProps,
+  TreeItemToggleProps,
+  TreeListProps,
   TreeProps,
   TreeState,
   UseTreeOptions,
+  VirtualTreeListProps,
 } from './components/tree/typings';
 export * from './styles/alignment';
 export * from './styles/animation';

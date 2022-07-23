@@ -9,6 +9,20 @@ const resizerStyle: ComponentStyle<ResizerProps> = () => {
   return css`
     width: 100%;
     height: 100%;
+    overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: ${(props) => props.theme.palette.colors[props.theme.colors.light]}
+      ${(props) => props.theme.colors[props.theme.colors.lighter]};
+    &::-webkit-scrollbar {
+      width: 12px;
+    }
+    &::-webkit-scrollbar-track {
+      background: ${(props) => props.theme.palette.colors[props.theme.colors.lighter]};
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: ${(props) => props.theme.palette.colors[props.theme.colors.light]};
+      border: 3px solid ${(props) => props.theme.palette.colors[props.theme.colors.lighter]};
+    }
     .o-resizer-vertical-splitter {
       ${width('6px')};
       ${backgroundColor('transparent')}

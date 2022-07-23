@@ -140,8 +140,10 @@ export const clarityTheme = (customTheme: Partial<Theme> = {}): Theme => {
     colors: {
       white: 'white',
       lightest: 'gray-100',
+      lighter: 'gray-200',
       light: 'gray-400',
-      dark: 'gray-700',
+      dark: 'gray-600',
+      darker: 'gray-700',
       darkest: 'gray-900',
       black: 'black',
       success: 'green-700',
@@ -275,6 +277,12 @@ export const clarityTheme = (customTheme: Partial<Theme> = {}): Theme => {
     accordion: {
       activeBgColor: 'lightest',
       activeFontColor: 'primary',
+    },
+
+    dashboard: {
+      body: {
+        bgColor: 'gray-0',
+      },
     },
 
     GlobalStyles,

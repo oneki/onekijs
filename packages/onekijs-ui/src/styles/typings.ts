@@ -37,8 +37,10 @@ export type Media = 'all' | 'sm' | 'md' | 'lg' | 'xl';
 export enum ColorKeys {
   white = 'white',
   lightest = 'lightest',
+  lighter = 'lighter',
   light = 'light',
   dark = 'dark',
+  darker = 'darker',
   darkest = 'darkest',
   black = 'black',
   success = 'success',
@@ -47,6 +49,14 @@ export enum ColorKeys {
   danger = 'danger',
   primary = 'primary',
   secondary = 'secondary',
+}
+
+export enum DashboardKeys {
+  left = 'left',
+  right = 'right',
+  header = 'header',
+  footer = 'footer',
+  body = 'body',
 }
 
 export enum BreakpointKeys {
@@ -374,6 +384,12 @@ export type Theme = {
     borderWidth: BorderWidthProperty<TLength>;
     paddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
     paddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
+  };
+
+  dashboard: {
+    [k in DashboardKeys]: {
+      bgColor: ColorPropertyTheme | BackgroundColorProperty;
+    };
   };
 };
 export type Palette = AnonymousObject; //TODO create a actual type

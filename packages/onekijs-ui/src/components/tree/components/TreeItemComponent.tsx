@@ -1,11 +1,13 @@
 import { AnonymousObject } from 'onekijs-framework';
-import React, { FC, useRef } from 'react';
+import React, { CSSProperties, FC, useRef } from 'react';
 import { addClassname } from '../../../utils/style';
+import FileIcon from '../../icon/FileIcon';
 import FolderIcon from '../../icon/FolderIcon';
 import TogglerIcon from '../../icon/TogglerIcon';
+import { useTreeConfig } from '../hooks/useTreeConfig';
 import { TreeItemProps, TreeItemToggleProps } from '../typings';
 
-const Toggler: React.FC<TreeItemToggleProps> = ({ item, onExpand, onCollapse, index }) => {
+export const TreeItemToggler: React.FC<TreeItemToggleProps> = ({ item, onExpand, onCollapse, index }) => {
   if (item === undefined) return null;
 
   const isFolder = item.type !== 'leaf' && (item.children === undefined || item.children.length > 0);
@@ -13,36 +15,63 @@ const Toggler: React.FC<TreeItemToggleProps> = ({ item, onExpand, onCollapse, in
   const handler = item.expanded && !item.collapsing ? onCollapse : onExpand;
 
   return (
-    <div>
-      {
-        <TogglerIcon
-          onClick={() => item && handler && handler(item, index)}
-          open={item.expanded && !item.collapsing}
-          visible={isFolder}
-        />
-      }
-    </div>
+    <TogglerIcon
+      onClick={() => item && handler && handler(item, index)}
+      open={item.expanded && !item.collapsing}
+      visible={isFolder}
+    />
   );
 };
 
-const TreeItemComponent: FC<TreeItemProps> = React.memo(({ className, item, onExpand, onCollapse, index }) => {
+export const TreeItemContent: React.FC<TreeItemProps> = ({ item }) => {
+  if (item === undefined) return null;
+
+  const isFolder = item.type !== 'leaf' && (item.children === undefined || item.children.length > 0);
+
+  return (
+    <>
+      {isFolder ? <FolderIcon /> : <FileIcon />}
+      <span className="o-tree-item-text">{item.text || ''}</span>
+    </>
+  );
+};
+
+const TreeItemComponent: FC<TreeItemProps> = React.memo((props) => {
+  const {
+    ItemComponent = TreeItemContent,
+    TogglerComponent = TreeItemToggler,
+    gap = 20,
+    paddingLeft = 0,
+    paddingRight = 0,
+  } = useTreeConfig();
+  const { className, item, onExpand, onCollapse, index } = props;
   const ref = useRef<AnonymousObject>({});
   ref.current.item = item;
-  const itemClassName = addClassname('o-tree-item', className);
+  let itemClassName = addClassname('o-tree-item', className);
+  if (item?.selected) {
+    itemClassName = addClassname('o-tree-item-selected', itemClassName);
+  }
+  if (item?.active) {
+    itemClassName = addClassname('o-tree-item-active', itemClassName);
+  }
+
   if (item === undefined) {
     return <div className={itemClassName}></div>;
   }
 
-  const style = {
-    paddingLeft: `${item.level * 20}px`,
+  const style: CSSProperties = {
+    paddingLeft: `${item.level * gap + paddingLeft}px`,
   };
+
+  if (paddingRight > 0) {
+    style.paddingRight = `${paddingRight}px`;
+  }
 
   return (
     <>
       <div className={itemClassName} style={style}>
-        <Toggler item={item} onExpand={onExpand} onCollapse={onCollapse} index={index} />
-        <FolderIcon />
-        <span className="o-tree-item-text">{item.text || ''}</span>
+        <TogglerComponent item={item} onExpand={onExpand} onCollapse={onCollapse} index={index} />
+        <ItemComponent {...props} />
       </div>
     </>
   );

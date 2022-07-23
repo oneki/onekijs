@@ -30,9 +30,13 @@ export type TreeConfig<T = any, I extends TreeItem<T> = TreeItem<T>> = {
   height?: number;
   itemClassName?: string | ((item: I) => string);
   ItemComponent?: React.FC<TreeItemProps<T, I>>;
+  TogglerComponent?: React.FC<TreeItemToggleProps>;
   onActivate?: TreeItemHandler<T, I>;
   onSelect?: TreeItemHandler<T, I>;
   virtual?: boolean;
+  gap?: number;
+  paddingLeft?: number;
+  paddingRight?: number;
 };
 
 export type TreeController<

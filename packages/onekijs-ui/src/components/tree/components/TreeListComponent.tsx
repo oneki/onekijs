@@ -1,7 +1,6 @@
 import { AnonymousObject } from 'onekijs-framework';
 import React, { useEffect, useRef } from 'react';
 import { CSSTransition } from 'react-transition-group';
-import { useTreeConfig } from '../hooks/useTreeConfig';
 import useTreeService from '../hooks/useTreeService';
 import { TreeItem, TreeItemHandler, TreeItemProps, TreeListProps } from '../typings';
 import TreeItemComponent from './TreeItemComponent';
@@ -79,7 +78,7 @@ const TreeListItemComponent: React.FC<TreeListItemProps> = ({
 
   return (
     <div ref={itemRef}>
-      <div className="o-virtual-item" key={`virtual-item-${item?.uid || index}`}>
+      <div className="o-tree-item-container" key={`tree-item-container-${item?.uid || index}`}>
         <ItemComponent
           key={`item-${item?.uid || index}`}
           className={className}
@@ -94,7 +93,7 @@ const TreeListItemComponent: React.FC<TreeListItemProps> = ({
       </div>
       <CSSTransition
         in={expanded}
-        classNames="o-tree-item-children"
+        classNames="o-tree-item-animate"
         timeout={timeout}
         mountOnEnter={false}
         appear={false}
@@ -134,7 +133,6 @@ const TreeListComponent: React.FC<TreeListProps> = ({ items, onItemClick, onItem
   // we keep a reference of the expanded status of items
   const expandedStatusRef = useRef<AnonymousObject<boolean>>({});
   const nextExpandedStatus: AnonymousObject<boolean> = {};
-  const { ItemComponent = TreeItemComponent } = useTreeConfig();
 
   expandedStatusRef.current = nextExpandedStatus;
 
@@ -148,7 +146,7 @@ const TreeListComponent: React.FC<TreeListProps> = ({ items, onItemClick, onItem
             key={`tree-item-${rooItem?.uid || index}`}
             item={rooItem}
             index={index}
-            ItemComponent={ItemComponent}
+            ItemComponent={TreeItemComponent}
             onClick={onItemClick}
             onMouseEnter={onItemMouseEnter}
             onMouseLeave={onItemMouseLeave}

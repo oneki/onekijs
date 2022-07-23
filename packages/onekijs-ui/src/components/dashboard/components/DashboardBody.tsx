@@ -1,6 +1,8 @@
 import { FCC } from 'onekijs-framework';
 import React, { CSSProperties, useEffect, useRef } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+import { backgroundColor } from '../../../styles/background';
+import { ComponentStyle } from '../../../styles/typings';
 import useDashboardService from '../hooks/useDashboardService';
 import useDashboardState from '../hooks/useDashboardState';
 import { DashboardBodyComponentProps, DashboardBodyPanelProps, DashboardSize } from '../typings';
@@ -32,7 +34,11 @@ const DashboardBodyComponent: FCC<DashboardBodyComponentProps> = (props) => {
   );
 };
 
-const getLength = (type: 'width' | 'height', size: DashboardSize, props: DashboardBodyComponentProps): string => {
+export const getBodyLength = (
+  type: 'width' | 'height',
+  size: DashboardSize,
+  props: DashboardBodyComponentProps,
+): string => {
   let result = '100%';
 
   const front = type === 'width' ? props.left : props.header;
@@ -91,22 +97,30 @@ const getTranslateY = (size: DashboardSize, props: DashboardBodyComponentProps):
   return 0;
 };
 
+const style: ComponentStyle<DashboardBodyComponentProps> = (props) => {
+  const t = props.theme.dashboard.body;
+  return css`
+    ${backgroundColor(t.bgColor)}
+    grid-area: body;
+    width: ${() => getBodyLength('width', 'small', props)};
+    height: ${() => getBodyLength('height', 'small', props)};
+    transition: ${() => (props.panel ? 'transform 0.6s, width 0.6s, height 0.6s' : 'none')};
+    transform: translate(${() => getTranslateX('small', props)}, ${() => getTranslateY('small', props)});
+    @media only screen and (min-width: 768px) {
+      width: ${() => getBodyLength('width', 'medium', props)};
+      height: ${() => getBodyLength('height', 'medium', props)};
+      transform: translate(${() => getTranslateX('medium', props)}, ${() => getTranslateY('medium', props)});
+    }
+    @media only screen and (min-width: 992px) {
+      width: ${() => getBodyLength('width', 'large', props)};
+      height: ${() => getBodyLength('height', 'large', props)};
+      transform: translate(${() => getTranslateX('large', props)}, ${() => getTranslateY('large', props)});
+    }
+  `;
+};
+
 const StyledDashboardBody = styled(DashboardBodyComponent)`
-  grid-area: body;
-  width: ${(props) => getLength('width', 'small', props)};
-  height: ${(props) => getLength('height', 'small', props)};
-  transition: ${(props) => (props.panel ? 'transform 0.6s, width 0.6s, height 0.6s' : 'none')};
-  transform: translate(${(props) => getTranslateX('small', props)}, ${(props) => getTranslateY('small', props)});
-  @media only screen and (min-width: 768px) {
-    width: ${(props) => getLength('width', 'medium', props)};
-    height: ${(props) => getLength('height', 'medium', props)};
-    transform: translate(${(props) => getTranslateX('medium', props)}, ${(props) => getTranslateY('medium', props)});
-  }
-  @media only screen and (min-width: 992px) {
-    width: ${(props) => getLength('width', 'large', props)};
-    height: ${(props) => getLength('height', 'large', props)};
-    transform: translate(${(props) => getTranslateX('large', props)}, ${(props) => getTranslateY('large', props)});
-  }
+  ${style}
 `;
 
 const DashboardBody: FCC<DashboardBodyPanelProps> = (props) => {

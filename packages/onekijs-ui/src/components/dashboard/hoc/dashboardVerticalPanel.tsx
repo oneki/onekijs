@@ -1,6 +1,7 @@
 import { FCC } from 'onekijs-framework';
-import React, { useEffect, useRef, CSSProperties } from 'react';
+import React, { CSSProperties, useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
+import { backgroundColor } from '../../../styles/background';
 import { ComponentStyle } from '../../../styles/typings';
 import Resizer from '../../resizer';
 import { ResizeStep } from '../../resizer/typings';
@@ -43,7 +44,7 @@ const getTranslateX = (size: DashboardSize, props: DashboardVerticalPanelCompone
 };
 
 const getHeight = (size: DashboardSize, props: DashboardVerticalPanelComponentProps): string | 0 => {
-  let height = '100%';
+  let height = '100vh';
   if (props.panel) {
     // if the panel is not in the first row, we need to remove the size of the header panel
     if (!isAreaInRow('first', props.panel.area, props.areas)) {
@@ -62,7 +63,7 @@ const getHeight = (size: DashboardSize, props: DashboardVerticalPanelComponentPr
     }
   }
 
-  return height === '100%' ? height : `calc(${height})`;
+  return height === '100vh' ? height : `calc(${height})`;
 };
 
 const Component: React.FC<DashboardVerticalPanelComponentProps> = (props) => {
@@ -92,7 +93,9 @@ const Component: React.FC<DashboardVerticalPanelComponentProps> = (props) => {
 };
 
 const style: ComponentStyle<DashboardVerticalPanelComponentProps> = (props) => {
+  const t = props.theme.dashboard[props.area];
   return css`
+    ${backgroundColor(t.bgColor)}
     grid-area: ${props.area};
     width: ${getDashboardPanelLength('width', 'small', props.panel)};
     height: ${getHeight('small', props)};
