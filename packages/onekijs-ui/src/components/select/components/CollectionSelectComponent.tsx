@@ -173,7 +173,6 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
       onSelect(null);
     } else {
       service.search(nextValue);
-      console.log('onInputChange', open);
       if (!open) {
         setOpen(true);
       }

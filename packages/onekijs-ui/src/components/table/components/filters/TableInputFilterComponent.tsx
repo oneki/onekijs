@@ -100,7 +100,7 @@ const TableInputFilterComponent: React.FC<TableHeaderCellProps> = ({ column }) =
   const value = getValueFromFilter(filter);
   const onValueChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.value) {
-      controller.addFilterCriteria(column.id, 'i_like', e.target.value, false, column.id);
+      controller.addFilterCriteria(column.id, 'like', e.target.value, false, column.id);
     } else {
       controller.removeFilter(column.id);
     }

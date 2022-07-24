@@ -68,6 +68,7 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
         xl: 2,
         '2xl': 2.5,
         '3xl': 3,
+        '4xl': 4,
       },
       sizes: {
         '2xs': '.625rem',
@@ -227,6 +228,15 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
       requiredMarginLeft: 'xs',
       helperIconColor: 'primary',
       helperMarginLeft: 'sm',
+    },
+
+    link: {
+      fontWeight: 'normal',
+      fontColor: 'primary',
+      textDecoration: 'none',
+      fontWeightHover: 'bold',
+      fontColorHover: 'primary',
+      textDecorationHover: 'none',
     },
 
     checkbox: {

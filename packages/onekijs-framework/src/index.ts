@@ -190,6 +190,7 @@ export {
   shouldResetData,
   urlSerializer,
   visitFilter,
+  addFilter,
 } from './collection/utils';
 export {
   asReducer,

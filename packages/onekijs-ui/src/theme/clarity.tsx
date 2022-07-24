@@ -8,6 +8,11 @@ import { colorFormatter, themeFormatter } from '../utils/formatter';
 import { preflight, toCss } from '../utils/style';
 import { BaseTheme, baseTheme } from './base';
 
+const getColor = (color: string, theme: Theme): string => {
+  const c = get(theme.colors, color, color);
+  return get(theme.palette.colors, c, c);
+};
+
 const GlobalStyles = createGlobalStyle`
   ${preflight()}
   html {
@@ -20,6 +25,17 @@ const GlobalStyles = createGlobalStyle`
     line-height: 1.2rem;
     font-weight: 400;
     ${toCss(null, colorFormatter('color'), 'gray-700', {})}
+    margin: 0;
+  }
+  a {
+    ${toCss('font-weight', themeFormatter('link'), 'fontWeight', {})}
+    ${toCss('text-decoration', themeFormatter('link'), 'textDecoration', {})}
+    color: ${(props) => getColor(props.theme.link.fontColor, props.theme)};
+    &:hover {
+      ${toCss('font-weight', themeFormatter('link'), 'fontWeightHover', {})}
+      ${toCss('text-decoration', themeFormatter('link'), 'textDecorationHover', {})}
+      color: ${(props) => getColor(props.theme.link.fontColorHover, props.theme)};
+    }
   }
 `;
 
@@ -193,6 +209,7 @@ export const clarityTheme = (customTheme: Partial<Theme> = {}): Theme => {
         xl: '1.6rem',
         '2xl': '1.8rem',
         '3xl': '2rem',
+        '4xl': '2.4rem',
       },
       sizes: {
         '2xs': '.5rem',
@@ -272,6 +289,10 @@ export const clarityTheme = (customTheme: Partial<Theme> = {}): Theme => {
 
     label: {
       fontWeight: 600,
+    },
+
+    link: {
+      fontWeight: 500,
     },
 
     accordion: {

@@ -475,6 +475,7 @@ export {
   withLayout,
   wrap,
   xhr,
+  addFilter,
 } from 'onekijs-framework';
 export {
   BrowserRouter,

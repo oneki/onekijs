@@ -13,6 +13,7 @@ import {
   QueryFilterCriteria,
   QueryFilterCriteriaOperator,
   QueryFilterCriteriaValue,
+  QueryFilterId,
   QueryFilterOrCriteria,
   QuerySerializer,
   QuerySerializerResult,
@@ -536,6 +537,30 @@ export const visitFilter = (filter: QueryFilter, visitor: (filter: QueryFilter) 
     }
   }
   return stop;
+};
+
+export const addFilter = (
+  query: Query,
+  filterOrCriteria: QueryFilterOrCriteria,
+  parentFilterId: QueryFilterId = rootFilterId,
+): void => {
+  const filter = formatFilter(query.filter) || { id: rootFilterId, operator: 'and', criterias: [] };
+  visitFilter(filter, (filter) => {
+    if (filter.id === parentFilterId) {
+      let index = -1;
+      if (filterOrCriteria.id !== undefined) {
+        index = filter.criterias.findIndex((entry) => filterOrCriteria.id === entry.id);
+      }
+      if (index === -1) {
+        filter.criterias.push(filterOrCriteria);
+      } else {
+        filter.criterias[index] = filterOrCriteria;
+      }
+      return true;
+    }
+    return false;
+  });
+  query.filter = filter;
 };
 
 export const isCollection = <T, I extends Item<T>, S extends CollectionState<T, I>>(

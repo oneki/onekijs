@@ -18,6 +18,7 @@ import {
   OpacityProperty,
   OutlineProperty,
   PaddingProperty,
+  TextDecorationProperty,
   TextOverflowProperty,
   TextTransformProperty,
   WhiteSpaceProperty,
@@ -116,6 +117,7 @@ export enum FontLineHeightKeys {
   xl = 'xl',
   '2xl' = '2xl',
   '3xl' = '3xl',
+  '4xl' = '4xl',
 }
 
 export enum FontSizeKeys {
@@ -351,6 +353,15 @@ export type Theme = {
     requiredMarginLeft: SpacingPropertyTheme | MarginProperty<TLength>;
     helperIconColor: ColorPropertyTheme | ColorProperty;
     helperMarginLeft: SpacingPropertyTheme | MarginProperty<TLength>;
+  };
+
+  link: {
+    fontWeight: FontWeightPropertyTheme | FontWeightProperty;
+    fontColor: ColorPropertyTheme | ColorProperty;
+    textDecoration: TextDecorationProperty<TLength>;
+    fontWeightHover: FontWeightPropertyTheme | FontWeightProperty;
+    fontColorHover: ColorPropertyTheme | ColorProperty;
+    textDecorationHover: TextDecorationProperty<TLength>;
   };
 
   tooltip: {

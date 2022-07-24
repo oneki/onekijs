@@ -119,7 +119,6 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
         this._adapt(entry, context);
       });
     }
-    console.log(dataSource, this.db);
   }
 
   protected _adapt(data: T | undefined, context?: AnonymousObject): I {

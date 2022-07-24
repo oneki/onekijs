@@ -53,6 +53,7 @@ import {
   shouldResetData,
   urlSerializer,
   visitFilter,
+  addFilter as aFilter,
 } from './utils';
 
 const defaultSearcher = 'i_like';
@@ -398,6 +399,7 @@ export default class CollectionService<
 
   @reducer
   load(limit?: number, offset?: number): void {
+    console.log('load', limit, offset, this.state.url);
     const resetData = this.state.items ? false : true;
     this._setLoading({ limit, offset, resetData });
     this.refresh();
@@ -644,23 +646,7 @@ export default class CollectionService<
     filterOrCriteria: QueryFilterOrCriteria,
     parentFilterId: QueryFilterId = rootFilterId,
   ): void {
-    const filter = formatFilter(query.filter) || { id: rootFilterId, operator: 'and', criterias: [] };
-    visitFilter(filter, (filter) => {
-      if (filter.id === parentFilterId) {
-        let index = -1;
-        if (filterOrCriteria.id !== undefined) {
-          index = filter.criterias.findIndex((entry) => filterOrCriteria.id === entry.id);
-        }
-        if (index === -1) {
-          filter.criterias.push(filterOrCriteria);
-        } else {
-          filter.criterias[index] = filterOrCriteria;
-        }
-        return true;
-      }
-      return false;
-    });
-    query.filter = filter;
+    return aFilter(query, filterOrCriteria, parentFilterId);
   }
 
   protected _addSortBy(query: Query, sortBy: QuerySortBy, prepend = true): void {
