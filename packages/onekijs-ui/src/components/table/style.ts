@@ -21,9 +21,23 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme }) => {
     ${backgroundColor(t.bgColor)}
     ${boxShadow(t.shadow)}
     ${boxSizing('border-box')}
+    scrollbar-width: thin;
+    scrollbar-color: ${(props) => props.theme.palette.colors[props.theme.colors.light]}
+      ${(props) => props.theme.colors[props.theme.colors.lighter]};
+    &::-webkit-scrollbar {
+      width: 12px;
+    }
+    &::-webkit-scrollbar-track {
+      background: ${(props) => props.theme.palette.colors[props.theme.colors.lighter]};
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: ${(props) => props.theme.palette.colors[props.theme.colors.light]};
+      border: 3px solid ${(props) => props.theme.palette.colors[props.theme.colors.lighter]};
+    }
+  }
     .o-table-body {
       ${overflowX('auto')}
-    }
+
     .o-table-body-row-container {
       ${borderBottomColor(t.tdBorderBottomColor)}
       ${borderBottomWidth(t.tdBorderBottomWidth)}

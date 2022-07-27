@@ -268,7 +268,5 @@ export type UseSelectColumnOptions<
 
 export type UseTableOptions<T = any, I extends TableItem<T> = TableItem<T>> = UseListOptions<T, I> & {
   adapter?: TableItemAdapter<T>;
-  dataSource?: T[] | string;
   selected?: T[];
-  columns?: TableColumn<T, I>[];
 };

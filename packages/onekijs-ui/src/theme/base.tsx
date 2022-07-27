@@ -1,7 +1,7 @@
 import { FCC, get, set, simpleMergeDeep } from 'onekijs-framework';
 import React from 'react';
 import { ThemeProvider } from 'styled-components';
-import { ColorKeys, ShadowKeys, Theme, ThemeProps } from '../styles/typings';
+import { ColorKeys, Theme, ThemeProps } from '../styles/typings';
 import { darken, lighten } from '../utils/color';
 
 export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
@@ -173,25 +173,25 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
 
     table: {
       bgColor: 'white',
-      shadow: ShadowKeys.default,
+      shadow: 'none',
       thPaddingX: 'md',
       thPaddingY: 'md',
       thBorderBottomWidth: '1px',
       thBorderBottomColor: 'lightest',
-      thBgColor: 'light',
-      thFontWeigth: 'medium',
+      thBgColor: 'lightest',
+      thFontWeigth: 'semibold',
       thFontColor: 'darker',
       thFontCase: 'uppercase',
       thFontSize: 'xs',
       thLetterSpacing: 'xl',
-      thFilterInputBgColor: 'lightest',
+      thFilterInputBgColor: 'lighter',
       thFilterInputFontSize: 'sm',
       thFilterInputPaddingX: 'xs',
       thFilterInputPaddingY: 'xs',
       tdFontColor: 'darkest',
       tdPaddingX: 'md',
       tdPaddingY: 'sm',
-      tdBorderBottomColor: 'light',
+      tdBorderBottomColor: 'lighter',
       tdBorderBottomStyle: 'solid',
       tdBorderBottomWidth: '1px',
       tdStripBgColor: 'lightest',

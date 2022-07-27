@@ -399,7 +399,6 @@ export default class CollectionService<
 
   @reducer
   load(limit?: number, offset?: number): void {
-    console.log('load', limit, offset, this.state.url);
     const resetData = this.state.items ? false : true;
     this._setLoading({ limit, offset, resetData });
     this.refresh();
