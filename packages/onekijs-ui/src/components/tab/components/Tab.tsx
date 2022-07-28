@@ -9,14 +9,15 @@ import TabTitle from './TabTitle';
 
 const Tab: FCC<TabProps<any>> = ({
   title,
-  initialActive,
+  active,
   disabled,
   visible,
-  closable = false,
+  closable,
   children,
   Component = TabTitle,
+  icon,
 }) => {
-  const tab = useTab(initialActive, disabled, visible);
+  const tab = useTab(title, active, disabled, visible, closable, icon);
   const service = useTabsService();
   const { animate } = useTabsState();
 
@@ -37,7 +38,7 @@ const Tab: FCC<TabProps<any>> = ({
         tab.disabled ? ' o-tab-disabled' : 'o-tab-enabled'
       }${tab.visible ? ' o-tab-visible' : 'o-tab-hidden'}`}
     >
-      <Component title={title} active={tab.active} closable={closable} onClick={activate} />
+      <Component tab={tab} onActivate={activate} />
       <CSSTransition
         in={tab.active}
         classNames="o-tab-animate"

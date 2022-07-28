@@ -1,24 +1,15 @@
-import { FCC, useService } from 'onekijs-framework';
+import { FCC } from 'onekijs-framework';
 import React from 'react';
-import { TabsServiceContext } from '../hooks/useTabsService';
-import { TabsStateContext } from '../hooks/useTabsState';
-import { TabsService } from '../TabsService';
-import { TabsProps, TabsState } from '../typings';
-import TabsContainer from './TabContainer';
+import { TabsProps } from '../typings';
+import ControlledTabsComponent from './ControlledTabsComponent';
+import UncontrolledTabsComponent from './UncontrolledTabsComponent';
 
-const TabsComponent: FCC<TabsProps> = ({ Component = TabsContainer, ...props }) => {
-  const [state, service] = useService(TabsService, {
-    tabs: {},
-    animate: props.animate ?? 150,
-  } as TabsState);
-
-  return (
-    <TabsServiceContext.Provider value={service}>
-      <TabsStateContext.Provider value={state}>
-        <Component {...props} />
-      </TabsStateContext.Provider>
-    </TabsServiceContext.Provider>
-  );
+const TabsComponent: FCC<TabsProps> = (props) => {
+  if (props.controller) {
+    return <ControlledTabsComponent {...props} controller={props.controller} />;
+  } else {
+    return <UncontrolledTabsComponent {...props} />;
+  }
 };
 
 export default TabsComponent;
