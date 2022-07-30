@@ -51,12 +51,12 @@ export { default as DropdownComponent } from './components/dropdown/components/D
 export { default as useDropdown } from './components/dropdown/hooks/useDropdown';
 export { default as dropdownStyle } from './components/dropdown/style';
 export { default as CrossIcon } from './components/icon/CrossIcon';
+export { default as FileIcon } from './components/icon/FileIcon';
+export { default as FolderIcon } from './components/icon/FolderIcon';
 export { default as LoadingIcon } from './components/icon/LoadingIcon';
 export { default as MenuIcon } from './components/icon/MenuIcon';
 export { default as SearchIcon } from './components/icon/SearchIcon';
 export { default as TogglerIcon } from './components/icon/TogglerIcon';
-export { default as FileIcon } from './components/icon/FileIcon';
-export { default as FolderIcon } from './components/icon/FolderIcon';
 export { default as Input } from './components/input';
 export { default as InputComponent } from './components/input/components/InputComponent';
 export { InputProps } from './components/input/typings';
@@ -105,6 +105,18 @@ export {
   SelectTokenProps,
   SelectTokensProps,
 } from './components/select/typings';
+export { default as Tabs } from './components/tab';
+export { default as Tab } from './components/tab/components/Tab';
+export { default as TabTitle } from './components/tab/components/TabTitle';
+export {
+  ControlledTabsProps,
+  TabProps,
+  TabsProps,
+  TabsState,
+  TabState,
+  TabTitleProps,
+  UseTabsController,
+} from './components/tab/typings';
 export { default as Table } from './components/table';
 export { default as useColumn } from './components/table/columns/useColumn';
 export { default as useInputColumn } from './components/table/columns/useInputColumn';
@@ -160,11 +172,11 @@ export {
 export { default as TreeListComponent } from './components/tree/components/TreeListComponent';
 export { default as VirtualTreeBodyComponent } from './components/tree/components/VirtualTreeBodyComponent';
 export { default as VirtualTreeListComponent } from './components/tree/components/VirtualTreeListComponent';
+export { TreeConfigContext, useTreeConfig } from './components/tree/hooks/useTreeConfig';
 export { default as useTreeController } from './components/tree/hooks/useTreeController';
-export { default as useTreeService, TreeServiceContext } from './components/tree/hooks/useTreeService';
-export { useTreeState, TreeStateContext } from './components/tree/hooks/useTreeState';
-export { useTreeConfig, TreeConfigContext } from './components/tree/hooks/useTreeConfig';
 export { default as useTreeInitialState } from './components/tree/hooks/useTreeInitialState';
+export { default as useTreeService, TreeServiceContext } from './components/tree/hooks/useTreeService';
+export { TreeStateContext, useTreeState } from './components/tree/hooks/useTreeState';
 export {
   ArrayTreeProps,
   ControllerTreeProps,

@@ -1,48 +1,52 @@
 import { AnonymousObject, AnyFunction, FCC } from 'onekijs-framework';
-import { FC, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { TabsService } from './TabsService';
 
-export type TabProps<T = string> = {
+export type TabProps = {
   active?: boolean;
-  title: T;
-  Component?: FCC<TabTitleProps<T>>;
+  title: string;
+  Component?: FCC<TabTitleProps>;
   visible?: boolean;
   closable?: boolean;
   disabled?: boolean;
   icon?: ReactNode;
-  TitleComponent?: FC;
-};
+  uid?: string;
+} & AnonymousObject<unknown>;
 
-export type TabTitleProps<T = string> = {
-  tab: TabState<T>;
-  onActivate: AnyFunction;
-};
+export type TabTitleProps = {
+  tab: TabState;
+  onActivate: (tab: TabState) => void;
+} & AnonymousObject<unknown>;
 
-export type TabState<T> = {
+export type TabState = {
   active: boolean;
   uid: string;
   disabled: boolean;
   visible: boolean;
   closable: boolean;
-  title: T;
+  title: string;
   icon?: ReactNode;
+  TitleComponent: FCC<TabTitleProps>;
 };
 
-export type TabsProps<T = string> = {
+export type TabsProps = {
   Component?: FCC<Omit<TabsProps, 'Component'>>;
   className?: string;
   animate?: number;
-  controller?: TabsService<T>;
+  controller?: TabsService;
   onAdd?: AnyFunction;
+  layout?: 'horizontal' | 'vertical';
 };
 
-export type ControlledTabsProps<T = string> = TabsProps<T> & {
-  controller: TabsService<T>;
+export type ControlledTabsProps = TabsProps & {
+  controller: TabsService;
 };
 
-export type TabsState<T = string> = {
-  tabs: AnonymousObject<TabState<T>>;
+export type TabsState = {
+  tabs: TabState[];
+  tabsIndex: AnonymousObject<number>;
   animate: number;
+  active?: string;
 };
 
-export type UseTabsController<T = string> = (props: { animate?: number }) => TabsService<T>;
+export type UseTabsController = (props: { animate?: number }) => TabsService;

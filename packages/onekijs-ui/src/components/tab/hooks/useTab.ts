@@ -1,33 +1,17 @@
-import { ReactNode, useEffect, useId } from 'react';
+import { useEffect } from 'react';
 import { TabState } from '../typings';
 import useTabsService from './useTabsService';
 import { useTabsState } from './useTabsState';
 
-const useTab = <T = string>(
-  title: T,
-  active = false,
-  disabled = false,
-  visible = true,
-  closable = false,
-  icon?: ReactNode,
-): TabState<T> | undefined => {
-  const uid = useId();
-  const service = useTabsService<T>();
-  const state = useTabsState<T>();
-  const tab = state.tabs[uid];
+const useTab = (props: TabState & { uid: string }): TabState | undefined => {
+  const service = useTabsService();
+  const state = useTabsState();
+  const tab = state.tabs[state.tabsIndex[props.uid]];
   useEffect(() => {
     if (tab === undefined) {
-      service.initTab({
-        uid,
-        active,
-        disabled,
-        visible,
-        closable,
-        title,
-        icon,
-      });
+      service.initTab(Object.assign({ uid: props.uid }, props));
     }
-  }, [disabled, visible, uid, active, closable, tab, service, title, icon]);
+  }, [props, service, tab]);
   return tab;
 };
 

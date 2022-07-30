@@ -9,6 +9,7 @@ import { DashboardPage } from './pages/dashboard';
 import { InputPage } from './pages/input';
 import { ListPage } from './pages/list';
 import { SelectPage } from './pages/select';
+import { TabsPage } from './pages/tab';
 import { TablePage } from './pages/table';
 import { TreePage } from './pages/tree';
 
@@ -28,7 +29,7 @@ root.render(
         >
           <Link href="/">Home</Link> | <Link href="/button">Button</Link> | <Link href="/select">Select</Link> |{' '}
           <Link href="/list">List</Link> | <Link href="/ajaxList">Ajax List</Link> | <Link href="/table">Table</Link> |{' '}
-          <Link href="/input">Input</Link> | <Link href="/dashboard">Dashboard</Link> | <Link href="/tree">Tree</Link>  | <Link href="/accordion">Accordion</Link>
+          <Link href="/input">Input</Link> | <Link href="/dashboard">Dashboard</Link> | <Link href="/tree">Tree</Link>  | <Link href="/accordion">Accordion</Link>  | <Link href="/tab">Tab</Link>
         </div>
         <Routes>
           <Route path="/button" element={<ButtonPage />}/>
@@ -40,6 +41,7 @@ root.render(
           <Route path="/dashboard" element={<DashboardPage />}/>
           <Route path="/tree" element={<TreePage />}/>
           <Route path="/accordion" element={<AccordionPage />}/>
+          <Route path="/tab" element={<TabsPage />}/>
         </Routes>
       </div>
     </ClarityTheme>

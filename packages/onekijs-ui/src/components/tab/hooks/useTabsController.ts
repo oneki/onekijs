@@ -3,9 +3,10 @@ import { TabsService } from '../TabsService';
 import { TabsState, UseTabsController } from '../typings';
 
 const useTabsController: UseTabsController = ({ animate }) => {
-  const [_, service] = useService(TabsService, {
-    tabs: {},
-    animate: animate ?? 150,
+  const [_, service] = useService<TabsState, TabsService>(TabsService, {
+    tabs: [],
+    tabsIndex: {},
+    animate: animate ?? 300,
   } as TabsState);
 
   return service;

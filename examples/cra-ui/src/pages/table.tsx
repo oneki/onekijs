@@ -89,13 +89,9 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
     stateColumn.broker.removeFilter('state');
   };
 
-  const controller = useTableController({
-    columns: [streetColumn, stateColumn],
-  });
+  const controller = useTableController(undefined, [streetColumn, stateColumn]);
 
-  const controller2 = useTableController({
-    dataSource: users,
-    columns: [
+  const controller2 = useTableController(users,  [
       {
         id: 'id',
         minWidth: '50px',
@@ -128,8 +124,7 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
         title: 'City',
       },
     ],
-    //grow: 'address.city'
-  });
+  );
 
   return (
     <Form>

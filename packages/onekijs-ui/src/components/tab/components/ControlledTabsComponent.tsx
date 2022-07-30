@@ -3,7 +3,7 @@ import React from 'react';
 import { TabsServiceContext } from '../hooks/useTabsService';
 import { TabsStateContext } from '../hooks/useTabsState';
 import { ControlledTabsProps } from '../typings';
-import TabsContainer from './TabContainer';
+import TabsContainer from './TabsContainer';
 
 const ControlledTabsComponent: FCC<ControlledTabsProps> = ({ Component = TabsContainer, controller, ...props }) => {
   return (

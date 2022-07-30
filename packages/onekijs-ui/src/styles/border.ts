@@ -3,7 +3,6 @@ import {
   BorderBottomLeftRadiusProperty,
   BorderBottomProperty,
   BorderBottomRightRadiusProperty,
-  BorderBottomStyleProperty,
   BorderBottomWidthProperty,
   BorderColorProperty,
   BorderImageOutsetProperty,
@@ -14,20 +13,17 @@ import {
   BorderImageWidthProperty,
   BorderLeftColorProperty,
   BorderLeftProperty,
-  BorderLeftStyleProperty,
   BorderLeftWidthProperty,
   BorderProperty,
   BorderRadiusProperty,
   BorderRightColorProperty,
   BorderRightProperty,
-  BorderRightStyleProperty,
   BorderRightWidthProperty,
   BorderStyleProperty,
   BorderTopColorProperty,
   BorderTopLeftRadiusProperty,
   BorderTopProperty,
   BorderTopRightRadiusProperty,
-  BorderTopStyleProperty,
   BorderTopWidthProperty,
   BorderWidthProperty,
   BoxShadowProperty,
@@ -100,10 +96,10 @@ export const borderBottomRightRadius = cssProperty<BorderBottomRightRadiusProper
 );
 
 export const borderStyle = cssProperty<BorderStyleProperty>('border-style');
-export const borderTopStyle = cssProperty<BorderTopStyleProperty>('border-top-style');
-export const borderBottomStyle = cssProperty<BorderBottomStyleProperty>('border-bottom-style');
-export const borderLeftStyle = cssProperty<BorderLeftStyleProperty>('border-left-style');
-export const borderRightStyle = cssProperty<BorderRightStyleProperty>('border-right-style');
+export const borderTopStyle = cssProperty<BorderStyleProperty>('border-top-style');
+export const borderBottomStyle = cssProperty<BorderStyleProperty>('border-bottom-style');
+export const borderLeftStyle = cssProperty<BorderStyleProperty>('border-left-style');
+export const borderRightStyle = cssProperty<BorderStyleProperty>('border-right-style');
 
 export const borderWidth = cssProperty<number | BorderWidthProperty<TLength>>('border-width', pxFormatter);
 export const borderTopWidth = cssProperty<number | BorderTopWidthProperty<TLength>>('border-top-width', pxFormatter);
