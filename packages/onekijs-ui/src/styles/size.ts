@@ -1,12 +1,18 @@
 import {
+  HeightProperty,
+  MaxHeightProperty,
+  MaxWidthProperty,
+  MinHeightProperty,
+  MinWidthProperty,
   OverscrollBehaviorBlockProperty,
   OverscrollBehaviorInlineProperty,
   OverscrollBehaviorProperty,
   OverscrollBehaviorXProperty,
   OverscrollBehaviorYProperty,
+  WidthProperty,
 } from 'csstype';
 import { cssProperty } from '../utils/style';
-import { Formatter, SizePropertyTheme, Theme } from './typings';
+import { Formatter, SizePropertyTheme, Theme, TLength } from './typings';
 import { pxFormatter } from '../utils/formatter';
 import { get } from 'onekijs-framework';
 
@@ -38,18 +44,18 @@ const heightFormatter: Formatter<SizePropertyTheme> = (value, theme) => {
 };
 
 // spacing or fraction or auto or full or screen
-export const width = cssProperty<SizePropertyTheme>('width', widthFormatter);
+export const width = cssProperty<SizePropertyTheme | WidthProperty<TLength>>('width', widthFormatter);
 
 // spacing or fraction or auto or full or screen
-export const minWidth = cssProperty<SizePropertyTheme>('min-width', widthFormatter);
+export const minWidth = cssProperty<SizePropertyTheme | MaxWidthProperty<TLength>>('min-width', widthFormatter);
 
-export const maxWidth = cssProperty<SizePropertyTheme>('max-width', widthFormatter);
+export const maxWidth = cssProperty<SizePropertyTheme | MinWidthProperty<TLength>>('max-width', widthFormatter);
 
-export const height = cssProperty<SizePropertyTheme>('height', heightFormatter);
+export const height = cssProperty<SizePropertyTheme | HeightProperty<TLength>>('height', heightFormatter);
 
-export const minHeight = cssProperty<SizePropertyTheme>('min-height', heightFormatter);
+export const minHeight = cssProperty<SizePropertyTheme | MinHeightProperty<TLength>>('min-height', heightFormatter);
 
-export const maxHeight = cssProperty<SizePropertyTheme>('max-height', heightFormatter);
+export const maxHeight = cssProperty<SizePropertyTheme | MaxHeightProperty<TLength>>('max-height', heightFormatter);
 
 export const overscrollBehavior = cssProperty<OverscrollBehaviorProperty>('overscroll-behavior');
 

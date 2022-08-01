@@ -45,7 +45,7 @@ export const clarityPalette: Palette = {
     current: 'currentColor',
     black: '#000',
     white: '#fff',
-    'gray-0': 'hsl(198, 0%, 100%)',
+    'gray-0': 'hsl(198, 0%, 98%)',
     'gray-100': 'hsl(198, 0%, 95%)',
     'gray-200': 'hsl(198, 0%, 91%)',
     'gray-300': 'hsl(198, 0%, 87%)',
@@ -55,7 +55,7 @@ export const clarityPalette: Palette = {
     'gray-700': 'hsl(198, 0%, 40%)',
     'gray-800': 'hsl(198, 0%, 27%)',
     'gray-900': 'hsl(198, 0%, 20%)',
-    'gray-1000': 'hsl(198, 0%, 0%)',
+    'gray-1000': 'hsl(198, 0%, 13%)',
     'red-0': 'hsl(9, 100%, 97%)',
     'red-100': 'hsl(9, 95%, 92%)',
     'red-200': 'hsl(9, 91%, 86%)',
@@ -226,11 +226,11 @@ export const clarityTheme = (customTheme: Partial<Theme> = {}): Theme => {
         default: '.7rem',
       },
       spacings: {
-        xs: '-0.04em',
+        xs: '-0.05em',
         sm: '-0.02em',
         md: 0,
         lg: '0.02em',
-        xl: '0.04em',
+        xl: '0.05em',
         '2xl': '0.08em',
         '3xl': '0.12em',
       },
@@ -304,6 +304,10 @@ export const clarityTheme = (customTheme: Partial<Theme> = {}): Theme => {
       body: {
         bgColor: 'gray-0',
       },
+    },
+
+    table: {
+      shadow: 'sm',
     },
 
     GlobalStyles,

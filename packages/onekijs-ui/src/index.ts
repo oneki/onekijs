@@ -10,8 +10,19 @@ export {
   AccordionProps,
   AccordionState,
 } from './components/accordion/typings';
+
+export { default as Properties } from './components/properties';
+export { default as PropertiesComponent } from './components/properties/components/PropertiesComponent';
+export { default as Property } from './components/properties/components/Property';
+export { propertiesStyle } from './components/properties/style';
+export { PropertiesProps, PropertyProps } from './components/properties/typings';
 export { default as Button } from './components/button';
 export { default as DropdownButton } from './components/button/DropdownButton';
+export { default as Card } from './components/card';
+export { default as CardComponent } from './components/card/components/CardComponent';
+export { default as CardTitle } from './components/card/components/CardTitle';
+export { cardStyle } from './components/card/style';
+export { CardProps, CardTitleProps } from './components/card/typings';
 export { default as Dashboard } from './components/dashboard';
 export { default as DashboardBody } from './components/dashboard/components/DashboardBody';
 export { default as DashboardContainer } from './components/dashboard/components/DashboardContainer';
@@ -50,6 +61,10 @@ export { default as Dropdown } from './components/dropdown';
 export { default as DropdownComponent } from './components/dropdown/components/DropdownComponent';
 export { default as useDropdown } from './components/dropdown/hooks/useDropdown';
 export { default as dropdownStyle } from './components/dropdown/style';
+export { default as Col } from './components/grid/Col';
+export { default as Row } from './components/grid/Row';
+export { colStyle, rowStyle } from './components/grid/style';
+export { ColProps, GridSize, RowProps } from './components/grid/typings';
 export { default as CrossIcon } from './components/icon/CrossIcon';
 export { default as FileIcon } from './components/icon/FileIcon';
 export { default as FolderIcon } from './components/icon/FolderIcon';

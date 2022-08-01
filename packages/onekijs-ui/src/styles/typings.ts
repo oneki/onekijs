@@ -12,6 +12,7 @@ import {
   FontSizeProperty,
   FontWeightProperty,
   Globals,
+  HeightProperty,
   LetterSpacingProperty,
   LineHeightProperty,
   MarginProperty,
@@ -425,6 +426,27 @@ export type Theme = {
     paddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
   };
 
+  card: {
+    borderColor: ColorPropertyTheme | BorderColorProperty;
+    borderRadius: BorderRadiusProperty<TLength> | RadiusPropertyTheme;
+    borderStyle: BorderStyleProperty;
+    borderWidth: BorderWidthProperty<TLength>;
+    shadow: ShadowPropertyTheme | BoxShadowProperty;
+    bgColor: ColorPropertyTheme | BackgroundColorProperty;
+    fontColor: ColorPropertyTheme | ColorProperty;
+    fontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
+    fontWeight: FontWeightPropertyTheme | FontWeightProperty;
+    fontCase: 'uppercase';
+    paddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
+    paddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
+    letterSpacing: LetterSpacingPropertyTheme | LetterSpacingProperty<TLength>;
+    iconColor: ColorPropertyTheme | ColorProperty;
+    iconWidth: SizePropertyTheme | WidthProperty<TLength>;
+    iconHeight: SizePropertyTheme | HeightProperty<TLength>;
+    marginTop: SpacingPropertyTheme | MarginProperty<TLength>;
+    titleBorderBottomWidth: BorderWidthProperty<TLength>;
+  };
+
   dashboard: {
     [k in DashboardKeys]: {
       bgColor: ColorPropertyTheme | BackgroundColorProperty;
@@ -499,5 +521,3 @@ export type ShadowPropertyTheme = keyof typeof ShadowKeys;
 export type ComponentStyle<P, T extends Theme = Theme> = (
   propsWithTheme: ThemedStyledProps<P, T>,
 ) => FlattenInterpolation<SytledThemeProps<T>>;
-
-export type GridSize = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
