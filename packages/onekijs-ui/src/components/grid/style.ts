@@ -6,7 +6,7 @@ import { display } from '../../styles/display';
 import { flexDirection, flexWrap } from '../../styles/flex';
 import { boxSizing } from '../../styles/interactivity';
 import { width } from '../../styles/size';
-import { margin } from '../../styles/spacing';
+import { marginBottom, marginLeft, marginRight, marginTop, marginX, marginY } from '../../styles/spacing';
 import { ComponentStyle, Theme, TLength } from '../../styles/typings';
 import { ColProps, RowProps } from './typings';
 
@@ -29,6 +29,10 @@ const getColWidths = (gap: WidthProperty<TLength>, theme: Theme) => {
   return colWidths.join(' ');
 };
 
+const formatSize = (value: TLength | undefined, defaultValue: string): string => {
+  return value === undefined ? defaultValue : value === 0 ? '0px' : value;
+};
+
 export const rowStyle: ComponentStyle<RowProps> = ({
   alignItems: align = 'stretch',
   width: w = '100%',
@@ -36,12 +40,28 @@ export const rowStyle: ComponentStyle<RowProps> = ({
   md,
   lg,
   xl,
-  gap = 0,
+  gap,
+  gapX,
+  gapY,
+  marginTop: mt,
+  marginBottom: mb,
+  marginRight: mr,
+  marginLeft: ml,
+  marginX: mx,
+  marginY: my,
+  margin: m,
   reverse = false,
 }) => {
-  if (gap === 0) {
-    gap = '0px';
-  }
+  const gapStr = formatSize(gap, '0px');
+  const gapXStr = formatSize(gapX, gapStr);
+  const gapYStr = formatSize(gapY, gapStr);
+  const marginStr = formatSize(m, '0px');
+  const marginXStr = formatSize(mx, marginStr);
+  const marginYStr = formatSize(my, marginStr);
+  const marginTopStr = formatSize(mt, marginYStr);
+  const marginBottomStr = formatSize(mb, marginYStr);
+  const marginRightStr = formatSize(mr, marginXStr);
+  const marginLeftStr = formatSize(ml, marginXStr);
   const variantWidth: AnonymousObject = {};
   if (sm !== undefined) variantWidth.sm = sm;
   if (md !== undefined) variantWidth.md = md;
@@ -54,11 +74,15 @@ export const rowStyle: ComponentStyle<RowProps> = ({
     ${boxSizing('border-box')}
     ${flexDirection(reverse ? 'row-reverse' : 'row')}
     ${width(w, variantWidth)}
-    ${margin(`calc(-${gap}/2)`)}
+    ${marginLeft(`calc(${marginLeftStr} - ${gapXStr}/2)`)}
+    ${marginRight(`calc(${marginRightStr} - ${gapXStr}/2)`)}
+    ${marginTop(`calc(${marginTopStr} - ${gapYStr}/2)`)}
+    ${marginBottom(`calc(${marginBottomStr} - ${gapYStr}/2)`)}
     .o-col {
-      ${margin(`calc(${gap}/2)`)}
+      ${marginX(`calc(${gapXStr}/2)`)}
+      ${marginY(`calc(${gapYStr}/2)`)}
     }
-    ${(props) => getColWidths(gap, props.theme)}
+    ${(props) => getColWidths(gapXStr, props.theme)}
   `;
 };
 

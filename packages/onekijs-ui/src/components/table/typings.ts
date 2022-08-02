@@ -93,6 +93,8 @@ export type TableConfig<T = any, I extends TableItem<T> = TableItem<T>> = {
   HeaderComponent?: React.FC<TableHeaderProps<T, I>>;
   height?: string;
   highlightRow?: boolean;
+  LoadingComponent?: React.FC;
+  LoadingRowComponent?: React.FC;
   onRowClick?: TableRowHandler<T, I>;
   onRowEnter?: TableRowHandler<T, I>;
   onRowLeave?: TableRowHandler<T, I>;

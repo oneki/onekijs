@@ -1,4 +1,4 @@
-import { useLazyRef } from 'onekijs-framework';
+import { LoadingStatus, useLazyRef } from 'onekijs-framework';
 import React, { useCallback, useRef } from 'react';
 import { addClassname } from '../../../utils/style';
 import ListBodyComponent from '../../list/components/ListBodyComponent';
@@ -10,6 +10,7 @@ import useTableService from '../hooks/useTableService';
 import { useTableState } from '../hooks/useTableState';
 import { TableBodyProps } from '../typings';
 import TableBodyRowComponent from './TableBodyRowComponent';
+import TableLoadingComponent from './TableLoadingComponent copy';
 
 const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, contentRef }) => {
   const service = useTableService();
@@ -21,6 +22,7 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
     onRowLeave,
     RowComponent = TableBodyRowComponent,
     rowClassName,
+    LoadingComponent = TableLoadingComponent,
   } = useTableConfig();
 
   const itemHeight = useCallback(() => {
@@ -61,6 +63,9 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
     return Component;
   });
 
+  if (service.status === LoadingStatus.Loading) {
+    return <LoadingComponent />;
+  }
   return (
     <ListBodyComponent
       className={addClassname('o-table-body', className)}

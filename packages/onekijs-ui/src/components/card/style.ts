@@ -14,7 +14,7 @@ import {
 import { display } from '../../styles/display';
 import { cursor, userSelect } from '../../styles/interactivity';
 import { overflowY } from '../../styles/overflow';
-import { marginLeft, marginTop, paddingX, paddingY } from '../../styles/spacing';
+import { marginLeft, paddingX, paddingY } from '../../styles/spacing';
 import { transitionDuration, transitionProperty, transitionTimingFunction } from '../../styles/transition';
 import { ComponentStyle } from '../../styles/typings';
 import { color, fontSize, fontWeight, letterSpacing, textTransform } from '../../styles/typography';
@@ -29,7 +29,6 @@ export const cardStyle: ComponentStyle<CardProps> = ({ theme, collapsable = true
     ${borderStyle(t.borderStyle)}
     ${borderRadius(t.borderRadius)}
     ${boxShadow(t.shadow)}
-    ${marginTop(t.marginTop)}
     .o-card-animate-enter-active, .o-card-animate-exit-active {
       ${overflowY('hidden')}
       ${transitionDuration(`${animate}ms`)}

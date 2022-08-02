@@ -12,7 +12,7 @@ import {
 import { display } from '../../styles/display';
 import { flexDirection } from '../../styles/flex';
 import { cursor } from '../../styles/interactivity';
-import { marginBottom, marginLeft, marginRight, marginTop, paddingX, paddingY } from '../../styles/spacing';
+import { marginBottom, marginLeft, marginRight, marginTop, paddingTop, paddingX, paddingY } from '../../styles/spacing';
 import { ComponentStyle } from '../../styles/typings';
 import { color, fontSize, fontWeight } from '../../styles/typography';
 import { TabsProps } from './typings';
@@ -66,6 +66,10 @@ export const tabsStyle: ComponentStyle<TabsProps> = ({ layout = 'horizontal', th
       &.o-tab-enabled {
         ${cursor(t.cursor)}
       }
+    }
+
+    .o-tabs-content {
+      ${paddingTop('lg')}
     }
 
 

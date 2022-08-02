@@ -21,7 +21,6 @@ const DropdownButtonComponent: FC<DropDownButtonProps> = ({
   const classNames = addClassname('o-button-dropdown', className);
 
   const doClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    console.log('onClick');
     setOpen(!open);
     if (onClick) {
       onClick(e);

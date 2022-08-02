@@ -1,5 +1,5 @@
 import { FormSubmitCallback, SubmitButton, useForm } from 'onekijs';
-import { Button, ComponentStyle, FormTable, Table, useInputColumn, useSelectColumn, useTableController } from 'onekijs-ui';
+import { Button, Card, ComponentStyle, FormTable, Table, useInputColumn, useSelectColumn, useTableController } from 'onekijs-ui';
 import React from 'react';
 import styled, { css } from 'styled-components';
 import { users } from '../data/users';
@@ -127,13 +127,13 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
   );
 
   return (
-    <div style={{padding: '20px'}}>
+    <Card title="table">
       {/* <FormTable name="addresses" controller={controller} className={className} />
       <Button onClick={addFilter}>Add Filter</Button> <Button onClick={removeFilter}>Remove Filter</Button>{' '}
       <SubmitButton>Submit</SubmitButton> */}
       <Table controller={controller2} className={className} height="500px" ExpandedComponent={ExpandedComponent} />
       {/* <pre>{JSON.stringify(values, null, 2)}</pre> */}
-    </div>
+    </Card>
   );
 };
 

@@ -53,10 +53,8 @@ export type TreeController<
 };
 
 export type TreeItem<T = any> = Item<T> & {
-  active?: boolean;
   activable?: boolean;
   children?: string[];
-  disabled?: boolean;
   collapsing?: boolean;
   expanded?: boolean;
   expanding?: boolean;
@@ -64,13 +62,16 @@ export type TreeItem<T = any> = Item<T> & {
   level: number;
   parent?: string;
   selectable?: boolean;
-  selected?: boolean;
   type?: 'folder' | 'leaf';
 };
 
 export type TreeItemAdaptee<T> = ItemAdaptee & {
   children?: T[];
   icon?: string;
+  selectable?: boolean;
+  selected?: boolean;
+  type?: 'folder' | 'leaf';
+  expanded?: boolean;
 };
 
 export type TreeItemAdapter<T> = (data: T) => TreeItemAdaptee<T>;

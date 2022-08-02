@@ -24,6 +24,8 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
   header = true,
   headerClassName,
   HeaderComponent = TableHeaderComponent,
+  LoadingComponent,
+  LoadingRowComponent,
   footer = false,
   height,
   highlightRow,
@@ -65,6 +67,8 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
       HeaderComponent,
       height,
       highlightRow,
+      LoadingComponent,
+      LoadingRowComponent,
       onRowClick,
       onRowEnter,
       onRowLeave,
@@ -91,6 +95,8 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
     HeaderComponent,
     height,
     highlightRow,
+    LoadingComponent,
+    LoadingRowComponent,
     onRowClick,
     onRowEnter,
     onRowLeave,
@@ -104,18 +110,21 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
 
   useEffect(() => {
     if (ExpandedComponent) {
-      service.addColumn(
-        {
-          id: 'system.expander',
-          minWidth: '45px',
-          maxWidth: '45px',
-          filterable: false,
-          sortable: false,
-          CellComponent: ExpandedCellComponent,
-          className: 'o-table-cell-expander',
-        },
-        0,
-      );
+      const currentColumn = service.state.columns.find((c) => c.id === 'system.expander');
+      if (!currentColumn) {
+        service.addColumn(
+          {
+            id: 'system.expander',
+            minWidth: '45px',
+            maxWidth: '45px',
+            filterable: false,
+            sortable: false,
+            CellComponent: ExpandedCellComponent,
+            className: 'o-table-cell-expander',
+          },
+          0,
+        );
+      }
     }
   }, [service, ExpandedComponent]);
 

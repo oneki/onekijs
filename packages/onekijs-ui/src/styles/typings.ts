@@ -319,6 +319,8 @@ export type Theme = {
     tdHoverBgColor: ColorPropertyTheme | BackgroundColorProperty;
     tdHoverFontColor: ColorPropertyTheme | ColorProperty;
     tdExpandedBgColor: ColorPropertyTheme | BackgroundColorProperty;
+    loadingRowBgColor: ColorPropertyTheme | BackgroundColorProperty;
+    loadingRowMinHeight: SizePropertyTheme | HeightProperty<TLength>;
   };
 
   input: {
@@ -445,6 +447,11 @@ export type Theme = {
     iconHeight: SizePropertyTheme | HeightProperty<TLength>;
     marginTop: SpacingPropertyTheme | MarginProperty<TLength>;
     titleBorderBottomWidth: BorderWidthProperty<TLength>;
+  };
+
+  properties: {
+    fontWeight: FontWeightPropertyTheme | FontWeightProperty;
+    paddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
   };
 
   dashboard: {

@@ -1,9 +1,11 @@
+import { isItemLoading } from 'onekijs-framework';
 import React, { FC, useRef, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { addClassname } from '../../../utils/style';
 import { useTableConfig } from '../hooks/useTableConfig';
 import { TableBodyRowProps } from '../typings';
 import TableBodyCellComponent from './TableBodyCellComponent';
+import TableLoadingRowComponent from './TableLoadingRowComponent';
 
 const timeout = 200;
 
@@ -21,7 +23,7 @@ const TableBodyRowComponent: FC<TableBodyRowProps> = ({
   onCollapsed,
 }) => {
   const [hover, setHover] = useState(false);
-  const { highlightRow, stripRows } = useTableConfig();
+  const { highlightRow, stripRows, LoadingRowComponent = TableLoadingRowComponent } = useTableConfig();
 
   const expandedHeightRef = useRef<number>(0);
 
@@ -60,6 +62,16 @@ const TableBodyRowComponent: FC<TableBodyRowProps> = ({
   );
 
   const rowContainerClassName = `o-table-body-row-container${item.expanded ? ' o-table-body-row-expanded' : ''}`;
+
+  if (isItemLoading(item)) {
+    return (
+      <div className={rowContainerClassName}>
+        <div className="o-table-body-row">
+          <LoadingRowComponent />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={rowContainerClassName}>

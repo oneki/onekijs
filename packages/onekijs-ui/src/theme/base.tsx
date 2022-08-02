@@ -198,6 +198,8 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
       tdHoverBgColor: 'primary',
       tdHoverFontColor: 'white',
       tdExpandedBgColor: 'lightest',
+      loadingRowBgColor: 'lightest',
+      loadingRowMinHeight: '40px',
     },
 
     input: {
@@ -309,6 +311,11 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
       letterSpacing: '2xl',
       titleBorderBottomWidth: '1px',
     },
+
+    properties: {
+      fontWeight: 'bold',
+      paddingY: 'xs',
+    },
   };
 
   theme.accordion = {
@@ -329,6 +336,8 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
     paddingX: 'sm',
     paddingY: 'sm',
   };
+
+  set(theme.table, 'thFilterInputBgColor', lighten(get(theme.colors, 'primary', ''), 400));
 
   Object.keys(ColorKeys).forEach((kind) => {
     set(theme, `buttons.${kind}`, {

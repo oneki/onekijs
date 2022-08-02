@@ -11,7 +11,6 @@ const ButtonComponent = React.forwardRef<HTMLButtonElement, ButtonProps>((props,
   if (props.disabled) {
     classNames = addClassname('o-button-disabled', classNames);
   }
-  console.log(IconComponent);
   return (
     <span className={classNames}>
       {IconComponent && <IconComponent {...props} />}

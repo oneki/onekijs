@@ -17,7 +17,7 @@ const Property: FC<PropertyProps> = React.memo(({ name, value }) => {
       nameSize === undefined ? undefined : ((nameSize === 12 ? 12 : 12 - nameSize) as GridSize);
   });
   return (
-    <Row className="o-property">
+    <Row className="o-property" gapX="10px">
       <Col size={nameSize} sm={context.sm} md={context.md} lg={context.lg} xl={context.xl} className="o-property-name">
         {name}
       </Col>

@@ -24,7 +24,6 @@ import { preflight } from '../../utils/style';
 import { TooltipProps } from './typings';
 
 const tooltipStyle: ComponentStyle<TooltipProps> = ({ kind = 'secondary', theme }) => {
-  console.log(theme.tooltip);
   const t = theme.tooltip[kind];
   const bgColor = t.bgColor;
   const fColor = t.color;

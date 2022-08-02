@@ -4,13 +4,14 @@ import { ComponentStyle } from '../../styles/typings';
 import { fontWeight } from '../../styles/typography';
 import { PropertiesProps } from './typings';
 
-export const propertiesStyle: ComponentStyle<PropertiesProps> = () => {
+export const propertiesStyle: ComponentStyle<PropertiesProps> = ({ theme }) => {
+  const t = theme.properties;
   return css`
     .o-property {
-      ${paddingY('xs')}
+      ${paddingY(t.paddingY)}
     }
     .o-property-name {
-      ${fontWeight('bold')}
+      ${fontWeight(t.fontWeight)}
     }
   `;
 };

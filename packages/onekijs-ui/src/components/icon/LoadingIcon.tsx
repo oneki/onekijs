@@ -1,7 +1,9 @@
 import React, { FC } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
+import { stroke } from '../../styles/svg';
+import { IconProps } from './typings';
 
-const IconComponent: FC<React.InputHTMLAttributes<HTMLDivElement>> = ({ className }) => {
+const IconComponent: FC<IconProps> = ({ className }) => {
   return (
     <div className={className}>
       <svg className="o-icon-loading-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -38,25 +40,28 @@ const iconCircleKeyFrame = keyframes`
 `;
 
 export default styled(IconComponent)`
-  height: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 100%;
+  ${({ width: cssWidth = '16px', height: cssHeight = '16px', color: cssColor = 'primary' }) => css`
+    height: ${cssHeight};
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    width: ${cssWidth};
 
-  .o-icon-loading-svg {
-    animation: 2s linear infinite both ${iconKeyFrame};
-  }
+    .o-icon-loading-svg {
+      animation: 2s linear infinite both ${iconKeyFrame};
+    }
 
-  .o-icon-loading-svg-circle {
-    animation: 1.4s ease-in-out infinite both ${iconCircleKeyFrame};
-    fill: transparent;
-    stroke: currentColor;
-    stroke-dasharray: 285;
-    stroke-linecap: round;
-    stroke-width: 10px;
-    transform-origin: 50% 50%;
-  }
+    .o-icon-loading-svg-circle {
+      animation: 1.4s ease-in-out infinite both ${iconCircleKeyFrame};
+      fill: transparent;
+      stroke: currentColor;
+      ${stroke(cssColor)}
+      stroke-dasharray: 285;
+      stroke-linecap: round;
+      stroke-width: 10px;
+      transform-origin: 50% 50%;
+    }
+  `}
 `;
