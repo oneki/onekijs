@@ -70,59 +70,34 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     this.refresh();
   }
 
-  @reducer
-  expand(item: I): void {
-    this.setMeta('item', item, 'expanded', true);
-    if (this.state.expanded) {
-      this.state.expanded.push(item.uid);
+  @saga(SagaEffect.Every)
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  *expand(item: I) {
+    if (item.type === 'folder' && item.children === undefined) {
+      yield this._fetchChildren(item, this._expand);
     } else {
-      this.state.expanded = [item.uid];
+      yield this._expand(item);
     }
-    this.setParam('expanded', this.state.expanded.join(','));
-    this.refresh();
   }
 
   @reducer
   expanded(item: I): void {
-    // check if the children are already loaded
-    if (item.type === 'folder' && item.children === undefined) {
-      this._fetchChildren(item, this.expanded);
-    } else {
-      this.setMeta('item', item, 'expanding', false);
-      if (this.state.expanding) {
-        this.state.expanding = this.state.expanding.filter((uid) => uid !== item.uid);
-        this.setParam('expanding', this.state.expanding.join(','));
-      }
-      this.refresh();
+    this.setMeta('item', item, 'expanding', false);
+    if (this.state.expanding) {
+      this.state.expanding = this.state.expanding.filter((uid) => uid !== item.uid);
+      this.setParam('expanding', this.state.expanding.join(','));
     }
+    this.refresh();
   }
 
-  @reducer
-  expanding(item: I): void {
+  @saga(SagaEffect.Every)
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  *expanding(item: I) {
     // check if the children are already loaded
     if (item.type === 'folder' && item.children === undefined) {
-      this._fetchChildren(item, this.expanding);
+      yield this._fetchChildren(item, this._expanding);
     } else {
-      this.setMeta('item', item, 'expanded', true);
-      this.setMeta('item', item, 'expanding', true);
-      this.setMeta('item', item, 'collapsing', false);
-      if (this.state.expanded) {
-        this.state.expanded.push(item.uid);
-      } else {
-        this.state.expanded = [item.uid];
-      }
-      if (this.state.expanding) {
-        this.state.expanding.push(item.uid);
-      } else {
-        this.state.expanding = [item.uid];
-      }
-      this.setParam('expanded', this.state.expanded.join(','));
-      this.setParam('expanding', this.state.expanding.join(','));
-      if (this.state.collapsing) {
-        this.state.collapsing = this.state.collapsing.filter((uid) => uid !== item.uid);
-        this.setParam('collapsing', this.state.collapsing.join(','));
-      }
-      this.refresh();
+      yield this._expanding(item);
     }
   }
 
@@ -138,8 +113,19 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
         context.level = 0;
         this._adapt(entry, context);
       });
+      if (this.state.expanded) {
+        this.setParam('expanded', this.state.expanded.join(','));
+      }
     }
   }
+
+  // getQuery(): Query {
+  //   const query = super.getQuery();
+  //   if (this.state.expanded && this.state.expanded.length > 0) {
+  //     query.params = Object.assign({}, query.params, { expanded: this.state.expanded.join(',') });
+  //   }
+  //   return query;
+  // }
 
   protected _adapt(data: T | undefined, context?: AnonymousObject): I {
     if (context === undefined) {
@@ -219,6 +205,14 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     // ensureFieldValue(result, 'children', children);
     result.children = children;
 
+    if (result.expanded) {
+      if (!this.state.expanded) {
+        this.state.expanded = [result.uid];
+      } else {
+        this.state.expanded.push(result.uid);
+      }
+    }
+
     return result;
   }
 
@@ -251,8 +245,43 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     } else {
       result = items;
     }
-
     return super._execute(result, query, comparator, comparators);
+  }
+
+  @reducer
+  _expand(item: I): void {
+    this.setMeta('item', item, 'expanded', true);
+    if (this.state.expanded) {
+      this.state.expanded.push(item.uid);
+    } else {
+      this.state.expanded = [item.uid];
+    }
+    this.setParam('expanded', this.state.expanded.join(','));
+    this.refresh();
+  }
+
+  @reducer
+  _expanding(item: I): void {
+    this.setMeta('item', item, 'expanded', true);
+    this.setMeta('item', item, 'expanding', true);
+    this.setMeta('item', item, 'collapsing', false);
+    if (this.state.expanded) {
+      this.state.expanded.push(item.uid);
+    } else {
+      this.state.expanded = [item.uid];
+    }
+    if (this.state.expanding) {
+      this.state.expanding.push(item.uid);
+    } else {
+      this.state.expanding = [item.uid];
+    }
+    this.setParam('expanded', this.state.expanded.join(','));
+    this.setParam('expanding', this.state.expanding.join(','));
+    if (this.state.collapsing) {
+      this.state.collapsing = this.state.collapsing.filter((uid) => uid !== item.uid);
+      this.setParam('collapsing', this.state.collapsing.join(','));
+    }
+    this.refresh();
   }
 
   @saga(SagaEffect.Every)
@@ -261,7 +290,6 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     let loadingTask: Task | null = null;
     const options = this.state.fetchOptions || {};
     const query = this.getQuery();
-
     try {
       query.params = Object.assign({}, query.params, { parent: item.id });
       const oQuery = this.serializeQuery(query);
@@ -278,6 +306,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
         } else {
           yield this.setMeta('item', item, 'loadingStatus', LoadingStatus.Loading);
         }
+
         const fetcher: Fetcher<CollectionFetcherResult<T>, T | Query | undefined> = options.fetcher || asyncHttp;
         const method = this.state.method ?? HttpMethod.Get;
         const body = this.state.method === HttpMethod.Get ? undefined : Object.assign({}, query);
@@ -321,14 +350,32 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   protected _fetchChildrenSuccess(item: I, result: CollectionFetcherResult<T>): void {
     const children: T[] = Array.isArray(result) ? result : result[this.state.dataKey];
+    const itemPosition = this.positionIndex[item.uid];
+    const context = {
+      position: 0,
+      nextPosition: 1,
+      level: item.level + 1,
+    };
+
+    if (this.db && itemPosition !== undefined) {
+      // we need to make some place for the new items in the index
+      for (let i = this.db.length - 1; i > parseInt(itemPosition); i--) {
+        const toMove = this.db[i];
+        this.db[i + children.length] = toMove;
+        this.positionIndex[toMove.uid] = `${i + children.length}`;
+      }
+      context.position = parseInt(itemPosition);
+      context.nextPosition = context.position + 1;
+    }
+
     this.setMeta(
       'item',
       item,
       'children',
       children.map((child) => {
-        const context = {
-          level: item.level + 1,
-        };
+        context.level = item.level + 1;
+        context.position = context.nextPosition;
+        context.nextPosition = context.position + 1;
         const adaptedChild = this._adapt(child, context);
         adaptedChild.parent = item.uid;
         return adaptedChild.uid;

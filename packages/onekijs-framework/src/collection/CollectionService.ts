@@ -39,6 +39,7 @@ import {
   QuerySortDir,
 } from './typings';
 import {
+  addFilter as aFilter,
   defaultComparator,
   defaultSerializer,
   formatFilter,
@@ -53,7 +54,6 @@ import {
   shouldResetData,
   urlSerializer,
   visitFilter,
-  addFilter as aFilter,
 } from './utils';
 
 const defaultSearcher = 'i_like';
@@ -561,6 +561,9 @@ export default class CollectionService<
       item = Object.assign({}, item, { [key]: value });
       this._indexItem(item);
       if (this.state.items) {
+        if (item.id === '125|||project_providers.0.controller') {
+          console.log(this.state.items.find((stateItem) => stateItem && item.uid === stateItem.uid));
+        }
         const stateItem = this.state.items.find((stateItem) => stateItem && item.uid === stateItem.uid);
         if (stateItem) {
           stateItem[key] = value;
@@ -1166,6 +1169,10 @@ export default class CollectionService<
           ),
         );
         if (location.relativeurl) {
+          const keys = Object.keys(this.cache);
+          if (keys.length > 100) {
+            delete this.cache[keys[0]];
+          }
           this.cache[location.relativeurl] = this.state.items;
         }
       }

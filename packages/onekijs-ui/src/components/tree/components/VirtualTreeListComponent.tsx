@@ -8,7 +8,7 @@ import useTreeService from '../hooks/useTreeService';
 import { TreeItem, TreeItemHandler, TreeItemProps, VirtualTreeListProps } from '../typings';
 import TreeItemComponent from './TreeItemComponent';
 
-const timeout = 150;
+const timeout = 200;
 
 type VirtualTreeItem<T = any, I extends TreeItem<T> = TreeItem<T>> = VirtualItem & {
   item?: I;

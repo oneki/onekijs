@@ -7,7 +7,7 @@ import { marginLeft } from '../../styles/spacing';
 import { ComponentStyle } from '../../styles/typings';
 import { color } from '../../styles/typography';
 import { TreeProps } from './typings';
-import { overflowY } from '../../styles/overflow';
+import { overflow } from '../../styles/overflow';
 import { transitionDuration, transitionProperty, transitionTimingFunction } from '../../styles/transition';
 
 export const treeStyle: ComponentStyle<TreeProps<any>> = () => {
@@ -26,6 +26,14 @@ export const treeStyle: ComponentStyle<TreeProps<any>> = () => {
         ${width(4)}
         ${height(4)}
       }
+      .o-icon-loading-container {
+        ${width(4)}
+        ${height(4)}
+        .o-icon-loading-svg {
+          ${width(3)}
+          ${height(3)}
+        }
+      }
       .o-icon-folder {
         ${color('primary')}
       }
@@ -34,8 +42,8 @@ export const treeStyle: ComponentStyle<TreeProps<any>> = () => {
       }
     }
     .o-tree-item-animate-expanding, .o-tree-item-animate-collapsing {
-      ${overflowY('hidden')}
-      ${transitionDuration('150ms')}
+      ${overflow('hidden')}
+      ${transitionDuration('200ms')}
       ${transitionProperty('height,opacity')}
       ${transitionTimingFunction('linear')}
     }

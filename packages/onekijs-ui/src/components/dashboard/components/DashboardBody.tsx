@@ -104,6 +104,7 @@ const style: ComponentStyle<DashboardBodyComponentProps> = (props) => {
     grid-area: body;
     width: ${() => getBodyLength('width', 'small', props)};
     height: ${() => getBodyLength('height', 'small', props)};
+    overflow: auto;
     transition: ${() => (props.panel ? 'transform 0.6s, width 0.6s, height 0.6s' : 'none')};
     transform: translate(${() => getTranslateX('small', props)}, ${() => getTranslateY('small', props)});
     @media only screen and (min-width: 768px) {

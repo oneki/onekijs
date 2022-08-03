@@ -1,11 +1,12 @@
 import React, { FC } from 'react';
 import styled, { css, keyframes } from 'styled-components';
 import { stroke } from '../../styles/svg';
+import { addClassname } from '../../utils/style';
 import { IconProps } from './typings';
 
 const IconComponent: FC<IconProps> = ({ className }) => {
   return (
-    <div className={className}>
+    <div className={addClassname('o-icon-loading-container', className)}>
       <svg className="o-icon-loading-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
         <circle className="o-icon-loading-svg-circle" cx="50" cy="50" r="45" />
       </svg>
@@ -42,12 +43,9 @@ const iconCircleKeyFrame = keyframes`
 export default styled(IconComponent)`
   ${({ width: cssWidth = '16px', height: cssHeight = '16px', color: cssColor = 'primary' }) => css`
     height: ${cssHeight};
-    margin-left: auto;
-    margin-right: auto;
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
     width: ${cssWidth};
+    display: inline-flex;
+    align-items: center;
 
     .o-icon-loading-svg {
       animation: 2s linear infinite both ${iconKeyFrame};

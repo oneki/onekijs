@@ -5,7 +5,7 @@ import useTreeService from '../hooks/useTreeService';
 import { TreeItem, TreeItemHandler, TreeItemProps, TreeListProps } from '../typings';
 import TreeItemComponent from './TreeItemComponent';
 
-const timeout = 150;
+const timeout = 200;
 
 type TreeListItemProps<T = any, I extends TreeItem<T> = TreeItem<T>> = {
   item: I;

@@ -13,7 +13,7 @@ import {
 } from '../../styles/border';
 import { display } from '../../styles/display';
 import { cursor, userSelect } from '../../styles/interactivity';
-import { overflowY } from '../../styles/overflow';
+import { overflow } from '../../styles/overflow';
 import { marginLeft, paddingX, paddingY } from '../../styles/spacing';
 import { transitionDuration, transitionProperty, transitionTimingFunction } from '../../styles/transition';
 import { ComponentStyle } from '../../styles/typings';
@@ -30,7 +30,7 @@ export const cardStyle: ComponentStyle<CardProps> = ({ theme, collapsable = true
     ${borderRadius(t.borderRadius)}
     ${boxShadow(t.shadow)}
     .o-card-animate-enter-active, .o-card-animate-exit-active {
-      ${overflowY('hidden')}
+      ${overflow('hidden')}
       ${transitionDuration(`${animate}ms`)}
       ${transitionProperty('height,opacity')}
       ${transitionTimingFunction('linear')}

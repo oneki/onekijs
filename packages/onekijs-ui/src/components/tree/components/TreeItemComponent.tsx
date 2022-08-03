@@ -1,8 +1,9 @@
-import { AnonymousObject } from 'onekijs-framework';
+import { AnonymousObject, isItemLoading } from 'onekijs-framework';
 import React, { CSSProperties, FC, useRef } from 'react';
 import { addClassname } from '../../../utils/style';
 import FileIcon from '../../icon/FileIcon';
 import FolderIcon from '../../icon/FolderIcon';
+import LoadingIcon from '../../icon/LoadingIcon';
 import TogglerIcon from '../../icon/TogglerIcon';
 import { useTreeConfig } from '../hooks/useTreeConfig';
 import { TreeItemProps, TreeItemToggleProps } from '../typings';
@@ -13,6 +14,10 @@ export const TreeItemToggler: React.FC<TreeItemToggleProps> = ({ item, onExpand,
   const isFolder = item.type !== 'leaf' && (item.children === undefined || item.children.length > 0);
 
   const handler = item.expanded && !item.collapsing ? onCollapse : onExpand;
+
+  if (isItemLoading(item)) {
+    return <LoadingIcon />;
+  }
 
   return (
     <TogglerIcon
