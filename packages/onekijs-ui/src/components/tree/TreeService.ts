@@ -357,31 +357,36 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
       level: item.level + 1,
     };
 
+    let dbClone: I[] = [];
+
     if (this.db && itemPosition !== undefined) {
       // we need to make some place for the new items in the index
-      for (let i = this.db.length - 1; i > parseInt(itemPosition); i--) {
-        const toMove = this.db[i];
-        this.db[i + children.length] = toMove;
-        this.positionIndex[toMove.uid] = `${i + children.length}`;
-      }
+      dbClone = this.db.slice(parseInt(itemPosition) + 1);
       context.position = parseInt(itemPosition);
       context.nextPosition = context.position + 1;
     }
 
-    this.setMeta(
-      'item',
-      item,
-      'children',
-      children.map((child) => {
-        context.level = item.level + 1;
-        context.position = context.nextPosition;
-        context.nextPosition = context.position + 1;
-        const adaptedChild = this._adapt(child, context);
-        adaptedChild.parent = item.uid;
-        return adaptedChild.uid;
-      }),
-    );
+    const childrenItems = children.map((child) => {
+      context.level = item.level + 1;
+      context.position = context.nextPosition;
+      context.nextPosition = context.position + 1;
+      const adaptedChild = this._adapt(child, context);
+      adaptedChild.parent = item.uid;
+      return adaptedChild.uid;
+    });
 
+    let nextPosition = context.nextPosition;
+
+    dbClone.forEach((toMove: I) => {
+      if (this.db !== undefined) {
+        this.db[nextPosition] = toMove;
+        console.log('move', toMove.uid, 'to', `${nextPosition}`);
+        this.positionIndex[toMove.uid] = `${nextPosition}`;
+        nextPosition++;
+      }
+    });
+
+    this.setMeta('item', item, 'children', childrenItems);
     this.setMeta('item', item, 'loadingStatus', LoadingStatus.Loaded);
   }
 }

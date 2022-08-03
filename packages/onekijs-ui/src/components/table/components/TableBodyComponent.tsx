@@ -10,7 +10,7 @@ import useTableService from '../hooks/useTableService';
 import { useTableState } from '../hooks/useTableState';
 import { TableBodyProps } from '../typings';
 import TableBodyRowComponent from './TableBodyRowComponent';
-import TableLoadingComponent from './TableLoadingComponent copy';
+import TableLoadingComponent from './TableLoadingComponent';
 
 const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, contentRef }) => {
   const service = useTableService();

@@ -12,4 +12,7 @@ const TableLoadingComponent: React.FC<React.InputHTMLAttributes<HTMLDivElement>>
 
 export default styled(TableLoadingComponent)`
   height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
