@@ -218,6 +218,7 @@ export type Item<T = any> = {
   highlighted?: boolean;
   active?: boolean;
   disabled?: boolean;
+  visible?: boolean;
 };
 
 export type ItemAdaptee = {
@@ -227,6 +228,7 @@ export type ItemAdaptee = {
   highlighted?: boolean;
   active?: boolean;
   disabled?: boolean;
+  visible?: boolean;
 };
 
 export type ItemAdapter<T = any> = (data: T) => ItemAdaptee;

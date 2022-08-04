@@ -2,10 +2,20 @@ import { AnonymousObject } from 'onekijs-framework';
 import React, { useEffect, useRef } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import useTreeService from '../hooks/useTreeService';
-import { TreeItem, TreeItemHandler, TreeItemProps, TreeListProps } from '../typings';
+import { TreeController, TreeItem, TreeItemHandler, TreeItemProps, TreeListProps, TreeState } from '../typings';
 import TreeItemComponent from './TreeItemComponent';
 
-const timeout = 200;
+const getChildrenSize = (
+  item: TreeItem<any> | undefined,
+  service: TreeController<any, TreeItem<any>, TreeState<any, TreeItem<any>>>,
+): number => {
+  if (item === undefined || item.children === undefined) return 0;
+  return item.children.reduce((accumulator, childUid) => {
+    const child = service.getItem(childUid);
+    const expanded = !!(child && child.expanded && !child.collapsing);
+    return accumulator + 1 + (expanded ? getChildrenSize(child, service) : 0);
+  }, 0);
+};
 
 type TreeListItemProps<T = any, I extends TreeItem<T> = TreeItem<T>> = {
   item: I;
@@ -42,6 +52,8 @@ const TreeListItemComponent: React.FC<TreeListItemProps> = ({
     service.collapsing(item, index);
   };
 
+  const timeout = Math.min(500, 100 + getChildrenSize(item, service) * 7);
+
   useEffect(() => {
     if (childrenRef.current && childrenAnimateRef.current && item.expanding) {
       const currentHeight = childrenRef.current.getBoundingClientRect().height;
@@ -62,6 +74,8 @@ const TreeListItemComponent: React.FC<TreeListItemProps> = ({
 
   const onExiting = (node: HTMLElement) => {
     node.style.height = `${node.getBoundingClientRect().height}px`;
+    node.style.transitionDuration = `${timeout}ms`;
+    node.style.transitionTimingFunction = 'ease-out';
     setTimeout(() => {
       node.style.height = '0px';
     }, 0);
@@ -74,6 +88,12 @@ const TreeListItemComponent: React.FC<TreeListItemProps> = ({
   };
 
   const expanded = !!(item && item.expanded && !item.collapsing);
+
+  const onEntering = (node: HTMLElement) => {
+    node.style.transitionDuration = `${timeout}ms`;
+    node.style.transitionTimingFunction = 'ease-in';
+  };
+
   const children = item?.children || [];
 
   return (
@@ -95,9 +115,10 @@ const TreeListItemComponent: React.FC<TreeListItemProps> = ({
         in={expanded}
         classNames="o-tree-item-animate"
         timeout={timeout}
-        mountOnEnter={false}
+        mountOnEnter={true}
         appear={false}
         unmountOnExit={true}
+        onEntering={onEntering}
         onExiting={onExiting}
         onExited={onExited}
       >

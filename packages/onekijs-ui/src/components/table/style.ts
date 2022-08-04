@@ -53,6 +53,10 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme }) => {
       ${transitionDuration('150ms')}
       ${transitionProperty('height,opacity')}
       ${transitionTimingFunction('ease-out')}
+      ${borderBottomColor(t.tdBorderBottomColor)}
+      ${borderBottomWidth(0)}
+      ${borderBottomStyle(t.tdBorderBottomStyle)}
+      ${boxShadow('default')}
     }
 
     .o-table-body-row:hover {

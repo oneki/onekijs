@@ -380,7 +380,6 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     dbClone.forEach((toMove: I) => {
       if (this.db !== undefined) {
         this.db[nextPosition] = toMove;
-        console.log('move', toMove.uid, 'to', `${nextPosition}`);
         this.positionIndex[toMove.uid] = `${nextPosition}`;
         nextPosition++;
       }

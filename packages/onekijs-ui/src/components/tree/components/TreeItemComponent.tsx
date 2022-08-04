@@ -59,6 +59,9 @@ const TreeItemComponent: FC<TreeItemProps> = React.memo((props) => {
   if (item?.active) {
     itemClassName = addClassname('o-tree-item-active', itemClassName);
   }
+  if (item?.visible === false) {
+    itemClassName = addClassname('o-tree-item-hide', itemClassName);
+  }
 
   if (item === undefined) {
     return <div className={itemClassName}></div>;

@@ -197,7 +197,7 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
       tdStripBgColor: 'lightest',
       tdHoverBgColor: 'primary',
       tdHoverFontColor: 'white',
-      tdExpandedBgColor: 'lightest',
+      tdExpandedBgColor: 'white',
       loadingRowBgColor: 'lightest',
       loadingRowMinHeight: '40px',
     },

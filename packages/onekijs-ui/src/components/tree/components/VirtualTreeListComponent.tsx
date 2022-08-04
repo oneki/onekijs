@@ -94,6 +94,8 @@ const VirtualTreeListItemComponent: React.FC<VirtualTreeListItemProps> = ({
     if (!deferRenderRef.current && childrenRef.current && childrenAnimateRef.current && item?.expanding) {
       const currentHeight = childrenRef.current.getBoundingClientRect().height;
       childrenAnimateRef.current.style.height = '0px';
+      childrenAnimateRef.current.style.transitionDuration = `${timeout}ms`;
+      childrenAnimateRef.current.style.transitionTimingFunction = expanded ? 'ease-out' : 'ease-in';
       setTimeout(() => {
         if (childrenAnimateRef.current) childrenAnimateRef.current.style.height = `${currentHeight}px`;
       }, 0);

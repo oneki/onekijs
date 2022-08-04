@@ -2,19 +2,22 @@ import { css } from 'styled-components';
 import { alignItems } from '../../styles/alignment';
 import { display } from '../../styles/display';
 import { cursor } from '../../styles/interactivity';
+import { overflow } from '../../styles/overflow';
 import { height, width } from '../../styles/size';
 import { marginLeft } from '../../styles/spacing';
+import { transitionProperty } from '../../styles/transition';
 import { ComponentStyle } from '../../styles/typings';
 import { color } from '../../styles/typography';
 import { TreeProps } from './typings';
-import { overflow } from '../../styles/overflow';
-import { transitionDuration, transitionProperty, transitionTimingFunction } from '../../styles/transition';
 
 export const treeStyle: ComponentStyle<TreeProps<any>> = () => {
   return css`
     .o-tree-item {
       ${display('flex')}
       ${alignItems('center')}
+      &.o-tree-item-hide {
+        ${display('none')}
+      }
       .o-toggler-icon-container {
         ${width(4, { hover: 4 })}
         ${height(4, { hover: 4 })}
@@ -41,15 +44,13 @@ export const treeStyle: ComponentStyle<TreeProps<any>> = () => {
         ${marginLeft('sm')}
       }
     }
-    .o-tree-item-animate-expanding, .o-tree-item-animate-collapsing {
+    .o-tree-item-animate-expanding,
+    .o-tree-item-animate-collapsing {
       ${overflow('hidden')}
-      ${transitionDuration('200ms')}
       ${transitionProperty('height,opacity')}
-      ${transitionTimingFunction('linear')}
     }
     .o-tree-item-animate-expanding {
       ${height(0)}
     }
-
   `;
 };

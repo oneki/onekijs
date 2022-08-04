@@ -1,4 +1,4 @@
-import { isItemLoading } from 'onekijs-framework';
+import { isItemFetching } from 'onekijs-framework';
 import React, { FC, useRef, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { addClassname } from '../../../utils/style';
@@ -23,7 +23,12 @@ const TableBodyRowComponent: FC<TableBodyRowProps> = ({
   onCollapsed,
 }) => {
   const [hover, setHover] = useState(false);
-  const { highlightRow, stripRows, LoadingRowComponent = TableLoadingRowComponent } = useTableConfig();
+  const {
+    highlightRow,
+    stripRows,
+    LoadingRowComponent = TableLoadingRowComponent,
+    ExpandedComponent,
+  } = useTableConfig();
 
   const expandedHeightRef = useRef<number>(0);
 
@@ -63,7 +68,7 @@ const TableBodyRowComponent: FC<TableBodyRowProps> = ({
 
   const rowContainerClassName = `o-table-body-row-container${item.expanded ? ' o-table-body-row-expanded' : ''}`;
 
-  if (isItemLoading(item)) {
+  if (isItemFetching(item)) {
     return (
       <div className={rowContainerClassName}>
         <div className="o-table-body-row">
@@ -112,7 +117,7 @@ const TableBodyRowComponent: FC<TableBodyRowProps> = ({
         onExited={() => onCollapsed && onCollapsed(item, index)}
       >
         <div className="o-table-body-row-expanded-content">
-          <div style={{ height: '200px', padding: '10px' }}>expanded</div>
+          {ExpandedComponent && <ExpandedComponent item={item} rowIndex={index} rowId={item.id} />}
         </div>
       </CSSTransition>
     </div>
