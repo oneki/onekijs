@@ -1,5 +1,5 @@
 import { AnonymousObject, isItemLoading } from 'onekijs-framework';
-import React, { CSSProperties, FC, useRef } from 'react';
+import React, { CSSProperties, FC, ReactNode, useRef } from 'react';
 import { addClassname } from '../../../utils/style';
 import FileIcon from '../../icon/FileIcon';
 import FolderIcon from '../../icon/FolderIcon';
@@ -28,14 +28,24 @@ export const TreeItemToggler: React.FC<TreeItemToggleProps> = ({ item, onExpand,
   );
 };
 
-export const TreeItemContent: React.FC<TreeItemProps> = ({ item }) => {
+export const TreeItemContent: React.FC<TreeItemProps> = (props) => {
+  const { item } = props;
+  const { IconComponent } = useTreeConfig();
+
   if (item === undefined) return null;
 
   const isFolder = item.type !== 'leaf' && (item.children === undefined || item.children.length > 0);
+  let iconElement: ReactNode = null;
+  if (IconComponent) {
+    iconElement = <IconComponent {...props} />;
+  } else {
+    iconElement = item.icon;
+  }
 
   return (
     <>
       {isFolder ? <FolderIcon /> : <FileIcon />}
+      {iconElement && <span className="o-tree-item-icon">{iconElement}</span>}
       <span className="o-tree-item-text">{item.text || ''}</span>
     </>
   );

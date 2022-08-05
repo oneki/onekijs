@@ -5,6 +5,7 @@ import { AccordionPage } from './pages/accordion';
 import { AjaxListPage } from './pages/ajaxList';
 import { ButtonPage } from './pages/button';
 import { CardPage } from './pages/card';
+import { CheckboxPage } from './pages/checkbox';
 import { DashboardPage } from './pages/dashboard';
 import { GridPage } from './pages/grid';
 import { InputPage } from './pages/input';
@@ -39,7 +40,7 @@ root.render(
           <Link href="/list">List</Link> | <Link href="/ajaxList">Ajax List</Link> | <Link href="/table">Table</Link> |{' '}
           <Link href="/input">Input</Link> | <Link href="/dashboard">Dashboard</Link> | <Link href="/tree">Tree</Link> |{' '}
           <Link href="/accordion">Accordion</Link> | <Link href="/tab">Tab</Link> | <Link href="/card">Card</Link> |{' '}
-          <Link href="/grid">Grid</Link> | <Link href="/properties">Properties</Link>
+          <Link href="/grid">Grid</Link> | <Link href="/properties">Properties</Link> | <Link href="/checkbox">Checkbox</Link>
         </div>
         <div style={{ paddingLeft: '100px', paddingRight: '100px' }}>
           <Routes>
@@ -56,6 +57,7 @@ root.render(
             <Route path="/card" element={<CardPage />} />
             <Route path="/grid" element={<GridPage />} />
             <Route path="/properties" element={<PropertiesPage />} />
+            <Route path="/checkbox" element={<CheckboxPage />} />
           </Routes>
         </div>
       </div>

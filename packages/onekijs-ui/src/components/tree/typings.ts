@@ -6,7 +6,7 @@ import {
   ItemAdaptee,
   UseCollectionOptions,
 } from 'onekijs-framework';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { ListItemHandler, ListItemProps, StandardListProps, VirtualListProps } from '../list/typings';
 
 export type ArrayTreeProps<T = any, I extends TreeItem<T> = TreeItem<T>> = TreeConfig<T, I> & {
@@ -30,6 +30,7 @@ export type TreeConfig<T = any, I extends TreeItem<T> = TreeItem<T>> = {
   height?: number;
   itemClassName?: string | ((item: I) => string);
   ItemComponent?: React.FC<TreeItemProps<T, I>>;
+  IconComponent?: React.FC<TreeItemProps<T, I>>;
   TogglerComponent?: React.FC<TreeItemToggleProps>;
   onActivate?: TreeItemHandler<T, I>;
   onSelect?: TreeItemHandler<T, I>;
@@ -58,7 +59,7 @@ export type TreeItem<T = any> = Item<T> & {
   collapsing?: boolean;
   expanded?: boolean;
   expanding?: boolean;
-  icon?: string;
+  icon?: ReactNode;
   level: number;
   parent?: string;
   selectable?: boolean;
@@ -67,7 +68,7 @@ export type TreeItem<T = any> = Item<T> & {
 
 export type TreeItemAdaptee<T> = ItemAdaptee & {
   children?: T[];
-  icon?: string;
+  icon?: ReactNode;
   selectable?: boolean;
   selected?: boolean;
   type?: 'folder' | 'leaf';

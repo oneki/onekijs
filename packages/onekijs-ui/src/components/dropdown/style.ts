@@ -1,7 +1,6 @@
 import { css } from 'styled-components';
 import { opacity } from '../../styles/effects';
 import { zIndex as cssZIndex } from '../../styles/position';
-import { width } from '../../styles/size';
 import { transitionDuration, transitionProperty, transitionTimingFunction } from '../../styles/transition';
 import { ComponentStyle } from '../../styles/typings';
 import { preflight } from '../../utils/style';
@@ -10,7 +9,6 @@ import { DropdownProps } from './typings';
 const dropdownStyle: ComponentStyle<DropdownProps> = ({ animationTimeout, zIndex }) => {
   return css`
     ${preflight()}
-    ${width(64)}
     &.o-dropdown-open {
       ${transitionDuration(`${animationTimeout}ms`)}
       ${transitionProperty('transform')}

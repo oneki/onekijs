@@ -3,7 +3,7 @@ import { FCC, useIsomorphicLayoutEffect } from 'onekijs-framework';
 import React, { useCallback, useRef, useState } from 'react';
 import { usePopper } from 'react-popper';
 import { CSSTransition } from 'react-transition-group';
-import { sameWidthPopperModifier } from '../../../utils/popper';
+import { maxWidthPopperModifier, minWidthPopperModifier, sameWidthPopperModifier } from '../../../utils/popper';
 import { addClassname } from '../../../utils/style';
 import { DropdownComponentProps } from '../typings';
 
@@ -23,13 +23,20 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
   onDropping,
   onCollapsing,
   placement = 'auto',
+  widthModifier = 'same',
   zIndex = 1000,
 }) => {
   const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
+  const popperWidthModifier =
+    widthModifier === 'same'
+      ? sameWidthPopperModifier
+      : widthModifier === 'min'
+      ? minWidthPopperModifier
+      : maxWidthPopperModifier;
   const { forceUpdate, styles, attributes } = usePopper(refElement, popperElement, {
     placement,
     modifiers: [
-      sameWidthPopperModifier,
+      popperWidthModifier,
       {
         name: 'offset',
         options: {

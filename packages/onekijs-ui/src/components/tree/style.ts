@@ -40,7 +40,8 @@ export const treeStyle: ComponentStyle<TreeProps<any>> = () => {
       .o-icon-folder {
         ${color('primary')}
       }
-      .o-tree-item-text {
+      .o-tree-item-text,
+      .o-tree-item-icon {
         ${marginLeft('sm')}
       }
     }

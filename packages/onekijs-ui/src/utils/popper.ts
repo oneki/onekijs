@@ -7,7 +7,7 @@ const refWidth = (type: string): Partial<Modifier<string, Record<string, unknown
     phase: 'beforeWrite',
     requires: ['computeStyles'],
     fn: ({ state }) => {
-      state.styles.popper.width = `${state.rects.reference.width}px`;
+      (state.styles.popper as any)[type] = `${state.rects.reference.width}px`;
     },
     effect: ({ state }) => {
       (state.elements.popper.style as any)[type] = `${state.elements.reference.getBoundingClientRect().width}px`;

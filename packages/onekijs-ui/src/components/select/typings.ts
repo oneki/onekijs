@@ -7,6 +7,7 @@ import {
   ValidationStatus,
 } from 'onekijs-framework';
 import React, { FC } from 'react';
+import { DropdownWidthModifier } from '../dropdown/typings';
 import { FieldLayoutProps, FieldSize } from '../field/typings';
 import {
   ListConfig,
@@ -108,7 +109,7 @@ export type SelectProps<
   fetchOnce?: boolean;
 };
 
-export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = ListConfig<T, I> & {
+export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omit<ListConfig<T, I>, 'ItemComponent'> & {
   InputComponent?: FC<SelectInputProps<T, I>>;
   IconComponent?: FC<SelectIconProps>;
   NotFoundComponent?: FC<SelectNotFoundProps>;
@@ -127,6 +128,10 @@ export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Lis
   minChars?: number;
   openOnFocus?: boolean;
   clickable?: boolean;
+  dropdownWidthModifier?: DropdownWidthModifier;
+  ItemComponent?: FC<SelectOptionProps>;
+  OptionComponent?: FC<SelectOptionProps>;
+  MultiOptionsComponent?: FC<SelectOptionProps>;
 };
 
 export type SelectState<T = any, I extends SelectItem<T> = SelectItem<T>> = ListState<T, I>;

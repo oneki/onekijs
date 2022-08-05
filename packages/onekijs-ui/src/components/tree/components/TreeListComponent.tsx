@@ -52,7 +52,7 @@ const TreeListItemComponent: React.FC<TreeListItemProps> = ({
     service.collapsing(item, index);
   };
 
-  const timeout = Math.min(500, 100 + getChildrenSize(item, service) * 7);
+  const timeout = Math.min(500, 100 + getChildrenSize(item, service) * 4);
 
   useEffect(() => {
     if (childrenRef.current && childrenAnimateRef.current && item.expanding) {

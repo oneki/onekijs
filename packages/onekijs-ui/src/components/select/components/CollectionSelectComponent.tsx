@@ -17,10 +17,11 @@ import { addClassname } from '../../../utils/style';
 import useDropdown from '../../dropdown/hooks/useDropdown';
 import ListBodyComponent from '../../list/components/ListBodyComponent';
 import useListView from '../../list/hooks/useListView';
-import { CollectionSelectProps, SelectItem, SelectOptionHandler } from '../typings';
+import { SelectConfigContext } from '../hooks/useSelectConfig';
+import { CollectionSelectProps, SelectConfig, SelectItem, SelectOptionHandler } from '../typings';
 import SelectInputComponent from './SelectInputComponent';
 import SelectNotFoundComponent from './SelectNotFoundComponent';
-import SelectOptionComponent, { MultiSelectOptionComponent } from './SelectOptionComponent';
+import SelectOptionComponent, { MultiSelectOptionComponent, SelectOptionContent } from './SelectOptionComponent';
 
 const findItem = (controller: Collection<any, SelectItem<any>>, pattern: string): SelectItem<any> | undefined => {
   let result = undefined;
@@ -62,7 +63,9 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
   controller,
   InputComponent = SelectInputComponent,
   IconComponent,
-  ItemComponent,
+  ItemComponent = SelectOptionContent,
+  OptionComponent = SelectOptionComponent,
+  MultiOptionsComponent = MultiSelectOptionComponent,
   NotFoundComponent = SelectNotFoundComponent,
   autoFocus,
   value,
@@ -77,6 +80,7 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
   minChars = 0,
   openOnFocus = false,
   clickable = true,
+  dropdownWidthModifier = 'min',
 }) => {
   const [open, setOpen] = useState(false);
   const [focus, setFocus] = useState(false);
@@ -89,6 +93,12 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
   const containerRef = useRef(null);
 
   const previousSearchRef = useRef<Primitive>();
+
+  const config: SelectConfig = useMemo(() => {
+    return {
+      ItemComponent,
+    };
+  }, [ItemComponent]);
 
   const tokens = useMemo<SelectItem<any>[]>(() => {
     return (controller.state.selected || [])
@@ -343,61 +353,64 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
   useEventListener('keydown', onKeyDown, false);
 
   return (
-    <div
-      className={classNames}
-      ref={containerRef}
-      onMouseDown={() => (stateRef.current.keepFocus = true)}
-      onMouseUp={() => (stateRef.current.keepFocus = false)}
-    >
-      <InputComponent
-        placeholder={placeholder}
-        setOpen={setOpen}
-        open={open}
-        loading={loading}
-        fetching={fetching}
-        onChange={onInputChange}
-        value={proxyItem ? proxyItem.text : ''}
-        focus={focus}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        tokens={tokens}
-        multiple={multiple}
-        onRemove={onRemoveToken}
-        autoFocus={autoFocus}
-        style={style}
-        nullable={nullable}
-        IconComponent={IconComponent}
-        clickable={clickable}
-        minChars={minChars}
-        ref={triggerRef}
-      />
-      <Dropdown
-        open={open}
-        distance={0}
-        animationTimeout={200}
-        onDropStart={onOpen}
-        onCollapseDone={onClosed}
-        placement="bottom"
+    <SelectConfigContext.Provider value={config}>
+      <div
+        className={classNames}
+        ref={containerRef}
+        onMouseDown={() => (stateRef.current.keepFocus = true)}
+        onMouseUp={() => (stateRef.current.keepFocus = false)}
       >
-        <ListBodyComponent
-          className="o-select-options"
-          bodyRef={optionsRef}
-          height={height}
-          ItemComponent={ItemComponent ? ItemComponent : multiple ? MultiSelectOptionComponent : SelectOptionComponent}
-          NotFoundComponent={NotFoundComponent}
-          items={selectItems}
-          onItemSelect={onSelect}
-          totalSize={totalSize}
-          virtualItems={isVirtual ? virtualItems : undefined}
-          scrollToIndex={scrollToIndex}
-          service={controller.asService()}
-          state={controller.state}
-          keyboardNavigable={true}
-          multiSelect={multiple}
-          onItemActivate={onActivate}
+        <InputComponent
+          placeholder={placeholder}
+          setOpen={setOpen}
+          open={open}
+          loading={loading}
+          fetching={fetching}
+          onChange={onInputChange}
+          value={proxyItem ? proxyItem.text : ''}
+          focus={focus}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          tokens={tokens}
+          multiple={multiple}
+          onRemove={onRemoveToken}
+          autoFocus={autoFocus}
+          style={style}
+          nullable={nullable}
+          IconComponent={IconComponent}
+          clickable={clickable}
+          minChars={minChars}
+          ref={triggerRef}
         />
-      </Dropdown>
-    </div>
+        <Dropdown
+          open={open}
+          distance={0}
+          animationTimeout={200}
+          onDropStart={onOpen}
+          onCollapseDone={onClosed}
+          placement="bottom"
+          widthModifier={dropdownWidthModifier}
+        >
+          <ListBodyComponent
+            className="o-select-options"
+            bodyRef={optionsRef}
+            height={height}
+            ItemComponent={multiple ? MultiOptionsComponent : OptionComponent}
+            NotFoundComponent={NotFoundComponent}
+            items={selectItems}
+            onItemSelect={onSelect}
+            totalSize={totalSize}
+            virtualItems={isVirtual ? virtualItems : undefined}
+            scrollToIndex={scrollToIndex}
+            service={controller.asService()}
+            state={controller.state}
+            keyboardNavigable={true}
+            multiSelect={multiple}
+            onItemActivate={onActivate}
+          />
+        </Dropdown>
+      </div>
+    </SelectConfigContext.Provider>
   );
 };
 
