@@ -18,7 +18,7 @@ import useDropdown from '../../dropdown/hooks/useDropdown';
 import ListBodyComponent from '../../list/components/ListBodyComponent';
 import useListView from '../../list/hooks/useListView';
 import { SelectConfigContext } from '../hooks/useSelectConfig';
-import { CollectionSelectProps, SelectConfig, SelectItem, SelectOptionHandler } from '../typings';
+import { ControllerSelectProps, SelectConfig, SelectItem, SelectOptionHandler } from '../typings';
 import SelectInputComponent from './SelectInputComponent';
 import SelectNotFoundComponent from './SelectNotFoundComponent';
 import SelectOptionComponent, { MultiSelectOptionComponent, SelectOptionContent } from './SelectOptionComponent';
@@ -57,7 +57,7 @@ const findItemIndex = (controller: Collection<any, SelectItem<any>>, item?: Item
   });
 };
 
-const CollectionSelectComponent: FC<CollectionSelectProps> = ({
+const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   className = '',
   placeholder,
   controller,
@@ -81,6 +81,9 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
   openOnFocus = false,
   clickable = true,
   dropdownWidthModifier = 'min',
+  preload = 100,
+  increment = 100,
+  animationMs = 200,
 }) => {
   const [open, setOpen] = useState(false);
   const [focus, setFocus] = useState(false);
@@ -129,7 +132,7 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
   const onBlur = useCallback(() => {
     if (!stateRef.current.keepFocus) {
       if (service.getSearch()) {
-        service.clearSearch();
+        clearSearch();
       }
       if (open) {
         setOpen(false);
@@ -208,6 +211,10 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
     [service],
   );
 
+  const clearSearch = useCallback(() => {
+    setTimeout(service.clearSearch, animationMs);
+  }, [service, animationMs]);
+
   const onSelect = useCallback(
     (item: Item | null, index = 0) => {
       if (!multiple) {
@@ -216,7 +223,7 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
       }
 
       if (service.getSearch()) {
-        service.clearSearch();
+        clearSearch();
       }
 
       if (multiple && item && !item.selected) {
@@ -302,7 +309,7 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
               setOpen(false);
             }
             if (service.getSearch()) {
-              service.clearSearch();
+              clearSearch();
             }
           }
           stateRef.current.keepFocus = false;
@@ -326,6 +333,8 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
     controller,
     height: height,
     ref: optionsRef,
+    preload,
+    increment,
   });
 
   const onOpen = useCallback(() => {
@@ -385,7 +394,7 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
         <Dropdown
           open={open}
           distance={0}
-          animationTimeout={200}
+          animationTimeout={animationMs}
           onDropStart={onOpen}
           onCollapseDone={onClosed}
           placement="bottom"
@@ -414,4 +423,4 @@ const CollectionSelectComponent: FC<CollectionSelectProps> = ({
   );
 };
 
-export default CollectionSelectComponent;
+export default ControllerSelectComponent;

@@ -76,6 +76,11 @@ export { default as InputComponent } from './components/input/components/InputCo
 export { InputProps } from './components/input/typings';
 export { default as Label } from './components/label';
 export { default as List } from './components/list';
+export { default as Tag } from './components/tag';
+export { default as TagComponent } from './components/tag/components/TagComponent';
+export { tagStyle } from './components/tag/style';
+export { TagProps } from './components/tag/typings';
+export { default as LoadingItem } from './components/list/components/LoadingItem';
 export {
   default as ListItemComponent,
   listItemContainer,
@@ -108,7 +113,7 @@ export { propertiesStyle } from './components/properties/style';
 export { PropertiesProps, PropertyProps } from './components/properties/typings';
 export { default as Select } from './components/select';
 export { default as ArraySelectComponent } from './components/select/components/ArraySelectComponent';
-export { default as CollectionSelectComponent } from './components/select/components/CollectionSelectComponent';
+export { default as ControllerSelectComponent } from './components/select/components/ControllerSelectComponent';
 export { default as SelectComponent } from './components/select/components/SelectComponent';
 export { default as SelectIconComponent } from './components/select/components/SelectIconComponent';
 export { default as SelectInputComponent } from './components/select/components/SelectInputComponent';

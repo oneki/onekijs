@@ -26,11 +26,11 @@ export type ArraySelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> =
   fetchOnce?: boolean;
 };
 
-export type CollectionSelectProps<
+export type ControllerSelectProps<
   T = any,
   I extends SelectItem<T> = SelectItem<T>,
   S extends SelectState<T, I> = SelectState<T, I>,
-  C extends SelectCollection<T, I, S> = SelectCollection<T, I, S>
+  C extends SelectController<T, I, S> = SelectController<T, I, S>
 > = SelectConfig<T, I> & {
   controller: CollectionProxy<T, I, S, C>;
 };
@@ -42,7 +42,7 @@ export type FormSelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = 
     FieldComponent?: React.FC<SelectProps>;
   };
 
-export type SelectCollection<
+export type SelectController<
   T,
   I extends SelectItem<T> = SelectItem<T>,
   S extends SelectState<T, I> = SelectState<T, I>
@@ -101,7 +101,7 @@ export type SelectProps<
   T = any,
   I extends SelectItem<T> = SelectItem<T>,
   S extends SelectState<T, I> = SelectState<T, I>,
-  C extends SelectCollection<T, I, S> = SelectCollection<T, I, S>
+  C extends SelectController<T, I, S> = SelectController<T, I, S>
 > = SelectConfig<T, I> & {
   adapter?: SelectItemAdapter<T>;
   controller?: CollectionProxy<T, I, S, C>;
@@ -132,6 +132,7 @@ export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omi
   ItemComponent?: FC<SelectOptionProps>;
   OptionComponent?: FC<SelectOptionProps>;
   MultiOptionsComponent?: FC<SelectOptionProps>;
+  animationMs?: number;
 };
 
 export type SelectState<T = any, I extends SelectItem<T> = SelectItem<T>> = ListState<T, I>;

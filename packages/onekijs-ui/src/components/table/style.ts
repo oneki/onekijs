@@ -50,9 +50,6 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme }) => {
     .o-table-body-row-expanded-content {
       ${backgroundColor(t.tdExpandedBgColor)}
       ${overflowY('hidden')}
-      ${transitionDuration('150ms')}
-      ${transitionProperty('height,opacity')}
-      ${transitionTimingFunction('ease-out')}
       ${borderBottomColor(t.tdBorderBottomColor)}
       ${borderBottomWidth(0)}
       ${borderBottomStyle(t.tdBorderBottomStyle)}

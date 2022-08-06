@@ -1,5 +1,6 @@
-import { CollectionProxy, CollectionService, useCollectionInitialState, useCollectionProxy } from 'onekijs-framework';
+import { CollectionProxy, useCollectionInitialState, useCollectionProxy } from 'onekijs-framework';
 import { UseListOptions } from '../../list/typings';
+import SelectService from '../SelectService';
 import { SelectItem, SelectState } from '../typings';
 
 const useSelectController = <T = any>(
@@ -9,10 +10,10 @@ const useSelectController = <T = any>(
   T,
   SelectItem<T>,
   SelectState<T, SelectItem<T>>,
-  CollectionService<T, SelectItem<T>, SelectState<T, SelectItem<T>>>
+  SelectService<T, SelectItem<T>, SelectState<T, SelectItem<T>>>
 > => {
   const initialState = useCollectionInitialState(dataSource, options);
-  const collection = useCollectionProxy(dataSource, CollectionService, initialState);
+  const collection = useCollectionProxy(dataSource, SelectService, initialState);
 
   return collection;
 };

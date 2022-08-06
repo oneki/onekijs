@@ -561,9 +561,6 @@ export default class CollectionService<
       item = Object.assign({}, item, { [key]: value });
       this._indexItem(item);
       if (this.state.items) {
-        if (item.id === '125|||project_providers.0.controller') {
-          console.log(this.state.items.find((stateItem) => stateItem && item.uid === stateItem.uid));
-        }
         const stateItem = this.state.items.find((stateItem) => stateItem && item.uid === stateItem.uid);
         if (stateItem) {
           stateItem[key] = value;
@@ -895,7 +892,7 @@ export default class CollectionService<
     return result;
   }
 
-  @saga(SagaEffect.Every)
+  @saga(SagaEffect.Throttle, 'state.throttle', 1)
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   protected *_fetch(query: Query, resetData: boolean) {
     let loadingTask: Task | null = null;
@@ -1297,7 +1294,9 @@ export default class CollectionService<
           item = this.adapt(undefined);
         }
         item.loadingStatus = status;
-        return Object.assign({}, item);
+        const result = Object.assign({}, item);
+        this._indexItem(result);
+        return result;
       };
 
       if (resetLimit) {

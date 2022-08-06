@@ -316,6 +316,7 @@ export const shouldResetData = (query: Query, nextQuery: Query): boolean => {
 };
 
 const handleQueryEntry = (key: string, value: string, result: Query): void => {
+  value = decodeURIComponent(value);
   switch (key.toLowerCase()) {
     case 'filter':
       result.filter = parseQueryFilter(value);

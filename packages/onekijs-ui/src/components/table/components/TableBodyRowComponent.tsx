@@ -7,7 +7,7 @@ import { TableBodyRowProps } from '../typings';
 import TableBodyCellComponent from './TableBodyCellComponent';
 import TableLoadingRowComponent from './TableLoadingRowComponent';
 
-const timeout = 200;
+const timeout = 500;
 
 const TableBodyRowComponent: FC<TableBodyRowProps> = ({
   item,
@@ -33,26 +33,23 @@ const TableBodyRowComponent: FC<TableBodyRowProps> = ({
   const expandedHeightRef = useRef<number>(0);
 
   const onExiting = (node: HTMLElement) => {
-    const height = node.getBoundingClientRect().height;
-    node.style.height = `${height}px`;
-    node.style.height = '0';
     node.style.opacity = '0';
-    for (let i = 0; i <= timeout; i += 20) {
-      setTimeout(() => onCollapsing && onCollapsing(item, index), i);
-    }
+    onCollapsing && onCollapsing(item, index);
   };
 
   const onEntering = (node: HTMLElement) => {
     expandedHeightRef.current = node.getBoundingClientRect().height;
-    node.style.height = '0px';
+    // node.style.height = '0px';
     node.style.opacity = '0';
+    onExpanding && onExpanding(item, index);
     setTimeout(() => {
-      node.style.height = `${expandedHeightRef.current}px`;
+      // node.style.height = `${expandedHeightRef.current}px`;
       node.style.opacity = '1';
+      node.style.transition = `opacity ${timeout}ms ease-out`;
     }, 0);
-    for (let i = 0; i <= timeout; i += 20) {
-      setTimeout(() => onExpanding && onExpanding(item, index), i);
-    }
+    // for (let i = 0; i <= timeout; i += 20) {
+    //   setTimeout(() => onExpanding && onExpanding(item, index), i);
+    // }
   };
 
   if (item === undefined) {
@@ -108,6 +105,7 @@ const TableBodyRowComponent: FC<TableBodyRowProps> = ({
         timeout={timeout}
         mountOnEnter={true}
         appear={false}
+        exit={false}
         unmountOnExit={true}
         onEnter={() => onExpand && onExpand(item, index)}
         onEntering={onEntering}

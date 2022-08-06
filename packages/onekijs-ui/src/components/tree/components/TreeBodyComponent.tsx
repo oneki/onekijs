@@ -8,7 +8,6 @@ import TreeListComponent from './TreeListComponent';
 const TreeBodyComponent: React.FC<ControllerTreeProps> = ({ className, controller }) => {
   const service = useTreeService();
   const ref = useRef<HTMLDivElement>(null);
-  console.log('render tree body');
   return (
     <ListBodyComponent
       className={addClassname('o-tree-body', className)}
