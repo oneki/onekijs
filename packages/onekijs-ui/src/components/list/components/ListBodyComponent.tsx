@@ -48,6 +48,7 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
 }) => {
   const scrollAlignRef = useRef<'center' | 'auto'>('center');
   const lastActiveItemUid = useRef<string>();
+  const virtualRef = useRef<HTMLDivElement>(null!);
 
   const onItemClick = useCallback(
     (item: any, index: number) => {
@@ -189,6 +190,7 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
         )}
       >
         <div
+          ref={virtualRef}
           className="o-virtualizer"
           style={{
             height: `${totalSize}px`,

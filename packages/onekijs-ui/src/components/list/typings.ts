@@ -165,3 +165,12 @@ export type VirtualItem = {
 export type VirtualListProps<T = any, I extends ListItem<T> = ListItem<T>> = StandardListProps<T, I> & {
   virtualItems: VirtualItem[];
 };
+
+export type VirtualItemWrapperProps<T = any, I extends ListItem<T> = ListItem<T>> = {
+  ItemComponent?: FC<ListItemProps<T, I>>;
+  listItem: any;
+  onItemClick?: ListItemHandler<T, I>;
+  onItemMouseEnter?: ListItemHandler<T, I>;
+  onItemMouseLeave?: ListItemHandler<T, I>;
+  virtualItem: VirtualItem;
+};

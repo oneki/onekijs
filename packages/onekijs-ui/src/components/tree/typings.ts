@@ -38,6 +38,7 @@ export type TreeConfig<T = any, I extends TreeItem<T> = TreeItem<T>> = {
   gap?: number;
   paddingLeft?: number;
   paddingRight?: number;
+  animate?: boolean;
 };
 
 export type TreeController<

@@ -1,11 +1,16 @@
 import React, { FC } from 'react';
+import { addClassname } from '../../../../utils/style';
 import TogglerIcon from '../../../icon/TogglerIcon';
 import useTableService from '../../hooks/useTableService';
 import { TableBodyCellProps } from '../../typings';
 
-const ExpandedCellComponent: FC<TableBodyCellProps> = ({ item }) => {
+const ExpandedCellComponent: FC<TableBodyCellProps> = ({ item, className }) => {
   const service = useTableService();
-  return <TogglerIcon open={item.expanded} onClick={() => service.toggle(item)} model="plus" color="primary" />;
+  return (
+    <div className={addClassname('o-table-cell-expander-content', className)} onClick={() => service.toggle(item)}>
+      <TogglerIcon open={item.expanded} model="plus" color="primary" />
+    </div>
+  );
 };
 
 export default ExpandedCellComponent;

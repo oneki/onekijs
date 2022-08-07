@@ -20,11 +20,13 @@ const ControllerTreeComponent: React.FC<ControllerTreeProps> = ({
   TogglerComponent,
   paddingLeft,
   paddingRight,
+  animate = true,
 }) => {
   const config: TreeConfig = useMemo(() => {
     return {
       className,
       onActivate,
+      animate,
       onSelect,
       height,
       virtual,
@@ -39,6 +41,7 @@ const ControllerTreeComponent: React.FC<ControllerTreeProps> = ({
   }, [
     className,
     onActivate,
+    animate,
     onSelect,
     height,
     virtual,

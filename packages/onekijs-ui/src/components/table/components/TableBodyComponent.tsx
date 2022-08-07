@@ -1,5 +1,5 @@
 import { LoadingStatus, useLazyRef } from 'onekijs-framework';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback } from 'react';
 import { addClassname } from '../../../utils/style';
 import ListBodyComponent from '../../list/components/ListBodyComponent';
 import useListView from '../../list/hooks/useListView';
@@ -28,9 +28,6 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
   const itemHeight = useCallback(() => {
     return 20;
   }, []);
-
-  const previousItemHeightRef = useRef(itemHeight);
-  previousItemHeightRef.current = itemHeight;
 
   const { items, isVirtual, totalSize, virtualItems, measure } = useListView({
     controller: service,

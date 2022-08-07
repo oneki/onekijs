@@ -75,6 +75,14 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme }) => {
         ${paddingX(t.tdPaddingX)}
         ${paddingY(t.tdPaddingY)}
         ${boxSizing('border-box')}
+        &.o-table-cell-expander {
+          ${padding(0)}
+          .o-table-cell-expander-content {
+            ${paddingX(t.tdPaddingX)}
+            ${paddingY(t.tdPaddingY)}
+            ${cursor('pointer')}
+          }
+        }
 
       }
       &.o-table-body-row-hover {
@@ -174,9 +182,5 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme }) => {
         }
       }
     }
-    .o-table-cell-expander {
-      ${cursor('pointer')}
-    }
-
   `;
 };

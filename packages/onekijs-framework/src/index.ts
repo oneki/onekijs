@@ -216,6 +216,7 @@ export { default as useLazyRef } from './core/useLazyRef';
 export { default as useLocalReducer } from './core/useLocalReducer';
 export { default as useObjectProxy } from './core/useObjectProxy';
 export { default as useService } from './core/useService';
+export { default as useThrottle } from './core/useThrottle';
 export { default as UseAppContext, default as useTryAppContext } from './core/useTryAppContext';
 export { default as useTryHistory } from './core/useTryHistory';
 export { default as useTryLocation } from './core/useTryLocation';

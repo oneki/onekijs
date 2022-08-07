@@ -1,6 +1,7 @@
 import { AnonymousObject } from 'onekijs-framework';
 import React, { useEffect, useRef } from 'react';
 import { CSSTransition } from 'react-transition-group';
+import { useTreeConfig } from '../hooks/useTreeConfig';
 import useTreeService from '../hooks/useTreeService';
 import { TreeController, TreeItem, TreeItemHandler, TreeItemProps, TreeListProps, TreeState } from '../typings';
 import TreeItemComponent from './TreeItemComponent';
@@ -39,6 +40,7 @@ const TreeListItemComponent: React.FC<TreeListItemProps> = ({
 }) => {
   const className = typeof itemClassName !== 'function' ? itemClassName : item ? itemClassName(item) : undefined;
   const service = useTreeService();
+  const { animate } = useTreeConfig();
 
   const childrenAnimateRef = useRef<HTMLDivElement>(null);
   const childrenRef = useRef<HTMLDivElement>(null);
@@ -52,7 +54,7 @@ const TreeListItemComponent: React.FC<TreeListItemProps> = ({
     service.collapsing(item, index);
   };
 
-  const timeout = Math.min(500, 100 + getChildrenSize(item, service) * 4);
+  const timeout = animate ? Math.min(500, 100 + getChildrenSize(item, service) * 4) : 0;
 
   useEffect(() => {
     if (childrenRef.current && childrenAnimateRef.current && item.expanding) {

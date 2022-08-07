@@ -277,6 +277,8 @@ export function useVirtual({
 
   const { start, end } = calculateRange(latestRef.current);
 
+  const idRef = React.useRef({});
+
   const indexes = React.useMemo(
     () =>
       rangeExtractor({
@@ -302,11 +304,17 @@ export function useVirtual({
         ...measurement,
         measureRef: (el) => {
           if (el) {
+            if (el.id) {
+              idRef.current[el.id] = {
+                item,
+                index: i,
+              };
+            }
             const measuredSize = measureSizeRef.current(el, horizontal);
 
             if (measuredSize !== item.size) {
               const { scrollOffset } = latestRef.current;
-              if (item.start < scrollOffset) {
+              if (item.start < scrollOffset && item.end < scrollOffset) {
                 const delta = measuredSize - item.size;
                 scrollOffsetWithAdjustmentsRef.current += delta;
                 defaultScrollToFn(scrollOffsetWithAdjustmentsRef.current, 'SizeChanged');
