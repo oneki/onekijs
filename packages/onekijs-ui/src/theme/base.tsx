@@ -196,8 +196,8 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
       tdBorderBottomWidth: '1px',
       tdStripBgColor: 'lightest',
       tdHoverBgColor: 'primary',
-      tdHoverFontColor: 'white',
-      tdExpandedBgColor: 'white',
+      tdHoverFontColor: 'inherit',
+      tdExpandedBgColor: 'lightest',
       loadingRowBgColor: 'lightest',
       loadingRowMinHeight: '40px',
     },
@@ -236,9 +236,9 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
       fontWeight: 'normal',
       fontColor: 'primary',
       textDecoration: 'none',
-      fontWeightHover: 'bold',
+      fontWeightHover: 'normal',
       fontColorHover: 'primary',
-      textDecorationHover: 'none',
+      textDecorationHover: 'underline',
     },
 
     checkbox: {
@@ -338,6 +338,7 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
   };
 
   set(theme.table, 'thFilterInputBgColor', lighten(get(theme.colors, 'primary', ''), 400));
+  set(theme.table, 'tdHoverBgColor', lighten(get(theme.colors, 'primary', ''), 400));
 
   Object.keys(ColorKeys).forEach((kind) => {
     set(theme, `buttons.${kind}`, {

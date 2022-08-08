@@ -47,40 +47,52 @@ const TreeListItemComponent: React.FC<TreeListItemProps> = ({
   const itemRef = useRef<HTMLDivElement>(null);
 
   const expand: TreeItemHandler<any, TreeItem<any>> = (item, index) => {
-    service.expanding(item, index);
+    if (animate) {
+      service.expanding(item, index);
+    } else {
+      service.expand(item, index);
+    }
   };
 
   const collapse: TreeItemHandler<any, TreeItem<any>> = (item, index) => {
-    service.collapsing(item, index);
+    if (animate) {
+      service.collapsing(item, index);
+    } else {
+      service.collapse(item, index);
+    }
   };
 
   const timeout = animate ? Math.min(500, 100 + getChildrenSize(item, service) * 4) : 0;
 
   useEffect(() => {
-    if (childrenRef.current && childrenAnimateRef.current && item.expanding) {
-      const currentHeight = childrenRef.current.getBoundingClientRect().height;
-      childrenAnimateRef.current.style.height = '0px';
-      setTimeout(() => {
-        if (childrenAnimateRef.current) childrenAnimateRef.current.style.height = `${currentHeight}px`;
-      }, 0);
-      setTimeout(() => {
-        if (item) {
-          service.expanded(item, index);
-        }
-      }, timeout);
-    }
-    if (childrenRef.current && childrenAnimateRef.current && !item.expanding && item.expanded && !item.collapsing) {
-      childrenAnimateRef.current.style.height = '';
+    if (animate) {
+      if (childrenRef.current && childrenAnimateRef.current && item.expanding) {
+        const currentHeight = childrenRef.current.getBoundingClientRect().height;
+        childrenAnimateRef.current.style.height = '0px';
+        setTimeout(() => {
+          if (childrenAnimateRef.current) childrenAnimateRef.current.style.height = `${currentHeight}px`;
+        }, 0);
+        setTimeout(() => {
+          if (item) {
+            service.expanded(item, index);
+          }
+        }, timeout);
+      }
+      if (childrenRef.current && childrenAnimateRef.current && !item.expanding && item.expanded && !item.collapsing) {
+        childrenAnimateRef.current.style.height = '';
+      }
     }
   });
 
   const onExiting = (node: HTMLElement) => {
-    node.style.height = `${node.getBoundingClientRect().height}px`;
-    node.style.transitionDuration = `${timeout}ms`;
-    node.style.transitionTimingFunction = 'ease-out';
-    setTimeout(() => {
-      node.style.height = '0px';
-    }, 0);
+    if (animate) {
+      node.style.height = `${node.getBoundingClientRect().height}px`;
+      node.style.transitionDuration = `${timeout}ms`;
+      node.style.transitionTimingFunction = 'ease-out';
+      setTimeout(() => {
+        node.style.height = '0px';
+      }, 0);
+    }
   };
 
   const onExited = () => {
@@ -92,8 +104,10 @@ const TreeListItemComponent: React.FC<TreeListItemProps> = ({
   const expanded = !!(item && item.expanded && !item.collapsing);
 
   const onEntering = (node: HTMLElement) => {
-    node.style.transitionDuration = `${timeout}ms`;
-    node.style.transitionTimingFunction = 'ease-in';
+    if (animate) {
+      node.style.transitionDuration = `${timeout}ms`;
+      node.style.transitionTimingFunction = 'ease-in';
+    }
   };
 
   const children = item?.children || [];

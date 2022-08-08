@@ -110,7 +110,7 @@ export { default as Properties } from './components/properties';
 export { default as PropertiesComponent } from './components/properties/components/PropertiesComponent';
 export { default as Property } from './components/properties/components/Property';
 export { propertiesStyle } from './components/properties/style';
-export { PropertiesProps, PropertyProps } from './components/properties/typings';
+export { PropertiesProps, PropertyProps, PropertiesList, PropertiesContext } from './components/properties/typings';
 export { default as Select } from './components/select';
 export { default as ArraySelectComponent } from './components/select/components/ArraySelectComponent';
 export { default as ControllerSelectComponent } from './components/select/components/ControllerSelectComponent';
@@ -205,6 +205,7 @@ export { TreeConfigContext, useTreeConfig } from './components/tree/hooks/useTre
 export { default as useTreeController } from './components/tree/hooks/useTreeController';
 export { default as useTreeInitialState } from './components/tree/hooks/useTreeInitialState';
 export { default as useTreeService, TreeServiceContext } from './components/tree/hooks/useTreeService';
+export { default as TreeService } from './components/tree/TreeService';
 export { TreeStateContext, useTreeState } from './components/tree/hooks/useTreeState';
 export {
   ArrayTreeProps,

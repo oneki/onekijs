@@ -18,7 +18,6 @@ const VirtualItemWrapper: React.FC<VirtualItemWrapperProps<any, any>> = ({
   const measure = useCallback(
     (el: HTMLElement | null) => {
       if (el?.offsetHeight !== previousHeightRef.current && el?.offsetHeight) {
-        console.log('previous', previousHeightRef.current, 'new', el?.offsetHeight);
         previousHeightRef.current = el.offsetHeight;
         measureRef(el);
       }

@@ -293,6 +293,7 @@ export const clarityTheme = (customTheme: Partial<Theme> = {}): Theme => {
 
     link: {
       fontWeight: 500,
+      fontWeightHover: 500,
     },
 
     accordion: {

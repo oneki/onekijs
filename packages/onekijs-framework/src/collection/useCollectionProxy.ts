@@ -5,7 +5,7 @@ import { Collection, CollectionProxy, CollectionState, Item } from './typings';
 import CollectionService from './CollectionService';
 import { isCollection } from './utils';
 
-const handler = {
+export const collectionProxyHandler = {
   get: function <T, I extends Item<T>, S extends CollectionState<T, I>, C extends Collection<T, I, S>>(
     target: C,
     prop: string | number | symbol,
@@ -39,7 +39,7 @@ const useCollectionProxy = <
     if (isCollection(dataSource)) {
       return dataSource as CollectionProxy<T, I, S, C>;
     }
-    const proxy = new Proxy(service, handler);
+    const proxy = new Proxy(service, collectionProxyHandler);
     return proxy as CollectionProxy<T, I, S, C>;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataSource, service.state]);

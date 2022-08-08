@@ -142,7 +142,7 @@ export {
 } from './collection/typings';
 export { default as useCollection } from './collection/useCollection';
 export { default as useCollectionInitialState } from './collection/useCollectionInitialState';
-export { default as useCollectionProxy } from './collection/useCollectionProxy';
+export { default as useCollectionProxy, collectionProxyHandler } from './collection/useCollectionProxy';
 export { default as useCollectionService } from './collection/useCollectionService';
 export {
   defaultComparator,
@@ -394,6 +394,7 @@ export {
   isSetter,
   omit,
   or,
+  pick,
   set,
   shallowEqual,
   simpleMergeDeep,

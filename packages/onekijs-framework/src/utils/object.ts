@@ -369,6 +369,13 @@ export const omit = <T>(source: any, keys: string[]): T => {
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export const pick = <T>(source: any, keys: string[]): T => {
+  const result: any = {};
+  keys.forEach((key) => (result[key] = source[key]));
+  return result as T;
+};
+
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const isGetter = (obj: any, property: string): boolean => {
   const descriptor = Object.getOwnPropertyDescriptor(obj, property);
   return descriptor !== undefined && descriptor.get !== undefined;

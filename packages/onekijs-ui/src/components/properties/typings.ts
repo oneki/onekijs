@@ -3,7 +3,7 @@ import React, { ReactNode } from 'react';
 import { GridSize } from '../grid/typings';
 
 export type PropertiesProps = {
-  properties: AnonymousObject<ReactNode>;
+  properties: PropertiesList;
   PropertyComponent?: React.FC<PropertyProps>;
   order?: boolean;
   className?: string;
@@ -26,3 +26,5 @@ export type PropertiesContext = {
   lg?: GridSize;
   xl?: GridSize;
 };
+
+export type PropertiesList = AnonymousObject<ReactNode>;

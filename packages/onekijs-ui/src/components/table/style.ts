@@ -57,8 +57,12 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme }) => {
     }
 
     .o-table-body-row:hover {
-      ${backgroundColor('blue-200')}
-      ${color(t.tdFontColor)}
+      ${backgroundColor(t.tdHoverBgColor)}
+      ${color(t.tdHoverFontColor)}
+      .o-checkbox label {
+          ${color('currentColor')}
+        }
+      }
     }
 
     .o-table-body-row {
@@ -81,15 +85,6 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme }) => {
             ${paddingX(t.tdPaddingX)}
             ${paddingY(t.tdPaddingY)}
             ${cursor('pointer')}
-          }
-        }
-
-      }
-      &.o-table-body-row-hover {
-        ${backgroundColor(t.tdHoverBgColor)}
-        ${color(t.tdHoverFontColor)}
-        .o-checkbox label {
-            ${color('currentColor')}
           }
         }
       }

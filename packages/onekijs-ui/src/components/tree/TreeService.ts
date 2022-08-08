@@ -384,7 +384,6 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
         nextPosition++;
       }
     });
-
     this.setMeta('item', item, 'children', childrenItems);
     this.setMeta('item', item, 'loadingStatus', LoadingStatus.Loaded);
   }

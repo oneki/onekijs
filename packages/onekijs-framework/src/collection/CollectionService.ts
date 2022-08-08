@@ -277,6 +277,10 @@ export default class CollectionService<
     return this.state.items || [];
   }
 
+  get index(): AnonymousObject<I> {
+    return this.idIndex;
+  }
+
   get status(): CollectionStatus {
     const defaultStatus = this.state.local ? LoadingStatus.Loaded : LoadingStatus.NotInitialized;
     return this.state.status || defaultStatus;
@@ -291,6 +295,10 @@ export default class CollectionService<
       throw new DefaultBasicError('URL is required for a remote collection');
     }
     return this.state.url || '';
+  }
+
+  getDb(): I[] {
+    return this.db || [];
   }
 
   getFields(): string[] | undefined {
