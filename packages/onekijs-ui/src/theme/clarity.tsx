@@ -168,6 +168,24 @@ export const clarityTheme = (customTheme: Partial<Theme> = {}): Theme => {
       danger: 'red-700',
       primary: 'blue-600',
       secondary: 'blue-1000',
+      blue: 'blue-600',
+      red: 'red-600',
+      purple: 'purple-600',
+      pink: 'pink-600',
+      indigo: 'indigo-600',
+      teal: 'teal-600',
+      orange: 'orange-600',
+      yellow: 'yellow-700',
+      green: 'green-600',
+      lightblue: 'blue-400',
+      lightred: 'red-400',
+      lightpurple: 'purple-400',
+      lightpink: 'pink-400',
+      lightindigo: 'indigo-400',
+      lightteal: 'teal-400',
+      lightorange: 'orange-400',
+      lightyellow: 'yellow-400',
+      lightgreen: 'green-400',
     },
 
     spacings: {
@@ -325,7 +343,11 @@ export const clarityTheme = (customTheme: Partial<Theme> = {}): Theme => {
     set(clarityTheme, `buttons.${kind}.borderRadius`, 'xs');
     set(clarityTheme, `buttons.${kind}.paddingX`, 'md');
     set(clarityTheme, `buttons.${kind}.hoverBgColorOutline`, lighten(get(clarityTheme.colors, kind, ''), 700));
-    set(clarityTheme, `tooltip.${kind}.color`, ['light', 'lightest', 'white'].includes(kind) ? 'darkest' : 'light');
+    set(
+      clarityTheme,
+      `tooltip.${kind}.color`,
+      kind.startsWith('light') || ['white'].includes(kind) ? 'darkest' : 'light',
+    );
   });
 
   return baseTheme(simpleMergeDeep(customTheme, clarityTheme)) as Theme;

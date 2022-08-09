@@ -1,4 +1,39 @@
-import { Button, DropdownButton, SearchIcon } from 'onekijs-ui';
+import { Button, ColorPropertyTheme, DropdownButton, SearchIcon } from 'onekijs-ui';
+
+const colors: ColorPropertyTheme[] = [
+  'white',
+  'lightest',
+  'lighter',
+  'light',
+  'dark',
+  'darker',
+  'darkest',
+  'black',
+  'success',
+  'info',
+  'warning',
+  'danger',
+  'primary',
+  'secondary',
+  'blue',
+  'red',
+  'purple',
+  'pink',
+  'indigo',
+  'teal',
+  'orange',
+  'yellow',
+  'green',
+  'lightblue',
+  'lightred',
+  'lightpurple',
+  'lightpink',
+  'lightindigo',
+  'lightteal',
+  'lightorange',
+  'lightyellow',
+  'lightgreen',
+];
 
 export const ButtonPage = () => {
   // const collection = useListController(users, {
@@ -6,36 +41,83 @@ export const ButtonPage = () => {
   // });
   return (
     <>
-      <div style={{marginBottom: "10px"}}>
-      <Button IconComponent={() => <SearchIcon width="16px" />} kind="primary">Primary</Button> <Button kind="info">Info</Button> <Button kind="danger">Danger</Button>{' '}
-      <Button kind="warning">Warning</Button> <Button kind="success">Success</Button>{' '}
-      <Button kind="secondary">Secondary</Button> <Button kind="light">Light</Button>{' '}
-      <DropdownButton dataSource={["a", "b"]}>Dropdown</DropdownButton></div>
+      <div style={{ marginBottom: '10px' }}>
+        {colors.map((c: ColorPropertyTheme) => (
+          <>
+            <Button kind={c}>{c}</Button>{' '}
+          </>
+        ))}
+      </div>
       <br />
-      <div style={{marginBottom: "10px"}}>
-      <Button kind="primary" disabled>Primary</Button> <Button kind="info" disabled>Info</Button> <Button kind="danger" disabled>Danger</Button>{' '}
-      <Button kind="warning" disabled>Warning</Button> <Button kind="success" disabled>Success</Button>{' '}
-      <Button kind="secondary" disabled>Secondary</Button> <Button kind="light" disabled>Light</Button>{' '}</div>
+      <div style={{ marginBottom: '10px' }}>
+        {colors.map((c: ColorPropertyTheme) => (
+          <>
+            <Button IconComponent={() => <SearchIcon width="16px" />} kind={c}>
+              {c}
+            </Button>{' '}
+          </>
+        ))}
+      </div>
       <br />
-      <div style={{marginBottom: "10px"}}>
-      <Button kind="primary" pattern="outline">Primary</Button> <Button kind="info" pattern="outline">Info</Button> <Button kind="danger" pattern="outline">Danger</Button>{' '}
-      <Button kind="warning" pattern="outline">Warning</Button> <Button kind="success" pattern="outline">Success</Button>{' '}
-      <Button kind="secondary" pattern="outline">Secondary</Button> <Button kind="light" pattern="outline">Light</Button></div>
+      <div style={{ marginBottom: '10px' }}>
+        {colors.map((c: ColorPropertyTheme) => (
+          <>
+            <DropdownButton kind={c} dataSource={['a', 'b']}>Dropdown</DropdownButton>{' '}
+          </>
+        ))}
+      </div>
+
       <br />
-      <div style={{marginBottom: "10px"}}>
-      <Button kind="primary" disabled pattern="outline">Primary</Button> <Button kind="info" disabled pattern="outline">Info</Button> <Button kind="danger" disabled pattern="outline">Danger</Button>{' '}
-      <Button kind="warning" disabled pattern="outline">Warning</Button> <Button kind="success" disabled pattern="outline">Success</Button>{' '}
-      <Button kind="secondary" disabled pattern="outline">Secondary</Button> <Button kind="light" disabled pattern="outline">Light</Button></div>
+      <div style={{ marginBottom: '10px' }}>
+        {colors.map((c: ColorPropertyTheme) => (
+          <>
+            <Button kind={c} disabled>
+              {c}
+            </Button>{' '}
+          </>
+        ))}
+      </div>
       <br />
-      <div style={{marginBottom: "10px"}}>
-      <Button kind="primary" pattern="flat">Primary</Button> <Button kind="info" pattern="flat">Info</Button> <Button kind="danger" pattern="flat">Danger</Button>{' '}
-      <Button kind="warning" pattern="flat">Warning</Button> <Button kind="success" pattern="flat">Success</Button>{' '}
-      <Button kind="secondary" pattern="flat">Secondary</Button> <Button kind="black" pattern="flat">Black</Button></div>
-      <br/>
-      <div style={{marginBottom: "10px"}}>
-      <Button kind="primary" disabled pattern="flat">Primary</Button> <Button kind="info" disabled pattern="flat">Info</Button> <Button kind="danger" disabled pattern="flat">Danger</Button>{' '}
-      <Button kind="warning" disabled pattern="flat">Warning</Button> <Button kind="success" disabled pattern="flat">Success</Button>{' '}
-      <Button kind="secondary" disabled pattern="flat">Secondary</Button> <Button kind="black" disabled pattern="flat">Black</Button></div>
+      <div style={{ marginBottom: '10px' }}>
+        {colors.map((c: ColorPropertyTheme) => (
+          <>
+            <Button kind={c} pattern="outline">
+              {c}
+            </Button>{' '}
+          </>
+        ))}
+      </div>
+      <br />
+      <div style={{ marginBottom: '10px' }}>
+        {colors.map((c: ColorPropertyTheme) => (
+          <>
+            <Button kind={c} disabled pattern="outline">
+              {c}
+            </Button>{' '}
+          </>
+        ))}
+      </div>
+      <br />
+      <div style={{ marginBottom: '10px' }}>
+        {colors.map((c: ColorPropertyTheme) => (
+          <>
+            <Button kind={c} pattern="flat">
+              {c}
+            </Button>{' '}
+          </>
+        ))}
+      </div>
+      <br />
+      <div style={{ marginBottom: '10px' }}>
+        {colors.map((c: ColorPropertyTheme) => (
+          <>
+            <Button kind={c} disabled pattern="flat">
+              {c}
+            </Button>{' '}
+          </>
+        ))}
+      </div>
+      <br />
     </>
   );
 };

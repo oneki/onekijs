@@ -42,7 +42,7 @@ export const treeStyle: ComponentStyle<TreeProps<any>> = () => {
       }
       .o-tree-item-text,
       .o-tree-item-icon {
-        ${marginLeft('sm')}
+        ${marginLeft('5px')}
       }
     }
     .o-tree-item-animate-expanding,
