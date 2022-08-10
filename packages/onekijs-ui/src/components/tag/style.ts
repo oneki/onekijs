@@ -1,11 +1,12 @@
+import { PaddingProperty } from 'csstype';
 import { css } from 'styled-components';
 import { alignItems } from '../../styles/alignment';
 import { backgroundColor } from '../../styles/background';
 import { borderRadius } from '../../styles/border';
 import { display } from '../../styles/display';
 import { cursor } from '../../styles/interactivity';
-import { marginLeft, marginX, paddingX } from '../../styles/spacing';
-import { ComponentStyle } from '../../styles/typings';
+import { marginBottom, marginLeft, marginRight, marginTop, paddingTop, paddingX } from '../../styles/spacing';
+import { ComponentStyle, SpacingPropertyTheme, TLength } from '../../styles/typings';
 import { color, fontSize, lineHeight } from '../../styles/typography';
 import { TagProps } from './typings';
 
@@ -16,16 +17,22 @@ export const tagStyle: ComponentStyle<TagProps> = ({
   fontColor = 'white',
   size = 'small',
   onClick,
+  marginBottom: mb = 0,
+  marginLeft: ml = 0,
+  marginRight: mr = 0,
+  marginTop: mt = 0,
 }) => {
   let fSize = 'sm';
   let lHeight = 'md';
   let pX = 'md';
   let radius = 'sm';
+  let pt: SpacingPropertyTheme | PaddingProperty<TLength> = 0;
   if (size === 'small') {
     fSize = 'xs';
     lHeight = 'xs';
     radius = 'xs';
     pX = 'sm';
+    pt = '2xs';
   }
   if (size === 'large') {
     fSize = 'md';
@@ -36,13 +43,16 @@ export const tagStyle: ComponentStyle<TagProps> = ({
     ${display('inline-flex')}
     ${alignItems('center')}
     ${backgroundColor(kind ? theme.buttons[kind].bgColor : bgColor)}
-    ${marginLeft('md')}
+    ${marginLeft(ml)}
+    ${marginRight(mr)}
+    ${marginBottom(mb)}
+    ${marginTop(mt)}
     ${lineHeight(lHeight)}
     ${paddingX(pX)}
+    ${paddingTop(pt)}
     ${color(kind ? theme.buttons[kind].color : fontColor)}
     ${fontSize(fSize)}
     ${cursor(onClick ? 'pointer' : 'inherit')}
     ${borderRadius(radius)}
-    ${marginX('sm')}
   `;
 };

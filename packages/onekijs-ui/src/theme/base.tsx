@@ -7,10 +7,11 @@ import { darken, lighten } from '../utils/color';
 export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
   const theme: Partial<Theme> = {
     breakpoints: {
-      sm: '640px',
-      md: '768px',
-      lg: '1024px',
-      xl: '1280px',
+      xs: '576px',
+      sm: '768px',
+      md: '992px',
+      lg: '1200px',
+      xl: '1850px',
     },
     colors: {
       white: 'white',

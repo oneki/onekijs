@@ -80,6 +80,7 @@ export enum DashboardKeys {
 }
 
 export enum BreakpointKeys {
+  xs = 'xs',
   sm = 'sm',
   md = 'md',
   lg = 'lg',

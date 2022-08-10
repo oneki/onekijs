@@ -1,8 +1,8 @@
-import { useMemo } from 'react';
-import useCollectionService from './useCollectionService';
+import { useEffect, useMemo } from 'react';
 import { Class } from '../types/object';
-import { Collection, CollectionProxy, CollectionState, Item } from './typings';
 import CollectionService from './CollectionService';
+import { Collection, CollectionProxy, CollectionState, Item, LoadingStatus } from './typings';
+import useCollectionService from './useCollectionService';
 import { isCollection } from './utils';
 
 export const collectionProxyHandler = {
@@ -35,7 +35,7 @@ const useCollectionProxy = <
 ): CollectionProxy<T, I, S, C> => {
   const [, service] = useCollectionService<T, I, S, C>(ctor, initialState);
 
-  return useMemo(() => {
+  const collectionProxy = useMemo(() => {
     if (isCollection(dataSource)) {
       return dataSource as CollectionProxy<T, I, S, C>;
     }
@@ -43,6 +43,19 @@ const useCollectionProxy = <
     return proxy as CollectionProxy<T, I, S, C>;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataSource, service.state]);
+
+  useEffect(() => {
+    if (
+      initialState.dataSource === undefined &&
+      Array.isArray(dataSource) &&
+      collectionProxy.status === LoadingStatus.NotInitialized
+    ) {
+      collectionProxy.setData(dataSource);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  });
+
+  return collectionProxy;
 };
 
 export default useCollectionProxy;

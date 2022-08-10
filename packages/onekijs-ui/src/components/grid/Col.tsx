@@ -5,8 +5,11 @@ import { addClassname } from '../../utils/style';
 import { colStyle } from './style';
 import { ColProps } from './typings';
 
-const ColComponent: FCC<ColProps> = ({ className, size, sm, md, lg, xl, offset, ...props }) => {
+const ColComponent: FCC<ColProps> = ({ className, size, xs, sm, md, lg, xl, offset, ...props }) => {
   const classNames = [`o-col-${size}`, 'o-col'];
+  if (xs !== undefined) {
+    classNames.unshift(`o-col-xs-${xs}`);
+  }
   if (sm !== undefined) {
     classNames.unshift(`o-col-sm-${sm}`);
   }

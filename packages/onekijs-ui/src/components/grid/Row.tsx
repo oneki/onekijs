@@ -8,6 +8,7 @@ import { RowProps } from './typings';
 const RowComponent: FCC<RowProps> = ({
   alignItems,
   width,
+  xs,
   sm,
   md,
   lg,

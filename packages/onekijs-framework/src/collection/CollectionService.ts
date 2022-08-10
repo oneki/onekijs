@@ -98,6 +98,7 @@ export default class CollectionService<
 
   initDb(dataSource: T[] | string | undefined): void {
     if (Array.isArray(dataSource)) {
+      this.state.status = LoadingStatus.Loaded;
       this.db = [];
       dataSource.map((entry, index) => this._adapt(entry, { position: index }));
     }

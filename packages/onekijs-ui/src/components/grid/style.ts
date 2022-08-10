@@ -11,7 +11,7 @@ import { ComponentStyle, Theme, TLength } from '../../styles/typings';
 import { ColProps, RowProps } from './typings';
 
 const getColWidths = (gap: WidthProperty<TLength>, theme: Theme) => {
-  const getContent = (size: number, variant?: 'sm' | 'md' | 'lg' | 'xl'): string => {
+  const getContent = (size: number, variant?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'): string => {
     const content = `{ flex: 0 0 calc((100% / 12) * ${size}  - ${gap}); max-width: calc((100% / 12) * ${size}  - ${gap}); }`;
     if (variant) {
       const breakpoint = theme.breakpoints[variant];
@@ -36,6 +36,7 @@ const formatSize = (value: TLength | undefined, defaultValue: string): string =>
 export const rowStyle: ComponentStyle<RowProps> = ({
   alignItems: align = 'stretch',
   width: w = '100%',
+  xs,
   sm,
   md,
   lg,
@@ -63,6 +64,7 @@ export const rowStyle: ComponentStyle<RowProps> = ({
   const marginRightStr = formatSize(mr, marginXStr);
   const marginLeftStr = formatSize(ml, marginXStr);
   const variantWidth: AnonymousObject = {};
+  if (xs !== undefined) variantWidth.xs = xs;
   if (sm !== undefined) variantWidth.sm = sm;
   if (md !== undefined) variantWidth.md = md;
   if (lg !== undefined) variantWidth.lg = lg;
