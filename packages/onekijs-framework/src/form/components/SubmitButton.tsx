@@ -1,8 +1,9 @@
-import React, { FC } from 'react';
+import React from 'react';
+import { FCC } from '../../types/core';
 import { SubmitButtonProps, ValidationCode } from '../typings';
 import useSubmit from '../useSubmit';
 
-const SubmitButton: FC<SubmitButtonProps> = React.memo((opts) => {
+const SubmitButton: FCC<SubmitButtonProps> = React.memo((opts) => {
   const { submitting, code, fields } = useSubmit();
   const { showErrors, ...props } = opts;
   let disabled = false;

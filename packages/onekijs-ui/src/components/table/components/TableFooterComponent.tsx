@@ -3,7 +3,7 @@ import { addClassname } from '../../../utils/style';
 import { TableFooterProps } from '../typings';
 import TableFooterCellComponent from './TableFooterCellComponent';
 
-const TableFooterComponent: React.FC<TableFooterProps> = ({ controller }) => {
+const TableFooterComponent: React.FC<TableFooterProps> = ({ className, columns }) => {
   const footerStyle: CSSProperties = {
     display: 'flex',
   };
@@ -15,16 +15,15 @@ const TableFooterComponent: React.FC<TableFooterProps> = ({ controller }) => {
     footerStyle.zIndex = 1;
   }
 
-  const className =
-    typeof controller.footerClassName === 'function'
-      ? controller.footerClassName(controller)
-      : controller.footerClassName;
-
   return (
     <div className={addClassname('o-table-footer', className)} style={footerStyle}>
-      {controller.columns.map((column, colIndex) => {
+      {columns.map((column, colIndex) => {
+        const cellClassName =
+          typeof column.footerClassName === 'function' ? column.footerClassName(column) : column.footerClassName;
         const Component = column.FooterComponent || TableFooterCellComponent;
-        return <Component column={column} colIndex={colIndex} key={`header-cell-${colIndex}`} />;
+        return (
+          <Component column={column} colIndex={colIndex} className={cellClassName} key={`header-cell-${colIndex}`} />
+        );
       })}
     </div>
   );

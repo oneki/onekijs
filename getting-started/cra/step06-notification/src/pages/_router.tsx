@@ -1,36 +1,21 @@
-import React from 'react';
-import { Redirect, Route, Switch } from 'onekijs';
+import { Navigate, Route, Routes } from 'onekijs';
 import AppLayout from '../modules/core/layouts/AppLayout';
-import ProductsRouter from './products/_router';
 import CartPage from './cart';
+import ProductsRouter from './products/_router';
 import LoginPage from './login';
 import LogoutPage from './logout';
 
 const RootRouter = (): JSX.Element => {
   return (
-    <Switch>
-      <Route path="/login">
-        <LoginPage />
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/logout" element={<LogoutPage />} />
+      <Route element={<AppLayout />}>
+        <Route path="/products/*" element={<ProductsRouter />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route index element={<Navigate to="/products" replace />} />
       </Route>
-      <Route path="/logout">
-        <LogoutPage />
-      </Route>
-      <Route>
-        <AppLayout>
-          <Switch>
-            <Route path="/products">
-              <ProductsRouter />
-            </Route>
-            <Route path="/cart">
-              <CartPage />
-            </Route>
-            <Route>
-              <Redirect to="/products" />
-            </Route>
-          </Switch>
-        </AppLayout>
-      </Route>
-    </Switch>
+    </Routes>
   );
 };
 

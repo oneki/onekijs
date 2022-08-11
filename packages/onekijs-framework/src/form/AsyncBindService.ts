@@ -38,7 +38,7 @@ export default class AsyncBindService<T> extends DefaultService<AsyncBindState> 
         yield this.success(task.result() as T);
       }
     } catch (e) {
-      yield this.error(e);
+      yield this.error(e as Error);
     }
   }
 

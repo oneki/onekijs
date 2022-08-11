@@ -1,4 +1,5 @@
 import { css } from 'styled-components';
+import { backgroundColor } from '../../styles/background';
 import {
   borderBottomColor,
   borderColor,
@@ -17,33 +18,33 @@ import { bottom, left, position, right, top, zIndex } from '../../styles/positio
 import { height, width } from '../../styles/size';
 import { margin, marginBottom, marginLeft, marginRight, marginTop, padding } from '../../styles/spacing';
 import { transition } from '../../styles/transition';
-import { color, fontSize } from '../../styles/typography';
-import { backgroundColor } from '../../styles/background';
 import { ComponentStyle } from '../../styles/typings';
+import { color, fontSize } from '../../styles/typography';
 import { preflight } from '../../utils/style';
 import { TooltipProps } from './typings';
 
-const tooltipStyle: ComponentStyle<TooltipProps> = () => {
-  const bgColor = 'primary';
-  const fColor = 'white';
-  const bColor = 'primary';
+const tooltipStyle: ComponentStyle<TooltipProps> = ({ kind = 'secondary', theme }) => {
+  const t = theme.tooltip[kind];
+  const bgColor = t.bgColor;
+  const fColor = t.color;
+  const bColor = t.borderColor;
   return css`
     ${preflight()}
     ${cursor('pointer')}
     .o-tooltip-container {
       ${backgroundColor(bgColor)}
-      ${borderRadius('md')}
-      ${borderWidth('1px')}
-      ${borderStyle('solid')}
+      ${borderRadius(t.borderRadius)}
+      ${borderWidth(t.borderWidth)}
+      ${borderStyle(t.borderStyle)}
       ${borderColor(bColor)}
-      ${boxShadow('lg')}
+      ${boxShadow(t.boxShadow)}
       ${color(fColor)}
       ${display('flex')}
       ${flexDirection('column')}
       ${transition('opacity 0.3s')}
       ${zIndex(9999)}
-      ${padding('sm')}
-      ${fontSize('sm')}
+      ${padding(t.padding)}
+      ${fontSize(t.fontSize)}
       &[data-popper-interactive='false'] {
         ${pointerEvents('none')}
       }
@@ -84,7 +85,7 @@ const tooltipStyle: ComponentStyle<TooltipProps> = () => {
             ${borderWidth('0.4rem 0.5rem 0 0.5rem')}
           }
         }
-      } 
+      }
 
       &[data-popper-placement*='right'] {
         .o-tooltip-arrow {
@@ -103,7 +104,7 @@ const tooltipStyle: ComponentStyle<TooltipProps> = () => {
             ${top(0)}
           }
         }
-      }   
+      }
 
       &[data-popper-placement*='left'] {
         .o-tooltip-arrow {
@@ -122,7 +123,7 @@ const tooltipStyle: ComponentStyle<TooltipProps> = () => {
             ${top(0)}
           }
         }
-      }        
+      }
 
     }
     .o-tooltip-arrow {
@@ -146,7 +147,7 @@ const tooltipStyle: ComponentStyle<TooltipProps> = () => {
         ${width(0)}
         ${margin('auto')}
         ${position('absolute')}
-      }      
+      }
     }
   `;
 };

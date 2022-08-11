@@ -1,9 +1,10 @@
-import React, { FC } from 'react';
+import { FCC } from 'onekijs-framework';
+import React from 'react';
 import { usePopperTooltip } from 'react-popper-tooltip';
 import { addClassname } from '../../../utils/style';
 import { TooltipProps } from '../typings';
 
-const TooltipComponent: FC<TooltipProps> = (props) => {
+const TooltipComponent: FCC<TooltipProps> = (props) => {
   const { content, className, popperOptions, children, ...tooltipConfig } = props;
   const tooltipOptions = Object.assign(
     {

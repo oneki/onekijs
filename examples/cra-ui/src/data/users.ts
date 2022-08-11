@@ -1,4 +1,5 @@
-import { CollectionItemAdapter, ItemMeta, QuerySearcher } from 'onekijs';
+import { QuerySearcher } from 'onekijs';
+import { SelectItemAdapter } from 'onekijs-ui/dist/components/select/typings';
 
 export interface User {
   id: number,
@@ -10,14 +11,14 @@ export interface User {
     city: string,
   }
   phones: string[],
+  children?: User[],
 }
 
-export const userAdapter: CollectionItemAdapter<User, ItemMeta> = (data?: User) => {
+export const userAdapter: SelectItemAdapter<User> = (data?: User) => {
   return {
     id: data ? String(data.id) : undefined,
     text: data ? `${data.firstname} ${data.lastname}` : '',
-    data,
-    meta: {},
+    data
   };
 };
 
@@ -3441,3 +3442,23 @@ export const users: User[] = [
     ],
   },
 ];
+
+export const generateTree: (maxLevel?: number, maxChildren?: number) => User[] = (maxLevel = 3, maxChildren=8) => {
+  const source = Object.assign([], users);
+  const generateSubLevel: (level: number) => User[] = (level) => {
+    const subLevel: User[] = [];
+    const max = Math.floor(Math.random() * maxChildren);
+    for (let i=0; i < max; i++) {
+      const index = Math.floor(Math.random() * source.length)
+      const user: User = source.splice(index,1)[0];
+      if (user !== undefined) {
+        if (level < maxLevel) {
+          user.children = generateSubLevel(level + 1);
+        }
+        subLevel[i] = user;
+      }
+    }
+    return subLevel;
+  }
+  return generateSubLevel(0);
+}

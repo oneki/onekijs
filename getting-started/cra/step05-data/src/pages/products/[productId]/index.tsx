@@ -5,7 +5,7 @@ import ProductDetails from '../../../modules/products/components/ProductDetails'
 import { ProductType } from '../../../__server__/api/dto/product';
 
 const ProductDetailsPage: React.FC = () => {
-  const { productId } = useParams();
+  const { productId = '' } = useParams();
   const [product] = useGet<ProductType>(`${URL_PRODUCT}/${productId}`, {
     pollingMs: 2000,
   });

@@ -22,7 +22,7 @@ export const lighten = (color: string, gap: number, newColorValue?: string): str
   if (weight === undefined) {
     return newColorValue;
   }
-  return `${newColorValue}-${Math.max(parseInt(weight) - gap, 100)}`;
+  return `${newColorValue}-${Math.max(parseInt(weight) - gap, 0)}`;
 };
 
 // https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb

@@ -3,7 +3,6 @@ import { AnonymousObject, lcfirst, toKebabCase } from 'onekijs-framework';
 import { CSSProperties } from 'react';
 import { css, FlattenInterpolation, ThemeProps } from 'styled-components';
 import { CssProperty, Formatter, Theme } from '../styles/typings';
-import { themeFormatter } from './formatter';
 
 const formatValue = <T>(value: T, theme: Theme, formatter?: Formatter<T>): string => {
   if (formatter) {
@@ -167,10 +166,13 @@ export const preflight = (): FlattenInterpolation<ThemeProps<any>> => {
       box-sizing: border-box;
       border-style: solid;
       border-width: 0;
-      font-size: 14px;
     }
-    ${toCss('font-family', themeFormatter('font.families'), 'sans', {})}
-    button, input, optgroup, select, textarea {
+
+    button,
+    input,
+    optgroup,
+    select,
+    textarea {
       font-family: inherit;
       font-size: 100%;
       margin: 0;

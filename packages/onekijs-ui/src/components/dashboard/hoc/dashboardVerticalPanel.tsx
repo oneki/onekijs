@@ -1,10 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import { FCC } from 'onekijs-framework';
+import React, { CSSProperties, useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
 import { backgroundColor } from '../../../styles/background';
-import { width, height } from '../../../styles/size';
-import { zIndex } from '../../../styles/position';
 import { ComponentStyle } from '../../../styles/typings';
 import Resizer from '../../resizer';
+import { ResizeStep } from '../../resizer/typings';
 import useDashboardService from '../hooks/useDashboardService';
 import useDashboardState from '../hooks/useDashboardState';
 import {
@@ -14,7 +14,7 @@ import {
   DashboardVerticalPanelProps,
 } from '../typings';
 import { isAreaInRow } from '../utils/dashboardArea';
-import { getDashboardPanelLength, getWorkspacePanelLength } from '../utils/dashboardLength';
+import { getDashboardPanelLength, getFloatingKey, getWorkspacePanelLength } from '../utils/dashboardLength';
 
 const getTranslateY = (size: DashboardSize, props: DashboardVerticalPanelComponentProps): string | 0 => {
   let translate: string | 0 = 0;
@@ -31,8 +31,10 @@ const getTranslateX = (size: DashboardSize, props: DashboardVerticalPanelCompone
   let translate: string | 0 = 0;
 
   // for the right panel, we have to translate backwards, otherwise it will not be visible
-  if (props.panel?.area === 'right') {
-    const width = getWorkspacePanelLength('width', size, props.panel);
+  if (props.panel && props.panel.area === 'right') {
+    const width = props.panel[getFloatingKey(size)]
+      ? getDashboardPanelLength('width', size, props.panel) // actual size of the panel
+      : getWorkspacePanelLength('width', size, props.panel); // size of the panel on the workspace (if floating, the workspace panel size is 0)
     if (width !== 0) {
       translate = `-${width}`;
     }
@@ -42,8 +44,7 @@ const getTranslateX = (size: DashboardSize, props: DashboardVerticalPanelCompone
 };
 
 const getHeight = (size: DashboardSize, props: DashboardVerticalPanelComponentProps): string | 0 => {
-  let height = '100%';
-
+  let height = '100vh';
   if (props.panel) {
     // if the panel is not in the first row, we need to remove the size of the header panel
     if (!isAreaInRow('first', props.panel.area, props.areas)) {
@@ -53,7 +54,7 @@ const getHeight = (size: DashboardSize, props: DashboardVerticalPanelComponentPr
       }
     }
 
-    // if the panel is not in the last column, we need to remove the size of the right panel
+    // if the panel is not in the last row, we need to remove the size of the right panel
     if (!isAreaInRow('last', props.panel.area, props.areas)) {
       const footerHeight = getWorkspacePanelLength('height', size, props.footer);
       if (footerHeight !== 0) {
@@ -62,41 +63,56 @@ const getHeight = (size: DashboardSize, props: DashboardVerticalPanelComponentPr
     }
   }
 
-  return height;
+  return height === '100vh' ? height : `calc(${height})`;
 };
 
-const Component = React.forwardRef<HTMLDivElement, DashboardVerticalPanelComponentProps>((props, ref) => {
+const Component: React.FC<DashboardVerticalPanelComponentProps> = (props) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const service = useDashboardService();
+  const stepRef = useRef<'initializing' | 'initialized' | undefined>();
+  const style: CSSProperties = {};
+  if (stepRef.current !== 'initialized') {
+    style.transition = 'none';
+  }
+
+  useEffect(() => {
+    if (stepRef.current === undefined) {
+      stepRef.current = 'initializing';
+      service.initVerticalPanel(props.area, props, ref);
+    } else if (stepRef.current === 'initializing' && ref.current) {
+      stepRef.current = 'initialized';
+      ref.current.style.transition = '';
+    }
+  });
+
   return (
-    <div className={props.className} ref={ref}>
-      {props.children}
+    <div className={props.className} ref={ref} style={style}>
+      {stepRef.current && props.children}
     </div>
   );
-});
-
-Component.displayName = 'VerticalPanel';
+};
 
 const style: ComponentStyle<DashboardVerticalPanelComponentProps> = (props) => {
+  const t = props.theme.dashboard[props.area];
   return css`
-    grid-area: ${props.panel?.area};
+    ${backgroundColor(t.bgColor)}
+    grid-area: ${props.area};
     width: ${getDashboardPanelLength('width', 'small', props.panel)};
     height: ${getHeight('small', props)};
     transform: translate(${getTranslateX('small', props)}, ${getTranslateY('small', props)});
-    ${props.panel ? 'transition: none 0.6s;' : ''}
-    @media only screen and (min-width: 46.875em) {
+    transition: transform 0.6s, width 0.6s, height 0.6s;
+    ${props.panel && props.panel[getFloatingKey('small')] ? 'z-index: 1001;' : 'auto;'}
+    @media only screen and (min-width: 768px) {
+      width: ${getDashboardPanelLength('width', 'medium', props.panel)};
+      height: ${getHeight('medium', props)};
+      transform: translate(${getTranslateX('medium', props)}, ${getTranslateY('medium', props)});
+      ${props.panel && props.panel[getFloatingKey('medium')] ? 'z-index: 1001;' : 'z-index: auto'}
+    }
+    @media only screen and (min-width: 992px) {
       width: ${getDashboardPanelLength('width', 'large', props.panel)};
       height: ${getHeight('large', props)};
       transform: translate(${getTranslateX('large', props)}, ${getTranslateY('large', props)});
-    }
-    .o-resizer-vertical-splitter {
-      ${width(1)};
-      ${backgroundColor('transparent')}
-      ${height('full')}
-      cursor: e-resize;
-      transition: background 0.1s ease-out;
-      &.o-resizer-active {
-        ${backgroundColor('primary')}
-        ${zIndex(35)}
-      }
+      ${props.panel && props.panel[getFloatingKey('medium')] ? 'z-index: 1001;' : 'z-index: auto'}
     }
   `;
 };
@@ -105,27 +121,24 @@ const StyledComponent = styled(Component)`
   ${style}
 `;
 
-const dashboardVerticalPanel = (area: DashboardVerticalArea): React.FC<DashboardVerticalPanelProps> => {
-  const Panel: React.FC<DashboardVerticalPanelProps> = (props) => {
+const dashboardVerticalPanel = (area: DashboardVerticalArea): FCC<DashboardVerticalPanelProps> => {
+  const Panel: FCC<DashboardVerticalPanelProps> = (props) => {
     const service = useDashboardService();
     const state = useDashboardState();
-    const ref: React.MutableRefObject<HTMLDivElement | null> = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-      service.initVerticalPanel(area, props, ref);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
 
     const panel = state[area];
-    const onResize = (width: number) => {
-      service.resizeWidth(area, width);
+    const onResize = (step: ResizeStep, nextWidth: number) => {
+      service.resizeWidth(area, nextWidth, step);
     };
 
     return (
-      <StyledComponent {...state} panel={panel} className={props.className} ref={ref}>
-        <Resizer onResize={onResize} handles={['e']}>
-          {props.children}
-        </Resizer>
+      <StyledComponent {...state} {...props} area={area} panel={panel}>
+        {props.resizable && (
+          <Resizer onResize={onResize} handles={[area === 'left' ? 'e' : 'w']}>
+            {props.children}
+          </Resizer>
+        )}
+        {!props.resizable && props.children}
       </StyledComponent>
     );
   };

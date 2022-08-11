@@ -28,3 +28,6 @@ coverage
 # next
 .next
 out
+
+# rollup
+.rollup.cache

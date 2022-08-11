@@ -3,26 +3,26 @@ import { addClassname } from '../../../utils/style';
 import { TableHeaderProps } from '../typings';
 import TableHeaderTitleComponent from './TableHeaderTitleComponent';
 import TableHeaderFilterComponent from './TableHeaderFilterComponent';
+import useTableService from '../hooks/useTableService';
+import { useTableConfig } from '../hooks/useTableConfig';
 
-const TableHeaderComponent: React.FC<TableHeaderProps> = ({ controller }) => {
+const TableHeaderComponent: React.FC<TableHeaderProps> = ({ columns, className }) => {
   const headerStyle: CSSProperties = {
     display: 'flex',
   };
 
-  if (controller.fixHeader) {
+  const service = useTableService();
+  const { fixHeader = true, filterable, sortable } = useTableConfig();
+
+  if (fixHeader) {
     headerStyle.position = 'sticky';
     headerStyle.top = 0;
     headerStyle.zIndex = 1;
   }
 
-  const hasFilter: boolean = controller.columns
-    .map((c) => c.filterable || (c.filterable === undefined && controller.filterable !== false))
+  const hasFilter: boolean = columns
+    .map((c) => c.filterable || (c.filterable === undefined && filterable !== false))
     .reduce((accumulator, filterable) => accumulator || filterable, false);
-
-  const className =
-    typeof controller.headerClassName === 'function'
-      ? controller.headerClassName(controller)
-      : controller.headerClassName;
 
   return (
     <div
@@ -30,39 +30,41 @@ const TableHeaderComponent: React.FC<TableHeaderProps> = ({ controller }) => {
       style={headerStyle}
     >
       <div className="o-table-header-row-title">
-        {controller.columns.map((column, colIndex) => {
-          const filterable = column.filterable || (column.filterable === undefined && controller.filterable !== false);
-          const sortable = column.sortable || (column.sortable === undefined && controller.sortable !== false);
-          const filter = controller.getFilterById(column.id);
-          const sort = controller.getSortById(column.id);
+        {columns.map((column, colIndex) => {
+          const isFilterable = column.filterable || (column.filterable === undefined && filterable !== false);
+          const isSortable = column.sortable || (column.sortable === undefined && sortable !== false);
+          const filter = service.getFilterById(column.id);
+          const sort = service.getSortById(column.id);
+          const cellClassName =
+            typeof column.headerClassName === 'function' ? column.headerClassName(column) : column.headerClassName;
           return (
             <TableHeaderTitleComponent
               column={column}
               filter={filter}
-              filterable={filterable}
+              filterable={isFilterable}
               sort={sort}
-              sortable={sortable}
+              sortable={isSortable}
               colIndex={colIndex}
               key={`header-cell-title-${colIndex}`}
+              className={cellClassName}
             />
           );
         })}
       </div>
       {hasFilter && (
         <div className="o-table-header-row-filter">
-          {controller.columns.map((column, colIndex) => {
-            const filterable =
-              column.filterable || (column.filterable === undefined && controller.filterable !== false);
-            const sortable = column.sortable || (column.sortable === undefined && controller.sortable !== false);
-            const filter = controller.getFilterById(column.id);
-            const sort = controller.getSortById(column.id);
+          {columns.map((column, colIndex) => {
+            const isFilterable = column.filterable || (column.filterable === undefined && filterable !== false);
+            const isSortable = column.sortable || (column.sortable === undefined && sortable !== false);
+            const filter = service.getFilterById(column.id);
+            const sort = service.getSortById(column.id);
             return (
               <TableHeaderFilterComponent
                 column={column}
                 filter={filter}
-                filterable={filterable}
+                filterable={isFilterable}
                 sort={sort}
-                sortable={sortable}
+                sortable={isSortable}
                 colIndex={colIndex}
                 key={`header-cell-filter-${colIndex}`}
               />

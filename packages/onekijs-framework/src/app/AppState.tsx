@@ -1,13 +1,14 @@
-import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Provider } from 'react-redux';
 import { AppSettings, AppStore } from '../types/app';
+import { FCC } from '../types/core';
 import { isPromise } from '../utils/type';
 import AppProvider from './AppProvider';
 import DefaultLoadingComponent from './DefaultLoadingComponent';
 import { AppStateProps } from './typings';
 import { createReduxStore, formatSettings } from './utils';
 
-const AppState: FC<AppStateProps> = ({
+const AppState: FCC<AppStateProps> = ({
   settings = {},
   store,
   initialState = {},
@@ -23,7 +24,6 @@ const AppState: FC<AppStateProps> = ({
   const [loading, setLoading] = useState(isPromise(initialState) || isPromise(settings));
   const [appSettings, setAppSettings] = useState(isPromise(settings) ? null : settings);
   const [appInitialState, setAppInitialState] = useState(isPromise(initialState) ? null : initialState);
-
   const appStore = useMemo(() => {
     if (!loading) {
       return store ? store : createReduxStore(appInitialState || {});
@@ -38,9 +38,9 @@ const AppState: FC<AppStateProps> = ({
     return;
   }, [appSettings]);
 
-  // if (formattedSettings) {
-  //   router.settings = formattedSettings;
-  // }
+  if (formattedSettings) {
+    router.settings = formattedSettings;
+  }
 
   const initRef = useRef(false);
 

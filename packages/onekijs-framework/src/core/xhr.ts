@@ -84,7 +84,7 @@ export async function formatAsyncResponse(response: Response): Promise<any> {
   try {
     result = await response.json();
   } catch (e) {
-    throw new HTTPError(response.status, undefined, e);
+    throw new HTTPError(response.status, undefined, e as AnonymousObject);
   }
   throw new HTTPError(response.status, result.message, result);
 }

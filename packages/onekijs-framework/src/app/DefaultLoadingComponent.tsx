@@ -1,5 +1,6 @@
-import React, { FC } from 'react';
+import React from 'react';
+import { FCC } from '../types/core';
 
-const DefaultLoadingComponent: FC<any> = () => <div>LOADING ...</div>;
+const DefaultLoadingComponent: FCC<any> = () => <div>LOADING ...</div>;
 
 export default DefaultLoadingComponent;

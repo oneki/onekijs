@@ -9,44 +9,39 @@ import { ComponentStyle } from '../../styles/typings';
 import { color, fontSize } from '../../styles/typography';
 import { FieldDescriptionProps, FieldHelpProps, FieldLayoutProps } from './typings';
 
-export const fieldStyle: ComponentStyle<FieldLayoutProps> = () => {
+export const fieldStyle: ComponentStyle<FieldLayoutProps> = ({ theme }) => {
+  const t = theme.fieldLayout;
   return css`
-      ${display('flex')}
-      ${marginY('xs')}
+    ${display('flex')}
+    ${marginY(t.marginY)}
       &.o-form-field-vertical {
-        ${flexDirection('column')}
-      }
-      &.o-form-field-horizontal {
-        ${flexDirection('row')}
-      }  
-      .o-helper-icon {
-        ${fontSize('xl')}
-        ${color('primary')}
-        ${marginLeft('sm')}
-        ${height('100%')}
-        ${display('flex')}
-        ${alignItems('center')}
-      }    
-    `;
+      ${flexDirection('column')}
+    }
+    &.o-form-field-horizontal {
+      ${flexDirection('row')}
+    }
+  `;
 };
 
-export const fieldHelpStyle: ComponentStyle<FieldHelpProps> = ({ visible = true }) => {
+export const fieldHelpStyle: ComponentStyle<FieldHelpProps> = ({ visible = true, theme }) => {
+  const t = theme.fieldLayout;
   return css`
       ${fontSize('xl')}
-      ${color('primary')}
-      ${marginLeft('sm')}
+      ${color(t.helperColor)}
+      ${marginLeft(t.helperMarginLeft)}
       ${height('100%')}
       ${display('flex')}
-      ${alignItems('center')}  
+      ${alignItems('center')}
       .o-tooltip {
         ${cursor(visible ? 'pointer' : 'default')}
       }
     `;
 };
 
-export const fieldDescriptionStyle: ComponentStyle<FieldDescriptionProps> = () => {
+export const fieldDescriptionStyle: ComponentStyle<FieldDescriptionProps> = ({ theme }) => {
+  const t = theme.fieldLayout;
   return css`
-    ${fontSize('sm')}
-    ${color('gray-600')}
+    ${fontSize(t.descriptionFontSize)}
+    ${color(t.descriptionColor)}
   `;
 };

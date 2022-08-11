@@ -14,7 +14,7 @@ const useLocalReducer = <S extends State, T extends Service<S>>(service: T, init
   env.current = state;
   const channelRef = useRef(stdChannel());
   const dispatcher = useCallback(
-    (a) => {
+    (a: any) => {
       if (service[reducers][a.type]) {
         try {
           const state = service.state;

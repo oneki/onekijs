@@ -1,5 +1,4 @@
-import React from 'react';
-import { Redirect, Route, Switch } from 'onekijs';
+import { Navigate, Route, Routes } from 'onekijs';
 import AppLayout from '../modules/core/layouts/AppLayout';
 import CartPage from './cart';
 import ProductsRouter from './products/_router';
@@ -7,17 +6,12 @@ import ProductsRouter from './products/_router';
 const RootRouter = (): JSX.Element => {
   return (
     <AppLayout>
-      <Switch>
-        <Route path="/products">
-          <ProductsRouter />
-        </Route>
-        <Route path="/cart">
-          <CartPage />
-        </Route>
-        <Route>
-          <Redirect to="/products" />
-        </Route>
-      </Switch>
+      {/* AppLayout is a layout common to all pages */}
+      <Routes>
+        <Route path="/products/*" element={<ProductsRouter />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route index element={<Navigate to="/products" replace />} />
+      </Routes>
     </AppLayout>
   );
 };

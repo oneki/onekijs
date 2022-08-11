@@ -14,7 +14,7 @@ const useLogout = (options: LogoutOptions = {}): [BasicError | undefined, boolea
 
   // we send errors to the notification service
   const defaultOnError = useCallback(
-    (error) => {
+    (error: BasicError) => {
       notificationService.send({
         topic: 'logout-error',
         payload: error,

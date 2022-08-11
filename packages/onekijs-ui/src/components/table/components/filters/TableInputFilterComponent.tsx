@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { alignItems, justifyContent } from '../../../../styles/alignment';
 import { backgroundColor } from '../../../../styles/background';
@@ -8,17 +8,57 @@ import { cursor, userSelect } from '../../../../styles/interactivity';
 import { width } from '../../../../styles/size';
 import { color } from '../../../../styles/typography';
 import { addClassname } from '../../../../utils/style';
+import Dropdown from '../../../dropdown';
 import SearchIcon from '../../../icon/SearchIcon';
 import Input from '../../../input';
 import { InputProps } from '../../../input/typings';
-import { TableFilterProps } from '../../typings';
-import useTableController from '../../useTableController';
+import useTableController from '../../hooks/useTableService';
+import { TableHeaderCellProps } from '../../typings';
 import { getValueFromFilter } from '../../util';
 
 const SearchComponent: React.FC<InputProps> = ({ className }) => {
+  const [showOperators, setShowOperators] = useState(false);
+  const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
+  const toggleOperators = () => {
+    setShowOperators(!showOperators);
+  };
+  const [dropping, setDropping] = useState(false);
+  const [collapsing, setCollapsing] = useState(false);
+
+  const style: React.CSSProperties = {};
+
+  if (dropping || collapsing) {
+    style['zIndex'] = 1001;
+  }
   return (
-    <div className={addClassname('o-search-icon-container', className)}>
-      <SearchIcon width="14px" height="14px" />
+    <div
+      ref={setContainerRef}
+      className={addClassname('o-search-icon-container', className)}
+      style={{ position: 'relative' }}
+    >
+      <SearchIcon className="o-search-icon" width="14px" height="14px" onClick={toggleOperators} />
+      {showOperators && (
+        <Dropdown
+          refElement={containerRef}
+          open={showOperators}
+          distance={0}
+          animationTimeout={200}
+          onDropStart={() => {
+            setDropping(true);
+          }}
+          onCollapseStart={() => {
+            setCollapsing(true);
+          }}
+          onDropDone={() => {
+            setDropping(false);
+          }}
+          onCollapseDone={() => {
+            setCollapsing(false);
+          }}
+        >
+          <div>operators</div>
+        </Dropdown>
+      )}
     </div>
   );
 };
@@ -30,10 +70,12 @@ const StyledSearchComponent = styled(SearchComponent)`
       ${alignItems('center')}
       ${borderRadius('none')}
       ${justifyContent('center')}
-      ${cursor('pointer')}
       ${backgroundColor('inherit')}
-      ${color('primary')}   
-      ${userSelect('none')} 
+      ${color('primary')}
+      ${userSelect('none')}
+      .o-search-icon {
+        ${cursor('pointer')}
+      }
   `}
 `;
 
@@ -52,13 +94,13 @@ const StyledSearchComponent = styled(SearchComponent)`
 //   `}
 // `;
 
-const TableInputFilterComponent: React.FC<TableFilterProps> = ({ column }) => {
+const TableInputFilterComponent: React.FC<TableHeaderCellProps> = ({ column }) => {
   const controller = useTableController();
   const filter = controller.getFilterById(column.id);
   const value = getValueFromFilter(filter);
   const onValueChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.value) {
-      controller.addFilterCriteria(column.id, 'i_like', e.target.value, false, column.id);
+      controller.addFilterCriteria(column.id, 'like', e.target.value, false, column.id);
     } else {
       controller.removeFilter(column.id);
     }

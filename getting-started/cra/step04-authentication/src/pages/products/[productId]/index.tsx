@@ -6,7 +6,7 @@ import { ProductType } from '../../../modules/products/components/Product';
 import ProductDetails from '../../../modules/products/components/ProductDetails';
 
 const ProductDetailsPage: React.FC = () => {
-  const { productId } = useParams();
+  const { productId = '' } = useParams();
   const [cart, setCart] = useGlobalState<ProductType[]>(STATE_CART, []); // TODO update to useGlobalState
 
   const product = products[+productId];

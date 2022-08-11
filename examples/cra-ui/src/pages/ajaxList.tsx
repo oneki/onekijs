@@ -1,33 +1,45 @@
 import {
-  Collection, CollectionService, CollectionState,
+  Collection,
+  CollectionService,
+  CollectionState,
   Fetcher,
   HttpMethod,
-  ItemMeta,
-  LoadingStatus, Query, useCollection,
-  useService
+  Item,
+  LoadingStatus,
+  Query,
+  useService,
 } from 'onekijs';
-import {
-  List
-} from 'onekijs-ui';
+import { List, useListController } from 'onekijs-ui';
 import React, { useCallback } from 'react';
+import styled from 'styled-components';
 import { User, userAdapter, users, userSearcher } from '../data/users';
 import Spinner from './spinner';
 
-
-
-const isLoading = (collection: Collection<User, ItemMeta>): boolean => {
+const isLoading = (collection: Collection<User, Item<User>>): boolean => {
   return collection.status === LoadingStatus.Loading || collection.status === LoadingStatus.PartialLoading;
 };
 
+const AjaxList = styled(List)`
+.o-list-item-highlighted {
+  background: yellow
+}
+.o-list-item-active {
+  background: blue
+}
+.o-list-item-selected {
+  background: red
+}
+`
+
 export const AjaxListPage = () => {
   const [, service] = useService<
-    CollectionState<User, ItemMeta>,
-    CollectionService<User, ItemMeta, CollectionState<User, ItemMeta>>
+    CollectionState<User, Item<User>>,
+    CollectionService<User, Item<User>, CollectionState<User, Item<User>>>
   >(CollectionService, {
     dataSource: users,
     adapter: userAdapter,
     searcher: userSearcher,
-  } as CollectionState<User, ItemMeta>);
+  } as CollectionState<User, Item<User>>);
 
   const fetcher: Fetcher = useCallback(
     async (url, method, body, options) => {
@@ -42,7 +54,7 @@ export const AjaxListPage = () => {
     [service],
   );
 
-  const remoteCollection = useCollection<User>('http://localhost', {
+  const remoteCollection = useListController<User>('http://localhost', {
     adapter: userAdapter,
     fetcher,
     method: HttpMethod.Post,
@@ -52,6 +64,8 @@ export const AjaxListPage = () => {
   const search = (e: React.ChangeEvent<HTMLInputElement>) => {
     remoteCollection.search(e.target.value);
   };
+
+
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', width: '100%' }}>
@@ -69,7 +83,7 @@ export const AjaxListPage = () => {
         {isLoading(remoteCollection) && <Spinner />}
       </div>
       <div style={{ width: '300px', border: '1px solid black', padding: '5px' }}>
-        <List height={200} items={remoteCollection} preload={100} increment={100} />
+        <AjaxList height={200} controller={remoteCollection} preload={100} increment={100} keyboardNavigable={true} />
       </div>
     </div>
   );

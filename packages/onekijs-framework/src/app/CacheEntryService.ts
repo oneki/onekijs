@@ -122,10 +122,10 @@ export default class CacheEntryService<T> extends DefaultGlobalService {
       if (loadingTask) {
         yield cancel(loadingTask);
       }
-      yield this.setError(url, e);
+      yield this.setError(url, e as BasicError);
       const onError = options.onError;
       if (onError) {
-        yield call(onError, e);
+        yield call(onError, e as BasicError);
       } else {
         throw e;
       }

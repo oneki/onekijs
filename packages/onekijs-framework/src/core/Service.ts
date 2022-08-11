@@ -61,8 +61,8 @@ export default class DefaultService<S extends State = AnyState> implements Servi
   public [types]: any;
   public [sagas]: any;
   public [dispatch]: any;
-  public [combinedReducers]: (state: any, action: any) => any;
-  public [inReducer]: boolean;
+  public [combinedReducers]: (state: any, action: any) => any = (state: any) => state;
+  public [inReducer] = false;
   public [sagasFromReducers]: any;
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   public state: S = null!;

@@ -1,12 +1,20 @@
-import { isTrue } from 'onekijs';
+import { isTrue, ucfirst } from 'onekijs-framework';
 import { DashboardHorizontalPanel, DashboardSize, DashboardVerticalPanel } from '../typings';
+
+export const getCollapseKey = (size: DashboardSize): 'collapseSmall' | 'collapseMedium' | 'collapseLarge' => {
+  return `collapse${ucfirst(size)}` as 'collapseSmall' | 'collapseMedium' | 'collapseLarge';
+};
+
+export const getFloatingKey = (size: DashboardSize): 'floatingSmall' | 'floatingMedium' | 'floatingLarge' => {
+  return `floating${ucfirst(size)}` as 'floatingSmall' | 'floatingMedium' | 'floatingLarge';
+};
 
 export const getDashboardPanelLength = (
   type: 'width' | 'height',
   size: DashboardSize,
   panel: DashboardHorizontalPanel | DashboardVerticalPanel | undefined,
 ): string | 0 => {
-  if (!panel) return 0;
+  if (!panel || (panel[getFloatingKey(size)] && panel[getCollapseKey(size)])) return 0;
 
   const panelCollapseLength =
     type === 'width'
@@ -16,8 +24,8 @@ export const getDashboardPanelLength = (
   const panelLength =
     type === 'width' ? (panel as DashboardVerticalPanel)?.width : (panel as DashboardHorizontalPanel)?.height;
 
-  if (!panel.floating && (size === 'small' || isTrue(panel.collapse))) {
-    return panelCollapseLength;
+  if (!panel[getFloatingKey(size)] && (size === 'small' || isTrue(panel[getCollapseKey(size)]))) {
+    return parseFloat(`${panelCollapseLength}`) < parseFloat(`${panelLength}`) ? panelCollapseLength : panelLength;
   }
   return panelLength;
 };
@@ -29,6 +37,6 @@ export const getWorkspacePanelLength = (
   size: DashboardSize,
   panel: DashboardHorizontalPanel | DashboardVerticalPanel | undefined,
 ): string | 0 => {
-  if (!panel || panel.floating) return 0;
+  if (!panel || panel[getFloatingKey(size)]) return 0;
   return getDashboardPanelLength(type, size, panel);
 };

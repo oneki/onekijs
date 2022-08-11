@@ -4,6 +4,7 @@ import { useErrorCallback, useSuccessCallback } from '../app/utils';
 import BasicError from '../core/BasicError';
 import useNotificationService from '../notification/useNotificationService';
 import { AnyFunction } from '../types/core';
+import { AnonymousObject } from '../types/object';
 import LoginService from './LoginService';
 import { LoginOptions, LoginState } from './typings';
 
@@ -19,7 +20,7 @@ const useLogin = (idpName = 'default', options: LoginOptions = {}): [BasicError 
 
   // we send errors to the notification service
   const defaultOnError = useCallback(
-    (error) => {
+    (error: BasicError) => {
       notificationService.send({
         topic: 'login-error',
         payload: error,
@@ -33,7 +34,7 @@ const useLogin = (idpName = 'default', options: LoginOptions = {}): [BasicError 
 
   // build the submit method in case of a form login
   const submit = useCallback(
-    (data) => {
+    (data?: AnonymousObject) => {
       return service.formLogin(Object.assign({}, data), idpName, onError, onSuccess);
     },
     [service, idpName, onError, onSuccess],

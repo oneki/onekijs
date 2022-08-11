@@ -5,23 +5,9 @@ import {
   isCollectionInitializing,
   reducer,
   service,
-  set,
 } from 'onekijs-framework';
 import React from 'react';
-import { toArray } from 'onekijs';
-import {
-  TableBodyProps,
-  TableBodyRowProps,
-  TableColumn,
-  TableColumnWidth,
-  TableController,
-  TableFooterProps,
-  TableHeaderProps,
-  TableItem,
-  TableItemMeta,
-  TableRowHandler,
-  TableState,
-} from './typings';
+import { TableColumn, TableColumnWidth, TableController, TableItem, TableState } from './typings';
 
 export const parseColumnWidth = (width: string | number = 'auto'): TableColumnWidth => {
   const regex = /^\s*(auto|(?:(?:([0-9]+)|(?:([0-9]+)\s*(px|%)))\s*(grow|force)?)|(grow))\s*$/;
@@ -56,9 +42,9 @@ export const parseColumnWidth = (width: string | number = 'auto'): TableColumnWi
 };
 
 @service
-class TableService<T = any, M extends TableItemMeta = TableItemMeta, S extends TableState<T, M> = TableState<T, M>>
-  extends CollectionService<T, M, S>
-  implements TableController<T, M> {
+class TableService<T = any, I extends TableItem<T> = TableItem<T>, S extends TableState<T, I> = TableState<T, I>>
+  extends CollectionService<T, I, S>
+  implements TableController<T, I> {
   // The table has three init steps
   //  - unmounted => data are not yet loaded
   //  - initializing -> the first render (with real data) is in progress
@@ -74,122 +60,18 @@ class TableService<T = any, M extends TableItemMeta = TableItemMeta, S extends T
   // ref of the body container
   protected contentRef: React.RefObject<HTMLDivElement> | null = null;
 
-  adapt(data: T | undefined): TableItem<T, M> {
+  adapt(data: T | undefined): I {
     const item = super.adapt(data);
-    set(item.meta, 'selected', this.state.selected && item.id !== undefined && this.state.selected.includes(item.id));
+    item.selected = this.state.selected && this.state.selected.includes(item.uid);
     return item;
-  }
-
-  get bodyClassName(): string | ((context: TableController<T, M>) => string) | undefined {
-    return this.state.bodyClassName;
-  }
-
-  get BodyComponent(): React.FC<TableBodyProps<T>> | undefined {
-    return this.state.BodyComponent;
-  }
-
-  get columns(): TableColumn<T, M>[] {
-    return this.state.columns;
-  }
-
-  get filterable(): boolean | undefined {
-    return this.state.filterable;
-  }
-
-  get fit(): boolean {
-    return this.state.fit === false ? false : true;
-  }
-
-  get fixHeader(): boolean {
-    return this.state.fixHeader === false ? false : true;
-  }
-
-  get footer(): boolean | undefined {
-    return this.state.footer;
-  }
-
-  get footerClassName(): string | ((context: TableController<T, M>) => string) | undefined {
-    return this.state.footerClassName;
-  }
-
-  get FooterComponent(): React.FC<TableHeaderProps> | undefined {
-    return this.state.FooterComponent;
-  }
-
-  get grow(): string | undefined {
-    return this.state.grow;
-  }
-
-  get header(): boolean | undefined {
-    return this.state.header;
-  }
-
-  get headerClassName(): string | ((context: TableController<T, M>) => string) | undefined {
-    return this.state.headerClassName;
-  }
-
-  get HeaderComponent(): React.FC<TableHeaderProps> | undefined {
-    return this.state.HeaderComponent;
-  }
-
-  get height(): string | undefined {
-    return this.state.height;
-  }
-
-  get highlightRow(): boolean | undefined {
-    return this.state.highlightRow;
-  }
-
-  get onRowClick(): TableRowHandler<T, M> | undefined {
-    return this.state.onRowClick;
-  }
-
-  get onRowEnter(): TableRowHandler<T, M> | undefined {
-    return this.state.onRowEnter;
-  }
-
-  get onRowLeave(): TableRowHandler<T, M> | undefined {
-    return this.state.onRowLeave;
-  }
-
-  get onRowOver(): TableRowHandler<T, M> | undefined {
-    return this.state.onRowOver;
-  }
-
-  get onRowOut(): TableRowHandler<T, M> | undefined {
-    return this.state.onRowOut;
-  }
-
-  get rowClassName(): string | ((rowData: T, context: TableController<T, M>) => string) | undefined {
-    return this.state.rowClassName;
-  }
-
-  get RowComponent(): React.FC<TableBodyRowProps<T, M>> | undefined {
-    return this.state.RowComponent;
-  }
-
-  get sortable(): boolean | undefined {
-    return this.state.sortable;
-  }
-
-  get selected(): (string | number)[] | undefined {
-    return this.state.selected;
   }
 
   get step(): 'unmounted' | 'mounted' | 'initializing' {
     return this._step;
   }
 
-  get stripRows(): boolean | undefined {
-    return this.state.stripRows;
-  }
-
-  asService(): TableService<T, M> {
-    return this;
-  }
-
   @reducer
-  addColumn(column: TableColumn<T, M>, position?: number): void {
+  addColumn(column: TableColumn<T, I>, position?: number): void {
     if (position === undefined) {
       this.state.columns.push(column);
     } else {
@@ -198,11 +80,8 @@ class TableService<T = any, M extends TableItemMeta = TableItemMeta, S extends T
     this.resetWidth();
   }
 
-  @reducer
-  addSelected(id: string | number | (string | number)[]): void {
-    const arrayOfIds = toArray(id);
-    this.state.selected = [...new Set((this.state.selected || []).concat(arrayOfIds))];
-    arrayOfIds.forEach((i) => this.setMetaById(i, 'selected', true));
+  get columns(): TableColumn<T, I>[] {
+    return this.state.columns;
   }
 
   @reducer
@@ -246,13 +125,6 @@ class TableService<T = any, M extends TableItemMeta = TableItemMeta, S extends T
   }
 
   @reducer
-  removeSelected(id: string | number | (string | number)[]): void {
-    const arrayOfIds = toArray(id);
-    this.state.selected = (this.state.selected || []).filter((s) => !arrayOfIds.includes(s));
-    arrayOfIds.forEach((i) => this.setMetaById(i, 'selected', false));
-  }
-
-  @reducer
   resetWidth(): void {
     this.state.columns.forEach((column) => {
       column.computedWidth = undefined;
@@ -261,32 +133,8 @@ class TableService<T = any, M extends TableItemMeta = TableItemMeta, S extends T
   }
 
   @reducer
-  setFooter(footer?: boolean): void {
-    this.state.footer = footer;
-  }
-
-  @reducer
-  setFooterComponent(FooterComponent?: React.FC<TableFooterProps>): void {
-    this.state.FooterComponent = FooterComponent;
-  }
-
-  @reducer
-  setHeader(header?: boolean): void {
-    this.state.header = header;
-  }
-
-  @reducer
-  setHeaderComponent(HeaderComponent?: React.FC<TableHeaderProps>): void {
-    this.state.HeaderComponent = HeaderComponent;
-  }
-
-  @reducer
-  setSelected(id: string | number | (string | number)[]): void {
-    const arrayOfIds = toArray(id);
-    const current = this.state.selected || [];
-    current.filter((i) => !arrayOfIds.includes(i)).forEach((i) => this.setMetaById(i, 'selected', false));
-    arrayOfIds.filter((i) => !current.includes(i)).forEach((i) => this.setMetaById(i, 'selected', true));
-    this.state.selected = toArray(id);
+  toggle(item: I): void {
+    this.setMeta('item', item, 'expanded', !item.expanded);
   }
 
   @reducer

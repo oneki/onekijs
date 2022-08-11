@@ -1,14 +1,14 @@
 import { useRouter } from 'onekijs-framework';
 import React, { FC } from 'react';
-import { matchPath, Route as ReactRouterRoute, RouteProps, useHistory } from 'react-router-dom';
+import { matchPath, Route as ReactRouterRoute, RouteProps, useLocation } from 'react-router-dom';
 
 const Route: FC<RouteProps> = (props) => {
-  const history = useHistory();
-  const match = matchPath(history.location.pathname, props);
+  const { pathname } = useLocation();
+  const match = props.path ? matchPath(props.path, pathname) : false;
   const router = useRouter();
   if (match) {
     router.params = match.params;
-    router.route = match.path;
+    router.route = props.path;
   }
   return <ReactRouterRoute {...props} />;
 };

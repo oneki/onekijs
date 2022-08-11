@@ -1,7 +1,7 @@
-import React from 'react';
+import { FCC } from 'onekijs';
 import Navbar from '../components/Navbar';
 
-const AppLayout: React.FC = ({ children }) => {
+const AppLayout: FCC = ({ children }) => {
   return (
     <div>
       <Navbar />

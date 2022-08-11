@@ -18,7 +18,7 @@ import { AnonymousObject } from './object';
 //     Component?: React.ForwardRefRenderFunction<HTMLAnchorElement, LinkComponentProps>;
 //   };
 export interface ParsedQuery<T = string> {
-  [key: string]: T | T[] | null | undefined;
+  [key: string]: T | null | Array<T | null>;
 }
 export type LinkComponentProps = Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>;
 export type LinkProps = Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> &
@@ -78,7 +78,6 @@ export interface Router {
   back(delta?: number): void;
   deleteOrigin(): void;
   forward(delta?: number): void;
-  getReactContext(): React.Context<any>;
   getLinkComponent(
     props: LinkProps,
     ref: ((instance: HTMLAnchorElement | null) => void) | MutableRefObject<HTMLAnchorElement | null> | null,

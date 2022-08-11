@@ -4,7 +4,7 @@ import { products } from '..';
 import ProductDetails from '../../../modules/products/components/ProductDetails';
 
 const ProductDetailsPage: React.FC = () => {
-  const { productId } = useParams();
+  const { productId = '' } = useParams();
   const product = products[+productId];
   return <ProductDetails product={product} />;
 };

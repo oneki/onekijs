@@ -1,9 +1,9 @@
+import { CollectionState } from '..';
 import { Primitive } from '../types/core';
 import { AnonymousObject } from '../types/object';
 import {
   Collection,
   CollectionBroker,
-  ItemMeta,
   QueryFilter,
   QueryFilterCriteria,
   QueryFilterCriteriaOperator,
@@ -12,11 +12,16 @@ import {
   QueryFilterOrCriteria,
   QuerySortBy,
   QuerySortDir,
+  Item,
 } from './typings';
 import { formatFilter, formatSortBy, rootFilterId } from './utils';
 
-export default class DefaultCollectionBroker<T = any, M extends ItemMeta = ItemMeta> implements CollectionBroker<T, M> {
-  protected subscribers: Collection<T, M>[] = [];
+export default class DefaultCollectionBroker<
+  T = any,
+  I extends Item<T> = Item<T>,
+  S extends CollectionState<T, I> = CollectionState<T, I>
+> implements CollectionBroker<T, I, S> {
+  protected subscribers: Collection<T, I, S>[] = [];
   protected filters: {
     parentFilterId: QueryFilterId;
     filter: QueryFilter;
@@ -77,11 +82,10 @@ export default class DefaultCollectionBroker<T = any, M extends ItemMeta = ItemM
     this.subscribers.forEach((s) => s.addSortBy(sortBy, prepend));
   }
 
-  addSubscriber(subscriber: Collection<T, M>): void {
-    const service = subscriber.asService();
-    const index = this.subscribers.indexOf(service);
+  addSubscriber(subscriber: Collection<T, I, S>): void {
+    const index = this.subscribers.indexOf(subscriber);
     if (index === -1) {
-      this.subscribers.push(service);
+      this.subscribers.push(subscriber);
     }
   }
 
@@ -147,9 +151,8 @@ export default class DefaultCollectionBroker<T = any, M extends ItemMeta = ItemM
     this.subscribers.forEach((s) => s.removeSortBy(id));
   }
 
-  removeSubscriber(subscriber: Collection<T, M>): void {
-    const service = subscriber.asService();
-    this.subscribers = this.subscribers.filter((s) => s !== service);
+  removeSubscriber(subscriber: Collection<T, I>): void {
+    this.subscribers = this.subscribers.filter((s) => s !== subscriber);
   }
 
   search(search: Primitive): void {

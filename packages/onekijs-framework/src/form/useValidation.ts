@@ -16,7 +16,7 @@ const useValidation = (name = '', touchedOnly = true): FieldValidation | Contain
   const argsRef = useRef({ name, touchedOnly });
 
   const getFieldValidation = useCallback(
-    (name, touchedOnly) => {
+    (name: string, touchedOnly: boolean) => {
       if (fields[name]) {
         if (touchedOnly) {
           return fields[name].touched ? validationsRef.current[name] || defaultValidation : defaultValidation;

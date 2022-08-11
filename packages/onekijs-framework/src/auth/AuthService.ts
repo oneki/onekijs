@@ -5,7 +5,7 @@ import DefaultBasicError from '../core/BasicError';
 import HTTPError from '../core/HTTPError';
 import { asyncGet, asyncPost } from '../core/xhr';
 import { SuccessCallback } from '../types/callback';
-import { ErrorCallback } from '../types/error';
+import { BasicError, ErrorCallback } from '../types/error';
 import { AnonymousObject } from '../types/object';
 import { SagaEffect } from '../types/saga';
 import { del, get, isNull, set } from '../utils/object';
@@ -162,7 +162,7 @@ export default class AuthService extends DefaultGlobalService {
       }
     } catch (e) {
       if (onError) {
-        yield onError(e);
+        yield onError(e as BasicError);
       } else {
         throw e;
       }
@@ -245,7 +245,7 @@ export default class AuthService extends DefaultGlobalService {
         console.error('fetchSecurityContext error', e, onError);
       }
       if (onError) {
-        yield onError(e);
+        yield onError(e as BasicError);
         return;
       } else {
         throw e;
@@ -325,7 +325,7 @@ export default class AuthService extends DefaultGlobalService {
       return result;
     } catch (e) {
       if (onError) {
-        yield onError(e);
+        yield onError(e as BasicError);
         return;
       } else {
         throw e;
@@ -434,7 +434,7 @@ export default class AuthService extends DefaultGlobalService {
         }
       }
       if (onError) {
-        yield onError(e);
+        yield onError(e as BasicError);
       } else {
         throw e;
       }
@@ -490,7 +490,7 @@ export default class AuthService extends DefaultGlobalService {
     } catch (e) {
       console.error(e);
       if (onError) {
-        yield onError(e);
+        yield onError(e as BasicError);
         return null;
       } else {
         throw e;

@@ -1,5 +1,5 @@
 import { display, flexDirection, paddingX, paddingY } from 'onekijs-ui';
-import React from 'react';
+
 import styled from 'styled-components';
 import Navbar from '../navbar/Navbar';
 
@@ -10,7 +10,7 @@ const Container = styled.div`
   ${paddingX(4)}
 `;
 
-const AppLayout: React.FC = ({ children }) => {
+const AppLayout: FCC = ({ children }) => {
   return (
     <>
       <Navbar />

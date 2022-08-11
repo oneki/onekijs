@@ -20,5 +20,7 @@
     "examples/*",
     "getting-started/*"
   ],
-  "useWorkspaces": true
+  "useWorkspaces": true,
+  "$schema": "node_modules/lerna/schemas/lerna-schema.json",
+  "useNx": false
 }

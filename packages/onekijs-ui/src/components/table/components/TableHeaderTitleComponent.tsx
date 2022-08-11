@@ -1,16 +1,18 @@
 import React, { FC, useEffect, useRef } from 'react';
 import { addClassname } from '../../../utils/style';
 import { TableHeaderCellProps } from '../typings';
-import useTableController from '../useTableController';
+import useTableService from '../hooks/useTableService';
 import { getCellWidth } from '../util';
 import TableSortComponent from './TableSortComponent';
+import { useTableConfig } from '../hooks/useTableConfig';
 
 export const DefaultTableHeaderTitleComponent: FC<TableHeaderCellProps> = ({ column, sort }) => {
-  const { sortable, sortBy } = useTableController();
+  const service = useTableService();
+  const { sortable } = useTableConfig();
   const isSortable = column.sortable || (column.sortable === undefined && sortable !== false);
   const onSort = () => {
     if (isSortable) {
-      sortBy({
+      service.sortBy({
         id: column.id,
         field: column.id,
         dir: sort && sort.dir !== 'desc' ? 'desc' : 'asc',
@@ -28,19 +30,19 @@ export const DefaultTableHeaderTitleComponent: FC<TableHeaderCellProps> = ({ col
 
 const TableHeaderTitleComponent: FC<TableHeaderCellProps> = React.memo((props) => {
   const { column, sortable } = props;
-  const controller = useTableController();
-  const { initCell, fit, grow } = controller;
+  const service = useTableService();
+  const { fit, grow } = useTableConfig();
   const ref = useRef<HTMLDivElement>(null);
   const initializedRef = useRef<boolean>(false);
 
   const className =
-    typeof column.headerClassName === 'function' ? column.headerClassName(column, controller) : column.headerClassName;
+    typeof column.headerClassName === 'function' ? column.headerClassName(column) : column.headerClassName;
 
-  const Component = column.HeaderComponent || DefaultTableHeaderTitleComponent;
+  const Component = column.TitleComponent || DefaultTableHeaderTitleComponent;
 
   useEffect(() => {
     if (!initializedRef.current && ref.current !== null) {
-      initializedRef.current = initCell('header-title', column.id, ref);
+      initializedRef.current = service.initCell('header-title', column.id, ref);
     }
   });
 

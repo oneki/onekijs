@@ -14,31 +14,34 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/index.module.js",
+      "import": "./dist/index.modern.js",
       "require": "./dist/index.js"
     }
   },
-  "module": "dist/index.module.js",
+  "module": "dist/index.modern.js",
   "unpkg": "dist/index.umd.js",
   "scripts": {
-    "build": "microbundle --jsx React.createElement",
-    "build:fast": "microbundle -f es --jsx React.createElement --no-compress",
-    "start": "microbundle watch -f es --jsx React.createElement --no-compress"
+    "build": "microbundle -f modern --jsx React.createElement --jsxFragment React.Fragment",
+    "build:fast": "microbundle -f modern --jsx React.createElement --jsxFragment React.Fragment --no-compress",
+    "start": "microbundle watch -f modern --jsx React.createElement --jsxFragment React.Fragment --max-old-space-size=8192 --no-compress",
+    "rollup:clean": "rimraf dist",
+    "rollup:build": "npm run rollup:clean && rollup --config rollup.config.js"
   },
   "author": "Oneki",
   "license": "MIT",
   "dependencies": {
     "history": "^4.10.1",
     "onekijs-framework": "^0.14.7",
-    "react-router": "^5.2.0",
-    "react-router-dom": "^5.1.2"
+    "react-router": "^6.3.0",
+    "react-router-dom": "^6.3.0"
   },
   "devDependencies": {
-    "microbundle": "^0.13.3"
+    "microbundle": "^0.15.0",
+    "rollup": "^2.77.3"
   },
   "peerDependencies": {
-    "react": ">=16",
-    "react-dom": ">=16"
+    "react": ">=18",
+    "react-dom": ">=18"
   },
   "sideEffects": false
 }

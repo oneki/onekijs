@@ -1,7 +1,8 @@
-import { History, Location as ReactRouterLocation, LocationListener, LocationState } from 'history';
+import { Location as ReactRouterLocation } from 'history';
 import {
   AppSettings,
   BaseRouter,
+  I18n,
   LinkProps,
   Location,
   LocationChangeCallback,
@@ -13,36 +14,23 @@ import {
   UnregisterCallback,
 } from 'onekijs-framework';
 import React, { MutableRefObject } from 'react';
-import { __RouterContext } from 'react-router';
+import { NavigateFunction } from 'react-router';
 import Link from '../Link';
 
 export class ReactRouter extends BaseRouter {
-  protected reactRouterHistory?: History<LocationState>;
-
-  constructor(history?: History<LocationState>) {
-    super();
-    if (history) {
-      this.reactRouterHistory = history;
-      this.reactRouterHistory.listen((reactRouterLocation: any) => {
-        this.pushLocation(reactRouterLocation);
-      });
-    }
-  }
+  listeners: LocationChangeCallback[] = [];
+  navigate?: NavigateFunction;
 
   back(delta = 1): void {
-    if (this.reactRouterHistory) {
-      this.reactRouterHistory.go(-delta);
+    if (this.navigate) {
+      this.navigate(-delta);
     }
   }
 
   forward(delta = 1): void {
-    if (this.reactRouterHistory) {
-      this.reactRouterHistory.go(delta);
+    if (this.navigate) {
+      this.navigate(delta);
     }
-  }
-
-  getReactContext(): React.Context<any> {
-    return __RouterContext;
   }
 
   getLinkComponent(
@@ -50,13 +38,6 @@ export class ReactRouter extends BaseRouter {
     ref: ((instance: HTMLAnchorElement | null) => void) | MutableRefObject<HTMLAnchorElement | null> | null,
   ): JSX.Element {
     return <Link {...props} ref={ref} />;
-  }
-
-  init(settings: AppSettings): void {
-    super.init(settings);
-    if (this.reactRouterHistory && this.history.length === 0) {
-      this.pushLocation(this.reactRouterHistory.location);
-    }
   }
 
   /**
@@ -91,29 +72,36 @@ export class ReactRouter extends BaseRouter {
    * }
    */
   listen(callback: LocationChangeCallback): UnregisterCallback {
-    const handler: LocationListener = (reactRouterLocation) => {
-      callback(this.convertLocation(reactRouterLocation), {
-        settings: this.settings,
-        i18n: this.i18n,
-      });
-    };
-    if (this.reactRouterHistory) {
-      return this.reactRouterHistory.listen(handler);
-    }
-
+    this.listeners.push(callback);
     return () => {
-      return;
+      this.listeners.splice(this.listeners.indexOf(callback), 1);
     };
   }
 
-  private convertLocation(reactRouterLocation: ReactRouterLocation<LocationState>): Location {
+  onLocationChange(): void {
+    this.listeners.forEach((listener) => {
+      listener(this.location, {
+        settings: this.settings,
+        i18n: this.i18n,
+      });
+    });
+  }
+
+  sync(location: ReactRouterLocation, navigate: NavigateFunction, i18n: I18n, settings: AppSettings): void {
+    this.navigate = navigate;
+    this.pushLocation(location);
+    this.i18n = i18n;
+    this.settings = settings;
+  }
+
+  private convertLocation(reactRouterLocation: ReactRouterLocation): Location {
     return toLocation(
       `${reactRouterLocation.pathname}${reactRouterLocation.search}${reactRouterLocation.hash}`,
       this.settings,
     );
   }
 
-  private pushLocation(reactRouterLocation: any): void {
+  private pushLocation(reactRouterLocation: ReactRouterLocation): void {
     const location = this.convertLocation(reactRouterLocation);
     this.history.unshift(location);
     this.history.splice(20, this.history.length);
@@ -126,9 +114,9 @@ export class ReactRouter extends BaseRouter {
     if (nextLocation && this.location && nextLocation.baseurl !== this.location.baseurl) {
       const nextUrl = toUrl(nextLocation);
       type === 'push' ? window.location.assign(nextUrl) : window.location.replace(nextUrl);
-    } else if (this.reactRouterHistory) {
+    } else if (this.navigate) {
       const nextUrl = toRelativeUrl(nextLocation);
-      type === 'push' ? this.reactRouterHistory.push(nextUrl) : this.reactRouterHistory.replace(nextUrl);
+      this.navigate(nextUrl, { replace: type === 'replace' });
     }
   }
 }

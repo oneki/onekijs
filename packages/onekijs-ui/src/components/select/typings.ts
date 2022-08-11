@@ -1,25 +1,52 @@
 import {
   AnyFunction,
   ChangeHandler,
+  Collection,
+  CollectionProxy,
   FormFieldProps,
-  Item,
-  ItemAdapter,
-  ItemMeta,
   ValidationStatus,
 } from 'onekijs-framework';
 import React, { FC } from 'react';
+import { DropdownWidthModifier } from '../dropdown/typings';
 import { FieldLayoutProps, FieldSize } from '../field/typings';
-import { ListItemHandler, ListItemProps, ListProps } from '../list/typings';
+import {
+  ListConfig,
+  ListItem,
+  ListItemAdaptee,
+  ListItemAdapter,
+  ListItemHandler,
+  ListItemProps,
+  ListNotFoundProps,
+  ListState,
+} from '../list/typings';
 
-export type FormSelectProps<T = any, M extends SelectOptionMeta = SelectOptionMeta> = SelectProps<T, M> &
+export type ArraySelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = SelectConfig<T, I> & {
+  adapter?: SelectItemAdapter<T>;
+  dataSource: T[] | string;
+  fetchOnce?: boolean;
+};
+
+export type ControllerSelectProps<
+  T = any,
+  I extends SelectItem<T> = SelectItem<T>,
+  S extends SelectState<T, I> = SelectState<T, I>,
+  C extends SelectController<T, I, S> = SelectController<T, I, S>
+> = SelectConfig<T, I> & {
+  controller: CollectionProxy<T, I, S, C>;
+};
+
+export type FormSelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = SelectProps<T, I> &
   FormFieldProps &
   FieldLayoutProps & {
     defaultValue?: T | T[] | null;
     FieldComponent?: React.FC<SelectProps>;
   };
 
-export type SelectAdapter<T, M extends SelectOptionMeta = SelectOptionMeta> = ItemAdapter<T, M>;
-export type SelectItem<T = any, M extends SelectOptionMeta = SelectOptionMeta> = Item<T, M>;
+export type SelectController<
+  T,
+  I extends SelectItem<T> = SelectItem<T>,
+  S extends SelectState<T, I> = SelectState<T, I>
+> = Collection<T, I, S>;
 
 export interface SelectIconProps {
   open: boolean;
@@ -28,58 +55,64 @@ export interface SelectIconProps {
   onClick: AnyFunction<void>;
 }
 
-export interface SelectInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> {
+export interface SelectInputProps<T = any, I extends SelectItem<T> = SelectItem<T>>
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> {
   IconComponent?: FC<SelectIconProps>;
   focus: boolean;
   value?: string;
-  tokens?: SelectItem[];
+  tokens?: SelectItem<T>[];
   open: boolean;
   loading: boolean;
   fetching: boolean;
   setOpen: (open: boolean) => void;
-  onChange: (nextValue: string) => void;
+  onChange: (nextValue: string | null) => void;
   multiple: boolean;
-  onRemove: SelectOptionHandler;
+  onRemove: SelectOptionHandler<T, I>;
+  style?: React.CSSProperties;
+  nullable?: boolean;
+  clickable: boolean;
+  minChars: number;
 }
 
-export interface SelectTokensProps {
-  tokens?: SelectItem[];
-  onRemove: SelectOptionHandler;
-}
+export type SelectItem<T = any> = ListItem<T>;
 
-export interface SelectTokenProps {
-  token: SelectItem;
-  onRemove: SelectOptionHandler;
-  index: number;
-}
+export type SelectItemAdaptee = ListItemAdaptee;
+
+export type SelectItemAdapter<T = any> = ListItemAdapter<T>;
 
 // export type SelectInternalProps<T = any, M extends ItemMeta = SelectOptionMeta> = Omit<SelectProps, 'items'> & {
 //   collection: Collection<T, M>;
 // };
 
-export type SelectOptionHandler<T = any, M extends ItemMeta = SelectOptionMeta> = ListItemHandler<T, M>;
-export type SelectOptionSelectionHandler<T = any, M extends ItemMeta = SelectOptionMeta> = (
-  item: Item<T, M>,
+export type SelectNotFoundProps = ListNotFoundProps;
+
+export type SelectOptionHandler<T = any, I extends SelectItem<T> = SelectItem<T>> = ListItemHandler<T, I>;
+export type SelectOptionSelectionHandler<T = any, I extends SelectItem<T> = SelectItem<T>> = (
+  item: I,
   index: number,
   close?: boolean,
 ) => void;
 
-export interface SelectOptionMeta extends ItemMeta {
-  selected?: boolean;
-  highlighted?: boolean;
-}
-
-export type SelectOptionProps<T = any, M extends SelectOptionMeta = SelectOptionMeta> = ListItemProps<T, M> & {
+export type SelectOptionProps<T = any, I extends SelectItem<T> = SelectItem<T>> = ListItemProps<T, I> & {
   multiple?: boolean;
 };
 
-export interface SelectOptionsProps<T = any, M extends SelectOptionMeta = SelectOptionMeta> extends ListProps<T, M> {
-  search?: string;
-}
+export type SelectProps<
+  T = any,
+  I extends SelectItem<T> = SelectItem<T>,
+  S extends SelectState<T, I> = SelectState<T, I>,
+  C extends SelectController<T, I, S> = SelectController<T, I, S>
+> = SelectConfig<T, I> & {
+  adapter?: SelectItemAdapter<T>;
+  controller?: CollectionProxy<T, I, S, C>;
+  dataSource?: T[] | string;
+  fetchOnce?: boolean;
+};
 
-export interface SelectProps<T = any, M extends SelectOptionMeta = SelectOptionMeta> extends ListProps<T, M> {
-  InputComponent?: FC<SelectInputProps>;
+export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omit<ListConfig<T, I>, 'ItemComponent'> & {
+  InputComponent?: FC<SelectInputProps<T, I>>;
   IconComponent?: FC<SelectIconProps>;
+  NotFoundComponent?: FC<SelectNotFoundProps>;
   placeholder?: string;
   value?: T | T[] | null;
   onChange?: ChangeHandler<T>;
@@ -91,4 +124,26 @@ export interface SelectProps<T = any, M extends SelectOptionMeta = SelectOptionM
   status?: ValidationStatus;
   name?: string;
   size?: FieldSize;
+  nullable?: boolean;
+  minChars?: number;
+  openOnFocus?: boolean;
+  clickable?: boolean;
+  dropdownWidthModifier?: DropdownWidthModifier;
+  ItemComponent?: FC<SelectOptionProps>;
+  OptionComponent?: FC<SelectOptionProps>;
+  MultiOptionsComponent?: FC<SelectOptionProps>;
+  animationMs?: number;
+};
+
+export type SelectState<T = any, I extends SelectItem<T> = SelectItem<T>> = ListState<T, I>;
+
+export interface SelectTokensProps<T = any, I extends SelectItem<T> = SelectItem<T>> {
+  tokens?: I[];
+  onRemove: SelectOptionHandler<T, I>;
+}
+
+export interface SelectTokenProps<T = any, I extends SelectItem<T> = SelectItem<T>> {
+  token: I;
+  onRemove: SelectOptionHandler<T, I>;
+  index: number;
 }

@@ -26,7 +26,9 @@ export {
   ErrorBoundaryComponentProps,
   GlobalModifierFunction,
   GlobalSelectorFunction,
+  LogLevel,
   SetGlobalStateFunction,
+  UseLogger,
 } from './app/typings';
 export { default as useAppContext } from './app/useAppContext';
 export { default as useAppService } from './app/useAppService';
@@ -40,7 +42,8 @@ export { default as useGlobalState } from './app/useGlobalState';
 export { default as useLocalService } from './app/useLocalService';
 export { useLocalState } from './app/useLocalState';
 export { default as useLocation } from './app/useLocation';
-export { default as useParams } from './app/useParams';
+export { default as useLogger } from './app/useLogger';
+export { default as useLogLevel } from './app/useLogLevel';
 export { default as useQuery } from './app/useQuery';
 export { default as useRouter } from './app/useRouter';
 export { default as useSetting } from './app/useSetting';
@@ -104,17 +107,18 @@ export {
   ChangeHandler,
   Collection,
   CollectionBroker,
+  CollectionBy,
   CollectionFetcher,
   CollectionFetcherResult,
   CollectionFetchOptions,
   CollectionItemAdapter,
   CollectionOptions,
+  CollectionProxy,
   CollectionState,
   CollectionStatus,
   Item,
+  ItemAdaptee,
   ItemAdapter,
-  ItemMeta,
-  List,
   LoadingItemStatus,
   LoadingStatus,
   LocalQuery,
@@ -136,10 +140,10 @@ export {
   QuerySortDir,
   UseCollectionOptions,
 } from './collection/typings';
-export { collectionProxyProps, default as useCollection } from './collection/useCollection';
+export { default as useCollection } from './collection/useCollection';
+export { default as useCollectionInitialState } from './collection/useCollectionInitialState';
+export { default as useCollectionProxy, collectionProxyHandler } from './collection/useCollectionProxy';
 export { default as useCollectionService } from './collection/useCollectionService';
-export { default as useCollectionState } from './collection/useCollectionState';
-export { default as useList } from './collection/useList';
 export {
   defaultComparator,
   defaultSerializer,
@@ -155,7 +159,6 @@ export {
   isCollectionFetching,
   isCollectionInitializing,
   isCollectionLoading,
-  isItem,
   isItemFetching,
   isItemLoading,
   isQueryFilter,
@@ -185,9 +188,9 @@ export {
   serializeSubFilter,
   serializeValue,
   shouldResetData,
-  toCollectionItem,
   urlSerializer,
   visitFilter,
+  addFilter,
 } from './collection/utils';
 export {
   asReducer,
@@ -213,10 +216,10 @@ export { default as useLazyRef } from './core/useLazyRef';
 export { default as useLocalReducer } from './core/useLocalReducer';
 export { default as useObjectProxy } from './core/useObjectProxy';
 export { default as useService } from './core/useService';
+export { default as useThrottle } from './core/useThrottle';
 export { default as UseAppContext, default as useTryAppContext } from './core/useTryAppContext';
 export { default as useTryHistory } from './core/useTryHistory';
 export { default as useTryLocation } from './core/useTryLocation';
-export { default as useTryParams } from './core/useTryParams';
 export { default as useTryQuery } from './core/useTryQuery';
 export { default as useTryRouter } from './core/useTryRouter';
 export { default as useTrySetting } from './core/useTrySetting';
@@ -322,7 +325,7 @@ export { extractState, rebuildLocation, toLocation, toRelativeUrl, toRouteUrl, t
 export { AppContext, AppSettings, AppStore, reducersSymbol, sagasSymbol } from './types/app';
 export { Auth, BasicAuth, OidcToken, Token } from './types/auth';
 export { ResultCallback, SuccessCallback } from './types/callback';
-export { AnyFunction, Primitive } from './types/core';
+export { AnyFunction, FCC, Primitive } from './types/core';
 export { BasicError, ErrorCallback } from './types/error';
 export { Fetcher, FetchMethod, FetchOptions, FetchState, HttpMethod } from './types/fetch';
 export { FormLayout, ValidationStatus } from './types/form';
@@ -366,6 +369,7 @@ export {
   localesModeSymbol,
   SERVICE_TYPE_ID,
 } from './types/symbol';
+export { first, last } from './utils/array';
 export { isBrowser, isMobile } from './utils/browser';
 export { decrypt, encrypt, sha256, verify } from './utils/crypt';
 export { detectLocale, flattenTranslations } from './utils/i18n';
@@ -378,6 +382,7 @@ export {
   deepFreeze,
   del,
   diffArrays,
+  ensureFieldValue,
   find,
   fromPayload,
   get,
@@ -389,6 +394,7 @@ export {
   isSetter,
   omit,
   or,
+  pick,
   set,
   shallowEqual,
   simpleMergeDeep,
@@ -420,6 +426,7 @@ export {
   trim,
   trimEnd,
   trimStart,
+  ucfirst,
   wrap,
 } from './utils/string';
 export {
@@ -433,3 +440,9 @@ export {
   isPromise,
   isTrue,
 } from './utils/type';
+
+declare module 'react' {
+  interface HTMLAttributes<T> {
+    children?: React.ReactNode | Record<string, unknown> | (React.ReactNode | Record<string, unknown>)[];
+  }
+}

@@ -3,21 +3,35 @@ import {
   BackgroundColorProperty,
   BorderBottomStyleProperty,
   BorderColorProperty,
+  BorderRadiusProperty,
+  BorderStyleProperty,
   BorderWidthProperty,
   BoxShadowProperty,
   ColorProperty,
+  CursorProperty,
   FontSizeProperty,
   FontWeightProperty,
   Globals,
+  HeightProperty,
   LetterSpacingProperty,
+  LineHeightProperty,
   MarginProperty,
+  OpacityProperty,
   OutlineProperty,
   PaddingProperty,
+  TextDecorationProperty,
+  TextOverflowProperty,
   TextTransformProperty,
+  WhiteSpaceProperty,
   WidthProperty,
 } from 'csstype';
 import { AnonymousObject } from 'onekijs-framework';
-import { FlattenInterpolation, ThemedStyledProps, ThemeProps as SytledThemeProps } from 'styled-components';
+import {
+  FlattenInterpolation,
+  GlobalStyleComponent,
+  ThemedStyledProps,
+  ThemeProps as SytledThemeProps,
+} from 'styled-components';
 
 export type CssProperty<T> = (value: T, variants?: AnonymousObject) => FlattenInterpolation<SytledThemeProps<any>>;
 export type Formatter<T> = (value: T, theme: Theme) => string;
@@ -25,8 +39,10 @@ export type Media = 'all' | 'sm' | 'md' | 'lg' | 'xl';
 export enum ColorKeys {
   white = 'white',
   lightest = 'lightest',
+  lighter = 'lighter',
   light = 'light',
   dark = 'dark',
+  darker = 'darker',
   darkest = 'darkest',
   black = 'black',
   success = 'success',
@@ -35,6 +51,32 @@ export enum ColorKeys {
   danger = 'danger',
   primary = 'primary',
   secondary = 'secondary',
+  blue = 'blue',
+  red = 'red',
+  purple = 'purple',
+  pink = 'pink',
+  indigo = 'indigo',
+  teal = 'teal',
+  orange = 'orange',
+  yellow = 'yellow',
+  green = 'green',
+  lightblue = 'lightblue',
+  lightred = 'lightred',
+  lightpurple = 'lightpurple',
+  lightpink = 'lightpink',
+  lightindigo = 'lightindigo',
+  lightteal = 'lightteal',
+  lightorange = 'lightorange',
+  lightyellow = 'lightyellow',
+  lightgreen = 'lightgreen',
+}
+
+export enum DashboardKeys {
+  left = 'left',
+  right = 'right',
+  header = 'header',
+  footer = 'footer',
+  body = 'body',
 }
 
 export enum BreakpointKeys {
@@ -46,6 +88,7 @@ export enum BreakpointKeys {
 
 export enum SpacingKeys {
   none = 'none',
+  '2xs' = '2xs',
   xs = 'xs',
   sm = 'sm',
   md = 'md',
@@ -91,6 +134,9 @@ export enum FontLineHeightKeys {
   md = 'md',
   lg = 'lg',
   xl = 'xl',
+  '2xl' = '2xl',
+  '3xl' = '3xl',
+  '4xl' = '4xl',
 }
 
 export enum FontSizeKeys {
@@ -105,6 +151,7 @@ export enum FontSizeKeys {
   '4xl' = '4xl',
   '5xl' = '5xl',
   '6xl' = '6xl',
+  default = 'default',
 }
 
 export enum FontSpacingKeys {
@@ -118,6 +165,7 @@ export enum FontSpacingKeys {
 
 export enum RadiusKeys {
   none = 'none',
+  '2xs' = '2xs',
   xs = 'xs',
   sm = 'sm',
   md = 'md',
@@ -176,6 +224,7 @@ export enum SizeKeys {
 }
 
 export type Theme = {
+  GlobalStyles: GlobalStyleComponent<any, any>;
   breakpoints: {
     [k in BreakpointKeys]: string;
   };
@@ -217,14 +266,48 @@ export type Theme = {
   buttons: {
     [k in ColorKeys]: {
       bgColor: ColorPropertyTheme | BackgroundColorProperty;
+      bgColorFlat: ColorPropertyTheme | BackgroundColorProperty;
+      bgColorOutline: ColorPropertyTheme | BackgroundColorProperty;
+      borderColor: ColorPropertyTheme | BorderColorProperty;
+      borderColorFlat: ColorPropertyTheme | BackgroundColorProperty;
+      borderColorOutline: ColorPropertyTheme | BackgroundColorProperty;
+      borderRadius: RadiusPropertyTheme | string;
+      borderStyle: BorderStyleProperty;
+      borderWidth: BorderWidthProperty<TLength>;
       color: ColorPropertyTheme | ColorProperty;
+      colorFlat: ColorPropertyTheme | BackgroundColorProperty;
+      colorOutline: ColorPropertyTheme | BackgroundColorProperty;
+      cursor: CursorProperty;
+      cursorDisabled: CursorProperty;
+      fontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
       fontWeight: FontWeightPropertyTheme | FontWeightProperty;
       hoverBgColor: ColorPropertyTheme | BackgroundColorProperty;
+      hoverBgColorFlat: ColorPropertyTheme | BackgroundColorProperty;
+      hoverBgColorOutline: ColorPropertyTheme | BackgroundColorProperty;
+      hoverBorderColor: ColorPropertyTheme | BackgroundColorProperty;
+      hoverBorderColorFlat: ColorPropertyTheme | BackgroundColorProperty;
+      hoverBorderColorOutline: ColorPropertyTheme | BackgroundColorProperty;
       hoverColor: ColorPropertyTheme | ColorProperty;
+      hoverColorFlat: ColorPropertyTheme | BackgroundColorProperty;
+      hoverColorOutline: ColorPropertyTheme | BackgroundColorProperty;
+      letterSpacing: LetterSpacingPropertyTheme | LetterSpacingProperty<TLength>;
+      lineHeight: LineHeightPropertyTheme | LineHeightProperty<TLength>;
+      opacity: OpacityProperty;
+      opacityDisabled: OpacityProperty;
       paddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
       paddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
-      radius: RadiusPropertyTheme | string;
+      textOverflow: TextOverflowProperty;
+      textTransform: TextTransformProperty;
+      whiteSpace: WhiteSpaceProperty;
     };
+  };
+
+  fieldLayout: {
+    marginY: MarginProperty<TLength> | SpacingPropertyTheme;
+    helperMarginLeft: MarginProperty<TLength> | SpacingPropertyTheme;
+    helperColor: ColorProperty | ColorPropertyTheme;
+    descriptionFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
+    descriptionColor: ColorProperty | ColorPropertyTheme;
   };
 
   table: {
@@ -253,6 +336,9 @@ export type Theme = {
     tdStripBgColor: ColorPropertyTheme | BackgroundColorProperty;
     tdHoverBgColor: ColorPropertyTheme | BackgroundColorProperty;
     tdHoverFontColor: ColorPropertyTheme | ColorProperty;
+    tdExpandedBgColor: ColorPropertyTheme | BackgroundColorProperty;
+    loadingRowBgColor: ColorPropertyTheme | BackgroundColorProperty;
+    loadingRowMinHeight: SizePropertyTheme | HeightProperty<TLength>;
   };
 
   input: {
@@ -289,8 +375,109 @@ export type Theme = {
     helperIconColor: ColorPropertyTheme | ColorProperty;
     helperMarginLeft: SpacingPropertyTheme | MarginProperty<TLength>;
   };
+
+  link: {
+    fontWeight: FontWeightPropertyTheme | FontWeightProperty;
+    fontColor: ColorPropertyTheme | ColorProperty;
+    textDecoration: TextDecorationProperty<TLength>;
+    fontWeightHover: FontWeightPropertyTheme | FontWeightProperty;
+    fontColorHover: ColorPropertyTheme | ColorProperty;
+    textDecorationHover: TextDecorationProperty<TLength>;
+  };
+
+  tooltip: {
+    [k in ColorKeys]: {
+      bgColor: ColorPropertyTheme | BackgroundColorProperty;
+      color: ColorPropertyTheme | ColorProperty;
+      borderColor: ColorPropertyTheme | BackgroundColorProperty;
+      borderRadius: BorderRadiusProperty<TLength> | RadiusPropertyTheme;
+      borderStyle: BorderStyleProperty;
+      borderWidth: BorderWidthProperty<TLength>;
+      boxShadow: ShadowPropertyTheme | BoxShadowProperty;
+      padding: SpacingPropertyTheme | PaddingProperty<TLength>;
+      fontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
+    };
+  };
+
+  accordion: {
+    fontWeight: FontWeightPropertyTheme | FontWeightProperty;
+    fontColor: ColorPropertyTheme | ColorProperty;
+    activeFontColor: ColorPropertyTheme | ColorProperty;
+    hoverFontColor: ColorPropertyTheme | ColorProperty;
+    fontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
+    togglerIconWidth: WidthProperty<TLength> | IconSizePropertyTheme;
+    togglerIconHeight: WidthProperty<TLength> | IconSizePropertyTheme;
+    bgColor: ColorPropertyTheme | BackgroundColorProperty;
+    activeBgColor: ColorPropertyTheme | BackgroundColorProperty;
+    hoverBgColor: ColorPropertyTheme | BackgroundColorProperty;
+    borderColor: ColorPropertyTheme | BorderColorProperty;
+    borderRadius: BorderRadiusProperty<TLength> | RadiusPropertyTheme;
+    borderStyle: BorderStyleProperty;
+    borderWidth: BorderWidthProperty<TLength>;
+    paddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
+    paddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
+  };
+
+  tab: {
+    activeBgColor: ColorPropertyTheme | BackgroundColorProperty;
+    activeBorderColor: ColorPropertyTheme | BorderColorProperty;
+    activeBorderStyle: BorderStyleProperty;
+    activeBorderWidth: BorderWidthProperty<TLength>;
+    activeFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
+    activeFontColor: ColorPropertyTheme | ColorProperty;
+    activeFontWeight: FontWeightPropertyTheme | FontWeightProperty;
+    bgColor: ColorPropertyTheme | BackgroundColorProperty;
+    borderColor: ColorPropertyTheme | BorderColorProperty;
+    borderRadius: BorderRadiusProperty<TLength> | RadiusPropertyTheme;
+    borderStyle: BorderStyleProperty;
+    borderWidth: BorderWidthProperty<TLength>;
+    cursor: CursorProperty;
+    fontColor: ColorPropertyTheme | ColorProperty;
+    fontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
+    fontWeight: FontWeightPropertyTheme | FontWeightProperty;
+    hoverBgColor: ColorPropertyTheme | BackgroundColorProperty;
+    hoverBorderColor: ColorPropertyTheme | BorderColorProperty;
+    hoverBorderStyle: BorderStyleProperty;
+    hoverBorderWidth: BorderWidthProperty<TLength>;
+    hoverFontColor: ColorPropertyTheme | ColorProperty;
+    marginBefore: SpacingPropertyTheme | MarginProperty<TLength>;
+    marginAfter: SpacingPropertyTheme | MarginProperty<TLength>;
+    paddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
+    paddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
+  };
+
+  card: {
+    borderColor: ColorPropertyTheme | BorderColorProperty;
+    borderRadius: BorderRadiusProperty<TLength> | RadiusPropertyTheme;
+    borderStyle: BorderStyleProperty;
+    borderWidth: BorderWidthProperty<TLength>;
+    shadow: ShadowPropertyTheme | BoxShadowProperty;
+    bgColor: ColorPropertyTheme | BackgroundColorProperty;
+    fontColor: ColorPropertyTheme | ColorProperty;
+    fontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
+    fontWeight: FontWeightPropertyTheme | FontWeightProperty;
+    fontCase: 'uppercase';
+    paddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
+    paddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
+    letterSpacing: LetterSpacingPropertyTheme | LetterSpacingProperty<TLength>;
+    iconColor: ColorPropertyTheme | ColorProperty;
+    iconWidth: SizePropertyTheme | WidthProperty<TLength>;
+    iconHeight: SizePropertyTheme | HeightProperty<TLength>;
+    marginTop: SpacingPropertyTheme | MarginProperty<TLength>;
+    titleBorderBottomWidth: BorderWidthProperty<TLength>;
+  };
+
+  properties: {
+    fontWeight: FontWeightPropertyTheme | FontWeightProperty;
+    paddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
+  };
+
+  dashboard: {
+    [k in DashboardKeys]: {
+      bgColor: ColorPropertyTheme | BackgroundColorProperty;
+    };
+  };
 };
-export type ThemeProps = AnonymousObject; //TODO create a actual type
 export type Palette = AnonymousObject; //TODO create a actual type
 export type TLength = string | 0;
 export type SizePropertyTheme =
@@ -341,12 +528,17 @@ export type SizePropertyTheme =
   | 'screen-lg'
   | 'screen-xl';
 
+export type ThemeProps = {
+  theme?: Partial<Theme>;
+};
+
 export type ColorPropertyTheme = keyof typeof ColorKeys;
 export type SpacingPropertyTheme = keyof typeof SpacingKeys;
 export type FontFamilyPropertyTheme = keyof typeof FontFamiliesKeys;
 export type FontSizePropertyTheme = keyof typeof FontSizeKeys;
+export type IconSizePropertyTheme = keyof typeof FontSizeKeys;
 export type FontWeightPropertyTheme = keyof typeof FontWeightKeys | number;
-export type LineHeightPropertyTheme = keyof typeof FontLineHeightKeys | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+export type LineHeightPropertyTheme = keyof typeof FontLineHeightKeys | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 export type LetterSpacingPropertyTheme = keyof typeof FontSpacingKeys;
 export type RadiusPropertyTheme = keyof typeof RadiusKeys;
 export type ShadowPropertyTheme = keyof typeof ShadowKeys;
@@ -354,5 +546,3 @@ export type ShadowPropertyTheme = keyof typeof ShadowKeys;
 export type ComponentStyle<P, T extends Theme = Theme> = (
   propsWithTheme: ThemedStyledProps<P, T>,
 ) => FlattenInterpolation<SytledThemeProps<T>>;
-
-export type GridSize = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;

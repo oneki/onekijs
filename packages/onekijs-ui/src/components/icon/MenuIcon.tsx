@@ -3,15 +3,16 @@ import styled, { css } from 'styled-components';
 import { color } from '../../styles/typography';
 import { alignItems } from '../../styles/alignment';
 import { display } from '../../styles/display';
-import { MenuIconProps } from './typings';
+import { IconProps } from './typings';
+import { cursor } from '../../styles/interactivity';
 
-const IconComponent: FC<MenuIconProps> = ({ className }) => {
+const IconComponent: FC<IconProps> = (props) => {
   return (
-    <div className={className}>
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="o-icon-menu-svg">
-        <line x1="3" y1="12" x2="21" y2="12"></line>
-        <line x1="3" y1="6" x2="21" y2="6"></line>
-        <line x1="3" y1="18" x2="21" y2="18"></line>
+    <div {...props}>
+      <svg className="o-icon-menu-svg" viewBox="0 0 100 100">
+        <rect width="100" height="15" rx="15" ry="15"></rect>
+        <rect y="40" width="100" height="15" rx="15" ry="15"></rect>
+        <rect y="80" width="100" height="15" rx="15" ry="15"></rect>
       </svg>
     </div>
   );
@@ -24,13 +25,10 @@ export default styled(IconComponent)`
     ${display('flex')};
     ${alignItems('center')};
     ${color(cssColor)}
-    .o-icon-search-svg {
+    ${cursor('pointer')}
+    .o-icon-menu-svg {
       display: inline-block;
-      stroke-width: 2;
-      stroke: currentColor;
-      fill: none;
-      stroke-line-cap: round;
-      stroke-line-join: round;
+      fill: currentColor;
     }
   `}
 `;

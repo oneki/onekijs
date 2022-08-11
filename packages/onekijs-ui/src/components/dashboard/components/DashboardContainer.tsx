@@ -1,6 +1,7 @@
-import React from 'react';
+import { FCC } from 'onekijs-framework';
+import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { DashboardArea, DashboardContainerProps } from '../typings';
+import { DashboardContainerProps } from '../typings';
 
 export const getDashboardTemplate = (dashboardContainerProps: DashboardContainerProps): string => {
   const { areas, left, right, header, footer } = dashboardContainerProps;
@@ -8,41 +9,45 @@ export const getDashboardTemplate = (dashboardContainerProps: DashboardContainer
     return '';
   }
   const clone = (items: any) => items.map((item: any) => (Array.isArray(item) ? clone(item) : item));
-  const dashboardAreas: (DashboardArea | undefined)[][] = clone(areas);
   const rows: (0 | string)[] = [0, '1fr', 0];
   const cols: (0 | string)[] = [0, '1fr', 0];
 
   if (!right) {
     // drop last column
-    [0, 1, 2].forEach((i) => dashboardAreas[i].splice(2, 1));
     cols.splice(2, 1);
   }
 
   if (!left) {
     // drop first column
-    [0, 1, 2].forEach((i) => dashboardAreas[i].splice(0, 1));
     cols.splice(0, 1);
   }
 
   if (!footer) {
     rows.splice(2, 1);
-    dashboardAreas.splice(2, 1);
   }
 
   if (!header) {
     rows.splice(0, 1);
-    dashboardAreas.splice(0, 1);
   }
 
   return `
     grid-template-columns: ${cols.join(' ')};
     grid-template-rows: ${rows.join(' ')};
-    grid-template-areas: "${dashboardAreas.map((row) => row.join(' ')).join('" "')}";
+    grid-template-areas: "${areas.map((row) => row.join(' ')).join('" "')}";
   `;
 };
 
-const DashboardContainerComponent: React.FC<DashboardContainerProps> = (props) => {
-  return <div className={props.className}>{props.children}</div>;
+const DashboardContainerComponent: FCC<DashboardContainerProps> = (props) => {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    props.onInit(ref);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return (
+    <div className={props.className} ref={ref}>
+      {props.children}
+    </div>
+  );
 };
 
 const DashboardContainer = styled(DashboardContainerComponent)`

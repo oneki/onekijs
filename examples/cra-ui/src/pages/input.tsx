@@ -41,7 +41,7 @@ const StyledSearchComponent = styled(SearchComponent)`
     })}
     ${color('primary', {
       hover: 'white'
-    })}    
+    })}
   `}
 `;
 
@@ -63,7 +63,7 @@ export const InputPage = () => {
   return (
     <div style={{ display: 'flex', justifyContent: 'center' }}>
       <div style={{ width: '300px' }}>
-        <StyledInput name="toto" PrefixComponent={StyledSearchComponent} />
+        <StyledInput name="toto" size="large" PrefixComponent={StyledSearchComponent} />
       </div>
     </div>
   );

@@ -40,16 +40,12 @@ export function isObject(item: any): boolean {
 // https://gist.github.com/Salakar/1d7137de9cb8b704e48a
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function simpleMergeDeep(target: any, source: any): any {
+  if (target === undefined) {
+    return source;
+  }
   if (isObject(target) && isObject(source)) {
     Object.keys(source).forEach((key) => {
-      if (isObject(source[key])) {
-        if (!target[key] || !isObject(target[key])) {
-          target[key] = source[key];
-        }
-        simpleMergeDeep(target[key], source[key]);
-      } else {
-        Object.assign(target, { [key]: source[key] });
-      }
+      target[key] = simpleMergeDeep(target[key], source[key]);
     });
   }
   return target;
@@ -373,6 +369,13 @@ export const omit = <T>(source: any, keys: string[]): T => {
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export const pick = <T>(source: any, keys: string[]): T => {
+  const result: any = {};
+  keys.forEach((key) => (result[key] = source[key]));
+  return result as T;
+};
+
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const isGetter = (obj: any, property: string): boolean => {
   const descriptor = Object.getOwnPropertyDescriptor(obj, property);
   return descriptor !== undefined && descriptor.get !== undefined;
@@ -393,4 +396,15 @@ export const isGetterOrSetter = (obj: any, property: string): boolean => {
 export const toArray = <T>(a: T | T[]): T[] => {
   if (Array.isArray(a)) return a;
   return [a];
+};
+
+export const ensureFieldValue = <T, K extends keyof T>(object: T, field: K, value?: T[K]): T => {
+  if (object[field] === undefined) {
+    if (value === undefined) {
+      delete object[field];
+    } else {
+      object[field] = value;
+    }
+  }
+  return object;
 };

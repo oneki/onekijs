@@ -48,6 +48,16 @@ export function lcfirst(str?: string | null): string | undefined | null {
   return str;
 }
 
+export function ucfirst(str: string): string;
+export function ucfirst(str: undefined): undefined;
+export function ucfirst(str: null): null;
+export function ucfirst(str?: string | null): string | undefined | null {
+  if (str && str.length > 0) {
+    return `${str[0].toUpperCase()}${str.substring(1)}`;
+  }
+  return str;
+}
+
 export function mergeString(separator: string, ...str: (string | undefined | null)[]): string {
   return str.filter((s) => !!s).join(separator);
 }

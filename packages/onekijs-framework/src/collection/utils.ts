@@ -2,18 +2,18 @@ import { __metadata } from 'tslib';
 import DefaultBasicError from '../core/BasicError';
 import { Primitive } from '../types/core';
 import { AnonymousObject } from '../types/object';
-import { isNull, shallowEqual, toArray } from '../utils/object';
+import { shallowEqual, toArray } from '../utils/object';
 import {
   Collection,
-  CollectionItemAdapter,
+  CollectionState,
   Item,
-  ItemMeta,
   LoadingStatus,
   Query,
   QueryFilter,
   QueryFilterCriteria,
   QueryFilterCriteriaOperator,
   QueryFilterCriteriaValue,
+  QueryFilterId,
   QueryFilterOrCriteria,
   QuerySerializer,
   QuerySerializerResult,
@@ -65,46 +65,27 @@ export const generateFilterId = (): number => {
   return ++filterUid;
 };
 
-export const isCollectionLoading = <T, M>(collection: Collection<T, M>): boolean => {
+export const isCollectionLoading = <T, I extends Item<T>>(collection: Collection<T, I>): boolean => {
   return !!(collection && ['partial_loading', 'loading'].includes(collection.status));
 };
 
-export const isCollectionFetching = <T, M>(collection: Collection<T, M>): boolean => {
+export const isCollectionFetching = <T, I extends Item<T>>(collection: Collection<T, I>): boolean => {
   return !!(collection && ['partial_fetching', 'partial_loading', 'loading', 'fetching'].includes(collection.status));
 };
 
-export const isCollectionInitializing = <T, M>(collection: Collection<T, M>): boolean => {
+export const isCollectionInitializing = <T, I extends Item<T>>(collection: Collection<T, I>): boolean => {
   return !!(collection && collection.status === 'not_initialized');
 };
 
-export const isItem = <T, M extends ItemMeta>(itemOrMeta: Item<T, M> | M): itemOrMeta is Item<T, M> => {
-  return (itemOrMeta as any).meta !== undefined;
-};
-
-export const isItemLoading = <T, M extends ItemMeta>(itemOrMeta?: Item<T, M> | M): boolean => {
-  if (itemOrMeta === undefined) {
+export const isItemLoading = <T, I extends Item<T>>(item?: I): boolean => {
+  if (item === undefined) {
     return false;
   }
-  if (isItem(itemOrMeta)) {
-    return !!(itemOrMeta.meta && itemOrMeta.meta.loadingStatus === LoadingStatus.Loading);
-  } else {
-    return itemOrMeta.loadingStatus === LoadingStatus.Loading;
-  }
+  return item.loadingStatus === LoadingStatus.Loading;
 };
 
-export const isItemFetching = <T, M extends ItemMeta>(itemOrMeta?: Item<T, M> | M): boolean => {
-  if (itemOrMeta === undefined) {
-    return false;
-  }
-  if (isItem(itemOrMeta)) {
-    return !!(
-      itemOrMeta.meta &&
-      (itemOrMeta.meta.loadingStatus === LoadingStatus.Loading ||
-        itemOrMeta.meta.loadingStatus === LoadingStatus.Fetching)
-    );
-  } else {
-    return itemOrMeta.loadingStatus === LoadingStatus.Loading || itemOrMeta.loadingStatus === LoadingStatus.Fetching;
-  }
+export const isItemFetching = <T, I extends Item<T>>(item?: I): boolean => {
+  return !!(item && (item.loadingStatus === LoadingStatus.Loading || item.loadingStatus === LoadingStatus.Fetching));
 };
 
 export const isQueryFilter = (value: QueryFilterOrCriteria | QueryFilterOrCriteria[]): value is QueryFilter => {
@@ -335,6 +316,7 @@ export const shouldResetData = (query: Query, nextQuery: Query): boolean => {
 };
 
 const handleQueryEntry = (key: string, value: string, result: Query): void => {
+  value = decodeURIComponent(value);
   switch (key.toLowerCase()) {
     case 'filter':
       result.filter = parseQueryFilter(value);
@@ -558,48 +540,34 @@ export const visitFilter = (filter: QueryFilter, visitor: (filter: QueryFilter) 
   return stop;
 };
 
-export const isCollection = <T, M extends ItemMeta>(
-  data?: T[] | Collection<T, M> | string,
-): data is Collection<T, M> => {
-  return data !== undefined && !Array.isArray(data) && !(typeof data === 'string');
+export const addFilter = (
+  query: Query,
+  filterOrCriteria: QueryFilterOrCriteria,
+  parentFilterId: QueryFilterId = rootFilterId,
+): void => {
+  const filter = formatFilter(query.filter) || { id: rootFilterId, operator: 'and', criterias: [] };
+  visitFilter(filter, (filter) => {
+    if (filter.id === parentFilterId) {
+      let index = -1;
+      if (filterOrCriteria.id !== undefined) {
+        index = filter.criterias.findIndex((entry) => filterOrCriteria.id === entry.id);
+      }
+      if (index === -1) {
+        filter.criterias.push(filterOrCriteria);
+      } else {
+        filter.criterias[index] = filterOrCriteria;
+      }
+      return true;
+    }
+    return false;
+  });
+  query.filter = filter;
 };
 
-export const toCollectionItem = <T, M>(data?: T, adapter?: CollectionItemAdapter<T, M>): Item<T, M> => {
-  const getId = (data: any) => {
-    if (isNull(data)) {
-      return undefined;
-    }
-    if (!isNull(data.id)) {
-      return data.id;
-    } else {
-      return undefined;
-    }
-  };
-  const getText = (data: any) => {
-    if (isNull(data)) {
-      return undefined;
-    }
-    if (!isNull(data.text)) {
-      return String(data.text);
-    } else if (typeof data === 'string') {
-      return data;
-    } else {
-      return undefined;
-    }
-  };
-  if (adapter) {
-    const adaptee = adapter(data);
-    return Object.assign({ data }, adaptee, {
-      id: adaptee.id === undefined ? getId(data) : String(adaptee.id),
-    });
-  }
-
-  return {
-    data,
-    meta: undefined,
-    id: getId(data),
-    text: getText(data),
-  };
+export const isCollection = <T, I extends Item<T>, S extends CollectionState<T, I>>(
+  data?: T[] | Collection<T, I, S> | string,
+): data is Collection<T, I, S> => {
+  return data !== undefined && !Array.isArray(data) && !(typeof data === 'string');
 };
 
 export const dummyLogMetadata = (): void => {

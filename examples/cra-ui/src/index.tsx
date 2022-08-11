@@ -1,67 +1,68 @@
-import '@fontsource/roboto';
-import { App } from 'onekijs';
-import { theme } from 'onekijs-ui';
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { Link, Route, Switch } from 'react-router-dom';
-import { ThemeProvider } from 'styled-components';
+import { App, Link, Route, Routes } from 'onekijs';
+import { ClarityTheme } from 'onekijs-ui';
+import { createRoot } from 'react-dom/client';
+import { AccordionPage } from './pages/accordion';
 import { AjaxListPage } from './pages/ajaxList';
 import { ButtonPage } from './pages/button';
+import { CardPage } from './pages/card';
+import { CheckboxPage } from './pages/checkbox';
 import { DashboardPage } from './pages/dashboard';
+import { GridPage } from './pages/grid';
 import { InputPage } from './pages/input';
 import { ListPage } from './pages/list';
+import { PropertiesPage } from './pages/properties';
 import { SelectPage } from './pages/select';
+import { TabsPage } from './pages/tab';
 import { TablePage } from './pages/table';
+import { TagPage } from './pages/tag';
+import { TreePage } from './pages/tree';
 
-const customTheme = {};
+const container = document.getElementById('root');
+const root = createRoot(container!); // createRoot(container!) if you use TypeScript
 
-ReactDOM.render(
+root.render(
   <App>
-    <ThemeProvider theme={theme(customTheme)}>
+    <ClarityTheme>
       <div
         style={{
-          fontFamily: 'Roboto',
+          backgroundColor: 'hsl(198, 0%, 98%)',
+          height: '100vh',
+          overflow: 'auto',
         }}
       >
         <div
           style={{
-            backgroundColor: '#EEE',
+            backgroundColor: 'hsl(198, 0%, 95%)',
             padding: '10px',
             marginBottom: '10px',
           }}
         >
-          <Link to="/">Home</Link> | <Link to="/button">Button</Link> | <Link to="/select">Select</Link> |{' '}
-          <Link to="/list">List</Link> | <Link to="/ajaxList">Ajax List</Link> | <Link to="/table">Table</Link> |{' '}
-          <Link to="/input">Input</Link> | <Link to="/dashboard">Dashboard</Link>
+          <Link href="/">Home</Link> | <Link href="/button">Button</Link> | <Link href="/select">Select</Link> |{' '}
+          <Link href="/list">List</Link> | <Link href="/ajaxList">Ajax List</Link> | <Link href="/table">Table</Link> |{' '}
+          <Link href="/input">Input</Link> | <Link href="/dashboard">Dashboard</Link> | <Link href="/tree">Tree</Link> |{' '}
+          <Link href="/accordion">Accordion</Link> | <Link href="/tab">Tab</Link> | <Link href="/card">Card</Link> |{' '}
+          <Link href="/grid">Grid</Link> | <Link href="/properties">Properties</Link> | <Link href="/checkbox">Checkbox</Link> | <Link href="/tag">Tag</Link>
         </div>
-        <Switch>
-          <Route path="/button">
-            <ButtonPage />
-          </Route>
-          <Route path="/select">
-            <SelectPage />
-          </Route>
-          <Route path="/list">
-            <ListPage />
-          </Route>
-          <Route path="/ajaxList">
-            <AjaxListPage />
-          </Route>
-          <Route path="/table">
-            <TablePage />
-          </Route>
-          <Route path="/input">
-            <InputPage />
-          </Route>
-          <Route path="/dashboard">
-            <DashboardPage />
-          </Route>
-          <Route>
-            <div>This is the main page</div>
-          </Route>
-        </Switch>
+        <div style={{ paddingLeft: '100px', paddingRight: '100px' }}>
+          <Routes>
+            <Route path="/button" element={<ButtonPage />} />
+            <Route path="/select" element={<SelectPage />} />
+            <Route path="/list" element={<ListPage />} />
+            <Route path="/ajaxList" element={<AjaxListPage />} />
+            <Route path="/table" element={<TablePage />} />
+            <Route path="/input" element={<InputPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/tree" element={<TreePage />} />
+            <Route path="/accordion" element={<AccordionPage />} />
+            <Route path="/tab" element={<TabsPage />} />
+            <Route path="/card" element={<CardPage />} />
+            <Route path="/grid" element={<GridPage />} />
+            <Route path="/properties" element={<PropertiesPage />} />
+            <Route path="/checkbox" element={<CheckboxPage />} />
+            <Route path="/tag" element={<TagPage />} />
+          </Routes>
+        </div>
       </div>
-    </ThemeProvider>
+    </ClarityTheme>
   </App>,
-  document.getElementById('root'),
 );

@@ -8,7 +8,7 @@ export const useLocalState = <T extends State = AnyState>(
 ): [T, (key: string, value: unknown) => void] => {
   const [state, service] = useLocalService(LocalStateService, initialState);
   const setState = useCallback(
-    (key, value) => {
+    (key: string, value: unknown) => {
       service.setState(key, value);
     },
     [service],

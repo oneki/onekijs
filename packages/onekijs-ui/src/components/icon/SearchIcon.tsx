@@ -3,11 +3,11 @@ import styled, { css } from 'styled-components';
 import { color } from '../../styles/typography';
 import { alignItems } from '../../styles/alignment';
 import { display } from '../../styles/display';
-import { SearchIconProps } from './typings';
+import { IconProps } from './typings';
 
-const IconComponent: FC<SearchIconProps> = ({ className }) => {
+const IconComponent: FC<IconProps> = ({ className, onClick }) => {
   return (
-    <div className={className}>
+    <div className={className} onClick={onClick}>
       <svg className="o-icon-search-svg" viewBox="0 0 118.783 118.783">
         <path
           d="M115.97,101.597L88.661,74.286c4.64-7.387,7.333-16.118,7.333-25.488c0-26.509-21.49-47.996-47.998-47.996

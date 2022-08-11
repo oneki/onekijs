@@ -1,5 +1,5 @@
-import { FormSubmitCallback, useForm } from 'onekijs';
-import { ComponentStyle, FormTable, useInputColumn, useSelectColumn, useTable } from 'onekijs-ui';
+import { FormSubmitCallback, SubmitButton, useForm } from 'onekijs';
+import { Button, Card, ComponentStyle, FormTable, Table, useInputColumn, useSelectColumn, useTableController } from 'onekijs-ui';
 import React from 'react';
 import styled, { css } from 'styled-components';
 import { users } from '../data/users';
@@ -44,11 +44,15 @@ const u = [
   },
 ];
 
+const ExpandedComponent = () => {
+  return <div></div>
+}
+
 const Page: React.FC<{ className?: string }> = ({ className }) => {
   const onSubmit: FormSubmitCallback = (data) => {
     console.log(data);
   };
-  const { Form } = useForm(onSubmit, {
+  const { Form, values } = useForm(onSubmit, {
     initialValues: {
       addresses,
       users: u,
@@ -85,14 +89,9 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
     stateColumn.broker.removeFilter('state');
   };
 
-  const controller = useTable({
-    columns: [streetColumn, stateColumn],
-    //grow: 'address.city'
-  });
+  const controller = useTableController(undefined, [streetColumn, stateColumn]);
 
-  const controller2 = useTable({
-    dataSource: users,
-    columns: [
+  const controller2 = useTableController(users,  [
       {
         id: 'id',
         minWidth: '50px',
@@ -125,19 +124,16 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
         title: 'City',
       },
     ],
-    //grow: 'address.city'
-    highlightRow: true,
-    stripRows: true,
-  });
+  );
 
   return (
-    <Form>
-      <FormTable name="addresses" controller={controller} className={className} />
-      {/* <Button onClick={addFilter}>Add Filter</Button> <Button onClick={removeFilter}>Remove Filter</Button>{' '}
-      <SubmitButton>Submit</SubmitButton>  */}
-      {/* <FormTable name="users" controller={controller2} className={className} /> */}
+    <Card title="table">
+      {/* <FormTable name="addresses" controller={controller} className={className} />
+      <Button onClick={addFilter}>Add Filter</Button> <Button onClick={removeFilter}>Remove Filter</Button>{' '}
+      <SubmitButton>Submit</SubmitButton> */}
+      <Table controller={controller2} className={className} height="500px" ExpandedComponent={ExpandedComponent} />
       {/* <pre>{JSON.stringify(values, null, 2)}</pre> */}
-    </Form>
+    </Card>
   );
 };
 

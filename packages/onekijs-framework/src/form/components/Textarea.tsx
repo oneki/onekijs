@@ -1,9 +1,10 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { extractValidators } from '../utils';
 import useField from '../useField';
 import { TextareaProps } from '../typings';
+import { FCC } from '../../types/core';
 
-const Textarea: FC<TextareaProps> = React.memo((props) => {
+const Textarea: FCC<TextareaProps> = React.memo((props) => {
   const [validators, wrappedProps] = extractValidators(props);
   const { name, defaultValue, ...textareaProps } = wrappedProps;
   const field = useField(name, validators, {

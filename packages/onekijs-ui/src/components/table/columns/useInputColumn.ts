@@ -1,11 +1,11 @@
 import { useLazyRef } from 'onekijs-framework';
-import InputCellComponent from '../components/InputCellComponent';
-import { TableItemMeta, InputColumn, UseInputColumnOptions } from '../typings';
+import InputCellComponent from '../components/cells/InputCellComponent';
+import { InputColumn, UseInputColumnOptions, TableItem } from '../typings';
 
-const useInputColumn = <T = any, M extends TableItemMeta = TableItemMeta>(
-  options: UseInputColumnOptions<T, M>,
-): InputColumn<T, M> => {
-  const optionsRef = useLazyRef<InputColumn<T, M>>(() => {
+const useInputColumn = <T = any, I extends TableItem<T> = TableItem<T>>(
+  options: UseInputColumnOptions<T, I>,
+): InputColumn<T, I> => {
+  const optionsRef = useLazyRef<InputColumn<T, I>>(() => {
     return Object.assign(
       {
         filterable: false,

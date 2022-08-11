@@ -1,21 +1,44 @@
-import React, { useEffect } from 'react';
-import styled from 'styled-components';
+import { FCC } from 'onekijs-framework';
+import React, { CSSProperties, useEffect, useRef } from 'react';
+import styled, { css } from 'styled-components';
+import { backgroundColor } from '../../../styles/background';
+import { ComponentStyle } from '../../../styles/typings';
 import useDashboardService from '../hooks/useDashboardService';
 import useDashboardState from '../hooks/useDashboardState';
-import {
-  DashboardBodyComponentProps,
-  DashboardBodyPanelProps,
-  DashboardHorizontalPanel,
-  DashboardSize,
-  DashboardVerticalPanel,
-} from '../typings';
-import { getWorkspacePanelLength } from '../utils/dashboardLength';
+import { DashboardBodyComponentProps, DashboardBodyPanelProps, DashboardSize } from '../typings';
+import { getDashboardPanelLength, getFloatingKey, getWorkspacePanelLength } from '../utils/dashboardLength';
 
-const DashboardBodyComponent: React.FC<DashboardBodyComponentProps> = (props) => {
-  return <div className={props.className}>{props.children}</div>;
+const DashboardBodyComponent: FCC<DashboardBodyComponentProps> = (props) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const service = useDashboardService();
+  const stepRef = useRef<'initializing' | 'initialized' | undefined>();
+  const style: CSSProperties = {};
+  if (stepRef.current !== 'initialized') {
+    style.transition = 'none';
+  }
+
+  useEffect(() => {
+    if (stepRef.current === undefined) {
+      stepRef.current = 'initializing';
+      service.initBodyPanel(props, ref);
+    } else if (stepRef.current === 'initializing' && ref.current) {
+      stepRef.current = 'initialized';
+      ref.current.style.transition = '';
+    }
+  });
+
+  return (
+    <div className={props.className} ref={ref} style={style}>
+      {stepRef.current && props.children}
+    </div>
+  );
 };
 
-const getLength = (type: 'width' | 'height', size: DashboardSize, props: DashboardBodyComponentProps): string => {
+export const getBodyLength = (
+  type: 'width' | 'height',
+  size: DashboardSize,
+  props: DashboardBodyComponentProps,
+): string => {
   let result = '100%';
 
   const front = type === 'width' ? props.left : props.header;
@@ -33,61 +56,80 @@ const getLength = (type: 'width' | 'height', size: DashboardSize, props: Dashboa
   return result === '100%' ? result : `calc(${result})`;
 };
 
-const getTranslate = (axis: 'x' | 'y', size: DashboardSize, props: DashboardBodyComponentProps): string | 0 => {
-  let translate: string | 0 = 0;
-  const panel = axis === 'x' ? props.left : props.header;
-  const panelCollapseLength =
-    axis === 'x'
-      ? (panel as DashboardVerticalPanel)?.collapseWidth
-      : (panel as DashboardHorizontalPanel)?.collapseHeight;
+// const getTranslate = (axis: 'x' | 'y', size: DashboardSize, props: DashboardBodyComponentProps): string | 0 => {
+//   let translate: string | 0 = 0;
+//   const panel = axis === 'x' ? props.left : props.header;
+//   const panelCollapseLength =
+//     axis === 'x'
+//       ? (panel as DashboardVerticalPanel)?.collapseWidth
+//       : (panel as DashboardHorizontalPanel)?.collapseHeight;
 
-  const panelLength =
-    axis === 'x' ? (panel as DashboardVerticalPanel)?.width : (panel as DashboardHorizontalPanel)?.height;
+//   const panelLength =
+//     axis === 'x' ? (panel as DashboardVerticalPanel)?.width : (panel as DashboardHorizontalPanel)?.height;
 
-  if (size === 'small') {
-    if (panel && !panel.floating && panelCollapseLength !== 0) {
-      translate = panelCollapseLength;
-    }
-  } else if (panel && !panel.floating) {
-    translate = panel.collapse ? panelCollapseLength : panelLength;
+//   if (size === 'small') {
+//     if (panel && !panel.floating && panelCollapseLength !== 0) {
+//       translate = panelCollapseLength;
+//     }
+//   } else if (panel && !panel.floating) {
+//     translate = panel.collapse ? panelCollapseLength : panelLength;
+//   }
+//   return translate;
+// };
+
+const getTranslateX = (size: DashboardSize, props: DashboardBodyComponentProps): string | 0 => {
+  const panel = props.left;
+  if (panel) {
+    return panel[getFloatingKey(size)]
+      ? getDashboardPanelLength('width', size, panel) // actual size of the panel
+      : getWorkspacePanelLength('width', size, panel); // size of the panel on the workspace (if floating, the workspace panel size is 0)
   }
-  return translate;
+  return 0;
+};
+
+const getTranslateY = (size: DashboardSize, props: DashboardBodyComponentProps): string | 0 => {
+  const panel = props.header;
+  if (panel) {
+    return panel[getFloatingKey(size)]
+      ? getDashboardPanelLength('height', size, panel) // actual size of the panel
+      : getWorkspacePanelLength('height', size, panel); // size of the panel on the workspace (if floating, the workspace panel size is 0)
+  }
+  return 0;
+};
+
+const style: ComponentStyle<DashboardBodyComponentProps> = (props) => {
+  const t = props.theme.dashboard.body;
+  return css`
+    ${backgroundColor(t.bgColor)}
+    grid-area: body;
+    width: ${() => getBodyLength('width', 'small', props)};
+    height: ${() => getBodyLength('height', 'small', props)};
+    overflow: auto;
+    transition: ${() => (props.panel ? 'transform 0.6s, width 0.6s, height 0.6s' : 'none')};
+    transform: translate(${() => getTranslateX('small', props)}, ${() => getTranslateY('small', props)});
+    @media only screen and (min-width: 768px) {
+      width: ${() => getBodyLength('width', 'medium', props)};
+      height: ${() => getBodyLength('height', 'medium', props)};
+      transform: translate(${() => getTranslateX('medium', props)}, ${() => getTranslateY('medium', props)});
+    }
+    @media only screen and (min-width: 992px) {
+      width: ${() => getBodyLength('width', 'large', props)};
+      height: ${() => getBodyLength('height', 'large', props)};
+      transform: translate(${() => getTranslateX('large', props)}, ${() => getTranslateY('large', props)});
+    }
+  `;
 };
 
 const StyledDashboardBody = styled(DashboardBodyComponent)`
-  grid-area: body;
-  width: ${(props) => getLength('width', 'small', props)};
-  height: ${(props) => getLength('height', 'small', props)};
-  transition: transform 0.6s, width 0.6s, height 0.6s;
-  transform: translate(
-    ${(props) => getTranslate('x', 'small', props)},
-    ${(props) => getTranslate('y', 'small', props)}
-  );
-  @media only screen and (min-width: 46.875em) {
-    width: ${(props) => getLength('width', 'large', props)};
-    height: ${(props) => getLength('height', 'large', props)};
-    transform: translate(
-      ${(props) => getTranslate('x', 'large', props)},
-      ${(props) => getTranslate('y', 'large', props)}
-    );
-  }
+  ${style}
 `;
 
-const DashboardBody: React.FC<DashboardBodyPanelProps> = (props) => {
-  const service = useDashboardService();
+const DashboardBody: FCC<DashboardBodyPanelProps> = (props) => {
   const state = useDashboardState();
-  useEffect(() => {
-    service.initBodyPanel(props);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const panel = state.body;
-  if (!panel) {
-    return null;
-  }
-
   return (
-    <StyledDashboardBody {...panel} {...state} className={props.className}>
+    <StyledDashboardBody {...state} panel={panel} className={props.className}>
       {props.children}
     </StyledDashboardBody>
   );

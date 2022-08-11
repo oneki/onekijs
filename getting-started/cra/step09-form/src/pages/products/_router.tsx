@@ -1,19 +1,13 @@
-import React from 'react';
-import { useRouteMatch, Switch, Route } from 'onekijs';
-import ProductDetailsPage from './[productId]/details';
+import { Route, Routes } from 'onekijs';
 import ProductsPage from '.';
+import ProductDetailsPage from './[productId]/details';
 
 const ProductsRouter = (): JSX.Element => {
-  const match = useRouteMatch();
   return (
-    <Switch>
-      <Route path={`${match.path}/:productId`}>
-        <ProductDetailsPage />
-      </Route>
-      <Route path={match.path}>
-        <ProductsPage />
-      </Route>
-    </Switch>
+    <Routes>
+      <Route path=":productId" element={<ProductDetailsPage />} />
+      <Route index element={<ProductsPage />} />
+    </Routes>
   );
 };
 

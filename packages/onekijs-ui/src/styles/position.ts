@@ -1,4 +1,12 @@
-import { ClearProperty, FloatProperty, LeftProperty, PositionProperty, RightProperty, TopProperty } from 'csstype';
+import {
+  ClearProperty,
+  FloatProperty,
+  LeftProperty,
+  PositionProperty,
+  RightProperty,
+  TopProperty,
+  ZIndexProperty,
+} from 'csstype';
 import { cssProperty } from '../utils/style';
 import { TLength } from './typings';
 
@@ -24,4 +32,4 @@ export const top = cssProperty<TopProperty<TLength>>('top');
 export const bottom = cssProperty<TopProperty<TLength>>('bottom');
 
 // auto or integer
-export const zIndex = cssProperty('z-index');
+export const zIndex = cssProperty<ZIndexProperty>('z-index');

@@ -1,8 +1,8 @@
-import React from 'react';
+import { FCC } from 'onekijs';
 import Navbar from '../components/Navbar';
 import NotificationCenter from '../components/NotificationCenter';
 
-const AppLayout: React.FC = ({ children }) => {
+const AppLayout: FCC = ({ children }) => {
   return (
     <div>
       <NotificationCenter />
