@@ -41,6 +41,9 @@ const useCollectionService = <
     if (!isCollection(initialState.dataSource) && initialState.autoload && !initialState.local) {
       service.load(initialState.limit, initialState.offset);
     }
+    return () => {
+      service.destroy();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

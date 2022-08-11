@@ -33,7 +33,17 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme }) => {
       background-color: ${(props) => props.theme.palette.colors[props.theme.colors.light]};
       border: 3px solid ${(props) => props.theme.palette.colors[props.theme.colors.lighter]};
     }
-  }
+
+    .o-table-not-found {
+      ${display('flex')}
+      ${flexDirection('column')}
+      ${alignItems('center')}
+      ${padding('8xl')}
+      ${color('primary')}
+      ${fontSize('xl')}
+      ${backgroundColor(t.bgColor)}
+    }
+
     .o-table-body {
       ${overflowX('auto')}
     }

@@ -1,4 +1,5 @@
 import { BackgroundColorProperty, ColorProperty, MarginProperty } from 'csstype';
+import { ReactNode } from 'react';
 import { ColorPropertyTheme, SpacingPropertyTheme, TLength } from '../../styles/typings';
 
 export type TagProps = {
@@ -12,4 +13,5 @@ export type TagProps = {
   marginRight?: SpacingPropertyTheme | MarginProperty<TLength>;
   marginTop?: SpacingPropertyTheme | MarginProperty<TLength>;
   marginBottom?: SpacingPropertyTheme | MarginProperty<TLength>;
+  icon?: ReactNode;
 };

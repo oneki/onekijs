@@ -12,7 +12,7 @@ import {
 } from 'onekijs-framework';
 import React from 'react';
 import { InputProps } from '../input/typings';
-import { ListItemProps, ListItems, ListState, UseListOptions } from '../list/typings';
+import { ListItemProps, ListItems, ListNotFoundProps, ListState, UseListOptions } from '../list/typings';
 import { SelectItem, SelectProps } from '../select/typings';
 
 export type ArrayTableProps<T = any, I extends TableItem<T> = TableItem<T>> = TableConfig<T, I> & {
@@ -93,13 +93,16 @@ export type TableConfig<T = any, I extends TableItem<T> = TableItem<T>> = {
   HeaderComponent?: React.FC<TableHeaderProps<T, I>>;
   height?: string;
   highlightRow?: boolean;
+  increment?: number;
   LoadingComponent?: React.FC;
   LoadingRowComponent?: React.FC;
+  NotFoundComponent?: React.FC<TableNotFoundProps>;
   onRowClick?: TableRowHandler<T, I>;
   onRowEnter?: TableRowHandler<T, I>;
   onRowLeave?: TableRowHandler<T, I>;
   onRowOver?: TableRowHandler<T, I>;
   onRowOut?: TableRowHandler<T, I>;
+  preload?: number;
   rowClassName?: string | ((item: I | undefined, rowIndex: number, columns: TableColumn<T, I>[]) => string);
   RowComponent?: React.FC<TableBodyRowProps<T, I>>;
   sortable?: boolean;
@@ -207,6 +210,8 @@ export type TableItemAdapter<T = any> = (data: T) => TableItemAdaptee;
 export type TableRowHandler<T = any, I extends TableItem<T> = TableItem<T>> = (item: I, index: number) => void;
 
 export type TableItems<T = any> = ListItems<T>;
+
+export type TableNotFoundProps = ListNotFoundProps;
 
 export type TableProps<
   T = any,

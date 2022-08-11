@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { AnonymousObject } from '../types/object';
+import { isSameArray } from './array';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function isNull(value: any): boolean {
@@ -311,7 +312,27 @@ export function shallowEqual(objA: AnonymousObject | null, objB: AnonymousObject
 
   // Test for A's keys different from B.
   for (let i = 0; i < keysA.length; i++) {
-    if (!Object.prototype.hasOwnProperty.call(objB, keysA[i]) || !is(objA[keysA[i]], objB[keysA[i]])) {
+    const key = keysA[i];
+    if (!Object.prototype.hasOwnProperty.call(objB, key)) {
+      return false;
+    }
+    if (Array.isArray(objA[key]) && Array.isArray(objB[key])) {
+      if (!isSameArray(objA[key], objB[key])) {
+        return false;
+      } else {
+        continue;
+      }
+    }
+
+    if (typeof objA[key] === 'object' && typeof objB[key] === 'object') {
+      if (!shallowEqual(objA[key], objB[key])) {
+        return false;
+      } else {
+        continue;
+      }
+    }
+
+    if (!is(objA[keysA[i]], objB[keysA[i]])) {
       return false;
     }
   }

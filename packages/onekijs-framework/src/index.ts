@@ -166,7 +166,6 @@ export {
   isQueryFilterString,
   isQuerySortByField,
   isQuerySortByMultiFields,
-  isSameArray,
   isSameFilter,
   isSameFilterCriteriaValue,
   isSameQuery,
@@ -369,7 +368,7 @@ export {
   localesModeSymbol,
   SERVICE_TYPE_ID,
 } from './types/symbol';
-export { first, last } from './utils/array';
+export { first, last, isSameArray } from './utils/array';
 export { isBrowser, isMobile } from './utils/browser';
 export { decrypt, encrypt, sha256, verify } from './utils/crypt';
 export { detectLocale, flattenTranslations } from './utils/i18n';

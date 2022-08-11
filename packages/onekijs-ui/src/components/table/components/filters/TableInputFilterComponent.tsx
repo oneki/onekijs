@@ -12,7 +12,7 @@ import Dropdown from '../../../dropdown';
 import SearchIcon from '../../../icon/SearchIcon';
 import Input from '../../../input';
 import { InputProps } from '../../../input/typings';
-import useTableController from '../../hooks/useTableService';
+import useTableService from '../../hooks/useTableService';
 import { TableHeaderCellProps } from '../../typings';
 import { getValueFromFilter } from '../../util';
 
@@ -95,21 +95,35 @@ const StyledSearchComponent = styled(SearchComponent)`
 // `;
 
 const TableInputFilterComponent: React.FC<TableHeaderCellProps> = ({ column }) => {
-  const controller = useTableController();
+  const controller = useTableService();
   const filter = controller.getFilterById(column.id);
-  const value = getValueFromFilter(filter);
+  const filterValue = getValueFromFilter(filter);
+  const [value, setValue] = useState(filterValue);
   const onValueChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.value) {
-      controller.addFilterCriteria(column.id, 'like', e.target.value, false, column.id);
+      if (controller.state.local) {
+        controller.addFilterCriteria(column.id, 'like', e.target.value, false, column.id);
+      } else {
+        setValue(e.target.value);
+      }
     } else {
+      setValue('');
       controller.removeFilter(column.id);
     }
   };
+
+  const onKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!controller.state.local && e.key === 'Enter') {
+      controller.addFilterCriteria(column.id, 'like', value, false, column.id);
+    }
+  };
+
   return (
     <Input
       className="o-table-filter-input"
-      value={value}
+      value={controller.state.local ? filterValue : value}
       onChange={onValueChange}
+      onKeyUp={onKeyUp}
       PrefixComponent={StyledSearchComponent}
     />
   );

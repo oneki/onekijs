@@ -26,13 +26,12 @@ export const tagStyle: ComponentStyle<TagProps> = ({
   let lHeight = 'md';
   let pX = 'md';
   let radius = 'sm';
-  let pt: SpacingPropertyTheme | PaddingProperty<TLength> = 0;
+  const pt: SpacingPropertyTheme | PaddingProperty<TLength> = '2xs';
   if (size === 'small') {
     fSize = 'xs';
     lHeight = 'xs';
     radius = 'xs';
     pX = 'sm';
-    pt = '2xs';
   }
   if (size === 'large') {
     fSize = 'md';
@@ -54,5 +53,10 @@ export const tagStyle: ComponentStyle<TagProps> = ({
     ${fontSize(fSize)}
     ${cursor(onClick ? 'pointer' : 'inherit')}
     ${borderRadius(radius)}
+    .o-tag-icon {
+      ${marginRight('xs')}
+      ${display('inline-flex')}
+      ${alignItems('center')}
+    }
   `;
 };

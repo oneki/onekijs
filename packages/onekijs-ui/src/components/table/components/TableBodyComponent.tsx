@@ -11,18 +11,22 @@ import { useTableState } from '../hooks/useTableState';
 import { TableBodyProps } from '../typings';
 import TableBodyRowComponent from './TableBodyRowComponent';
 import TableLoadingComponent from './TableLoadingComponent';
+import TableNotFoundComponent from './TableNotFoundComponent';
 
 const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, contentRef }) => {
   const service = useTableService();
   const state = useTableState();
   const {
     height,
+    increment,
     onRowClick,
     onRowEnter,
     onRowLeave,
+    preload,
     RowComponent = TableBodyRowComponent,
     rowClassName,
     LoadingComponent = TableLoadingComponent,
+    NotFoundComponent = TableNotFoundComponent,
   } = useTableConfig();
 
   const itemHeight = useCallback(() => {
@@ -35,6 +39,8 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
     ref: tableRef,
     overscan: service.step === 'mounted' ? 1 : 20,
     itemHeight,
+    preload,
+    increment,
   });
 
   const ItemComponentRef = useLazyRef<React.FC<ListItemProps<any, any>>>(() => {
@@ -63,6 +69,11 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
   if (service.status === LoadingStatus.Loading) {
     return <LoadingComponent />;
   }
+
+  if (service.status === LoadingStatus.Loaded && items.length === 0) {
+    return <NotFoundComponent />;
+  }
+
   return (
     <ListBodyComponent
       className={addClassname('o-table-body', className)}

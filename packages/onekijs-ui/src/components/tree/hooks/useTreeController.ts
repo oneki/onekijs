@@ -4,7 +4,7 @@ import { TreeItem, TreeState, UseTreeOptions } from '../typings';
 import useTreeInitialState from './useTreeInitialState';
 
 const useTreeController = <T>(
-  dataSource:
+  dataSource?:
     | string
     | T[]
     | CollectionProxy<

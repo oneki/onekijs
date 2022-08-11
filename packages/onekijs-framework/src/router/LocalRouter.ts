@@ -20,6 +20,10 @@ export default class LocalRouter extends Router {
     throw new Error('Method not implemented.');
   }
 
+  get location(): Location {
+    return this.history[0];
+  }
+
   getLinkComponent(): JSX.Element {
     throw new Error('Method not implemented.');
   }
