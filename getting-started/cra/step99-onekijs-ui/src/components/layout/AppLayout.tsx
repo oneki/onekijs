@@ -10,7 +10,7 @@ const Container = styled.div`
   ${paddingX(4)}
 `;
 
-const AppLayout: FCC = ({ children }) => {
+const AppLayout: FC = () => {
   return (
     <>
       <Navbar />

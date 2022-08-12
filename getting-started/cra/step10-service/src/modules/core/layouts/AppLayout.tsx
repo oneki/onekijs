@@ -1,5 +1,5 @@
 import { Outlet } from 'onekijs';
-import React, { FC } from 'react';import { FCC } from 'onekijs';
+import { FC } from 'react';
 import Navbar from '../components/Navbar';
 import NotificationCenter from '../components/NotificationCenter';
 

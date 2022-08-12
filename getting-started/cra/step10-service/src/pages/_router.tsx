@@ -15,8 +15,8 @@ const RootRouter = (): JSX.Element => {
         <Route path="signup" element={<SignupPage />} />
         <Route path="products/*" element={<ProductsRouter />} />
         <Route path="cart" element={<CartPage />} />
-        <Route index element={<Navigate to="products" />} />
       </Route>
+      <Route index element={<Navigate to="/products" replace />} />
     </Routes>
   );
 };

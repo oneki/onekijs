@@ -25,7 +25,8 @@
     "build:fast": "microbundle -f modern --jsx React.createElement --jsxFragment React.Fragment --no-compress",
     "start": "microbundle watch -f modern --jsx React.createElement --jsxFragment React.Fragment --max-old-space-size=8192 --no-compress",
     "rollup:clean": "rimraf dist",
-    "rollup:build": "npm run rollup:clean && rollup --config rollup.config.js"
+    "rollup:build": "npm run rollup:clean && rollup --config rollup.config.js",
+    "rollup:start": "rollup -w --config rollup.config.js"
   },
   "author": "Oneki",
   "license": "MIT",

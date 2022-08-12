@@ -109,7 +109,7 @@ export const formatSettings = (settings: AppSettings): AppSettings => {
     }
   }
   const cloneDefaultSettings = clone(defaultSettings);
-  const formattedSettings = simpleMergeDeep(cloneDefaultSettings, result);
+  const formattedSettings = simpleMergeDeep(result, cloneDefaultSettings);
   return indexLocales(formattedSettings);
 };
 

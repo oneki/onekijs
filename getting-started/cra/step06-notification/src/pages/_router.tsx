@@ -13,8 +13,8 @@ const RootRouter = (): JSX.Element => {
       <Route element={<AppLayout />}>
         <Route path="/products/*" element={<ProductsRouter />} />
         <Route path="/cart" element={<CartPage />} />
-        <Route index element={<Navigate to="/products" replace />} />
       </Route>
+      <Route index element={<Navigate to="/products" replace />} />
     </Routes>
   );
 };
