@@ -76,16 +76,12 @@ export { default as InputComponent } from './components/input/components/InputCo
 export { InputProps } from './components/input/typings';
 export { default as Label } from './components/label';
 export { default as List } from './components/list';
-export { default as Tag } from './components/tag';
-export { default as TagComponent } from './components/tag/components/TagComponent';
-export { tagStyle } from './components/tag/style';
-export { TagProps } from './components/tag/typings';
-export { default as LoadingItem } from './components/list/components/LoadingItem';
 export {
   default as ListItemComponent,
   listItemContainer,
   ListItemContent,
 } from './components/list/components/ListItemComponent';
+export { default as LoadingItem } from './components/list/components/LoadingItem';
 export { default as useListController } from './components/list/hooks/useListController';
 export {
   ArrayListProps,
@@ -106,11 +102,15 @@ export {
   UseListOptions,
   VirtualItem,
 } from './components/list/typings';
+export { default as Modal } from './components/modal';
+export { default as ModalComponent } from './components/modal/components/ModalComponent';
+export { modalStyle } from './components/modal/style';
+export { ModalProps } from './components/modal/typings';
 export { default as Properties } from './components/properties';
 export { default as PropertiesComponent } from './components/properties/components/PropertiesComponent';
 export { default as Property } from './components/properties/components/Property';
 export { propertiesStyle } from './components/properties/style';
-export { PropertiesProps, PropertyProps, PropertiesList, PropertiesContext } from './components/properties/typings';
+export { PropertiesContext, PropertiesList, PropertiesProps, PropertyProps } from './components/properties/typings';
 export { default as Select } from './components/select';
 export { default as ArraySelectComponent } from './components/select/components/ArraySelectComponent';
 export { default as ControllerSelectComponent } from './components/select/components/ControllerSelectComponent';
@@ -187,6 +187,10 @@ export {
   UseSelectColumnOptions,
   UseTableOptions,
 } from './components/table/typings';
+export { default as Tag } from './components/tag';
+export { default as TagComponent } from './components/tag/components/TagComponent';
+export { tagStyle } from './components/tag/style';
+export { TagProps } from './components/tag/typings';
 export { default as Tooltip } from './components/tooltip';
 export { default as Tree } from './components/tree';
 export { default as ArrayTreeComponent } from './components/tree/components/ArrayTreeComponent';
@@ -205,8 +209,8 @@ export { TreeConfigContext, useTreeConfig } from './components/tree/hooks/useTre
 export { default as useTreeController } from './components/tree/hooks/useTreeController';
 export { default as useTreeInitialState } from './components/tree/hooks/useTreeInitialState';
 export { default as useTreeService, TreeServiceContext } from './components/tree/hooks/useTreeService';
-export { default as TreeService } from './components/tree/TreeService';
 export { TreeStateContext, useTreeState } from './components/tree/hooks/useTreeState';
+export { default as TreeService } from './components/tree/TreeService';
 export {
   ArrayTreeProps,
   ControllerTreeProps,
@@ -224,6 +228,18 @@ export {
   UseTreeOptions,
   VirtualTreeListProps,
 } from './components/tree/typings';
+export { default as Wizard } from './components/wizard';
+export { default as Step } from './components/wizard/components/Step';
+export { default as StepTitle } from './components/wizard/components/StepTitle';
+export {
+  ControlledWizardProps,
+  StepProps,
+  StepState,
+  StepTitleProps,
+  UseWizardController,
+  WizardProps,
+  WizardState,
+} from './components/wizard/typings';
 export * from './styles/alignment';
 export * from './styles/animation';
 export * from './styles/background';

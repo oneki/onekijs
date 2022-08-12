@@ -1,23 +1,23 @@
 import { FCC } from 'onekijs-framework';
 import React from 'react';
 import { CSSTransition } from 'react-transition-group';
-import useTab from '../hooks/useTab';
-import { useTabsState } from '../hooks/useTabsState';
-import { TabProps } from '../typings';
-import TabTitle from './TabTitle';
+import useStep from '../hooks/useStep';
+import { useWizardState } from '../hooks/useWizardState';
+import { StepProps } from '../typings';
+import StepTitle from './StepTitle';
 
-const Tab: FCC<TabProps> = ({
+const Step: FCC<StepProps> = ({
   title,
   active = false,
   disabled = false,
   visible = true,
   closable = false,
   children,
-  Component = TabTitle,
+  Component = StepTitle,
   icon,
   uid,
 }) => {
-  const tab = useTab({
+  const step = useStep({
     title,
     active,
     disabled,
@@ -32,7 +32,7 @@ const Tab: FCC<TabProps> = ({
     node.style.opacity = '0';
   };
 
-  const { animate } = useTabsState();
+  const { animate } = useWizardState();
 
   const onEntering = (node: HTMLElement) => {
     setTimeout(() => {
@@ -41,15 +41,15 @@ const Tab: FCC<TabProps> = ({
     }, 0);
   };
 
-  if (!tab || !tab.active) {
+  if (!step || !step.active) {
     return null;
   }
 
   return (
     <CSSTransition in={true} timeout={animate} appear={true} onEnter={onEnter} onEntering={onEntering}>
-      <div className="o-tab">{children}</div>
+      <div className="o-step-content">{children}</div>
     </CSSTransition>
   );
 };
 
-export default Tab;
+export default Step;

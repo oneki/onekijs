@@ -11,11 +11,11 @@ export type TabProps = {
   disabled?: boolean;
   icon?: ReactNode;
   uid?: string;
-} & AnonymousObject<unknown>;
+};
 
-export type TabTitleProps = {
-  tab: TabState;
-  onActivate: (tab: TabState) => void;
+export type TabTitleProps<M extends TabState = TabState> = {
+  member: M;
+  onActivate: (member: M) => void;
 } & AnonymousObject<unknown>;
 
 export type TabState = {
@@ -42,9 +42,9 @@ export type ControlledTabsProps = TabsProps & {
   controller: TabsService;
 };
 
-export type TabsState = {
-  tabs: TabState[];
-  tabsIndex: AnonymousObject<number>;
+export type TabsState<M extends TabState = TabState> = {
+  members: M[];
+  membersIndex: AnonymousObject<number>;
   animate: number;
   active?: string;
 };

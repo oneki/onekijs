@@ -23,9 +23,9 @@ const TabsContainer: FCC<Omit<TabsProps, 'Component'>> = ({ className, children 
   return (
     <div className={classNames}>
       <div className="o-tabs-title">
-        {state.tabs.map((tab) => {
+        {state.members.map((tab) => {
           const Component = tab.TitleComponent;
-          return <Component key={tab.uid} tab={tab} onActivate={activate} />;
+          return <Component key={tab.uid} member={tab} onActivate={activate} />;
         })}
       </div>
       <div className="o-tabs-content">{children}</div>

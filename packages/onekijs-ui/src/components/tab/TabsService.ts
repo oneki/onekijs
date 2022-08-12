@@ -3,53 +3,53 @@ import { ReactNode } from 'react';
 import { TabsState, TabState, TabTitleProps } from './typings';
 
 @service
-export class TabsService extends DefaultService<TabsState> {
+export class TabsService<S extends TabsState = TabsState, M extends TabState = TabState> extends DefaultService<S> {
   @reducer
   activate(uid: string): void {
-    const tab = this.getTab(uid);
-    if (tab) {
-      this.state.tabs.forEach((t) => {
+    const member = this.getMember(uid);
+    if (member) {
+      this.state.members.forEach((t) => {
         t.active = false;
       });
-      tab.active = true;
+      member.active = true;
       this.state.active = uid;
     }
   }
 
   @reducer
   disable(uid: string): void {
-    const tab = this.getTab(uid);
-    if (tab) {
-      tab.disabled = true;
+    const member = this.getMember(uid);
+    if (member) {
+      member.disabled = true;
     }
   }
 
   @reducer
   enable(uid: string): void {
-    const tab = this.getTab(uid);
-    if (tab) {
-      tab.disabled = false;
+    const member = this.getMember(uid);
+    if (member) {
+      member.disabled = false;
     }
   }
 
-  getTab(uid: string): TabState {
-    return this.state.tabs[this.state.tabsIndex[uid]];
+  getMember(uid: string): TabState {
+    return this.state.members[this.state.membersIndex[uid]];
   }
 
   @reducer
   hide(uid: string): void {
-    const tab = this.getTab(uid);
-    if (tab) {
-      tab.visible = false;
+    const member = this.getMember(uid);
+    if (member) {
+      member.visible = false;
     }
   }
 
   @reducer
-  initTab(state: TabState): void {
-    if (!Object.keys(this.state.tabsIndex).includes(state.uid)) {
-      const firstTab = this.state.tabs.length === 0;
-      this.state.tabsIndex[state.uid] = this.state.tabs.length;
-      this.state.tabs.push(state);
+  initMember(state: M): void {
+    if (!Object.keys(this.state.membersIndex).includes(state.uid)) {
+      const firstTab = this.state.members.length === 0;
+      this.state.membersIndex[state.uid] = this.state.members.length;
+      this.state.members.push(state);
       if (!state.disabled && state.visible && (state.active || firstTab)) {
         this.activate(state.uid);
       }
@@ -58,48 +58,48 @@ export class TabsService extends DefaultService<TabsState> {
 
   @reducer
   remove(uid: string): void {
-    const index = this.state.tabsIndex[uid];
-    delete this.state.tabsIndex[uid];
-    this.state.tabs.splice(index, 1);
+    const index = this.state.membersIndex[uid];
+    delete this.state.membersIndex[uid];
+    this.state.members.splice(index, 1);
   }
 
   @reducer
   setClosable(uid: string, closable: boolean): void {
-    const tab = this.getTab(uid);
-    if (tab) {
-      tab.closable = closable;
+    const member = this.getMember(uid);
+    if (member) {
+      member.closable = closable;
     }
   }
 
   @reducer
   setIcon(uid: string, icon?: ReactNode): void {
-    const tab = this.getTab(uid);
-    if (tab) {
-      tab.icon = icon;
+    const member = this.getMember(uid);
+    if (member) {
+      member.icon = icon;
     }
   }
 
   @reducer
   setTitle(uid: string, title: string): void {
-    const tab = this.getTab(uid);
-    if (tab) {
-      tab.title = title;
+    const member = this.getMember(uid);
+    if (member) {
+      member.title = title;
     }
   }
 
   @reducer
   setTitleComponent(uid: string, TitleComponent: FCC<TabTitleProps>): void {
-    const tab = this.getTab(uid);
-    if (tab) {
-      tab.TitleComponent = TitleComponent;
+    const member = this.getMember(uid);
+    if (member) {
+      member.TitleComponent = TitleComponent;
     }
   }
 
   @reducer
   show(uid: string): void {
-    const tab = this.getTab(uid);
-    if (tab) {
-      tab.visible = true;
+    const member = this.getMember(uid);
+    if (member) {
+      member.visible = true;
     }
   }
 }

@@ -24,6 +24,7 @@ import {
   TextTransformProperty,
   WhiteSpaceProperty,
   WidthProperty,
+  ZIndexProperty,
 } from 'csstype';
 import { AnonymousObject } from 'onekijs-framework';
 import {
@@ -32,6 +33,8 @@ import {
   ThemedStyledProps,
   ThemeProps as SytledThemeProps,
 } from 'styled-components';
+
+export type TshirtSize = 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge';
 
 export type CssProperty<T> = (value: T, variants?: AnonymousObject) => FlattenInterpolation<SytledThemeProps<any>>;
 export type Formatter<T> = (value: T, theme: Theme) => string;
@@ -108,6 +111,14 @@ export enum SpacingKeys {
   '12xl' = '12xl',
   '13xl' = '13xl',
   px = 'px',
+}
+
+export enum TshirtKeys {
+  xsmall = 'xsmall',
+  small = 'small',
+  medium = 'medium',
+  large = 'large',
+  xlarge = 'xlarge',
 }
 
 export enum FontWeightKeys {
@@ -447,6 +458,57 @@ export type Theme = {
     paddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
   };
 
+  wizard: {
+    activeBgColor: ColorPropertyTheme | BackgroundColorProperty;
+    activeBorderColor: ColorPropertyTheme | BorderColorProperty;
+    activeFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
+    activeFontColor: ColorPropertyTheme | ColorProperty;
+    activeFontWeight: FontWeightPropertyTheme | FontWeightProperty;
+    bgColor: ColorPropertyTheme | BackgroundColorProperty;
+    borderColor: ColorPropertyTheme | BorderColorProperty;
+    borderRadius: BorderRadiusProperty<TLength> | RadiusPropertyTheme;
+    borderStyle: BorderStyleProperty;
+    borderWidth: BorderWidthProperty<TLength>;
+    cursor: CursorProperty;
+    disabledBgColor: ColorPropertyTheme | BackgroundColorProperty;
+    disabledBorderColor: ColorPropertyTheme | BorderColorProperty;
+    disabledFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
+    disabledFontColor: ColorPropertyTheme | ColorProperty;
+    disabledFontWeight: FontWeightPropertyTheme | FontWeightProperty;
+    errorBgColor: ColorPropertyTheme | BackgroundColorProperty;
+    errorBorderColor: ColorPropertyTheme | BorderColorProperty;
+    errorFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
+    errorFontColor: ColorPropertyTheme | ColorProperty;
+    errorFontWeight: FontWeightPropertyTheme | FontWeightProperty;
+    fontColor: ColorPropertyTheme | ColorProperty;
+    fontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
+    fontWeight: FontWeightPropertyTheme | FontWeightProperty;
+    hoverBgColor: ColorPropertyTheme | BackgroundColorProperty;
+    hoverBorderColor: ColorPropertyTheme | BorderColorProperty;
+    hoverBorderStyle: BorderStyleProperty;
+    hoverBorderWidth: BorderWidthProperty<TLength>;
+    hoverFontColor: ColorPropertyTheme | ColorProperty;
+    marginBefore: SpacingPropertyTheme | MarginProperty<TLength>;
+    marginAfter: SpacingPropertyTheme | MarginProperty<TLength>;
+    paddingRight: SpacingPropertyTheme | PaddingProperty<TLength>;
+    paddingLeft: SpacingPropertyTheme | PaddingProperty<TLength>;
+    paddingTop: SpacingPropertyTheme | PaddingProperty<TLength>;
+    paddingBottom: SpacingPropertyTheme | PaddingProperty<TLength>;
+    stepsBgColor: ColorPropertyTheme | BackgroundColorProperty;
+    stepsBorderColor: ColorPropertyTheme | BorderColorProperty;
+    stepsBorderStyle: BorderStyleProperty;
+    stepsBorderWidth: BorderWidthProperty<TLength>;
+    stepsPaddingTop: SpacingPropertyTheme | PaddingProperty<TLength>;
+    stepsPaddingBottom: SpacingPropertyTheme | PaddingProperty<TLength>;
+    stepsPaddingLeft: SpacingPropertyTheme | PaddingProperty<TLength>;
+    stepsPaddingRight: SpacingPropertyTheme | PaddingProperty<TLength>;
+    successBgColor: ColorPropertyTheme | BackgroundColorProperty;
+    successBorderColor: ColorPropertyTheme | BorderColorProperty;
+    successFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
+    successFontColor: ColorPropertyTheme | ColorProperty;
+    successFontWeight: FontWeightPropertyTheme | FontWeightProperty;
+  };
+
   card: {
     borderColor: ColorPropertyTheme | BorderColorProperty;
     borderRadius: BorderRadiusProperty<TLength> | RadiusPropertyTheme;
@@ -477,6 +539,20 @@ export type Theme = {
     [k in DashboardKeys]: {
       bgColor: ColorPropertyTheme | BackgroundColorProperty;
     };
+  };
+
+  modal: {
+    bgColor: ColorPropertyTheme | BackgroundColorProperty;
+    maskColor: ColorPropertyTheme | BackgroundColorProperty;
+    maskOpacity: OpacityProperty;
+    zIndex: ZIndexProperty;
+    xsmallSize: SizePropertyTheme | HeightProperty<TLength>;
+    smallSize: SizePropertyTheme | HeightProperty<TLength>;
+    mediumSize: SizePropertyTheme | HeightProperty<TLength>;
+    largeSize: SizePropertyTheme | HeightProperty<TLength>;
+    xlargeSize: SizePropertyTheme | HeightProperty<TLength>;
+    boxShadow: ShadowPropertyTheme | BoxShadowProperty;
+    borderRadius: RadiusPropertyTheme | string;
   };
 };
 export type Palette = AnonymousObject; //TODO create a actual type
