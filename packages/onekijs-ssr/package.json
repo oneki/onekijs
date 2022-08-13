@@ -21,9 +21,9 @@
   "module": "dist/index.module.js",
   "unpkg": "dist/index.umd.js",
   "scripts": {
-    "build": "microbundle --jsx React.createElement",
-    "build:fast": "microbundle -f es --jsx React.createElement --no-compress",
-    "start": "microbundle watch -f es --jsx React.createElement --max-old-space-size=8192 --no-compress"
+    "clean": "rimraf dist",
+    "build": "rimraf dist && rollup --config rollup.config.js",
+    "start": "rollup -w --config rollup.config.js"
   },
   "author": "Oneki",
   "license": "MIT",
@@ -31,11 +31,9 @@
     "onekijs-framework": "^0.14.7"
   },
   "devDependencies": {
-    "microbundle": "^0.13.3"
-  },
-  "peerDependencies": {
-    "react": ">=16",
-    "react-dom": ">=16"
+    "microbundle": "^0.13.3",
+    "rollup": "^2.77.3",
+    "rimraf": "^3.0.2"
   },
   "sideEffects": false
 }

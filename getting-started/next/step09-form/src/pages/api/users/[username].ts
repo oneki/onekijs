@@ -1,13 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { users } from '.';
-
-export default (req: NextApiRequest, res: NextApiResponse): void => {
+const userByNameApi = (req: NextApiRequest, res: NextApiResponse): void => {
   const { username } = req.query;
   const user = users.find((user) => user.username === username);
   if (!user) {
-    return res.status(404).end();
+    res.status(404).end();
+  } else {
+    res.status(200).json({
+      username: user,
+    });
   }
-  res.status(200).json({
-    username: user,
-  });
 };
+
+export default userByNameApi;

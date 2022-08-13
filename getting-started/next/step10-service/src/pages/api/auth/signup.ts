@@ -2,7 +2,7 @@ import { serialize } from 'cookie';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { users } from '../users';
 
-export default (req: NextApiRequest, res: NextApiResponse): void => {
+const signupApi = (req: NextApiRequest, res: NextApiResponse): void => {
   const { username } = req.body;
   const user = users.find((user) => user.username === username);
   if (user) {
@@ -21,3 +21,5 @@ export default (req: NextApiRequest, res: NextApiResponse): void => {
   );
   res.status(200).json({ username, name: 'John Doe' });
 };
+
+export default signupApi;

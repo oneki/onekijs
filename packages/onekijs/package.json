@@ -21,12 +21,9 @@
   "module": "dist/index.modern.js",
   "unpkg": "dist/index.umd.js",
   "scripts": {
-    "build": "microbundle -f modern --jsx React.createElement --jsxFragment React.Fragment",
-    "build:fast": "microbundle -f modern --jsx React.createElement --jsxFragment React.Fragment --no-compress",
-    "start": "microbundle watch -f modern --jsx React.createElement --jsxFragment React.Fragment --max-old-space-size=8192 --no-compress",
-    "rollup:clean": "rimraf dist",
-    "rollup:build": "npm run rollup:clean && rollup --config rollup.config.js",
-    "rollup:start": "rollup -w --config rollup.config.js"
+    "clean": "rimraf dist",
+    "build": "rimraf dist && rollup --config rollup.config.js",
+    "start": "rollup -w --config rollup.config.js"
   },
   "author": "Oneki",
   "license": "MIT",
@@ -38,7 +35,8 @@
   },
   "devDependencies": {
     "microbundle": "^0.15.0",
-    "rollup": "^2.77.3"
+    "rollup": "^2.77.3",
+    "rimraf": "^3.0.2"
   },
   "peerDependencies": {
     "react": ">=18",

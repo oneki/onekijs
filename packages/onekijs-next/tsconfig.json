@@ -23,7 +23,7 @@
     "jsx": "react",
     "esModuleInterop": true,
     "allowJs": true,
-    "target": "ES5",
+    "target": "ESNext",
     "downlevelIteration": true,
     "outDir": "./dist/",
     "incremental": true,

@@ -1,4 +1,3 @@
-import { UnregisterCallback } from 'history';
 import Router, { NextRouter as NextRouterType } from 'next/router';
 import {
   BaseRouter,
@@ -9,6 +8,7 @@ import {
   toLocation,
   toRouteUrl,
   toUrl,
+  UnregisterCallback,
 } from 'onekijs-framework';
 import React from 'react';
 import Link from '../Link';
@@ -35,6 +35,10 @@ export default class NextRouter extends BaseRouter {
     if (typeof window !== 'undefined') {
       window.history.go(delta);
     }
+  }
+
+  get location(): Location {
+    return this.history[0];
   }
 
   getLinkComponent(props: LinkProps): JSX.Element {

@@ -35,7 +35,7 @@ const config = [
         sourcemap: true,
       },
     ],
-    plugins: [resolve(), commonjs(), typescript({ tsconfig: './tsconfig.json' }) /*, terser()*/],
+    plugins: [resolve(), commonjs(), typescript({ tsconfig: './tsconfig.json' }), terser()],
   },
 ];
 

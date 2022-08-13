@@ -1,7 +1,7 @@
 import { serialize } from 'cookie';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-export default (req: NextApiRequest, res: NextApiResponse): void => {
+const userinfoApi = (req: NextApiRequest, res: NextApiResponse): void => {
   const { username } = req.body;
   res.setHeader(
     'Set-Cookie',
@@ -9,5 +9,7 @@ export default (req: NextApiRequest, res: NextApiResponse): void => {
       path: '/',
     }),
   );
-  res.status(200).json({ name: 'John Doe' });
+  res.status(200).json({ username });
 };
+
+export default userinfoApi;

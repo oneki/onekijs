@@ -1,8 +1,8 @@
-import { layout } from 'onekijs-next';
-import React, { FC } from 'react';
+import { FCC, layout } from 'onekijs-next';
+import React from 'react';
 import Navbar from '../components/Navbar';
 
-const AppLayout: FC = ({ children }) => {
+const AppLayout: FCC = ({ children }) => {
   return (
     <div>
       <Navbar />

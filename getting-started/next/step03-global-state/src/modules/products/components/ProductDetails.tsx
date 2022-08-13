@@ -7,7 +7,7 @@ interface ProductDetailsProps {
   onBuy: () => void;
 }
 
-const ProductDetails: React.FC<ProductDetailsProps> = ({ product, onBuy }) => {
+const ProductDetails: FC<ProductDetailsProps> = ({ product, onBuy }) => {
   return (
     <div>
       <h2>Product Details</h2>

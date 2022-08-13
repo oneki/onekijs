@@ -5,7 +5,7 @@ export const cart: CartType = {
   products: [],
 };
 
-export default (req: NextApiRequest, res: NextApiResponse): void => {
+const cartApi = (req: NextApiRequest, res: NextApiResponse): void => {
   const { username } = req.cookies;
   if (!username) {
     res.status(401).end();
@@ -19,3 +19,4 @@ export default (req: NextApiRequest, res: NextApiResponse): void => {
     res.status(200).end();
   }
 };
+export default cartApi;

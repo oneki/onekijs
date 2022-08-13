@@ -16,7 +16,7 @@ export const products: ProductType[] = [
     description: 'A great phone with one of the best cameras',
   },
   {
-    name: 'Phone Invalid',
+    name: 'Phone Standard',
     price: 299,
   },
 ];

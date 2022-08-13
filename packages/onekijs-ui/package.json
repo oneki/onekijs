@@ -24,7 +24,10 @@
   "scripts": {
     "build": "microbundle --jsx React.createElement",
     "build:fast": "microbundle -f es --jsx React.createElement --no-compress",
-    "start": "microbundle watch -f es --jsx React.createElement --max-old-space-size=8192 --no-compress"
+    "start": "microbundle watch -f es --jsx React.createElement --max-old-space-size=8192 --no-compress",
+    "rollup:clean": "rimraf dist",
+    "rollup:build": "npm run rollup:clean && rollup --config rollup.config.js",
+    "rollup:start": "rollup -w --config rollup.config.js"
   },
   "author": "Oneki",
   "license": "MIT",
@@ -44,11 +47,12 @@
   "devDependencies": {
     "@types/react-virtualized-auto-sizer": "^1.0.0",
     "@types/react-window": "^1.8.2",
-    "microbundle": "^0.13.3"
+    "microbundle": "^0.13.3",
+    "rollup": "^2.77.3"
   },
   "peerDependencies": {
-    "react": ">=16",
-    "react-dom": ">=16"
+    "react": ">=18",
+    "react-dom": ">=18"
   },
   "sideEffects": false
 }

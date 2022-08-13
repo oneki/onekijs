@@ -29,9 +29,11 @@ const ProductDetails: FC<ProductDetailsProps> = ({ product, onBuy }) => {
         <h4>
           <T>{currency(product.price)}</T>
         </h4>
-        <p>
-          <T>{product.description}</T>
-        </p>
+        {product.description && (
+          <p>
+            <T>{product.description}</T>
+          </p>
+        )}
         <p>
           <button onClick={onBuy}>
             <T>Buy</T>
