@@ -46,6 +46,7 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
       lightorange: 'orange-200',
       lightyellow: 'yellow-200',
       lightgreen: 'green-200',
+      background: 'white',
     },
     palette: {},
     spacings: {
@@ -273,7 +274,7 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
         bgColor: 'secondary',
       },
       body: {
-        bgColor: 'white',
+        bgColor: 'background',
       },
       right: {
         bgColor: 'lighter',
@@ -337,7 +338,7 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
     },
 
     modal: {
-      bgColor: 'lightest',
+      bgColor: 'background',
       maskColor: 'darkest',
       maskOpacity: '0.85',
       zIndex: 1050,
@@ -367,11 +368,9 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
       disabledFontSize: 'inherit',
       disabledFontColor: 'light',
       disabledFontWeight: 'inherit',
-      errorBgColor: 'inherit',
+      errorBgColor: 'red-100',
       errorBorderColor: 'danger',
-      errorFontSize: 'inherit',
-      errorFontColor: 'inherit',
-      errorFontWeight: 'inherit',
+      errorFontColor: 'danger',
       fontColor: 'inherit',
       fontSize: 'inherit',
       fontWeight: 'inherit',
@@ -386,7 +385,7 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
       paddingLeft: 'lg',
       paddingTop: 'sm',
       paddingBottom: 'sm',
-      stepsBgColor: 'lightest',
+      stepsBgColor: 'lighter',
       stepsBorderColor: 'light',
       stepsBorderStyle: 'solid',
       stepsBorderWidth: '1px',
@@ -394,11 +393,12 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
       stepsPaddingBottom: 'lg',
       stepsPaddingLeft: 'xl',
       stepsPaddingRight: 0,
-      successBgColor: 'inherit',
+      successBgColor: 'green-100',
       successBorderColor: 'success',
-      successFontSize: 'inherit',
-      successFontColor: 'inherit',
-      successFontWeight: 'inherit',
+      successFontColor: 'success',
+      warningBgColor: 'yellow-100',
+      warningBorderColor: 'warning',
+      warningFontColor: 'warning',
     },
   };
 

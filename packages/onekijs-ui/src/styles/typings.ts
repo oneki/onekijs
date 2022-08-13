@@ -72,6 +72,7 @@ export enum ColorKeys {
   lightorange = 'lightorange',
   lightyellow = 'lightyellow',
   lightgreen = 'lightgreen',
+  background = 'background',
 }
 
 export enum DashboardKeys {
@@ -477,9 +478,7 @@ export type Theme = {
     disabledFontWeight: FontWeightPropertyTheme | FontWeightProperty;
     errorBgColor: ColorPropertyTheme | BackgroundColorProperty;
     errorBorderColor: ColorPropertyTheme | BorderColorProperty;
-    errorFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
     errorFontColor: ColorPropertyTheme | ColorProperty;
-    errorFontWeight: FontWeightPropertyTheme | FontWeightProperty;
     fontColor: ColorPropertyTheme | ColorProperty;
     fontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
     fontWeight: FontWeightPropertyTheme | FontWeightProperty;
@@ -504,9 +503,10 @@ export type Theme = {
     stepsPaddingRight: SpacingPropertyTheme | PaddingProperty<TLength>;
     successBgColor: ColorPropertyTheme | BackgroundColorProperty;
     successBorderColor: ColorPropertyTheme | BorderColorProperty;
-    successFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
     successFontColor: ColorPropertyTheme | ColorProperty;
-    successFontWeight: FontWeightPropertyTheme | FontWeightProperty;
+    warningBgColor: ColorPropertyTheme | BackgroundColorProperty;
+    warningBorderColor: ColorPropertyTheme | BorderColorProperty;
+    warningFontColor: ColorPropertyTheme | ColorProperty;
   };
 
   card: {

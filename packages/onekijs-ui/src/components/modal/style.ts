@@ -2,7 +2,7 @@ import { HeightProperty } from 'csstype';
 import { get } from 'onekijs-framework';
 import { css } from 'styled-components';
 import { alignItems, justifyContent } from '../../styles/alignment';
-import { backgroundColor } from '../../styles/background';
+import { backgroundColor, backgroundOpacity } from '../../styles/background';
 import { borderRadius, boxShadow } from '../../styles/border';
 import { display } from '../../styles/display';
 import { opacity } from '../../styles/effects';
@@ -45,10 +45,7 @@ export const modalStyle: ComponentStyle<ModalProps> = ({
     ${alignItems('center')}
     ${padding('5xl')}
     ${backgroundColor(t.maskColor)}
-    ${opacity(t.maskOpacity)}
-    .o-modal-dialog {
-
-    }
+    ${backgroundOpacity(t.maskOpacity)}
 
     .o-modal-dialog {
       ${backgroundColor(t.bgColor)}
@@ -63,6 +60,7 @@ export const modalStyle: ComponentStyle<ModalProps> = ({
       ${display('flex')}
       ${flexDirection('column')}
       transform: translateY(0);
+      ${opacity(1)}
     }
 
     .o-modal-close-icon {
@@ -81,6 +79,7 @@ export const modalStyle: ComponentStyle<ModalProps> = ({
       ${lineHeight('4xl')}
       ${padding('2xl')}
     }
+
     .o-modal-content {
       ${flexGrow(1)}
       ${overflow('auto')}
@@ -93,7 +92,7 @@ export const modalStyle: ComponentStyle<ModalProps> = ({
     }
 
     .o-modal-button {
-      ${marginLeft('md')}
+      ${marginLeft('sm')}
     }
 
     &.o-modal-exit-active {

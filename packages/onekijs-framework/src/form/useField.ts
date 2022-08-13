@@ -1,12 +1,20 @@
 import useValue from './useValue';
 import useFormContext from './useFormContext';
 import { FieldOptions, Validator, FieldProps } from './typings';
+import { useEffect } from 'react';
 
 const useField = (fieldName: string, validators: Validator[] = [], options: FieldOptions = {}): FieldProps => {
-  const { init } = useFormContext();
+  const { init, initializedRef } = useFormContext();
   const field = init(fieldName, validators, options);
   const value = useValue(fieldName);
   field.value = value === undefined ? (options.defaultValue === undefined ? '' : options.defaultValue) : value;
+
+  useEffect(() => {
+    if (initializedRef.current) {
+      field.onChange(field.value);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return field;
 };

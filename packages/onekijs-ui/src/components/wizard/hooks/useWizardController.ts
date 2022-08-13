@@ -2,11 +2,12 @@ import { useService } from 'onekijs-framework';
 import { WizardService } from '../WizardService';
 import { WizardState, UseWizardController } from '../typings';
 
-const useWizardController: UseWizardController = ({ animate }) => {
+const useWizardController: UseWizardController = ({ animate = 300, forwardOnly = true }) => {
   const [_, service] = useService<WizardState, WizardService>(WizardService, {
     members: [],
     membersIndex: {},
-    animate: animate ?? 300,
+    animate,
+    forwardOnly,
   } as WizardState);
 
   return service;

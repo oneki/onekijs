@@ -3,7 +3,7 @@ import { FCC, get, set, simpleMergeDeep } from 'onekijs-framework';
 import React from 'react';
 import { createGlobalStyle } from 'styled-components';
 import { ColorKeys, Palette, Theme, ThemeProps } from '../styles/typings';
-import { darken, lighten } from '../utils/color';
+import { lighten } from '../utils/color';
 import { colorFormatter, themeFormatter } from '../utils/formatter';
 import { preflight, toCss } from '../utils/style';
 import { BaseTheme, baseTheme } from './base';
@@ -186,6 +186,7 @@ export const clarityTheme = (customTheme: Partial<Theme> = {}): Theme => {
       lightorange: 'orange-400',
       lightyellow: 'yellow-400',
       lightgreen: 'green-400',
+      background: 'gray-0',
     },
 
     spacings: {
@@ -319,12 +320,6 @@ export const clarityTheme = (customTheme: Partial<Theme> = {}): Theme => {
       activeFontColor: 'primary',
     },
 
-    dashboard: {
-      body: {
-        bgColor: 'gray-0',
-      },
-    },
-
     table: {
       shadow: 'sm',
     },
@@ -334,8 +329,8 @@ export const clarityTheme = (customTheme: Partial<Theme> = {}): Theme => {
 
   Object.keys(ColorKeys).forEach((kind) => {
     set(clarityTheme, `buttons.${kind}.fontWeight`, 'medium');
-    set(clarityTheme, `buttons.${kind}.hoverBgColor`, darken(get(clarityTheme.colors, kind, ''), 200));
-    set(clarityTheme, `buttons.${kind}.hoverBorderColor`, darken(get(clarityTheme.colors, kind, ''), 200));
+    set(clarityTheme, `buttons.${kind}.hoverBgColor`, lighten(get(clarityTheme.colors, kind, ''), 100));
+    set(clarityTheme, `buttons.${kind}.hoverBorderColor`, lighten(get(clarityTheme.colors, kind, ''), 100));
     set(clarityTheme, `buttons.${kind}.textTransform`, 'uppercase');
     set(clarityTheme, `buttons.${kind}.letterSpacing`, '3xl');
     set(clarityTheme, `buttons.${kind}.fontSize`, 'xs');

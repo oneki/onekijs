@@ -4,7 +4,6 @@ import { CSSTransition } from 'react-transition-group';
 import useTab from '../hooks/useTab';
 import { useTabsState } from '../hooks/useTabsState';
 import { TabProps } from '../typings';
-import TabTitle from './TabTitle';
 
 const Tab: FCC<TabProps> = ({
   title,
@@ -13,7 +12,6 @@ const Tab: FCC<TabProps> = ({
   visible = true,
   closable = false,
   children,
-  Component = TabTitle,
   icon,
   uid,
 }) => {
@@ -23,8 +21,8 @@ const Tab: FCC<TabProps> = ({
     disabled,
     visible,
     closable,
-    TitleComponent: Component,
     icon,
+    loading: false,
     uid: uid === undefined ? title : uid,
   });
 

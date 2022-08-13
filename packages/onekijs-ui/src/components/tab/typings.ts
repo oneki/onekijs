@@ -5,7 +5,6 @@ import { TabsService } from './TabsService';
 export type TabProps = {
   active?: boolean;
   title: string;
-  Component?: FCC<TabTitleProps>;
   visible?: boolean;
   closable?: boolean;
   disabled?: boolean;
@@ -16,21 +15,27 @@ export type TabProps = {
 export type TabTitleProps<M extends TabState = TabState> = {
   member: M;
   onActivate: (member: M) => void;
-} & AnonymousObject<unknown>;
+};
 
 export type TabState = {
   active: boolean;
-  uid: string;
-  disabled: boolean;
-  visible: boolean;
   closable: boolean;
-  title: string;
+  disabled: boolean;
+  error?: string;
   icon?: ReactNode;
-  TitleComponent: FCC<TabTitleProps>;
+  loading: boolean;
+  success?: boolean;
+  title: string;
+  touchedError?: string;
+  touchedWarning?: string;
+  uid: string;
+  visible: boolean;
+  warning?: string;
 };
 
 export type TabsProps = {
   Component?: FCC<Omit<TabsProps, 'Component'>>;
+  TitleComponent?: React.FC<TabTitleProps>;
   className?: string;
   animate?: number;
   controller?: TabsService;

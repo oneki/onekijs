@@ -11,7 +11,7 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
   const cancelButton = <Button pattern="outline" kind="primary" onClick={() => setOpen(false)}>Cancel</Button>;
   return (
     <>
-      <Modal title="Hello World" open={open} onClose={() => setOpen(false)} buttons={[cancelButton]} closeOnClickOutside={true}>
+      <Modal title="Hello World" open={open} onClose={() => setOpen(false)} buttons={[cancelButton]} closeOnClickOutside={true} closeOnEscape={true}>
       Hello World<br />Hello World<br />Hello World<br />Hello World<br />Hello World<br />Hello World<br />
       Hello World<br />Hello World<br />Hello World<br />Hello World<br />Hello World<br />Hello World<br />
       Hello World<br />Hello World<br />Hello World<br />Hello World<br />Hello World<br />Hello World<br />

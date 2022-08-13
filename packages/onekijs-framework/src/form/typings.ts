@@ -30,7 +30,8 @@ export interface Field extends FieldOptions {
 export interface FieldContainer {
   context: FormContext;
   value: AnonymousObject<any>;
-  validation: ContainerValidation;
+  touchedValidation: ContainerValidation;
+  allValidation: ContainerValidation;
 }
 
 export interface FieldProps {
@@ -95,6 +96,7 @@ export interface FormContext {
   clearValidation: (fieldName: string, validatorName: string, code: ValidationCode) => void;
   fields: any;
   init: (name: string, validators?: Validator[], fieldOptions?: FieldOptions) => FieldProps;
+  initializedRef: MutableRefObject<boolean>;
   getContainerFieldValidation: (
     validations: AnonymousObject<FieldValidation>,
     fields: AnonymousObject<Field>,
@@ -157,6 +159,7 @@ export interface UseForm {
   getValue<T = any>(fieldName: string, defaultValue: T): T;
   getValue(fieldName?: string, defaultValue?: any): any;
   getValidation: (fieldName?: string, touchedOnly?: boolean) => FieldValidation | ContainerValidation;
+  initialized: boolean;
   remove: (fieldArrayName: string, index: number) => void;
   reset: () => void;
   setError: (fieldName: string, validatorName: string, message?: string, match?: boolean) => boolean;

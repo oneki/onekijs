@@ -1,5 +1,5 @@
 import { css } from 'styled-components';
-import { alignItems } from '../../styles/alignment';
+import { alignItems, justifyContent } from '../../styles/alignment';
 import { backgroundColor } from '../../styles/background';
 import {
   borderBottomColor,
@@ -13,12 +13,13 @@ import {
   borderRightWidth,
 } from '../../styles/border';
 import { display } from '../../styles/display';
-import { flexDirection } from '../../styles/flex';
+import { flexDirection, flexGrow } from '../../styles/flex';
 import { cursor } from '../../styles/interactivity';
-import { padding, paddingBottom, paddingLeft, paddingRight, paddingTop } from '../../styles/spacing';
+import { height } from '../../styles/size';
+import { marginLeft, padding, paddingBottom, paddingLeft, paddingRight, paddingTop } from '../../styles/spacing';
 import { ComponentStyle } from '../../styles/typings';
-import { color, fontSize, fontWeight, lineHeight } from '../../styles/typography';
-import { WizardProps } from './typings';
+import { color, fontSize, fontWeight, lineHeight, textDecoration } from '../../styles/typography';
+import { WizardModalProps, WizardProps } from './typings';
 
 export const wizardStyle: ComponentStyle<WizardProps> = ({ layout = 'vertical', theme }) => {
   const t = theme.wizard;
@@ -31,7 +32,7 @@ export const wizardStyle: ComponentStyle<WizardProps> = ({ layout = 'vertical', 
   return css`
     ${display('flex')}
     ${flexDirection(layout === 'horizontal' ? 'column' : 'row')}
-    .o-wizard-steps {
+    .o-wizard-step-panel {
       ${display('flex')}
       ${flexDirection(layout === 'horizontal' ? 'row' : 'column')}
       ${alignItems(layout === 'horizontal' ? 'flex-end' : 'stretch')}
@@ -64,14 +65,36 @@ export const wizardStyle: ComponentStyle<WizardProps> = ({ layout = 'vertical', 
       &.o-step-enabled {
         ${cursor('default')}
       }
+      &.o-step-warning {
+        ${stepBorderColorFn(t.warningBorderColor)}
+        ${color(t.warningFontColor)}
+        ${backgroundColor(t.warningBgColor)}
+      }
+      &.o-step-error {
+        ${stepBorderColorFn(t.errorBorderColor)}
+        ${color(t.errorFontColor)}
+        ${backgroundColor(t.errorBgColor)}
+      }
+    }
+
+    .o-step-inactive {
+      &.o-step-success, &.o-step-touched {
+        ${stepBorderColorFn(t.successBorderColor)}
+      }
+      &.o-step-warning {
+        ${stepBorderColorFn(t.warningBorderColor)}
+      }
+      &.o-step-error {
+        ${stepBorderColorFn(t.errorBorderColor)}
+      }
     }
 
     .o-step-enabled {
       ${cursor(t.cursor)}
     }
 
-    .o-step-disabled {
-      ${cursor('not-allowed')}
+    .o-step-disabled, .o-step-untouched {
+      ${cursor('default')}
       ${stepBorderColorFn(t.disabledBorderColor)}
       ${color(t.disabledFontColor)}
       ${fontWeight(t.disabledFontWeight)}
@@ -79,24 +102,28 @@ export const wizardStyle: ComponentStyle<WizardProps> = ({ layout = 'vertical', 
       ${backgroundColor(t.disabledBgColor)}
     }
 
-    .o-step-success {
-      ${stepBorderColorFn(t.successBorderColor)}
-      ${color(t.successFontColor)}
-      ${fontWeight(t.successFontWeight)}
-      ${fontSize(t.successFontSize)}
-      ${backgroundColor(t.successBgColor)}
+    .o-step-disabled {
+      ${cursor('not-allowed')}
+      ${textDecoration('line-through')}
     }
 
-    .o-step-error {
-      ${stepBorderColorFn(t.errorBorderColor)}
-      ${color(t.errorFontColor)}
-      ${fontWeight(t.errorFontWeight)}
-      ${fontSize(t.errorFontSize)}
-      ${backgroundColor(t.errorBgColor)}
+    .o-wizard-content-panel {
+      ${padding('lg')}
+      ${display('flex')}
+      ${flexDirection('column')}
     }
 
     .o-wizard-content {
-      ${padding('lg')}
+      ${flexGrow(1)}
+    }
+
+    .o-wizard-control {
+      ${display('flex')}
+      ${justifyContent('flex-end')}
+    }
+
+    .o-wizard-control-button {
+      ${marginLeft('sm')}
     }
 
     .o-wizard-title {
@@ -107,5 +134,13 @@ export const wizardStyle: ComponentStyle<WizardProps> = ({ layout = 'vertical', 
       ${paddingBottom('md')}
     }
 
+  `;
+};
+
+export const wizardModalStyle: ComponentStyle<WizardModalProps> = () => {
+  return css`
+    .o-wizard {
+      ${height('100%')}
+    }
   `;
 };

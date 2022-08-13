@@ -1,14 +1,34 @@
 import { FCC } from 'onekijs-framework';
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { addClassname } from '../../../utils/style';
+import Button from '../../button';
 import Col from '../../grid/Col';
 import Row from '../../grid/Row';
 import { GridSize } from '../../grid/typings';
 import useWizardService from '../hooks/useWizardService';
 import { useWizardState } from '../hooks/useWizardState';
 import { StepState, WizardProps } from '../typings';
+import StepTitle from './StepTitle';
 
-const WizardContainer: FCC<Omit<WizardProps, 'Component'>> = ({ className, children, title, stepSize = 3 }) => {
+type Error = {
+  stepIndex: number;
+  stepTitle: string;
+  errorMessage: string;
+};
+
+const WizardContainer: FCC<Omit<WizardProps, 'Component'>> = ({
+  cancelLabel = 'Cancel',
+  className,
+  children,
+  doneLabel = 'Submit',
+  nextLabel = 'Next',
+  onCancel,
+  onDone,
+  previousLabel = 'Previous',
+  title,
+  stepSize = 3,
+  TitleComponent = StepTitle,
+}) => {
   const classNames = addClassname('o-wizard', className);
   const state = useWizardState();
   const service = useWizardService();
@@ -23,17 +43,81 @@ const WizardContainer: FCC<Omit<WizardProps, 'Component'>> = ({ className, child
     [service],
   );
 
+  const errorRef = useRef<Error[]>([]);
+  errorRef.current = [];
+
+  const indexRef = useRef(0);
+  indexRef.current = 0;
+
   return (
     <Row className={classNames}>
-      <Col size={stepSize} className="o-wizard-steps">
+      <Col size={stepSize} className="o-wizard-step-panel">
         {title && <div className="o-wizard-title">{title}</div>}
         {state.members.map((step) => {
-          const Component = step.TitleComponent;
-          return <Component key={step.uid} member={step} onActivate={activate} />;
+          if (step.visible) {
+            indexRef.current++;
+          }
+          if (step.error !== undefined) {
+            errorRef.current.push({
+              stepIndex: indexRef.current,
+              stepTitle: step.title,
+              errorMessage: step.error,
+            });
+          }
+          return (
+            <TitleComponent
+              key={`step-title-${step.uid}`}
+              member={step}
+              onActivate={activate}
+              index={indexRef.current}
+            />
+          );
         })}
       </Col>
-      <Col size={(12 - stepSize) as GridSize} className="o-wizard-content">
-        {children}
+      <Col size={(12 - stepSize) as GridSize} className="o-wizard-content-panel">
+        <div className="o-wizard-content">{children}</div>
+        <div className="o-wizard-control">
+          {onCancel && (
+            <Button kind="primary" pattern="flat" className="o-wizard-control-button" type="button">
+              {cancelLabel}
+            </Button>
+          )}
+          {!service.isFirstStep() && (
+            <Button
+              kind="primary"
+              pattern="outline"
+              className="o-wizard-control-button"
+              onClick={() => service.activatePrevious()}
+              type="button"
+            >
+              {previousLabel}
+            </Button>
+          )}
+          {!service.isLastStep() && (
+            <Button
+              kind="primary"
+              pattern="solid"
+              className="o-wizard-control-button"
+              disabled={service.isCurrentStepInError()}
+              onClick={() => service.activateNext()}
+              type="button"
+            >
+              {nextLabel}
+            </Button>
+          )}
+          {service.isLastStep() && (
+            <Button
+              kind={errorRef.current.length > 0 ? 'danger' : 'success'}
+              pattern="solid"
+              className="o-wizard-control-button"
+              disabled={errorRef.current.length > 0}
+              onClick={onDone}
+              type="button"
+            >
+              {doneLabel}
+            </Button>
+          )}
+        </div>
       </Col>
     </Row>
   );

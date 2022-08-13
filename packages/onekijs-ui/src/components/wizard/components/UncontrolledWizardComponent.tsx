@@ -5,7 +5,7 @@ import { WizardProps } from '../typings';
 import ControlledWizardComponent from './ControlledWizardComponent';
 
 const UncontrolledWizardComponent: FCC<WizardProps> = (props) => {
-  const controller = useWizardController({ animate: props.animate });
+  const controller = useWizardController(props);
 
   return <ControlledWizardComponent {...props} controller={controller} />;
 };

@@ -1,10 +1,10 @@
-import { FCC } from 'onekijs-framework';
+import { DefaultFormContext, FCC, useFieldContainer } from 'onekijs-framework';
 import React from 'react';
 import { CSSTransition } from 'react-transition-group';
 import useStep from '../hooks/useStep';
+import useWizardService from '../hooks/useWizardService';
 import { useWizardState } from '../hooks/useWizardState';
 import { StepProps } from '../typings';
-import StepTitle from './StepTitle';
 
 const Step: FCC<StepProps> = ({
   title,
@@ -13,26 +13,37 @@ const Step: FCC<StepProps> = ({
   visible = true,
   closable = false,
   children,
-  Component = StepTitle,
   icon,
   uid,
+  optional = false,
 }) => {
+  const { animate, forwardOnly } = useWizardState();
+  const service = useWizardService();
+
   const step = useStep({
     title,
     active,
     disabled,
     visible,
     closable,
-    TitleComponent: Component,
     icon,
+    loading: false,
+    optional,
+    touched: !forwardOnly,
     uid: uid === undefined ? title : uid,
+  });
+
+  const fieldContainer = useFieldContainer({
+    onValidationChange: (_field, _validation, touchedValidation, allValidation) => {
+      if (step) {
+        service.onValidationChange(step.uid, touchedValidation, allValidation);
+      }
+    },
   });
 
   const onEnter = (node: HTMLElement) => {
     node.style.opacity = '0';
   };
-
-  const { animate } = useWizardState();
 
   const onEntering = (node: HTMLElement) => {
     setTimeout(() => {
@@ -46,9 +57,11 @@ const Step: FCC<StepProps> = ({
   }
 
   return (
-    <CSSTransition in={true} timeout={animate} appear={true} onEnter={onEnter} onEntering={onEntering}>
-      <div className="o-step-content">{children}</div>
-    </CSSTransition>
+    <DefaultFormContext.Provider value={fieldContainer.context}>
+      <CSSTransition in={true} timeout={animate} appear={true} onEnter={onEnter} onEntering={onEntering}>
+        <div className="o-step-content">{children}</div>
+      </CSSTransition>
+    </DefaultFormContext.Provider>
   );
 };
 

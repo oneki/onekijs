@@ -46,3 +46,19 @@ export const hexToRgb = (hex: string): { r: number; g: number; b: number } | nul
 export const rgbToHex = (r: number, g: number, b: number): string => {
   return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 };
+
+export const applyOpacity = (color: string, opacity: number | string): string => {
+  if (color.startsWith('#')) {
+    const rgb = hexToRgb(color);
+    if (rgb !== null) {
+      return `rgba(${rgb['r']},${rgb['g']},${rgb['b']},${opacity})`;
+    } else {
+      return color;
+    }
+  } else if (color.startsWith('rgb(')) {
+    return color.replace('rgb(', 'rgba(').replace(/.$/, `,${opacity})`);
+  } else if (color.startsWith('hsl(')) {
+    return color.replace('hsl(', 'hsla(').replace(/.$/, `,${opacity})`);
+  }
+  return color;
+};

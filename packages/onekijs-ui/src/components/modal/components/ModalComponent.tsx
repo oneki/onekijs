@@ -1,4 +1,4 @@
-import { FCC } from 'onekijs-framework';
+import { FCC, useEventListener } from 'onekijs-framework';
 import React, { useContext, useRef } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { ThemeContext } from 'styled-components';
@@ -16,6 +16,7 @@ const ModalComponent: FCC<ModalProps> = ({
   title,
   buttons = [],
   closeOnClickOutside,
+  closeOnEscape,
 }) => {
   const theme = useContext(ThemeContext);
   const maskOpacity = theme.modal.maskOpacity;
@@ -46,6 +47,12 @@ const ModalComponent: FCC<ModalProps> = ({
 
   useClickOutside(ref, () => {
     if (closeOnClickOutside) {
+      onClose();
+    }
+  });
+
+  useEventListener('keyup', (e) => {
+    if (closeOnEscape && e.key === 'Escape') {
       onClose();
     }
   });

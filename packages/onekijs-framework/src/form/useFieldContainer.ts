@@ -8,10 +8,24 @@ import FieldValidation from './FieldValidation';
 import { FieldContainer, FormContext, FormListenerProps, ValidationCode } from './typings';
 import useFormContext from './useFormContext';
 
-const useFieldContainer = (): FieldContainer => {
+const useFieldContainer = ({
+  onValueChange,
+  onValidationChange,
+}: {
+  onValueChange?: (field: string, value: any) => void;
+  onValidationChange?: (
+    field: string,
+    validation: FieldValidation,
+    touchedValidation: ContainerValidation,
+    allValidation: ContainerValidation,
+  ) => void;
+}): FieldContainer => {
   const fieldsRef = useRef<string[]>([]);
   const fieldValidationsRef = useRef<AnonymousObject<FieldValidation>>({});
-  const validationRef = useRef<ContainerValidation>(
+  const touchedValidationRef = useRef<ContainerValidation>(
+    new ContainerValidation('', ValidationStatus.None, ValidationCode.None, {}),
+  );
+  const allValidationRef = useRef<ContainerValidation>(
     new ContainerValidation('', ValidationStatus.None, ValidationCode.None, {}),
   );
   const valueRef = useRef<AnonymousObject<any>>({});
@@ -53,30 +67,48 @@ const useFieldContainer = (): FieldContainer => {
       const valueListener = (fieldName: string) => {
         return (fieldValue: any) => {
           set(valueRef.current, fieldName, fieldValue);
-          forceRender();
+          if (onValueChange) {
+            onValueChange(fieldName, fieldValue);
+          } else {
+            forceRender();
+          }
         };
       };
-      context.onValueChange(valueListener, [fieldName]);
+      const valueFieldListener = valueListener(fieldName);
+      context.onValueChange(valueFieldListener, [fieldName]);
       valueListenersRef.current[fieldName] = {
-        listener: valueListener,
+        listener: valueFieldListener,
         watchs: [fieldName],
       };
 
       const validationListener = (fieldName: string) => {
         return (fieldValidation: FieldValidation) => {
           fieldValidationsRef.current[fieldName] = fieldValidation;
-          validationRef.current = context.getContainerFieldValidation(
+          console.log(fieldValidationsRef.current, context.fields);
+          touchedValidationRef.current = context.getContainerFieldValidation(
             fieldValidationsRef.current,
             context.fields,
             '',
             true,
           );
-          forceRender();
+          allValidationRef.current = context.getContainerFieldValidation(
+            fieldValidationsRef.current,
+            context.fields,
+            '',
+            false,
+          );
+          if (onValidationChange) {
+            onValidationChange(fieldName, fieldValidation, touchedValidationRef.current, allValidationRef.current);
+          } else {
+            forceRender();
+          }
         };
       };
-      context.onValidationChange(validationListener, [fieldName]);
+
+      const validationFieldListener = validationListener(fieldName);
+      context.onValidationChange(validationFieldListener, [fieldName]);
       validationListenersRef.current[fieldName] = {
-        listener: validationListener,
+        listener: validationFieldListener,
         watchs: [fieldName],
       };
     });
@@ -99,7 +131,8 @@ const useFieldContainer = (): FieldContainer => {
   return {
     context: containerContextRef.current,
     value: valueRef.current,
-    validation: validationRef.current,
+    touchedValidation: touchedValidationRef.current,
+    allValidation: allValidationRef.current,
   };
 };
 

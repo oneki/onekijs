@@ -229,17 +229,26 @@ export {
   VirtualTreeListProps,
 } from './components/tree/typings';
 export { default as Wizard } from './components/wizard';
+export { default as ControlledWizardComponent } from './components/wizard/components/ControlledWizardComponent';
 export { default as Step } from './components/wizard/components/Step';
 export { default as StepTitle } from './components/wizard/components/StepTitle';
+export { default as UncontrolledWizardComponent } from './components/wizard/components/UncontrolledWizardComponent';
+export { default as WizardComponent } from './components/wizard/components/WizardComponent';
+export { default as WizardContainer } from './components/wizard/components/WizardContainer';
+export { default as WizardModalComponent } from './components/wizard/components/WizardModalComponent';
+export { wizardModalStyle, wizardStyle } from './components/wizard/style';
 export {
   ControlledWizardProps,
   StepProps,
   StepState,
   StepTitleProps,
   UseWizardController,
+  WizardModalProps,
   WizardProps,
   WizardState,
 } from './components/wizard/typings';
+export { default as WizardModal } from './components/wizard/WizardModal';
+export { WizardService } from './components/wizard/WizardService';
 export * from './styles/alignment';
 export * from './styles/animation';
 export * from './styles/background';
