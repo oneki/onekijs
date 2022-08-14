@@ -26,8 +26,10 @@ export type TabState = {
   loading: boolean;
   success?: boolean;
   title: string;
-  touchedError?: string;
-  touchedWarning?: string;
+  touching: boolean;
+  touched: boolean;
+  touchingError?: string;
+  touchingWarning?: string;
   uid: string;
   visible: boolean;
   warning?: string;

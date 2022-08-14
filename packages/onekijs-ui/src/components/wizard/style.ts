@@ -15,7 +15,6 @@ import {
 import { display } from '../../styles/display';
 import { flexDirection, flexGrow } from '../../styles/flex';
 import { cursor } from '../../styles/interactivity';
-import { height } from '../../styles/size';
 import { marginLeft, padding, paddingBottom, paddingLeft, paddingRight, paddingTop } from '../../styles/spacing';
 import { ComponentStyle } from '../../styles/typings';
 import { color, fontSize, fontWeight, lineHeight, textDecoration } from '../../styles/typography';
@@ -44,6 +43,7 @@ export const wizardStyle: ComponentStyle<WizardProps> = ({ layout = 'vertical', 
       ${paddingLeft(t.stepsPaddingLeft)}
       ${paddingBottom(t.stepsPaddingBottom)}
       ${backgroundColor(t.stepsBgColor)}
+
     }
 
     .o-step {
@@ -54,6 +54,9 @@ export const wizardStyle: ComponentStyle<WizardProps> = ({ layout = 'vertical', 
       ${stepBorderStyleFn(t.borderStyle)}
       ${stepBorderWidthFn(t.borderWidth)}
       ${stepBorderColorFn(t.borderColor)}
+      ${fontWeight(t.fontWeight)}
+      ${fontSize(t.fontSize)}
+      ${color(t.fontColor)}
     }
 
     .o-step-active {
@@ -65,6 +68,7 @@ export const wizardStyle: ComponentStyle<WizardProps> = ({ layout = 'vertical', 
       &.o-step-enabled {
         ${cursor('default')}
       }
+
       &.o-step-warning {
         ${stepBorderColorFn(t.warningBorderColor)}
         ${color(t.warningFontColor)}
@@ -80,12 +84,15 @@ export const wizardStyle: ComponentStyle<WizardProps> = ({ layout = 'vertical', 
     .o-step-inactive {
       &.o-step-success, &.o-step-touched {
         ${stepBorderColorFn(t.successBorderColor)}
+        ${color(t.successFontColor)}
       }
       &.o-step-warning {
         ${stepBorderColorFn(t.warningBorderColor)}
+        ${color(t.warningFontColor)}
       }
       &.o-step-error {
         ${stepBorderColorFn(t.errorBorderColor)}
+        ${color(t.errorFontColor)}
       }
     }
 
@@ -108,18 +115,19 @@ export const wizardStyle: ComponentStyle<WizardProps> = ({ layout = 'vertical', 
     }
 
     .o-wizard-content-panel {
-      ${padding('lg')}
       ${display('flex')}
       ${flexDirection('column')}
     }
 
     .o-wizard-content {
       ${flexGrow(1)}
+      ${padding('lg')}
     }
 
     .o-wizard-control {
       ${display('flex')}
       ${justifyContent('flex-end')}
+      ${padding('lg')}
     }
 
     .o-wizard-control-button {
@@ -138,9 +146,5 @@ export const wizardStyle: ComponentStyle<WizardProps> = ({ layout = 'vertical', 
 };
 
 export const wizardModalStyle: ComponentStyle<WizardModalProps> = () => {
-  return css`
-    .o-wizard {
-      ${height('100%')}
-    }
-  `;
+  return css``;
 };

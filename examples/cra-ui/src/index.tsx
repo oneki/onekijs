@@ -2,6 +2,7 @@ import { App, Link, Route, Routes } from 'onekijs';
 import { ClarityTheme } from 'onekijs-ui';
 import { createRoot } from 'react-dom/client';
 import { AccordionPage } from './pages/accordion';
+import { ActionMenuPage } from './pages/actionmenu';
 import { AjaxListPage } from './pages/ajaxList';
 import { ButtonPage } from './pages/button';
 import { CardPage } from './pages/card';
@@ -44,7 +45,9 @@ root.render(
           <Link href="/list">List</Link> | <Link href="/ajaxList">Ajax List</Link> | <Link href="/table">Table</Link> |{' '}
           <Link href="/input">Input</Link> | <Link href="/dashboard">Dashboard</Link> | <Link href="/tree">Tree</Link> |{' '}
           <Link href="/accordion">Accordion</Link> | <Link href="/tab">Tab</Link> | <Link href="/card">Card</Link> |{' '}
-          <Link href="/grid">Grid</Link> | <Link href="/properties">Properties</Link> | <Link href="/checkbox">Checkbox</Link> | <Link href="/tag">Tag</Link> | <Link href="/modal">Modal</Link> | <Link href="/wizard">Wizard</Link> | <Link href="/form">Form</Link>
+          <Link href="/grid">Grid</Link> | <Link href="/properties">Properties</Link> |{' '}
+          <Link href="/checkbox">Checkbox</Link> | <Link href="/tag">Tag</Link> | <Link href="/modal">Modal</Link> |{' '}
+          <Link href="/wizard">Wizard</Link> | <Link href="/form">Form</Link> | <Link href="/actionmenu">Action Menu</Link>
         </div>
         <div style={{ paddingLeft: '100px', paddingRight: '100px' }}>
           <Routes>
@@ -66,6 +69,7 @@ root.render(
             <Route path="/modal" element={<ModalPage />} />
             <Route path="/wizard" element={<WizardPage />} />
             <Route path="/form" element={<FormPage />} />
+            <Route path="/actionmenu" element={<ActionMenuPage />} />
           </Routes>
         </div>
       </div>

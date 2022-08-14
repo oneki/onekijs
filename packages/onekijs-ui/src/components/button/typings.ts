@@ -1,6 +1,7 @@
+import { AnyFunction } from 'onekijs-framework';
+import { ReactNode } from 'react';
 import { ColorPropertyTheme } from '../../styles/typings';
 import { DropdownProps } from '../dropdown/typings';
-import { ListProps } from '../list/typings';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   kind?: ColorPropertyTheme;
@@ -9,4 +10,12 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   loading?: boolean;
 }
 
-export interface DropDownButtonProps extends ButtonProps, ListProps, DropdownProps {}
+export interface SubmitButtonProps extends ButtonProps {
+  showErrors?: boolean;
+}
+
+export interface DropDownButtonProps extends ButtonProps, DropdownProps {
+  listElement: ReactNode;
+  onDrop: AnyFunction;
+  onCollapse: AnyFunction;
+}

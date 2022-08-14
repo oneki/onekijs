@@ -23,6 +23,8 @@ const Tab: FCC<TabProps> = ({
     closable,
     icon,
     loading: false,
+    touched: false,
+    touching: false,
     uid: uid === undefined ? title : uid,
   });
 

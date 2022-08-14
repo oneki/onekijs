@@ -341,7 +341,7 @@ export const clarityTheme = (customTheme: Partial<Theme> = {}): Theme => {
     set(
       clarityTheme,
       `tooltip.${kind}.color`,
-      kind.startsWith('light') || ['white'].includes(kind) ? 'darkest' : 'light',
+      kind.startsWith('light') || ['white'].includes(kind) ? 'darkest' : 'white',
     );
   });
 

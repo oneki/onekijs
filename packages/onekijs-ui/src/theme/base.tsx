@@ -373,7 +373,7 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
       errorFontColor: 'danger',
       fontColor: 'inherit',
       fontSize: 'inherit',
-      fontWeight: 'inherit',
+      fontWeight: 'medium',
       hoverBgColor: 'light',
       hoverBorderColor: 'inherit',
       hoverBorderStyle: 'inherit',

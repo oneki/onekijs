@@ -455,7 +455,7 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
 
         return (
           <DefaultFormContext.Provider value={formContextRef.current}>
-            {!service.state.resetting && <form {...props} onSubmit={submit} />}
+            {!service.state.resetting && <form {...props} onSubmit={submit} className="o-form" />}
           </DefaultFormContext.Provider>
         );
       };

@@ -30,6 +30,7 @@ const Step: FCC<StepProps> = ({
     loading: false,
     optional,
     touched: !forwardOnly,
+    touching: !forwardOnly,
     uid: uid === undefined ? title : uid,
   });
 

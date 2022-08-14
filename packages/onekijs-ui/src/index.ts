@@ -12,6 +12,9 @@ export {
 } from './components/accordion/typings';
 export { default as Button } from './components/button';
 export { default as DropdownButton } from './components/button/DropdownButton';
+export { default as buttonStyle, dropdownButtonStyle } from './components/button/style';
+export { default as SubmitButton } from './components/button/SubmitButton';
+export { ButtonProps, DropDownButtonProps, SubmitButtonProps } from './components/button/typings';
 export { default as Card } from './components/card';
 export { default as CardComponent } from './components/card/components/CardComponent';
 export { default as CardTitle } from './components/card/components/CardTitle';

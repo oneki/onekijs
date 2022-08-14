@@ -2,6 +2,7 @@ import { FCC } from 'onekijs-framework';
 import React, { useCallback, useRef } from 'react';
 import { addClassname } from '../../../utils/style';
 import Button from '../../button';
+import SubmitButton from '../../button/SubmitButton';
 import Col from '../../grid/Col';
 import Row from '../../grid/Row';
 import { GridSize } from '../../grid/typings';
@@ -87,7 +88,7 @@ const WizardContainer: FCC<Omit<WizardProps, 'Component'>> = ({
               kind="primary"
               pattern="outline"
               className="o-wizard-control-button"
-              onClick={() => service.activatePrevious()}
+              onClick={() => service.previous()}
               type="button"
             >
               {previousLabel}
@@ -99,23 +100,24 @@ const WizardContainer: FCC<Omit<WizardProps, 'Component'>> = ({
               pattern="solid"
               className="o-wizard-control-button"
               disabled={service.isCurrentStepInError()}
-              onClick={() => service.activateNext()}
+              onClick={() => service.next()}
               type="button"
             >
               {nextLabel}
             </Button>
           )}
           {service.isLastStep() && (
-            <Button
+            <SubmitButton
               kind={errorRef.current.length > 0 ? 'danger' : 'success'}
               pattern="solid"
               className="o-wizard-control-button"
               disabled={errorRef.current.length > 0}
               onClick={onDone}
               type="button"
+              showErrors={true}
             >
               {doneLabel}
-            </Button>
+            </SubmitButton>
           )}
         </div>
       </Col>

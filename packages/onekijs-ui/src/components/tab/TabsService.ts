@@ -8,6 +8,10 @@ export class TabsService<M extends TabState = TabState, S extends TabsState<M> =
 > {
   @reducer
   activate(uid: string): void {
+    const currentMember = this.state.members[this.getCurrentActiveIndex()];
+    if (currentMember) {
+      this.touched(currentMember.uid);
+    }
     const member = this.getMember(uid);
     if (member) {
       this.state.members.forEach((t) => {
@@ -15,6 +19,7 @@ export class TabsService<M extends TabState = TabState, S extends TabsState<M> =
       });
       member.active = true;
       this.state.active = uid;
+      this.touching(this.state.active);
     }
   }
 
@@ -32,6 +37,10 @@ export class TabsService<M extends TabState = TabState, S extends TabsState<M> =
     if (member) {
       member.disabled = false;
     }
+  }
+
+  getCurrentActiveIndex(): number {
+    return this.state.members.findIndex((m) => m.uid === this.state.active);
   }
 
   getMember(uid: string): M | undefined {
@@ -130,36 +139,52 @@ export class TabsService<M extends TabState = TabState, S extends TabsState<M> =
     }
   }
 
-  _onValidationChange(uid: string, validation: ContainerValidation, touched: boolean): void {
+  @reducer
+  touched(uid: string): void {
+    const member = this.getMember(uid);
+    if (member) {
+      member.touched = true;
+    }
+  }
+
+  @reducer
+  touching(uid: string): void {
+    const member = this.getMember(uid);
+    if (member) {
+      member.touching = true;
+    }
+  }
+
+  _onValidationChange(uid: string, validation: ContainerValidation, touching: boolean): void {
     const getProp = (name: string): string => {
-      return touched ? `touched${ucfirst(name)}` : name;
+      return touching ? `touching${ucfirst(name)}` : name;
     };
 
     const member = this.getMember(uid);
     if (!member) return;
 
-    const error = getProp('error') as 'error' | 'touchedError';
-    const warning = getProp('warning') as 'warning' | 'touchedWarning';
+    const error = getProp('error') as 'error' | 'touchingError';
+    const warning = getProp('warning') as 'warning' | 'touchingWarning';
 
     switch (validation.code) {
       case ValidationCode.Loading:
-        if (!touched) member.loading = true;
+        if (!touching) member.loading = true;
         break;
       case ValidationCode.Error:
-        if (!touched) member.loading = false;
+        if (!touching) member.loading = false;
         member[error] = validation.message;
         break;
       case ValidationCode.Warning:
-        if (!touched) member.loading = false;
+        if (!touching) member.loading = false;
         member[error] = undefined;
         member[warning] = validation.message;
         break;
       case ValidationCode.Ok:
       case ValidationCode.None:
-        if (!touched) member.loading = false;
+        if (!touching) member.loading = false;
         member[error] = undefined;
         member[warning] = undefined;
-        if (!touched) member.success = true;
+        if (!touching) member.success = true;
         break;
     }
   }

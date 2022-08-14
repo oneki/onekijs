@@ -83,6 +83,9 @@ export const modalStyle: ComponentStyle<ModalProps> = ({
     .o-modal-content {
       ${flexGrow(1)}
       ${overflow('auto')}
+      ${display('flex')}
+      ${width('full')}
+      ${flexDirection('column')}
     }
     .o-modal-footer {
       ${display('flex')}
@@ -105,6 +108,36 @@ export const modalStyle: ComponentStyle<ModalProps> = ({
         ${transitionDuration(`${animationDuration}ms`)}
         ${transitionProperty('transform')}
         ${transitionTimingFunction('ease-in')}
+      }
+    }
+
+    .o-form {
+      ${flexGrow(1)}
+    }
+
+    .o-wizard {
+      ${height('100%')}
+    }
+    .o-wizard-content-panel {
+      ${height('100%')}
+    }
+
+    .o-wizard-step-panel,
+    .o-wizard-content {
+      ${overflow('auto')}
+      ${height('100%')}
+      scrollbar-width: thin;
+      scrollbar-color: ${(props) => props.theme.palette.colors[props.theme.colors.light]}
+        ${(props) => props.theme.colors[props.theme.colors.lighter]};
+      &::-webkit-scrollbar {
+        width: 12px;
+      }
+      &::-webkit-scrollbar-track {
+        background: ${(props) => props.theme.palette.colors[props.theme.colors.lighter]};
+      }
+      &::-webkit-scrollbar-thumb {
+        background-color: ${(props) => props.theme.palette.colors[props.theme.colors.light]};
+        border: 3px solid ${(props) => props.theme.palette.colors[props.theme.colors.lighter]};
       }
     }
   `;

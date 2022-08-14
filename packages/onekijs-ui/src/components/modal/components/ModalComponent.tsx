@@ -16,7 +16,7 @@ const ModalComponent: FCC<ModalProps> = ({
   title,
   buttons = [],
   closeOnClickOutside,
-  closeOnEscape,
+  closeOnEscape = true,
 }) => {
   const theme = useContext(ThemeContext);
   const maskOpacity = theme.modal.maskOpacity;

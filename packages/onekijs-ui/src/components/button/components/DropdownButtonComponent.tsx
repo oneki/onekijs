@@ -1,9 +1,9 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useRef } from 'react';
 import Button from '..';
+import { useClickOutside } from '../../../utils/event';
 import { addClassname } from '../../../utils/style';
 import useDropdown from '../../dropdown/hooks/useDropdown';
 import TogglerIcon from '../../icon/TogglerIcon';
-import ListComponent from '../../list/components/ListComponent';
 import { DropDownButtonProps } from '../typings';
 
 const DropdownButtonComponent: FC<DropDownButtonProps> = ({
@@ -12,35 +12,68 @@ const DropdownButtonComponent: FC<DropDownButtonProps> = ({
   distance = 0,
   placement = 'bottom',
   className,
-  controller,
-  dataSource,
   children,
-  ...props
+  listElement,
+  open,
+  skidding,
+  onUpdate,
+  onDrop,
+  onDropStart,
+  onDropping,
+  onDropDone,
+  onCollapse,
+  onCollapseStart,
+  onCollapseDone,
+  onCollapsing,
+  widthModifier,
+  zIndex = 1000,
+  ...buttonProps
 }) => {
-  const [open, setOpen] = useState(false);
   const classNames = addClassname('o-button-dropdown', className);
-
-  const doClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    setOpen(!open);
-    if (onClick) {
-      onClick(e);
-    }
-  };
+  const ref = useRef<HTMLSpanElement>(null);
 
   const [Dropdown, triggerRef] = useDropdown();
 
+  useClickOutside(ref, () => onCollapse());
+
   return (
-    <>
-      <Button {...props} onClick={doClick} className={classNames} ref={triggerRef}>
-        <span className="o-button-dropdown-content">{children}</span>
+    <span ref={ref}>
+      <Button
+        {...buttonProps}
+        className={classNames}
+        onClick={onClick ? undefined : open ? onCollapse : onDrop}
+        ref={triggerRef}
+      >
+        <span className="o-button-dropdown-content" onClick={onClick}>
+          {children}
+        </span>
         <span className="o-button-dropdown-icon">
-          <TogglerIcon width="16px" height="16px" open={open} closeArrowPosition="s" openArrowPosition="n" />
+          <TogglerIcon
+            width="16px"
+            height="16px"
+            open={open}
+            closeArrowPosition="s"
+            openArrowPosition="n"
+            onClick={onClick ? (open ? onCollapse : onDrop) : undefined}
+          />
         </span>
       </Button>
-      <Dropdown {...props} open={open} placement={placement} animationTimeout={animationTimeout} zIndex={1000}>
-        <ListComponent {...props} controller={controller} dataSource={dataSource} className="o-button-dropdown-list" />
+      <Dropdown
+        skidding={skidding}
+        onUpdate={onUpdate}
+        onDropStart={onDropStart}
+        onDropping={onDropping}
+        onDropDone={onDropDone}
+        onCollapseStart={onCollapseStart}
+        widthModifier={widthModifier}
+        zIndex={zIndex}
+        open={open}
+        placement={placement}
+        animationTimeout={animationTimeout}
+      >
+        {listElement}
       </Dropdown>
-    </>
+    </span>
   );
 };
 

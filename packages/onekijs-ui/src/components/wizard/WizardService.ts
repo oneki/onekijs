@@ -1,41 +1,50 @@
-import { reducer, service } from 'onekijs-framework';
+import { reducer, saga, SagaEffect, service } from 'onekijs-framework';
 import { TabsService } from '../tab/TabsService';
 import { StepState, WizardState } from './typings';
 
 @service
-export class WizardService extends TabsService<StepState, WizardState> {
-  @reducer
-  activate(uid: string): void {
-    super.activate(uid);
-    if (this.state.active) {
-      this.touched(this.state.active);
-    }
-  }
-
+export class WizardService<
+  M extends StepState = StepState,
+  S extends WizardState<M> = WizardState<M>
+> extends TabsService<M, S> {
   @reducer
   activateNext(): void {
-    for (let i = this.getCurrentActiveIndex() + 1; i < this.state.members.length; i++) {
-      const step = this.state.members[i];
-      if (step && step.visible && !step.disabled) {
-        this.activate(step.uid);
-        return;
-      }
+    const nextStep = this.getNextStep();
+    if (nextStep) {
+      this.activate(nextStep.uid);
     }
   }
 
   @reducer
   activatePrevious(): void {
-    for (let i = this.getCurrentActiveIndex() - 1; i >= 0; i--) {
-      const step = this.state.members[i];
-      if (step && step.visible && !step.disabled) {
-        this.activate(step.uid);
-        return;
-      }
+    const previousStep = this.getPreviousStep();
+    if (previousStep) {
+      this.activate(previousStep.uid);
     }
   }
 
-  getCurrentActiveIndex(): number {
-    return this.state.members.findIndex((m) => m.uid === this.state.active);
+  getCurrentStep(): M | undefined {
+    return this.state.members[this.getCurrentActiveIndex()];
+  }
+
+  getNextStep(): M | undefined {
+    for (let i = this.getCurrentActiveIndex() + 1; i < this.state.members.length; i++) {
+      const step = this.state.members[i];
+      if (step && step.visible && !step.disabled) {
+        return step;
+      }
+    }
+    return undefined;
+  }
+
+  getPreviousStep(): M | undefined {
+    for (let i = this.getCurrentActiveIndex() - 1; i >= 0; i--) {
+      const step = this.state.members[i];
+      if (step && step.visible && !step.disabled) {
+        return step;
+      }
+    }
+    return undefined;
   }
 
   isFirstStep(): boolean {
@@ -60,11 +69,40 @@ export class WizardService extends TabsService<StepState, WizardState> {
     return false;
   }
 
-  @reducer
-  touched(uid: string): void {
-    const member = this.getMember(uid);
-    if (member) {
-      member.touched = true;
+  @saga(SagaEffect.Leading)
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  *done() {
+    yield this.setSubmitting(true);
+    if (this.state.onDone) {
+      yield this.state.onDone();
     }
+    yield this.setSubmitting(false);
+  }
+
+  @reducer
+  next(): void {
+    let result = true;
+    if (this.state.onNext) {
+      result = this.state.onNext(this.getCurrentStep() as M, this.getNextStep() as M);
+    }
+    if (result) {
+      this.activateNext();
+    }
+  }
+
+  @reducer
+  previous(): void {
+    let result = true;
+    if (this.state.onPrevious) {
+      result = this.state.onPrevious(this.getCurrentStep() as M, this.getPreviousStep() as M);
+    }
+    if (result) {
+      this.activatePrevious();
+    }
+  }
+
+  @reducer
+  setSubmitting(submitting: boolean): void {
+    this.state.submitting = submitting;
   }
 }

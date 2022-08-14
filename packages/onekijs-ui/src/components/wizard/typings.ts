@@ -15,18 +15,20 @@ export type StepProps = TabProps & {
 
 export type StepState = TabState & {
   optional: boolean;
-  touched: boolean;
 };
 
-export type StepTitleProps = TabTitleProps<StepState> & {
+export type StepTitleProps<M extends StepState = StepState> = TabTitleProps<M> & {
   index: number;
 };
 
 export type UseWizardController = (props: WizardProps) => WizardService;
 
-export type WizardModalProps = ModalProps & WizardProps;
+export type WizardModalProps<M extends StepState = StepState> = ModalProps & WizardProps<M>;
 
-export type WizardProps = Omit<TabsProps, 'controller' | 'Component' | 'TitleComponent'> & {
+export type WizardProps<M extends StepState = StepState> = Omit<
+  TabsProps,
+  'controller' | 'Component' | 'TitleComponent'
+> & {
   cancelLabel?: string;
   controller?: WizardService;
   Component?: FCC<Omit<WizardProps, 'Component'>>;
@@ -36,11 +38,15 @@ export type WizardProps = Omit<TabsProps, 'controller' | 'Component' | 'TitleCom
   previousLabel?: string;
   stepSize?: GridSize;
   onCancel?: AnyFunction;
-  onDone: AnyFunction;
+  onDone?: AnyFunction;
+  onNext?: (currentStep: M, nextStep: M) => boolean;
+  onPrevious?: (currentStep: M, previousStep: M) => boolean;
   title?: ReactNode;
   TitleComponent?: React.FC<StepTitleProps>;
 };
 
-export type WizardState = TabsState<StepState> & {
-  forwardOnly?: boolean;
-};
+export type WizardState<M extends StepState = StepState> = TabsState<M> &
+  Pick<WizardProps<M>, 'onCancel' | 'onDone' | 'onNext' | 'onPrevious'> & {
+    forwardOnly?: boolean;
+    submitting?: boolean;
+  };
