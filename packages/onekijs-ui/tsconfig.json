@@ -27,6 +27,7 @@
     "downlevelIteration": true,
     "outDir": "./dist/",
     "incremental": true,
+    "tsBuildInfoFile": "./.buildcache/tsconfig.tsbuildinfo",
   },
   "typedocOptions": {
     "inputFiles": ["./src"],
