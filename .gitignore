@@ -31,3 +31,6 @@ out
 
 # rollup
 .rollup.cache
+
+# tsbuild
+*.tsbuildinfo

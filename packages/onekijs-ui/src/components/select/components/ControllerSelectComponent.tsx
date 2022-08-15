@@ -93,7 +93,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   const loading = isCollectionLoading(controller);
   const fetching = isCollectionFetching(controller);
 
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const previousSearchRef = useRef<Primitive>();
 
@@ -158,13 +158,9 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
     }
   }, [focus, forwardFocus, openOnFocus, open]);
 
-  useClickOutside(containerRef.current, () => {
-    onBlur();
-  });
+  useClickOutside(containerRef, onBlur);
 
-  useFocusOutside(containerRef.current, () => {
-    onBlur();
-  });
+  useFocusOutside(containerRef, onBlur);
 
   useEffect(() => {
     const search = controller.getSearch();

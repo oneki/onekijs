@@ -31,7 +31,7 @@ export const tabsStyle: ComponentStyle<TabsProps> = ({ layout = 'horizontal', th
     .o-tabs-title {
       ${display('flex')}
       ${flexDirection(layout === 'horizontal' ? 'row' : 'column')}
-      ${alignItems('flex-end')}
+      ${alignItems(layout === 'horizontal' ? 'flex-end' : 'flex-start')}
       ${borderStyleFn(t.borderStyle)}
       ${borderWidthFn(t.borderWidth)}
       ${borderColorFn(t.borderColor)}

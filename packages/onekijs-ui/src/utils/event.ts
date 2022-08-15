@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 
 export const useClickOutside = (
-  ref: React.MutableRefObject<HTMLElement> | HTMLElement | null,
+  ref: React.MutableRefObject<HTMLElement | null>,
   onClickOutside: (e: MouseEvent) => void,
 ): void => {
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      const element = ref && !(ref instanceof HTMLElement) ? ref.current : ref;
+      const element = ref.current;
       if (element && !element.contains(event.target as Node)) {
         onClickOutside(event);
       }
@@ -22,12 +22,12 @@ export const useClickOutside = (
 };
 
 export const useFocusOutside = (
-  ref: React.MutableRefObject<HTMLElement> | HTMLElement | null,
+  ref: React.MutableRefObject<HTMLElement | null>,
   onFocusOutside: (e: FocusEvent) => void,
 ): void => {
   useEffect(() => {
     function handleFocusOutside(event: FocusEvent) {
-      const element = ref && !(ref instanceof HTMLElement) ? ref.current : ref;
+      const element = ref.current;
       if (element && !element.contains(event.target as Node)) {
         onFocusOutside(event);
       }

@@ -4,8 +4,9 @@ import { addClassname } from '../../../utils/style';
 import useTabsService from '../hooks/useTabsService';
 import { useTabsState } from '../hooks/useTabsState';
 import { TabsProps, TabState } from '../typings';
+import TabTitle from './TabTitle';
 
-const TabsContainer: FCC<Omit<TabsProps, 'Component'>> = ({ className, children }) => {
+const TabsContainer: FCC<Omit<TabsProps, 'Component'>> = ({ className, children, TitleComponent = TabTitle }) => {
   const classNames = addClassname('o-tabs', className);
   const state = useTabsState();
   const service = useTabsService();
@@ -23,9 +24,8 @@ const TabsContainer: FCC<Omit<TabsProps, 'Component'>> = ({ className, children 
   return (
     <div className={classNames}>
       <div className="o-tabs-title">
-        {state.tabs.map((tab) => {
-          const Component = tab.TitleComponent;
-          return <Component key={tab.uid} tab={tab} onActivate={activate} />;
+        {state.members.map((tab) => {
+          return <TitleComponent key={tab.uid} member={tab} onActivate={activate} />;
         })}
       </div>
       <div className="o-tabs-content">{children}</div>

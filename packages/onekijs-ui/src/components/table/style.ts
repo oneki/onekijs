@@ -5,7 +5,7 @@ import { borderBottomColor, borderBottomStyle, borderBottomWidth, borderWidth, b
 import { display } from '../../styles/display';
 import { flexDirection } from '../../styles/flex';
 import { boxSizing, cursor, outline } from '../../styles/interactivity';
-import { overflowX, overflowY } from '../../styles/overflow';
+import { overflow, overflowX, overflowY } from '../../styles/overflow';
 import { height, width } from '../../styles/size';
 import { marginLeft, marginTop, padding, paddingBottom, paddingRight, paddingX, paddingY } from '../../styles/spacing';
 import { verticalAlign } from '../../styles/table';
@@ -33,7 +33,17 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme }) => {
       background-color: ${(props) => props.theme.palette.colors[props.theme.colors.light]};
       border: 3px solid ${(props) => props.theme.palette.colors[props.theme.colors.lighter]};
     }
-  }
+
+    .o-table-not-found {
+      ${display('flex')}
+      ${flexDirection('column')}
+      ${alignItems('center')}
+      ${padding('8xl')}
+      ${color('primary')}
+      ${fontSize('xl')}
+      ${backgroundColor(t.bgColor)}
+    }
+
     .o-table-body {
       ${overflowX('auto')}
     }
@@ -79,6 +89,7 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme }) => {
         ${paddingX(t.tdPaddingX)}
         ${paddingY(t.tdPaddingY)}
         ${boxSizing('border-box')}
+        ${overflow('hidden')}
         &.o-table-cell-expander {
           ${padding(0)}
           .o-table-cell-expander-content {
@@ -120,6 +131,7 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme }) => {
         ${flexDirection('row')}
         ${alignItems('center')}
         ${paddingX(t.thPaddingX)}
+        ${overflow('hidden')}
       }
 
       .o-table-header-title-container {

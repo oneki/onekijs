@@ -7,8 +7,8 @@ import { canFetchMore } from '../utils';
 
 const defaultHeight = '100%';
 const defaultItemHeight = 37;
-const defaultPreload = 100;
-const defaultIncrement = 100;
+const defaultPreload = 50;
+const defaultIncrement = 50;
 const defaultOverscan = 1;
 
 const defaultKeyExtractor = (index: number) => index;

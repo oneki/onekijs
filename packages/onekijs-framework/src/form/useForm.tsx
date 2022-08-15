@@ -34,6 +34,8 @@ import { DefaultFormContext } from './useFormContext';
  */
 
 const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): UseForm => {
+  const initializedRef = useRef(false);
+
   // onSubmit cannot be changed after initialization but we do not want to force using useCallback
   const onSubmitRef = useRef(onSubmit);
 
@@ -104,7 +106,6 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
       if (!service.fields[name]) {
         fieldOptions.defaultValue = fieldOptions.defaultValue === undefined ? '' : fieldOptions.defaultValue;
         fieldOptions.touchOn = fieldOptions.touchOn || formOptionsRef.current.touchOn || TouchOn.Blur;
-
         service.addField(
           Object.assign({}, fieldOptions, {
             name,
@@ -134,7 +135,9 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
             },
           }),
         );
-        defaultValuesRef.current[name] = get(valuesRef.current, name, fieldOptions.defaultValue);
+        if (!initializedRef.current) {
+          defaultValuesRef.current[name] = get(valuesRef.current, name, fieldOptions.defaultValue);
+        }
       }
       const field = service.fields[name];
       return {
@@ -342,6 +345,7 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
       clearValidation: clearLevelValidation,
       fields: service.fields,
       init,
+      initializedRef: initializedRef,
       getContainerFieldValidation: service.getContainerFieldValidation.bind(service),
       labelWidth: formOptionsRef.current.labelWidth,
       layout: formOptionsRef.current.layout,
@@ -464,7 +468,7 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
 
         return (
           <DefaultFormContext.Provider value={formContextRef.current}>
-            {!service.state.resetting && <form {...props} onSubmit={submit} />}
+            {!service.state.resetting && <form {...props} onSubmit={submit} className="o-form" />}
           </DefaultFormContext.Provider>
         );
       };
@@ -482,6 +486,7 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
       getValue,
       getValidation,
       loading: loading || false,
+      initialized: initializedRef.current,
       remove,
       reset: service.reset.bind(service),
       setError,
@@ -520,9 +525,12 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
   ]);
 
   useEffect((): void => {
-    if (Object.keys(defaultValuesRef.current).length > 0) {
-      service.setValues(defaultValuesRef.current);
-      defaultValuesRef.current = {};
+    if (!initializedRef.current) {
+      if (Object.keys(defaultValuesRef.current).length > 0) {
+        service.setValues(defaultValuesRef.current);
+        defaultValuesRef.current = {};
+      }
+      initializedRef.current = true;
     }
   });
 

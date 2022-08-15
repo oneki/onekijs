@@ -1,5 +1,6 @@
-import { BackgroundColorProperty, ColorProperty } from 'csstype';
-import { ColorPropertyTheme } from '../../styles/typings';
+import { BackgroundColorProperty, ColorProperty, MarginProperty } from 'csstype';
+import { ReactNode } from 'react';
+import { ColorPropertyTheme, SpacingPropertyTheme, TLength } from '../../styles/typings';
 
 export type TagProps = {
   kind?: ColorPropertyTheme;
@@ -8,4 +9,9 @@ export type TagProps = {
   size?: 'small' | 'medium' | 'large';
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;
   className?: string;
+  marginLeft?: SpacingPropertyTheme | MarginProperty<TLength>;
+  marginRight?: SpacingPropertyTheme | MarginProperty<TLength>;
+  marginTop?: SpacingPropertyTheme | MarginProperty<TLength>;
+  marginBottom?: SpacingPropertyTheme | MarginProperty<TLength>;
+  icon?: ReactNode;
 };

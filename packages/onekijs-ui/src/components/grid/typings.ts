@@ -7,6 +7,10 @@ export type RowProps = Omit<React.InputHTMLAttributes<HTMLDivElement>, 'width'> 
   gapX?: WidthProperty<TLength>;
   gapY?: HeightProperty<TLength>;
   width?: WidthProperty<TLength>;
+<<<<<<< HEAD
+=======
+  xs?: WidthProperty<TLength>;
+>>>>>>> ui/grid
   sm?: WidthProperty<TLength>;
   md?: WidthProperty<TLength>;
   lg?: WidthProperty<TLength>;
@@ -23,6 +27,10 @@ export type RowProps = Omit<React.InputHTMLAttributes<HTMLDivElement>, 'width'> 
 
 export type ColProps = Omit<React.InputHTMLAttributes<HTMLDivElement>, 'size'> & {
   size: GridSize;
+<<<<<<< HEAD
+=======
+  xs?: GridSize;
+>>>>>>> ui/grid
   sm?: GridSize;
   md?: GridSize;
   lg?: GridSize;

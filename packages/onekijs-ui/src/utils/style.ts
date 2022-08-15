@@ -167,17 +167,6 @@ export const preflight = (): FlattenInterpolation<ThemeProps<any>> => {
       border-style: solid;
       border-width: 0;
     }
-
-    button,
-    input,
-    optgroup,
-    select,
-    textarea {
-      font-family: inherit;
-      font-size: 100%;
-      margin: 0;
-      line-height: 1.15;
-    }
   `;
 };
 

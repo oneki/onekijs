@@ -2,7 +2,8 @@ import { __metadata } from 'tslib';
 import DefaultBasicError from '../core/BasicError';
 import { Primitive } from '../types/core';
 import { AnonymousObject } from '../types/object';
-import { shallowEqual, toArray } from '../utils/object';
+import { isSameArray } from '../utils/array';
+import { clone, shallowEqual, toArray } from '../utils/object';
 import {
   Collection,
   CollectionState,
@@ -54,7 +55,11 @@ const _serializer = (query: Query, url: boolean) => {
   const params = query.params;
   if (params) {
     Object.keys(params).forEach((key) => {
-      result[key] = `${encodeURIComponent(String(params[key]))}`;
+      result[key] = `${
+        Array.isArray(params[key])
+          ? params[key].map((p: any) => encodeURIComponent(p)).join(',')
+          : encodeURIComponent(String(params[key]))
+      }`;
     });
   }
 
@@ -179,18 +184,6 @@ export const isQuerySortByMultiFields = (value: QuerySortBy): value is QuerySort
   return Object.keys(value).includes('fields');
 };
 
-export const isSameArray = (a1: any[] | undefined, a2: any[] | undefined): boolean => {
-  if (a1 === undefined && a2 === undefined) return true;
-  if (a1 === undefined || a2 === undefined) return false;
-  if (a1.length !== a2.length) return false;
-  for (let i = 0; i < a1.length; i++) {
-    if (a1[i] !== a2[i]) {
-      return false;
-    }
-  }
-  return true;
-};
-
 export const isSameFilterCriteriaValue = (
   v1: QueryFilterCriteriaValue | QueryFilterCriteriaValue[],
   v2: QueryFilterCriteriaValue | QueryFilterCriteriaValue[],
@@ -212,6 +205,9 @@ export const isSameFilter = (f1?: QueryFilterOrCriteria, f2?: QueryFilterOrCrite
   if (f1 === undefined || f2 === undefined) return false;
   if (isQueryFilter(f1) && isQueryFilter(f2)) {
     let result = true;
+    if (f1.criterias.length !== f2.criterias.length) {
+      return false;
+    }
     for (let i = 0; i < f1.criterias.length; i++) {
       if (!f2.criterias[i]) return false;
       result = result && isSameFilter(f1.criterias[i], f2.criterias[i]);
@@ -341,7 +337,7 @@ const handleQueryEntry = (key: string, value: string, result: Query): void => {
       break;
     default:
       result.params = result.params || {};
-      result.params[key] = value;
+      result.params[key] = value.includes(',') ? value.split(',') : value;
   }
 };
 
@@ -419,7 +415,8 @@ export const serializeCriteria = (criteria: QueryFilterCriteria): string => {
 
 export const serializeFields = (fields: string[] | undefined): string | void => {
   if (fields && fields.length > 0) {
-    return `${encodeURIComponent(fields.join(','))}`;
+    // return `${encodeURIComponent(fields.join(','))}`;
+    return `${fields.map((f) => encodeURIComponent(f)).join(',')}`;
   }
 };
 
@@ -427,7 +424,11 @@ export const serializeParams = (params: AnonymousObject | undefined): AnonymousO
   if (params && params.length > 0) {
     const result: AnonymousObject<string> = {};
     Object.keys(params).forEach((key) => {
-      result[key] = `${encodeURIComponent(String(params[key]))}}`;
+      result[key] = `${
+        Array.isArray(params[key])
+          ? params[key].map((p: any) => encodeURIComponent(p)).join(',')
+          : encodeURIComponent(String(params[key]))
+      }`;
     });
     return result;
   }
@@ -545,7 +546,7 @@ export const addFilter = (
   filterOrCriteria: QueryFilterOrCriteria,
   parentFilterId: QueryFilterId = rootFilterId,
 ): void => {
-  const filter = formatFilter(query.filter) || { id: rootFilterId, operator: 'and', criterias: [] };
+  const filter = clone(formatFilter(query.filter) || { id: rootFilterId, operator: 'and', criterias: [] });
   visitFilter(filter, (filter) => {
     if (filter.id === parentFilterId) {
       let index = -1;

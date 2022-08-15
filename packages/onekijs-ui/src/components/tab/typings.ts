@@ -5,32 +5,39 @@ import { TabsService } from './TabsService';
 export type TabProps = {
   active?: boolean;
   title: string;
-  Component?: FCC<TabTitleProps>;
   visible?: boolean;
   closable?: boolean;
   disabled?: boolean;
   icon?: ReactNode;
   uid?: string;
-} & AnonymousObject<unknown>;
+};
 
-export type TabTitleProps = {
-  tab: TabState;
-  onActivate: (tab: TabState) => void;
-} & AnonymousObject<unknown>;
+export type TabTitleProps<M extends TabState = TabState> = {
+  member: M;
+  onActivate: (member: M) => void;
+};
 
 export type TabState = {
   active: boolean;
-  uid: string;
-  disabled: boolean;
-  visible: boolean;
   closable: boolean;
-  title: string;
+  disabled: boolean;
+  error?: string;
   icon?: ReactNode;
-  TitleComponent: FCC<TabTitleProps>;
+  loading: boolean;
+  success?: boolean;
+  title: string;
+  touching: boolean;
+  touched: boolean;
+  touchingError?: string;
+  touchingWarning?: string;
+  uid: string;
+  visible: boolean;
+  warning?: string;
 };
 
 export type TabsProps = {
   Component?: FCC<Omit<TabsProps, 'Component'>>;
+  TitleComponent?: React.FC<TabTitleProps>;
   className?: string;
   animate?: number;
   controller?: TabsService;
@@ -42,9 +49,9 @@ export type ControlledTabsProps = TabsProps & {
   controller: TabsService;
 };
 
-export type TabsState = {
-  tabs: TabState[];
-  tabsIndex: AnonymousObject<number>;
+export type TabsState<M extends TabState = TabState> = {
+  members: M[];
+  membersIndex: AnonymousObject<number>;
   animate: number;
   active?: string;
 };

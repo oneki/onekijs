@@ -1,6 +1,6 @@
 import { AnonymousObject, get } from 'onekijs-framework';
 import { ColorPropertyTheme, Formatter } from '../styles/typings';
-import { hexToRgb } from './color';
+import { applyOpacity } from './color';
 
 export const booleanFormatter: Formatter<boolean> = (value): '0' | '1' => (value ? '1' : '0');
 
@@ -22,10 +22,7 @@ export const colorFormatter = (key: string, opacityKey?: string): Formatter<stri
     }
     result = `${result}${key}: ${value}`;
     if (opacityKey) {
-      const rgb = hexToRgb(value);
-      if (rgb) {
-        result = `${result};${key}: rgba(${rgb.r},${rgb.g},${rgb.b},var(--${opacityKey}))`;
-      }
+      result = `${result};${key}: ${applyOpacity(value, `var(--${opacityKey})`)}`;
     }
     result += ';';
 

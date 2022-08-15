@@ -1,7 +1,9 @@
-import { useFormContext, useTrySetting, FormLayout, FCC } from 'onekijs-framework';
+import { FCC, FormLayout, useFormContext, useTrySetting } from 'onekijs-framework';
 import React from 'react';
 import { gridSize } from '../../../utils/size';
 import { addClassname } from '../../../utils/style';
+import Col from '../../grid/Col';
+import Row from '../../grid/Row';
 import { GridSize } from '../../grid/typings';
 import Label from '../../label';
 import FieldDescription from '../FieldDescription';
@@ -33,21 +35,27 @@ const FieldLayoutComponent: FCC<FieldLayoutProps> = React.memo(
 
     if (fieldLayout === 'vertical') {
       return (
-        <div className={classNames}>
+        <Row className={classNames}>
           {label && (
-            <LabelComponent
-              description={description}
-              htmlFor={id}
-              text={label}
-              layout={fieldLayout}
-              required={required}
-              size={size}
-              help={help}
-            />
+            <Col size={12}>
+              <LabelComponent
+                description={description}
+                htmlFor={id}
+                text={label}
+                layout={fieldLayout}
+                required={required}
+                size={size}
+                help={help}
+              />
+            </Col>
           )}
-          {children}
-          {description && <DescriptionComponent content={description} />}
-        </div>
+          <Col size={12}>{children}</Col>
+          {description && (
+            <Col size={12}>
+              <DescriptionComponent content={description} />
+            </Col>
+          )}
+        </Row>
       );
     } else if (layout === 'horizontal') {
       return (

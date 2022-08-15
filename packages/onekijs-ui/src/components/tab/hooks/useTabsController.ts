@@ -4,8 +4,8 @@ import { TabsState, UseTabsController } from '../typings';
 
 const useTabsController: UseTabsController = ({ animate }) => {
   const [_, service] = useService<TabsState, TabsService>(TabsService, {
-    tabs: [],
-    tabsIndex: {},
+    members: [],
+    membersIndex: {},
     animate: animate ?? 300,
   } as TabsState);
 

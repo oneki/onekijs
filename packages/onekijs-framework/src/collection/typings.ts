@@ -17,6 +17,7 @@ export type Collection<T, I extends Item<T> = Item<T>, S extends CollectionState
     target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
   ): I[];
   addSelected<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
+  destroy: () => void;
   readonly data?: T[];
   readonly dataSource?: T[] | string;
   readonly items: (I | undefined)[];

@@ -2,20 +2,24 @@ import { App, Link, Route, Routes } from 'onekijs';
 import { ClarityTheme } from 'onekijs-ui';
 import { createRoot } from 'react-dom/client';
 import { AccordionPage } from './pages/accordion';
+import { ActionMenuPage } from './pages/actionmenu';
 import { AjaxListPage } from './pages/ajaxList';
 import { ButtonPage } from './pages/button';
 import { CardPage } from './pages/card';
 import { CheckboxPage } from './pages/checkbox';
 import { DashboardPage } from './pages/dashboard';
+import { FormPage } from './pages/form';
 import { GridPage } from './pages/grid';
 import { InputPage } from './pages/input';
 import { ListPage } from './pages/list';
+import { ModalPage } from './pages/modal';
 import { PropertiesPage } from './pages/properties';
 import { SelectPage } from './pages/select';
 import { TabsPage } from './pages/tab';
 import { TablePage } from './pages/table';
 import { TagPage } from './pages/tag';
 import { TreePage } from './pages/tree';
+import { WizardPage } from './pages/wizard';
 
 const container = document.getElementById('root');
 const root = createRoot(container!); // createRoot(container!) if you use TypeScript
@@ -41,7 +45,9 @@ root.render(
           <Link href="/list">List</Link> | <Link href="/ajaxList">Ajax List</Link> | <Link href="/table">Table</Link> |{' '}
           <Link href="/input">Input</Link> | <Link href="/dashboard">Dashboard</Link> | <Link href="/tree">Tree</Link> |{' '}
           <Link href="/accordion">Accordion</Link> | <Link href="/tab">Tab</Link> | <Link href="/card">Card</Link> |{' '}
-          <Link href="/grid">Grid</Link> | <Link href="/properties">Properties</Link> | <Link href="/checkbox">Checkbox</Link> | <Link href="/tag">Tag</Link>
+          <Link href="/grid">Grid</Link> | <Link href="/properties">Properties</Link> |{' '}
+          <Link href="/checkbox">Checkbox</Link> | <Link href="/tag">Tag</Link> | <Link href="/modal">Modal</Link> |{' '}
+          <Link href="/wizard">Wizard</Link> | <Link href="/form">Form</Link> | <Link href="/actionmenu">Action Menu</Link>
         </div>
         <div style={{ paddingLeft: '100px', paddingRight: '100px' }}>
           <Routes>
@@ -60,6 +66,10 @@ root.render(
             <Route path="/properties" element={<PropertiesPage />} />
             <Route path="/checkbox" element={<CheckboxPage />} />
             <Route path="/tag" element={<TagPage />} />
+            <Route path="/modal" element={<ModalPage />} />
+            <Route path="/wizard" element={<WizardPage />} />
+            <Route path="/form" element={<FormPage />} />
+            <Route path="/actionmenu" element={<ActionMenuPage />} />
           </Routes>
         </div>
       </div>

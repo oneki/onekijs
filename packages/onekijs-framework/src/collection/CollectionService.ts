@@ -8,10 +8,10 @@ import LocalRouter from '../router/LocalRouter';
 import { Primitive } from '../types/core';
 import { Fetcher, HttpMethod } from '../types/fetch';
 import { AnonymousObject } from '../types/object';
-import { Location } from '../types/router';
+import { Location, UnregisterCallback } from '../types/router';
 import { SagaEffect } from '../types/saga';
 import { dispatch, types } from '../types/service';
-import { ensureFieldValue, get, isNull, set, toArray, toPayload } from '../utils/object';
+import { clone, ensureFieldValue, get, isNull, set, toArray, toPayload } from '../utils/object';
 import { urlBuilder } from '../utils/router';
 import { generateUniqueId } from '../utils/string';
 import {
@@ -70,6 +70,7 @@ export default class CollectionService<
   protected uidIndex: AnonymousObject<I> = {};
   protected positionIndex: AnonymousObject<string> = {};
   protected db?: I[];
+  protected unregisterRouterListener?: UnregisterCallback;
 
   init(): void {
     this.initialState = this.state;
@@ -80,7 +81,7 @@ export default class CollectionService<
       this.state.router = new LocalRouter();
     }
     // listen on location change and adapt filters, sort, ... with these values
-    this.state.router.listen((location: Location) => this._onLocationChange(location));
+    this.unregisterRouterListener = this.state.router.listen((location: Location) => this._onLocationChange(location));
     // retrieve params from URL and initiate filter, sort ... with these values
     this._setQuery(this._parseLocation(this.state.router.location), false);
 
@@ -96,8 +97,15 @@ export default class CollectionService<
     }
   }
 
+  destroy(): void {
+    if (this.unregisterRouterListener) {
+      this.unregisterRouterListener();
+    }
+  }
+
   initDb(dataSource: T[] | string | undefined): void {
     if (Array.isArray(dataSource)) {
+      this.state.status = LoadingStatus.Loaded;
       this.db = [];
       dataSource.map((entry, index) => this._adapt(entry, { position: index }));
     }
@@ -488,7 +496,7 @@ export default class CollectionService<
 
   @reducer
   search(search: Primitive): void {
-    const query = this.getQuery();
+    const query = Object.assign({}, this.getQuery());
     this._setLoading({ limit: this.state.limit, offset: 0 });
     this._setSearch(query, search);
     this.refresh(query);
@@ -527,7 +535,7 @@ export default class CollectionService<
 
   @reducer
   setFields(fields: string[]): void {
-    const query = this.getQuery();
+    const query = Object.assign({}, this.getQuery());
     this._setLoading({ limit: this.state.limit, offset: 0 });
     this._setFields(query, fields);
     this.refresh(query);
@@ -582,7 +590,7 @@ export default class CollectionService<
   @reducer
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   setParam(key: string, value: any): void {
-    const query = this.getQuery();
+    const query = Object.assign({}, this.getQuery());
     this._setLoading({ limit: this.state.limit, offset: 0 });
     this._setParam(query, key, value);
     this.refresh(query);
@@ -590,7 +598,7 @@ export default class CollectionService<
 
   @reducer
   setParams(params: AnonymousObject): void {
-    const query = this.getQuery();
+    const query = Object.assign({}, this.getQuery());
     this._setLoading({ limit: this.state.limit, offset: 0 });
     this._setParams(query, params);
     this.refresh(query);
@@ -608,7 +616,7 @@ export default class CollectionService<
 
   @reducer
   sort(dir: QuerySortDir): void {
-    const query = this.getQuery();
+    const query = Object.assign({}, this.getQuery());
     this._setLoading({ limit: this.state.limit, offset: 0 });
     this._setSort(query, dir);
     this.refresh(query);
@@ -616,7 +624,7 @@ export default class CollectionService<
 
   @reducer
   sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void {
-    const query = this.getQuery();
+    const query = Object.assign({}, this.getQuery());
     this._setLoading({ limit: this.state.limit, offset: 0 });
     this._setSortBy(query, sortBy);
     this.refresh(query);
@@ -658,7 +666,7 @@ export default class CollectionService<
 
   protected _addSortBy(query: Query, sortBy: QuerySortBy, prepend = true): void {
     this._removeSortBy(query, sortBy);
-    const currentSortBy = formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(query, 'sortBy')) || [];
+    const currentSortBy = (formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(query, 'sortBy')) || []).slice(0);
     if (prepend) {
       currentSortBy.unshift(sortBy);
     } else {
@@ -1211,7 +1219,7 @@ export default class CollectionService<
   }
 
   protected _removeFilter(query: Query, filterId: QueryFilterId): void {
-    const filter = formatFilter(query.filter);
+    const filter = clone(formatFilter(query.filter));
     if (filter) {
       visitFilter(filter, (filter) => {
         for (const i in filter.criterias) {

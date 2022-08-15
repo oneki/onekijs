@@ -4,7 +4,6 @@ import { CSSTransition } from 'react-transition-group';
 import useTab from '../hooks/useTab';
 import { useTabsState } from '../hooks/useTabsState';
 import { TabProps } from '../typings';
-import TabTitle from './TabTitle';
 
 const Tab: FCC<TabProps> = ({
   title,
@@ -13,7 +12,6 @@ const Tab: FCC<TabProps> = ({
   visible = true,
   closable = false,
   children,
-  Component = TabTitle,
   icon,
   uid,
 }) => {
@@ -23,8 +21,10 @@ const Tab: FCC<TabProps> = ({
     disabled,
     visible,
     closable,
-    TitleComponent: Component,
     icon,
+    loading: false,
+    touched: false,
+    touching: false,
     uid: uid === undefined ? title : uid,
   });
 
@@ -46,7 +46,7 @@ const Tab: FCC<TabProps> = ({
   }
 
   return (
-    <CSSTransition in={true} timeout={5000} appear={true} onEnter={onEnter} onEntering={onEntering}>
+    <CSSTransition in={true} timeout={animate} appear={true} onEnter={onEnter} onEntering={onEntering}>
       <div className="o-tab">{children}</div>
     </CSSTransition>
   );
