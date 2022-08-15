@@ -1,0 +1,45 @@
+{
+  "name": "onekijs-theme-clarity",
+  "private": true,
+  "version": "0.14.7",
+  "description": "Opiniated React framework built on top of Next.js",
+  "source": "../src/next.tsx",
+  "main": "../dist/next.js",
+  "typings": "../dist/next.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=10"
+  },
+  "exports": {
+    ".": {
+      "import": "./../dist/index.module.js",
+      "require": "./../dist/index.js"
+    }
+  },
+  "module": "../dist/index.module.js",
+  "unpkg": "../dist/index.umd.js",
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "rimraf dist && rollup --config rollup.config.js",
+    "start": "rollup -w --config rollup.config.js"
+  },
+  "author": "Oneki",
+  "license": "MIT",
+  "dependencies": {
+    "onekijs-ui": "^0.14.7",
+    "@clr/city": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/react-virtualized-auto-sizer": "^1.0.0",
+    "@types/react-window": "^1.8.2",
+    "rollup": "^2.77.3"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "sideEffects": false
+}

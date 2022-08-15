@@ -1,5 +1,7 @@
 import { App } from 'onekijs';
-import { ClarityTheme } from 'onekijs-ui';
+// highlight-start
+import { ClarityTheme } from 'onekijs-theme-clarity';
+// highlight-end
 import { createRoot } from 'react-dom/client';
 import ErrorBoundary from './modules/core/components/ErrorBoundary';
 import RootRouter from './pages/_router';
@@ -15,8 +17,10 @@ const root = createRoot(container!); // createRoot(container!) if you use TypeSc
 
 root.render(
   <App settings={settings} ErrorBoundaryComponent={ErrorBoundary}>
+    {/* hightlight-start */}
     <ClarityTheme>
       <RootRouter />
     </ClarityTheme>
+    {/* hightlight-end */}
   </App>,
 );
