@@ -24,7 +24,7 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
   onCollapsing,
   placement = 'auto',
   widthModifier = 'same',
-  zIndex = 1000,
+  zIndex = 1,
 }) => {
   const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
   const popperWidthModifier =
@@ -46,6 +46,13 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
       {
         name: 'flip',
         enabled: placement === 'auto',
+      },
+      {
+        name: 'eventListeners',
+        options: {
+          scroll: true,
+          resize: true,
+        },
       },
     ],
   });
@@ -89,6 +96,7 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
 
   const onEntered = useCallback(
     (node: HTMLElement, isAppearing: boolean) => {
+      node.style.transform = '';
       if (refElement !== null && refElement !== undefined) {
         refElement.style.zIndex = triggerZIndexRef.current || '';
       }
@@ -97,6 +105,22 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
       }
     },
     [onDropDone, refElement],
+  );
+
+  const onEntering = useCallback(
+    (node: HTMLElement, isAppearing: boolean) => {
+      node.style.transform = 'translateY(-40px)';
+      node.style.opacity = '0';
+      node.style.transition = `transform ${animationTimeout}ms ease-out, opacity ${animationTimeout}ms ease-out`;
+      setTimeout(() => {
+        node.style.opacity = '1';
+        node.style.transform = 'translateY(0px)';
+      }, 0);
+      if (onDropping) {
+        onDropping(node, isAppearing);
+      }
+    },
+    [onDropping, animationTimeout],
   );
 
   const onExit = useCallback(
@@ -109,6 +133,22 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
       }
     },
     [onCollapseStart, refElement, zIndex],
+  );
+
+  const onExiting = useCallback(
+    (node: HTMLElement) => {
+      node.style.opacity = '1';
+      node.style.transform = 'translateY(0px)';
+      node.style.transition = `transform ${animationTimeout}ms ease-in, opacity ${animationTimeout}ms ease-in`;
+      setTimeout(() => {
+        node.style.opacity = '0';
+        node.style.transform = 'translateY(-40px)';
+      }, 0);
+      if (onCollapsing) {
+        onCollapsing(node);
+      }
+    },
+    [onCollapsing, animationTimeout],
   );
 
   const onExited = useCallback(
@@ -124,6 +164,35 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
   );
 
   return (
+    // <>
+    //   {ReactDOM.createPortal(
+    //     <div
+    //       style={styles.popper}
+    //       {...attributes.popper}
+    //       ref={setPopperElement}
+    //       key="dropdown-container"
+    //       className={addClassname('o-dropdown-container', classNames)}
+    //     >
+    //       <CSSTransition
+    //         in={open}
+    //         classNames="o-dropdown"
+    //         timeout={animationTimeout}
+    //         mountOnEnter={true}
+    //         appear={false}
+    //         unmountOnExit={true}
+    //         onEnter={onEnter}
+    //         onEntering={onEntering}
+    //         onEntered={onEntered}
+    //         onExit={onExit}
+    //         onExited={onExited}
+    //         onExiting={onExiting}
+    //       >
+    //         <div className="o-dropdown">{children}</div>
+    //       </CSSTransition>
+    //     </div>,
+    //     document.body,
+    //   )}
+    // </>
     <div
       style={styles.popper}
       {...attributes.popper}
@@ -139,11 +208,11 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
         appear={false}
         unmountOnExit={true}
         onEnter={onEnter}
-        onEntering={onDropping}
+        onEntering={onEntering}
         onEntered={onEntered}
         onExit={onExit}
         onExited={onExited}
-        onExiting={onCollapsing}
+        onExiting={onExiting}
       >
         <div className="o-dropdown">{children}</div>
       </CSSTransition>

@@ -75,7 +75,13 @@ export interface FormOptions {
   onError?: FormErrorCallback;
   onWarning?: FormWarningCallback;
   labelWidth?: FormLabelWidth;
+  xsLabelWidth?: FormLabelWidth;
+  smLabelWidth?: FormLabelWidth;
+  mdLabelWidth?: FormLabelWidth;
+  lgLabelWidth?: FormLabelWidth;
+  xlLabelWidth?: FormLabelWidth;
   layout?: FormLayout;
+  fieldSize?: 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge';
   delayLoading?: number;
 }
 
@@ -100,6 +106,7 @@ export interface FormContext {
   fields: any;
   init: (name: string, validators?: Validator[], fieldOptions?: FieldOptions) => FieldProps;
   initializedRef: MutableRefObject<boolean>;
+  fieldSize?: 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge';
   getContainerFieldValidation: (
     validations: AnonymousObject<FieldValidation>,
     fields: AnonymousObject<Field>,
@@ -107,6 +114,11 @@ export interface FormContext {
     touchedOnly?: boolean,
   ) => ContainerValidation;
   labelWidth?: FormLabelWidth;
+  xsLabelWidth?: FormLabelWidth;
+  smLabelWidth?: FormLabelWidth;
+  mdLabelWidth?: FormLabelWidth;
+  lgLabelWidth?: FormLabelWidth;
+  xlLabelWidth?: FormLabelWidth;
   layout?: FormLayout;
   offSubmittingChange: (listener: FormListener) => void;
   offValidationChange: (listener: FormListener, watchs: string[] | string) => void;

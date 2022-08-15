@@ -4,13 +4,17 @@ import {
   CollectionBy,
   CollectionProxy,
   FormContext,
+  FormFieldProps,
   Item,
   ItemAdaptee,
   QueryFilterOrCriteria,
   QuerySortBy,
   UseCollectionOptions,
+  ValidationStatus,
 } from 'onekijs-framework';
 import React from 'react';
+import { TshirtSize } from '../../styles/typings';
+import { FieldLayoutProps } from '../field/typings';
 import { InputProps } from '../input/typings';
 import { ListItemProps, ListItems, ListNotFoundProps, ListState, UseListOptions } from '../list/typings';
 import { SelectItem, SelectProps } from '../select/typings';
@@ -37,10 +41,26 @@ export type FormTableProps<
   I extends TableItem<T> = TableItem<T>,
   S extends TableState<T, I> = TableState<T, I>,
   C extends TableController<T, I, S> = TableController<T, I, S>
-> = ControllerTableProps<T, I, S, C> & {
-  name: string;
-  format?: 'id' | 'object' | 'auto';
-};
+> = ControllerTableProps<T, I, S, C> &
+  FormFieldProps &
+  FieldLayoutProps & {
+    format?: 'id' | 'object' | 'auto';
+    defaultValue?: T[];
+    FieldComponent?: React.FC<FormTableProps<T, I, S, C>>;
+    value?: T[];
+    onFocus?: () => void;
+    onBlur?: () => void;
+    onChange?: (value: T[]) => void;
+    status?: ValidationStatus;
+    size?: TshirtSize;
+  };
+
+export type FormInputProps = InputProps &
+  FormFieldProps &
+  FieldLayoutProps & {
+    defaultValue?: string;
+    FieldComponent?: React.FC<InputProps>;
+  };
 
 export type FormTableContext<T = any> = FormContext & {
   tableName: string;
@@ -96,7 +116,7 @@ export type TableConfig<T = any, I extends TableItem<T> = TableItem<T>> = {
   increment?: number;
   LoadingComponent?: React.FC;
   LoadingRowComponent?: React.FC;
-  NotFoundComponent?: React.FC<TableNotFoundProps>;
+  NotFoundComponent?: React.FC<TableNotFoundProps> | null;
   onRowClick?: TableRowHandler<T, I>;
   onRowEnter?: TableRowHandler<T, I>;
   onRowLeave?: TableRowHandler<T, I>;

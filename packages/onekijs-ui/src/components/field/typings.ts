@@ -1,7 +1,25 @@
+import {
+  AnonymousObject,
+  ContainerValidation,
+  FieldValidation,
+  FormFieldProps,
+  FormLayout,
+  ValidationStatus,
+} from 'onekijs-framework';
 import React from 'react';
-import { FormLayout } from 'onekijs-framework';
-import { LabelProps } from '../label/typings';
+import { TshirtSize } from '../../styles/typings';
 import { GridSize } from '../grid/typings';
+import { LabelProps } from '../label/typings';
+
+export type FieldComponentProps<T extends AnonymousObject> = T & {
+  name: string;
+  value?: T['value'];
+  onFocus?: T['onFocus'];
+  onBlur?: T['onBlur'];
+  onChange?: T['onChange'];
+  status?: ValidationStatus;
+  size?: T['size'];
+};
 
 export type FieldDescriptionProps = {
   className?: string;
@@ -24,9 +42,20 @@ export type FieldLayoutProps = {
   label?: string;
   LabelComponent?: React.FC<LabelProps>;
   labelWidth?: GridSize;
+  xsLabelWidth?: GridSize;
+  smLabelWidth?: GridSize;
+  mdLabelWidth?: GridSize;
+  lgLabelWidth?: GridSize;
+  xlLabelWidth?: GridSize;
   layout?: FormLayout;
   required?: boolean;
-  size?: FieldSize;
+  size?: TshirtSize;
+  validation?: FieldValidation | ContainerValidation;
 };
 
-export type FieldSize = 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge';
+export type UseFieldLayoutProps<T extends AnonymousObject> = T &
+  FormFieldProps &
+  FieldLayoutProps & {
+    defaultValue: T['value'];
+    FieldComponent?: React.FC<T>;
+  };

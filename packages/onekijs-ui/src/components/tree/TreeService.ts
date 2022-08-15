@@ -136,7 +136,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     return super._adapt(data, context);
   }
 
-  protected _buildItem(currentItem: I, data: T | undefined, adaptee: unknown, context?: AnonymousObject): I {
+  protected _buildItem(data: T | undefined, adaptee: unknown, context?: AnonymousObject): I {
     context = context || {};
     const getChildren = (data: any): T[] | undefined => {
       if (isNull(data)) {
@@ -175,7 +175,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     const level = context.level || 0;
     const position = context.position || 0;
 
-    const result = super._buildItem(currentItem, data, treeAdaptee, context) as I;
+    const result = super._buildItem(data, treeAdaptee, context) as I;
     const children =
       treeAdaptee.children === undefined
         ? treeAdaptee.type === 'leaf'

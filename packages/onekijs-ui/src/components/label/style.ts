@@ -1,13 +1,12 @@
 import { css } from 'styled-components';
-import { alignContent, justifyContent } from '../../styles/alignment';
+import { alignItems, justifyContent } from '../../styles/alignment';
 import { display, visibility } from '../../styles/display';
-import { width } from '../../styles/size';
 import { marginLeft, marginRight, marginY, paddingY } from '../../styles/spacing';
 import { ComponentStyle } from '../../styles/typings';
 import { color, fontSize, fontWeight, letterSpacing, textTransform } from '../../styles/typography';
 import { LabelProps } from './typings';
 
-const labelStyle: ComponentStyle<LabelProps> = ({ theme, width: labelWidth }) => {
+const labelStyle: ComponentStyle<LabelProps> = ({ theme }) => {
   const t = theme.label;
   return css`
       ${display('flex')}
@@ -17,38 +16,37 @@ const labelStyle: ComponentStyle<LabelProps> = ({ theme, width: labelWidth }) =>
         ${color(t.fontColor)}
         ${fontSize(t.fontSize)}
         ${letterSpacing(t.letterSpacing)}
-      }      
+      }
       &.o-label-vertical {
-        ${alignContent('center')}
+        ${alignItems('center')}
       }
       &.o-label-horizontal {
         ${justifyContent('flex-end')}
-        ${alignContent('center')}
-        ${width(`${(100 / 12) * (labelWidth || 12)}%`)}
+        ${alignItems('center')}
         ${marginY('2px')}
         &.o-label-xsmall {
           ${paddingY(0)}
         }
         &.o-label-small {
           ${paddingY('xs')}
-        }                   
+        }
         &.o-label-medium {
           ${paddingY('sm')}
         }
         &.o-label-large {
           ${paddingY('md')}
-        }  
+        }
         &.o-label-xlarge {
           ${paddingY('lg')}
-        }  
+        }
         .o-marker-required, .o-marker-optional {
           ${marginRight('lg')}
-        }                 
-      }      
+        }
+      }
       .o-marker-required, .o-marker-optional {
         ${color(t.requiredColor)}
         ${fontWeight(t.requiredWeight)}
-        ${marginLeft(t.requiredMarginLeft)} 
+        ${marginLeft(t.requiredMarginLeft)}
       }
       .o-marker-optional {
         ${visibility(false)}
@@ -58,7 +56,7 @@ const labelStyle: ComponentStyle<LabelProps> = ({ theme, width: labelWidth }) =>
         ${fontSize('xl')}
         ${color(t.helperIconColor)}
         ${marginLeft(t.helperMarginLeft)}
-      }   
+      }
 
     `;
 };

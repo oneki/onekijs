@@ -518,8 +518,8 @@ export default class CollectionService<
       throw new DefaultBasicError('Call to unsupported method setData of a remote collection');
     }
     this.cache = {};
-    this.idIndex = {};
-    this.uidIndex = {};
+    // this.idIndex = {};
+    // this.uidIndex = {};
     this.positionIndex = {};
     this.state.items = undefined;
     const query = this.getQuery();
@@ -633,8 +633,7 @@ export default class CollectionService<
   protected _adapt(data: T | undefined, context?: AnonymousObject): I {
     const adaptee = this.state.adapter === undefined || data === undefined ? {} : this.state.adapter(data);
 
-    const currentItem = this.idIndex[String(adaptee.id)];
-    const item: I = this._buildItem(currentItem, data, adaptee, context);
+    const item: I = this._buildItem(data, adaptee, context);
     this._indexItem(item, context);
     return item;
   }
@@ -1088,7 +1087,7 @@ export default class CollectionService<
     }
   }
 
-  protected _buildItem(currentItem: I, data: T | undefined, adaptee: unknown, _context?: { position?: number }): I {
+  protected _buildItem(data: T | undefined, adaptee: unknown, _context?: { position?: number }): I {
     const result = adaptee as I;
 
     const getId = (data: any): string | number | undefined => {
@@ -1117,8 +1116,10 @@ export default class CollectionService<
     ensureFieldValue(result, 'id', getId(data));
     ensureFieldValue(result, 'text', getText(data));
 
+    const currentItem = this.idIndex[String(result.id)];
+
     if (currentItem !== undefined) {
-      return Object.assign({}, currentItem, result);
+      return Object.assign({}, currentItem, { data }, result);
     } else {
       return Object.assign(
         {

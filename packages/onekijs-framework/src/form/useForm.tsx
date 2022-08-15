@@ -344,10 +344,16 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
       add,
       clearValidation: clearLevelValidation,
       fields: service.fields,
+      fieldSize: formOptionsRef.current.fieldSize,
       init,
       initializedRef: initializedRef,
       getContainerFieldValidation: service.getContainerFieldValidation.bind(service),
       labelWidth: formOptionsRef.current.labelWidth,
+      xsLabelWidth: formOptionsRef.current.xsLabelWidth,
+      smLabelWidth: formOptionsRef.current.smLabelWidth,
+      mdLabelWidth: formOptionsRef.current.mdLabelWidth,
+      lgLabelWidth: formOptionsRef.current.lgLabelWidth,
+      xlLabelWidth: formOptionsRef.current.xlLabelWidth,
       layout: formOptionsRef.current.layout,
       offSubmittingChange: service.offSubmittingChange.bind(service),
       offValidationChange: service.offValidationChange.bind(service),
@@ -401,7 +407,7 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
           for (const prop of service.pendingDispatch) {
             for (const type of Object.keys(service.listeners) as FormListenerType[]) {
               for (const key of Object.keys(service.listeners[type])) {
-                if (prop.startsWith(key)) {
+                if (prop === key) {
                   for (const listener of service.listeners[type][key]) {
                     const watchs = [];
                     let changed = false;

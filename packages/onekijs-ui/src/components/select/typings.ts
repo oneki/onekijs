@@ -7,8 +7,9 @@ import {
   ValidationStatus,
 } from 'onekijs-framework';
 import React, { FC } from 'react';
+import { TshirtSize } from '../../styles/typings';
 import { DropdownWidthModifier } from '../dropdown/typings';
-import { FieldLayoutProps, FieldSize } from '../field/typings';
+import { FieldLayoutProps } from '../field/typings';
 import {
   ListConfig,
   ListItem,
@@ -123,7 +124,7 @@ export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omi
   multiple?: boolean;
   status?: ValidationStatus;
   name?: string;
-  size?: FieldSize;
+  size?: TshirtSize;
   nullable?: boolean;
   minChars?: number;
   openOnFocus?: boolean;

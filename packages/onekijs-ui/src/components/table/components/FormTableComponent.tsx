@@ -1,4 +1,4 @@
-import { useField, useFormContext, useLazyRef } from 'onekijs-framework';
+import { generateUniqueId, useFormContext, useLazyRef } from 'onekijs-framework';
 import React, { useEffect } from 'react';
 import Button from '../../button';
 import Checkbox from '../../checkbox';
@@ -25,7 +25,9 @@ const SelectRowComponent: React.FC<TableBodyCellProps> = ({ item }) => {
 const FooterComponent: React.FC<TableFooterProps> = () => {
   const { add, tableName } = useFormTableContext();
   const addRow: React.MouseEventHandler<HTMLButtonElement> = (e) => {
-    add(tableName);
+    add(tableName, {
+      id: generateUniqueId(),
+    });
     e.preventDefault();
   };
   return (
@@ -36,10 +38,9 @@ const FooterComponent: React.FC<TableFooterProps> = () => {
 };
 
 const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.memo(
-  ({ controller, className, name, format = 'auto', ...props }) => {
+  ({ controller, value, onChange, className, name, format = 'auto', ...props }) => {
     const formContext = useFormContext();
     const service = controller.asService();
-    const { value, onChange } = useField(name);
     const formatRef = useLazyRef<'id' | 'object'>(() => {
       if (format === 'auto') {
         return value && value.length > 0 && typeof value[0] === 'object' ? 'object' : 'id';
@@ -55,9 +56,9 @@ const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.
         const currentValues = formContext.valuesRef.current[name] || [];
         const value = formatRef.current === 'id' ? item.id : item.data;
         if (selected) {
-          onChange([value].concat(currentValues));
+          onChange && onChange([value].concat(currentValues));
         } else {
-          onChange(currentValues.filter((v: any) => getId(v) !== getId(value)));
+          onChange && onChange(currentValues.filter((v: any) => getId(v) !== getId(value)));
         }
       };
       return Object.assign({ tableName: name, onSelect }, formContext);
@@ -106,6 +107,7 @@ const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.
           className={className}
           FooterComponent={service.dataSource ? undefined : FooterComponent}
           footer={service.dataSource ? false : true}
+          NotFoundComponent={null}
           {...props}
         />
       </DefaultFormTableContext.Provider>

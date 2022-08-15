@@ -5,7 +5,7 @@ import { addClassname } from '../../../utils/style';
 import { TooltipProps } from '../typings';
 
 const TooltipComponent: FCC<TooltipProps> = (props) => {
-  const { content, className, popperOptions, children, delayHide = 500, ...tooltipConfig } = props;
+  const { content, className, popperOptions, children, delayHide = 300, ...tooltipConfig } = props;
   const tooltipOptions = Object.assign(
     {
       interactive: true,

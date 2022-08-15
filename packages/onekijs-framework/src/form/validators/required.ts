@@ -7,7 +7,7 @@ const required = (message?: string | boolean): Validator => {
     let valid;
     if (message === false) {
       valid = true;
-    } else if (isNull(value)) {
+    } else if (isNull(value) || value === false) {
       valid = false;
     } else if (Array.isArray(value)) {
       valid = value.length > 0;

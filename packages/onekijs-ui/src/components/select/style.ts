@@ -42,6 +42,26 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
         }
       }
     }
+    &.o-select-status-warning {
+      .o-select-input-container, .o-select-input-container.o-select-input-focus {
+        ${borderColor('warning')}
+      }
+      .o-select-icon-container {
+        .o-select-icon {
+          ${color('warning')}
+        }
+      }
+    }
+    &.o-select-status-success {
+      .o-select-input-container, .o-select-input-container.o-select-input-focus {
+        ${borderColor('success')}
+      }
+      .o-select-icon-container {
+        .o-select-icon {
+          ${color('success')}
+        }
+      }
+    }
     &.o-select-size-xsmall {
       .o-select-input-wrapper {
         ${paddingY(0)}

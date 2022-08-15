@@ -70,7 +70,7 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
     return <LoadingComponent />;
   }
 
-  if (service.status === LoadingStatus.Loaded && items.length === 0) {
+  if (service.status === LoadingStatus.Loaded && items.length === 0 && NotFoundComponent) {
     return <NotFoundComponent />;
   }
 

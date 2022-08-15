@@ -63,6 +63,18 @@ const inputStyle: ComponentStyle<InputProps> = ({ theme }) => {
       ${paddingY('lg')}
       ${fontSize('lg')}
     }
+
+    &.o-input-status-error {
+      ${borderColor('danger')}
+    }
+
+    &.o-input-status-warning {
+      ${borderColor('warning')}
+    }
+
+    &.o-input-status-success {
+      ${borderColor('success')}
+    }
   `;
 };
 

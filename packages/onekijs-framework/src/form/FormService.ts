@@ -162,6 +162,16 @@ export default class FormService extends DefaultService<FormState> {
       }
       result.push(watch);
     }
+    while (watch.includes('.')) {
+      watch = watch.split('.').slice(0, -1).join('.');
+      const index = watch === '' ? this.watchIndex[''] : get(this.watchIndex, watch);
+      if (index) {
+        result.push(watch);
+      }
+    }
+    if (this.watchIndex['']) {
+      result.push('');
+    }
     return result;
   }
 
