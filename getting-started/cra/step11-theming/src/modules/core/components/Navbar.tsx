@@ -72,23 +72,3 @@ export default styled(Navbar)`
     ${color('lightest')}
   }
 `;
-
-/* <h4>
-          Change locale via buttons:
-          <button onClick={() => i18nService.changeLocale("en")}>
-            en
-          </button> | <button onClick={() => i18nService.changeLocale("fr")}>fr</button>
-        </h4>
-        <h4>
-          Change locale via dropdown:
-          <select
-            value={currentLocale}
-            onChange={(e) => i18nService.changeLocale(e.target.value)}
-          >
-            {locales.map((l) => (
-              <option key={l} value={l}>
-                {l}
-              </option>
-            ))}
-          </select>
-        </h4>*/

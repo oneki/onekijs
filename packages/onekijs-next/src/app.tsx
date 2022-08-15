@@ -18,6 +18,7 @@ export const App: FC<AppProps> = ({
   translations,
   i18nNs,
   router: nextRouter,
+  Theme,
   ...appProps
 }) => {
   const routerRef = useLazyRef(() => new NextRouter([]));
@@ -43,6 +44,7 @@ export const App: FC<AppProps> = ({
   }, [nextRouter]);
 
   const getLayout = (Component && (Component as any).getLayout) || ((page: any) => page);
+
   return (
     <AppState
       {...appProps}
@@ -52,7 +54,10 @@ export const App: FC<AppProps> = ({
       LoadingComponent={LoadingComponent}
       router={routerRef.current}
     >
-      <Router router={routerRef.current}>{getLayout(<Component {...pageProps}></Component>)}</Router>
+      <Router router={routerRef.current}>
+        {Theme && <Theme>{getLayout(<Component {...pageProps}></Component>)}</Theme>}
+        {!Theme && getLayout(<Component {...pageProps}></Component>)}
+      </Router>
     </AppState>
   );
 };

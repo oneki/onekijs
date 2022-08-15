@@ -10,13 +10,7 @@ const AppLayout: FC = () => {
     <div>
       <NotificationCenter />
       <Dashboard>
-        <DashboardHeader
-          resizable
-          collapseSmall={true}
-          collapseMedium={true}
-          collapseLarge={false}
-          floatingSmall={false}
-        >
+        <DashboardHeader>
           <Navbar />
         </DashboardHeader>
 
