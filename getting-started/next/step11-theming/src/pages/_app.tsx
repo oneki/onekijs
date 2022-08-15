@@ -1,6 +1,9 @@
 import { AppProps } from 'next/app';
 import { NextApp } from 'onekijs-next';
-import { ClarityTheme } from 'onekijs-ui';
+// highlight-start
+import { ClarityTheme } from 'onekijs-theme-clarity/next';
+import 'onekijs-theme-clarity/font.css';
+// highlight-end
 import Head from 'next/head';
 import React, { FC } from 'react';
 import settings from '../settings';

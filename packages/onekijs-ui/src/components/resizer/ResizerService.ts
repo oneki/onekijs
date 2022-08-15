@@ -4,6 +4,9 @@ import { DefaultService, reducer, saga, SagaEffect, service, useService } from '
 import { clearSelection, markBodyAsSelectable, markBodyAsUnselectable } from '../../utils/dom';
 import { ResizerHandle, ResizerHandler, ResizerState } from './typings';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const MouseEvent = (global as any).MouseEvent as MouseEvent;
+
 @service
 export class ResizerService extends DefaultService<ResizerState> {
   protected hoverTask: Task | null = null;

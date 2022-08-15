@@ -13,6 +13,8 @@
     "next": "^12.2.4",
     "onekijs-next": "^0.14.7",
     "onekijs-ssr": "^0.14.7",
+    "onekijs-ui": "^0.14.7",
+    "onekijs-theme-clarity": "^0.14.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

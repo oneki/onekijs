@@ -1,4 +1,5 @@
 export function isMobile(): boolean {
+  if (!isBrowser()) return false;
   return (
     (navigator.userAgent.match(/Android/i) !== null ||
       navigator.userAgent.match(/webOS/i) !== null ||
