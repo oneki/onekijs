@@ -19,5 +19,3 @@ export interface DropDownButtonProps extends ButtonProps, DropdownProps {
   onDrop: AnyFunction;
   onCollapse: AnyFunction;
 }
-
-export interface DropDownButtonProps extends ButtonProps, ListProps, DropdownProps {}

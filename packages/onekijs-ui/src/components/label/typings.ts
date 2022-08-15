@@ -1,7 +1,7 @@
 import React from 'react';
 import { FormLayout } from 'onekijs-framework';
-import { GridSize } from '../../styles/typings';
 import { FieldDescriptionProps, FieldHelpProps, FieldSize } from '../field/typings';
+import { GridSize } from '../grid/typings';
 
 export interface LabelProps {
   className?: string;

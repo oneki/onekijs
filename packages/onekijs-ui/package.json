@@ -22,12 +22,9 @@
   "module": "dist/index.module.js",
   "unpkg": "dist/index.umd.js",
   "scripts": {
-    "build": "microbundle --jsx React.createElement",
-    "build:fast": "microbundle -f es --jsx React.createElement --no-compress",
-    "start": "microbundle watch -f es --jsx React.createElement --max-old-space-size=8192 --no-compress",
-    "rollup:clean": "rimraf dist",
-    "rollup:build": "npm run rollup:clean && rollup --config rollup.config.js",
-    "rollup:start": "rollup -w --config rollup.config.js"
+    "clean": "rimraf dist",
+    "build": "rimraf dist && rollup --config rollup.config.js",
+    "start": "rollup -w --config rollup.config.js"
   },
   "author": "Oneki",
   "license": "MIT",
