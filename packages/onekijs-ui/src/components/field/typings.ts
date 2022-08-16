@@ -24,12 +24,14 @@ export type FieldComponentProps<T extends AnonymousObject> = T & {
 export type FieldDescriptionProps = {
   className?: string;
   content: string | JSX.Element;
+  size?: TshirtSize;
 };
 
 export type FieldHelpProps = {
   className?: string;
   content?: string | JSX.Element;
   visible?: boolean;
+  size?: TshirtSize;
 };
 
 export type FieldLayoutProps = {

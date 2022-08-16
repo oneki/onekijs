@@ -15,6 +15,7 @@ export interface SubmitButtonProps extends ButtonProps {
 }
 
 export interface DropDownButtonProps extends ButtonProps, DropdownProps {
+  attachDropdownToBody?: boolean;
   listElement: ReactNode;
   onDrop: AnyFunction;
   onCollapse: AnyFunction;

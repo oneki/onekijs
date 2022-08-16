@@ -31,7 +31,7 @@ export type ControllerTableProps<
   T = any,
   I extends TableItem<T> = TableItem<T>,
   S extends TableState<T, I> = TableState<T, I>,
-  C extends TableController<T, I, S> = TableController<T, I, S>
+  C extends TableController<T, I, S> = TableController<T, I, S>,
 > = TableConfig<T, I> & {
   controller: CollectionProxy<T, I, S, C>;
 };
@@ -40,10 +40,11 @@ export type FormTableProps<
   T = any,
   I extends TableItem<T> = TableItem<T>,
   S extends TableState<T, I> = TableState<T, I>,
-  C extends TableController<T, I, S> = TableController<T, I, S>
+  C extends TableController<T, I, S> = TableController<T, I, S>,
 > = ControllerTableProps<T, I, S, C> &
   FormFieldProps &
   FieldLayoutProps & {
+    addLabel?: string;
     format?: 'id' | 'object' | 'auto';
     defaultValue?: T[];
     FieldComponent?: React.FC<FormTableProps<T, I, S, C>>;
@@ -65,6 +66,7 @@ export type FormInputProps = InputProps &
 export type FormTableContext<T = any> = FormContext & {
   tableName: string;
   onSelect: (item: TableItem<T>, selected: boolean) => void;
+  addLabel: string;
 };
 
 export type TableBodyCellProps<T = any, I extends TableItem<T> = TableItem<T>> = {
@@ -132,7 +134,7 @@ export type TableConfig<T = any, I extends TableItem<T> = TableItem<T>> = {
 export type TableController<
   T = any,
   I extends TableItem<T> = TableItem<T>,
-  S extends TableState<T, I> = TableState<T, I>
+  S extends TableState<T, I> = TableState<T, I>,
 > = Collection<T, I, S> & {
   addColumn(column: TableColumn<T, I>, position?: number): void;
   addSelected<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
@@ -237,7 +239,7 @@ export type TableProps<
   T = any,
   I extends TableItem<T> = TableItem<T>,
   S extends TableState<T, I> = TableState<T, I>,
-  C extends TableController<T, I, S> = TableController<T, I, S>
+  C extends TableController<T, I, S> = TableController<T, I, S>,
 > = TableConfig<T, I> & {
   adapter?: TableItemAdapter<T>;
   controller?: CollectionProxy<T, I, S, C>;
@@ -286,7 +288,7 @@ export type UseSelectColumnOptions<
   T = any,
   I extends TableItem<T> = TableItem<T>,
   F = any,
-  FI extends SelectItem<F> = SelectItem<F>
+  FI extends SelectItem<F> = SelectItem<F>,
 > = Omit<TableColumnSpec<T, I>, 'CellComponent'> &
   Omit<SelectProps, 'className' | 'onFocus' | 'onChange' | 'onBlur' | 'items'> &
   UseCollectionOptions<F, FI> & {

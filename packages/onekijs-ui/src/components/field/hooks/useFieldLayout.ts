@@ -1,4 +1,5 @@
 import { useField, useFormContext, useTrySetting, useValidation } from 'onekijs-framework';
+import { useId } from 'react';
 import { FieldComponentProps, FieldLayoutProps, UseFieldLayoutProps } from '../typings';
 import { extractFieldLayoutProps } from '../util';
 
@@ -9,17 +10,18 @@ const useFieldLayout = <T>(props: UseFieldLayoutProps<T>): [FieldLayoutProps, Fi
   const validation = useValidation(name);
   const { fieldSize: contextFieldSize } = useFormContext();
   const settingFieldSize = useTrySetting('form.fieldSize');
+  const id = useId();
 
   return [
-    Object.assign(fieldLayoutProps, { validation: validation }),
-    Object.assign(fieldComponentProps, ({
+    Object.assign({ id }, fieldLayoutProps, { validation: validation }),
+    Object.assign({ id }, fieldComponentProps, {
       value,
       onFocus,
       onBlur,
       onChange,
       status: validation.status,
       size: fieldLayoutProps.size || contextFieldSize || settingFieldSize,
-    } as unknown) as FieldComponentProps<T>),
+    } as unknown as FieldComponentProps<T>),
   ];
 };
 

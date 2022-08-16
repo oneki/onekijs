@@ -19,7 +19,7 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
     layout: 'vertical',
     fieldSize: 'small',
   });
-  console.log('form1', values, validations);
+  //console.log('form1', values, validations);
 
   const { Form: Form2, values: values2, validations: validations2 } = useForm((value) => console.log(value), {
     layout: 'horizontal',
@@ -30,6 +30,8 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
     id: 'street',
     title: 'Street',
     required: true,
+    size: 'small',
+    placeholder: 'Street',
   });
 
   const stateColumn = useSelectColumn({
@@ -40,6 +42,8 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
       { id: 3, text: 'NY' },
     ],
     title: 'State',
+    size: 'small',
+    placeholder: 'State',
   });
 
   const tableController = useTableController(undefined, [streetColumn, stateColumn]);
@@ -51,11 +55,11 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
           <FormInput label="Firstname" name="firstname" required={true} />
           <FormSelect label="Role" name="role" dataSource={['admin', 'user']} required={true} />
           <FormCheckbox label="Backup" name="backup" />
-          <FormTable name="addresses" controller={tableController} />
+          <FormTable label="Address" name="addresses" controller={tableController} addLabel="Add address" />
           <SubmitButton />
         </Form>
       </div>
-      <div>
+      <div style={{marginTop: '500px'}}>
         <Form2 className={className}>
           <FormInput
             label="Firstname"

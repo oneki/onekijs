@@ -1,5 +1,5 @@
 import { css } from 'styled-components';
-import { alignItems } from '../../styles/alignment';
+import { alignItems, justifyContent } from '../../styles/alignment';
 import { backgroundColor } from '../../styles/background';
 import { borderBottomColor, borderBottomStyle, borderBottomWidth, borderWidth, boxShadow } from '../../styles/border';
 import { display } from '../../styles/display';
@@ -7,7 +7,16 @@ import { flexDirection } from '../../styles/flex';
 import { boxSizing, cursor, outline } from '../../styles/interactivity';
 import { overflow, overflowX, overflowY } from '../../styles/overflow';
 import { height, width } from '../../styles/size';
-import { marginLeft, marginTop, padding, paddingBottom, paddingRight, paddingX, paddingY } from '../../styles/spacing';
+import {
+  marginBottom,
+  marginLeft,
+  marginTop,
+  padding,
+  paddingBottom,
+  paddingRight,
+  paddingX,
+  paddingY,
+} from '../../styles/spacing';
 import { verticalAlign } from '../../styles/table';
 import { transitionDuration, transitionProperty, transitionTimingFunction } from '../../styles/transition';
 import { ComponentStyle } from '../../styles/typings';
@@ -110,84 +119,128 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme }) => {
       .o-table-header-sortable {
         cursor: pointer;
       }
+    }
 
-      &.o-table-header-filterable {
-        .o-table-header-title-container {
-          ${borderBottomWidth(0)}
-          ${paddingBottom(0)}
-        }
-      }
-
-      .o-table-header-row-title, .o-table-header-row-filter {
-        ${boxSizing('border-box')}
-        ${display('flex')}
-        ${flexDirection('row')}
-        ${backgroundColor(t.thBgColor)}
-      }
-
-      .o-table-header-title-container, .o-table-header-filter {
-        ${boxSizing('border-box')}
-        ${display('flex')}
-        ${flexDirection('row')}
-        ${alignItems('center')}
-        ${paddingX(t.thPaddingX)}
-        ${overflow('hidden')}
-      }
-
+    .o-table-header-filterable {
       .o-table-header-title-container {
-        ${paddingY(t.thPaddingY)}
-        ${borderBottomWidth(t.thBorderBottomWidth)}
-        ${borderBottomColor(t.thBorderBottomColor)}
+        ${borderBottomWidth(0)}
+        ${paddingBottom(0)}
+      }
+    }
 
-        .o-table-header-title {
-          ${color(t.thFontColor)}
-          ${fontWeight(t.thFontWeigth)}
-          ${fontSize(t.thFontSize)}
-          ${textTransform(t.thFontCase)}
+    .o-table-header-row-title, .o-table-header-row-filter {
+      ${boxSizing('border-box')}
+      ${display('flex')}
+      ${flexDirection('row')}
+      ${backgroundColor(t.thBgColor)}
+    }
+
+    .o-table-header-title-container, .o-table-header-filter {
+      ${boxSizing('border-box')}
+      ${display('flex')}
+      ${flexDirection('row')}
+      ${alignItems('center')}
+      ${paddingX(t.thPaddingX)}
+      ${overflow('hidden')}
+    }
+
+    .o-table-header-title-container {
+      ${paddingY(t.thPaddingY)}
+      ${borderBottomWidth(t.thBorderBottomWidth)}
+      ${borderBottomColor(t.thBorderBottomColor)}
+    }
+
+    .o-table-header-title {
+      ${color(t.thFontColor)}
+      ${fontWeight(t.thFontWeigth)}
+      ${fontSize(t.thFontSize)}
+      ${textTransform(t.thFontCase)}
+    }
+
+    .o-table-sort-container {
+      ${color('primary')}
+      ${cursor('pointer')}
+      ${width(8)}
+      ${display('flex')}
+      ${alignItems('center')}
+    }
+
+    .o-table-sort-icon {
+      ${color('primary')}
+      ${cursor('pointer')}
+      ${width(4)}
+      ${height(4)}
+      ${outline('none', { focus: 'none' })}
+      ${backgroundColor('transparent')}
+      ${marginLeft('px')}
+      ${padding(0)}
+      ${borderWidth(0)}
+    }
+    .o-table-sort-svg {
+      ${display('block')}
+      ${verticalAlign('middle')}
+      ${transitionDuration('.5s')}
+      ${transitionProperty('all')}
+      ${transitionTimingFunction('ease-in-out')}
+    }
+
+    .o-table-header-filter {
+      ${borderBottomWidth(t.thBorderBottomWidth)}
+      ${borderBottomColor(t.thBorderBottomColor)}
+      ${paddingBottom(t.thPaddingY)}
+      .o-table-filter-input {
+        ${marginTop('xs')}
+        ${backgroundColor(t.thFilterInputBgColor)}
+        ${borderWidth(0)}
+        .o-input-field {
+          ${paddingY(t.thFilterInputPaddingY)}
+          ${paddingX(t.thFilterInputPaddingX)}
+          ${fontSize(t.thFilterInputFontSize)}
         }
       }
+    }
 
-      .o-table-sort-container {
-        ${color('primary')}
-        ${cursor('pointer')}
-        ${width(8)}
-        ${display('flex')}
-        ${alignItems('center')}
-        .o-table-sort-icon {
-          ${color('primary')}
-          ${cursor('pointer')}
-          ${width(4)}
-          ${height(4)}
-          ${outline('none', { focus: 'none' })}
-          ${backgroundColor('transparent')}
-          ${marginLeft('px')}
-          ${padding(0)}
-          ${borderWidth(0)}
-        }
-        .o-table-sort-svg {
-          ${display('block')}
-          ${verticalAlign('middle')}
-          ${transitionDuration('.5s')}
-          ${transitionProperty('all')}
-          ${transitionTimingFunction('ease-in-out')}
-        }
-      }
-
-      .o-table-header-filter {
-        ${borderBottomWidth(t.thBorderBottomWidth)}
-        ${borderBottomColor(t.thBorderBottomColor)}
-        ${paddingBottom(t.thPaddingY)}
-        .o-table-filter-input {
-          ${marginTop('xs')}
-          ${backgroundColor(t.thFilterInputBgColor)}
-          ${borderWidth(0)}
-          .o-input-field {
-            ${paddingY(t.thFilterInputPaddingY)}
-            ${paddingX(t.thFilterInputPaddingX)}
-            ${fontSize(t.thFilterInputFontSize)}
+    &.o-form-table {
+      ${boxShadow('none')}
+      .o-table-body-row:hover {
+        ${backgroundColor(t.bgColor)}
+        ${color(t.tdFontColor)}
+        .o-checkbox label {
+            ${color('currentColor')}
           }
         }
       }
+      .o-table-header-title-container {
+        ${paddingY('xs')}
+        ${borderBottomWidth('1px')}
+        ${borderBottomColor('primary')}
+      }
+    }
+
+    .o-form-table-add {
+      ${marginTop('sm')}
+      ${display('inline-flex')}
+      ${alignItems('center')}
+      ${fontWeight('bold')}
+      ${textTransform('uppercase')}
+      ${fontSize('xs')}
+      ${cursor('pointer')}
+      ${color('primary')}
+      .o-toggler-icon-container {
+        ${marginBottom('px')}
+      }
+    }
+    .o-form-table-remove {
+      ${display('inline-flex')}
+      ${alignItems('center')}
+      ${color('primary')}
+      ${cursor('pointer')}
+    }
+
+    .o-form-table-remove-cell {
+      ${display('flex')}
+      ${alignItems('center')}
+      ${justifyContent('center')}
     }
   `;
 };

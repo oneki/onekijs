@@ -1,6 +1,6 @@
-import observeRect from '@reach/observe-rect';
-import { FCC, useIsomorphicLayoutEffect } from 'onekijs-framework';
-import React, { useCallback, useRef, useState } from 'react';
+import { FCC, useIsomorphicLayoutEffect, useThrottle } from 'onekijs-framework';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import ReactDOM from 'react-dom';
 import { usePopper } from 'react-popper';
 import { CSSTransition } from 'react-transition-group';
 import { maxWidthPopperModifier, minWidthPopperModifier, sameWidthPopperModifier } from '../../../utils/popper';
@@ -9,6 +9,7 @@ import { DropdownComponentProps } from '../typings';
 
 const DropdownComponent: FCC<DropdownComponentProps> = ({
   animationTimeout = 0,
+  attachToBody = false,
   className,
   refElement,
   open,
@@ -56,28 +57,40 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
       },
     ],
   });
-  const previousRectRef = useRef<DOMRect>();
+
   const triggerZIndexRef = useRef<string>();
 
-  useIsomorphicLayoutEffect(() => {
-    if (!refElement) return;
-    const observer = observeRect(refElement, (rect) => {
-      if (
-        previousRectRef.current &&
-        (previousRectRef.current.height !== rect.height || previousRectRef.current.width !== rect.width)
-      ) {
-        forceUpdate && forceUpdate();
-        onUpdate && onUpdate();
-      }
-      previousRectRef.current = rect;
+  const update = useCallback(() => {
+    forceUpdate && forceUpdate();
+    onUpdate && onUpdate();
+  }, [forceUpdate, onUpdate]);
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  const throttleUpdate = useThrottle(update, 20);
+
+  const resizeObserver = useMemo(() => {
+    return new ResizeObserver(() => {
+      throttleUpdate();
     });
+  }, [throttleUpdate]);
 
-    observer.observe();
-
+  useIsomorphicLayoutEffect(() => {
+    const el = refElement;
+    if (el) {
+      resizeObserver.observe(el);
+    }
     return () => {
-      observer.unobserve();
+      if (el) {
+        resizeObserver.unobserve(el);
+      }
     };
   }, [refElement, forceUpdate]);
+
+  useIsomorphicLayoutEffect(() => {
+    if (open) {
+      setTimeout(update, 0);
+    }
+  }, [open, update]);
 
   const classNames = addClassname(`o-dropdown-${open ? 'open' : 'close'}`, className);
 
@@ -163,36 +176,7 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
     [onCollapseDone, refElement],
   );
 
-  return (
-    // <>
-    //   {ReactDOM.createPortal(
-    //     <div
-    //       style={styles.popper}
-    //       {...attributes.popper}
-    //       ref={setPopperElement}
-    //       key="dropdown-container"
-    //       className={addClassname('o-dropdown-container', classNames)}
-    //     >
-    //       <CSSTransition
-    //         in={open}
-    //         classNames="o-dropdown"
-    //         timeout={animationTimeout}
-    //         mountOnEnter={true}
-    //         appear={false}
-    //         unmountOnExit={true}
-    //         onEnter={onEnter}
-    //         onEntering={onEntering}
-    //         onEntered={onEntered}
-    //         onExit={onExit}
-    //         onExited={onExited}
-    //         onExiting={onExiting}
-    //       >
-    //         <div className="o-dropdown">{children}</div>
-    //       </CSSTransition>
-    //     </div>,
-    //     document.body,
-    //   )}
-    // </>
+  const element = (
     <div
       style={styles.popper}
       {...attributes.popper}
@@ -218,6 +202,12 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
       </CSSTransition>
     </div>
   );
+
+  if (attachToBody) {
+    return <> {ReactDOM.createPortal(element, document.body)}</>;
+  } else {
+    return <>{element}</>;
+  }
 };
 
 export default DropdownComponent;

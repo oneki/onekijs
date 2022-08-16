@@ -58,6 +58,7 @@ const findItemIndex = (controller: Collection<any, SelectItem<any>>, item?: Item
 };
 
 const ControllerSelectComponent: FC<ControllerSelectProps> = ({
+  attachDropdownToBody = false,
   className = '',
   placeholder,
   controller,
@@ -129,6 +130,10 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
     }
   }, [focus, controller, value, multiple]);
 
+  const clearSearch = useCallback(() => {
+    setTimeout(service.clearSearch, animationMs);
+  }, [service, animationMs]);
+
   const onBlur = useCallback(() => {
     if (!stateRef.current.keepFocus) {
       if (service.getSearch()) {
@@ -144,7 +149,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
         }
       }
     }
-  }, [open, service, forwardBlur, setOpen, focus]);
+  }, [open, service, forwardBlur, setOpen, focus, clearSearch]);
 
   const onFocus = useCallback(() => {
     if (!focus) {
@@ -207,10 +212,6 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
     [service],
   );
 
-  const clearSearch = useCallback(() => {
-    setTimeout(service.clearSearch, animationMs);
-  }, [service, animationMs]);
-
   const onSelect = useCallback(
     (item: Item | null, index = 0) => {
       if (!multiple) {
@@ -245,7 +246,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
         }
       }
     },
-    [onChange, service, multiple, onRemoveToken, setOpen],
+    [onChange, service, multiple, onRemoveToken, setOpen, clearSearch],
   );
 
   const onKeyDownCapture = useCallback((e: KeyboardEvent) => {
@@ -312,7 +313,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
           break;
       }
     },
-    [service, open, setOpen, focus, multiple],
+    [service, open, setOpen, focus, multiple, clearSearch],
   );
 
   const style: React.CSSProperties = {};
@@ -325,7 +326,13 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   );
 
   const optionsRef = useRef<HTMLDivElement>(null);
-  const { items: selectItems, isVirtual, totalSize, virtualItems, scrollToIndex } = useListView({
+  const {
+    items: selectItems,
+    isVirtual,
+    totalSize,
+    virtualItems,
+    scrollToIndex,
+  } = useListView({
     controller,
     height: height,
     ref: optionsRef,
@@ -388,6 +395,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
           ref={triggerRef}
         />
         <Dropdown
+          attachToBody={attachDropdownToBody}
           open={open}
           distance={0}
           animationTimeout={animationMs}
