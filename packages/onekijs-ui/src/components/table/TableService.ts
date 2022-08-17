@@ -44,7 +44,8 @@ export const parseColumnWidth = (width: string | number = 'auto'): TableColumnWi
 @service
 class TableService<T = any, I extends TableItem<T> = TableItem<T>, S extends TableState<T, I> = TableState<T, I>>
   extends CollectionService<T, I, S>
-  implements TableController<T, I> {
+  implements TableController<T, I>
+{
   // The table has three init steps
   //  - unmounted => data are not yet loaded
   //  - initializing -> the first render (with real data) is in progress

@@ -5,6 +5,7 @@ import { InputColumn, UseInputColumnOptions, TableItem } from '../typings';
 const useInputColumn = <T = any, I extends TableItem<T> = TableItem<T>>(
   options: UseInputColumnOptions<T, I>,
 ): InputColumn<T, I> => {
+  const Component = options.CellComponent || InputCellComponent;
   const optionsRef = useLazyRef<InputColumn<T, I>>(() => {
     return Object.assign(
       {
@@ -13,7 +14,7 @@ const useInputColumn = <T = any, I extends TableItem<T> = TableItem<T>>(
       },
       options,
       {
-        CellComponent: InputCellComponent(options),
+        CellComponent: Component(options),
       },
     );
   });

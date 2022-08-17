@@ -282,7 +282,10 @@ export type UseInputColumnOptions<T = any, I extends TableItem<T> = TableItem<T>
   TableColumnSpec<T, I>,
   'CellComponent'
 > &
-  Omit<InputProps, 'className' | 'onFocus' | 'onChange' | 'onBlur'>;
+  Omit<FormFieldProps, 'name'> &
+  Omit<InputProps, 'className' | 'onFocus' | 'onChange' | 'onBlur'> & {
+    CellComponent?: (options: UseInputColumnOptions<T, I>) => React.FC<TableBodyCellProps<T, I>>;
+  };
 
 export type UseSelectColumnOptions<
   T = any,
@@ -291,8 +294,13 @@ export type UseSelectColumnOptions<
   FI extends SelectItem<F> = SelectItem<F>,
 > = Omit<TableColumnSpec<T, I>, 'CellComponent'> &
   Omit<SelectProps, 'className' | 'onFocus' | 'onChange' | 'onBlur' | 'items'> &
+  Omit<FormFieldProps, 'name'> &
   UseCollectionOptions<F, FI> & {
     dataSource: string | F[];
+    CellComponent?: (
+      options: UseSelectColumnOptions<F, FI>,
+      broker: CollectionBroker<F, FI>,
+    ) => React.FC<TableBodyCellProps<T, I>>;
   };
 
 export type UseTableOptions<T = any, I extends TableItem<T> = TableItem<T>> = UseListOptions<T, I> & {

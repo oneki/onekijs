@@ -6,6 +6,7 @@ const useSelectColumn = <T = any>(options: UseSelectColumnOptions<T, TableItem<T
   const broker = useLazyRef<CollectionBroker<T, TableItem<T>>>(() => {
     return new DefaultCollectionBroker();
   });
+  const Component = options.CellComponent || SelectCellComponent;
   const optionsRef = useLazyRef<SelectColumn<T, TableItem<T>>>(() => {
     return Object.assign(
       {
@@ -14,7 +15,7 @@ const useSelectColumn = <T = any>(options: UseSelectColumnOptions<T, TableItem<T
       },
       options,
       {
-        CellComponent: SelectCellComponent(options, broker.current),
+        CellComponent: Component(options, broker.current),
         broker: broker.current,
       },
     );

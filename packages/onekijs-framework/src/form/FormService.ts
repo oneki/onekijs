@@ -74,10 +74,10 @@ export default class FormService extends DefaultService<FormState> {
     }
     fieldNames.forEach((fieldName) => {
       if (this.fields[fieldName]) {
-        const previousValidation = get(this.state, `validations.${fieldName}`);
+        const previousValidation = this.state.validations[fieldName];
         const nextValidation = this.getValidation(fieldName);
         if (force || !nextValidation.equals(previousValidation)) {
-          set(this.state, `validations.${fieldName}`, nextValidation);
+          this.state.validations[fieldName] = nextValidation;
           this.pendingDispatch.add(fieldName);
         }
       }
@@ -367,7 +367,7 @@ export default class FormService extends DefaultService<FormState> {
       this._getSubWatchs(key).forEach((key) => this.pendingDispatch.add(key));
     });
     Object.keys(validations).forEach((fieldName) => {
-      set(this.state, `validations.${fieldName}`, validations[fieldName]);
+      this.state.validations[fieldName] = validations[fieldName];
       this.compileValidations(fieldName);
     });
   }

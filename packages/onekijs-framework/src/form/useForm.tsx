@@ -43,25 +43,22 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
   // we copy initialValues to values to be able to reset the form to its initial state
   // immer will not kept a reference between to two objects. So changing values will not change initialValues
   const formOptionsRef = useRef(formOptions);
-  const [state, service] = useService(
-    FormService,
-    (): FormState => {
-      formOptions.touchOn = formOptions.touchOn ?? TouchOn.Blur;
-      formOptions.initialValues = formOptions.initialValues ?? {};
-      const initialState: FormState = Object.assign({}, formOptions, {
-        validations: {},
-        submitting: false,
-      });
-      if (typeof formOptions.initialValues === 'object') {
-        initialState.values = initialState.initialValues as AnonymousObject;
-        initialState.fetching = false;
-      } else {
-        initialState.values = {};
-        initialState.fetching = true;
-      }
-      return initialState;
-    },
-  );
+  const [state, service] = useService(FormService, (): FormState => {
+    formOptions.touchOn = formOptions.touchOn ?? TouchOn.Blur;
+    formOptions.initialValues = formOptions.initialValues ?? {};
+    const initialState: FormState = Object.assign({}, formOptions, {
+      validations: {},
+      submitting: false,
+    });
+    if (typeof formOptions.initialValues === 'object') {
+      initialState.values = initialState.initialValues as AnonymousObject;
+      initialState.fetching = false;
+    } else {
+      initialState.values = {};
+      initialState.fetching = true;
+    }
+    return initialState;
+  });
 
   useEffect(() => {
     if (formOptions.initialValues && typeof formOptions.initialValues !== 'object') {
@@ -391,96 +388,94 @@ const useForm = (onSubmit: FormSubmitCallback, formOptions: FormOptions = {}): U
   ]);
   formContextRef.current = formContext;
 
-  const FormRef = useLazyRef<FCC<FormProps>>(
-    (): FCC<FormProps> => {
-      const Form: FCC<FormProps> = (props) => {
-        const prevValuesRef = useRef({});
-        const prevValidationsRef = useRef<AnonymousObject<FieldValidation>>({});
-        const prevSubmittingRef = useRef(false);
+  const FormRef = useLazyRef<FCC<FormProps>>((): FCC<FormProps> => {
+    const Form: FCC<FormProps> = (props) => {
+      const prevValuesRef = useRef({});
+      const prevValidationsRef = useRef<AnonymousObject<FieldValidation>>({});
+      const prevSubmittingRef = useRef(false);
 
-        // eslint-disable-next-line
-        useEffect((): void => {
-          if (service.state.resetting) {
-            service.setResetting(false);
-            return;
-          }
-          for (const prop of service.pendingDispatch) {
-            for (const type of Object.keys(service.listeners) as FormListenerType[]) {
-              for (const key of Object.keys(service.listeners[type])) {
-                if (prop === key) {
-                  for (const listener of service.listeners[type][key]) {
-                    const watchs = [];
-                    let changed = false;
-                    if (type === 'valueChange') {
-                      listener.watchs.forEach((w: string) => {
-                        const prev = get(prevValuesRef.current, w, '');
-                        const next = get(service.state.values, w, '');
-                        watchs.push(next);
+      // eslint-disable-next-line
+      useEffect((): void => {
+        if (service.state.resetting) {
+          service.setResetting(false);
+          return;
+        }
+        for (const prop of service.pendingDispatch) {
+          for (const type of Object.keys(service.listeners) as FormListenerType[]) {
+            for (const key of Object.keys(service.listeners[type])) {
+              if (prop === key) {
+                for (const listener of service.listeners[type][key]) {
+                  const watchs = [];
+                  let changed = false;
+                  if (type === 'valueChange') {
+                    listener.watchs.forEach((w: string) => {
+                      const prev = get(prevValuesRef.current, w, '');
+                      const next = get(service.state.values, w, '');
+                      watchs.push(next);
+                      if (prev !== next) {
+                        changed = true;
+                      }
+                    });
+                  } else if (type === 'validationChange') {
+                    listener.watchs.forEach((w: string) => {
+                      let prev, next;
+                      // check if w is a field or a composition
+                      if (!service.fields[w]) {
+                        prev = service.getContainerFieldValidation(
+                          prevValidationsRef.current,
+                          service.fields,
+                          w,
+                          false,
+                        );
+                        next = service.getContainerFieldValidation(
+                          service.state.validations || {},
+                          service.fields,
+                          w,
+                          false,
+                        );
+                        if (prev.status !== next.status || prev.message !== next.message) {
+                          changed = true;
+                        }
+                      } else {
+                        prev = prevValidationsRef.current[w];
+                        const nextValidations = service.state.validations || {};
+                        next = nextValidations[w];
                         if (prev !== next) {
                           changed = true;
                         }
-                      });
-                    } else if (type === 'validationChange') {
-                      listener.watchs.forEach((w: string) => {
-                        let prev, next;
-                        // check if w is a field or a composition
-                        if (!service.fields[w]) {
-                          prev = service.getContainerFieldValidation(
-                            prevValidationsRef.current,
-                            service.fields,
-                            w,
-                            false,
-                          );
-                          next = service.getContainerFieldValidation(
-                            service.state.validations || {},
-                            service.fields,
-                            w,
-                            false,
-                          );
-                          if (prev.status !== next.status || prev.message !== next.message) {
-                            changed = true;
-                          }
-                        } else {
-                          prev = prevValidationsRef.current[w];
-                          const nextValidations = service.state.validations || {};
-                          next = nextValidations[w];
-                          if (prev !== next) {
-                            changed = true;
-                          }
-                        }
-                        watchs.push(next);
-                      });
-                    } else if (type === 'submittingChange') {
-                      changed = prevSubmittingRef.current !== service.state.submitting;
-                      watchs.push(service.state.submitting);
-                    }
-
-                    if (changed) {
-                      if (listener.once) {
-                        service.offChange(type, listener.listener, listener.watchs);
                       }
-                      listener.listener(...watchs);
+                      watchs.push(next);
+                    });
+                  } else if (type === 'submittingChange') {
+                    changed = prevSubmittingRef.current !== service.state.submitting;
+                    watchs.push(service.state.submitting);
+                  }
+
+                  if (changed) {
+                    if (listener.once) {
+                      service.offChange(type, listener.listener, listener.watchs);
                     }
+                    listener.listener(...watchs);
                   }
                 }
               }
             }
           }
-          service.pendingDispatch.clear();
-          prevValuesRef.current = service.state.values || {};
-          prevValidationsRef.current = service.state.validations || {};
-          prevSubmittingRef.current = service.state.submitting || false;
-        });
+        }
+        service.pendingDispatch.clear();
+        prevValuesRef.current = service.state.values || {};
+        prevValidationsRef.current = service.state.validations || {};
+        prevSubmittingRef.current = service.state.submitting || false;
+      });
 
-        return (
-          <DefaultFormContext.Provider value={formContextRef.current}>
-            {!service.state.resetting && <form {...props} onSubmit={submit} className="o-form" />}
-          </DefaultFormContext.Provider>
-        );
-      };
-      return Form;
-    },
-  );
+      return (
+        <DefaultFormContext.Provider value={formContextRef.current}>
+          {!service.state.resetting && <form {...props} onSubmit={submit} className="o-form" />}
+        </DefaultFormContext.Provider>
+      );
+    };
+    return Form;
+  });
 
   const result = useMemo<UseForm>(() => {
     return {

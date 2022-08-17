@@ -5,13 +5,8 @@ import FieldValidation, { defaultValidation } from './FieldValidation';
 import useFormContext from './useFormContext';
 
 const useValidation = (name = '', touchedOnly = true): FieldValidation | ContainerValidation => {
-  const {
-    onValidationChange,
-    offValidationChange,
-    validationsRef,
-    fields,
-    getContainerFieldValidation,
-  } = useFormContext();
+  const { onValidationChange, offValidationChange, validationsRef, fields, getContainerFieldValidation } =
+    useFormContext();
 
   const argsRef = useRef({ name, touchedOnly });
 

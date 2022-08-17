@@ -27,16 +27,16 @@ export const fieldStyle: ComponentStyle<FieldLayoutProps> = () => {
 export const fieldHelpStyle: ComponentStyle<FieldHelpProps> = ({ visible = true, theme }) => {
   const t = theme.fieldLayout;
   return css`
-      ${fontSize('2xl')}
-      ${color(t.helperColor)}
+    ${fontSize('2xl')}
+    ${color(t.helperColor)}
       ${marginLeft(t.helperMarginLeft)}
       ${height('100%')}
       ${display('flex')}
       ${alignItems('center')}
       .o-tooltip {
-        ${cursor(visible ? 'pointer' : 'default')}
-      }
-    `;
+      ${cursor(visible ? 'pointer' : 'default')}
+    }
+  `;
 };
 
 export const fieldDescriptionStyle: ComponentStyle<FieldDescriptionProps> = ({ theme }) => {

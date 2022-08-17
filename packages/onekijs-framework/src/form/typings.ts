@@ -90,7 +90,7 @@ export type FormProps = Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onSubmi
 export type FormSubmitCallback = (values: AnonymousObject) => void;
 
 export interface FormState extends State, FormOptions {
-  validations?: AnonymousObject<FieldValidation>;
+  validations: AnonymousObject<FieldValidation>;
   values?: AnonymousObject;
   submitting?: boolean;
   resetting?: boolean;

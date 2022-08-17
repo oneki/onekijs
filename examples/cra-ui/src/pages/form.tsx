@@ -1,5 +1,14 @@
 import { SubmitButton, useForm } from 'onekijs';
-import { ComponentStyle, FormCheckbox, FormInput, FormSelect, FormTable, useInputColumn, useSelectColumn, useTableController } from 'onekijs-ui';
+import {
+  ComponentStyle,
+  FormCheckbox,
+  FormInput,
+  FormSelect,
+  FormTable,
+  useInputColumn,
+  useSelectColumn,
+  useTableController,
+} from 'onekijs-ui';
 import React from 'react';
 import styled, { css } from 'styled-components';
 
@@ -19,18 +28,21 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
     layout: 'vertical',
     fieldSize: 'small',
   });
-  //console.log('form1', values, validations);
 
-  const { Form: Form2, values: values2, validations: validations2 } = useForm((value) => console.log(value), {
+  console.log(values, validations);
+
+  const {
+    Form: Form2,
+    values: values2,
+    validations: validations2,
+  } = useForm((value) => console.log(value), {
     layout: 'horizontal',
   });
-
 
   const streetColumn = useInputColumn({
     id: 'street',
     title: 'Street',
     required: true,
-    size: 'small',
     placeholder: 'Street',
   });
 
@@ -42,8 +54,8 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
       { id: 3, text: 'NY' },
     ],
     title: 'State',
-    size: 'small',
     placeholder: 'State',
+    required: true,
   });
 
   const tableController = useTableController(undefined, [streetColumn, stateColumn]);
@@ -52,14 +64,16 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
     <>
       <div>
         <Form className={className}>
-          <FormInput label="Firstname" name="firstname" required={true} />
+          <FormInput label="Firstname" name="firstname" required={true} autoFocus={true} />
           <FormSelect label="Role" name="role" dataSource={['admin', 'user']} required={true} />
           <FormCheckbox label="Backup" name="backup" />
           <FormTable label="Address" name="addresses" controller={tableController} addLabel="Add address" />
           <SubmitButton />
         </Form>
+        {/* <div>Values: <pre>{JSON.stringify(values)}</pre></div>
+        <div>Validations: <pre>{JSON.stringify(validations)}</pre></div> */}
       </div>
-      <div style={{marginTop: '500px'}}>
+      <div style={{ marginTop: '500px' }}>
         <Form2 className={className}>
           <FormInput
             label="Firstname"
@@ -67,7 +81,7 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
             required={true}
             description="Can only contain alphanumeric characters"
             help="This is an help message for this field"
-            autoFocus={true}
+
           />
           <FormSelect label="Role" name="role" dataSource={['admin', 'user']} required={true} />
           <FormCheckbox label="Backup" name="backup" required={true} />
