@@ -84,8 +84,7 @@ const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.
         service.addColumn(
           {
             id: 'system.select',
-            minWidth: '50px',
-            maxWidth: '50px',
+            width: '50px',
             filterable: false,
             sortable: false,
             CellComponent: SelectRowComponent,
@@ -96,8 +95,7 @@ const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.
         service.addColumn(
           {
             id: 'system.insert',
-            minWidth: '50px',
-            maxWidth: '50px',
+            width: '50px',
             filterable: false,
             sortable: false,
             CellComponent: DeleteRowComponent,

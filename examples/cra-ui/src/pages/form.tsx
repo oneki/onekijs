@@ -5,6 +5,7 @@ import {
   FormInput,
   FormSelect,
   FormTable,
+  useCheckboxColumn,
   useInputColumn,
   useSelectColumn,
   useTableController,
@@ -28,8 +29,6 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
     layout: 'vertical',
     fieldSize: 'small',
   });
-
-  console.log(values, validations);
 
   const {
     Form: Form2,
@@ -58,7 +57,14 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
     required: true,
   });
 
-  const tableController = useTableController(undefined, [streetColumn, stateColumn]);
+  const privateColumn = useCheckboxColumn({
+    id: 'private',
+    title: 'Private address',
+    defaultValue: true,
+    required: true,
+  });
+
+  const tableController = useTableController(undefined, [streetColumn, stateColumn, privateColumn]);
 
   return (
     <>
@@ -70,8 +76,12 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
           <FormTable label="Address" name="addresses" controller={tableController} addLabel="Add address" />
           <SubmitButton />
         </Form>
-        {/* <div>Values: <pre>{JSON.stringify(values)}</pre></div>
-        <div>Validations: <pre>{JSON.stringify(validations)}</pre></div> */}
+        <div>
+          Values: <pre>{JSON.stringify(values)}</pre>
+        </div>
+        <div>
+          Validations: <pre>{JSON.stringify(validations)}</pre>
+        </div>
       </div>
       <div style={{ marginTop: '500px' }}>
         <Form2 className={className}>
@@ -81,7 +91,6 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
             required={true}
             description="Can only contain alphanumeric characters"
             help="This is an help message for this field"
-
           />
           <FormSelect label="Role" name="role" dataSource={['admin', 'user']} required={true} />
           <FormCheckbox label="Backup" name="backup" required={true} />

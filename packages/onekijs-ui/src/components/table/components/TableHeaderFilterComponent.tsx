@@ -15,7 +15,7 @@ const TableHeaderFilterComponent: FC<TableHeaderCellProps> = React.memo((props) 
 
   useEffect(() => {
     if (!initializedRef.current && ref.current !== null) {
-      initializedRef.current = service.initCell('header-filter', column.id, ref);
+      service.initCell('header-filter', column.id, ref);
     }
   });
 

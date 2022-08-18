@@ -166,6 +166,7 @@ export {
   UseTabsController,
 } from './components/tab/typings';
 export { default as Table } from './components/table';
+export { default as useCheckboxColumn } from './components/table/columns/useCheckboxColumn';
 export { default as useColumn } from './components/table/columns/useColumn';
 export { default as useInputColumn } from './components/table/columns/useInputColumn';
 export { default as useLinkColumn } from './components/table/columns/useLinkColumn';
@@ -174,6 +175,7 @@ export { default as FormTable } from './components/table/FormTable';
 export { default as useTableController } from './components/table/hooks/useTableController';
 export {
   ArrayTableProps,
+  CheckboxColumn,
   ControllerTableProps,
   FormTableContext,
   FormTableProps,
@@ -198,11 +200,14 @@ export {
   TableItemAdaptee,
   TableItemAdapter,
   TableItems,
+  TableNotFoundProps,
   TableProps,
   TableRowHandler,
   TableSortProps,
   TableState,
+  UseCheckboxColumnOptions,
   UseInputColumnOptions,
+  UseLinkColumnOptions,
   UseSelectColumnOptions,
   UseTableOptions,
 } from './components/table/typings';

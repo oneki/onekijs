@@ -37,7 +37,7 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
     controller: service,
     height: height,
     ref: tableRef,
-    overscan: service.step === 'mounted' ? 1 : 20,
+    overscan: 20,
     itemHeight,
     preload,
     increment,

@@ -16,7 +16,7 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
   BodyComponent = TableBodyComponent,
   ExpandedComponent,
   filterable,
-  fit = true,
+  fit,
   fixHeader = true,
   grow,
   FooterComponent = TableFooterComponent,
@@ -49,15 +49,11 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
   const tableRef = useRef<HTMLDivElement>(null);
   const service = controller.asService();
 
-  useEffect(() => {
-    controller.onMount(tableRef, contentRef);
-  });
-
   const config: TableConfig = useMemo(() => {
     return {
-      className,
       bodyClassName,
       BodyComponent,
+      className,
       ExpandedComponent,
       filterable,
       fit,
@@ -87,9 +83,9 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
       stripRows,
     };
   }, [
-    className,
     bodyClassName,
     BodyComponent,
+    className,
     ExpandedComponent,
     filterable,
     fit,
@@ -126,8 +122,7 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
         service.addColumn(
           {
             id: 'system.expander',
-            minWidth: '45px',
-            maxWidth: '45px',
+            width: '45px',
             filterable: false,
             sortable: false,
             CellComponent: ExpandedCellComponent,

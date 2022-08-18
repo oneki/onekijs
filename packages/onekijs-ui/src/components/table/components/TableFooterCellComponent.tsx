@@ -1,9 +1,9 @@
 import React, { FC, useEffect, useRef } from 'react';
 import { addClassname } from '../../../utils/style';
-import { TableFooterCellProps } from '../typings';
-import useTableService from '../hooks/useTableService';
-import { getCellWidth } from '../util';
 import { useTableConfig } from '../hooks/useTableConfig';
+import useTableService from '../hooks/useTableService';
+import { TableFooterCellProps } from '../typings';
+import { getCellWidth } from '../util';
 
 const TableFooterCellComponent: FC<TableFooterCellProps> = React.memo(({ column }) => {
   const service = useTableService();
@@ -16,7 +16,7 @@ const TableFooterCellComponent: FC<TableFooterCellProps> = React.memo(({ column 
 
   useEffect(() => {
     if (!initializedRef.current && ref.current !== null) {
-      initializedRef.current = service.initCell('footer', column.id, ref);
+      service.initCell('footer', column.id, ref);
     }
   });
 

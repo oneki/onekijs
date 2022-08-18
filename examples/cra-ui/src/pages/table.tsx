@@ -94,34 +94,39 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
   const controller2 = useTableController(users,  [
       {
         id: 'id',
-        minWidth: '50px',
-        maxWidth: '50px',
+        width: '50px',
         title: 'ID',
       },
       {
         id: 'firstname',
-        width: '10px',
         title: 'Firstname',
+        weight: 10,
       },
       {
         id: 'lastname',
-        width: '20px',
         title: 'Lastname',
+        minWidth: '150px',
+        weight: 10,
       },
       {
         id: 'address.street',
-        width: '600px',
         //title: 'Street',
         filterable: true,
         sortable: false,
+        minWidth: '150px',
+        weight: 10,
       },
       {
         id: 'address.postalCode',
         title: 'Postal Code',
+        minWidth: '100px',
+        weight: 5,
       },
       {
         id: 'address.city',
         title: 'City',
+        minWidth: '150px',
+        weight: 2,
       },
     ],
   );

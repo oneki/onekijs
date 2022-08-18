@@ -6,17 +6,25 @@ export const getCellWidth = (column: TableColumn<any, TableItem<any>>, fit?: boo
   const style: CSSProperties = {};
   if (column.computedWidth) {
     return column.computedWidth;
+  } else if (column.width) {
+    return { width: column.width };
   } else {
-    if (column.minWidth) {
-      style.minWidth = column.minWidth;
+    const minWidth = column.minWidth;
+    if (minWidth) {
+      if (fit) {
+        style.width = minWidth;
+      } else {
+        style.minWidth = minWidth;
+      }
     }
 
-    if (column.maxWidth) {
-      style.maxWidth = column.maxWidth;
-    }
-
-    if (!grow || grow === column.id) {
+    if (grow === column.id) {
       style.flexGrow = 1;
+    } else if (!grow) {
+      style.flexGrow = column.weight || 1;
+      style.flexBasis = (column.weight || 1) + 'px';
+    } else {
+      style.flexBasis = (column.weight || 1) + 'px';
     }
 
     if (column.width) {

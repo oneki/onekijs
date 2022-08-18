@@ -14,7 +14,9 @@ const SelectCellComponent = (
   const SelectCellComponent: React.FC<TableBodyCellProps> = ({ column, rowIndex }) => {
     const { tableName } = useFormTableContext();
     const [validators] = extractValidators(options);
-    const field = useField(`${tableName}.${rowIndex}.${column.id}`, validators);
+    const field = useField(`${tableName}.${rowIndex}.${column.id}`, validators, {
+      defaultValue: options.defaultValue ? options.defaultValue : options.multiple ? [] : null,
+    });
     const validation = useValidation(`${tableName}.${rowIndex}.${column.id}`);
     const status = validation?.status;
     const message = validation?.message;

@@ -20,7 +20,7 @@ const TableBodyCellComponent: FC<TableBodyCellProps> = React.memo((props) => {
 
   useEffect(() => {
     if (!initializedRef.current && ref.current !== null) {
-      initializedRef.current = service.initCell(rowIndex, column.id, ref);
+      service.initCell(rowIndex, column.id, ref);
     }
   });
 

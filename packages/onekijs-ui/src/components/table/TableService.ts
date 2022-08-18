@@ -1,11 +1,4 @@
-import {
-  AnonymousObject,
-  CollectionService,
-  isCollectionFetching,
-  isCollectionInitializing,
-  reducer,
-  service,
-} from 'onekijs-framework';
+import { AnonymousObject, CollectionService, reducer, service } from 'onekijs-framework';
 import React from 'react';
 import { TableColumn, TableColumnWidth, TableController, TableItem, TableState } from './typings';
 
@@ -46,12 +39,6 @@ class TableService<T = any, I extends TableItem<T> = TableItem<T>, S extends Tab
   extends CollectionService<T, I, S>
   implements TableController<T, I>
 {
-  // The table has three init steps
-  //  - unmounted => data are not yet loaded
-  //  - initializing -> the first render (with real data) is in progress
-  //  - mounted -> the first render is done
-  protected _step: 'unmounted' | 'mounted' | 'initializing' = 'unmounted';
-
   // contains a reference to each initial cells (the one built during the initial render)
   protected cells: AnonymousObject<AnonymousObject<React.RefObject<HTMLDivElement>>> = {};
 
@@ -65,10 +52,6 @@ class TableService<T = any, I extends TableItem<T> = TableItem<T>, S extends Tab
     const item = super.adapt(data);
     item.selected = this.state.selected && this.state.selected.includes(item.uid);
     return item;
-  }
-
-  get step(): 'unmounted' | 'mounted' | 'initializing' {
-    return this._step;
   }
 
   @reducer
@@ -90,33 +73,9 @@ class TableService<T = any, I extends TableItem<T> = TableItem<T>, S extends Tab
     rowNumber: number | 'header-title' | 'header-filter' | 'footer',
     colId: string,
     ref: React.RefObject<HTMLDivElement>,
-  ): boolean {
-    let result = false;
-
-    if (this._step !== 'mounted' && !isCollectionFetching(this) && !isCollectionInitializing(this)) {
-      this._step = 'initializing';
-    }
-
-    if (this._step !== 'unmounted') {
-      result = true;
-      if (this._step === 'initializing') {
-        // width are not yet computed
-        this.cells[colId] = this.cells[colId] || {};
-        this.cells[colId][`${rowNumber}`] = ref;
-      }
-    }
-    return result;
-  }
-
-  @reducer
-  onMount(tableRef: React.RefObject<HTMLDivElement>, contentRef: React.RefObject<HTMLDivElement>): void {
-    this.tableRef = tableRef;
-    this.contentRef = contentRef;
-    if (this._step === 'initializing') {
-      const fit = (contentRef.current?.offsetWidth || 0) <= (tableRef.current?.offsetWidth || 0);
-      this._setCellWidth(fit);
-      this._step = 'mounted';
-    }
+  ): void {
+    this.cells[colId] = this.cells[colId] || {};
+    this.cells[colId][`${rowNumber}`] = ref;
   }
 
   @reducer
@@ -130,7 +89,6 @@ class TableService<T = any, I extends TableItem<T> = TableItem<T>, S extends Tab
     this.state.columns.forEach((column) => {
       column.computedWidth = undefined;
     });
-    this._step = 'initializing';
   }
 
   @reducer

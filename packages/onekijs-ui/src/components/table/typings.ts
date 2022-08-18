@@ -14,6 +14,7 @@ import {
 } from 'onekijs-framework';
 import React from 'react';
 import { TshirtSize } from '../../styles/typings';
+import { CheckboxProps } from '../checkbox/typings';
 import { FieldLayoutProps } from '../field/typings';
 import { InputProps } from '../input/typings';
 import { ListItemProps, ListItems, ListNotFoundProps, ListState, UseListOptions } from '../list/typings';
@@ -56,13 +57,6 @@ export type FormTableProps<
     size?: TshirtSize;
   };
 
-export type FormInputProps = InputProps &
-  FormFieldProps &
-  FieldLayoutProps & {
-    defaultValue?: string;
-    FieldComponent?: React.FC<InputProps>;
-  };
-
 export type FormTableContext<T = any> = FormContext & {
   tableName: string;
   onSelect: (item: TableItem<T>, selected: boolean) => void;
@@ -99,9 +93,9 @@ export type TableBodyRowProps<T = any, I extends TableItem<T> = TableItem<T>> = 
 };
 
 export type TableConfig<T = any, I extends TableItem<T> = TableItem<T>> = {
-  className?: string;
   bodyClassName?: string;
   BodyComponent?: React.FC<TableBodyProps<T, I>>;
+  className?: string;
   ExpandedComponent?: React.FC<TableExpandedProps<T, I>>;
   filterable?: boolean;
   fit?: boolean;
@@ -143,15 +137,13 @@ export type TableController<
     rowIndex: number | 'header-title' | 'header-filter' | 'footer',
     colId: string,
     ref: React.RefObject<HTMLDivElement>,
-  ): boolean;
-  onMount(tableRef: React.RefObject<HTMLDivElement>, contentRef: React.RefObject<HTMLDivElement>): void;
+  ): void;
   removeColumn(id: string): void;
   removeSelected<B extends keyof CollectionBy<T, I>>(
     by: B,
     target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
   ): I[];
   setSelected<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
-  step: 'unmounted' | 'mounted' | 'initializing';
   toggle(item: I): void;
 };
 
@@ -173,6 +165,7 @@ export type TableColumnSpec<T, I extends TableItem<T> = TableItem<T>> = {
   sortable?: boolean;
   title?: string;
   TitleComponent?: React.FC<TableHeaderCellProps<T, I>>;
+  weight?: number;
   width?: string;
 };
 
@@ -265,6 +258,8 @@ export type TableColumnsState<T = any, I extends TableItem<T> = TableItem<T>> = 
   columns: TableColumn<T, I>[];
 };
 
+export type CheckboxColumn<T = any, I extends TableItem<T> = TableItem<T>> = TableColumn<T, I>;
+
 export type InputColumn<T = any, I extends TableItem<T> = TableItem<T>> = TableColumn<T, I>;
 
 export type SelectColumn<T = any, I extends TableItem<T> = TableItem<T>> = TableColumn<T, I> & {
@@ -277,6 +272,16 @@ export type UseLinkColumnOptions<T = any, I extends TableItem<T> = TableItem<T>>
 > & {
   href: string | ((item: I) => string);
 };
+
+export type UseCheckboxColumnOptions<T = any, I extends TableItem<T> = TableItem<T>> = Omit<
+  TableColumnSpec<T, I>,
+  'CellComponent'
+> &
+  Omit<FormFieldProps, 'name'> &
+  Omit<CheckboxProps, 'className' | 'onFocus' | 'onChange' | 'onBlur' | 'defaultValue'> & {
+    CellComponent?: (options: UseCheckboxColumnOptions<T, I>) => React.FC<TableBodyCellProps<T, I>>;
+    defaultValue?: boolean;
+  };
 
 export type UseInputColumnOptions<T = any, I extends TableItem<T> = TableItem<T>> = Omit<
   TableColumnSpec<T, I>,
