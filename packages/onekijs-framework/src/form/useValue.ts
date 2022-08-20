@@ -1,26 +1,26 @@
 import { useEffect, useRef, useState } from 'react';
 import { get, isNullOrEmpty } from '../utils/object';
-import useFormContext from './useFormContext';
+import useForm from './useForm';
 
 const useValue = (fieldName: string): any => {
-  const { onValueChange, offValueChange, valuesRef } = useFormContext();
+  const form = useForm();
   const nameRef = useRef(fieldName);
   const [value, setValue] = useState((): any => {
     if (isNullOrEmpty(nameRef.current)) {
-      return valuesRef.current;
+      return form.state.values;
     }
-    return get(valuesRef.current, nameRef.current);
+    return get(form.state.values, nameRef.current);
   });
 
   useEffect((): (() => void) => {
     const watch = [nameRef.current || ''];
     const listener = (nextValue: any) => setValue(nextValue);
-    onValueChange(listener, watch);
+    form.onValueChange(listener, watch);
 
     return (): void => {
-      offValueChange(listener, watch);
+      form.offValueChange(listener, watch);
     };
-  }, [onValueChange, offValueChange]);
+  }, [form]);
 
   return value;
 };

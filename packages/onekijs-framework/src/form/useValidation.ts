@@ -2,32 +2,31 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { isNullOrEmpty } from '../utils/object';
 import ContainerValidation from './ContainerValidation';
 import FieldValidation, { defaultValidation } from './FieldValidation';
-import useFormContext from './useFormContext';
+import useForm from './useForm';
 
 const useValidation = (name = '', touchedOnly = true): FieldValidation | ContainerValidation => {
-  const { onValidationChange, offValidationChange, validationsRef, fields, getContainerFieldValidation } =
-    useFormContext();
+  const form = useForm();
 
   const argsRef = useRef({ name, touchedOnly });
 
   const getFieldValidation = useCallback(
     (name: string, touchedOnly: boolean) => {
-      if (fields[name]) {
+      if (form.fields[name]) {
         if (touchedOnly) {
-          return fields[name].touched ? validationsRef.current[name] || defaultValidation : defaultValidation;
+          return form.fields[name].touched ? form.state.validations[name] || defaultValidation : defaultValidation;
         } else {
-          return validationsRef.current[name] || defaultValidation;
+          return form.state.validations[name] || defaultValidation;
         }
       } else {
-        return getContainerFieldValidation(validationsRef.current, fields, name, touchedOnly);
+        return form.getContainerFieldValidation(form.state.validations, form.fields, name, touchedOnly);
       }
     },
-    [fields, validationsRef, getContainerFieldValidation],
+    [form],
   );
 
   const [validation, setValidation] = useState(() => {
     if (isNullOrEmpty(argsRef.current.name)) {
-      return getContainerFieldValidation(validationsRef.current, fields, '', argsRef.current.touchedOnly);
+      return form.getContainerFieldValidation(form.state.validations, form.fields, '', argsRef.current.touchedOnly);
     } else {
       return getFieldValidation(argsRef.current.name, argsRef.current.touchedOnly);
     }
@@ -37,18 +36,18 @@ const useValidation = (name = '', touchedOnly = true): FieldValidation | Contain
     const { name, touchedOnly } = argsRef.current;
     const listener = (nextValidation: FieldValidation) => {
       if (isNullOrEmpty(name)) {
-        setValidation(getContainerFieldValidation(validationsRef.current, fields, '', touchedOnly));
+        setValidation(form.getContainerFieldValidation(form.state.validations, form.fields, '', touchedOnly));
       } else {
-        if (!touchedOnly || fields[name].touched) {
+        if (!touchedOnly || form.fields[name].touched) {
           setValidation(nextValidation);
         }
       }
     };
-    onValidationChange(listener, [name]);
+    form.onValidationChange(listener, [name]);
     return () => {
-      offValidationChange(listener, [name]);
+      form.offValidationChange(listener, [name]);
     };
-  }, [onValidationChange, offValidationChange, fields, validationsRef, getContainerFieldValidation]);
+  }, [form]);
 
   return validation;
 };

@@ -1,8 +1,8 @@
-import { SyntheticEvent, useEffect, useState } from 'react';
+import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { ValidationStatus } from '../types/form';
 import { AnonymousObject } from '../types/object';
 import { ValidationCode } from './typings';
-import useFormContext from './useFormContext';
+import useForm from './useForm';
 import useFormStatus from './useFormStatus';
 
 const useSubmit = (): {
@@ -13,19 +13,30 @@ const useSubmit = (): {
   fields: AnonymousObject<string>;
 } => {
   const { status, code, fields } = useFormStatus();
-  const { submittingRef, onSubmittingChange, offSubmittingChange, submit } = useFormContext();
-  const [submitting, setSubmitting] = useState(submittingRef.current);
+  const form = useForm();
+  const [submitting, setSubmitting] = useState(form.state.submitting || false);
 
   useEffect((): (() => void) => {
     const listener = (submitting: boolean) => {
       setSubmitting(submitting);
     };
-    onSubmittingChange(listener);
+    form.onSubmittingChange(listener);
 
     return (): void => {
-      offSubmittingChange(listener);
+      form.offSubmittingChange(listener);
     };
-  }, [onSubmittingChange, offSubmittingChange]);
+  }, [form]);
+
+  const submit = useCallback(
+    (e?: SyntheticEvent) => {
+      if (e) {
+        e.preventDefault();
+      }
+      form.submit();
+    },
+    [form],
+  );
+
   return {
     submit,
     submitting,

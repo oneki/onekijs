@@ -1,10 +1,11 @@
-import { MutableRefObject, SyntheticEvent } from 'react';
+import React, { SyntheticEvent } from 'react';
 import { FCC } from '../types/core';
 import { FormLayout } from '../types/form';
 import { AnonymousObject } from '../types/object';
 import { State } from '../types/state';
 import ContainerValidation from './ContainerValidation';
 import FieldValidation from './FieldValidation';
+import FormService from './FormService';
 
 export type AsyncBinder<T> = (...args: any[]) => Promise<T>;
 
@@ -17,18 +18,16 @@ export interface AsyncBindState extends State {
 export type Binder<T> = (...args: any[]) => T;
 
 export interface Field extends FieldOptions {
-  name: string;
   touched: boolean;
+  name: string;
   validations: AnonymousObject<string>[];
   touchOn: TouchOnType;
   validators: Validator[];
-  onChange: (value: any) => void;
-  onFocus: () => void;
-  onBlur: () => void;
+  context: FieldProps;
 }
 
 export interface FieldContainer {
-  context: FormContext;
+  context: FormService;
   value: AnonymousObject<any>;
   touchedValidation: ContainerValidation;
   allValidation: ContainerValidation;
@@ -47,7 +46,23 @@ export interface FieldOptions {
   touchOn?: TouchOnType;
 }
 
-export type FormErrorCallback = (fields: Field[], values: AnonymousObject) => void;
+export type FormConfig = {
+  touchOn?: TouchOnType;
+  onError?: FormErrorCallback;
+  onSubmit: FormSubmitCallback;
+  onWarning?: FormWarningCallback;
+  labelWidth?: FormLabelWidth;
+  xsLabelWidth?: FormLabelWidth;
+  smLabelWidth?: FormLabelWidth;
+  mdLabelWidth?: FormLabelWidth;
+  lgLabelWidth?: FormLabelWidth;
+  xlLabelWidth?: FormLabelWidth;
+  layout?: FormLayout;
+  LoadingComponent?: React.FC;
+  fieldSize?: 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge';
+};
+
+export type FormErrorCallback = (fields: Field[], values?: AnonymousObject) => void;
 
 export type FormFieldProps = FieldOptions &
   ValidatorsType & {
@@ -57,7 +72,7 @@ export type FormFieldProps = FieldOptions &
 
 export type FormLabelWidth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
-export type FormListener = (...args: any[]) => void;
+export type FormListener = (...args: any[]) => any;
 
 export interface FormListenerProps {
   listener: FormListener;
@@ -70,76 +85,26 @@ export interface FormListenerProps {
 export type FormListenerType = 'valueChange' | 'validationChange' | 'submittingChange';
 
 export interface FormOptions {
-  touchOn?: TouchOnType;
-  initialValues?: AnonymousObject | string | (() => AnonymousObject | Promise<AnonymousObject>);
-  onError?: FormErrorCallback;
-  onWarning?: FormWarningCallback;
-  labelWidth?: FormLabelWidth;
-  xsLabelWidth?: FormLabelWidth;
-  smLabelWidth?: FormLabelWidth;
-  mdLabelWidth?: FormLabelWidth;
-  lgLabelWidth?: FormLabelWidth;
-  xlLabelWidth?: FormLabelWidth;
-  layout?: FormLayout;
-  fieldSize?: 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge';
   delayLoading?: number;
 }
 
-export type FormProps = Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onSubmit'>;
+export type FormProps = Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onSubmit'> &
+  FormConfig & {
+    controller: FormService;
+  };
 
 export type FormSubmitCallback = (values: AnonymousObject) => void;
 
 export interface FormState extends State, FormOptions {
   validations: AnonymousObject<FieldValidation>;
   values?: AnonymousObject;
+  initialValues?: AnonymousObject;
   submitting?: boolean;
-  resetting?: boolean;
   loading?: boolean;
   fetching?: boolean;
 }
 
-export type FormWarningCallback = (fields: Field[], values: AnonymousObject) => void;
-
-export interface FormContext {
-  add: (fieldArrayName: string, initialValue?: any) => void;
-  clearValidation: (fieldName: string, validatorName: string, code: ValidationCode) => void;
-  fields: any;
-  init: (name: string, validators?: Validator[], fieldOptions?: FieldOptions) => FieldProps;
-  initializedRef: MutableRefObject<boolean>;
-  fieldSize?: 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge';
-  getContainerFieldValidation: (
-    validations: AnonymousObject<FieldValidation>,
-    fields: AnonymousObject<Field>,
-    prefix?: string,
-    touchedOnly?: boolean,
-  ) => ContainerValidation;
-  labelWidth?: FormLabelWidth;
-  xsLabelWidth?: FormLabelWidth;
-  smLabelWidth?: FormLabelWidth;
-  mdLabelWidth?: FormLabelWidth;
-  lgLabelWidth?: FormLabelWidth;
-  xlLabelWidth?: FormLabelWidth;
-  layout?: FormLayout;
-  offSubmittingChange: (listener: FormListener) => void;
-  offValidationChange: (listener: FormListener, watchs: string[] | string) => void;
-  offValueChange: (listener: FormListener, watchs: string[] | string) => void;
-  onSubmittingChange: (listener: FormListener, once?: boolean) => void;
-  onValidationChange: (listener: FormListener, watchs: string[] | string, once?: boolean) => void;
-  onValueChange: (listener: FormListener, watchs: string[] | string, once?: boolean) => void;
-  remove: (fieldArrayName: string, index: number) => void;
-  reset: () => void;
-  setError: (fieldName: string, validatorName: string, message?: string, match?: boolean) => boolean;
-  setOK: (fieldName: string, validatorName: string) => boolean;
-  setPendingValidation: (fieldName: string, validatorName: string, pending?: any) => boolean;
-  setValidation: (fieldName: string, validatorName: string, code: ValidationCode, message?: string) => void;
-  setValue: (fieldName: string, value: any) => void;
-  setValues: (values: AnonymousObject<any>) => void;
-  setWarning: (fieldName: string, validatorName: string, message?: string, match?: boolean) => boolean;
-  submit: (e?: SyntheticEvent<Element, Event>) => void;
-  submittingRef: MutableRefObject<boolean>;
-  valuesRef: MutableRefObject<any>;
-  validationsRef: MutableRefObject<AnonymousObject<FieldValidation>>;
-}
+export type FormWarningCallback = (fields: Field[], values?: AnonymousObject) => void;
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   name: string;

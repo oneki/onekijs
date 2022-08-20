@@ -142,9 +142,10 @@ export {
 } from './collection/typings';
 export { default as useCollection } from './collection/useCollection';
 export { default as useCollectionInitialState } from './collection/useCollectionInitialState';
-export { default as useCollectionProxy, collectionProxyHandler } from './collection/useCollectionProxy';
+export { collectionProxyHandler, default as useCollectionProxy } from './collection/useCollectionProxy';
 export { default as useCollectionService } from './collection/useCollectionService';
 export {
+  addFilter,
   defaultComparator,
   defaultSerializer,
   dummyLogMetadata,
@@ -189,7 +190,6 @@ export {
   shouldResetData,
   urlSerializer,
   visitFilter,
-  addFilter,
 } from './collection/utils';
 export {
   asReducer,
@@ -258,6 +258,7 @@ export { default as Textarea } from './form/components/Textarea';
 export { default as ContainerValidation } from './form/ContainerValidation';
 export { default as FieldValidation, defaultValidation } from './form/FieldValidation';
 export { default as FormService } from './form/FormService';
+export { default as Form } from './form';
 export {
   AsyncBinder,
   AsyncBindState,
@@ -266,7 +267,7 @@ export {
   FieldContainer,
   FieldOptions,
   FieldProps,
-  FormContext,
+  FormConfig,
   FormErrorCallback,
   FormFieldProps,
   FormLabelWidth,
@@ -289,14 +290,17 @@ export {
   ValidationCode,
   ValidationResult,
   Validator,
+  ValidatorAsyncFunction,
+  ValidatorFunction,
   ValidatorsType,
+  ValidatorSyncFunction,
 } from './form/typings';
 export { default as useAsyncBind } from './form/useAsyncBind';
 export { default as useBind } from './form/useBind';
 export { default as useField } from './form/useField';
 export { default as useFieldContainer } from './form/useFieldContainer';
-export { default as useForm } from './form/useForm';
-export { default as useFormContext, DefaultFormContext } from './form/useFormContext';
+export { default as useForm, FormContext } from './form/useForm';
+export { default as useFormController } from './form/useFormController';
 export { default as useFormStatus } from './form/useFormStatus';
 export { default as useRule } from './form/useRule';
 export { default as useSubmit } from './form/useSubmit';
@@ -368,7 +372,7 @@ export {
   localesModeSymbol,
   SERVICE_TYPE_ID,
 } from './types/symbol';
-export { first, last, isSameArray } from './utils/array';
+export { first, isSameArray, last } from './utils/array';
 export { isBrowser, isMobile } from './utils/browser';
 export { decrypt, encrypt, sha256, verify } from './utils/crypt';
 export { detectLocale, flattenTranslations } from './utils/i18n';
@@ -440,8 +444,8 @@ export {
   isTrue,
 } from './utils/type';
 
-declare module 'react' {
-  interface HTMLAttributes<T> {
-    children?: React.ReactNode | Record<string, unknown> | (React.ReactNode | Record<string, unknown>)[];
-  }
-}
+// declare module 'react' {
+//   interface HTMLAttributes<T> {
+//     children?: React.ReactNode | Record<string, unknown> | (React.ReactNode | Record<string, unknown>)[];
+//   }
+// }

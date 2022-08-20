@@ -1,4 +1,5 @@
-import { useForm } from "onekijs";
+
+import { Form, useFormController } from "onekijs";
 import { addClassname, alignItems, backgroundColor, borderRadius, color, cursor, display, FormInput, InputProps, justifyContent, SearchIcon, width } from "onekijs-ui";
 import styled, { css } from "styled-components";
 
@@ -30,11 +31,11 @@ const StyledSearchComponent = styled(SearchComponent)`
 
 
 export const InputPage = () => {
-  const { Form } = useForm(() => {});
-  const { Form: Form2 } = useForm(() => {}, { layout: 'horizontal' });
+  const formController1 = useFormController();
+  const formController2 = useFormController();
   return (
     <>
-      <Form style={{ display: 'flex', justifyContent: 'center' }}>
+      <Form style={{ display: 'flex', justifyContent: 'center' }} controller={formController1} onSubmit={() => {}}>
         <div style={{ width: '300px' }}>
           <FormInput
             name="toto"
@@ -73,7 +74,7 @@ export const InputPage = () => {
           />
         </div>
       </Form>
-      <Form2 style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
+      <Form style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }} controller={formController2} onSubmit={() => {}} layout="horizontal">
         <div style={{ width: '800px' }}>
           <FormInput
             name="toto"
@@ -111,7 +112,7 @@ export const InputPage = () => {
             PrefixComponent={StyledSearchComponent}
           />
         </div>
-      </Form2>
+      </Form>
     </>
   );
 };

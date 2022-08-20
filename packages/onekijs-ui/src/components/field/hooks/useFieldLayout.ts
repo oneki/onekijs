@@ -1,4 +1,4 @@
-import { useField, useFormContext, useTrySetting, useValidation } from 'onekijs-framework';
+import { useField, useForm, useTrySetting, useValidation } from 'onekijs-framework';
 import { useId } from 'react';
 import { FieldComponentProps, FieldLayoutProps, UseFieldLayoutProps } from '../typings';
 import { extractFieldLayoutProps } from '../util';
@@ -8,7 +8,7 @@ const useFieldLayout = <T>(props: UseFieldLayoutProps<T>): [FieldLayoutProps, Fi
   const { FieldComponent, ...fieldComponentProps } = fieldProps;
   const { value, onFocus, onBlur, onChange } = useField(name, validators, fieldOptions);
   const validation = useValidation(name);
-  const { fieldSize: contextFieldSize } = useFormContext();
+  const form = useForm();
   const settingFieldSize = useTrySetting('form.fieldSize');
   const id = useId();
 
@@ -20,7 +20,7 @@ const useFieldLayout = <T>(props: UseFieldLayoutProps<T>): [FieldLayoutProps, Fi
       onBlur,
       onChange,
       status: validation.status,
-      size: fieldLayoutProps.size || contextFieldSize || settingFieldSize,
+      size: fieldLayoutProps.size || form.config.fieldSize || settingFieldSize,
     } as unknown as FieldComponentProps<T>),
   ];
 };

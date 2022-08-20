@@ -1,9 +1,8 @@
-import { Task } from 'redux-saga';
-import { Task as TaskType } from '@redux-saga/types';
+import { Task } from '@redux-saga/types';
 import { cancel, delay, fork } from 'redux-saga/effects';
-import { asyncGet } from '../core/xhr';
 import { reducer, saga, service } from '../core/annotations';
 import DefaultService from '../core/Service';
+import { asyncGet } from '../core/xhr';
 import { ValidationStatus } from '../types/form';
 import { AnonymousObject } from '../types/object';
 import { SagaEffect } from '../types/saga';
@@ -12,15 +11,17 @@ import ContainerValidation from './ContainerValidation';
 import FieldValidation, { defaultValidation } from './FieldValidation';
 import {
   Field,
-  FormErrorCallback,
+  FieldOptions,
+  FieldProps,
+  FormConfig,
   FormListener,
   FormListenerProps,
   FormListenerType,
   FormState,
-  FormSubmitCallback,
-  FormWarningCallback,
+  TouchOn,
   ValidationCode,
   ValidationResult,
+  Validator,
   ValidatorAsyncFunction,
   ValidatorSyncFunction,
 } from './typings';
@@ -39,6 +40,13 @@ export default class FormService extends DefaultService<FormState> {
     [fieldName: string]: boolean;
   };
 
+  public config: FormConfig = {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    onSubmit: () => {},
+  };
+  public initializing = true;
+  protected defaultValues: AnonymousObject = {};
+
   constructor() {
     super();
     this.fields = {};
@@ -52,10 +60,18 @@ export default class FormService extends DefaultService<FormState> {
     this.watchIndex = {};
   }
 
+  @reducer
+  add(fieldArrayName: string, initialValue = {}): void {
+    // get current value
+    const currentArrayValue = get(this.state.values, fieldArrayName, []);
+    const index = currentArrayValue.length;
+    this.setValue(`${fieldArrayName}.${index}`, initialValue || {});
+  }
+
   addField(field: Field): void {
-    if (!this.fields[field.name]) {
-      this.fields[field.name] = field;
-      set(this.fieldIndex, field.name, true, false);
+    if (!this.fields[field.context.name]) {
+      this.fields[field.context.name] = field;
+      set(this.fieldIndex, field.context.name, true, false);
     }
   }
 
@@ -75,10 +91,11 @@ export default class FormService extends DefaultService<FormState> {
     fieldNames.forEach((fieldName) => {
       if (this.fields[fieldName]) {
         const previousValidation = this.state.validations[fieldName];
-        const nextValidation = this.getValidation(fieldName);
+        const nextValidation = this._getValidation(fieldName);
         if (force || !nextValidation.equals(previousValidation)) {
           this.state.validations[fieldName] = nextValidation;
           this.pendingDispatch.add(fieldName);
+          this.pendingDispatch.add('');
         }
       }
     });
@@ -91,6 +108,30 @@ export default class FormService extends DefaultService<FormState> {
       yield delay(delay_ms);
       yield this.setLoading(true, true);
     }
+  }
+
+  /**
+   *  this method is an helper to quickly register a field from a component. It will return
+   *   - name
+   *   - value
+   *   - onChange
+   *   - onFocus
+   *   - onBlur
+   *
+   * @param {string} name - the name of the field. Must be related to a key in values
+   * @param {Object} validators - a object of validators
+   *
+   * @return {Object} a list of props for the field
+   *                    - name
+   *                    - value
+   *                    - onChange
+   *                    - onFocus
+   *                    - onBlur
+   */
+  field(name: string, validators: Validator[] = [], options: AnonymousObject = {}): FieldProps {
+    const field = this.initField(name, validators, options);
+    field.value = get(this.state.values, name, options.defaultValue === undefined ? '' : options.defaultValue);
+    return field;
   }
 
   getContainerFieldValidation(
@@ -175,7 +216,29 @@ export default class FormService extends DefaultService<FormState> {
     return result;
   }
 
-  getValidation(fieldName: string): FieldValidation {
+  getValidation = (fieldName?: string, touchedOnly = true): FieldValidation | ContainerValidation => {
+    const getFieldValidation = (fieldName: string): any => {
+      if (this.fields[fieldName]) {
+        if (touchedOnly) {
+          return this.fields[fieldName].touched
+            ? this.state.validations[fieldName] || defaultValidation
+            : defaultValidation;
+        } else {
+          return this.state.validations[fieldName] || defaultValidation;
+        }
+      } else {
+        return this.getContainerFieldValidation(this.state.validations, this.fields, fieldName, touchedOnly);
+      }
+    };
+
+    if (fieldName === undefined || fieldName === '') {
+      return this.getContainerFieldValidation(this.state.validations, this.fields, '', touchedOnly);
+    } else {
+      return getFieldValidation(fieldName);
+    }
+  };
+
+  protected _getValidation(fieldName: string): FieldValidation {
     if (this.fields[fieldName]) {
       const field = this.fields[fieldName];
       for (const code in field.validations) {
@@ -187,6 +250,13 @@ export default class FormService extends DefaultService<FormState> {
       return defaultValidation;
     }
     return defaultValidation;
+  }
+
+  getValue(fieldName?: string, defaultValue?: any): any {
+    if (fieldName === undefined || fieldName === '') {
+      return this.state.values || defaultValue;
+    }
+    return get(this.state.values, fieldName, defaultValue);
   }
 
   hasValidation(fieldName: string, validatorName: string, code: ValidationCode, message?: string): boolean {
@@ -201,11 +271,68 @@ export default class FormService extends DefaultService<FormState> {
     return false;
   }
 
+  /**
+   *  Register a field and return three listeners
+   *   - onChange
+   *   - onFocus
+   *   - onBlur
+   *
+   * @param {string} name - the name of the field. Must be related to a key in values
+   * @param {Validator[]} validators - a object of validators
+   * @param {FieldOptions} options
+   *
+   * @return {Object} a list of listeners for the field and its name
+   *                    - name
+   *                    - onChange
+   *                    - onFocus
+   *                    - onBlur
+   */
+  initField(name: string, validators: Validator[] = [], options: FieldOptions = {}): FieldProps {
+    if (!this.fields[name]) {
+      options.defaultValue = options.defaultValue === undefined ? '' : options.defaultValue;
+      options.touchOn = options.touchOn || this.config.touchOn || TouchOn.Blur;
+      this.addField(
+        Object.assign({}, options, {
+          name,
+          validators,
+          validations: [],
+          touched: options.touchOn === TouchOn.Load,
+          touchOn: options.touchOn,
+          context: {
+            name,
+            onChange: (value: any): void => {
+              if (value && value.nativeEvent && value.nativeEvent instanceof Event) {
+                value = value.target.value;
+              }
+              if (get(this.state.values, name) !== value) {
+                this.setValue(name, value);
+              }
+            },
+            onFocus: (): void => {
+              const field = this.fields[name];
+              if (field.touchOn === 'focus' && !field.touched) {
+                this.touch(name);
+              }
+            },
+            onBlur: (): void => {
+              const field = this.fields[name];
+              if (field.touchOn === 'blur' && !field.touched) {
+                this.touch(name);
+              }
+            },
+          },
+        }),
+      );
+      this.defaultValues[name] = get(this.state.values, name, options.defaultValue);
+    }
+    return this.fields[name].context;
+  }
+
   @saga(SagaEffect.Leading)
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   *loadInitialValues(fetcher: string | (() => AnonymousObject | Promise<AnonymousObject>)) {
     let initialValues: AnonymousObject = {};
-    let loadingTask: TaskType | null = null;
+    let loadingTask: Task | null = null;
     try {
       loadingTask = yield fork([this, this.delayLoading], this.state.delayLoading || 0);
       if (typeof fetcher === 'string') {
@@ -213,7 +340,7 @@ export default class FormService extends DefaultService<FormState> {
       } else {
         initialValues = yield fetcher();
       }
-      yield cancel(loadingTask as TaskType);
+      yield cancel(loadingTask as Task);
       this.setInitialValues(initialValues);
       this.setValues(initialValues);
       this.setLoading(false, false);
@@ -252,6 +379,14 @@ export default class FormService extends DefaultService<FormState> {
     }
   }
 
+  @reducer
+  onMount(): void {
+    if (this.initializing) {
+      this.initializing = false;
+      this.setValues(this.defaultValues);
+    }
+  }
+
   offSubmittingChange(listener: FormListener): void {
     this.offChange('submittingChange', listener, '');
   }
@@ -277,6 +412,22 @@ export default class FormService extends DefaultService<FormState> {
   }
 
   @reducer
+  remove(fieldArrayName: string, index: number): void {
+    const currentArrayValue = get(this.state.values, fieldArrayName, []);
+    if (currentArrayValue.length - 1 >= index) {
+      const nextValues: AnonymousObject = {};
+      // need to modifiy all values with an index superior to the removed one
+      for (let i = index + 1; i < currentArrayValue.length; i++) {
+        Object.keys(currentArrayValue[i]).forEach((fieldName) => {
+          nextValues[`${fieldArrayName}.${i - 1}.${fieldName}`] = currentArrayValue[i][fieldName];
+        });
+      }
+      nextValues[fieldArrayName] = currentArrayValue.filter((_a: never, i: number): boolean => i !== index);
+      this.setValues(nextValues);
+    }
+  }
+
+  @reducer
   reset(): void {
     const props = Object.getOwnPropertyNames(this.fields);
     for (let i = 0; i < props.length; i++) {
@@ -290,16 +441,18 @@ export default class FormService extends DefaultService<FormState> {
     this.pendingDispatch = new Set<string>();
     this.fieldIndex = {};
     this.watchIndex = {};
-    if (this.state.initialValues && typeof this.state.initialValues === 'object') {
-      this.state.values = this.state.initialValues as AnonymousObject;
+    if (
+      this.state.initialValues === undefined ||
+      (this.state.initialValues && typeof this.state.initialValues === 'object')
+    ) {
+      this.state.values = this.state.initialValues;
+    } else {
+      this.state.values = undefined;
+      this.state.fetching = true;
+      this.loadInitialValues(this.state.initialValues);
     }
     this.state.validations = {};
-    this.setResetting(true);
-  }
-
-  @reducer
-  setResetting(resetting: boolean): void {
-    this.state.resetting = resetting;
+    this.initializing = true;
   }
 
   serializeValidationCode(code: ValidationCode): ValidationStatus {
@@ -317,6 +470,11 @@ export default class FormService extends DefaultService<FormState> {
     }
   }
 
+  @reducer
+  setError(fieldName: string, validatorName: string, message = '', match?: boolean): boolean {
+    return this.setOrClearValidation(ValidationCode.Error, fieldName, validatorName, message, match);
+  }
+
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @reducer
   setInitialValues(values: AnonymousObject<any>): void {
@@ -330,9 +488,47 @@ export default class FormService extends DefaultService<FormState> {
   }
 
   @reducer
+  setOK(fieldName: string, validatorName: string): boolean {
+    return this.setOrClearValidation(ValidationCode.Ok, fieldName, validatorName, '', true);
+  }
+
+  @reducer
+  setOrClearValidation(
+    code: ValidationCode,
+    fieldName: string,
+    validatorName: string,
+    message = '',
+    match?: boolean,
+  ): boolean {
+    let changed = false;
+    if (this.fields[fieldName]) {
+      if (this.hasValidation(fieldName, validatorName, ValidationCode.Loading)) {
+        this.clearValidation(fieldName, validatorName, ValidationCode.Loading);
+        changed = true;
+      }
+      if (match === undefined || match) {
+        if (!this.hasValidation(fieldName, validatorName, code, message)) {
+          this.setValidation(fieldName, validatorName, code, message);
+          changed = true;
+        }
+      } else if (this.hasValidation(fieldName, validatorName, code)) {
+        this.clearValidation(fieldName, validatorName, code);
+        changed = true;
+      }
+    }
+    return changed;
+  }
+
+  @reducer
+  setPendingValidation(fieldName: string, validatorName: string, pending = true): boolean {
+    return this.setOrClearValidation(ValidationCode.Loading, fieldName, validatorName, '', pending);
+  }
+
+  @reducer
   setSubmitting(submitting: boolean): void {
     this.state.submitting = submitting;
     this.pendingDispatch.add('__submit__');
+    this.pendingDispatch.add('');
   }
 
   @reducer
@@ -372,42 +568,42 @@ export default class FormService extends DefaultService<FormState> {
     });
   }
 
+  @reducer
+  setWarning(fieldName: string, validatorName: string, message = '', match?: boolean): boolean {
+    return this.setOrClearValidation(ValidationCode.Warning, fieldName, validatorName, message, match);
+  }
+
   @saga(SagaEffect.Leading)
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  *submit(
-    values: AnonymousObject,
-    validations: AnonymousObject<FieldValidation>,
-    resubmit: () => void,
-    onSuccess: FormSubmitCallback,
-    onError?: FormErrorCallback,
-    onWarning?: FormWarningCallback,
-  ) {
+  *submit() {
     // compile the validations to get the status
-    const { code, fields } = yield this.getContainerFieldValidation(validations, this.fields, '', false);
+    const { code, fields } = yield this.getContainerFieldValidation(this.state.validations, this.fields, '', false);
     yield this.touchAll();
     if (!this.state.submitting) {
       yield this.setSubmitting(true);
     }
     switch (code) {
       case ValidationCode.Loading:
-        this.onValidationChange(() => resubmit(), '', true);
+        this.onValidationChange(() => this.submit(), '', true);
         break;
       case ValidationCode.Error:
-        if (typeof onError === 'function') {
-          yield onError(fields, values);
+        if (typeof this.config.onError === 'function') {
+          yield this.config.onError(fields, this.state.values);
         }
         yield this.setSubmitting(false);
         break;
       case ValidationCode.Warning:
-        if (typeof onWarning === 'function') {
-          yield onWarning(fields, values);
-        } else {
-          yield onSuccess(values);
+        if (typeof this.config.onWarning === 'function') {
+          yield this.config.onWarning(fields, this.state.values);
+        } else if (this.state.values) {
+          yield this.config.onSubmit(this.state.values);
         }
         yield this.setSubmitting(false);
         break;
       default:
-        yield onSuccess(values);
+        if (this.state.values) {
+          yield this.config.onSubmit(this.state.values);
+        }
         yield this.setSubmitting(false);
         break;
     }
@@ -505,7 +701,7 @@ export default class FormService extends DefaultService<FormState> {
     }
 
     Object.keys(tasks).forEach((fieldName) => {
-      validations[fieldName] = this.getValidation(fieldName);
+      validations[fieldName] = this._getValidation(fieldName);
     });
 
     return validations;

@@ -59,10 +59,13 @@ import {
 const defaultSearcher = 'i_like';
 
 export default class CollectionService<
-  T = any,
-  I extends Item<T> = Item<T>,
-  S extends CollectionState<T, I> = CollectionState<T, I>
-> extends DefaultService<S> implements Collection<T, I, S> {
+    T = any,
+    I extends Item<T> = Item<T>,
+    S extends CollectionState<T, I> = CollectionState<T, I>,
+  >
+  extends DefaultService<S>
+  implements Collection<T, I, S>
+{
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   protected initialState: S = null!;
   protected cache: AnonymousObject<any> = {};
@@ -759,7 +762,7 @@ export default class CollectionService<
     if (typeof searcher === 'function') {
       return searcher(item.data, search);
     }
-    return this._applyOperator(searcher, item, search);
+    return this._applyOperator(searcher, item.text, search);
   }
 
   protected _applySort(items: I[], dir: QuerySortDir, comparator: QuerySortComparator): I[] {
@@ -1092,12 +1095,12 @@ export default class CollectionService<
 
     const getId = (data: any): string | number | undefined => {
       if (isNull(data)) {
-        return undefined;
+        return _context?.position;
       }
       if (!isNull(data.id)) {
         return data.id;
       } else {
-        return undefined;
+        return _context?.position;
       }
     };
     const getText = (data: any): string | undefined => {

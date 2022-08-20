@@ -1,4 +1,4 @@
-import { generateUniqueId, useFormContext, useLazyRef } from 'onekijs-framework';
+import { generateUniqueId, useForm, useLazyRef } from 'onekijs-framework';
 import React, { useEffect } from 'react';
 import { addClassname } from '../../../utils/style';
 import Checkbox from '../../checkbox';
@@ -9,9 +9,10 @@ import { FormTableContext, FormTableProps, TableBodyCellProps, TableFooterProps,
 import ControllerTableComponent from './ControllerTableComponent';
 
 const DeleteRowComponent: React.FC<TableBodyCellProps> = ({ rowIndex }) => {
-  const { remove, tableName } = useFormTableContext();
+  const form = useForm();
+  const { tableName } = useFormTableContext();
   const removeRow = () => {
-    remove(tableName, rowIndex);
+    form.remove(tableName, rowIndex);
   };
 
   return (
@@ -29,11 +30,10 @@ const SelectRowComponent: React.FC<TableBodyCellProps> = ({ item }) => {
 };
 
 const FooterComponent: React.FC<TableFooterProps> = () => {
-  const { add, tableName, addLabel } = useFormTableContext();
+  const form = useForm();
+  const { tableName, addLabel } = useFormTableContext();
   const addRow: React.MouseEventHandler<HTMLDivElement> = (e) => {
-    add(tableName, {
-      id: generateUniqueId(),
-    });
+    form.add(tableName);
     e.preventDefault();
   };
   return (
@@ -46,8 +46,8 @@ const FooterComponent: React.FC<TableFooterProps> = () => {
 
 const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.memo(
   ({ addLabel = 'add', controller, value, onChange, className, name, format = 'auto', ...props }) => {
-    const formContext = useFormContext();
-    const service = controller.asService();
+    const form = useForm();
+    const tableService = controller.asService();
     const formatRef = useLazyRef<'id' | 'object'>(() => {
       if (format === 'auto') {
         return value && value.length > 0 && typeof value[0] === 'object' ? 'object' : 'id';
@@ -60,7 +60,7 @@ const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.
         const getId = (v: any) => {
           return formatRef.current === 'id' ? v : v.id;
         };
-        const currentValues = formContext.valuesRef.current[name] || [];
+        const currentValues = form.getValue(name, []);
         const value = formatRef.current === 'id' ? item.id : item.data;
         if (selected) {
           onChange && onChange([value].concat(currentValues));
@@ -68,20 +68,20 @@ const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.
           onChange && onChange(currentValues.filter((v: any) => getId(v) !== getId(value)));
         }
       };
-      return Object.assign({ tableName: name, onSelect, addLabel }, formContext);
+      return { tableName: name, onSelect, addLabel };
     });
 
     useEffect(() => {
-      if (service.dataSource) {
-        service.setSelected('value', value || []);
-      } else {
-        service.setData(value || []);
+      if (tableService.dataSource) {
+        tableService.setSelected('value', value || []);
+      } else if (value !== undefined) {
+        tableService.setData(value);
       }
-    }, [service, value, formatRef]);
+    }, [tableService, value, formatRef]);
 
     useEffect(() => {
-      if (service.dataSource) {
-        service.addColumn(
+      if (tableService.dataSource) {
+        tableService.addColumn(
           {
             id: 'system.select',
             width: '50px',
@@ -92,7 +92,7 @@ const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.
           0,
         );
       } else {
-        service.addColumn(
+        tableService.addColumn(
           {
             id: 'system.insert',
             width: '50px',
@@ -104,15 +104,15 @@ const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.
           0,
         );
       }
-    }, [service]);
+    }, [tableService]);
 
     return (
       <DefaultFormTableContext.Provider value={formTableContext.current}>
         <ControllerTableComponent
           controller={controller}
           className={addClassname('o-form-table', className)}
-          FooterComponent={service.dataSource ? undefined : FooterComponent}
-          footer={service.dataSource ? false : true}
+          FooterComponent={tableService.dataSource ? undefined : FooterComponent}
+          footer={tableService.dataSource ? false : true}
           NotFoundComponent={null}
           {...props}
         />

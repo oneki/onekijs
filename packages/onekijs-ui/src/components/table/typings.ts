@@ -3,7 +3,6 @@ import {
   CollectionBroker,
   CollectionBy,
   CollectionProxy,
-  FormContext,
   FormFieldProps,
   Item,
   ItemAdaptee,
@@ -57,7 +56,7 @@ export type FormTableProps<
     size?: TshirtSize;
   };
 
-export type FormTableContext<T = any> = FormContext & {
+export type FormTableContext<T = any> = {
   tableName: string;
   onSelect: (item: TableItem<T>, selected: boolean) => void;
   addLabel: string;

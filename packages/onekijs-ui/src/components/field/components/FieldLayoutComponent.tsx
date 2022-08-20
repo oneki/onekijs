@@ -1,4 +1,4 @@
-import { FCC, FormLayout, useFormContext, useTrySetting } from 'onekijs-framework';
+import { FCC, FormLayout, useForm, useTrySetting } from 'onekijs-framework';
 import React from 'react';
 import { addClassname } from '../../../utils/style';
 import Col from '../../grid/Col';
@@ -39,30 +39,22 @@ const FieldLayoutComponent: FCC<FieldLayoutProps> = React.memo(
     const settingLgLabelWidth = useTrySetting('form.lgLabelWidth');
     const settingXlLabelWidth = useTrySetting('form.xlLabelWidth');
     const settingFieldSize = useTrySetting('form.fieldSize');
-    const {
-      layout: contextLayout,
-      labelWidth: contextWidth,
-      xsLabelWidth: contextXsLabelWidth,
-      smLabelWidth: contextSmLabelWidth,
-      mdLabelWidth: contextMdLabelWidth,
-      lgLabelWidth: contextLgLabelWidth,
-      xlLabelWidth: contextXlLabelWidth,
-      fieldSize: contextFieldSize,
-    } = useFormContext();
-    const fieldLayout: FormLayout = layout || contextLayout || settingLayout || 'vertical';
-    const fieldLabelWidth: GridSize = labelWidth || contextWidth || settingWidth || 3;
+
+    const form = useForm();
+    const fieldLayout: FormLayout = layout || form.config.layout || settingLayout || 'vertical';
+    const fieldLabelWidth: GridSize = labelWidth || form.config.labelWidth || settingWidth || 3;
     const xsFieldLabelWidth: GridSize | undefined =
-      xsLabelWidth || contextXsLabelWidth || settingXsLabelWidth || undefined;
+      xsLabelWidth || form.config.xsLabelWidth || settingXsLabelWidth || undefined;
     const smFieldLabelWidth: GridSize | undefined =
-      smLabelWidth || contextSmLabelWidth || settingSmLabelWidth || undefined;
+      smLabelWidth || form.config.smLabelWidth || settingSmLabelWidth || undefined;
     const mdFieldLabelWidth: GridSize | undefined =
-      mdLabelWidth || contextMdLabelWidth || settingMdLabelWidth || undefined;
+      mdLabelWidth || form.config.mdLabelWidth || settingMdLabelWidth || undefined;
     const lgFieldLabelWidth: GridSize | undefined =
-      lgLabelWidth || contextLgLabelWidth || settingLgLabelWidth || undefined;
+      lgLabelWidth || form.config.lgLabelWidth || settingLgLabelWidth || undefined;
     const xlFieldLabelWidth: GridSize | undefined =
-      xlLabelWidth || contextXlLabelWidth || settingXlLabelWidth || undefined;
+      xlLabelWidth || form.config.xlLabelWidth || settingXlLabelWidth || undefined;
     const classNames = addClassname(`o-form-field o-form-field-${fieldLayout}`, className);
-    const fieldSize = size || contextFieldSize || settingFieldSize;
+    const fieldSize = size || form.config.fieldSize || settingFieldSize;
     let status: string | undefined = undefined;
     let message: string | undefined = undefined;
     if (validation && validation.message) {

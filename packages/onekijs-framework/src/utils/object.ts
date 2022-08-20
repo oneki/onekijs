@@ -140,7 +140,7 @@ export function find(content: any, property: string | number, populate = false):
     const part = parts[i];
     const index = !isNaN(Number(part)) ? parseInt(part) : part;
     try {
-      if (!(index in content)) {
+      if (!(index in content) || content[index] === undefined) {
         if (populate) {
           if (!isNaN(Number(parts[i + 1]))) {
             content[index] = [];
@@ -383,14 +383,13 @@ export const fromPayload = (payload: AnonymousObject): any[] => {
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const omit = <T>(source: any, keys: string[]): T => {
+export const omit = <T, S = any>(source: S, keys: (keyof S)[]): T => {
   const clone = Object.assign({}, source);
   keys.forEach((key) => delete clone[key]);
-  return clone as T;
+  return clone as unknown as T;
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const pick = <T>(source: any, keys: string[]): T => {
+export const pick = <T>(source: T & { [k: string]: any }, keys: (keyof T)[]): T => {
   const result: any = {};
   keys.forEach((key) => (result[key] = source[key]));
   return result as T;

@@ -48,7 +48,7 @@ const SubmitButton: FCC<SubmitButtonProps> = React.memo((opts) => {
       delayHide={0}
     >
       <Button {...props} disabled={disabled} type={type}>
-        {children}
+        {children ? children : 'Submit'}
       </Button>
     </Tooltip>
   );
