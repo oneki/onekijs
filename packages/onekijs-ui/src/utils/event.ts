@@ -1,14 +1,11 @@
 import { useEffect } from 'react';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const MouseEvent = (global as any).MouseEvent as MouseEvent;
-
 export const useClickOutside = (
   ref: React.MutableRefObject<HTMLElement | null>,
-  onClickOutside: (e: MouseEvent) => void,
+  onClickOutside: (e: any) => void,
 ): void => {
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    function handleClickOutside(event: any) {
       const element = ref.current;
       if (element && !element.contains(event.target as Node)) {
         onClickOutside(event);

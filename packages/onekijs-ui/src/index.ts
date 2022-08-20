@@ -158,6 +158,7 @@ export { default as FormTable } from './components/table/FormTable';
 export { default as useTableController } from './components/table/hooks/useTableController';
 export {
   ArrayTableProps,
+  Cell,
   ControllerTableProps,
   FormTableContext,
   FormTableProps,

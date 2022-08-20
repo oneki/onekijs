@@ -20,6 +20,10 @@ export type AccordionPanelState = {
 };
 
 export type AccordionProps = {
+  /**
+   * a flag to indicate if the border is visible or not
+   * @defaultValue true if strict
+   */
   border?: boolean;
   Component?: FCC<Omit<AccordionProps, 'Component'>>;
   className?: string;

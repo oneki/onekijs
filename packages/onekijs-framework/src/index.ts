@@ -440,8 +440,8 @@ export {
   isTrue,
 } from './utils/type';
 
-declare module 'react' {
-  interface HTMLAttributes<T> {
-    children?: React.ReactNode | Record<string, unknown> | (React.ReactNode | Record<string, unknown>)[];
-  }
-}
+// declare module 'react' {
+//   interface HTMLAttributes<T> {
+//     children?: React.ReactNode | Record<string, unknown> | (React.ReactNode | Record<string, unknown>)[];
+//   }
+// }

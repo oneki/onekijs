@@ -10,7 +10,7 @@ import {
   QuerySortBy,
   UseCollectionOptions,
 } from 'onekijs-framework';
-import React from 'react';
+import React, { FC } from 'react';
 import { InputProps } from '../input/typings';
 import { ListItemProps, ListItems, ListNotFoundProps, ListState, UseListOptions } from '../list/typings';
 import { SelectItem, SelectProps } from '../select/typings';
@@ -27,7 +27,7 @@ export type ControllerTableProps<
   T = any,
   I extends TableItem<T> = TableItem<T>,
   S extends TableState<T, I> = TableState<T, I>,
-  C extends TableController<T, I, S> = TableController<T, I, S>
+  C extends TableController<T, I, S> = TableController<T, I, S>,
 > = TableConfig<T, I> & {
   controller: CollectionProxy<T, I, S, C>;
 };
@@ -36,7 +36,7 @@ export type FormTableProps<
   T = any,
   I extends TableItem<T> = TableItem<T>,
   S extends TableState<T, I> = TableState<T, I>,
-  C extends TableController<T, I, S> = TableController<T, I, S>
+  C extends TableController<T, I, S> = TableController<T, I, S>,
 > = ControllerTableProps<T, I, S, C> & {
   name: string;
   format?: 'id' | 'object' | 'auto';
@@ -56,6 +56,8 @@ export type TableBodyCellProps<T = any, I extends TableItem<T> = TableItem<T>> =
   item: I;
 };
 
+export type Cell<T = any, I extends TableItem<T> = TableItem<T>> = FC<TableBodyCellProps<T, I>>;
+
 export type TableBodyProps<T = any, I extends TableItem<T> = TableItem<T>> = {
   className?: string;
   columns: TableColumn<T, I>[];
@@ -66,7 +68,7 @@ export type TableBodyProps<T = any, I extends TableItem<T> = TableItem<T>> = {
 
 export type TableBodyRowProps<T = any, I extends TableItem<T> = TableItem<T>> = ListItemProps<T, I> & {
   className?: string;
-  CellComponent?: React.FC<TableBodyCellProps<T, I>>;
+  CellComponent?: Cell<T, I>;
   columns: TableColumn<T, I>[];
   onExpand?: (item: I | undefined, index: number) => void;
   onExpanding?: (item: I | undefined, index: number) => void;
@@ -112,7 +114,7 @@ export type TableConfig<T = any, I extends TableItem<T> = TableItem<T>> = {
 export type TableController<
   T = any,
   I extends TableItem<T> = TableItem<T>,
-  S extends TableState<T, I> = TableState<T, I>
+  S extends TableState<T, I> = TableState<T, I>,
 > = Collection<T, I, S> & {
   addColumn(column: TableColumn<T, I>, position?: number): void;
   addSelected<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
@@ -139,7 +141,7 @@ export type TableColumn<T, I extends TableItem<T> = TableItem<T>> = TableColumnS
 
 export type TableColumnSpec<T, I extends TableItem<T> = TableItem<T>> = {
   className?: string | ((item: I, column: TableColumn<T, I>, rowIndex: number) => string);
-  CellComponent?: React.FC<TableBodyCellProps<T, I>>;
+  CellComponent?: Cell<T, I>;
   footerClassName?: string | ((column: TableColumn<T, I>) => string);
   FooterComponent?: React.FC<TableFooterCellProps<T, I>>;
   filterable?: boolean;
@@ -217,7 +219,7 @@ export type TableProps<
   T = any,
   I extends TableItem<T> = TableItem<T>,
   S extends TableState<T, I> = TableState<T, I>,
-  C extends TableController<T, I, S> = TableController<T, I, S>
+  C extends TableController<T, I, S> = TableController<T, I, S>,
 > = TableConfig<T, I> & {
   adapter?: TableItemAdapter<T>;
   controller?: CollectionProxy<T, I, S, C>;
@@ -266,7 +268,7 @@ export type UseSelectColumnOptions<
   T = any,
   I extends TableItem<T> = TableItem<T>,
   F = any,
-  FI extends SelectItem<F> = SelectItem<F>
+  FI extends SelectItem<F> = SelectItem<F>,
 > = Omit<TableColumnSpec<T, I>, 'CellComponent'> &
   Omit<SelectProps, 'className' | 'onFocus' | 'onChange' | 'onBlur' | 'items'> &
   UseCollectionOptions<F, FI> & {

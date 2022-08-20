@@ -102,7 +102,7 @@ const TableInputFilterComponent: React.FC<TableHeaderCellProps> = ({ column }) =
   const onValueChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.value) {
       if (controller.state.local) {
-        controller.addFilterCriteria(column.id, 'like', e.target.value, false, column.id);
+        controller.addFilterCriteria(column.id, 'i_like', e.target.value, false, column.id);
       } else {
         setValue(e.target.value);
       }
@@ -114,7 +114,7 @@ const TableInputFilterComponent: React.FC<TableHeaderCellProps> = ({ column }) =
 
   const onKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!controller.state.local && e.key === 'Enter') {
-      controller.addFilterCriteria(column.id, 'like', value, false, column.id);
+      controller.addFilterCriteria(column.id, 'i_like', value, false, column.id);
     }
   };
 

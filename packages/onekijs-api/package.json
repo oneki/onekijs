@@ -1,0 +1,27 @@
+{
+  "name": "onekijs-api",
+  "private": true,
+  "version": "0.14.7",
+  "description": "Opiniated React framework built on top of Next.js",
+  "source": "src/index.ts",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "engines": {
+    "node": ">=16"
+  },
+  "scripts": {
+    "dev": "nodemon",
+    "start": "ts-node src/index.ts"
+  },
+  "author": "Oneki",
+  "license": "MIT",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "@types/node": "^18.7.1",
+    "nodemon": "^2.0.19",
+    "ts-node": "^10.9.1",
+    "typedoc": "^0.23.10"
+  }
+}
