@@ -36,10 +36,29 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "The last name of the user"
+									}
+								],
+								"blockTags": [
+									{
+										"tag": "@defaultValue",
+										"content": [
+											{
+												"kind": "text",
+												"text": "Doe"
+											}
+										]
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "packages/onekijs-api/src/test.ts",
-									"line": 9,
+									"line": 30,
 									"character": 2
 								}
 							],
@@ -54,10 +73,41 @@
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "The name of the user\n\n"
+									},
+									{
+										"kind": "code",
+										"text": "```ts\nthis is a block\nwith multi line\n```"
+									},
+									{
+										"kind": "text",
+										"text": "\n\nAfter the block code"
+									}
+								],
+								"blockTags": [
+									{
+										"tag": "@example",
+										"content": [
+											{
+												"kind": "text",
+												"text": "Here is an example\n"
+											},
+											{
+												"kind": "code",
+												"text": "```\nthis is the example block code\n```"
+											}
+										]
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "packages/onekijs-api/src/test.ts",
-									"line": 8,
+									"line": 24,
 									"character": 2
 								}
 							],
@@ -81,10 +131,18 @@
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "The type of the user"
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "packages/onekijs-api/src/test.ts",
-									"line": 10,
+									"line": 34,
 									"character": 2
 								}
 							],
@@ -207,7 +265,7 @@
 			"sources": [
 				{
 					"fileName": "packages/onekijs-api/src/test.ts",
-					"line": 13,
+					"line": 37,
 					"character": 13
 				}
 			],

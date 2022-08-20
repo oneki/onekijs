@@ -1,7 +1,7 @@
 import apiJson from './api/test.json';
 import {
   DeclarationReflection,
-  SignatureReflection,
+  Comment,
   ReferenceType,
   ReflectionType,
   IntersectionType,
@@ -18,6 +18,9 @@ interface Props {
   name: string;
   flags: ReflectionFlags;
   type: string;
+  description: string;
+  example?: string;
+  defaultValue?: string;
 }
 interface Context {
   props: Props[];
@@ -28,11 +31,6 @@ interface Context {
     end: string;
   };
 }
-
-const handleSignature = (signature: SignatureReflection) => {
-  if (signature.kind === ReflectionKind.CallSignature) {
-  }
-};
 
 const getCurrentProp = (context: Context) => {
   return context.props.at(-1);
@@ -45,6 +43,26 @@ const appendCurrentPropType = (context: Context, type: string) => {
   }
 };
 
+const commentToDescription = (comment?: Comment) => {
+  if (!comment) return '';
+  return comment.summary.reduce((description, summary) => {
+    return `${description}${summary.text}`;
+  }, '');
+};
+
+const commentToExample = (comment?: Comment) => {
+  if (!comment) return '';
+  const blockTags = comment.blockTags;
+  if (!blockTags) return '';
+  const exampleBlocks = blockTags.filter((blockTag) => blockTag.tag === '@example');
+  return exampleBlocks.reduce((description, blockTag) => {
+    const example = blockTag.content.reduce((example, content) => {
+      return `${example}${content.text}`;
+    }, '');
+    return `${description}${example}`;
+  }, '');
+};
+
 const buildIndex = (container: DeclarationReflection) => {
   const children = container.children;
   if (children) {
@@ -54,12 +72,7 @@ const buildIndex = (container: DeclarationReflection) => {
   }
 };
 
-const handleTypeArguments = (context: Context, element: SomeType) => {
-  console.log('todo');
-};
-
 const handleReferenceType = (context: Context, element: ReferenceType) => {
-  
   const id = element.id;
   if (id && idx[id]) {
     appendCurrentPropType(context, `[${element.name}](./${id}/${element.name})`);
@@ -90,6 +103,8 @@ const handleDeclarationReflection = (context: Context, element: DeclarationRefle
           name: c.name,
           flags: c.flags,
           type: '',
+          description: commentToDescription(c.comment),
+          example: commentToExample(c.comment),
         });
         context.propsChildrenLevel = true;
       }
