@@ -81,7 +81,7 @@
 									},
 									{
 										"kind": "code",
-										"text": "```ts\nthis is a block\nwith multi line\n```"
+										"text": "```\nthis is a block\n  with multi line\n```"
 									},
 									{
 										"kind": "text",
@@ -265,7 +265,7 @@
 			"sources": [
 				{
 					"fileName": "packages/onekijs-api/src/test.ts",
-					"line": 37,
+					"line": 45,
 					"character": 13
 				}
 			],
@@ -276,6 +276,14 @@
 					"kind": 4096,
 					"kindString": "Call signature",
 					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "This is the documentation of the component\nThe goal is to have **markdown** tag in the descrition\n\nThis description could be quite long"
+							}
+						]
+					},
 					"parameters": [
 						{
 							"id": 12,
@@ -341,7 +349,7 @@
 			]
 		},
 		{
-			"title": "Functions",
+			"title": "Components",
 			"children": [
 				10
 			]

@@ -8,9 +8,9 @@ export type ComponentProps = {
   /**
    * The name of the user
    *
-   * ```ts
+   * ```
    * this is a block
-   * with multi line
+   *   with multi line
    * ```
    *
    * After the block code
@@ -34,6 +34,42 @@ export type ComponentProps = {
   type: Promise<MyGenericType<string>>;
 };
 
+/**
+ * This is the documentation of the component
+ * The goal is to have **markdown** tag in the descrition
+ *
+ * This description could be quite long
+ *
+ * @group Components
+ */
 export const MyComponent: FC<ComponentProps> = ({ name }) => {
   return null;
 };
+
+// export interface Notification {
+//   payload: any;
+//   id: string | number;
+//   topic: string;
+//   timestamp: number;
+//   expires: number | null;
+//   persist: boolean;
+//   ttl?: number;
+//   remove: () => void;
+// }
+
+// /**
+//  * This is the description
+//  *
+//  * @param topic the topic with
+//  * multiple lines ?
+//  * ```
+//  * test
+//  * ```
+//  * @returns
+//  *
+//  * @group Framework
+//  * @category Notification
+//  */
+// export const useNotifications = (topic: string, firstname = 'toto'): Notification[] => {
+//   return [];
+// };
