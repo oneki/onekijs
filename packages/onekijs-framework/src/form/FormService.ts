@@ -17,6 +17,8 @@ import {
   FormConfig,
   FormListenerProps,
   FormListenerType,
+  FormMetadata,
+  FormMetadataListener,
   FormState,
   FormSubmitListener,
   FormValidationListener,
@@ -35,7 +37,10 @@ export default class FormService extends DefaultService<FormState> {
   public listeners: {
     [k in FormListenerType]: AnonymousObject<FormListenerProps[]>;
   };
-  public pendingDispatch: Set<string>;
+  public pendingDispatch: {
+    [fieldName: string]: Set<string>;
+  };
+
   protected fieldIndex: {
     [fieldName: string]: boolean;
   };
@@ -53,6 +58,7 @@ export default class FormService extends DefaultService<FormState> {
   };
   public initializing = true;
   protected defaultValues: AnonymousObject = {};
+  protected defaultMetadata: AnonymousObject<FormMetadata> = {};
 
   constructor() {
     super();
@@ -61,8 +67,14 @@ export default class FormService extends DefaultService<FormState> {
       valueChange: {},
       validationChange: {},
       submittingChange: {},
+      metadataChange: {},
     };
-    this.pendingDispatch = new Set<string>();
+    this.pendingDispatch = {
+      valueChange: new Set<string>(),
+      validationChange: new Set<string>(),
+      submittingChange: new Set<string>(),
+      metadataChange: new Set<string>(),
+    };
     this.fieldIndex = {};
     this.watchIndex = {};
     this.listenerIndex = {};
@@ -102,8 +114,8 @@ export default class FormService extends DefaultService<FormState> {
         const nextValidation = this._getValidation(fieldName);
         if (force || !nextValidation.equals(previousValidation)) {
           this.state.validations[fieldName] = nextValidation;
-          this.pendingDispatch.add(fieldName);
-          this.pendingDispatch.add('');
+          this.pendingDispatch.validationChange.add(fieldName);
+          this.pendingDispatch.validationChange.add('');
         }
       }
     });
@@ -115,6 +127,45 @@ export default class FormService extends DefaultService<FormState> {
     if (delay_ms) {
       yield delay(delay_ms);
       yield this.setLoading(true, true);
+    }
+  }
+
+  @reducer
+  disable(fieldName: string): void {
+    this.setMetadata(fieldName, 'disabled', true);
+  }
+
+  @reducer
+  disableValidator(fieldName: string, validatorName: string) {
+    const field = this.fields[fieldName];
+    if (field) {
+      const validator = field.validators[validatorName];
+      if (validator && !validator.disabled) {
+        validator.disabled = true;
+        this.clearValidation(fieldName, validatorName, ValidationCode.Error, true);
+      }
+    }
+  }
+
+  @reducer
+  enable(fieldName: string): void {
+    this.setMetadata(fieldName, 'disabled', false);
+  }
+
+  @reducer
+  enableValidator(fieldName: string, validatorName: string): void {
+    const field = this.fields[fieldName];
+    if (field) {
+      const validator = field.validators[validatorName];
+      if (validator && validator.disabled) {
+        validator.disabled = false;
+        const validatorSync: ValidatorSyncFunction =
+          typeof validator.validator === 'object'
+            ? (validator.validator.validator as ValidatorSyncFunction)
+            : (validator.validator as ValidatorSyncFunction);
+        this.validateSync(fieldName, validatorName, validatorSync, this.getValue(fieldName));
+        this.compileValidations(fieldName);
+      }
     }
   }
 
@@ -136,7 +187,7 @@ export default class FormService extends DefaultService<FormState> {
    *                    - onFocus
    *                    - onBlur
    */
-  field(name: string, validators: Validator[] = [], options: AnonymousObject = {}): FieldProps {
+  field(name: string, validators: AnonymousObject<Validator> = {}, options: FieldOptions = {}): FieldProps {
     const field = this.initField(name, validators, options);
     field.value = get(this.state.values, name, options.defaultValue === undefined ? '' : options.defaultValue);
     return field;
@@ -198,19 +249,19 @@ export default class FormService extends DefaultService<FormState> {
 
   protected _getSubWatchs(watch: string): string[] {
     let result: string[] = [];
+    // check if the index if something listens on the key "watch"
     const index = watch === '' ? this.watchIndex[''] : get(this.watchIndex, watch);
     if (index) {
-      if (Array.isArray(index)) {
-        for (const i in index) {
-          result = result.concat(this._getSubWatchs(`${watch}.${i}`));
-        }
-      } else if (isObject(index)) {
-        Object.keys(index).forEach((childWatch) => {
-          result = result.concat(this._getSubWatchs(`${watch}.${childWatch}`));
-        });
+      // if the value "addresses" changes, addresses.0.street should be alerted as well as addresses.street, .....
+      for (const i in index) {
+        result = result.concat(this._getSubWatchs(`${watch}.${i}`));
       }
+      // direct listener on "addresses" are also alerted
       result.push(watch);
     }
+
+    // if addresses.0.street is changed, addresses should be alerted (becasue the object has been changed)
+    // we will also alert adresses.street but it would be done in form/index.tsx
     while (watch.includes('.')) {
       watch = watch.split('.').slice(0, -1).join('.');
       const index = watch === '' ? this.watchIndex[''] : get(this.watchIndex, watch);
@@ -279,6 +330,11 @@ export default class FormService extends DefaultService<FormState> {
     return false;
   }
 
+  @reducer
+  hide(fieldName: string): void {
+    this.setMetadata(fieldName, 'visible', false);
+  }
+
   /**
    *  Register a field and return three listeners
    *   - onChange
@@ -295,14 +351,21 @@ export default class FormService extends DefaultService<FormState> {
    *                    - onFocus
    *                    - onBlur
    */
-  initField(name: string, validators: Validator[] = [], options: FieldOptions = {}): FieldProps {
+  initField(name: string, validators: AnonymousObject<Validator> = {}, options: FieldOptions = {}): FieldProps {
     if (!this.fields[name]) {
       options.defaultValue = options.defaultValue === undefined ? '' : options.defaultValue;
       options.touchOn = options.touchOn || this.config.touchOn || TouchOn.Blur;
+      const fieldValidators: AnonymousObject<{ disabled?: boolean; validator: Validator }> = {};
+      Object.keys(validators).forEach((k) => {
+        fieldValidators[k] = {
+          disabled: false,
+          validator: validators[k],
+        };
+      });
       this.addField(
         Object.assign({}, options, {
           name,
-          validators,
+          validators: fieldValidators,
           validations: [],
           touched: options.touchOn === TouchOn.Load,
           touchOn: options.touchOn,
@@ -332,6 +395,10 @@ export default class FormService extends DefaultService<FormState> {
         }),
       );
       this.defaultValues[name] = get(this.state.values, name, options.defaultValue);
+      this.defaultMetadata[name] = this.state.metadata[name] || {
+        disabled: options.disabled,
+        visible: options.visible,
+      };
     }
     return this.fields[name].context;
   }
@@ -409,8 +476,17 @@ export default class FormService extends DefaultService<FormState> {
   onMount(): void {
     if (this.initializing) {
       this.initializing = false;
+      this.setMetadatas(this.defaultMetadata);
       this.setValues(this.defaultValues);
     }
+  }
+
+  offMetadataChange(id: string): void {
+    this.offChange('metadataChange', id);
+  }
+
+  onMetadataChange(id: string, listener: FormMetadataListener, watchs: string[] | string, once = false): void {
+    this.onChange('metadataChange', id, listener, watchs, once);
   }
 
   offSubmittingChange(id: string): void {
@@ -463,8 +539,14 @@ export default class FormService extends DefaultService<FormState> {
       valueChange: {},
       validationChange: {},
       submittingChange: {},
+      metadataChange: {},
     };
-    this.pendingDispatch = new Set<string>();
+    this.pendingDispatch = {
+      valueChange: new Set<string>(),
+      validationChange: new Set<string>(),
+      submittingChange: new Set<string>(),
+      metadataChange: new Set<string>(),
+    };
     this.fieldIndex = {};
     this.watchIndex = {};
     this.listenerIndex = {};
@@ -515,6 +597,32 @@ export default class FormService extends DefaultService<FormState> {
   }
 
   @reducer
+  setMetadata<K extends keyof FormMetadata>(fieldName: string, key: K, value: FormMetadata[K]): void {
+    this.state.metadata[fieldName] = this.state.metadata[fieldName] || {};
+    this.state.metadata[fieldName][key] = value;
+
+    if (key === 'visible') {
+      if (value === false) {
+        this.disableValidator(fieldName, 'required');
+      } else {
+        this.enableValidator(fieldName, 'required');
+      }
+    }
+
+    this.pendingDispatch.metadataChange.add(fieldName);
+    this.pendingDispatch.metadataChange.add('');
+  }
+
+  @reducer
+  setMetadatas(metadatas: AnonymousObject<FormMetadata>): void {
+    Object.keys(metadatas).forEach((fieldName) => {
+      Object.keys(metadatas[fieldName]).forEach((key: any) => {
+        this.setMetadata(fieldName, key, metadatas[fieldName][key as keyof FormMetadata]);
+      });
+    });
+  }
+
+  @reducer
   setOK(fieldName: string, validatorName: string): boolean {
     return this.setOrClearValidation(ValidationCode.Ok, fieldName, validatorName, '', true);
   }
@@ -554,8 +662,8 @@ export default class FormService extends DefaultService<FormState> {
   @reducer
   setSubmitting(submitting: boolean): void {
     this.state.submitting = submitting;
-    this.pendingDispatch.add('__submit__');
-    this.pendingDispatch.add('');
+    this.pendingDispatch.submittingChange.add('__submit__');
+    this.pendingDispatch.submittingChange.add('');
   }
 
   @reducer
@@ -587,17 +695,20 @@ export default class FormService extends DefaultService<FormState> {
         field.touched = true;
       }
       set(this.state, `values.${key}`, values[key]);
-      this._getSubWatchs(key).forEach((key) => this.pendingDispatch.add(key));
+      this._getSubWatchs(key).forEach((key) => this.pendingDispatch.valueChange.add(key));
     });
-    Object.keys(validations).forEach((fieldName) => {
-      this.state.validations[fieldName] = validations[fieldName];
-      this.compileValidations(fieldName);
-    });
+    this.compileValidations(Object.keys(validations));
   }
 
   @reducer
   setWarning(fieldName: string, validatorName: string, message = '', match?: boolean): boolean {
     return this.setOrClearValidation(ValidationCode.Warning, fieldName, validatorName, message, match);
+  }
+
+  @reducer
+  show(fieldName: string): void {
+    this.setMetadata(fieldName, 'visible', true);
+    this.enableValidator(fieldName, 'required');
   }
 
   @saga(SagaEffect.Leading)
@@ -699,29 +810,30 @@ export default class FormService extends DefaultService<FormState> {
         const field = this.fields[fieldName];
         const validators = field.validators;
         tasks[fieldName] = [];
-        for (const i in validators) {
-          const validatorName = `__validator_${i}`;
-          const validator = validators[i];
-          if (typeof validator === 'object' && validator.async === true) {
-            this.setValidation(fieldName, validatorName, ValidationCode.Loading, '', false);
-            this.callSaga(
-              'validateAsync',
-              fieldName,
-              validatorName,
-              validator.validator as ValidatorAsyncFunction,
-              get(values[key], fieldName.substr(key.length + 1)),
-            );
-          } else {
-            const validatorSync: ValidatorSyncFunction =
-              typeof validator === 'object'
-                ? (validator.validator as ValidatorSyncFunction)
-                : (validator as ValidatorSyncFunction);
-            this.validateSync(
-              fieldName,
-              validatorName,
-              validatorSync,
-              get(values[key], fieldName.substr(key.length + 1)),
-            );
+        for (const validatorName in validators) {
+          if (!validators[validatorName].disabled) {
+            const validator = validators[validatorName].validator;
+            if (typeof validator === 'object' && validator.async === true) {
+              this.setValidation(fieldName, validatorName, ValidationCode.Loading, '', false);
+              this.callSaga(
+                'validateAsync',
+                fieldName,
+                validatorName,
+                validator.validator as ValidatorAsyncFunction,
+                get(values[key], fieldName.substr(key.length + 1)),
+              );
+            } else {
+              const validatorSync: ValidatorSyncFunction =
+                typeof validator === 'object'
+                  ? (validator.validator as ValidatorSyncFunction)
+                  : (validator as ValidatorSyncFunction);
+              this.validateSync(
+                fieldName,
+                validatorName,
+                validatorSync,
+                get(values[key], fieldName.substr(key.length + 1)),
+              );
+            }
           }
         }
       }

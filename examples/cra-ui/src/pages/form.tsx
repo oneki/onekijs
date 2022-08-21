@@ -21,13 +21,11 @@ const fomStyle: ComponentStyle<{}> = () => {
 const Page: React.FC<{ className?: string }> = ({ className }) => {
   const form1 = useFormController();
 
-  const bind = useFormWatcher<string>(form1, 'firstname', (value: string) => {
-    if (value === 'toto') {
-      return 'bind to toto';
-    }
+  useFormWatcher<string>(form1, 'addresses.0.street', (value: string) => {
   });
 
-  console.log('bind', bind);
+  useFormWatcher<string>(form1, 'addresses.street', (value: string, _previousValue: string | undefined, watch) => {
+  });
 
   const formController2 = useFormController({ firstname: 'toto' });
 
@@ -57,6 +55,14 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
     required: true,
   });
 
+  useFormWatcher<string>(form1, 'firstname', (value: string) => {
+    if (value === 'toto') {
+      stateColumn.broker.addFilterCriteria('text', 'eq', 'California', false, 'toto');
+    } else {
+      stateColumn.broker.removeFilter('toto');
+    }
+  });
+
   const tableController = useTableController(undefined, [streetColumn, stateColumn, privateColumn]);
 
   return (
@@ -70,7 +76,7 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
           onSubmit={(values) => console.log(values)}
         >
           <FormInput label="Firstname" name="firstname" required={true} autoFocus={true} />
-          <FormSelect label="Role" name="role" dataSource={['admin', 'user']} required={true} />
+          <FormSelect label="Role" name="role" dataSource={['admin', 'user']} required={true} visible={false} />
           <FormCheckbox label="Backup" name="backup" />
           <FormTable label="Address" name="addresses" controller={tableController} addLabel="Add address" />
           <SubmitButton showErrors={true}>Submit</SubmitButton>
@@ -80,6 +86,9 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
         </div>
         <div>
           Validations: <pre>{JSON.stringify(form1.state.validations)}</pre>
+        </div>
+        <div>
+          Metadata: <pre>{JSON.stringify(form1.state.metadata)}</pre>
         </div>
       </div>
       <div style={{ marginTop: '500px' }}>

@@ -4,6 +4,8 @@ import { AnonymousObject } from '../types/object';
 import {
   Collection,
   CollectionBroker,
+  CollectionOptions,
+  Item,
   QueryFilter,
   QueryFilterCriteria,
   QueryFilterCriteriaOperator,
@@ -12,24 +14,20 @@ import {
   QueryFilterOrCriteria,
   QuerySortBy,
   QuerySortDir,
-  Item,
 } from './typings';
-import { formatFilter, formatSortBy, rootFilterId } from './utils';
+import { formatFilter, formatSortBy, rootFilterId, addFilter as aFilter, visitFilter, isSameSortBy } from './utils';
 
 export default class DefaultCollectionBroker<
   T = any,
   I extends Item<T> = Item<T>,
-  S extends CollectionState<T, I> = CollectionState<T, I>
-> implements CollectionBroker<T, I, S> {
+  S extends CollectionState<T, I> = CollectionState<T, I>,
+> implements CollectionBroker<T, I, S>
+{
   protected subscribers: Collection<T, I, S>[] = [];
-  protected filters: {
-    parentFilterId: QueryFilterId;
-    filter: QueryFilter;
-    id?: QueryFilterId;
-  }[] = [];
-  protected sortBys: { sortBy: QuerySortBy; id?: string }[] = [];
-  protected fields: string[] = [];
-  protected params: AnonymousObject = {};
+  protected filters: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | undefined;
+  protected sortBys: string | QuerySortBy | QuerySortBy[] | undefined;
+  protected fields: string[] | undefined;
+  protected params: AnonymousObject | undefined;
   protected currentSearch: Primitive | undefined;
   protected currentSort: QuerySortDir | undefined;
   protected data: T[] | undefined;
@@ -37,12 +35,26 @@ export default class DefaultCollectionBroker<
   addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId: QueryFilterId = rootFilterId): void {
     const filter = formatFilter(filterOrCriteria);
     if (!filter) return;
-    const filters = this.filters.filter((f) => filter.id === undefined || f.id !== filter.id);
-    filters.push({
-      id: filter.id,
-      parentFilterId,
-      filter,
+
+    const thisFilter = formatFilter(this.filters) || { id: rootFilterId, operator: 'and', criterias: [] };
+
+    visitFilter(thisFilter, (filter) => {
+      if (filter.id === parentFilterId) {
+        let index = -1;
+        if (filterOrCriteria.id !== undefined) {
+          index = filter.criterias.findIndex((entry) => filterOrCriteria.id === entry.id);
+        }
+        if (index === -1) {
+          filter.criterias.push(filterOrCriteria);
+        } else {
+          filter.criterias[index] = filterOrCriteria;
+        }
+        return true;
+      }
+      return false;
     });
+    this.filters = thisFilter;
+
     this.subscribers.forEach((s) => s.addFilter(filter, parentFilterId));
   }
 
@@ -67,18 +79,18 @@ export default class DefaultCollectionBroker<
   }
 
   addSortBy(sortBy: QuerySortBy, prepend?: boolean): void {
-    const sortBys = this.sortBys.filter((s) => sortBy.id === undefined || s.id !== sortBy.id);
-    if (prepend) {
-      sortBys.unshift({
-        id: sortBy.id,
-        sortBy,
-      });
-    } else {
-      sortBys.push({
-        id: sortBy.id,
-        sortBy,
-      });
+    const sortBys = formatSortBy(this.sortBys);
+    if (sortBys) {
+      this.sortBys = sortBys.filter((s) => !isSameSortBy(sortBy, s));
     }
+
+    const currentSortBy = (formatSortBy(this.sortBys) || []).slice(0);
+    if (prepend) {
+      currentSortBy.unshift(sortBy);
+    } else {
+      currentSortBy.push(sortBy);
+    }
+    this.sortBys = currentSortBy;
     this.subscribers.forEach((s) => s.addSortBy(sortBy, prepend));
   }
 
@@ -100,7 +112,10 @@ export default class DefaultCollectionBroker<
   }
 
   clearParam(key: string): void {
-    delete this.params[key];
+    if (this.params !== undefined) {
+      delete this.params[key];
+    }
+
     this.subscribers.forEach((s) => s.clearParam(key));
   }
 
@@ -125,29 +140,47 @@ export default class DefaultCollectionBroker<
   }
 
   filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[]): void {
-    const f = formatFilter(filter);
-    if (f) {
-      this.filters = [
-        {
-          id: rootFilterId,
-          parentFilterId: rootFilterId,
-          filter: f,
-        },
-      ];
-    } else {
-      this.filters = [];
-    }
-
+    this.filters = formatFilter(filter);
     this.subscribers.forEach((s) => s.filter(filter));
   }
 
+  getInitialQuery(): Pick<
+    CollectionOptions<T, I>,
+    'initialFields' | 'initialFilter' | 'initialParams' | 'initialSearch' | 'initialSort' | 'initialSortBy'
+  > {
+    return {
+      initialFilter: this.filters,
+      initialSortBy: this.sortBys,
+      initialFields: this.fields,
+      initialSearch: this.currentSearch,
+      initialSort: this.currentSort,
+      initialParams: this.params,
+    };
+  }
+
   removeFilter(id: QueryFilterId): void {
-    this.filters = this.filters.filter((f) => f.id !== id);
+    const filter = formatFilter(this.filters);
+    if (filter) {
+      visitFilter(filter, (filter) => {
+        for (const i in filter.criterias) {
+          if (filter.criterias[i].id === id) {
+            filter.criterias.splice(parseInt(i), 1);
+            return true;
+          }
+        }
+        return false;
+      });
+      this.filters = filter;
+    }
+
     this.subscribers.forEach((s) => s.removeFilter(id));
   }
 
   removeSortBy(id: string): void {
-    this.sortBys = this.sortBys.filter((s) => s.id !== id);
+    const sortBy = formatSortBy(this.sortBys);
+    if (sortBy) {
+      this.sortBys = sortBy.filter((sort) => sort.id !== id);
+    }
     this.subscribers.forEach((s) => s.removeSortBy(id));
   }
 
@@ -172,6 +205,9 @@ export default class DefaultCollectionBroker<
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   setParam(key: string, value: any): void {
+    if (this.params === undefined) {
+      this.params = {};
+    }
     this.params[key] = value;
     this.subscribers.forEach((s) => s.setParam(key, value));
   }
@@ -187,12 +223,7 @@ export default class DefaultCollectionBroker<
   }
 
   sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void {
-    this.sortBys = (formatSortBy(sortBy) || []).map((s) => {
-      return {
-        sortBy: s,
-        id: undefined,
-      };
-    });
+    this.sortBys = formatSortBy(sortBy);
     this.subscribers.forEach((s) => s.sortBy(sortBy));
   }
 }

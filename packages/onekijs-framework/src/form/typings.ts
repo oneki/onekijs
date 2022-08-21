@@ -22,7 +22,7 @@ export interface Field extends FieldOptions {
   name: string;
   validations: AnonymousObject<string>[];
   touchOn: TouchOnType;
-  validators: Validator[];
+  validators: AnonymousObject<{ disabled?: boolean; validator: Validator }>;
   context: FieldProps;
 }
 
@@ -41,10 +41,10 @@ export interface FieldProps {
   value?: any;
 }
 
-export interface FieldOptions {
+export type FieldOptions = FormMetadata & {
   defaultValue?: any;
   touchOn?: TouchOnType;
-}
+};
 
 export type FormConfig = {
   touchOn?: TouchOnType;
@@ -74,11 +74,22 @@ export type FormLabelWidth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
 export interface FormListenerProps {
   id: string;
-  listener: FormValueListener | FormValidationListener | FormSubmitListener;
+  listener: FormValueListener | FormValidationListener | FormSubmitListener | FormMetadataListener;
   once?: boolean;
 }
 
-export type FormListenerType = 'valueChange' | 'validationChange' | 'submittingChange';
+export type FormListenerType = 'valueChange' | 'validationChange' | 'submittingChange' | 'metadataChange';
+
+export type FormMetadata = {
+  visible?: boolean;
+  disabled?: boolean;
+};
+
+export type FormMetadataListener = (
+  metadata: FormMetadata,
+  previousMetadata: FormMetadata | undefined,
+  watch: string,
+) => any;
 
 export interface FormOptions {
   delayLoading?: number;
@@ -93,6 +104,7 @@ export type FormSubmitCallback = (values: AnonymousObject) => void;
 
 export interface FormState extends State, FormOptions {
   validations: AnonymousObject<FieldValidation>;
+  metadata: AnonymousObject<FormMetadata>;
   values?: AnonymousObject;
   initialValues?: AnonymousObject;
   submitting?: boolean;

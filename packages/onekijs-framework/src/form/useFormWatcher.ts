@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import FormService from './FormService';
 import { FormValueListener } from './typings';
 
@@ -11,15 +11,19 @@ const useFormWatcher = <R = any, T = any>(
   const [result, setResult] = useState<R | undefined>();
   const watchRef = useRef(watchs);
 
-  useEffect(() => {
-    const valueListener: FormValueListener<T> = (value, previousValue, watch) => {
+  const valueListener: FormValueListener<T> = useCallback(
+    (value, previousValue, watch) => {
       const listenerResult = listener(value, previousValue, watch);
       if (result !== listenerResult) {
         setResult(listenerResult);
       }
-    };
+    },
+    [listener, result],
+  );
+
+  useMemo(() => {
     form.onValueChange(id, valueListener, watchRef.current);
-  }, [form, id, listener, result]);
+  }, [form, id, valueListener]);
 
   useEffect((): (() => void) => {
     return (): void => {

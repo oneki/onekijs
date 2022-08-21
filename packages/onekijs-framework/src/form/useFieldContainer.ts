@@ -49,7 +49,11 @@ const useFieldContainer = ({
     const handler = {
       get: function (target: FormService, prop: string | number | symbol, receiver?: FormService): any {
         if (prop === 'init') {
-          return (name: string, validators: Validator[] = [], options: FieldOptions = {}): FieldProps => {
+          return (
+            name: string,
+            validators: AnonymousObject<Validator> = {},
+            options: FieldOptions = {},
+          ): FieldProps => {
             const field = form.initField(name, validators, options);
             field.value = form.getValue(name, '');
             if (!fieldsRef.current.includes(name)) {

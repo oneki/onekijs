@@ -22,7 +22,7 @@ const SelectCellComponent = (
     const message = validation?.message;
     const size = options.size || 'small';
 
-    const controller = useSelectController(options.dataSource, options);
+    const controller = useSelectController(options.dataSource, Object.assign({}, options, broker.getInitialQuery()));
 
     useEffect(() => {
       broker.addSubscriber(controller);

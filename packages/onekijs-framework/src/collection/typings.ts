@@ -7,7 +7,7 @@ export type ChangeHandler<T> = (value: T) => void;
 
 export type Collection<T, I extends Item<T> = Item<T>, S extends CollectionState<T, I> = CollectionState<T, I>> = Omit<
   CollectionBroker<T, I, S>,
-  'addSubscriber' | 'removeSubscriber'
+  'addSubscriber' | 'removeSubscriber' | 'getInitialQuery'
 > & {
   adapt(data: T | undefined): I;
   addActive<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
@@ -73,7 +73,7 @@ export type Collection<T, I extends Item<T> = Item<T>, S extends CollectionState
 export type CollectionBroker<
   T,
   I extends Item<T> = Item<T>,
-  S extends CollectionState<T, I> = CollectionState<T, I>
+  S extends CollectionState<T, I> = CollectionState<T, I>,
 > = {
   addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId?: QueryFilterId): void;
   addFilterCriteria(
@@ -94,6 +94,10 @@ export type CollectionBroker<
   clearSort(): void;
   clearSortBy(): void;
   filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | null): void;
+  getInitialQuery(): Pick<
+    CollectionOptions<T, I>,
+    'initialFields' | 'initialFilter' | 'initialParams' | 'initialSearch' | 'initialSort' | 'initialSortBy'
+  >;
   removeFilter(filterId: QueryFilterId): void;
   removeSortBy(id: string): void;
   removeSubscriber(collection: Collection<T, I, S>): void;
@@ -157,7 +161,7 @@ export type CollectionProxy<
   T,
   I extends Item<T> = Item<T>,
   S extends CollectionState<T, I> = CollectionState<T, I>,
-  C extends Collection<T, I, S> = Collection<T, I, S>
+  C extends Collection<T, I, S> = Collection<T, I, S>,
 > = C & {
   asService(): C;
 };

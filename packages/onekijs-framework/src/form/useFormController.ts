@@ -20,6 +20,7 @@ const useFormController = (initialValues?: any, formOptions: FormOptions = {}): 
   const [, service] = useService(FormService, (): FormState => {
     const initialState: FormState = Object.assign({}, formOptions, {
       validations: {},
+      metadata: {},
       submitting: false,
       initialValues,
     });

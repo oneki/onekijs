@@ -37,6 +37,7 @@ export type FieldHelpProps = {
 export type FieldLayoutProps = {
   className?: string;
   description?: string | JSX.Element;
+  disabled?: boolean;
   DescriptionComponent?: React.FC<FieldDescriptionProps>;
   help?: string | JSX.Element;
   HelpComponent?: React.FC<FieldHelpProps>;
@@ -53,6 +54,7 @@ export type FieldLayoutProps = {
   required?: boolean;
   size?: TshirtSize;
   validation?: FieldValidation | ContainerValidation;
+  visible?: boolean;
 };
 
 export type UseFieldLayoutProps<T extends AnonymousObject> = T &

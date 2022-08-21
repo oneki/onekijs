@@ -139,7 +139,8 @@ export const getQueryFilterCriteriaValue = (value: string): QueryFilterCriteriaV
 };
 
 export const getQueryFilterCriteria = (filterCriteria: string): QueryFilterCriteria | undefined => {
-  const filterCriteriaRegex = /^\s*([a-zA-Z$_][a-zA-Z0-9$_]*)\s+(eq|starts_with)\s+('(?:[^\\']|\\.)*'|"(?:[^\\"]|\\.)*"|(?:[^\s"';]+))\s*$/g;
+  const filterCriteriaRegex =
+    /^\s*([a-zA-Z$_][a-zA-Z0-9$_]*)\s+(eq|starts_with)\s+('(?:[^\\']|\\.)*'|"(?:[^\\"]|\\.)*"|(?:[^\s"';]+))\s*$/g;
   const match = filterCriteriaRegex.exec(filterCriteria);
   if (match === null) return;
   return {
@@ -150,7 +151,8 @@ export const getQueryFilterCriteria = (filterCriteria: string): QueryFilterCrite
 };
 
 export const getQueryFilterOrCriterias = (filterOrCriterias: string): QueryFilterOrCriteria[] => {
-  const filterOrCriteriaRegex = /\s*((?:(?:[a-zA-Z$_][a-zA-Z0-9$_]*)\s+(?:eq|starts_with)\s+(?:'(?:[^\\']|\\.)*'|"(?:[^\\"]|\\.)*"|(?:[^\s"';]+)))|(?:(?:and|or)?\s*\(.*\)))\s*;?/g;
+  const filterOrCriteriaRegex =
+    /\s*((?:(?:[a-zA-Z$_][a-zA-Z0-9$_]*)\s+(?:eq|starts_with)\s+(?:'(?:[^\\']|\\.)*'|"(?:[^\\"]|\\.)*"|(?:[^\s"';]+)))|(?:(?:and|or)?\s*\(.*\)))\s*;?/g;
   let match = filterOrCriteriaRegex.exec(filterOrCriterias);
   if (match === null) return [];
 

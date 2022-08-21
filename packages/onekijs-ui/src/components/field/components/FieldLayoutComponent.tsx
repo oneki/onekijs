@@ -30,7 +30,9 @@ const FieldLayoutComponent: FCC<FieldLayoutProps> = React.memo(
     children,
     size,
     validation,
+    visible,
   }) => {
+    const form = useForm();
     const settingLayout = useTrySetting('form.layout');
     const settingWidth = useTrySetting('form.labelWidth');
     const settingXsLabelWidth = useTrySetting('form.xsLabelWidth');
@@ -40,7 +42,8 @@ const FieldLayoutComponent: FCC<FieldLayoutProps> = React.memo(
     const settingXlLabelWidth = useTrySetting('form.xlLabelWidth');
     const settingFieldSize = useTrySetting('form.fieldSize');
 
-    const form = useForm();
+    if (visible === false) return null;
+
     const fieldLayout: FormLayout = layout || form.config.layout || settingLayout || 'vertical';
     const fieldLabelWidth: GridSize = labelWidth || form.config.labelWidth || settingWidth || 3;
     const xsFieldLabelWidth: GridSize | undefined =
