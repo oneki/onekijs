@@ -7,6 +7,7 @@ import { ValidationStatus } from '../types/form';
 import { AnonymousObject } from '../types/object';
 import { SagaEffect } from '../types/saga';
 import { del, get, isObject, set } from '../utils/object';
+import { generateUniqueId } from '../utils/string';
 import ContainerValidation from './ContainerValidation';
 import FieldValidation, { defaultValidation } from './FieldValidation';
 import {
@@ -14,10 +15,12 @@ import {
   FieldOptions,
   FieldProps,
   FormConfig,
-  FormListener,
   FormListenerProps,
   FormListenerType,
   FormState,
+  FormSubmitListener,
+  FormValidationListener,
+  FormValueListener,
   TouchOn,
   ValidationCode,
   ValidationResult,
@@ -40,6 +43,10 @@ export default class FormService extends DefaultService<FormState> {
     [fieldName: string]: boolean;
   };
 
+  protected listenerIndex: {
+    [id: string]: AnonymousObject<FormListenerProps>;
+  };
+
   public config: FormConfig = {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     onSubmit: () => {},
@@ -58,6 +65,7 @@ export default class FormService extends DefaultService<FormState> {
     this.pendingDispatch = new Set<string>();
     this.fieldIndex = {};
     this.watchIndex = {};
+    this.listenerIndex = {};
   }
 
   @reducer
@@ -355,26 +363,44 @@ export default class FormService extends DefaultService<FormState> {
     }
   }
 
-  offChange(type: FormListenerType, listener: FormListener, watchs: string[] | string): void {
-    watchs = Array.isArray(watchs) ? watchs : [watchs];
-    for (const watch of watchs) {
-      this.listeners[type][watch] = this.listeners[type][watch] || [];
-      this.listeners[type][watch] = this.listeners[type][watch].filter((x) => x.listener !== listener);
-    }
+  offChange(type: FormListenerType, id: string): void {
+    if (this.listenerIndex[id] === undefined) return;
+    Object.keys(this.listenerIndex[id]).forEach((watch) => {
+      this.listeners[type][watch] = this.listeners[type][watch].filter((x) => x.id !== id);
+    });
   }
 
-  onChange(type: FormListenerType, listener: FormListener, watchs: string[] | string, once: boolean): void {
+  onChange(
+    type: FormListenerType,
+    id: string,
+    listener: FormValueListener | FormValidationListener | FormSubmitListener,
+    watchs: string[] | string,
+    once: boolean,
+  ): void {
     watchs = Array.isArray(watchs) ? watchs : [watchs];
+    this.listenerIndex[id] = this.listenerIndex[id] || {};
     for (const watch of watchs) {
-      this.listeners[type][watch] = this.listeners[type][watch] || [];
-      this.listeners[type][watch].push({ listener, watchs, once });
-      const current = watch === '' ? this.watchIndex[''] : get(this.watchIndex, watch, undefined);
-      if (current === undefined) {
-        if (watch === '') {
-          this.watchIndex[''] = true;
-        } else {
-          set(this.watchIndex, watch, true);
+      if (this.listenerIndex[id][watch] === undefined) {
+        const listenerContext: FormListenerProps = {
+          id,
+          listener,
+          once,
+        };
+        this.listenerIndex[id][watch] = listenerContext;
+        this.listeners[type][watch] = this.listeners[type][watch] || [];
+        this.listeners[type][watch].push(listenerContext);
+        const current = watch === '' ? this.watchIndex[''] : get(this.watchIndex, watch, undefined);
+        if (current === undefined) {
+          if (watch === '') {
+            this.watchIndex[''] = true;
+          } else {
+            set(this.watchIndex, watch, true);
+          }
         }
+      } else {
+        // the listener could have been changed (because no useCallback or changes in the dependencies of a useCallback)
+        // update the listener via the listenerIndex
+        this.listenerIndex[id][watch].listener = listener;
       }
     }
   }
@@ -387,28 +413,28 @@ export default class FormService extends DefaultService<FormState> {
     }
   }
 
-  offSubmittingChange(listener: FormListener): void {
-    this.offChange('submittingChange', listener, '');
+  offSubmittingChange(id: string): void {
+    this.offChange('submittingChange', id);
   }
 
-  onSubmittingChange(listener: FormListener, once = false): void {
-    this.onChange('submittingChange', listener, '', once);
+  onSubmittingChange(id: string, listener: FormSubmitListener, once = false): void {
+    this.onChange('submittingChange', id, listener, '', once);
   }
 
-  offValidationChange(listener: FormListener, watchs: string[] | string): void {
-    this.offChange('validationChange', listener, watchs);
+  offValidationChange(id: string): void {
+    this.offChange('validationChange', id);
   }
 
-  onValidationChange(listener: FormListener, watchs: string[] | string, once = false): void {
-    this.onChange('validationChange', listener, watchs, once);
+  onValidationChange(id: string, listener: FormValidationListener, watchs: string[] | string, once = false): void {
+    this.onChange('validationChange', id, listener, watchs, once);
   }
 
-  offValueChange(listener: FormListener, watchs: string[] | string): void {
-    this.offChange('valueChange', listener, watchs);
+  offValueChange(id: string): void {
+    this.offChange('valueChange', id);
   }
 
-  onValueChange(listener: FormListener, watchs: string[] | string, once = false): void {
-    this.onChange('valueChange', listener, watchs, once);
+  onValueChange(id: string, listener: FormValueListener, watchs: string[] | string, once = false): void {
+    this.onChange('valueChange', id, listener, watchs, once);
   }
 
   @reducer
@@ -441,6 +467,7 @@ export default class FormService extends DefaultService<FormState> {
     this.pendingDispatch = new Set<string>();
     this.fieldIndex = {};
     this.watchIndex = {};
+    this.listenerIndex = {};
     if (
       this.state.initialValues === undefined ||
       (this.state.initialValues && typeof this.state.initialValues === 'object')
@@ -584,7 +611,7 @@ export default class FormService extends DefaultService<FormState> {
     }
     switch (code) {
       case ValidationCode.Loading:
-        this.onValidationChange(() => this.submit(), '', true);
+        this.onValidationChange(generateUniqueId(), () => this.submit(), '', true);
         break;
       case ValidationCode.Error:
         if (typeof this.config.onError === 'function') {

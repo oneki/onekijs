@@ -1,10 +1,33 @@
-import React, { useContext } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import FormService from './FormService';
+import { FormValueListener } from './typings';
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-export const FormContext = React.createContext<FormService>(null!);
-const useForm = (): FormService => {
-  return useContext(FormContext);
+const useFormWatcher = <R = any, T = any>(
+  form: FormService,
+  watchs: string | string[],
+  listener: FormValueListener<T>,
+): R | undefined => {
+  const id = useId();
+  const [result, setResult] = useState<R | undefined>();
+  const watchRef = useRef(watchs);
+
+  useEffect(() => {
+    const valueListener: FormValueListener<T> = (value, previousValue, watch) => {
+      const listenerResult = listener(value, previousValue, watch);
+      if (result !== listenerResult) {
+        setResult(listenerResult);
+      }
+    };
+    form.onValueChange(id, valueListener, watchRef.current);
+  }, [form, id, listener, result]);
+
+  useEffect((): (() => void) => {
+    return (): void => {
+      form.offValueChange(id);
+    };
+  }, [form, id]);
+
+  return result;
 };
 
-export default useForm;
+export default useFormWatcher;

@@ -3,10 +3,20 @@ import useLazyRef from '../core/useLazyRef';
 import { ValidationStatus } from '../types/form';
 import { AnonymousObject } from '../types/object';
 import { diffArrays, set } from '../utils/object';
+import { generateUniqueId } from '../utils/string';
 import ContainerValidation from './ContainerValidation';
 import FieldValidation from './FieldValidation';
 import FormService from './FormService';
-import { FieldContainer, FieldOptions, FieldProps, FormListenerProps, ValidationCode, Validator } from './typings';
+import {
+  FieldContainer,
+  FieldOptions,
+  FieldProps,
+  FormListenerProps,
+  FormValidationListener,
+  FormValueListener,
+  ValidationCode,
+  Validator,
+} from './typings';
 import useForm from './useForm';
 
 const useFieldContainer = ({
@@ -59,36 +69,34 @@ const useFieldContainer = ({
   useEffect(() => {
     const diff = diffArrays(Object.keys(valueListenersRef.current), fieldsRef.current);
     diff.removed.forEach((fieldName) => {
-      form.offValueChange(valueListenersRef.current[fieldName].listener, valueListenersRef.current[fieldName].watchs);
-      form.offValidationChange(
-        validationListenersRef.current[fieldName].listener,
-        validationListenersRef.current[fieldName].watchs,
-      );
+      form.offValueChange(valueListenersRef.current[fieldName].id);
+      form.offValidationChange(validationListenersRef.current[fieldName].id);
       delete valueListenersRef.current[fieldName];
       delete validationListenersRef.current[fieldName];
     });
 
     diff.added.forEach((fieldName) => {
-      const valueListener = (fieldName: string) => {
-        return (fieldValue: any) => {
-          set(valueRef.current, fieldName, fieldValue);
+      const valueListener = (fieldName: string): FormValueListener => {
+        return (value) => {
+          set(valueRef.current, fieldName, value);
           if (onValueChange) {
-            onValueChange(fieldName, fieldValue);
+            onValueChange(fieldName, value);
           } else {
             forceRender();
           }
         };
       };
+      const valueChangeId = generateUniqueId();
       const valueFieldListener = valueListener(fieldName);
-      form.onValueChange(valueFieldListener, [fieldName]);
+      form.onValueChange(valueChangeId, valueFieldListener, [fieldName]);
       valueListenersRef.current[fieldName] = {
+        id: valueChangeId,
         listener: valueFieldListener,
-        watchs: [fieldName],
       };
 
-      const validationListener = (fieldName: string) => {
-        return (fieldValidation: FieldValidation) => {
-          fieldValidationsRef.current[fieldName] = fieldValidation;
+      const validationListener = (fieldName: string): FormValidationListener => {
+        return (validation) => {
+          fieldValidationsRef.current[fieldName] = validation;
           console.log(fieldValidationsRef.current, form.fields);
           touchedValidationRef.current = form.getContainerFieldValidation(
             fieldValidationsRef.current,
@@ -103,18 +111,19 @@ const useFieldContainer = ({
             false,
           );
           if (onValidationChange) {
-            onValidationChange(fieldName, fieldValidation, touchedValidationRef.current, allValidationRef.current);
+            onValidationChange(fieldName, validation, touchedValidationRef.current, allValidationRef.current);
           } else {
             forceRender();
           }
         };
       };
 
+      const validationChangeId = generateUniqueId();
       const validationFieldListener = validationListener(fieldName);
-      form.onValidationChange(validationFieldListener, [fieldName]);
+      form.onValidationChange(validationChangeId, validationFieldListener, [fieldName]);
       validationListenersRef.current[fieldName] = {
+        id: validationChangeId,
         listener: validationFieldListener,
-        watchs: [fieldName],
       };
     });
   });
@@ -122,14 +131,10 @@ const useFieldContainer = ({
   useEffect(() => {
     return () => {
       // eslint-disable-next-line
-      Object.values(valueListenersRef.current).forEach((listener) =>
-        form.offValueChange(listener.listener, listener.watchs),
-      );
+      Object.values(valueListenersRef.current).forEach((listener) => form.offValueChange(listener.id));
 
       // eslint-disable-next-line
-      Object.values(validationListenersRef.current).forEach((listener) =>
-        form.offValidationChange(listener.listener, listener.watchs),
-      );
+      Object.values(validationListenersRef.current).forEach((listener) => form.offValidationChange(listener.id));
     };
   }, [form]);
 

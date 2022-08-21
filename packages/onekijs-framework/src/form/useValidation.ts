@@ -1,11 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { isNullOrEmpty } from '../utils/object';
 import ContainerValidation from './ContainerValidation';
 import FieldValidation, { defaultValidation } from './FieldValidation';
+import { FormValidationListener } from './typings';
 import useForm from './useForm';
 
 const useValidation = (name = '', touchedOnly = true): FieldValidation | ContainerValidation => {
   const form = useForm();
+  const id = useId();
 
   const argsRef = useRef({ name, touchedOnly });
 
@@ -34,20 +36,20 @@ const useValidation = (name = '', touchedOnly = true): FieldValidation | Contain
 
   useEffect(() => {
     const { name, touchedOnly } = argsRef.current;
-    const listener = (nextValidation: FieldValidation) => {
+    const listener: FormValidationListener = (validation) => {
       if (isNullOrEmpty(name)) {
         setValidation(form.getContainerFieldValidation(form.state.validations, form.fields, '', touchedOnly));
       } else {
         if (!touchedOnly || form.fields[name].touched) {
-          setValidation(nextValidation);
+          setValidation(validation);
         }
       }
     };
-    form.onValidationChange(listener, [name]);
+    form.onValidationChange(id, listener, [name]);
     return () => {
-      form.offValidationChange(listener, [name]);
+      form.offValidationChange(id);
     };
-  }, [form]);
+  }, [form, id]);
 
   return validation;
 };

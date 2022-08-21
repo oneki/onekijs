@@ -1,4 +1,4 @@
-import { useFormController, Form } from 'onekijs';
+import { Form, useFormController, useFormWatcher } from 'onekijs';
 import {
   ComponentStyle,
   FormCheckbox,
@@ -15,12 +15,20 @@ import React from 'react';
 import styled, { css } from 'styled-components';
 
 const fomStyle: ComponentStyle<{}> = () => {
-  return css`
-  `;
+  return css``;
 };
 
 const Page: React.FC<{ className?: string }> = ({ className }) => {
-  const formController1 = useFormController();
+  const form1 = useFormController();
+
+  const bind = useFormWatcher<string>(form1, 'firstname', (value: string) => {
+    if (value === 'toto') {
+      return 'bind to toto';
+    }
+  });
+
+  console.log('bind', bind);
+
   const formController2 = useFormController({ firstname: 'toto' });
 
   const streetColumn = useInputColumn({
@@ -54,22 +62,33 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
   return (
     <>
       <div>
-        <Form controller={formController1} layout="vertical" fieldSize="small" className={className} onSubmit={(values) => console.log(values)}>
+        <Form
+          controller={form1}
+          layout="vertical"
+          fieldSize="small"
+          className={className}
+          onSubmit={(values) => console.log(values)}
+        >
           <FormInput label="Firstname" name="firstname" required={true} autoFocus={true} />
           <FormSelect label="Role" name="role" dataSource={['admin', 'user']} required={true} />
           <FormCheckbox label="Backup" name="backup" />
           <FormTable label="Address" name="addresses" controller={tableController} addLabel="Add address" />
-          <SubmitButton>Submit</SubmitButton>
+          <SubmitButton showErrors={true}>Submit</SubmitButton>
         </Form>
         <div>
-          Values: <pre>{JSON.stringify(formController1.getValue())}</pre>
+          Values: <pre>{JSON.stringify(form1.state.values)}</pre>
         </div>
         <div>
-          Validations: <pre>{JSON.stringify(formController1.getValidation())}</pre>
+          Validations: <pre>{JSON.stringify(form1.state.validations)}</pre>
         </div>
       </div>
       <div style={{ marginTop: '500px' }}>
-        <Form controller={formController2} className={className} onSubmit={(values) => console.log(values)} layout="horizontal">
+        <Form
+          controller={formController2}
+          className={className}
+          onSubmit={(values) => console.log(values)}
+          layout="horizontal"
+        >
           <FormInput
             label="Firstname"
             name="firstname"

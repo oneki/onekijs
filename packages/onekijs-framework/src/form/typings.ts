@@ -72,14 +72,10 @@ export type FormFieldProps = FieldOptions &
 
 export type FormLabelWidth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
-export type FormListener = (...args: any[]) => any;
-
 export interface FormListenerProps {
-  listener: FormListener;
-  watchs: string[];
+  id: string;
+  listener: FormValueListener | FormValidationListener | FormSubmitListener;
   once?: boolean;
-  labelWidth?: FormLabelWidth;
-  layout?: FormLayout;
 }
 
 export type FormListenerType = 'valueChange' | 'validationChange' | 'submittingChange';
@@ -103,6 +99,16 @@ export interface FormState extends State, FormOptions {
   loading?: boolean;
   fetching?: boolean;
 }
+
+export type FormSubmitListener = (submitting: boolean, previousSubmitting: boolean | undefined) => any;
+
+export type FormValidationListener = (
+  validation: FieldValidation | ContainerValidation,
+  previousValidation: FieldValidation | ContainerValidation | undefined,
+  watch: string,
+) => any;
+
+export type FormValueListener<T = any> = (value: T, previousValue: T | undefined, watch: string) => any;
 
 export type FormWarningCallback = (fields: Field[], values?: AnonymousObject) => void;
 

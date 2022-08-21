@@ -2,8 +2,16 @@ import React, { SyntheticEvent, useCallback, useEffect, useRef } from 'react';
 import { FCC } from '../types/core';
 import { AnonymousObject } from '../types/object';
 import { get, omit, pick } from '../utils/object';
+import ContainerValidation from './ContainerValidation';
 import FieldValidation from './FieldValidation';
-import { FormConfig, FormListenerType, FormProps } from './typings';
+import {
+  FormConfig,
+  FormListenerType,
+  FormProps,
+  FormSubmitListener,
+  FormValidationListener,
+  FormValueListener,
+} from './typings';
 import useForm, { FormContext } from './useForm';
 
 const configKeys: (keyof FormConfig)[] = [
@@ -54,60 +62,61 @@ const Form: FCC<FormProps> = (props) => {
   useEffect((): void => {
     for (const prop of controller.pendingDispatch) {
       for (const type of Object.keys(controller.listeners) as FormListenerType[]) {
-        for (const key of Object.keys(controller.listeners[type])) {
-          if (prop === key) {
-            for (const listener of controller.listeners[type][key]) {
-              const watchs = [];
+        for (const watch of Object.keys(controller.listeners[type])) {
+          if (prop === watch) {
+            for (const listener of controller.listeners[type][watch]) {
               let changed = false;
               if (type === 'valueChange') {
-                listener.watchs.forEach((w: string) => {
-                  const prev = get(prevValuesRef.current, w, '');
-                  const next = get(controller.state.values, w, '');
-                  watchs.push(next);
+                const prev = get(prevValuesRef.current, watch, '');
+                const next = get(controller.state.values, watch, '');
+                if (prev !== next) {
+                  changed = true;
+                  (listener.listener as FormValueListener)(next, prev, watch);
+                }
+              } else if (type === 'validationChange') {
+                let prev: FieldValidation | ContainerValidation;
+                let next: FieldValidation | ContainerValidation;
+                // check if w is a field or a composition
+                if (!controller.fields[watch]) {
+                  prev = controller.getContainerFieldValidation(
+                    prevValidationsRef.current,
+                    controller.fields,
+                    watch,
+                    false,
+                  );
+                  next = controller.getContainerFieldValidation(
+                    controller.state.validations || {},
+                    controller.fields,
+                    watch,
+                    false,
+                  );
+                  if (prev.status !== next.status || prev.message !== next.message) {
+                    changed = true;
+                  }
+                } else {
+                  prev = prevValidationsRef.current[watch];
+                  const nextValidations = controller.state.validations || {};
+                  next = nextValidations[watch];
                   if (prev !== next) {
                     changed = true;
                   }
-                });
-              } else if (type === 'validationChange') {
-                listener.watchs.forEach((w: string) => {
-                  let prev, next;
-                  // check if w is a field or a composition
-                  if (!controller.fields[w]) {
-                    prev = controller.getContainerFieldValidation(
-                      prevValidationsRef.current,
-                      controller.fields,
-                      w,
-                      false,
-                    );
-                    next = controller.getContainerFieldValidation(
-                      controller.state.validations || {},
-                      controller.fields,
-                      w,
-                      false,
-                    );
-                    if (prev.status !== next.status || prev.message !== next.message) {
-                      changed = true;
-                    }
-                  } else {
-                    prev = prevValidationsRef.current[w];
-                    const nextValidations = controller.state.validations || {};
-                    next = nextValidations[w];
-                    if (prev !== next) {
-                      changed = true;
-                    }
-                  }
-                  watchs.push(next);
-                });
+                }
+
+                if (changed) {
+                  (listener.listener as FormValidationListener)(next, prev, watch);
+                }
               } else if (type === 'submittingChange') {
                 changed = prevSubmittingRef.current !== controller.state.submitting;
-                watchs.push(controller.state.submitting);
+                if (changed) {
+                  (listener.listener as FormSubmitListener)(
+                    controller.state.submitting || false,
+                    prevSubmittingRef.current,
+                  );
+                }
               }
 
-              if (changed) {
-                if (listener.once) {
-                  controller.offChange(type, listener.listener, listener.watchs);
-                }
-                listener.listener(...watchs);
+              if (changed && listener.once) {
+                controller.offChange(type, listener.id);
               }
             }
           }

@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { get, isNullOrEmpty } from '../utils/object';
+import { FormValueListener } from './typings';
 import useForm from './useForm';
 
 const useValue = (fieldName: string): any => {
   const form = useForm();
+  const id = useId();
   const nameRef = useRef(fieldName);
   const [value, setValue] = useState((): any => {
     if (isNullOrEmpty(nameRef.current)) {
@@ -14,13 +16,13 @@ const useValue = (fieldName: string): any => {
 
   useEffect((): (() => void) => {
     const watch = [nameRef.current || ''];
-    const listener = (nextValue: any) => setValue(nextValue);
-    form.onValueChange(listener, watch);
+    const listener: FormValueListener = (value) => setValue(value);
+    form.onValueChange(id, listener, watch);
 
     return (): void => {
-      form.offValueChange(listener, watch);
+      form.offValueChange(id);
     };
-  }, [form]);
+  }, [form, id]);
 
   return value;
 };

@@ -20,7 +20,6 @@ import { margin, marginBottom, marginLeft, marginRight, marginTop, padding } fro
 import { transition } from '../../styles/transition';
 import { ComponentStyle } from '../../styles/typings';
 import { color, fontSize } from '../../styles/typography';
-import { preflight } from '../../utils/style';
 import { TooltipProps } from './typings';
 
 const tooltipStyle: ComponentStyle<TooltipProps> = ({ kind = 'secondary', theme }) => {
@@ -29,8 +28,8 @@ const tooltipStyle: ComponentStyle<TooltipProps> = ({ kind = 'secondary', theme 
   const fColor = t.color;
   const bColor = t.borderColor;
   return css`
-    ${preflight()}
     ${cursor('pointer')}
+    ${display('inline-flex')}
     .o-tooltip-container {
       ${backgroundColor(bgColor)}
       ${borderRadius(t.borderRadius)}
@@ -124,7 +123,6 @@ const tooltipStyle: ComponentStyle<TooltipProps> = ({ kind = 'secondary', theme 
           }
         }
       }
-
     }
     .o-tooltip-arrow {
       ${height('1rem')}

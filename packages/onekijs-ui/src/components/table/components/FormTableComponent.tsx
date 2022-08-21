@@ -1,4 +1,4 @@
-import { generateUniqueId, useForm, useLazyRef } from 'onekijs-framework';
+import { useForm, useLazyRef } from 'onekijs-framework';
 import React, { useEffect } from 'react';
 import { addClassname } from '../../../utils/style';
 import Checkbox from '../../checkbox';
