@@ -1,7 +1,30 @@
 import { FC } from 'react';
 
+export type TestArray = [
+  /**
+   * This is the doc of test
+   */
+  test: boolean,
+  /**
+   * This is the doc of test2
+   */
+  test2?: boolean,
+];
+
 export type MyGenericType<T> = {
   foo: T;
+};
+
+export type ComponentOptions = {
+  /**
+   * Flag to determine if the component is transferable
+   */
+  transferable: boolean;
+
+  /**
+   * this is the alias
+   */
+  alias: string;
 };
 
 export type ComponentProps = {
@@ -9,11 +32,12 @@ export type ComponentProps = {
    * The name of the user
    *
    * ```
-   * this is a block
-   *   with multi line
+   * <div>
+   *  <Input name="lastname" />
+   * </div>
    * ```
    *
-   * After the block code
+   * After the block code ><><>
    *
    * @example
    * Here is an example
@@ -32,6 +56,13 @@ export type ComponentProps = {
    * The type of the user
    */
   type: Promise<MyGenericType<string>>;
+
+  /**
+   * Optional options
+   *
+   * @remarks #doc#
+   */
+  options?: ComponentOptions;
 };
 
 /**
@@ -39,6 +70,11 @@ export type ComponentProps = {
  * The goal is to have **markdown** tag in the descrition
  *
  * This description could be quite long
+ *
+ * ### Signature
+ * ```
+ * const test = useForm('toto):
+ * ```
  *
  * @group Components
  */

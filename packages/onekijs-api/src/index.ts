@@ -12,6 +12,7 @@ indexer.buildIndexes(api);
 indexer.elements.forEach((e) => {
   const parser = new ElementParser(indexer);
   const parsedElement = parser.parse(e.element);
+  console.log(JSON.stringify(parsedElement, null, 2));
   const builder = new MarkdownBuilder(parsedElement, '/home/onurb/workspace/oneki/onekijs/packages/onekijs-api/dist');
   builder.build();
 });

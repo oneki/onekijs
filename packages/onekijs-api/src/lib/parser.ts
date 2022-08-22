@@ -8,11 +8,12 @@ import {
   SomeType,
   UnionType,
 } from 'typedoc/dist/lib/serialization/schema';
-import { commentToDescription, commentToExample } from '../util/parser';
-import ElementContext from './context';
+import { commentToDescription, commentToExample, isToDocument } from '../util/parser';
+import ElementContext, { Props } from './context';
 import { Indexer } from './indexer';
 
 export type ParsedElement = Omit<ElementContext, 'propsLevel'>;
+type SpecialType = 'props' | 'toDocument';
 
 export class ElementParser {
   private context: ElementContext;
@@ -29,7 +30,6 @@ export class ElementParser {
     } else {
       // this.handleDeclarationReflection(subject);
     }
-    console.log(JSON.stringify(this.context));
     return this.context;
   }
 
@@ -41,23 +41,24 @@ export class ElementParser {
       if (parameters) {
         parameters.forEach((p) => {
           if (p.kind === ReflectionKind.Parameter && p.name === 'props') {
-            this.context.propsLevel = true;
             const type = p.type;
-            if (type) this.handleType(type);
+            if (type) this.handleType(type, 'props');
           }
         });
       }
     }
   }
 
-  protected handleDeclarationReflection(element: DeclarationReflection) {
+  protected handleDeclarationReflection(element: DeclarationReflection, specialType?: SpecialType) {
     const children = element.children || [];
     const type = element.type;
+    if (!specialType && isToDocument(element.comment)) {
+      specialType = 'toDocument';
+    }
     if (element.kind === ReflectionKind.TypeLiteral) {
-      const isPropsLevel = this.context.propsLevel;
-      this.context.propsLevel = false;
+      const activeProp = this.context.getActiveProp();
       children.forEach((child) => {
-        if (isPropsLevel) {
+        if (specialType === 'props') {
           // this is a property of a component, let's add a prop in the context
           this.context.props.push({
             name: child.name,
@@ -66,20 +67,50 @@ export class ElementParser {
             description: commentToDescription(child.comment),
             example: commentToExample(child.comment),
           });
+          this.handleDeclarationReflection(child);
+        } else if (specialType === 'toDocument') {
+          // this is a property of a component, let's add a prop in the context
+          const prop: Props = {
+            name: child.name,
+            flags: child.flags,
+            type: '',
+            description: commentToDescription(child.comment),
+            example: commentToExample(child.comment),
+          };
+          if (activeProp) {
+            const children = activeProp.children;
+            if (children) {
+              children.push(prop);
+            } else {
+              activeProp.children = [prop];
+            }
+          }
+          this.handleDeclarationReflection(child);
+        } else {
+          this.handleDeclarationReflection(child, specialType);
         }
-        this.handleDeclarationReflection(child);
+        // else if (specialType === 'toDocument') {
+        //   // this is property of a component of type object (example 'options')
+        //   // that we wants to document on the same page as the other props of the
+        //   // component
+        //   if (specialType === 'toDocument') {
+        //     const activeProp = this.context.getActiveProp();
+        //     if (activeProp) {
+        //     }
+        //   }
+        // }
       });
     } else if (element.kind === ReflectionKind.TypeAlias || element.kind === ReflectionKind.Property) {
       if (type) {
-        this.handleType(type);
+        this.handleType(type, specialType);
       }
     }
   }
 
-  protected handleIntersection(element: IntersectionType) {
+  protected handleIntersection(element: IntersectionType, specialType?: SpecialType) {
     const types = element.types;
     types.forEach((type) => {
-      this.handleType(type);
+      this.handleType(type, specialType);
     });
   }
 
@@ -105,46 +136,43 @@ export class ElementParser {
     }
   }
 
-  protected handleReflection(element: ReflectionType) {
+  protected handleReflection(element: ReflectionType, specialType?: SpecialType) {
     const declaration = element.declaration;
     if (declaration) {
-      this.handleDeclarationReflection(declaration);
+      this.handleDeclarationReflection(declaration, specialType);
     }
   }
 
-  protected handleType(type: SomeType) {
+  protected handleType(type: SomeType, specialType?: SpecialType) {
     if (type.type === 'reference') {
-      if (this.context.propsLevel) {
-        // This is the definition of a component's props
-        // we follow the link to handle it completely
+      let element: DeclarationReflection | null = null;
+      if (specialType === 'props' || specialType === 'toDocument') {
         const id = type.id || 0;
-        const element = this.indexer.getElementById(id);
-        if (element) {
-          this.handleDeclarationReflection(element);
-        } else {
-          this.handleReferenceType(type);
-        }
+        element = this.indexer.getElementById(id);
+      }
+      if (element) {
+        this.handleDeclarationReflection(element, specialType);
       } else {
         this.handleReferenceType(type);
       }
     } else if (type.type === 'reflection') {
-      this.handleReflection(type);
+      this.handleReflection(type, specialType);
     } else if (type.type === 'intersection') {
-      this.handleIntersection(type);
+      this.handleIntersection(type, specialType);
     } else if (type.type === 'union') {
-      this.handleUnion(type);
+      this.handleUnion(type, specialType);
     } else if (type.type === 'intrinsic') {
       this.handleIntrinsic(type);
     }
   }
 
-  protected handleUnion(element: UnionType) {
+  protected handleUnion(element: UnionType, specialType?: SpecialType) {
     const types = element.types;
     types.forEach((type, index) => {
       if (index > 0) {
         this.context.appendActiveType(' | ');
       }
-      this.handleType(type);
+      this.handleType(type, specialType);
     });
   }
 }

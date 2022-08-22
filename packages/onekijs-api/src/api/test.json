@@ -7,7 +7,101 @@
 	"originalName": "",
 	"children": [
 		{
-			"id": 5,
+			"id": 6,
+			"name": "ComponentOptions",
+			"kind": 4194304,
+			"kindString": "Type alias",
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "packages/onekijs-api/src/test.ts",
+					"line": 18,
+					"character": 12
+				}
+			],
+			"type": {
+				"type": "reflection",
+				"declaration": {
+					"id": 7,
+					"name": "__type",
+					"kind": 65536,
+					"kindString": "Type literal",
+					"flags": {},
+					"children": [
+						{
+							"id": 9,
+							"name": "alias",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "this is the alias"
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "packages/onekijs-api/src/test.ts",
+									"line": 27,
+									"character": 2
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 8,
+							"name": "transferable",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Flag to determine if the component is transferable"
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "packages/onekijs-api/src/test.ts",
+									"line": 22,
+									"character": 2
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "boolean"
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"children": [
+								9,
+								8
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "packages/onekijs-api/src/test.ts",
+							"line": 18,
+							"character": 31
+						}
+					]
+				}
+			}
+		},
+		{
+			"id": 10,
 			"name": "ComponentProps",
 			"kind": 4194304,
 			"kindString": "Type alias",
@@ -15,21 +109,21 @@
 			"sources": [
 				{
 					"fileName": "packages/onekijs-api/src/test.ts",
-					"line": 7,
+					"line": 30,
 					"character": 12
 				}
 			],
 			"type": {
 				"type": "reflection",
 				"declaration": {
-					"id": 6,
+					"id": 11,
 					"name": "__type",
 					"kind": 65536,
 					"kindString": "Type literal",
 					"flags": {},
 					"children": [
 						{
-							"id": 8,
+							"id": 13,
 							"name": "lastname",
 							"kind": 1024,
 							"kindString": "Property",
@@ -58,7 +152,7 @@
 							"sources": [
 								{
 									"fileName": "packages/onekijs-api/src/test.ts",
-									"line": 30,
+									"line": 54,
 									"character": 2
 								}
 							],
@@ -68,7 +162,7 @@
 							}
 						},
 						{
-							"id": 7,
+							"id": 12,
 							"name": "name",
 							"kind": 1024,
 							"kindString": "Property",
@@ -81,11 +175,11 @@
 									},
 									{
 										"kind": "code",
-										"text": "```\nthis is a block\n  with multi line\n```"
+										"text": "```\n<div>\n <Input name=\"lastname\" />\n</div>\n```"
 									},
 									{
 										"kind": "text",
-										"text": "\n\nAfter the block code"
+										"text": "\n\nAfter the block code ><><>"
 									}
 								],
 								"blockTags": [
@@ -107,7 +201,7 @@
 							"sources": [
 								{
 									"fileName": "packages/onekijs-api/src/test.ts",
-									"line": 24,
+									"line": 48,
 									"character": 2
 								}
 							],
@@ -126,7 +220,47 @@
 							}
 						},
 						{
-							"id": 9,
+							"id": 15,
+							"name": "options",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isOptional": true
+							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Optional options"
+									}
+								],
+								"blockTags": [
+									{
+										"tag": "@remarks",
+										"content": [
+											{
+												"kind": "text",
+												"text": "#doc#"
+											}
+										]
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "packages/onekijs-api/src/test.ts",
+									"line": 65,
+									"character": 2
+								}
+							],
+							"type": {
+								"type": "reference",
+								"id": 6,
+								"name": "ComponentOptions"
+							}
+						},
+						{
+							"id": 14,
 							"name": "type",
 							"kind": 1024,
 							"kindString": "Property",
@@ -142,7 +276,7 @@
 							"sources": [
 								{
 									"fileName": "packages/onekijs-api/src/test.ts",
-									"line": 34,
+									"line": 58,
 									"character": 2
 								}
 							],
@@ -151,7 +285,7 @@
 								"typeArguments": [
 									{
 										"type": "reference",
-										"id": 1,
+										"id": 2,
 										"typeArguments": [
 											{
 												"type": "intrinsic",
@@ -171,16 +305,17 @@
 						{
 							"title": "Properties",
 							"children": [
-								8,
-								7,
-								9
+								13,
+								12,
+								15,
+								14
 							]
 						}
 					],
 					"sources": [
 						{
 							"fileName": "packages/onekijs-api/src/test.ts",
-							"line": 7,
+							"line": 30,
 							"character": 29
 						}
 					]
@@ -188,8 +323,77 @@
 			}
 		},
 		{
-			"id": 1,
+			"id": 2,
 			"name": "MyGenericType",
+			"kind": 4194304,
+			"kindString": "Type alias",
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "packages/onekijs-api/src/test.ts",
+					"line": 14,
+					"character": 12
+				}
+			],
+			"typeParameters": [
+				{
+					"id": 5,
+					"name": "T",
+					"kind": 131072,
+					"kindString": "Type parameter",
+					"flags": {}
+				}
+			],
+			"type": {
+				"type": "reflection",
+				"declaration": {
+					"id": 3,
+					"name": "__type",
+					"kind": 65536,
+					"kindString": "Type literal",
+					"flags": {},
+					"children": [
+						{
+							"id": 4,
+							"name": "foo",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "packages/onekijs-api/src/test.ts",
+									"line": 15,
+									"character": 2
+								}
+							],
+							"type": {
+								"type": "reference",
+								"id": 5,
+								"name": "T"
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"children": [
+								4
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "packages/onekijs-api/src/test.ts",
+							"line": 14,
+							"character": 31
+						}
+					]
+				}
+			}
+		},
+		{
+			"id": 1,
+			"name": "TestArray",
 			"kind": 4194304,
 			"kindString": "Type alias",
 			"flags": {},
@@ -200,64 +404,32 @@
 					"character": 12
 				}
 			],
-			"typeParameters": [
-				{
-					"id": 4,
-					"name": "T",
-					"kind": 131072,
-					"kindString": "Type parameter",
-					"flags": {}
-				}
-			],
 			"type": {
-				"type": "reflection",
-				"declaration": {
-					"id": 2,
-					"name": "__type",
-					"kind": 65536,
-					"kindString": "Type literal",
-					"flags": {},
-					"children": [
-						{
-							"id": 3,
-							"name": "foo",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {},
-							"sources": [
-								{
-									"fileName": "packages/onekijs-api/src/test.ts",
-									"line": 4,
-									"character": 2
-								}
-							],
-							"type": {
-								"type": "reference",
-								"id": 4,
-								"name": "T"
-							}
+				"type": "tuple",
+				"elements": [
+					{
+						"type": "named-tuple-member",
+						"name": "test",
+						"isOptional": false,
+						"element": {
+							"type": "intrinsic",
+							"name": "boolean"
 						}
-					],
-					"groups": [
-						{
-							"title": "Properties",
-							"children": [
-								3
-							]
+					},
+					{
+						"type": "named-tuple-member",
+						"name": "test2",
+						"isOptional": true,
+						"element": {
+							"type": "intrinsic",
+							"name": "boolean"
 						}
-					],
-					"sources": [
-						{
-							"fileName": "packages/onekijs-api/src/test.ts",
-							"line": 3,
-							"character": 31
-						}
-					]
-				}
+					}
+				]
 			}
 		},
 		{
-			"id": 10,
+			"id": 16,
 			"name": "MyComponent",
 			"kind": 64,
 			"kindString": "Function",
@@ -265,13 +437,13 @@
 			"sources": [
 				{
 					"fileName": "packages/onekijs-api/src/test.ts",
-					"line": 45,
+					"line": 81,
 					"character": 13
 				}
 			],
 			"signatures": [
 				{
-					"id": 11,
+					"id": 17,
 					"name": "MyComponent",
 					"kind": 4096,
 					"kindString": "Call signature",
@@ -280,25 +452,29 @@
 						"summary": [
 							{
 								"kind": "text",
-								"text": "This is the documentation of the component\nThe goal is to have **markdown** tag in the descrition\n\nThis description could be quite long"
+								"text": "This is the documentation of the component\nThe goal is to have **markdown** tag in the descrition\n\nThis description could be quite long\n\n### Signature\n"
+							},
+							{
+								"kind": "code",
+								"text": "```\nconst test = useForm('toto):\n```"
 							}
 						]
 					},
 					"parameters": [
 						{
-							"id": 12,
+							"id": 18,
 							"name": "props",
 							"kind": 32768,
 							"kindString": "Parameter",
 							"flags": {},
 							"type": {
 								"type": "reference",
-								"id": 5,
+								"id": 10,
 								"name": "ComponentProps"
 							}
 						},
 						{
-							"id": 13,
+							"id": 19,
 							"name": "context",
 							"kind": 32768,
 							"kindString": "Parameter",
@@ -344,14 +520,16 @@
 		{
 			"title": "Type Aliases",
 			"children": [
-				5,
+				6,
+				10,
+				2,
 				1
 			]
 		},
 		{
 			"title": "Components",
 			"children": [
-				10
+				16
 			]
 		}
 	],

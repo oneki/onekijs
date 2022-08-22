@@ -3,14 +3,20 @@ import { join } from 'path';
 import { Props } from './context';
 import { ParsedElement } from './parser';
 
+const isMandatoryProp = (prop: Props) => {
+  if (prop.defaultValue !== undefined) return false;
+  if (prop.flags.isOptional === true) return false;
+  return true;
+};
 export class MarkdownBuilder {
   constructor(public element: ParsedElement, public basePath: string) {}
 
   public build() {
     let markdown = '';
-    markdown += `${this.element.description}\n`;
-    markdown += '### Inputs\n\n<font size="1">(Mandatory parameter are in bold)</font>\n';
+    markdown += `${this.element.description}\n\n`;
+    markdown += '### Inputs\n\n<font size="2"><i>(Mandatory parameters are in bold)</i></font>\n\n';
     markdown += `${this.buildHeader(this.element.props)}\n`;
+    this.sortProps(this.element.props);
     this.element.props.forEach((prop) => {
       markdown += this.buildProp(prop, this.depth(this.element.props));
     });
@@ -61,7 +67,7 @@ export class MarkdownBuilder {
     for (let i = depth; i < maxDepth; i++) {
       result += '| ';
     }
-    result += `| ${prop.type.replace(/\|/g, '\\|')} | ${this.buildPropDescription(prop)} |\n`;
+    result += `| ${prop.type.replace(/\|/g, '\\|').replace(/>/g, '\\>')} | ${this.buildPropDescription(prop)} |\n`;
 
     const children = prop.children;
     if (children) {
@@ -74,12 +80,22 @@ export class MarkdownBuilder {
   }
 
   private buildPropDescription(prop: Props) {
-    return prop.description.replace(/\n/g, '<br/>');
+    return prop.description;
   }
 
   private handleMandatoryProp(prop: Props) {
-    if (prop.defaultValue !== undefined) return prop.name;
-    if (prop.flags.isOptional === true) return prop.name;
-    return `**${prop.name}**`;
+    if (isMandatoryProp(prop)) return `**${prop.name}**`;
+    return prop.name;
+  }
+
+  private sortProps(props: Props[]) {
+    return props.sort(function (prop1, prop2) {
+      const isMandatoryProp1 = isMandatoryProp(prop1);
+      const isMandatoryProp2 = isMandatoryProp(prop2);
+
+      if (isMandatoryProp1 && !isMandatoryProp2) return -1;
+      if (isMandatoryProp2 && !isMandatoryProp1) return 1;
+      return prop1.name.localeCompare(prop2.name);
+    });
   }
 }

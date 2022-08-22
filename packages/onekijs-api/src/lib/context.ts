@@ -14,21 +14,33 @@ export interface Props extends Description {
 interface Context extends Description {
   props: Props[];
   returns?: Props;
-  propsLevel: boolean;
+  follow: boolean;
 }
 
 export class ElementContext implements Context {
   props: Props[];
   returns?: Props;
-  propsLevel: boolean;
+  follow: boolean;
   description: string;
   example?: string;
   defaultValue?: string;
 
   constructor(public name: string) {
     this.props = [];
-    this.propsLevel = false;
+    this.follow = false;
     this.description = '';
+  }
+
+  addActiveProp(prop: Props) {
+    const activeProp = this.getActiveProp();
+    if (activeProp) {
+      const children = activeProp.children;
+      if (children) {
+        children.push(prop);
+      } else {
+        activeProp.children = [prop];
+      }
+    }
   }
 
   appendActiveType = (type: string) => {
