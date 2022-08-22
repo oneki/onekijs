@@ -268,6 +268,8 @@ export {
   FieldOptions,
   FieldProps,
   FormConfig,
+  FormDecorator,
+  FormDecoratorOptions,
   FormErrorCallback,
   FormFieldProps,
   FormLabelWidth,
@@ -303,12 +305,13 @@ export { default as useField } from './form/useField';
 export { default as useFieldContainer } from './form/useFieldContainer';
 export { default as useForm, FormContext } from './form/useForm';
 export { default as useFormController } from './form/useFormController';
+export { default as useFormDecorator } from './form/useFormDecorator';
 export { default as useFormStatus } from './form/useFormStatus';
 export { default as useFormWatcher } from './form/useFormWatcher';
+export { default as useFormMetadata } from './form/useFormMetadata';
 export { default as useSubmit } from './form/useSubmit';
 export { default as useValidation } from './form/useValidation';
 export { default as useValue } from './form/useValue';
-export { default as useMetadata } from './form/useMetadata';
 export { extractValidators } from './form/utils';
 export { default as email } from './form/validators/email';
 export { default as regex } from './form/validators/regex';

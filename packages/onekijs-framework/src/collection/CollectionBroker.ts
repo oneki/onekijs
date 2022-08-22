@@ -15,7 +15,7 @@ import {
   QuerySortBy,
   QuerySortDir,
 } from './typings';
-import { formatFilter, formatSortBy, rootFilterId, addFilter as aFilter, visitFilter, isSameSortBy } from './utils';
+import { formatFilter, formatSortBy, rootFilterId, visitFilter, isSameSortBy } from './utils';
 
 export default class DefaultCollectionBroker<
   T = any,

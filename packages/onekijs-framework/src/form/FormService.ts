@@ -15,6 +15,8 @@ import {
   FieldOptions,
   FieldProps,
   FormConfig,
+  FormDecorator,
+  FormDecoratorOptions,
   FormListenerProps,
   FormListenerType,
   FormMetadata,
@@ -34,6 +36,7 @@ import {
 @service
 export default class FormService extends DefaultService<FormState> {
   public fields: AnonymousObject<Field>;
+  public decorators: AnonymousObject<FormDecorator>;
   public listeners: {
     [k in FormListenerType]: AnonymousObject<FormListenerProps[]>;
   };
@@ -63,6 +66,7 @@ export default class FormService extends DefaultService<FormState> {
   constructor() {
     super();
     this.fields = {};
+    this.decorators = {};
     this.listeners = {
       valueChange: {},
       validationChange: {},
@@ -336,6 +340,26 @@ export default class FormService extends DefaultService<FormState> {
   }
 
   /**
+   *  Register a decorator. Unlike a field, a decorator has no value but can have metadata (like disabled / visible)
+   *
+   * @param {string} name - the name of the decorator. Must not be in conflict with a field name
+   *
+   * @return {void}
+   */
+  initDecorator(name: string, options: FormDecoratorOptions = {}): FormDecorator {
+    if (!this.decorators[name]) {
+      this.decorators[name] = {
+        name,
+      };
+      this.defaultMetadata[name] = this.state.metadata[name] || {
+        disabled: options.disabled,
+        visible: options.visible,
+      };
+    }
+    return this.decorators[name];
+  }
+
+  /**
    *  Register a field and return three listeners
    *   - onChange
    *   - onFocus
@@ -531,10 +555,16 @@ export default class FormService extends DefaultService<FormState> {
 
   @reducer
   reset(): void {
-    const props = Object.getOwnPropertyNames(this.fields);
+    let props = Object.getOwnPropertyNames(this.fields);
     for (let i = 0; i < props.length; i++) {
       delete this.fields[props[i]];
     }
+
+    props = Object.getOwnPropertyNames(this.decorators);
+    for (let i = 0; i < props.length; i++) {
+      delete this.decorators[props[i]];
+    }
+
     this.listeners = {
       valueChange: {},
       validationChange: {},

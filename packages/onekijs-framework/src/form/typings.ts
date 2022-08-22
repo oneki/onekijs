@@ -62,6 +62,12 @@ export type FormConfig = {
   fieldSize?: 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge';
 };
 
+export type FormDecorator = {
+  name: string;
+};
+
+export type FormDecoratorOptions = FormMetadata;
+
 export type FormErrorCallback = (fields: Field[], values?: AnonymousObject) => void;
 
 export type FormFieldProps = FieldOptions &

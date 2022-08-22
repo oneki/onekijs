@@ -16,10 +16,11 @@ export { default as buttonStyle, dropdownButtonStyle } from './components/button
 export { default as SubmitButton } from './components/button/SubmitButton';
 export { ButtonProps, DropDownButtonProps, SubmitButtonProps } from './components/button/typings';
 export { default as Card } from './components/card';
+export { default as FormCard } from './components/card/FormCard';
 export { default as CardComponent } from './components/card/components/CardComponent';
 export { default as CardTitle } from './components/card/components/CardTitle';
 export { cardStyle } from './components/card/style';
-export { CardProps, CardTitleProps } from './components/card/typings';
+export { CardProps, CardTitleProps, FormCardProps } from './components/card/typings';
 export { default as Checkbox } from './components/checkbox';
 export { default as CheckboxComponent } from './components/checkbox/components/CheckboxComponent';
 export { default as FormCheckbox } from './components/checkbox/FormCheckbox';

@@ -1,3 +1,4 @@
+import { FormDecoratorOptions } from 'onekijs-framework';
 import { FC, ReactNode } from 'react';
 
 export type CardProps = {
@@ -8,7 +9,8 @@ export type CardProps = {
   title: string;
   TitleComponent?: FC<CardTitleProps>;
   icon?: ReactNode;
-  initialOpen?: boolean;
+  open?: boolean;
+  onToggle?: () => void;
 };
 
 export type CardTitleProps = {
@@ -19,3 +21,8 @@ export type CardTitleProps = {
   collapsable: boolean;
   animate?: number;
 };
+
+export type FormCardProps = CardProps &
+  FormDecoratorOptions & {
+    name: string;
+  };

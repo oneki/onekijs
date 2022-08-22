@@ -2,7 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { FormMetadata, FormMetadataListener } from './typings';
 import useForm from './useForm';
 
-const useMetadata = (fieldName: string): FormMetadata => {
+const useFormMetadata = (fieldName: string): FormMetadata => {
   const form = useForm();
   const id = useId();
   const nameRef = useRef(fieldName);
@@ -21,4 +21,4 @@ const useMetadata = (fieldName: string): FormMetadata => {
   return metadata;
 };
 
-export default useMetadata;
+export default useFormMetadata;

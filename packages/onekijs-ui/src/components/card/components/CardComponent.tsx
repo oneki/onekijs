@@ -7,19 +7,27 @@ import CardTitle from './CardTitle';
 
 const CardComponent: FCC<CardProps> = ({
   TitleComponent = CardTitle,
-  initialOpen = true,
+  open = true,
   className,
   title,
   animate = 150,
   icon,
   collapsable = true,
   children,
+  onToggle,
 }) => {
   const classNames = addClassname('o-card', className);
-  const [open, setOpen] = useState(initialOpen);
+
+  // if onToggle is undefined, the component is not controlled.
+  // we use this useState to do the action
+  const [internalOpen, setOpen] = useState(open);
   const toggle = () => {
     if (collapsable) {
-      setOpen(!open);
+      if (onToggle !== undefined) {
+        onToggle();
+      } else {
+        setOpen(!internalOpen);
+      }
     }
   };
 
@@ -48,13 +56,13 @@ const CardComponent: FCC<CardProps> = ({
         title={title}
         icon={icon}
         onToggle={toggle}
-        open={open}
+        open={onToggle ? open : internalOpen}
         collapsable={collapsable}
         animate={animate}
       />
 
       <CSSTransition
-        in={open}
+        in={onToggle ? open : internalOpen}
         appear={false}
         classNames="o-card-animate"
         timeout={animate}

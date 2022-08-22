@@ -1,6 +1,7 @@
 import { Form, useFormController, useFormWatcher } from 'onekijs';
 import {
   ComponentStyle,
+  FormCard,
   FormCheckbox,
   FormInput,
   FormSelect,
@@ -58,8 +59,10 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
   useFormWatcher<string>(form1, 'firstname', (value: string) => {
     if (value === 'toto') {
       stateColumn.broker.addFilterCriteria('text', 'eq', 'California', false, 'toto');
+      form1.disable('dataManagement');
     } else {
       stateColumn.broker.removeFilter('toto');
+      form1.enable('dataManagement');
     }
   });
 
@@ -77,7 +80,9 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
         >
           <FormInput label="Firstname" name="firstname" required={true} autoFocus={true} />
           <FormSelect label="Role" name="role" dataSource={['admin', 'user']} required={true} visible={false} />
-          <FormCheckbox label="Backup" name="backup" />
+          <FormCard title="Data Management" name="dataManagement" bordered={false}>
+            <FormCheckbox label="Backup" name="backup" />
+          </FormCard>
           <FormTable label="Address" name="addresses" controller={tableController} addLabel="Add address" />
           <SubmitButton showErrors={true}>Submit</SubmitButton>
         </Form>

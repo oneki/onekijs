@@ -69,6 +69,7 @@ export type TableBodyCellProps<T = any, I extends TableItem<T> = TableItem<T>> =
   rowId?: string | number;
   rowIndex: number;
   item: I;
+  data: T;
 };
 
 export type TableBodyProps<T = any, I extends TableItem<T> = TableItem<T>> = {
@@ -79,9 +80,12 @@ export type TableBodyProps<T = any, I extends TableItem<T> = TableItem<T>> = {
   tableRef: React.RefObject<HTMLDivElement>;
 };
 
-export type TableBodyRowProps<T = any, I extends TableItem<T> = TableItem<T>> = ListItemProps<T, I> & {
+export type TableBodyRowProps<T = any, I extends TableItem<T> = TableItem<T>> = Omit<
+  ListItemProps<T, I>,
+  'CellComponent'
+> & {
   className?: string;
-  CellComponent?: React.FC<TableBodyCellProps<T, I>>;
+  CellComponent?: React.FC<Omit<TableBodyCellProps<T, I>, 'data'>>;
   columns: TableColumn<T, I>[];
   onExpand?: (item: I | undefined, index: number) => void;
   onExpanding?: (item: I | undefined, index: number) => void;
