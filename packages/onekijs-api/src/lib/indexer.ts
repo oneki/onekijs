@@ -4,7 +4,7 @@ type CategoryType = 'Components' | 'Hooks' | 'Other';
 
 export interface IndexedElement {
   element: DeclarationReflection;
-  types: string[];
+  groups: string[];
   categories: string[];
 }
 
@@ -22,7 +22,7 @@ export class Indexer {
       children.forEach((child) => {
         this.elements[child.id] = {
           element: child,
-          types: [],
+          groups: [],
           categories: [],
         };
       });
@@ -36,7 +36,7 @@ export class Indexer {
             console.error(`element with ID ${child} not found in index. This is not normal`);
             return;
           }
-          element.types.push(group.title);
+          element.groups.push(group.title);
         });
         group.categories?.forEach((category) => {
           category.children?.forEach((child) => {
@@ -52,12 +52,24 @@ export class Indexer {
     }
   }
 
+  getCategoryById(id: number) {
+    return this.elements[id]?.categories[0];
+  }
+
+  getCategoriesById(id: number) {
+    return this.elements[id]?.categories;
+  }
+
   getElementById(id: number) {
     return this.elements[id]?.element;
   }
 
+  getTypeById(id: number) {
+    return this.elements[id]?.groups[0];
+  }
+
   getTypesById(id: number) {
-    return this.elements[id]?.types;
+    return this.elements[id]?.groups;
   }
 
   isComponent(id: number): boolean {

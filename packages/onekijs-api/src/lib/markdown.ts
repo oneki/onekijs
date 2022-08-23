@@ -1,5 +1,6 @@
 import { writeFileSync } from 'fs';
 import { join } from 'path';
+import { writeFileSyncRecursive } from '../util/file';
 import { Props } from './context';
 import { ParsedElement } from './parser';
 
@@ -21,11 +22,11 @@ export class MarkdownBuilder {
       markdown += this.buildProp(prop, this.depth(this.element.props));
     });
 
-    this.writeString(`${this.element.name}.md`, markdown);
+    this.writeString(this.getOutputFilename(), markdown);
   }
 
   writeString(path: string, data: string) {
-    writeFileSync(join(this.basePath, path), data, {
+    writeFileSyncRecursive(join(this.basePath, path), data, {
       flag: 'w',
     });
   }
@@ -81,6 +82,18 @@ export class MarkdownBuilder {
 
   private buildPropDescription(prop: Props) {
     return prop.description;
+  }
+
+  private getOutputFilename() {
+    let path = '';
+    if (this.element.groups[0]) {
+      path += `${this.element.groups[0]}/`;
+    }
+    if (this.element.categories[0]) {
+      path += `${this.element.categories[0]}/`;
+    }
+    path += `${this.element.name}.md`;
+    return path;
   }
 
   private handleMandatoryProp(prop: Props) {

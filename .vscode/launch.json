@@ -7,7 +7,7 @@
         "request": "launch",
         "cwd": "${workspaceRoot}/packages/onekijs-api",
         "runtimeArgs": ["-r", "ts-node/register"],
-        "args": ["${workspaceRoot}/packages/onekijs-api/src/index.ts"]
+        "args": ["${workspaceRoot}/packages/onekijs-api/src/index.ts", "${workspaceRoot}/packages/onekijs-api/src/api/test.json", "${workspaceRoot}/packages/onekijs-api/dist"]
       }
     ]
   }

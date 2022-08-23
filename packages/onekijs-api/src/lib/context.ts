@@ -24,11 +24,15 @@ export class ElementContext implements Context {
   description: string;
   example?: string;
   defaultValue?: string;
+  groups: string[];
+  categories: string[];
 
   constructor(public name: string) {
     this.props = [];
     this.follow = false;
     this.description = '';
+    this.groups = [];
+    this.categories = [];
   }
 
   addActiveProp(prop: Props) {

@@ -10,7 +10,7 @@ import {
 } from 'typedoc/dist/lib/serialization/schema';
 import { commentToDescription, commentToExample, isToDocument } from '../util/parser';
 import ElementContext, { Props } from './context';
-import { Indexer } from './indexer';
+import { IndexedElement, Indexer } from './indexer';
 
 export type ParsedElement = Omit<ElementContext, 'propsLevel'>;
 type SpecialType = 'props' | 'toDocument';
@@ -22,8 +22,12 @@ export class ElementParser {
     this.context = new ElementContext('');
   }
 
-  parse(subject: DeclarationReflection): ParsedElement {
+  parse(indexedElement: IndexedElement): ParsedElement {
+    const subject = indexedElement.element;
     this.context.name = subject.name;
+    this.context.groups = indexedElement.groups;
+    this.context.categories = indexedElement.categories;
+
     this.handleDeclarationReflection(subject);
     if (this.indexer.isComponent(subject.id)) {
       this.handleComponent(subject);
@@ -31,6 +35,23 @@ export class ElementParser {
       // this.handleDeclarationReflection(subject);
     }
     return this.context;
+  }
+
+  protected buildLink(basePath: string, element: ReferenceType) {
+    const id = element.id;
+    if (!id) return element.name;
+    let link = `[${element.name}](${basePath}`;
+    const group = this.indexer.getTypeById(id);
+    const category = this.indexer.getCategoryById(id);
+    if (group) {
+      link += `/${group}`;
+    }
+    if (category) {
+      link += `/${category}`;
+    }
+
+    link += `/${element.name})`;
+    return link;
   }
 
   protected handleComponent(container: DeclarationReflection) {
@@ -119,12 +140,7 @@ export class ElementParser {
   }
 
   protected handleReferenceType(element: ReferenceType) {
-    const id = element.id;
-    if (id && this.indexer.getElementById(id)) {
-      this.context.appendActiveType(`[${element.name}](./${element.name})`);
-    } else {
-      this.context.appendActiveType(element.name);
-    }
+    this.context.appendActiveType(this.buildLink('.', element));
     const typeArguments = element.typeArguments;
     if (typeArguments) {
       // this is a type with generic like React.FC<...>
