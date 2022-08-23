@@ -29,7 +29,7 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
   }
 
   return (
-    <Card title="properties" initialOpen={true} >
+    <Card title="properties" open={true} >
       <Properties properties={properties} size={12} sm={3} lg={2} xl={1} />
     </Card>
   );

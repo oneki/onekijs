@@ -7,8 +7,9 @@ import {
   ValidationStatus,
 } from 'onekijs-framework';
 import React, { FC } from 'react';
+import { TshirtSize } from '../../styles/typings';
 import { DropdownWidthModifier } from '../dropdown/typings';
-import { FieldLayoutProps, FieldSize } from '../field/typings';
+import { FieldLayoutProps } from '../field/typings';
 import {
   ListConfig,
   ListItem,
@@ -30,7 +31,7 @@ export type ControllerSelectProps<
   T = any,
   I extends SelectItem<T> = SelectItem<T>,
   S extends SelectState<T, I> = SelectState<T, I>,
-  C extends SelectController<T, I, S> = SelectController<T, I, S>
+  C extends SelectController<T, I, S> = SelectController<T, I, S>,
 > = SelectConfig<T, I> & {
   controller: CollectionProxy<T, I, S, C>;
 };
@@ -45,7 +46,7 @@ export type FormSelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = 
 export type SelectController<
   T,
   I extends SelectItem<T> = SelectItem<T>,
-  S extends SelectState<T, I> = SelectState<T, I>
+  S extends SelectState<T, I> = SelectState<T, I>,
 > = Collection<T, I, S>;
 
 export interface SelectIconProps {
@@ -101,7 +102,7 @@ export type SelectProps<
   T = any,
   I extends SelectItem<T> = SelectItem<T>,
   S extends SelectState<T, I> = SelectState<T, I>,
-  C extends SelectController<T, I, S> = SelectController<T, I, S>
+  C extends SelectController<T, I, S> = SelectController<T, I, S>,
 > = SelectConfig<T, I> & {
   adapter?: SelectItemAdapter<T>;
   controller?: CollectionProxy<T, I, S, C>;
@@ -110,6 +111,7 @@ export type SelectProps<
 };
 
 export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omit<ListConfig<T, I>, 'ItemComponent'> & {
+  attachDropdownToBody?: boolean;
   InputComponent?: FC<SelectInputProps<T, I>>;
   IconComponent?: FC<SelectIconProps>;
   NotFoundComponent?: FC<SelectNotFoundProps>;
@@ -123,7 +125,7 @@ export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omi
   multiple?: boolean;
   status?: ValidationStatus;
   name?: string;
-  size?: FieldSize;
+  size?: TshirtSize;
   nullable?: boolean;
   minChars?: number;
   openOnFocus?: boolean;

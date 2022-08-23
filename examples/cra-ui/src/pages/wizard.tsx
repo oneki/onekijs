@@ -1,4 +1,4 @@
-import { Input, useForm } from 'onekijs';
+import { Input, Form, useFormController } from 'onekijs';
 import { ComponentStyle, Step, Wizard, WizardModal } from 'onekijs-ui';
 import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
@@ -15,19 +15,19 @@ const wizardStyle: ComponentStyle<{}> = () => {
 };
 
 const Page: React.FC<{ className?: string }> = ({ className }) => {
-  const { Form, values, validations, submit } = useForm((value) => console.log(value));
+  const formController = useFormController();
   const [open, setOpen] = useState(false);
 
   return (
     <>
       <button onClick={() => setOpen(!open)}>{open ? 'Close modal' : 'Open modal'}</button>
-      <Form className={className}>
+      <Form className={className} onSubmit={(value) => console.log(value)} controller={formController}>
         <WizardModal
           open={open}
           title="New Virtual Machine"
           layout="vertical"
           forwardOnly={true}
-          onDone={submit}
+          onDone={formController.submit}
           closeOnEscape={true}
           onClose={() => setOpen(false)}
           size="large"
@@ -146,10 +146,10 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
 
       </Form>
       <div>
-        <pre>{JSON.stringify(values)}</pre>
+        <pre>{JSON.stringify(formController.getValue())}</pre>
       </div>
       <div>
-        <pre>{JSON.stringify(validations)}</pre>
+        <pre>{JSON.stringify(formController.getValidation())}</pre>
       </div>
     </>
   );

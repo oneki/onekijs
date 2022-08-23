@@ -1,6 +1,6 @@
-import observeRect from '@reach/observe-rect';
-import { FCC, useIsomorphicLayoutEffect } from 'onekijs-framework';
-import React, { useCallback, useRef, useState } from 'react';
+import { FCC, useIsomorphicLayoutEffect, useThrottle } from 'onekijs-framework';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import ReactDOM from 'react-dom';
 import { usePopper } from 'react-popper';
 import { CSSTransition } from 'react-transition-group';
 import { maxWidthPopperModifier, minWidthPopperModifier, sameWidthPopperModifier } from '../../../utils/popper';
@@ -9,6 +9,7 @@ import { DropdownComponentProps } from '../typings';
 
 const DropdownComponent: FCC<DropdownComponentProps> = ({
   animationTimeout = 0,
+  attachToBody = false,
   className,
   refElement,
   open,
@@ -24,7 +25,7 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
   onCollapsing,
   placement = 'auto',
   widthModifier = 'same',
-  zIndex = 1000,
+  zIndex = 1,
 }) => {
   const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
   const popperWidthModifier =
@@ -47,30 +48,49 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
         name: 'flip',
         enabled: placement === 'auto',
       },
+      {
+        name: 'eventListeners',
+        options: {
+          scroll: true,
+          resize: true,
+        },
+      },
     ],
   });
-  const previousRectRef = useRef<DOMRect>();
+
   const triggerZIndexRef = useRef<string>();
 
-  useIsomorphicLayoutEffect(() => {
-    if (!refElement) return;
-    const observer = observeRect(refElement, (rect) => {
-      if (
-        previousRectRef.current &&
-        (previousRectRef.current.height !== rect.height || previousRectRef.current.width !== rect.width)
-      ) {
-        forceUpdate && forceUpdate();
-        onUpdate && onUpdate();
-      }
-      previousRectRef.current = rect;
+  const update = useCallback(() => {
+    forceUpdate && forceUpdate();
+    onUpdate && onUpdate();
+  }, [forceUpdate, onUpdate]);
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  const throttleUpdate = useThrottle(update, 20);
+
+  const resizeObserver = useMemo(() => {
+    return new ResizeObserver(() => {
+      throttleUpdate();
     });
+  }, [throttleUpdate]);
 
-    observer.observe();
-
+  useIsomorphicLayoutEffect(() => {
+    const el = refElement;
+    if (el) {
+      resizeObserver.observe(el);
+    }
     return () => {
-      observer.unobserve();
+      if (el) {
+        resizeObserver.unobserve(el);
+      }
     };
   }, [refElement, forceUpdate]);
+
+  useIsomorphicLayoutEffect(() => {
+    if (open) {
+      setTimeout(update, 0);
+    }
+  }, [open, update]);
 
   const classNames = addClassname(`o-dropdown-${open ? 'open' : 'close'}`, className);
 
@@ -89,6 +109,7 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
 
   const onEntered = useCallback(
     (node: HTMLElement, isAppearing: boolean) => {
+      node.style.transform = '';
       if (refElement !== null && refElement !== undefined) {
         refElement.style.zIndex = triggerZIndexRef.current || '';
       }
@@ -97,6 +118,22 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
       }
     },
     [onDropDone, refElement],
+  );
+
+  const onEntering = useCallback(
+    (node: HTMLElement, isAppearing: boolean) => {
+      node.style.transform = 'translateY(-40px)';
+      node.style.opacity = '0';
+      node.style.transition = `transform ${animationTimeout}ms ease-out, opacity ${animationTimeout}ms ease-out`;
+      setTimeout(() => {
+        node.style.opacity = '1';
+        node.style.transform = 'translateY(0px)';
+      }, 0);
+      if (onDropping) {
+        onDropping(node, isAppearing);
+      }
+    },
+    [onDropping, animationTimeout],
   );
 
   const onExit = useCallback(
@@ -111,6 +148,22 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
     [onCollapseStart, refElement, zIndex],
   );
 
+  const onExiting = useCallback(
+    (node: HTMLElement) => {
+      node.style.opacity = '1';
+      node.style.transform = 'translateY(0px)';
+      node.style.transition = `transform ${animationTimeout}ms ease-in, opacity ${animationTimeout}ms ease-in`;
+      setTimeout(() => {
+        node.style.opacity = '0';
+        node.style.transform = 'translateY(-40px)';
+      }, 0);
+      if (onCollapsing) {
+        onCollapsing(node);
+      }
+    },
+    [onCollapsing, animationTimeout],
+  );
+
   const onExited = useCallback(
     (node: HTMLElement) => {
       if (refElement !== null && refElement !== undefined) {
@@ -123,7 +176,7 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
     [onCollapseDone, refElement],
   );
 
-  return (
+  const element = (
     <div
       style={styles.popper}
       {...attributes.popper}
@@ -139,16 +192,22 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
         appear={false}
         unmountOnExit={true}
         onEnter={onEnter}
-        onEntering={onDropping}
+        onEntering={onEntering}
         onEntered={onEntered}
         onExit={onExit}
         onExited={onExited}
-        onExiting={onCollapsing}
+        onExiting={onExiting}
       >
         <div className="o-dropdown">{children}</div>
       </CSSTransition>
     </div>
   );
+
+  if (attachToBody) {
+    return <> {ReactDOM.createPortal(element, document.body)}</>;
+  } else {
+    return <>{element}</>;
+  }
 };
 
 export default DropdownComponent;

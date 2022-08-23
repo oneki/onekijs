@@ -2,11 +2,22 @@ import { useEffect, useReducer, useRef } from 'react';
 import useLazyRef from '../core/useLazyRef';
 import { ValidationStatus } from '../types/form';
 import { AnonymousObject } from '../types/object';
-import { diffArrays, get, set } from '../utils/object';
+import { diffArrays, set } from '../utils/object';
+import { generateUniqueId } from '../utils/string';
 import ContainerValidation from './ContainerValidation';
 import FieldValidation from './FieldValidation';
-import { FieldContainer, FormContext, FormListenerProps, ValidationCode } from './typings';
-import useFormContext from './useFormContext';
+import FormService from './FormService';
+import {
+  FieldContainer,
+  FieldOptions,
+  FieldProps,
+  FormListenerProps,
+  FormValidationListener,
+  FormValueListener,
+  ValidationCode,
+  Validator,
+} from './typings';
+import useForm from './useForm';
 
 const useFieldContainer = ({
   onValueChange,
@@ -31,85 +42,92 @@ const useFieldContainer = ({
   const valueRef = useRef<AnonymousObject<any>>({});
   const valueListenersRef = useRef<AnonymousObject<FormListenerProps>>({});
   const validationListenersRef = useRef<AnonymousObject<FormListenerProps>>({});
-  const context = useFormContext();
+  const form = useForm();
   const [, forceRender] = useReducer((s) => s + 1, 0);
 
-  const containerContextRef = useLazyRef<FormContext>(() => {
-    const result = Object.assign({}, context);
-    result.init = (name, validators = [], options = {}) => {
-      const field = context.init(name, validators, options);
-      field.value = get(context.valuesRef.current, name, '');
-      if (!fieldsRef.current.includes(name)) {
-        fieldsRef.current.push(name);
-        set(valueRef.current, name, field.value);
-      }
-      return field;
+  const containerContextRef = useLazyRef<FormService>(() => {
+    const handler = {
+      get: function (target: FormService, prop: string | number | symbol, receiver?: FormService): any {
+        if (prop === 'init') {
+          return (
+            name: string,
+            validators: AnonymousObject<Validator> = {},
+            options: FieldOptions = {},
+          ): FieldProps => {
+            const field = form.initField(name, validators, options);
+            field.value = form.getValue(name, '');
+            if (!fieldsRef.current.includes(name)) {
+              fieldsRef.current.push(name);
+              set(valueRef.current, name, field.value);
+            }
+            return field;
+          };
+        } else {
+          return Reflect.get(target, prop, receiver);
+        }
+      },
     };
-    return result;
+    return new Proxy(form, handler);
   });
 
   useEffect(() => {
     const diff = diffArrays(Object.keys(valueListenersRef.current), fieldsRef.current);
     diff.removed.forEach((fieldName) => {
-      context.offValueChange(
-        valueListenersRef.current[fieldName].listener,
-        valueListenersRef.current[fieldName].watchs,
-      );
-      context.offValidationChange(
-        validationListenersRef.current[fieldName].listener,
-        validationListenersRef.current[fieldName].watchs,
-      );
+      form.offValueChange(valueListenersRef.current[fieldName].id);
+      form.offValidationChange(validationListenersRef.current[fieldName].id);
       delete valueListenersRef.current[fieldName];
       delete validationListenersRef.current[fieldName];
     });
 
     diff.added.forEach((fieldName) => {
-      const valueListener = (fieldName: string) => {
-        return (fieldValue: any) => {
-          set(valueRef.current, fieldName, fieldValue);
+      const valueListener = (fieldName: string): FormValueListener => {
+        return (value) => {
+          set(valueRef.current, fieldName, value);
           if (onValueChange) {
-            onValueChange(fieldName, fieldValue);
+            onValueChange(fieldName, value);
           } else {
             forceRender();
           }
         };
       };
+      const valueChangeId = generateUniqueId();
       const valueFieldListener = valueListener(fieldName);
-      context.onValueChange(valueFieldListener, [fieldName]);
+      form.onValueChange(valueChangeId, valueFieldListener, [fieldName]);
       valueListenersRef.current[fieldName] = {
+        id: valueChangeId,
         listener: valueFieldListener,
-        watchs: [fieldName],
       };
 
-      const validationListener = (fieldName: string) => {
-        return (fieldValidation: FieldValidation) => {
-          fieldValidationsRef.current[fieldName] = fieldValidation;
-          console.log(fieldValidationsRef.current, context.fields);
-          touchedValidationRef.current = context.getContainerFieldValidation(
+      const validationListener = (fieldName: string): FormValidationListener => {
+        return (validation) => {
+          fieldValidationsRef.current[fieldName] = validation;
+          console.log(fieldValidationsRef.current, form.fields);
+          touchedValidationRef.current = form.getContainerFieldValidation(
             fieldValidationsRef.current,
-            context.fields,
+            form.fields,
             '',
             true,
           );
-          allValidationRef.current = context.getContainerFieldValidation(
+          allValidationRef.current = form.getContainerFieldValidation(
             fieldValidationsRef.current,
-            context.fields,
+            form.fields,
             '',
             false,
           );
           if (onValidationChange) {
-            onValidationChange(fieldName, fieldValidation, touchedValidationRef.current, allValidationRef.current);
+            onValidationChange(fieldName, validation, touchedValidationRef.current, allValidationRef.current);
           } else {
             forceRender();
           }
         };
       };
 
+      const validationChangeId = generateUniqueId();
       const validationFieldListener = validationListener(fieldName);
-      context.onValidationChange(validationFieldListener, [fieldName]);
+      form.onValidationChange(validationChangeId, validationFieldListener, [fieldName]);
       validationListenersRef.current[fieldName] = {
+        id: validationChangeId,
         listener: validationFieldListener,
-        watchs: [fieldName],
       };
     });
   });
@@ -117,16 +135,12 @@ const useFieldContainer = ({
   useEffect(() => {
     return () => {
       // eslint-disable-next-line
-      Object.values(valueListenersRef.current).forEach((listener) =>
-        context.offValueChange(listener.listener, listener.watchs),
-      );
+      Object.values(valueListenersRef.current).forEach((listener) => form.offValueChange(listener.id));
 
       // eslint-disable-next-line
-      Object.values(validationListenersRef.current).forEach((listener) =>
-        context.offValidationChange(listener.listener, listener.watchs),
-      );
+      Object.values(validationListenersRef.current).forEach((listener) => form.offValidationChange(listener.id));
     };
-  }, [context]);
+  }, [form]);
 
   return {
     context: containerContextRef.current,

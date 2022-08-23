@@ -1,7 +1,7 @@
 import React from 'react';
 import { FormLayout } from 'onekijs-framework';
-import { FieldDescriptionProps, FieldHelpProps, FieldSize } from '../field/typings';
-import { GridSize } from '../grid/typings';
+import { FieldDescriptionProps, FieldHelpProps } from '../field/typings';
+import { TshirtSize } from '../../styles/typings';
 
 export interface LabelProps {
   className?: string;
@@ -13,6 +13,5 @@ export interface LabelProps {
   layout?: FormLayout;
   required?: boolean;
   text: string;
-  width?: GridSize;
-  size?: FieldSize;
+  size?: TshirtSize;
 }

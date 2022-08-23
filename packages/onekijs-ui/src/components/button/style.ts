@@ -5,7 +5,7 @@ import { backgroundColor } from '../../styles/background';
 import { borderColor, borderRadius, borderStyle, borderWidth } from '../../styles/border';
 import { display } from '../../styles/display';
 import { opacity } from '../../styles/effects';
-import { cursor } from '../../styles/interactivity';
+import { cursor, outline } from '../../styles/interactivity';
 import { position } from '../../styles/position';
 import { marginLeft, paddingLeft, paddingX, paddingY } from '../../styles/spacing';
 import { ComponentStyle } from '../../styles/typings';
@@ -71,6 +71,7 @@ const buttonStyle: ComponentStyle<ButtonProps> = ({
       ${fontSize(t.fontSize)}
       ${opacity(disabled ? 0.6 : 1)}
       ${marginLeft(IconComponent ? 'xs' : 'none')}
+      ${outline('none')}
     }
   `;
 };

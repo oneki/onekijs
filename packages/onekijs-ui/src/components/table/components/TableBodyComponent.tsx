@@ -37,7 +37,7 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
     controller: service,
     height: height,
     ref: tableRef,
-    overscan: service.step === 'mounted' ? 1 : 20,
+    overscan: 20,
     itemHeight,
     preload,
     increment,
@@ -70,7 +70,7 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
     return <LoadingComponent />;
   }
 
-  if (service.status === LoadingStatus.Loaded && items.length === 0) {
+  if (service.status === LoadingStatus.Loaded && items.length === 0 && NotFoundComponent) {
     return <NotFoundComponent />;
   }
 

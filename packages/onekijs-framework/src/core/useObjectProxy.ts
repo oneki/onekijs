@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { AnonymousObject } from '../types/object';
+import { get } from '../utils/object';
 import { isFunction } from '../utils/type';
 import Service from './Service';
 import useLazyRef from './useLazyRef';
@@ -29,29 +30,29 @@ const useObjectProxy = <R>(object: AnonymousObject | Service, options: useObject
     keys = keys.filter((k) => !(mutableKeys.includes(k) || omitKeys.includes(k)));
 
     return keys.reduce((accumulator, prop) => {
-      if (isFunction(object[prop])) {
-        accumulator[prop] = object[prop].bind(object);
+      if (isFunction(get(object, prop))) {
+        accumulator[prop] = get(object, prop).bind(object);
       } else {
-        accumulator[prop] = object[prop];
+        accumulator[prop] = get(object, prop);
       }
       return accumulator;
     }, {} as AnonymousObject);
   });
 
-  const mutables = mutableKeys.map((k) => object[k]);
+  const mutables = mutableKeys.map((k) => get(object, k));
 
-  const proxy = (useMemo(() => {
+  const proxy = useMemo(() => {
     const mutables = mutableKeys.reduce((accumulator, prop) => {
-      if (isFunction(object[prop])) {
-        accumulator[prop] = object[prop].bind(object);
+      if (isFunction(get(object, prop))) {
+        accumulator[prop] = get(object, prop).bind(object);
       } else {
-        accumulator[prop] = object[prop];
+        accumulator[prop] = get(object, prop);
       }
       return accumulator;
     }, {} as AnonymousObject);
     return Object.assign({}, immutables.current, mutables);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, mutables) as unknown) as R;
+  }, mutables) as unknown as R;
 
   return proxy;
 };

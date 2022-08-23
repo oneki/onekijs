@@ -1,4 +1,4 @@
-import { BasicError, DefaultBasicError, Input, useForm } from 'onekijs';
+import { BasicError, DefaultBasicError, Form, Input, useFormController } from 'onekijs';
 import { ComponentStyle, DropdownButton, MenuIcon, Modal, Step, Wizard } from 'onekijs-ui';
 import React, { useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
@@ -76,12 +76,13 @@ const ActionMenuComponent: ActionMenu<ActionProps> = ({ items }) => {
 };
 
 const Item1: ActionMenuItem<ActionProps> = ({ title, onSuccess, onError }) => {
-  const { Form, submit } = useForm(() => onSuccess(title, 0), {
-    onError: () => onError(title, new DefaultBasicError('error')),
-  });
+  // const { Form, submit } = useForm(() => onSuccess(title, 0), {
+  //   onError: () => onError(title, new DefaultBasicError('error')),
+  // });
+  const formController = useFormController();
   return (
-    <Form>
-      <Wizard title={title} onDone={submit}>
+    <Form controller={formController} onSubmit={() => onSuccess(title, 0)} onError={() => onError(title, new DefaultBasicError('error'))} >
+      <Wizard title={title} onDone={formController.submit}>
         <Step title="Item1-step1">
           <Input name="firstname" />
         </Step>
@@ -94,18 +95,26 @@ Item1.title = 'Item1';
 Item1.size = 'medium';
 
 const Item2: ActionMenuItem<ActionProps> = ({ title, onSuccess, onError }) => {
-  const { Form, submit } = useForm(
-    async function () {
-      await new Promise((r) => setTimeout(r, 5000));
-      onSuccess(title, 0);
-    },
-    {
-      onError: () => onError(title, new DefaultBasicError('error')),
-    },
-  );
+  // const { Form, submit } = useForm(
+  //   async function () {
+  //     await new Promise((r) => setTimeout(r, 5000));
+  //     onSuccess(title, 0);
+  //   },
+  //   {
+  //     onError: () => onError(title, new DefaultBasicError('error')),
+  //   },
+  // );
+
+  async function onSubmit() {
+    await new Promise((r) => setTimeout(r, 5000));
+    onSuccess(title, 0);
+  }
+
+  const formController = useFormController();
+
   return (
-    <Form>
-      <Wizard title={title} onDone={submit}>
+    <Form controller={formController} onSubmit={onSubmit} onError={() => onError(title, new DefaultBasicError('error'))}>
+      <Wizard title={title} onDone={formController.submit}>
         <Step title="Step1">
           <Input name="firstname" required={true} />
         </Step>

@@ -1,24 +1,8 @@
-import {
-  addClassname,
-  alignItems,
-  backgroundColor,
-  borderRadius,
-  borderWidth,
-  color,
-  cursor,
-  display,
-  fontSize,
-  Input,
-  InputProps,
-  justifyContent,
-  padding,
-  paddingX,
-  paddingY,
-  SearchIcon,
-  width,
-} from 'onekijs-ui';
-import React from 'react';
-import styled, { css } from 'styled-components';
+
+import { Form, useFormController } from "onekijs";
+import { addClassname, alignItems, backgroundColor, borderRadius, color, cursor, display, FormInput, InputProps, justifyContent, SearchIcon, width } from "onekijs-ui";
+import styled, { css } from "styled-components";
+
 
 const SearchComponent: React.FC<InputProps> = ({ className }) => {
   return (
@@ -37,34 +21,98 @@ const StyledSearchComponent = styled(SearchComponent)`
     ${justifyContent('center')}
     ${cursor('pointer')}
     ${backgroundColor('inherit', {
-      hover: 'primary'
+      hover: 'primary',
     })}
     ${color('primary', {
-      hover: 'white'
+      hover: 'white',
     })}
   `}
 `;
 
-const StyledInput = styled(Input)`
-  ${css`
-    ${backgroundColor('#f6f6f6')}
-    ${borderWidth(0)}
-    ${borderRadius('none')}
-    ${padding(0)}
-    .o-input-field {
-      ${paddingY('xs')}
-      ${paddingX('xs')}
-    }
-    ${fontSize('14px')}
-  `}
-`;
 
 export const InputPage = () => {
+  const formController1 = useFormController();
+  const formController2 = useFormController();
   return (
-    <div style={{ display: 'flex', justifyContent: 'center' }}>
-      <div style={{ width: '300px' }}>
-        <StyledInput name="toto" size="large" PrefixComponent={StyledSearchComponent} />
-      </div>
-    </div>
+    <>
+      <Form style={{ display: 'flex', justifyContent: 'center' }} controller={formController1} onSubmit={() => {}}>
+        <div style={{ width: '300px' }}>
+          <FormInput
+            name="toto"
+            label="Extra Small Input"
+            help="test"
+            size="xsmall"
+            PrefixComponent={StyledSearchComponent}
+          />
+          <FormInput
+            name="toto1"
+            label="Small Input"
+            help="test"
+            size="small"
+            PrefixComponent={StyledSearchComponent}
+          />
+          <FormInput
+            name="toto2"
+            label="Medium Input"
+            help="test"
+            size="medium"
+            PrefixComponent={StyledSearchComponent}
+          />
+          <FormInput
+            name="toto3"
+            label="Large Input"
+            help="test"
+            size="large"
+            PrefixComponent={StyledSearchComponent}
+          />
+          <FormInput
+            name="toto4"
+            label="Extra Large Input"
+            help="test"
+            size="xlarge"
+            PrefixComponent={StyledSearchComponent}
+          />
+        </div>
+      </Form>
+      <Form style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }} controller={formController2} onSubmit={() => {}} layout="horizontal">
+        <div style={{ width: '800px' }}>
+          <FormInput
+            name="toto"
+            label="Extra Small Input"
+            help="test"
+            size="xsmall"
+            PrefixComponent={StyledSearchComponent}
+          />
+          <FormInput
+            name="toto1"
+            label="Small Input"
+            help="test"
+            size="small"
+            PrefixComponent={StyledSearchComponent}
+          />
+          <FormInput
+            name="toto2"
+            label="Medium Input"
+            help="test"
+            size="medium"
+            PrefixComponent={StyledSearchComponent}
+          />
+          <FormInput
+            name="toto3"
+            label="Large Input"
+            help="test"
+            size="large"
+            PrefixComponent={StyledSearchComponent}
+          />
+          <FormInput
+            name="toto4"
+            label="Extra Large Input"
+            help="test"
+            size="xlarge"
+            PrefixComponent={StyledSearchComponent}
+          />
+        </div>
+      </Form>
+    </>
   );
 };

@@ -1,20 +1,32 @@
+import { useEffect, useRef } from 'react';
+import { AnonymousObject } from '../types/object';
+import { FieldOptions, FieldProps, Validator } from './typings';
+import useForm from './useForm';
 import useValue from './useValue';
-import useFormContext from './useFormContext';
-import { FieldOptions, Validator, FieldProps } from './typings';
-import { useEffect } from 'react';
 
-const useField = (fieldName: string, validators: Validator[] = [], options: FieldOptions = {}): FieldProps => {
-  const { init, initializedRef } = useFormContext();
-  const field = init(fieldName, validators, options);
+const useField = (
+  fieldName: string,
+  validators: AnonymousObject<Validator> = {},
+  options: FieldOptions = {},
+): FieldProps => {
+  const form = useForm();
+  const field = form.initField(fieldName, validators, options);
   const value = useValue(fieldName);
   field.value = value === undefined ? (options.defaultValue === undefined ? '' : options.defaultValue) : value;
+  const optionsRef = useRef<FieldOptions>(options);
+  const nameRef = useRef<string>(fieldName);
 
   useEffect(() => {
-    if (initializedRef.current) {
+    if (!form.initializing) {
       field.onChange(field.value);
+      if (optionsRef.current.disabled) {
+        form.setMetadata(nameRef.current, 'disabled', optionsRef.current.disabled);
+      }
+      if (optionsRef.current.visible === false) {
+        form.setMetadata(nameRef.current, 'visible', optionsRef.current.visible);
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [field, form]);
 
   return field;
 };

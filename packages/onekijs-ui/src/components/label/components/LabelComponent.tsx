@@ -18,7 +18,7 @@ const LabelComponent: React.FC<LabelProps> = React.memo(
         <div className={classNames}>
           <label {...labelProps}>{text}</label>
           {required && <span className="o-marker-required">*</span>}
-          <HelpComponent content={help} visible={help ? true : false} />
+          <HelpComponent content={help} visible={help ? true : false} size={size} />
         </div>
       );
     } else if (layout === 'horizontal') {

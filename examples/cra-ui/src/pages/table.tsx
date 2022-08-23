@@ -1,5 +1,5 @@
-import { FormSubmitCallback, SubmitButton, useForm } from 'onekijs';
-import { Button, Card, ComponentStyle, FormTable, Table, useInputColumn, useSelectColumn, useTableController } from 'onekijs-ui';
+import { FormSubmitCallback, useFormController } from 'onekijs';
+import { Card, ComponentStyle, Table, useInputColumn, useSelectColumn, useTableController } from 'onekijs-ui';
 import React from 'react';
 import styled, { css } from 'styled-components';
 import { users } from '../data/users';
@@ -45,18 +45,17 @@ const u = [
 ];
 
 const ExpandedComponent = () => {
-  return <div></div>
-}
+  return <div></div>;
+};
 
 const Page: React.FC<{ className?: string }> = ({ className }) => {
   const onSubmit: FormSubmitCallback = (data) => {
     console.log(data);
   };
-  const { Form, values } = useForm(onSubmit, {
-    initialValues: {
-      addresses,
-      users: u,
-    },
+
+  const formController = useFormController({
+    addresses,
+    users: u,
   });
 
   const streetColumn = useInputColumn({
@@ -91,40 +90,44 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
 
   const controller = useTableController(undefined, [streetColumn, stateColumn]);
 
-  const controller2 = useTableController(users,  [
-      {
-        id: 'id',
-        minWidth: '50px',
-        maxWidth: '50px',
-        title: 'ID',
-      },
-      {
-        id: 'firstname',
-        width: '10px',
-        title: 'Firstname',
-      },
-      {
-        id: 'lastname',
-        width: '20px',
-        title: 'Lastname',
-      },
-      {
-        id: 'address.street',
-        width: '600px',
-        //title: 'Street',
-        filterable: true,
-        sortable: false,
-      },
-      {
-        id: 'address.postalCode',
-        title: 'Postal Code',
-      },
-      {
-        id: 'address.city',
-        title: 'City',
-      },
-    ],
-  );
+  const controller2 = useTableController(users, [
+    {
+      id: 'id',
+      width: '50px',
+      title: 'ID',
+    },
+    {
+      id: 'firstname',
+      title: 'Firstname',
+      weight: 10,
+    },
+    {
+      id: 'lastname',
+      title: 'Lastname',
+      minWidth: '150px',
+      weight: 10,
+    },
+    {
+      id: 'address.street',
+      //title: 'Street',
+      filterable: true,
+      sortable: false,
+      minWidth: '150px',
+      weight: 10,
+    },
+    {
+      id: 'address.postalCode',
+      title: 'Postal Code',
+      minWidth: '100px',
+      weight: 5,
+    },
+    {
+      id: 'address.city',
+      title: 'City',
+      minWidth: '150px',
+      weight: 2,
+    },
+  ]);
 
   return (
     <Card title="table">

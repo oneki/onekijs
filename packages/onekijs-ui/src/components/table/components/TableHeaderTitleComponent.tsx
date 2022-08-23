@@ -1,10 +1,10 @@
 import React, { FC, useEffect, useRef } from 'react';
 import { addClassname } from '../../../utils/style';
-import { TableHeaderCellProps } from '../typings';
+import { useTableConfig } from '../hooks/useTableConfig';
 import useTableService from '../hooks/useTableService';
+import { TableHeaderCellProps } from '../typings';
 import { getCellWidth } from '../util';
 import TableSortComponent from './TableSortComponent';
-import { useTableConfig } from '../hooks/useTableConfig';
 
 export const DefaultTableHeaderTitleComponent: FC<TableHeaderCellProps> = ({ column, sort }) => {
   const service = useTableService();
@@ -42,7 +42,7 @@ const TableHeaderTitleComponent: FC<TableHeaderCellProps> = React.memo((props) =
 
   useEffect(() => {
     if (!initializedRef.current && ref.current !== null) {
-      initializedRef.current = service.initCell('header-title', column.id, ref);
+      service.initCell('header-title', column.id, ref);
     }
   });
 

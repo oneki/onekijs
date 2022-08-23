@@ -31,9 +31,10 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
   return css`
     ${preflight()}
     ${width('100%')}
-    ${position('relative')}
+
     &.o-select-status-error {
-      .o-select-input-container, .o-select-input-container.o-select-input-focus {
+      .o-select-input-container,
+      .o-select-input-container.o-select-input-focus {
         ${borderColor('danger')}
       }
       .o-select-icon-container {
@@ -42,7 +43,42 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
         }
       }
     }
+    &.o-select-status-warning {
+      .o-select-input-container,
+      .o-select-input-container.o-select-input-focus {
+        ${borderColor('warning')}
+      }
+      .o-select-icon-container {
+        .o-select-icon {
+          ${color('warning')}
+        }
+      }
+    }
+    &.o-select-status-success {
+      .o-select-input-container,
+      .o-select-input-container.o-select-input-focus {
+        ${borderColor('success')}
+      }
+      .o-select-icon-container {
+        .o-select-icon {
+          ${color('success')}
+        }
+      }
+    }
     &.o-select-size-xsmall {
+      .o-select-input-wrapper {
+        ${paddingY(0)}
+      }
+      .o-select-input {
+        ${paddingY(0)}
+        ${fontSize('xs')}
+      }
+      .o-select-token {
+        ${paddingY(0)}
+        ${marginY('px')}
+      }
+    }
+    &.o-select-size-small {
       .o-select-input-wrapper {
         ${paddingY(0)}
       }
@@ -55,30 +91,17 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
         ${marginY('px')}
       }
     }
-    &.o-select-size-small {
-      .o-select-input-wrapper {
-        ${paddingY('xs')}
-      }
-      .o-select-input {
-        ${paddingY('xs')}
-        ${fontSize('sm')}
-      }
-      .o-select-token {
-        ${paddingY(0)}
-        ${marginY('xs')}
-      }
-    }
     &.o-select-size-medium {
       .o-select-input-wrapper {
-        ${paddingY('sm')}
+        ${paddingY('xs')}
       }
       .o-select-input {
-        ${paddingY('sm')}
-        ${fontSize('base')}
+        ${paddingY('xs')}
+        ${fontSize('default')}
       }
       .o-select-token {
-        ${paddingY('xs')}
-        ${marginY('2xs')}
+        ${paddingY('0')}
+        ${marginY('xs')}
       }
     }
     &.o-select-size-large {
@@ -87,7 +110,7 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
       }
       .o-select-input {
         ${paddingY('md')}
-        ${fontSize('base')}
+        ${fontSize('md')}
       }
       .o-select-token {
         ${paddingY('sm')}
@@ -134,7 +157,7 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
       }
     }
     &.o-select-close {
-      .o-select-input{
+      .o-select-input {
         ${clickable ? cursor('pointer') : ''}
       }
     }
@@ -241,7 +264,6 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
           }
         }
       }
-
     }
 
     .o-select-not-found {
@@ -251,7 +273,8 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
       ${padding('4xl')}
       ${color('primary')}
     }
-    .o-select-options, .o-select-not-found {
+    .o-select-options,
+    .o-select-not-found {
       ${borderRadius('md')}
       ${borderTopLeftRadius(0)}
       ${borderTopRightRadius(0)}
@@ -263,11 +286,10 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
       ${borderTopWidth(0)}
     }
 
-
     .o-select-options {
       scrollbar-width: thin;
-      scrollbar-color: ${(props) => props.theme.palette.colors[props.theme.colors.primary]} ${(props) =>
-    props.theme.colors['gray-200']};
+      scrollbar-color: ${(props) => props.theme.palette.colors[props.theme.colors.primary]}
+        ${(props) => props.theme.colors['gray-200']};
       &::-webkit-scrollbar {
         width: 12px;
       }
@@ -316,7 +338,6 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
         }
       }
     }
-
   `;
 };
 

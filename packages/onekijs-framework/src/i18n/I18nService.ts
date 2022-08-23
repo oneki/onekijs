@@ -14,7 +14,8 @@ import { isFunction } from '../utils/type';
 @service
 export default class I18nService extends DefaultGlobalService {
   notificationService: NotificationService;
-  modifiers: AnonymousObject<any>;
+  modifiers: AnonymousObject;
+  fetching: AnonymousObject;
 
   constructor(notificationService: NotificationService) {
     super();

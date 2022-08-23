@@ -4,7 +4,7 @@ import { FieldLayoutProps } from './typings';
 export const extractFieldLayoutProps = (
   props: AnonymousObject,
 ): {
-  validators: Validator[];
+  validators: AnonymousObject<Validator>;
   fieldLayoutProps: FieldLayoutProps;
   name: string;
   fieldOptions: FieldOptions;
@@ -27,7 +27,7 @@ export const extractFieldLayoutProps = (
     'required',
     'size',
   ];
-  const fieldOptionsKeys = ['defaultValue', 'touchedOn'];
+  const fieldOptionsKeys = ['defaultValue', 'touchedOn', 'disabled', 'visible'];
   Object.keys(nonValidatorProps).forEach((k) => {
     if (fieldLayoutKeys.includes(k)) {
       (fieldLayoutProps as any)[k] = props[k];

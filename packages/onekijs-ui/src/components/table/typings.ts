@@ -3,14 +3,18 @@ import {
   CollectionBroker,
   CollectionBy,
   CollectionProxy,
-  FormContext,
+  FormFieldProps,
   Item,
   ItemAdaptee,
   QueryFilterOrCriteria,
   QuerySortBy,
   UseCollectionOptions,
+  ValidationStatus,
 } from 'onekijs-framework';
 import React, { FC } from 'react';
+import { TshirtSize } from '../../styles/typings';
+import { CheckboxProps } from '../checkbox/typings';
+import { FieldLayoutProps } from '../field/typings';
 import { InputProps } from '../input/typings';
 import { ListItemProps, ListItems, ListNotFoundProps, ListState, UseListOptions } from '../list/typings';
 import { SelectItem, SelectProps } from '../select/typings';
@@ -37,14 +41,25 @@ export type FormTableProps<
   I extends TableItem<T> = TableItem<T>,
   S extends TableState<T, I> = TableState<T, I>,
   C extends TableController<T, I, S> = TableController<T, I, S>,
-> = ControllerTableProps<T, I, S, C> & {
-  name: string;
-  format?: 'id' | 'object' | 'auto';
-};
+> = ControllerTableProps<T, I, S, C> &
+  FormFieldProps &
+  FieldLayoutProps & {
+    addLabel?: string;
+    format?: 'id' | 'object' | 'auto';
+    defaultValue?: T[];
+    FieldComponent?: React.FC<FormTableProps<T, I, S, C>>;
+    value?: T[];
+    onFocus?: () => void;
+    onBlur?: () => void;
+    onChange?: (value: T[]) => void;
+    status?: ValidationStatus;
+    size?: TshirtSize;
+  };
 
-export type FormTableContext<T = any> = FormContext & {
+export type FormTableContext<T = any> = {
   tableName: string;
   onSelect: (item: TableItem<T>, selected: boolean) => void;
+  addLabel: string;
 };
 
 export type TableBodyCellProps<T = any, I extends TableItem<T> = TableItem<T>> = {
@@ -54,6 +69,7 @@ export type TableBodyCellProps<T = any, I extends TableItem<T> = TableItem<T>> =
   rowId?: string | number;
   rowIndex: number;
   item: I;
+  data: T;
 };
 
 export type Cell<T = any, I extends TableItem<T> = TableItem<T>> = FC<TableBodyCellProps<T, I>>;
@@ -66,9 +82,12 @@ export type TableBodyProps<T = any, I extends TableItem<T> = TableItem<T>> = {
   tableRef: React.RefObject<HTMLDivElement>;
 };
 
-export type TableBodyRowProps<T = any, I extends TableItem<T> = TableItem<T>> = ListItemProps<T, I> & {
+export type TableBodyRowProps<T = any, I extends TableItem<T> = TableItem<T>> = Omit<
+  ListItemProps<T, I>,
+  'CellComponent'
+> & {
   className?: string;
-  CellComponent?: Cell<T, I>;
+  CellComponent?: React.FC<Omit<TableBodyCellProps<T, I>, 'data'>>;
   columns: TableColumn<T, I>[];
   onExpand?: (item: I | undefined, index: number) => void;
   onExpanding?: (item: I | undefined, index: number) => void;
@@ -79,9 +98,9 @@ export type TableBodyRowProps<T = any, I extends TableItem<T> = TableItem<T>> = 
 };
 
 export type TableConfig<T = any, I extends TableItem<T> = TableItem<T>> = {
-  className?: string;
   bodyClassName?: string;
   BodyComponent?: React.FC<TableBodyProps<T, I>>;
+  className?: string;
   ExpandedComponent?: React.FC<TableExpandedProps<T, I>>;
   filterable?: boolean;
   fit?: boolean;
@@ -98,7 +117,7 @@ export type TableConfig<T = any, I extends TableItem<T> = TableItem<T>> = {
   increment?: number;
   LoadingComponent?: React.FC;
   LoadingRowComponent?: React.FC;
-  NotFoundComponent?: React.FC<TableNotFoundProps>;
+  NotFoundComponent?: React.FC<TableNotFoundProps> | null;
   onRowClick?: TableRowHandler<T, I>;
   onRowEnter?: TableRowHandler<T, I>;
   onRowLeave?: TableRowHandler<T, I>;
@@ -123,15 +142,13 @@ export type TableController<
     rowIndex: number | 'header-title' | 'header-filter' | 'footer',
     colId: string,
     ref: React.RefObject<HTMLDivElement>,
-  ): boolean;
-  onMount(tableRef: React.RefObject<HTMLDivElement>, contentRef: React.RefObject<HTMLDivElement>): void;
+  ): void;
   removeColumn(id: string): void;
   removeSelected<B extends keyof CollectionBy<T, I>>(
     by: B,
     target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
   ): I[];
   setSelected<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
-  step: 'unmounted' | 'mounted' | 'initializing';
   toggle(item: I): void;
 };
 
@@ -153,6 +170,7 @@ export type TableColumnSpec<T, I extends TableItem<T> = TableItem<T>> = {
   sortable?: boolean;
   title?: string;
   TitleComponent?: React.FC<TableHeaderCellProps<T, I>>;
+  weight?: number;
   width?: string;
 };
 
@@ -245,6 +263,8 @@ export type TableColumnsState<T = any, I extends TableItem<T> = TableItem<T>> = 
   columns: TableColumn<T, I>[];
 };
 
+export type CheckboxColumn<T = any, I extends TableItem<T> = TableItem<T>> = TableColumn<T, I>;
+
 export type InputColumn<T = any, I extends TableItem<T> = TableItem<T>> = TableColumn<T, I>;
 
 export type SelectColumn<T = any, I extends TableItem<T> = TableItem<T>> = TableColumn<T, I> & {
@@ -258,11 +278,24 @@ export type UseLinkColumnOptions<T = any, I extends TableItem<T> = TableItem<T>>
   href: string | ((item: I) => string);
 };
 
+export type UseCheckboxColumnOptions<T = any, I extends TableItem<T> = TableItem<T>> = Omit<
+  TableColumnSpec<T, I>,
+  'CellComponent'
+> &
+  Omit<FormFieldProps, 'name'> &
+  Omit<CheckboxProps, 'className' | 'onFocus' | 'onChange' | 'onBlur' | 'defaultValue'> & {
+    CellComponent?: (options: UseCheckboxColumnOptions<T, I>) => React.FC<TableBodyCellProps<T, I>>;
+    defaultValue?: boolean;
+  };
+
 export type UseInputColumnOptions<T = any, I extends TableItem<T> = TableItem<T>> = Omit<
   TableColumnSpec<T, I>,
   'CellComponent'
 > &
-  Omit<InputProps, 'className' | 'onFocus' | 'onChange' | 'onBlur'>;
+  Omit<FormFieldProps, 'name'> &
+  Omit<InputProps, 'className' | 'onFocus' | 'onChange' | 'onBlur'> & {
+    CellComponent?: (options: UseInputColumnOptions<T, I>) => React.FC<TableBodyCellProps<T, I>>;
+  };
 
 export type UseSelectColumnOptions<
   T = any,
@@ -271,8 +304,13 @@ export type UseSelectColumnOptions<
   FI extends SelectItem<F> = SelectItem<F>,
 > = Omit<TableColumnSpec<T, I>, 'CellComponent'> &
   Omit<SelectProps, 'className' | 'onFocus' | 'onChange' | 'onBlur' | 'items'> &
+  Omit<FormFieldProps, 'name'> &
   UseCollectionOptions<F, FI> & {
     dataSource: string | F[];
+    CellComponent?: (
+      options: UseSelectColumnOptions<F, FI>,
+      broker: CollectionBroker<F, FI>,
+    ) => React.FC<TableBodyCellProps<T, I>>;
   };
 
 export type UseTableOptions<T = any, I extends TableItem<T> = TableItem<T>> = UseListOptions<T, I> & {

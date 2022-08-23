@@ -7,8 +7,8 @@ import TogglerIcon from '../../icon/TogglerIcon';
 import { DropDownButtonProps } from '../typings';
 
 const DropdownButtonComponent: FC<DropDownButtonProps> = ({
-  onClick,
   animationTimeout = 200,
+  attachDropdownToBody = false,
   distance = 0,
   placement = 'bottom',
   className,
@@ -16,7 +16,7 @@ const DropdownButtonComponent: FC<DropDownButtonProps> = ({
   listElement,
   open,
   skidding,
-  onUpdate,
+  onClick,
   onDrop,
   onDropStart,
   onDropping,
@@ -25,6 +25,7 @@ const DropdownButtonComponent: FC<DropDownButtonProps> = ({
   onCollapseStart,
   onCollapseDone,
   onCollapsing,
+  onUpdate,
   widthModifier,
   zIndex = 1000,
   ...buttonProps
@@ -59,6 +60,7 @@ const DropdownButtonComponent: FC<DropDownButtonProps> = ({
         </span>
       </Button>
       <Dropdown
+        attachToBody={attachDropdownToBody}
         skidding={skidding}
         onUpdate={onUpdate}
         onDropStart={onDropStart}

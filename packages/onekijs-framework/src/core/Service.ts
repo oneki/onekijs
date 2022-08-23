@@ -66,7 +66,6 @@ export default class DefaultService<S extends State = AnyState> implements Servi
   public [sagasFromReducers]: any;
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   public state: S = null!;
-  [k: string]: any;
 
   [create](initialState: S): void {
     this[reducers] = {};
@@ -77,10 +76,10 @@ export default class DefaultService<S extends State = AnyState> implements Servi
     this.state = initialState;
 
     const createProperty = (property: string) => {
-      if (isFunction(this[property]) && this[property].reducer) {
-        this[createReducer](property, this[property]);
-      } else if (isFunction(this[property]) && this[property].saga) {
-        this[createSaga](property, this[property]);
+      if (isFunction((this as any)[property]) && (this as any)[property].reducer) {
+        this[createReducer](property, (this as any)[property]);
+      } else if (isFunction((this as any)[property]) && (this as any)[property].saga) {
+        this[createSaga](property, (this as any)[property]);
       }
     };
 
@@ -100,9 +99,9 @@ export default class DefaultService<S extends State = AnyState> implements Servi
     }
 
     this[run]();
-    if (isFunction(this.init)) {
+    if (isFunction((this as any).init)) {
       this[inReducer] = true;
-      this.init();
+      (this as any).init();
       this[inReducer] = false;
     }
     // freeze state
@@ -120,7 +119,7 @@ export default class DefaultService<S extends State = AnyState> implements Servi
         actionType,
       };
     }
-    this[type] = function (...args: any[]) {
+    (this as any)[type] = function (...args: any[]) {
       if (!self[inReducer]) {
         // call from a saga -> dispatch
         // return self[dispatch]({
@@ -169,8 +168,8 @@ export default class DefaultService<S extends State = AnyState> implements Servi
 
       if (obj === 'state') {
         delay = get(this.state, delay.substring(sep + 1), defaultDelay);
-      } else {
-        delay = get(this.context.settings, delay.substring(sep + 1), defaultDelay);
+      } else if ((this as any).context) {
+        delay = get((this as any).context.settings, delay.substring(sep + 1), defaultDelay);
       }
     }
 
@@ -212,7 +211,7 @@ export default class DefaultService<S extends State = AnyState> implements Servi
       type: 'saga',
       actionType,
     };
-    this[type] = function* (...args: any[]) {
+    (this as any)[type] = function* (...args: any[]) {
       yield saga.apply(self, args);
     };
     this[sagasFromReducers][type] = function (...args: any[]) {

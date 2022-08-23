@@ -2,6 +2,7 @@ import { Placement } from '@popperjs/core';
 import { AnyFunction } from 'onekijs-framework';
 
 export type DropdownProps = {
+  attachToBody?: boolean;
   className?: string;
   open?: boolean;
   skidding?: number;

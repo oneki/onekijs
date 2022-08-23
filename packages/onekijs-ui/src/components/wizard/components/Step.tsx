@@ -1,4 +1,4 @@
-import { DefaultFormContext, FCC, useFieldContainer } from 'onekijs-framework';
+import { FCC, FormContext, useFieldContainer } from 'onekijs-framework';
 import React from 'react';
 import { CSSTransition } from 'react-transition-group';
 import useStep from '../hooks/useStep';
@@ -58,11 +58,11 @@ const Step: FCC<StepProps> = ({
   }
 
   return (
-    <DefaultFormContext.Provider value={fieldContainer.context}>
+    <FormContext.Provider value={fieldContainer.context}>
       <CSSTransition in={true} timeout={animate} appear={true} onEnter={onEnter} onEntering={onEntering}>
         <div className="o-step-content">{children}</div>
       </CSSTransition>
-    </DefaultFormContext.Provider>
+    </FormContext.Provider>
   );
 };
 

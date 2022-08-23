@@ -5,8 +5,8 @@ import regex from './validators/regex';
 import required from './validators/required';
 
 // extract validators from props
-export const extractValidators = (props: AnonymousObject): [Validator[], AnonymousObject] => {
-  let validators: Validator[] = [];
+export const extractValidators = (props: AnonymousObject): [AnonymousObject<Validator>, AnonymousObject] => {
+  let validators: AnonymousObject<Validator> = {};
   const {
     required: requiredValidator,
     requiredMessage,
@@ -17,13 +17,13 @@ export const extractValidators = (props: AnonymousObject): [Validator[], Anonymo
   } = props;
 
   if (requiredValidator && !isFalse(requiredValidator)) {
-    validators.push(required(requiredMessage));
+    validators.required = required(requiredMessage);
   }
   if (regexValidator) {
-    validators.push(regex(regexValidator, regexMessage));
+    validators.regex = regex(regexValidator, regexMessage);
   }
   if (extraValidators) {
-    validators = validators.concat(extraValidators);
+    validators = Object.assign(validators, extraValidators);
   }
   return [validators, extraProps];
 };

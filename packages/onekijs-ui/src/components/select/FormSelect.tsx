@@ -1,12 +1,11 @@
-import { useField, useValidation } from 'onekijs-framework';
 import React, { FC } from 'react';
 import Select from '.';
 import FieldLayout from '../field/FieldLayout';
-import { extractFieldLayoutProps } from '../field/util';
-import { FormSelectProps } from './typings';
+import useFieldLayout from '../field/hooks/useFieldLayout';
+import { FormSelectProps, SelectProps } from './typings';
 
 const FormSelect: FC<FormSelectProps> = React.memo((props) => {
-  const { validators, fieldLayoutProps, name, fieldOptions, fieldProps } = extractFieldLayoutProps(
+  const [fieldLayoutProps, fieldComponentProps] = useFieldLayout<SelectProps>(
     Object.assign(
       {
         defaultValue: props.defaultValue === undefined ? (props.multiple ? [] : null) : props.defaultValue,
@@ -14,22 +13,11 @@ const FormSelect: FC<FormSelectProps> = React.memo((props) => {
       props,
     ),
   );
-  const { FieldComponent = Select, ...fieldComponentProps } = fieldProps;
-  const { value, onFocus, onBlur, onChange } = useField(name, validators, fieldOptions);
-  const validation = useValidation(name);
+  const Component = props.FieldComponent || Select;
 
   return (
     <FieldLayout {...fieldLayoutProps} required={props.required}>
-      <FieldComponent
-        {...fieldComponentProps}
-        name={name}
-        value={value}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        onChange={onChange}
-        status={validation.status}
-        size={fieldLayoutProps.size}
-      />
+      <Component {...fieldComponentProps} />
     </FieldLayout>
   );
 });

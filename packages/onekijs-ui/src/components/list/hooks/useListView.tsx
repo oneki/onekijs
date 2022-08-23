@@ -5,7 +5,6 @@ import { useVirtual } from '../../../vendor/reactVirtual';
 import { CollectionListProps, ListCollection, VirtualItem } from '../typings';
 import { canFetchMore } from '../utils';
 
-const defaultHeight = '100%';
 const defaultItemHeight = 37;
 const defaultPreload = 50;
 const defaultIncrement = 50;
@@ -30,7 +29,7 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
   measure: () => void;
 } = ({
   controller,
-  height = defaultHeight,
+  height,
   itemHeight = defaultItemHeight,
   overscan = defaultOverscan,
   preload = defaultPreload,

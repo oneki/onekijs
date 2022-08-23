@@ -12,18 +12,11 @@ import { overflow } from '../../styles/overflow';
 import { bottom, left, position, right, top, zIndex } from '../../styles/position';
 import { height, maxHeight, maxWidth, width } from '../../styles/size';
 import { marginLeft, padding } from '../../styles/spacing';
-import { transitionDuration, transitionProperty, transitionTimingFunction } from '../../styles/transition';
 import { ComponentStyle, SizePropertyTheme, TLength } from '../../styles/typings';
 import { color, fontSize, fontWeight, lineHeight } from '../../styles/typography';
 import { ModalProps } from './typings';
 
-export const modalStyle: ComponentStyle<ModalProps> = ({
-  width: w,
-  height: h,
-  size = 'medium',
-  theme,
-  animationDuration = 150,
-}) => {
+export const modalStyle: ComponentStyle<ModalProps> = ({ width: w, height: h, size = 'medium', theme }) => {
   const t = theme.modal;
   w = w ?? size;
   h = h ?? size;
@@ -45,7 +38,7 @@ export const modalStyle: ComponentStyle<ModalProps> = ({
     ${alignItems('center')}
     ${padding('5xl')}
     ${backgroundColor(t.maskColor)}
-    ${backgroundOpacity(t.maskOpacity)}
+    ${opacity(0)}
 
     .o-modal-dialog {
       ${backgroundColor(t.bgColor)}
@@ -59,7 +52,7 @@ export const modalStyle: ComponentStyle<ModalProps> = ({
       ${borderRadius(t.borderRadius)}
       ${display('flex')}
       ${flexDirection('column')}
-      transform: translateY(0);
+      transform: translateY(-40px);
       ${opacity(1)}
     }
 
@@ -98,16 +91,11 @@ export const modalStyle: ComponentStyle<ModalProps> = ({
       ${marginLeft('sm')}
     }
 
-    &.o-modal-exit-active {
-      ${opacity(0)}
-      ${transitionDuration(`${animationDuration}ms`)}
-      ${transitionProperty('opacity,transform')}
-      ${transitionTimingFunction('ease-in')}
+    &.o-modal-enter-done, &.o-modal-exit {
+      ${backgroundOpacity(t.maskOpacity)}
+      ${opacity(1)}
       .o-modal-dialog {
-        transform: translateY(-40px);
-        ${transitionDuration(`${animationDuration}ms`)}
-        ${transitionProperty('transform')}
-        ${transitionTimingFunction('ease-in')}
+        transform: translateY(0px);
       }
     }
 

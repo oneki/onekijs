@@ -10,7 +10,7 @@ const DefaultCellComponent: FC<TableBodyCellProps> = ({ item, column }) => {
   return <>{get(item, `data.${column.id}`)}</>;
 };
 
-const TableBodyCellComponent: FC<TableBodyCellProps> = React.memo((props) => {
+const TableBodyCellComponent: FC<Omit<TableBodyCellProps, 'data'>> = React.memo((props) => {
   const { column, rowIndex, className } = props;
   const service = useTableService();
   const { fit, grow } = useTableConfig();
@@ -20,13 +20,13 @@ const TableBodyCellComponent: FC<TableBodyCellProps> = React.memo((props) => {
 
   useEffect(() => {
     if (!initializedRef.current && ref.current !== null) {
-      initializedRef.current = service.initCell(rowIndex, column.id, ref);
+      service.initCell(rowIndex, column.id, ref);
     }
   });
 
   return (
     <div ref={ref} className={addClassname('o-table-body-cell', className)} style={getCellWidth(column, fit, grow)}>
-      <Component {...props} />
+      {props.item.data !== undefined && <Component {...props} data={props.item.data} />}
     </div>
   );
 });
