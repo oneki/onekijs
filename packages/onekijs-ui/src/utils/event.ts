@@ -1,5 +1,8 @@
 import { useEffect } from 'react';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const MouseEvent = (global as any).MouseEvent as MouseEvent;
+
 export const useClickOutside = (
   ref: React.MutableRefObject<HTMLElement | null>,
   onClickOutside: (e: MouseEvent) => void,

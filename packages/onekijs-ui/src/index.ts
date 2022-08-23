@@ -298,7 +298,6 @@ export * from './styles/transition';
 export * from './styles/typings';
 export * from './styles/typography';
 export { baseTheme, BaseTheme } from './theme/base';
-export { clarityPalette, clarityTheme, ClarityTheme } from './theme/clarity';
 export { tailwindPalette, tailwindTheme, TailwindTheme } from './theme/tailwind';
 export * from './utils/color';
 export * from './utils/event';

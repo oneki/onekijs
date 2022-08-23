@@ -1,12 +1,19 @@
-import '@clr/city';
 import { FCC, get, set, simpleMergeDeep } from 'onekijs-framework';
+import {
+  BaseTheme,
+  baseTheme,
+  colorFormatter,
+  ColorKeys,
+  lighten,
+  Palette,
+  preflight,
+  Theme,
+  themeFormatter,
+  ThemeProps,
+  toCss,
+} from 'onekijs-ui';
 import React from 'react';
 import { createGlobalStyle } from 'styled-components';
-import { ColorKeys, Palette, Theme, ThemeProps } from '../styles/typings';
-import { lighten } from '../utils/color';
-import { colorFormatter, themeFormatter } from '../utils/formatter';
-import { preflight, toCss } from '../utils/style';
-import { BaseTheme, baseTheme } from './base';
 
 const getColor = (color: string, theme: Theme): string => {
   const c = get(theme.colors, color, color);
@@ -214,8 +221,7 @@ export const clarityTheme = (customTheme: Partial<Theme> = {}): Theme => {
 
     font: {
       families: {
-        sans:
-          '"Clarity City", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
+        sans: '"Clarity City", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
         serif: 'Georgia, Cambria, "Times New Roman", Times, serif',
         mono: 'Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
       },
