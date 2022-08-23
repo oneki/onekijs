@@ -10,6 +10,16 @@ export type TestArray = [
    */
   test2?: boolean,
 ];
+/**
+ *
+ * @returns
+ * An array of two elements :
+ * - test: flag
+ * - test2: flag
+ */
+export const testArrayFunc = (): [test: boolean, test2: boolean] => {
+  return [true, true];
+};
 
 export type MyGenericType<T> = {
   foo: T;
@@ -76,7 +86,8 @@ export type ComponentProps = {
  * const test = useForm('toto):
  * ```
  *
- * @group Components
+ * @group Form
+ * @category Components
  */
 export const MyComponent: FC<ComponentProps> = ({ name }) => {
   return null;

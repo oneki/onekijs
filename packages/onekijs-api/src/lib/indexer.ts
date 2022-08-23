@@ -1,10 +1,11 @@
 import { DeclarationReflection } from 'typedoc/dist/lib/serialization/schema';
 
-type GroupType = 'Components' | 'Hooks' | 'Other';
+type CategoryType = 'Components' | 'Hooks' | 'Other';
 
 export interface IndexedElement {
   element: DeclarationReflection;
-  types: GroupType[];
+  types: string[];
+  categories: string[];
 }
 
 export class Indexer {
@@ -22,22 +23,31 @@ export class Indexer {
         this.elements[child.id] = {
           element: child,
           types: [],
+          categories: [],
         };
       });
     }
 
     if (groups) {
       groups.forEach((group) => {
-        if (group.title === 'Components' || group.title === 'Hooks') {
-          group.children?.forEach((child) => {
+        group.children?.forEach((child) => {
+          const element = this.elements[child];
+          if (!element) {
+            console.error(`element with ID ${child} not found in index. This is not normal`);
+            return;
+          }
+          element.types.push(group.title);
+        });
+        group.categories?.forEach((category) => {
+          category.children?.forEach((child) => {
             const element = this.elements[child];
             if (!element) {
               console.error(`element with ID ${child} not found in index. This is not normal`);
               return;
             }
-            element.types = group.title as any;
+            element.categories.push(category.title);
           });
-        }
+        });
       });
     }
   }
@@ -51,17 +61,17 @@ export class Indexer {
   }
 
   isComponent(id: number): boolean {
-    return this.isPartOfGroup(id, 'Components');
+    return this.isPartOfCategory(id, 'Components');
   }
 
   isHook(id: number): boolean {
-    return this.isPartOfGroup(id, 'Hooks');
+    return this.isPartOfCategory(id, 'Hooks');
   }
 
-  isPartOfGroup(id: number, type: GroupType): boolean {
+  isPartOfCategory(id: number, type: CategoryType): boolean {
     const indexedElement = this.elements[id];
     if (!indexedElement) return false;
-    if (indexedElement.types.includes(type)) return true;
+    if (indexedElement.categories.includes(type)) return true;
     return false;
   }
 }
