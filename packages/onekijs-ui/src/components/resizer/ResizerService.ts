@@ -5,7 +5,7 @@ import { clearSelection, markBodyAsSelectable, markBodyAsUnselectable } from '..
 import { ResizerHandle, ResizerHandler, ResizerState } from './typings';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const MouseEvent = (global as any).MouseEvent as MouseEvent;
+// const MouseEvent = (global as any).MouseEvent as MouseEvent;
 
 @service
 export class ResizerService extends DefaultService<ResizerState> {
