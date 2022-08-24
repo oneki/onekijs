@@ -1,0 +1,263 @@
+{
+	"id": 0,
+	"name": "onekijs-ui",
+	"kind": 1,
+	"kindString": "Project",
+	"flags": {},
+	"originalName": "",
+	"children": [
+		{
+			"id": 10657,
+			"name": "InputProps",
+			"kind": 4194304,
+			"kindString": "Type alias",
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "packages/onekijs-ui/src/components/input/typings.ts",
+					"line": 4,
+					"character": 12
+				}
+			],
+			"type": {
+				"type": "intersection",
+				"types": [
+					{
+						"type": "reference",
+						"typeArguments": [
+							{
+								"type": "reference",
+								"typeArguments": [
+									{
+										"type": "reference",
+										"name": "HTMLInputElement",
+										"qualifiedName": "HTMLInputElement",
+										"package": "typescript"
+									}
+								],
+								"name": "React.InputHTMLAttributes",
+								"qualifiedName": "React.InputHTMLAttributes",
+								"package": "@types/react"
+							},
+							{
+								"type": "literal",
+								"value": "size"
+							}
+						],
+						"name": "Omit",
+						"qualifiedName": "Omit",
+						"package": "typescript"
+					},
+					{
+						"type": "reflection",
+						"declaration": {
+							"id": 10658,
+							"name": "__type",
+							"kind": 65536,
+							"kindString": "Type literal",
+							"flags": {},
+							"children": [
+								{
+									"id": 10659,
+									"name": "PrefixComponent",
+									"kind": 1024,
+									"kindString": "Property",
+									"flags": {
+										"isOptional": true
+									},
+									"sources": [
+										{
+											"fileName": "packages/onekijs-ui/src/components/input/typings.ts",
+											"line": 5,
+											"character": 2
+										}
+									],
+									"type": {
+										"type": "reference",
+										"typeArguments": [
+											{
+												"type": "reference",
+												"id": 10657,
+												"name": "InputProps"
+											}
+										],
+										"name": "React.FC",
+										"qualifiedName": "React.FC",
+										"package": "@types/react"
+									}
+								},
+								{
+									"id": 10660,
+									"name": "SuffixComponent",
+									"kind": 1024,
+									"kindString": "Property",
+									"flags": {
+										"isOptional": true
+									},
+									"sources": [
+										{
+											"fileName": "packages/onekijs-ui/src/components/input/typings.ts",
+											"line": 6,
+											"character": 2
+										}
+									],
+									"type": {
+										"type": "reference",
+										"typeArguments": [
+											{
+												"type": "reference",
+												"id": 10657,
+												"name": "InputProps"
+											}
+										],
+										"name": "React.FC",
+										"qualifiedName": "React.FC",
+										"package": "@types/react"
+									}
+								},
+								{
+									"id": 10662,
+									"name": "size",
+									"kind": 1024,
+									"kindString": "Property",
+									"flags": {
+										"isOptional": true
+									},
+									"sources": [
+										{
+											"fileName": "packages/onekijs-ui/src/components/input/typings.ts",
+											"line": 8,
+											"character": 2
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "FieldSize"
+									}
+								},
+								{
+									"id": 10661,
+									"name": "status",
+									"kind": 1024,
+									"kindString": "Property",
+									"flags": {
+										"isOptional": true
+									},
+									"sources": [
+										{
+											"fileName": "packages/onekijs-ui/src/components/input/typings.ts",
+											"line": 7,
+											"character": 2
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "ValidationStatus"
+									}
+								}
+							],
+							"groups": [
+								{
+									"title": "Properties",
+									"children": [
+										10659,
+										10660,
+										10662,
+										10661
+									]
+								}
+							],
+							"sources": [
+								{
+									"fileName": "packages/onekijs-ui/src/components/input/typings.ts",
+									"line": 4,
+									"character": 85
+								}
+							]
+						}
+					}
+				]
+			}
+		},
+		{
+			"id": 10651,
+			"name": "InputComponent",
+			"kind": 64,
+			"kindString": "Function",
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "packages/onekijs-ui/src/components/input/components/InputComponent.tsx",
+					"line": 5,
+					"character": 6
+				},
+				{
+					"fileName": "packages/onekijs-ui/src/components/input/components/InputComponent.tsx",
+					"line": 21,
+					"character": 0
+				}
+			],
+			"signatures": [
+				{
+					"id": 10652,
+					"name": "InputComponent",
+					"kind": 4096,
+					"kindString": "Call signature",
+					"flags": {},
+					"parameters": [
+						{
+							"id": 10653,
+							"name": "props",
+							"kind": 32768,
+							"kindString": "Parameter",
+							"flags": {},
+							"type": {
+								"type": "reference",
+								"id": 10657,
+								"name": "InputProps"
+							}
+						},
+						{
+							"id": 10654,
+							"name": "context",
+							"kind": 32768,
+							"kindString": "Parameter",
+							"flags": {
+								"isOptional": true
+							},
+							"type": {
+								"type": "intrinsic",
+								"name": "any"
+							}
+						}
+					],
+					"type": {
+						"type": "union",
+						"types": [
+							{
+								"type": "literal",
+								"value": null
+							},
+							{
+								"type": "reference",
+								"typeArguments": [
+									{
+										"type": "intrinsic",
+										"name": "any"
+									},
+									{
+										"type": "intrinsic",
+										"name": "any"
+									}
+								],
+								"name": "ReactElement",
+								"qualifiedName": "React.ReactElement",
+								"package": "@types/react"
+							}
+						]
+					}
+				}
+			]
+		}
+	]
+}

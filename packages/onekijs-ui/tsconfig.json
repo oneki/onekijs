@@ -28,12 +28,5 @@
     "outDir": "./dist/",
     "incremental": true,
     "tsBuildInfoFile": "./.buildcache/tsconfig.tsbuildinfo",
-  },
-  "typedocOptions": {
-    "inputFiles": ["./src"],
-    "mode": "modules",
-    "out": "docs",
-    "excludeNotExported": true,
-    "theme": "docusaurus2"
   }
 }

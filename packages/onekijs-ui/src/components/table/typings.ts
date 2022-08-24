@@ -11,7 +11,7 @@ import {
   UseCollectionOptions,
   ValidationStatus,
 } from 'onekijs-framework';
-import React from 'react';
+import React, { FC } from 'react';
 import { TshirtSize } from '../../styles/typings';
 import { CheckboxProps } from '../checkbox/typings';
 import { FieldLayoutProps } from '../field/typings';
@@ -71,6 +71,8 @@ export type TableBodyCellProps<T = any, I extends TableItem<T> = TableItem<T>> =
   item: I;
   data: T;
 };
+
+export type Cell<T = any, I extends TableItem<T> = TableItem<T>> = FC<TableBodyCellProps<T, I>>;
 
 export type TableBodyProps<T = any, I extends TableItem<T> = TableItem<T>> = {
   className?: string;
@@ -156,7 +158,7 @@ export type TableColumn<T, I extends TableItem<T> = TableItem<T>> = TableColumnS
 
 export type TableColumnSpec<T, I extends TableItem<T> = TableItem<T>> = {
   className?: string | ((item: I, column: TableColumn<T, I>, rowIndex: number) => string);
-  CellComponent?: React.FC<TableBodyCellProps<T, I>>;
+  CellComponent?: Cell<T, I>;
   footerClassName?: string | ((column: TableColumn<T, I>) => string);
   FooterComponent?: React.FC<TableFooterCellProps<T, I>>;
   filterable?: boolean;
