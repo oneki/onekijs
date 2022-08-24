@@ -1,15 +1,17 @@
 import { FC } from 'react';
 
-export type TestArray = [
+export interface TestInterface {
   /**
    * This is the doc of test
    */
-  test: boolean,
+  test: boolean;
   /**
    * This is the doc of test2
+   *
+   * @remarks #doc#
    */
-  test2?: boolean,
-];
+  test2?: ComponentOptions;
+}
 /**
  *
  * @returns
@@ -17,9 +19,19 @@ export type TestArray = [
  * - test: flag
  * - test2: flag
  */
-export const testArrayFunc = (): [test: boolean, test2: boolean] => {
-  return [true, true];
+export const testFuncArrow = (name: string): string => {
+  return name;
 };
+
+/**
+ *
+ * @param name description of param
+ *
+ * @returns
+ */
+export function testFunc(name: string): string {
+  return name;
+}
 
 export type MyGenericType<T> = {
   foo: T;
