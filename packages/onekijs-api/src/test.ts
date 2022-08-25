@@ -1,5 +1,19 @@
 import { FC } from 'react';
 
+export enum BreakpointKeys {
+  /**
+   * Extra small
+   */
+  xs = 'xs',
+  sm = 'sm',
+  md = 'md',
+  lg = 'lg',
+  xl = 'xl',
+}
+
+/**
+ * Doc of TestInterface
+ */
 export interface TestInterface {
   /**
    * This is the doc of test
@@ -29,8 +43,12 @@ export const testFuncArrow = (name: string): string => {
  *
  * @returns
  */
-export function testFunc(name: string): string {
-  return name;
+export function testFunc(name: TestInterface): string {
+  if (name.test) {
+    return 'test';
+  } else {
+    return 'tmp';
+  }
 }
 
 export type MyGenericType<T> = {

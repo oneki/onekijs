@@ -1,3 +1,4 @@
+import { ReflectionKind } from 'typedoc';
 import { ReflectionFlags } from 'typedoc/dist/lib/serialization/schema';
 
 export interface Description {
@@ -27,7 +28,7 @@ export class ElementContext implements Context {
   groups: string[];
   categories: string[];
 
-  constructor(public name: string) {
+  constructor(public name: string, public type: string | ReflectionKind) {
     this.props = [];
     this.follow = false;
     this.description = '';

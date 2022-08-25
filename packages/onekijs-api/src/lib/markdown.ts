@@ -1,8 +1,7 @@
-import { writeFileSync } from 'fs';
 import { join } from 'path';
-import { writeFileSyncRecursive } from '../util/file';
-import { Props } from './context';
-import { ParsedElement } from './parser';
+import { ReflectionKind } from 'typedoc';
+import { getAbsoluteFilepath, writeFileSyncRecursive } from '../util/file';
+import ElementContext, { Props } from './context';
 
 const isMandatoryProp = (prop: Props) => {
   if (prop.defaultValue !== undefined) return false;
@@ -10,32 +9,57 @@ const isMandatoryProp = (prop: Props) => {
   return true;
 };
 export class MarkdownBuilder {
-  constructor(public element: ParsedElement, public basePath: string) {}
+  constructor(public element: ElementContext, public basePath: string) {}
 
   public build() {
-    let markdown = '';
-    markdown += `${this.element.description}\n\n`;
-    markdown += '### Inputs\n\n<font size="2"><i>(Mandatory parameters are in bold)</i></font>\n\n';
-    markdown += `${this.buildHeader(this.element.props)}\n`;
     this.sortProps(this.element.props);
-    this.element.props.forEach((prop) => {
-      markdown += this.buildProp(prop, this.depth(this.element.props));
-    });
+    const markdown = `${this.markdownMetadata()}
 
-    this.writeString(this.getOutputFilename(), markdown);
+${this.element.description}
+
+### Inputs\n\n<font size="2"><i>(Mandatory parameters are in bold)</i></font>
+
+${this.headerProps(this.element.props)}
+${this.props(this.element.props)}
+`;
+
+    this.writeString(getAbsoluteFilepath(this.element), markdown);
   }
 
   writeString(path: string, data: string) {
-    writeFileSyncRecursive(join(this.basePath, path), data, {
+    writeFileSyncRecursive(path, data, {
       flag: 'w',
     });
   }
 
-  private buildHeader(props: Props[]) {
+  private headerProps(props: Props[]) {
     const depth = this.depth(props);
-    let result = `| Parameter ${this.buildHeaderDepth(depth, '|   ')}| Type | Description |\n`;
-    result += `| --------- ${this.buildHeaderDepth(depth, '| -- ')}| ---- | ----------- |`;
-    return result;
+    return `| Parameter ${this.buildHeaderDepth(depth, '|   ')}| ${this.headerTypelabel()} | Description |
+| --------- ${this.buildHeaderDepth(depth, '| -- ')}| ---- | ----------- |`;
+  }
+
+  private markdownMetadata() {
+    return `---
+id: ${this.element.name}
+title: ${this.element.name}
+sidebar_label: ${this.element.name}
+---`;
+  }
+
+  private headerTypelabel() {
+    if (this.element.type === ReflectionKind.Enum) {
+      return 'Value';
+    } else {
+      return 'Type';
+    }
+  }
+
+  private props(props: Props[]) {
+    let markdown = '';
+    props.forEach((prop) => {
+      markdown += this.buildProp(prop, this.depth(props));
+    });
+    return markdown;
   }
 
   private depth(props: Props[], initialDepth = 1): number {
@@ -84,17 +108,17 @@ export class MarkdownBuilder {
     return prop.description;
   }
 
-  private getOutputFilename() {
-    let path = '';
-    if (this.element.groups[0]) {
-      path += `${this.element.groups[0]}/`;
-    }
-    if (this.element.categories[0]) {
-      path += `${this.element.categories[0]}/`;
-    }
-    path += `${this.element.name}.md`;
-    return path;
-  }
+  // private getOutputFilename() {
+  //   let path = '';
+  //   if (this.element.groups[0]) {
+  //     path += `${this.element.groups[0]}/`;
+  //   }
+  //   if (this.element.categories[0]) {
+  //     path += `${this.element.categories[0]}/`;
+  //   }
+  //   path += `${this.element.name}.md`;
+  //   return path;
+  // }
 
   private handleMandatoryProp(prop: Props) {
     if (isMandatoryProp(prop)) return `**${prop.name}**`;

@@ -19,7 +19,7 @@ indexer.buildIndexes(api);
 
 indexer.elements.forEach((e) => {
   const parser = new ElementParser(indexer);
-  const parsedElement = parser.parse(e);
+  const parsedElement = parser.parse(e.element.id);
   console.log(JSON.stringify(parsedElement, null, 2));
   const builder = new MarkdownBuilder(parsedElement, outputDir);
   builder.build();
