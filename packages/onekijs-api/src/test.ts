@@ -33,8 +33,10 @@ export interface TestInterface {
  * - test: flag
  * - test2: flag
  */
-export const testFuncArrow = (name: string): string => {
-  return name;
+export const testFuncArrow = (name: string): TestInterface => {
+  return {
+    test: true,
+  };
 };
 
 /**
@@ -51,6 +53,9 @@ export function testFunc(name: TestInterface): string {
   }
 }
 
+/**
+ * @typeParam T - the identity type
+ */
 export type MyGenericType<T> = {
   foo: T;
 };

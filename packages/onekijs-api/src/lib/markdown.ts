@@ -1,7 +1,6 @@
-import { join } from 'path';
 import { ReflectionKind } from 'typedoc';
 import { getAbsoluteFilepath, writeFileSyncRecursive } from '../util/file';
-import ElementContext, { Props } from './context';
+import ParsedElement, { Props } from './context';
 
 const isMandatoryProp = (prop: Props) => {
   if (prop.defaultValue !== undefined) return false;
@@ -9,7 +8,7 @@ const isMandatoryProp = (prop: Props) => {
   return true;
 };
 export class MarkdownBuilder {
-  constructor(public element: ElementContext, public basePath: string) {}
+  constructor(public element: ParsedElement, public basePath: string) {}
 
   public build() {
     this.sortProps(this.element.props);
@@ -17,7 +16,9 @@ export class MarkdownBuilder {
 
 ${this.element.description}
 
-### Inputs\n\n<font size="2"><i>(Mandatory parameters are in bold)</i></font>
+${this.typeParameters()}
+
+${this.inputTitle()}
 
 ${this.headerProps(this.element.props)}
 ${this.props(this.element.props)}
@@ -34,7 +35,7 @@ ${this.props(this.element.props)}
 
   private headerProps(props: Props[]) {
     const depth = this.depth(props);
-    return `| Parameter ${this.buildHeaderDepth(depth, '|   ')}| ${this.headerTypelabel()} | Description |
+    return `| ${this.inputLabel()} ${this.buildHeaderDepth(depth, '|   ')}| ${this.headerTypelabel()} | Description |
 | --------- ${this.buildHeaderDepth(depth, '| -- ')}| ---- | ----------- |`;
   }
 
@@ -62,13 +63,33 @@ sidebar_label: ${this.element.name}
     return markdown;
   }
 
+  private typeParameters() {
+    const typeParameters = this.element.typeParameters;
+    let markdown = '';
+    if (typeParameters.length > 0) {
+      markdown += `### Type parameters\n\nSignature: ${this.element.name}<`;
+      typeParameters.forEach((typeParameter, i) => {
+        if (i > 0) markdown += ', ';
+        markdown += typeParameter.name;
+      });
+      markdown += '> where: \n\n';
+      typeParameters.forEach((typeParameter) => {
+        markdown += `- **${typeParameter.name}**: ${typeParameter.description}\n`;
+      });
+      markdown += '\n';
+    }
+    return markdown;
+  }
+
   private depth(props: Props[], initialDepth = 1): number {
     let maxDepth = initialDepth;
     for (const prop of props) {
-      const children = prop.children;
-      if (children) {
-        const depth = this.depth(children, initialDepth + 1);
-        maxDepth = Math.max(depth, maxDepth);
+      if (prop.toDocument && prop.type instanceof ParsedElement) {
+        const children = prop.type.props;
+        if (children.length > 0) {
+          const depth = this.depth(children, initialDepth + 1);
+          maxDepth = Math.max(depth, maxDepth);
+        }
       }
     }
 
@@ -92,20 +113,30 @@ sidebar_label: ${this.element.name}
     for (let i = depth; i < maxDepth; i++) {
       result += '| ';
     }
-    result += `| ${prop.type.replace(/\|/g, '\\|').replace(/>/g, '\\>')} | ${this.buildPropDescription(prop)} |\n`;
+    result += `| ${this.typeAsString(prop).replace(/\|/g, '\\|').replace(/>/g, '\\>')} | ${this.buildPropDescription(
+      prop,
+    )} |\n`;
 
-    const children = prop.children;
-    if (children) {
-      children.forEach((child) => {
-        result += this.buildProp(child, maxDepth, depth + 1);
-      });
+    if (prop.toDocument && prop.type instanceof ParsedElement) {
+      const children = prop.type.props;
+      if (children) {
+        children.forEach((child) => {
+          result += this.buildProp(child, maxDepth, depth + 1);
+        });
+      }
     }
-
     return result;
   }
 
   private buildPropDescription(prop: Props) {
     return prop.description;
+  }
+
+  private typeAsString(prop: Props) {
+    if (typeof prop.type === 'string') {
+      return prop.type;
+    }
+    return prop.type.name; // TODO build full type
   }
 
   // private getOutputFilename() {
@@ -134,5 +165,20 @@ sidebar_label: ${this.element.name}
       if (isMandatoryProp2 && !isMandatoryProp1) return 1;
       return prop1.name.localeCompare(prop2.name);
     });
+  }
+
+  private inputTitle() {
+    const label = this.inputLabel();
+    return `### ${label}\n\n<font size="2"><i>(Mandatory ${label.toLocaleLowerCase()} are in bold)</i></font>`;
+  }
+
+  private inputLabel() {
+    let label = 'Properties';
+    if (this.element.categories[0] === 'Components') {
+      label = 'Properties';
+    } else if (this.element.type === 'Function') {
+      label = 'Parameters';
+    }
+    return label;
   }
 }

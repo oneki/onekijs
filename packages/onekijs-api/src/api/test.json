@@ -240,7 +240,7 @@
 			"sources": [
 				{
 					"fileName": "packages/onekijs-api/src/test.ts",
-					"line": 58,
+					"line": 63,
 					"character": 12
 				}
 			],
@@ -270,7 +270,7 @@
 							"sources": [
 								{
 									"fileName": "packages/onekijs-api/src/test.ts",
-									"line": 67,
+									"line": 72,
 									"character": 2
 								}
 							],
@@ -296,7 +296,7 @@
 							"sources": [
 								{
 									"fileName": "packages/onekijs-api/src/test.ts",
-									"line": 62,
+									"line": 67,
 									"character": 2
 								}
 							],
@@ -318,7 +318,7 @@
 					"sources": [
 						{
 							"fileName": "packages/onekijs-api/src/test.ts",
-							"line": 58,
+							"line": 63,
 							"character": 31
 						}
 					]
@@ -334,7 +334,7 @@
 			"sources": [
 				{
 					"fileName": "packages/onekijs-api/src/test.ts",
-					"line": 70,
+					"line": 75,
 					"character": 12
 				}
 			],
@@ -377,7 +377,7 @@
 							"sources": [
 								{
 									"fileName": "packages/onekijs-api/src/test.ts",
-									"line": 94,
+									"line": 99,
 									"character": 2
 								}
 							],
@@ -426,7 +426,7 @@
 							"sources": [
 								{
 									"fileName": "packages/onekijs-api/src/test.ts",
-									"line": 88,
+									"line": 93,
 									"character": 2
 								}
 							],
@@ -474,7 +474,7 @@
 							"sources": [
 								{
 									"fileName": "packages/onekijs-api/src/test.ts",
-									"line": 105,
+									"line": 110,
 									"character": 2
 								}
 							],
@@ -501,7 +501,7 @@
 							"sources": [
 								{
 									"fileName": "packages/onekijs-api/src/test.ts",
-									"line": 98,
+									"line": 103,
 									"character": 2
 								}
 							],
@@ -540,7 +540,7 @@
 					"sources": [
 						{
 							"fileName": "packages/onekijs-api/src/test.ts",
-							"line": 70,
+							"line": 75,
 							"character": 29
 						}
 					]
@@ -556,7 +556,7 @@
 			"sources": [
 				{
 					"fileName": "packages/onekijs-api/src/test.ts",
-					"line": 54,
+					"line": 59,
 					"character": 12
 				}
 			],
@@ -566,7 +566,15 @@
 					"name": "T",
 					"kind": 131072,
 					"kindString": "Type parameter",
-					"flags": {}
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "the identity type"
+							}
+						]
+					}
 				}
 			],
 			"type": {
@@ -587,7 +595,7 @@
 							"sources": [
 								{
 									"fileName": "packages/onekijs-api/src/test.ts",
-									"line": 55,
+									"line": 60,
 									"character": 2
 								}
 							],
@@ -609,7 +617,7 @@
 					"sources": [
 						{
 							"fileName": "packages/onekijs-api/src/test.ts",
-							"line": 54,
+							"line": 59,
 							"character": 31
 						}
 					]
@@ -625,7 +633,7 @@
 			"sources": [
 				{
 					"fileName": "packages/onekijs-api/src/test.ts",
-					"line": 122,
+					"line": 127,
 					"character": 13
 				}
 			],
@@ -712,7 +720,7 @@
 			"sources": [
 				{
 					"fileName": "packages/onekijs-api/src/test.ts",
-					"line": 46,
+					"line": 48,
 					"character": 16
 				}
 			],
@@ -809,8 +817,9 @@
 						}
 					],
 					"type": {
-						"type": "intrinsic",
-						"name": "string"
+						"type": "reference",
+						"id": 10,
+						"name": "TestInterface"
 					}
 				}
 			]

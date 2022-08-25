@@ -9,19 +9,19 @@ export interface Description {
 }
 export interface Props extends Description {
   flags: ReflectionFlags;
-  type: string;
-  children?: Props[];
-}
-interface Context extends Description {
-  props: Props[];
-  returns?: Props;
-  follow: boolean;
+  type: string | ParsedElement;
+  toDocument?: boolean;
 }
 
-export class ElementContext implements Context {
+export interface TypeParameter {
+  name: string;
+  description: string;
+}
+
+export class ParsedElement {
   props: Props[];
-  returns?: Props;
-  follow: boolean;
+  typeParameters: TypeParameter[];
+  returns?: string | ParsedElement | Array<string | ParsedElement>;
   description: string;
   example?: string;
   defaultValue?: string;
@@ -30,46 +30,46 @@ export class ElementContext implements Context {
 
   constructor(public name: string, public type: string | ReflectionKind) {
     this.props = [];
-    this.follow = false;
     this.description = '';
     this.groups = [];
     this.categories = [];
+    this.typeParameters = [];
   }
 
-  addActiveProp(prop: Props) {
-    const activeProp = this.getActiveProp();
-    if (activeProp) {
-      const children = activeProp.children;
-      if (children) {
-        children.push(prop);
-      } else {
-        activeProp.children = [prop];
-      }
-    }
-  }
+  // addActiveProp(prop: Props) {
+  //   const activeProp = this.getActiveProp();
+  //   if (activeProp) {
+  //     const children = activeProp.children;
+  //     if (children) {
+  //       children.push(prop);
+  //     } else {
+  //       activeProp.children = [prop];
+  //     }
+  //   }
+  // }
 
-  appendActiveType = (type: string) => {
-    const activeProp = this.getActiveProp();
-    if (activeProp) {
-      activeProp.type = `${activeProp.type}${type}`;
-    }
-  };
+  // appendActiveType = (type: string) => {
+  //   const activeProp = this.getActiveProp();
+  //   if (activeProp) {
+  //     activeProp.type = `${activeProp.type}${type}`;
+  //   }
+  // };
 
-  getActiveProp() {
-    const prop = this.props.at(-1);
-    if (prop) {
-      return this.getActiveChildrenProp(prop);
-    }
-    return prop;
-  }
+  // getActiveProp() {
+  //   const prop = this.props.at(-1);
+  //   if (prop) {
+  //     return this.getActiveChildrenProp(prop);
+  //   }
+  //   return prop;
+  // }
 
-  private getActiveChildrenProp(prop: Props) {
-    const children = prop?.children;
-    if (children) {
-      return children.at(-1);
-    }
-    return prop;
-  }
+  // private getActiveChildrenProp(prop: Props) {
+  //   const children = prop?.children;
+  //   if (children) {
+  //     return children.at(-1);
+  //   }
+  //   return prop;
+  // }
 }
 
-export default ElementContext;
+export default ParsedElement;

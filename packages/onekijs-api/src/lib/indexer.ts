@@ -1,5 +1,5 @@
 import { DeclarationReflection } from 'typedoc/dist/lib/serialization/schema';
-import ElementContext from './context';
+import ParsedElement from './context';
 
 type CategoryType = 'Components' | 'Hooks' | 'Other';
 
@@ -11,7 +11,7 @@ export interface IndexedElement {
 
 export class Indexer {
   elements: IndexedElement[];
-  parsedElements: ElementContext[];
+  parsedElements: ParsedElement[];
 
   constructor() {
     this.elements = [];
