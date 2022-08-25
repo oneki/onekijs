@@ -11,7 +11,7 @@
         "${workspaceRoot}/packages/onekijs-api/src/index.ts",
         "${workspaceRoot}/packages/onekijs-api/src/api/test.json",
         "${workspaceRoot}/packages/onekijs-api/dist",
-        "/docs/api"
+        "/api"
       ]
     }
   ]

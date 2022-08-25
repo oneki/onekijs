@@ -55,10 +55,6 @@ export class ElementParser {
 
     this.handleDeclarationReflection(subject, context);
 
-    if (this.element.name === 'TestInterface') {
-      console.log(JSON.stringify(this.element, null, 2));
-    }
-
     // if (this.indexer.isComponent(subject.id)) {
     //   this.handleComponent(subject);
     // } else {
@@ -252,20 +248,19 @@ export class ElementParser {
       if (id) {
         const parsedElement = this.getIndexedParsedElement(id);
         if (!parsedElement) {
-          const prop = context.currentProp;
-          if (prop) {
-            prop.type = type.name;
-          }
+          this.handleReferenceType(type, context);
           return;
         }
-        if (context.specialType === 'element') {
+        if (context.specialType === 'element' || context.specialType === 'component') {
           this.element.props = parsedElement.props;
           return;
         }
-        if (context.currentProp) {
+        if (context.currentProp && context.currentProp.toDocument) {
           context.currentProp.type = parsedElement;
+          return;
         }
       }
+      this.handleReferenceType(type, context);
     } else if (type.type === 'reflection') {
       this.handleReflection(type, context);
     } else if (type.type === 'intersection') {
