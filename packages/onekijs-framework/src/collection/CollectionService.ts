@@ -941,6 +941,8 @@ export default class CollectionService<
 
         const fetchOptions = method === HttpMethod.Get ? Object.assign({}, options, { query: oQuery }) : options;
         result = yield fetcher(this.url, method, body, fetchOptions);
+        console.log(this.url, query.offset, query.limit, result);
+
         this.cache[sQuery] = result;
         if (loadingTask !== null) {
           yield cancel(loadingTask);
@@ -1124,10 +1126,11 @@ export default class CollectionService<
     if (currentItem !== undefined) {
       return Object.assign({}, currentItem, { data }, result);
     } else {
+      const uid = generateUniqueId();
       return Object.assign(
         {
           data,
-          uid: generateUniqueId(),
+          uid,
           loadingStatus: data !== undefined ? LoadingStatus.Loaded : LoadingStatus.NotInitialized,
         },
         result,
