@@ -12,8 +12,8 @@ import {
   UnionType,
 } from 'typedoc/dist/lib/serialization/schema';
 import { getDocusaurusPath } from '../util/file';
-import { commentToDescription, commentToExample, isToDocument } from '../util/parser';
-import ParsedElement, { Props } from './context';
+import { commentToDescription, commentToExample, emptyProp, handleComment, isToDocument } from '../util/parser';
+import ParsedElement, { Props, TypeParameter } from './context';
 import { Indexer } from './indexer';
 
 type SpecialType = 'component' | 'element' | 'attributeToDocument';
@@ -21,6 +21,8 @@ type SpecialType = 'component' | 'element' | 'attributeToDocument';
 export interface Context {
   specialType?: SpecialType;
   currentProp?: Props;
+  typeParameters?: TypeParameter[];
+  signatures?: string[];
 }
 
 export class ElementParser {
@@ -43,8 +45,8 @@ export class ElementParser {
     this.element.type = subject.kindString || subject.kind;
     this.element.groups = indexedElement.groups;
     this.element.categories = indexedElement.categories;
-    this.element.description = commentToDescription(subject.comment);
-    this.element.example = commentToExample(subject.comment);
+    handleComment(this.element, subject.comment, false);
+
     const context: Context = {};
 
     if (this.indexer.isComponent(subject.id)) {
@@ -87,27 +89,82 @@ export class ElementParser {
         this.element.props.push(prop);
         const type = parameter.type;
         if (type) {
-          context.specialType = undefined;
-          context.currentProp = prop;
-          this.handleType(type, context);
+          this.handleType(type, { currentProp: prop });
         }
       });
+    }
+
+    // handle type parameter
+    const typeParameters = element.typeParameter;
+    if (typeParameters) {
+      this.handleTypeParameters(typeParameters, context);
     }
 
     // handle result
     const type = element.type;
     if (type) {
-      if (type.type === 'reference' && type.hasOwnProperty('id') && type.id) {
-        this.element.returns = this.getIndexedParsedElement(type.id);
-      }
+      const currentProp = emptyProp();
+      this.handleType(type, { currentProp });
+      this.element.returns = currentProp.type;
+
+      // if (type.type === 'reference' && type.hasOwnProperty('id') && type.id) {
+      //   this.element.returns = this.getIndexedParsedElement(type.id);
+      // }
       // TODO support other types (string, number, boolean or array)
     }
+  }
+
+  protected handleSignatureString(element: SignatureReflection, context: Context) {
+    const parameters = element.parameters;
+    let result = element.name;
+
+    // handle type parameter
+    const typeParameters = element.typeParameter;
+    if (typeParameters) {
+      this.handleTypeParameters(typeParameters, {});
+      result += `<${context.typeParameters?.map((typeParameter) => typeParameter.name).join(',')}>`;
+    }
+    result += '(';
+    if (parameters) {
+      result += parameters
+        .map((parameter) => {
+          const prop = this.asProp(parameter);
+          const type = parameter.type;
+          if (type) {
+            this.handleType(type, { currentProp: prop });
+          }
+          return `${prop.name}: ${prop.type}`;
+        })
+        .join(',');
+
+      parameters.forEach((parameter) => {
+        const prop = this.asProp(parameter);
+        const type = parameter.type;
+        if (type) {
+          this.handleType(type, { currentProp: prop });
+        }
+        result += `${prop.name}: ${prop.type}`;
+      });
+    }
+    result += ')';
+
+    // handle result
+    const type = element.type;
+    if (type) {
+      const currentProp = emptyProp();
+      this.handleType(type, { currentProp });
+      result += `: ${currentProp.type}`;
+    } else {
+      result += ': void';
+    }
+    context.signatures = context.signatures || [];
+    context.signatures?.push(result);
   }
 
   protected handleComponent(container: DeclarationReflection, context: Context) {
     const signatures = container.signatures;
     if (signatures && signatures.length > 0) {
-      this.element.description = commentToDescription(signatures[0].comment);
+      handleComment(this.element, signatures[0].comment, false);
       const parameters = signatures[0].parameters;
       if (parameters) {
         parameters.forEach((p) => {
@@ -141,13 +198,15 @@ export class ElementParser {
     }
   }
   handleTypeParameters(typeParameters: TypeParameterReflection[], context: Context) {
-    if (context.specialType === 'component' || context.specialType === 'element') {
-      typeParameters.forEach((typeParameter) => {
-        this.element.typeParameters.push({
-          name: typeParameter.name,
-          description: commentToDescription(typeParameter.comment),
-        });
+    context.typeParameters = [];
+    typeParameters.forEach((typeParameter) => {
+      context.typeParameters?.push({
+        name: typeParameter.name,
+        description: commentToDescription(typeParameter.comment),
       });
+    });
+    if (context.specialType === 'component' || context.specialType === 'element') {
+      this.element.typeParameters = context.typeParameters;
     }
   }
 
@@ -167,11 +226,17 @@ export class ElementParser {
   protected handleDeclarationReflectionSignatures(signatures: SignatureReflection[], context: Context) {
     // currently, we only support signature[0]  => to be updated to handle all signature
     const signature = signatures[0];
-    if (signature) {
+    if (signature && context.specialType === 'element') {
+      handleComment(this.element, signature.comment, false);
       if (signature.kind === ReflectionKind.CallSignature) {
         this.handleCallSignature(signature, context);
       }
     }
+    const signatureContext: Context = {};
+    signatures.forEach((signature) => {
+      this.handleSignatureString(signature, signatureContext);
+    });
+    this.element.signatures = signatureContext.signatures || [];
   }
 
   protected handleIntersection(element: IntersectionType, context: Context) {
@@ -292,14 +357,16 @@ export class ElementParser {
   }
 
   protected asProp(parameter: ParameterReflection | DeclarationReflection): Props {
-    return {
+    const prop: Props = {
       name: parameter.name,
       flags: parameter.flags,
       type: '',
-      description: commentToDescription(parameter.comment as any),
-      example: commentToExample(parameter.comment as any),
+      description: '',
       defaultValue: parameter.defaultValue,
       toDocument: isToDocument(parameter.comment as any),
     };
+
+    handleComment(prop, parameter.comment as any);
+    return prop;
   }
 }

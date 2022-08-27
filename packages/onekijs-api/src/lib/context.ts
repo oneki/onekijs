@@ -6,6 +6,8 @@ export interface Description {
   description: string;
   example?: string;
   defaultValue?: string;
+  remarks?: string;
+  returnComment?: string;
 }
 export interface Props extends Description {
   flags: ReflectionFlags;
@@ -18,13 +20,16 @@ export interface TypeParameter {
   description: string;
 }
 
-export class ParsedElement {
+export class ParsedElement implements Description {
   props: Props[];
   typeParameters: TypeParameter[];
-  returns?: string | ParsedElement | Array<string | ParsedElement>;
+  signatures: string[];
+  returns?: string | ParsedElement;
   description: string;
   example?: string;
   defaultValue?: string;
+  remarks?: string;
+  returnComment?: string;
   groups: string[];
   categories: string[];
 
@@ -34,6 +39,7 @@ export class ParsedElement {
     this.groups = [];
     this.categories = [];
     this.typeParameters = [];
+    this.signatures = [];
   }
 
   // addActiveProp(prop: Props) {

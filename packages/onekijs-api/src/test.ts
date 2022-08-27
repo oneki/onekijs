@@ -27,6 +27,13 @@ export interface TestInterface {
   test2?: ComponentOptions;
 }
 /**
+ * This is the description of testFuncArrow
+ * This function is awesone
+ *
+ * @example
+ * ```
+ * const { test } = testFunctionArray('foo');
+ * ```
  *
  * @returns
  * An array of two elements :
@@ -41,11 +48,29 @@ export const testFuncArrow = (name: string): TestInterface => {
 
 /**
  *
+ * This is the description
+ * of testFunc
+ *
+ * ```
+ * Example code
+ * ```
+ *
+ * ### Signature
+ *
+ * ```
+ * testFunc('test');
+ * ```
+ * @typeParam T - the identity type
  * @param name description of param
  *
  * @returns
+ * The result is something
+ *
+ * ```
+ * this is some code in the result
+ * ```
  */
-export function testFunc(name: TestInterface): string {
+export function testFunc<T>(name: TestInterface): string | undefined | MyGenericType<T> {
   if (name.test) {
     return 'test';
   } else {
@@ -116,9 +141,21 @@ export type ComponentProps = {
  *
  * This description could be quite long
  *
- * ### Signature
  * ```
  * const test = useForm('toto):
+ * ```
+ * <br/>
+ *
+ * @example
+ * ```
+ * <MyCompnent name="foo" />
+ * ```
+ *
+ * @remarks
+ * This is a useful remark !
+ *
+ * ```
+ * With some code in it !
  * ```
  *
  * @group Form
