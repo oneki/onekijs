@@ -74,6 +74,7 @@ export default class CollectionService<
   protected positionIndex: AnonymousObject<string> = {};
   protected db?: I[];
   protected unregisterRouterListener?: UnregisterCallback;
+  protected refreshing = false;
 
   init(): void {
     this.initialState = this.state;
@@ -439,6 +440,7 @@ export default class CollectionService<
   @reducer
   refresh(query?: Query): void {
     const path = this.state.router.location.pathname;
+    this.refreshing = true;
     this.state.router.push(urlBuilder(path, {}, urlSerializer(query || this.getQuery())));
   }
 
@@ -941,7 +943,6 @@ export default class CollectionService<
 
         const fetchOptions = method === HttpMethod.Get ? Object.assign({}, options, { query: oQuery }) : options;
         result = yield fetcher(this.url, method, body, fetchOptions);
-        console.log(this.url, query.offset, query.limit, result);
 
         this.cache[sQuery] = result;
         if (loadingTask !== null) {
@@ -1173,6 +1174,8 @@ export default class CollectionService<
 
   @reducer
   protected _onLocationChange(location: Location): void {
+    if (!this.refreshing) return;
+    this.refreshing = false;
     const nextQuery = this._parseLocation(location);
     if (this.state.local) {
       this._setQuery(nextQuery);
