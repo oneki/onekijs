@@ -12,17 +12,23 @@ import {
   UnionType,
 } from 'typedoc/dist/lib/serialization/schema';
 import { getDocusaurusPath } from '../util/file';
-import { commentToDescription, commentToExample, emptyProp, handleComment, isToDocument } from '../util/parser';
+import { commentToDescription, emptyProp, handleComment, isToDocument } from '../util/parser';
 import ParsedElement, { Props, TypeParameter } from './context';
 import { Indexer } from './indexer';
 
 type SpecialType = 'component' | 'element' | 'attributeToDocument';
 
 export interface Context {
+  currentElement?: ParsedElement;
   specialType?: SpecialType;
   currentProp?: Props;
   typeParameters?: TypeParameter[];
   signatures?: string[];
+  doNotBuildLink?: boolean;
+}
+
+function cloneContext(context: Context): Context {
+  return Object.assign({}, context);
 }
 
 export class ElementParser {
@@ -73,7 +79,8 @@ export class ElementParser {
     return new ElementParser(this.indexer).parse(id);
   }
 
-  protected buildLink(element: ReferenceType) {
+  protected buildLink(element: ReferenceType, context: Context) {
+    if (context.doNotBuildLink === true) return element.name;
     const id = element.id;
     if (!id || !this.indexer.elements[id]) return element.name;
     const parsedElement = this.getIndexedParsedElement(id);
@@ -121,7 +128,8 @@ export class ElementParser {
     // handle type parameter
     const typeParameters = element.typeParameter;
     if (typeParameters) {
-      this.handleTypeParameters(typeParameters, {});
+      const context: Context = {};
+      this.handleTypeParameters(typeParameters, context);
       result += `<${context.typeParameters?.map((typeParameter) => typeParameter.name).join(',')}>`;
     }
     result += '(';
@@ -131,20 +139,11 @@ export class ElementParser {
           const prop = this.asProp(parameter);
           const type = parameter.type;
           if (type) {
-            this.handleType(type, { currentProp: prop });
+            this.handleType(type, { currentProp: prop, doNotBuildLink: true });
           }
           return `${prop.name}: ${prop.type}`;
         })
         .join(',');
-
-      parameters.forEach((parameter) => {
-        const prop = this.asProp(parameter);
-        const type = parameter.type;
-        if (type) {
-          this.handleType(type, { currentProp: prop });
-        }
-        result += `${prop.name}: ${prop.type}`;
-      });
     }
     result += ')';
 
@@ -152,7 +151,7 @@ export class ElementParser {
     const type = element.type;
     if (type) {
       const currentProp = emptyProp();
-      this.handleType(type, { currentProp });
+      this.handleType(type, { currentProp, doNotBuildLink: true });
       result += `: ${currentProp.type}`;
     } else {
       result += ': void';
@@ -255,7 +254,7 @@ export class ElementParser {
   }
 
   protected handleReferenceType(element: ReferenceType, context: Context) {
-    this.appendTypeToProp(this.buildLink(element), context);
+    this.appendTypeToProp(this.buildLink(element, context), context);
     const typeArguments = element.typeArguments;
     if (typeArguments) {
       // this is a type with generic like React.FC<...>

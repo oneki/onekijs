@@ -13,14 +13,14 @@ export class MarkdownBuilder {
 
   public build() {
     this.sortProps(this.element.props);
-    const markdown = `${this.markdownMetadata()}
-
-${this.element.description}${this.remark()}${this.signatures()}${this.example()}${this.typeParameters()}
+    const markdown = `${this.markdownMetadata()}${this.signatures()}
+    
+${this.element.description}${this.remark()}${this.example()}
 
 ${this.inputTitle()}
 
 ${this.headerProps(this.element.props)}
-${this.props(this.element.props)}${this.return()}
+${this.props(this.element.props)}${this.return()}${this.typeParameters()}
 `;
 
     this.writeString(getAbsoluteFilepath(this.element), markdown);
@@ -66,14 +66,12 @@ sidebar_label: ${this.element.name}
     const typeParameters = this.element.typeParameters;
     let markdown = '';
     if (typeParameters.length > 0) {
-      markdown += `\n\n### Type parameters\n\nSignature: ${this.element.name}<`;
-      typeParameters.forEach((typeParameter, i) => {
-        if (i > 0) markdown += ', ';
-        markdown += typeParameter.name;
-      });
-      markdown += '> where: \n\n';
+      markdown += `\n\n### Type parameters
+| Type | Description |
+| ---- | ----------- |
+`;
       typeParameters.forEach((typeParameter) => {
-        markdown += `- **${typeParameter.name}**: ${typeParameter.description}\n`;
+        markdown += `| ${typeParameter.name} | ${typeParameter.description} |\n`;
       });
       markdown += '\n';
     }
@@ -194,15 +192,15 @@ sidebar_label: ${this.element.name}
     let markdown = '';
     const returns = this.element.returns;
     if (returns) {
-      markdown += '\n\n### Return\n\nThe return is of type `';
+      markdown += '\n\n### Return\n\nThe return is of type <code>';
       if (typeof returns === 'string') {
-        markdown += returns;
+        markdown += returns.replace(/>/g, '\\>');
       } else if (returns instanceof ParsedElement) {
-        markdown += resultType(returns);
+        markdown += resultType(returns).replace(/>/g, '\\>');
       } else {
         // TODO handle array result type
       }
-      markdown += '`';
+      markdown += '</code>';
     }
     return markdown;
   }
@@ -220,12 +218,12 @@ sidebar_label: ${this.element.name}
     let markdown = '';
     const signatures = this.element.signatures;
     if (signatures.length > 0) {
-      markdown += `\n\n#### Signature${signatures.length > 1 ? 's' : ''}\n\n`;
+      markdown += `\n\n`;
       markdown += '```tsx\n';
       signatures.forEach((signature) => {
         markdown += `${signature}\n`;
       });
-      markdown += '```';
+      markdown += '```\n<br/>';
     }
     return markdown;
   }
