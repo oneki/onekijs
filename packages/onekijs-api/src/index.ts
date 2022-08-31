@@ -18,11 +18,10 @@ const indexer = new Indexer();
 indexer.buildIndexes(api);
 
 indexer.elements.forEach((e) => {
+  console.log('handle element ', e.element.name);
   const parser = new ElementParser(indexer);
   const parsedElement = parser.parse(e.element.id);
-  if (parsedElement?.name === 'NotificationService') {
-    console.log(JSON.stringify(parsedElement, null, 2));
-  }
+
   if (parsedElement) {
     const builder = new MarkdownBuilder(parsedElement, outputDir);
     builder.build();

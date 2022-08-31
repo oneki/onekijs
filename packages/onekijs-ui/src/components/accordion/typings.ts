@@ -27,7 +27,13 @@ export type AccordionProps = {
   border?: boolean;
   Component?: FCC<Omit<AccordionProps, 'Component'>>;
   className?: string;
+  /**
+   * @defaultValue false
+   */
   multiActive?: boolean;
+  /**
+   * @defaultValue 150
+   */
   animate?: number;
 };
 

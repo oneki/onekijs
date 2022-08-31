@@ -12,14 +12,14 @@ import {
   UnionType,
 } from 'typedoc/dist/lib/serialization/schema';
 import { getDocusaurusPath } from '../util/file';
-import { commentToDescription, emptyProp, handleComment, isToDocument } from '../util/parser';
+import { blockTagToString, commentToDescription, emptyProp, handleComment, isToDocument } from '../util/parser';
 import ParsedElement, { Props, TypeParameter } from './context';
 import { Indexer } from './indexer';
 
 type SpecialType = 'component' | 'element' | 'attributeToDocument';
 
 export interface Context {
-  currentElement?: ParsedElement;
+  element: ParsedElement;
   specialType?: SpecialType;
   currentProp?: Props;
   typeParameters?: TypeParameter[];
@@ -32,10 +32,10 @@ function cloneContext(context: Context): Context {
 }
 
 export class ElementParser {
-  private element: ParsedElement;
+  // private element: ParsedElement;
 
   constructor(public indexer: Indexer) {
-    this.element = new ParsedElement('', ReflectionKind.All);
+    //context.element = new ParsedElement('', ReflectionKind.All);
   }
 
   parse(id: number): ParsedElement | undefined {
@@ -47,13 +47,29 @@ export class ElementParser {
     if (indexedParsedElement) return indexedParsedElement;
 
     // Let's proccess this item
-    this.element.name = subject.name;
-    this.element.type = subject.kindString || subject.kind;
-    this.element.groups = indexedElement.groups;
-    this.element.categories = indexedElement.categories;
-    handleComment(this.element, subject.comment, false);
+    const parsedElement = new ParsedElement(subject.name, subject.kindString || subject.kind);
+    parsedElement.groups = indexedElement.groups;
+    parsedElement.categories = indexedElement.categories;
+    this.indexer.parsedElements[subject.id] = parsedElement;
 
-    const context: Context = {};
+    // Check if it's not an alias for another component
+    const see = blockTagToString('@see', subject.comment, false);
+    if (see !== undefined && see !== '') {
+      const aliasElement = this.indexer.elementsByName[see];
+      const aliasParsedElement = this.getIndexedParsedElement(aliasElement.element.id);
+      if (aliasParsedElement) {
+        this.indexer.parsedElements[subject.id] = Object.assign({}, aliasParsedElement, {
+          name: parsedElement.name,
+          type: parsedElement.type,
+        });
+        return this.indexer.parsedElements[subject.id];
+      }
+    }
+
+    const context: Context = {
+      element: parsedElement,
+    };
+    handleComment(parsedElement, subject.comment, false);
 
     if (this.indexer.isComponent(subject.id)) {
       context.specialType = 'component';
@@ -63,12 +79,7 @@ export class ElementParser {
 
     this.handleDeclarationReflection(subject, context);
 
-    // if (this.indexer.isComponent(subject.id)) {
-    //   this.handleComponent(subject);
-    // } else {
-    //   this.handleDeclarationReflection(subject);
-    // }
-    return this.element;
+    return parsedElement;
   }
 
   protected getIndexedParsedElement(id: number) {
@@ -92,11 +103,16 @@ export class ElementParser {
     const parameters = element.parameters;
     if (parameters) {
       parameters.forEach((parameter) => {
+        if (parameter.name.startsWith('[') && parameter.name.endsWith(']')) return;
+        if (parameter.name.startsWith('_')) return;
         const prop = this.asProp(parameter);
-        this.element.props.push(prop);
+        context.element.props.push(prop);
         const type = parameter.type;
         if (type) {
-          this.handleType(type, { currentProp: prop });
+          this.handleType(type, {
+            element: context.element,
+            currentProp: prop,
+          });
         }
       });
     }
@@ -111,11 +127,14 @@ export class ElementParser {
     const type = element.type;
     if (type) {
       const currentProp = emptyProp();
-      this.handleType(type, { currentProp });
-      this.element.returns = currentProp.type;
+      this.handleType(type, {
+        element: context.element,
+        currentProp,
+      });
+      context.element.returns = currentProp.type;
 
       // if (type.type === 'reference' && type.hasOwnProperty('id') && type.id) {
-      //   this.element.returns = this.getIndexedParsedElement(type.id);
+      //   context.element.returns = this.getIndexedParsedElement(type.id);
       // }
       // TODO support other types (string, number, boolean or array)
     }
@@ -128,9 +147,11 @@ export class ElementParser {
     // handle type parameter
     const typeParameters = element.typeParameter;
     if (typeParameters) {
-      const context: Context = {};
-      this.handleTypeParameters(typeParameters, context);
-      result += `<${context.typeParameters?.map((typeParameter) => typeParameter.name).join(',')}>`;
+      const innerContext: Context = {
+        element: context.element,
+      };
+      this.handleTypeParameters(typeParameters, innerContext);
+      result += `<${innerContext.typeParameters?.map((typeParameter) => typeParameter.name).join(',')}>`;
     }
     result += '(';
     if (parameters) {
@@ -139,7 +160,11 @@ export class ElementParser {
           const prop = this.asProp(parameter);
           const type = parameter.type;
           if (type) {
-            this.handleType(type, { currentProp: prop, doNotBuildLink: true });
+            this.handleType(type, {
+              element: context.element,
+              currentProp: prop,
+              doNotBuildLink: true,
+            });
           }
           return `${prop.name}: ${prop.type}`;
         })
@@ -149,10 +174,20 @@ export class ElementParser {
 
     // handle result
     const type = element.type;
-    if (type) {
+    let name = '';
+    if (type && type.hasOwnProperty('name')) {
+      name = (type as any).name;
+    }
+    if (type && element.kind !== ReflectionKind.ConstructorSignature && name !== 'Generator') {
       const currentProp = emptyProp();
-      this.handleType(type, { currentProp, doNotBuildLink: true });
+      this.handleType(type, {
+        element: context.element,
+        currentProp,
+        doNotBuildLink: true,
+      });
       result += `: ${currentProp.type}`;
+    } else if (element.kind === ReflectionKind.ConstructorSignature) {
+      result += '';
     } else {
       result += ': void';
     }
@@ -163,7 +198,7 @@ export class ElementParser {
   protected handleComponent(container: DeclarationReflection, context: Context) {
     const signatures = container.signatures;
     if (signatures && signatures.length > 0) {
-      handleComment(this.element, signatures[0].comment, false);
+      handleComment(context.element, signatures[0].comment, false);
       const parameters = signatures[0].parameters;
       if (parameters) {
         parameters.forEach((p) => {
@@ -205,19 +240,30 @@ export class ElementParser {
       });
     });
     if (context.specialType === 'component' || context.specialType === 'element') {
-      this.element.typeParameters = context.typeParameters;
+      context.element.typeParameters = context.typeParameters;
     }
   }
 
   protected handleDeclarationReflectionChildren(children: DeclarationReflection[], context: Context) {
     children.forEach((child) => {
       // const newSpecialType = this.handleSpecialType(child as any, specialType, activeProp);
+      if (child.name.startsWith('[') && child.name.endsWith(']')) return;
+      if (child.name.startsWith('_')) return;
       const prop = this.asProp(child);
-      this.element.props.push(prop);
+      context.element.props.push(prop);
       if (child.type) {
         context.specialType = undefined;
         context.currentProp = prop;
         this.handleType(child.type, context);
+      }
+      if (child.signatures) {
+        const innerContext: Context = {
+          element: new ParsedElement(child.name, child.kindString || child.kind),
+          specialType: 'element',
+        };
+        this.handleDeclarationReflectionSignatures(child.signatures, innerContext);
+        prop.description = innerContext.element.description;
+        prop.type = innerContext.element.signatures[0];
       }
     });
   }
@@ -226,16 +272,18 @@ export class ElementParser {
     // currently, we only support signature[0]  => to be updated to handle all signature
     const signature = signatures[0];
     if (signature && context.specialType === 'element') {
-      handleComment(this.element, signature.comment, false);
+      handleComment(context.element, signature.comment, false);
       if (signature.kind === ReflectionKind.CallSignature) {
         this.handleCallSignature(signature, context);
       }
     }
-    const signatureContext: Context = {};
+    const signatureContext: Context = {
+      element: context.element,
+    };
     signatures.forEach((signature) => {
       this.handleSignatureString(signature, signatureContext);
     });
-    this.element.signatures = signatureContext.signatures || [];
+    context.element.signatures = signatureContext.signatures || [];
   }
 
   protected handleIntersection(element: IntersectionType, context: Context) {
@@ -259,7 +307,8 @@ export class ElementParser {
     if (typeArguments) {
       // this is a type with generic like React.FC<...>
       this.appendTypeToProp('<', context);
-      typeArguments.forEach((typeArgument) => {
+      typeArguments.forEach((typeArgument, i) => {
+        if (i > 0) this.appendTypeToProp(', ', context);
         this.handleType(typeArgument, context);
       });
       this.appendTypeToProp('>', context);
@@ -277,7 +326,7 @@ export class ElementParser {
   //   if (!context) return;
   //   if (context.specialType === 'element') {
   //     // this is a property of a component, let's add a prop in the context
-  //     this.element.props.push({
+  //     context.element.props.push({
   //       name: element.name,
   //       flags: element.flags,
   //       type: '',
@@ -307,21 +356,19 @@ export class ElementParser {
   // }
 
   protected handleType(type: SomeType, context: Context) {
+    console.log('handleType', type.type);
     if (type.type === 'reference') {
-      const id = type.id;
-      if (id) {
-        const parsedElement = this.getIndexedParsedElement(id);
-        if (!parsedElement) {
-          this.handleReferenceType(type, context);
-          return;
-        }
-        if (context.specialType === 'element' || context.specialType === 'component') {
-          this.element.props = parsedElement.props;
-          return;
-        }
-        if (context.currentProp && context.currentProp.toDocument) {
-          context.currentProp.type = parsedElement;
-          return;
+      if (type.id) {
+        const parsedElement = this.getIndexedParsedElement(type.id);
+        if (parsedElement) {
+          if (context.specialType === 'element' || context.specialType === 'component') {
+            context.element.props = parsedElement.props;
+            return;
+          }
+          if (context.currentProp && context.currentProp.toDocument) {
+            context.currentProp.type = parsedElement;
+            return;
+          }
         }
       }
       this.handleReferenceType(type, context);
@@ -359,6 +406,7 @@ export class ElementParser {
     const prop: Props = {
       name: parameter.name,
       flags: parameter.flags,
+      kind: parameter.kindString || parameter.kind,
       type: '',
       description: '',
       defaultValue: parameter.defaultValue,

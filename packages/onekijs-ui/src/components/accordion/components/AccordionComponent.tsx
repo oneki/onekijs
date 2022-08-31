@@ -5,6 +5,7 @@ import { AccordionServiceContext } from '../hooks/useAccordionService';
 import { AccordionStateContext } from '../hooks/useAccordionState';
 import { AccordionProps, AccordionState } from '../typings';
 import AccordionContainer from './AccordionContainer';
+
 /**
  * This is the comment for AccordionComponent
  *
@@ -17,6 +18,9 @@ import AccordionContainer from './AccordionContainer';
  *
  * @param param0 test param0
  * @returns a AccordionCompont
+ *
+ * @group Accordion
+ * @category Components
  */
 const AccordionComponent: FCC<AccordionProps> = ({ Component = AccordionContainer, ...props }) => {
   const [state, service] = useService(AccordionService, {

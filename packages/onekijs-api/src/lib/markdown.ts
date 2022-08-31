@@ -8,22 +8,15 @@ const isMandatoryProp = (prop: Props) => {
   if (prop.flags.isOptional === true) return false;
   return true;
 };
+
 export class MarkdownBuilder {
-  constructor(public element: ParsedElement, public basePath: string) {}
+  constructor(public element: ParsedElement, public basePath: string, public markdown = '') {}
 
   public build() {
-    this.sortProps(this.element.props);
-    const markdown = `${this.markdownMetadata()}${this.signatures()}
-    
-${this.element.description}${this.remark()}${this.example()}
-
-${this.inputTitle()}
-
-${this.headerProps(this.element.props)}
-${this.props(this.element.props)}${this.return()}${this.typeParameters()}
-`;
-
-    this.writeString(getAbsoluteFilepath(this.element), markdown);
+    // build markdown
+    this.markdownMetadata().signatures().description().remark().example().section1().section2().typeParameters();
+    // write markdown to file
+    this.writeString(getAbsoluteFilepath(this.element), this.markdown);
   }
 
   writeString(path: string, data: string) {
@@ -32,34 +25,13 @@ ${this.props(this.element.props)}${this.return()}${this.typeParameters()}
     });
   }
 
-  private headerProps(props: Props[]) {
-    const depth = this.depth(props);
-    return `| ${this.inputLabel()} ${this.buildHeaderDepth(depth, '|   ')}| ${this.headerTypelabel()} | Description |
-| --------- ${this.buildHeaderDepth(depth, '| -- ')}| ---- | ----------- |`;
-  }
-
   private markdownMetadata() {
-    return `---
+    this.markdown += `---
 id: ${this.element.name}
 title: ${this.element.name}
 sidebar_label: ${this.element.name}
 ---`;
-  }
-
-  private headerTypelabel() {
-    if (this.element.type === ReflectionKind.Enum) {
-      return 'Value';
-    } else {
-      return 'Type';
-    }
-  }
-
-  private props(props: Props[]) {
-    let markdown = '';
-    props.forEach((prop) => {
-      markdown += this.buildProp(prop, this.depth(props));
-    });
-    return markdown;
+    return this;
   }
 
   private typeParameters() {
@@ -84,7 +56,8 @@ sidebar_label: ${this.element.name}
     if (example) {
       markdown += `\n\n#### Example\n\n${example}`;
     }
-    return markdown;
+    this.markdown += markdown;
+    return this;
   }
 
   private depth(props: Props[], initialDepth = 1): number {
@@ -135,7 +108,16 @@ sidebar_label: ${this.element.name}
   }
 
   private buildPropDescription(prop: Props) {
-    return prop.description;
+    let markdown = prop.description;
+    if (prop.example !== undefined && prop.example !== '') {
+      if (markdown.length > 0) markdown += '<br/><br/>';
+      markdown += `**Example:** ${prop.example}`;
+    }
+    if (prop.defaultValue !== undefined && prop.defaultValue !== '') {
+      if (markdown.length > 0) markdown += '<br/><br/>';
+      markdown += `**Defaults to:** ${prop.defaultValue}`;
+    }
+    return markdown;
   }
 
   private typeAsString(prop: Props) {
@@ -144,18 +126,6 @@ sidebar_label: ${this.element.name}
     }
     return prop.type.name; // TODO build full type
   }
-
-  // private getOutputFilename() {
-  //   let path = '';
-  //   if (this.element.groups[0]) {
-  //     path += `${this.element.groups[0]}/`;
-  //   }
-  //   if (this.element.categories[0]) {
-  //     path += `${this.element.categories[0]}/`;
-  //   }
-  //   path += `${this.element.name}.md`;
-  //   return path;
-  // }
 
   private handleMandatoryProp(prop: Props) {
     if (isMandatoryProp(prop)) return `**${prop.name}**`;
@@ -173,26 +143,97 @@ sidebar_label: ${this.element.name}
     });
   }
 
-  private inputTitle() {
-    const label = this.inputLabel();
-    return `### ${label}\n\n<font size="2"><i>(Mandatory ${label.toLocaleLowerCase()} are in bold)</i></font>`;
+  private section1() {
+    const label = this.sectionLabel(1);
+    this.markdown += `\n\n### ${label}\n\n`;
+    if (this.element.type !== 'Class') {
+      this.markdown += `<font size="2"><i>(Mandatory ${label.toLocaleLowerCase()} are in bold)</i></font>\n\n`;
+    }
+
+    let props = this.sortProps(this.element.props);
+    props = props.filter((prop) => {
+      if (prop.flags.isPrivate || prop.flags.isProtected) return false;
+      if (this.element.type === 'Class') {
+        return prop.kind === 'Property' || prop.kind === ReflectionKind.Property;
+      }
+      return true;
+    });
+
+    const depth = this.depth(props);
+    this.markdown += `| ${label} ${this.buildHeaderDepth(depth, '|   ')}| ${this.typeLabel(1)} | Description |\n`;
+    this.markdown += `| --------- ${this.buildHeaderDepth(depth, '| -- ')}| ---- | ----------- |\n`;
+    props.forEach((prop) => {
+      this.markdown += this.buildProp(prop, depth);
+    });
+    return this;
   }
 
-  private inputLabel() {
-    let label = 'Properties';
-    if (this.element.categories[0] === 'Components') {
-      label = 'Properties';
-    } else if (this.element.type === 'Function') {
-      label = 'Parameters';
+  private section2() {
+    const label = this.sectionLabel(2);
+    this.markdown += `\n\n### ${label}\n\n`;
+    let props = this.sortProps(this.element.props);
+    if (this.element.type === 'Function' || this.element.type === 'Method') {
+      // We only display properties
+      this.markdown += this.return();
+      return this;
+    } else if (this.element.type === 'Class') {
+      // We only display properties
+      props = props.filter((prop) => {
+        if (prop.flags.isPrivate || prop.flags.isProtected) return false;
+        return prop.kind === 'Method' || prop.kind === ReflectionKind.Method;
+      });
+    } else {
+      return this;
     }
+
+    const depth = this.depth(props);
+    this.markdown += `| ${label} ${this.buildHeaderDepth(depth, '|   ')}| ${this.typeLabel(2)} | Description |\n`;
+    this.markdown += `| --------- ${this.buildHeaderDepth(depth, '| -- ')}| ---- | ----------- |\n`;
+    props.forEach((prop) => {
+      this.markdown += this.buildProp(prop, depth);
+    });
+    return this;
+  }
+
+  private sectionLabel(idx: number) {
+    let label = 'Properties';
+    if (idx === 1) {
+      if (this.element.type === 'Function') {
+        label = 'Parameters';
+      }
+    } else if (idx === 2) {
+      if (this.element.type === 'Function') {
+        label = 'Return';
+      } else if (this.element.type === 'Class') {
+        label = 'Methods';
+      }
+    }
+
     return label;
+  }
+
+  private typeLabel(idx: number) {
+    if (idx === 1) {
+      if (this.element.type === ReflectionKind.Enum) {
+        return 'Value';
+      } else {
+        return 'Type';
+      }
+    } else if (idx === 2) {
+      if (this.element.type === 'Class') {
+        return 'Signature';
+      } else {
+        return 'Type';
+      }
+    }
+    return 'Type';
   }
 
   private return() {
     let markdown = '';
     const returns = this.element.returns;
     if (returns) {
-      markdown += '\n\n### Return\n\nThe return is of type <code>';
+      markdown += '\n\nThe return is of type <code>';
       if (typeof returns === 'string') {
         markdown += returns.replace(/>/g, '\\>');
       } else if (returns instanceof ParsedElement) {
@@ -211,7 +252,13 @@ sidebar_label: ${this.element.name}
     if (remarks) {
       markdown += `\n\n:::info Remark\n${remarks}\n:::`;
     }
-    return markdown;
+    this.markdown += markdown;
+    return this;
+  }
+
+  private description() {
+    this.markdown += `\n\n${this.element.description}`;
+    return this;
   }
 
   private signatures() {
@@ -225,6 +272,7 @@ sidebar_label: ${this.element.name}
       });
       markdown += '```\n<br/>';
     }
-    return markdown;
+    this.markdown += markdown;
+    return this;
   }
 }

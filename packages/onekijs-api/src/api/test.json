@@ -7,267 +7,437 @@
 	"originalName": "",
 	"children": [
 		{
-			"id": 1,
-			"name": "NotificationService",
-			"kind": 128,
-			"kindString": "Class",
+			"id": 5,
+			"name": "ComponentOptions",
+			"kind": 4194304,
+			"kindString": "Type alias",
 			"flags": {},
 			"comment": {
 				"summary": [
 					{
 						"kind": "text",
-						"text": "Comment of NotificationService class"
+						"text": "TEst"
+					}
+				],
+				"blockTags": [
+					{
+						"tag": "@see",
+						"content": [
+							{
+								"kind": "text",
+								"text": "ComponentProps"
+							}
+						]
 					}
 				]
 			},
-			"children": [
+			"sources": [
 				{
-					"id": 2,
-					"name": "constructor",
-					"kind": 512,
-					"kindString": "Constructor",
+					"fileName": "test.ts",
+					"line": 116,
+					"character": 12
+				}
+			],
+			"type": {
+				"type": "reflection",
+				"declaration": {
+					"id": 6,
+					"name": "__type",
+					"kind": 65536,
+					"kindString": "Type literal",
 					"flags": {},
-					"sources": [
+					"children": [
 						{
-							"fileName": "test.ts",
-							"line": 7,
-							"character": 2
-						}
-					],
-					"signatures": [
-						{
-							"id": 3,
-							"name": "new NotificationService",
-							"kind": 16384,
-							"kindString": "Constructor signature",
-							"flags": {},
-							"parameters": [
-								{
-									"id": 4,
-									"name": "indexer",
-									"kind": 32768,
-									"kindString": "Parameter",
-									"flags": {},
-									"type": {
-										"type": "intrinsic",
-										"name": "string"
-									}
-								}
-							],
-							"type": {
-								"type": "reference",
-								"id": 1,
-								"name": "NotificationService"
-							}
-						}
-					]
-				},
-				{
-					"id": 5,
-					"name": "indexer",
-					"kind": 1024,
-					"kindString": "Property",
-					"flags": {
-						"isPublic": true
-					},
-					"sources": [
-						{
-							"fileName": "test.ts",
-							"line": 7,
-							"character": 21
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "string"
-					}
-				},
-				{
-					"id": 8,
-					"name": "add",
-					"kind": 2048,
-					"kindString": "Method",
-					"flags": {},
-					"sources": [
-						{
-							"fileName": "test.ts",
-							"line": 20,
-							"character": 2
-						}
-					],
-					"signatures": [
-						{
-							"id": 9,
-							"name": "add",
-							"kind": 4096,
-							"kindString": "Call signature",
-							"flags": {},
+							"id": 8,
+							"name": "alias",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isOptional": true
+							},
 							"comment": {
 								"summary": [
 									{
 										"kind": "text",
-										"text": "Comment of the add operation"
+										"text": "this is the alias"
 									}
 								],
 								"blockTags": [
 									{
-										"tag": "@returns",
+										"tag": "@defaultValue",
 										"content": [
 											{
 												"kind": "text",
-												"text": "a string indicating the status"
+												"text": "test"
 											}
 										]
 									}
 								]
 							},
-							"parameters": [
+							"sources": [
 								{
-									"id": 10,
-									"name": "notification",
-									"kind": 32768,
-									"kindString": "Parameter",
-									"flags": {},
-									"comment": {
-										"summary": [
-											{
-												"kind": "text",
-												"text": "the notification to send"
-											}
-										]
-									},
-									"type": {
-										"type": "intrinsic",
-										"name": "string"
-									}
+									"fileName": "test.ts",
+									"line": 127,
+									"character": 2
 								}
 							],
 							"type": {
 								"type": "intrinsic",
 								"name": "string"
 							}
+						},
+						{
+							"id": 7,
+							"name": "transferable",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Flag to determine if the component is transferable"
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "test.ts",
+									"line": 120,
+									"character": 2
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "boolean"
+							}
 						}
-					]
-				},
-				{
-					"id": 11,
-					"name": "error",
-					"kind": 2048,
-					"kindString": "Method",
-					"flags": {},
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"children": [
+								8,
+								7
+							]
+						}
+					],
 					"sources": [
 						{
 							"fileName": "test.ts",
-							"line": 24,
-							"character": 3
+							"line": 116,
+							"character": 31
 						}
-					],
-					"signatures": [
+					]
+				}
+			}
+		},
+		{
+			"id": 9,
+			"name": "ComponentProps",
+			"kind": 4194304,
+			"kindString": "Type alias",
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "test.ts",
+					"line": 130,
+					"character": 12
+				}
+			],
+			"type": {
+				"type": "reflection",
+				"declaration": {
+					"id": 10,
+					"name": "__type",
+					"kind": 65536,
+					"kindString": "Type literal",
+					"flags": {},
+					"children": [
 						{
 							"id": 12,
-							"name": "error",
-							"kind": 4096,
-							"kindString": "Call signature",
-							"flags": {},
-							"parameters": [
-								{
-									"id": 13,
-									"name": "payload",
-									"kind": 32768,
-									"kindString": "Parameter",
-									"flags": {},
-									"type": {
-										"type": "intrinsic",
-										"name": "any"
+							"name": "lastname",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isOptional": true
+							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "The last name of the user"
 									}
+								],
+								"blockTags": [
+									{
+										"tag": "@defaultValue",
+										"content": [
+											{
+												"kind": "text",
+												"text": "Doe"
+											}
+										]
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "test.ts",
+									"line": 154,
+									"character": 2
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 11,
+							"name": "name",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "The name of the user\n\n"
+									},
+									{
+										"kind": "code",
+										"text": "```\n<div>\n <Input name=\"lastname\" />\n</div>\n```"
+									},
+									{
+										"kind": "text",
+										"text": "\n\nAfter the block code ><><>"
+									}
+								],
+								"blockTags": [
+									{
+										"tag": "@example",
+										"content": [
+											{
+												"kind": "text",
+												"text": "Here is an example\n"
+											},
+											{
+												"kind": "code",
+												"text": "```\nthis is the example block code\n```"
+											}
+										]
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "test.ts",
+									"line": 148,
+									"character": 2
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "string"
+									},
+									{
+										"type": "intrinsic",
+										"name": "number"
+									}
+								]
+							}
+						},
+						{
+							"id": 14,
+							"name": "options",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isOptional": true
+							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Optional options"
+									}
+								],
+								"blockTags": [
+									{
+										"tag": "@remarks",
+										"content": [
+											{
+												"kind": "text",
+												"text": "#doc#"
+											}
+										]
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "test.ts",
+									"line": 165,
+									"character": 2
+								}
+							],
+							"type": {
+								"type": "reference",
+								"id": 5,
+								"name": "ComponentOptions"
+							}
+						},
+						{
+							"id": 13,
+							"name": "type",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "The type of the user"
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "test.ts",
+									"line": 158,
+									"character": 2
 								}
 							],
 							"type": {
 								"type": "reference",
 								"typeArguments": [
 									{
-										"type": "intrinsic",
-										"name": "void"
-									},
-									{
-										"type": "intrinsic",
-										"name": "void"
-									},
-									{
-										"type": "intrinsic",
-										"name": "unknown"
+										"type": "reference",
+										"id": 1,
+										"typeArguments": [
+											{
+												"type": "intrinsic",
+												"name": "string"
+											}
+										],
+										"name": "MyGenericType"
 									}
 								],
-								"name": "Generator",
-								"qualifiedName": "Generator",
+								"name": "Promise",
+								"qualifiedName": "Promise",
 								"package": "typescript"
 							}
 						}
-					]
-				},
-				{
-					"id": 6,
-					"name": "init",
-					"kind": 2048,
-					"kindString": "Method",
-					"flags": {},
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"children": [
+								12,
+								11,
+								14,
+								13
+							]
+						}
+					],
 					"sources": [
 						{
 							"fileName": "test.ts",
-							"line": 11,
-							"character": 2
-						}
-					],
-					"signatures": [
-						{
-							"id": 7,
-							"name": "init",
-							"kind": 4096,
-							"kindString": "Call signature",
-							"flags": {},
-							"type": {
-								"type": "intrinsic",
-								"name": "void"
-							}
+							"line": 130,
+							"character": 29
 						}
 					]
 				}
-			],
-			"groups": [
-				{
-					"title": "Constructors",
-					"children": [
-						2
-					]
-				},
-				{
-					"title": "Properties",
-					"children": [
-						5
-					]
-				},
-				{
-					"title": "Methods",
-					"children": [
-						8,
-						11,
-						6
-					]
-				}
-			],
+			}
+		},
+		{
+			"id": 1,
+			"name": "MyGenericType",
+			"kind": 4194304,
+			"kindString": "Type alias",
+			"flags": {},
 			"sources": [
 				{
 					"fileName": "test.ts",
-					"line": 6,
-					"character": 13
+					"line": 107,
+					"character": 12
 				}
-			]
+			],
+			"typeParameters": [
+				{
+					"id": 4,
+					"name": "T",
+					"kind": 131072,
+					"kindString": "Type parameter",
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "the identity type"
+							}
+						]
+					}
+				}
+			],
+			"type": {
+				"type": "reflection",
+				"declaration": {
+					"id": 2,
+					"name": "__type",
+					"kind": 65536,
+					"kindString": "Type literal",
+					"flags": {},
+					"children": [
+						{
+							"id": 3,
+							"name": "foo",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "test.ts",
+									"line": 108,
+									"character": 2
+								}
+							],
+							"type": {
+								"type": "reference",
+								"id": 4,
+								"name": "T"
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"children": [
+								3
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "test.ts",
+							"line": 107,
+							"character": 31
+						}
+					]
+				}
+			}
 		}
 	],
 	"groups": [
 		{
-			"title": "Classes",
+			"title": "Type Aliases",
 			"children": [
+				5,
+				9,
 				1
 			]
 		}

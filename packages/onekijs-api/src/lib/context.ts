@@ -12,6 +12,7 @@ export interface Description {
 export interface Props extends Description {
   flags: ReflectionFlags;
   type: string | ParsedElement;
+  kind: string | ReflectionKind;
   toDocument?: boolean;
 }
 

@@ -14,6 +14,7 @@ export const handleComment = (element: Description, comment?: Comment, useHtml =
   element.example = blockTagToString('@example', comment, useHtml);
   element.remarks = blockTagToString('@remarks', comment, useHtml);
   element.returnComment = blockTagToString('@returns', comment, useHtml);
+  element.defaultValue = blockTagToString('@defaultValue', comment, useHtml);
 };
 
 export const commentToDescription = (comment?: Comment, useHtml = true): string => {
@@ -73,6 +74,7 @@ export const emptyProp = () => {
     flags: {},
     name: '',
     type: '',
+    kind: '',
   };
   return prop;
 };

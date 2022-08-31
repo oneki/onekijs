@@ -1,30 +1,32 @@
 import { FC } from 'react';
 
-/**
- * Comment of NotificationService class
- */
-export class NotificationService {
-  constructor(public indexer: string) {
-    console.log('test');
-  }
+// /**
+//  * Comment of NotificationService class
+//  */
+// export class NotificationService {
+//   private myPrivateField?: string;
+//   myPublicField2?: string;
+//   constructor(public indexer: string, public myPublicField?: string) {
+//     console.log('test');
+//   }
 
-  init(): void {
-    console.log('test');
-  }
+//   init(): void {
+//     console.log('test');
+//   }
 
-  /**
-   * Comment of the add operation
-   * @param notification the notification to send
-   * @returns a string indicating the status
-   */
-  add(notification: string): string {
-    return 'test';
-  }
+//   /**
+//    * Comment of the add operation
+//    * @param notification the notification to send
+//    * @returns a string indicating the status
+//    */
+//   protected add(notification: string): string {
+//     return 'test';
+//   }
 
-  *error(payload: any) {
-    yield console.log(payload.test);
-  }
-}
+//   *error(payload: any) {
+//     yield console.log(payload.test);
+//   }
+// }
 
 // export enum BreakpointKeys {
 //   /**
@@ -99,62 +101,69 @@ export class NotificationService {
 //   }
 // }
 
-// /**
-//  * @typeParam T - the identity type
-//  */
-// export type MyGenericType<T> = {
-//   foo: T;
-// };
+/**
+ * @typeParam T - the identity type
+ */
+export type MyGenericType<T> = {
+  foo: T;
+};
 
-// export type ComponentOptions = {
-//   /**
-//    * Flag to determine if the component is transferable
-//    */
-//   transferable: boolean;
+/**
+ * TEst
+ *
+ * @see ComponentProps
+ */
+export type ComponentOptions = {
+  /**
+   * Flag to determine if the component is transferable
+   */
+  transferable: boolean;
 
-//   /**
-//    * this is the alias
-//    */
-//   alias: string;
-// };
+  /**
+   * this is the alias
+   *
+   * @defaultValue test
+   */
+  alias?: string;
+};
 
-// export type ComponentProps = {
-//   /**
-//    * The name of the user
-//    *
-//    * ```
-//    * <div>
-//    *  <Input name="lastname" />
-//    * </div>
-//    * ```
-//    *
-//    * After the block code ><><>
-//    *
-//    * @example
-//    * Here is an example
-//    * ```
-//    * this is the example block code
-//    * ```
-//    */
-//   name: string | number;
-//   /**
-//    * The last name of the user
-//    *
-//    * @defaultValue Doe
-//    */
-//   lastname?: string;
-//   /**
-//    * The type of the user
-//    */
-//   type: Promise<MyGenericType<string>>;
+export type ComponentProps = {
+  /**
+   * The name of the user
+   *
+   * ```
+   * <div>
+   *  <Input name="lastname" />
+   * </div>
+   * ```
+   *
+   * After the block code ><><>
+   *
+   * @example
+   * Here is an example
+   * ```
+   * this is the example block code
+   * ```
+   */
+  name: string | number;
+  /**
+   * The last name of the user
+   *
+   * @defaultValue Doe
+   */
+  lastname?: string;
+  /**
+   * The type of the user
+   */
+  type: Promise<MyGenericType<string>>;
 
-//   /**
-//    * Optional options
-//    *
-//    * @remarks #doc#
-//    */
-//   options?: ComponentOptions;
-// };
+  /**
+   * Optional options
+   *
+   * @remarks #doc#
+   */
+  options?: string;
+};
 
 // /**
 //  * This is the documentation of the component
