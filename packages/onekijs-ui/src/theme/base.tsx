@@ -74,8 +74,7 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
 
     font: {
       families: {
-        sans:
-          'Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
+        sans: 'Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
         serif: 'Georgia, Cambria, "Times New Roman", Times, serif',
         mono: 'Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
       },

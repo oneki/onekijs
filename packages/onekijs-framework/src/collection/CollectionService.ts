@@ -75,6 +75,7 @@ export default class CollectionService<
   protected db?: I[];
   protected unregisterRouterListener?: UnregisterCallback;
   protected refreshing = false;
+  protected currentQuery?: string;
 
   init(): void {
     this.initialState = this.state;

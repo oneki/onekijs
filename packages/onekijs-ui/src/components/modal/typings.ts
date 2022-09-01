@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import { SizePropertyTheme, TLength, TshirtSize } from '../../styles/typings';
 
 export type ModalProps = {
+  attachToBody?: boolean;
   className?: string;
   size?: TshirtSize;
   width?: TshirtSize | SizePropertyTheme | WidthProperty<TLength>;

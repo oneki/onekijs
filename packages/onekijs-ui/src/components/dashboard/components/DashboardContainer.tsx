@@ -43,6 +43,7 @@ const DashboardContainerComponent: FCC<DashboardContainerProps> = (props) => {
     props.onInit(ref);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   return (
     <div className={props.className} ref={ref}>
       {props.children}

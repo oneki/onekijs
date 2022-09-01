@@ -76,7 +76,7 @@ export {
 export { default as useAuth } from './auth/useAuth';
 export { default as useAuthService } from './auth/useAuthService';
 export { default as useLogin, useLoginService } from './auth/useLogin';
-export { default as useCallback, useLoginCallbackService } from './auth/useLoginCallback';
+export { default as useLoginCallback, useLoginCallbackService } from './auth/useLoginCallback';
 export { default as useLoginError } from './auth/useLoginError';
 export { default as useLogout, useLogoutService } from './auth/useLogout';
 export { default as useLogoutCallback, useLogoutCallbackService } from './auth/useLogoutCallback';

@@ -18,7 +18,7 @@ const DefaultAuthErrorComponent: FCC<AuthErrorProps> = ({ error }) => {
     return null;
   }
 
-  return <div>ERROR COMPONENT HERE {error.code}</div>;
+  return <div>ERROR {error.code}</div>;
 };
 
 export default DefaultAuthErrorComponent;
