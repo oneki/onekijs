@@ -43,7 +43,6 @@ export const wizardStyle: ComponentStyle<WizardProps> = ({ layout = 'vertical', 
       ${paddingLeft(t.stepsPaddingLeft)}
       ${paddingBottom(t.stepsPaddingBottom)}
       ${backgroundColor(t.stepsBgColor)}
-
     }
 
     .o-step {
@@ -82,7 +81,8 @@ export const wizardStyle: ComponentStyle<WizardProps> = ({ layout = 'vertical', 
     }
 
     .o-step-inactive {
-      &.o-step-success, &.o-step-touched {
+      &.o-step-success,
+      &.o-step-touched {
         ${stepBorderColorFn(t.successBorderColor)}
         ${color(t.successFontColor)}
       }
@@ -100,7 +100,8 @@ export const wizardStyle: ComponentStyle<WizardProps> = ({ layout = 'vertical', 
       ${cursor(t.cursor)}
     }
 
-    .o-step-disabled, .o-step-untouched {
+    .o-step-disabled,
+    .o-step-untouched {
       ${cursor('default')}
       ${stepBorderColorFn(t.disabledBorderColor)}
       ${color(t.disabledFontColor)}
@@ -142,6 +143,13 @@ export const wizardStyle: ComponentStyle<WizardProps> = ({ layout = 'vertical', 
       ${paddingBottom('md')}
     }
 
+    .o-step-content-title {
+      ${fontSize('2xl')}
+      ${fontWeight('light')}
+      ${color('black')}
+      ${lineHeight('4xl')}
+      ${paddingBottom('md')}
+    }
   `;
 };
 

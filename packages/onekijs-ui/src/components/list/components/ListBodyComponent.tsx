@@ -2,7 +2,8 @@ import { get, Item, last, useEventListener } from 'onekijs-framework';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { addStyle } from '../../../utils/style';
 import { ListBodyProps } from '../typings';
-import ListItemComponent from './ListItemComponent';
+import ListItemComponent, { ListItemContent } from './ListItemComponent';
+import LoadingItem from './LoadingItem';
 import StandardListComponent from './StandardListComponent';
 import DefaultVirtualListComponent from './VirtualListComponent';
 
@@ -27,6 +28,8 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
   height,
   items,
   ItemComponent = ListItemComponent,
+  ItemLoadingComponent = LoadingItem,
+  ItemContentComponent = ListItemContent,
   NotFoundComponent,
   keyboardNavigable,
   ListComponent = StandardListComponent,
@@ -201,6 +204,8 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
           <VirtualListComponent
             items={items}
             ItemComponent={ItemComponent}
+            ItemLoadingComponent={ItemLoadingComponent}
+            ItemContentComponent={ItemContentComponent}
             virtualItems={virtualItems}
             onItemMouseEnter={onItemMouseEnter}
             onItemMouseLeave={onItemMouseLeave}
@@ -231,6 +236,8 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
         <ListComponent
           items={items}
           ItemComponent={ItemComponent}
+          ItemLoadingComponent={ItemLoadingComponent}
+          ItemContentComponent={ItemContentComponent}
           onItemMouseEnter={onItemMouseEnter}
           onItemMouseLeave={onItemMouseLeave}
           onItemClick={onItemClick}

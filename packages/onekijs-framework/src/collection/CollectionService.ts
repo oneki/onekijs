@@ -890,13 +890,12 @@ export default class CollectionService<
     comparators: AnonymousObject<QuerySortComparator>,
   ): I[] {
     // apply filters to data
-    let result = items;
+    let result: I[] = Object.assign([], items);
     if (query.filter) {
-      result = items.filter((item) => this._applyFilter(item, formatFilter(query.filter)));
-    } else if (query.search) {
-      result = items.filter((item) => this._applySearch(item, query.search));
-    } else {
-      result = Object.assign([], items);
+      result = result.filter((item) => this._applyFilter(item, formatFilter(query.filter)));
+    }
+    if (query.search) {
+      result = result.filter((item) => this._applySearch(item, query.search));
     }
 
     // apply sort

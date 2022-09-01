@@ -16,6 +16,7 @@ import { useClickOutside, useFocusOutside } from '../../../utils/event';
 import { addClassname } from '../../../utils/style';
 import useDropdown from '../../dropdown/hooks/useDropdown';
 import ListBodyComponent from '../../list/components/ListBodyComponent';
+import LoadingItem from '../../list/components/LoadingItem';
 import useListView from '../../list/hooks/useListView';
 import { SelectConfigContext } from '../hooks/useSelectConfig';
 import { ControllerSelectProps, SelectConfig, SelectItem, SelectOptionHandler } from '../typings';
@@ -64,8 +65,9 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   controller,
   InputComponent = SelectInputComponent,
   IconComponent,
-  ItemComponent = SelectOptionContent,
+  OptionContentComponent = SelectOptionContent,
   OptionComponent = SelectOptionComponent,
+  OptionLoadingComponent = LoadingItem,
   MultiOptionsComponent = MultiSelectOptionComponent,
   NotFoundComponent = SelectNotFoundComponent,
   autoFocus,
@@ -100,9 +102,10 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
 
   const config: SelectConfig = useMemo(() => {
     return {
-      ItemComponent,
+      OptionContentComponent,
+      OptionLoadingComponent,
     };
-  }, [ItemComponent]);
+  }, [OptionContentComponent, OptionLoadingComponent]);
 
   const tokens = useMemo<SelectItem<any>[]>(() => {
     return (controller.state.selected || [])
@@ -409,6 +412,8 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
             bodyRef={optionsRef}
             height={height}
             ItemComponent={multiple ? MultiOptionsComponent : OptionComponent}
+            ItemLoadingComponent={OptionLoadingComponent}
+            ItemContentComponent={OptionContentComponent}
             NotFoundComponent={NotFoundComponent}
             items={selectItems}
             onItemSelect={onSelect}

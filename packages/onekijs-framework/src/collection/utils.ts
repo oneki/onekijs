@@ -29,6 +29,12 @@ export const rootFilterId = Symbol();
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const defaultComparator = (a: any, b: any) => {
+  if (typeof a === 'string') {
+    a = a.toLowerCase();
+  }
+  if (typeof b === 'string') {
+    b = b.toLowerCase();
+  }
   if (a === b) return 0;
   return a < b ? -1 : 1;
 };

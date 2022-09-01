@@ -427,6 +427,14 @@ export default class FormService extends DefaultService<FormState> {
     return this.fields[name].context;
   }
 
+  isTouched(fieldName: string): boolean {
+    const field = this.fields[fieldName];
+    if (field) {
+      return field.touched;
+    }
+    return false;
+  }
+
   @saga(SagaEffect.Leading)
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   *loadInitialValues(fetcher: string | (() => AnonymousObject | Promise<AnonymousObject>)) {

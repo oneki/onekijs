@@ -131,8 +131,9 @@ export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omi
   openOnFocus?: boolean;
   clickable?: boolean;
   dropdownWidthModifier?: DropdownWidthModifier;
-  ItemComponent?: FC<SelectOptionProps>;
   OptionComponent?: FC<SelectOptionProps>;
+  OptionContentComponent?: FC<SelectOptionProps>;
+  OptionLoadingComponent?: FC;
   MultiOptionsComponent?: FC<SelectOptionProps>;
   animationMs?: number;
 };

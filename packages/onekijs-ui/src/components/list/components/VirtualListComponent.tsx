@@ -1,12 +1,15 @@
-import { useThrottle } from 'onekijs-framework';
+import { LoadingStatus, useThrottle } from 'onekijs-framework';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { VirtualItemWrapperProps, VirtualListProps } from '../typings';
-import ListItemComponent from './ListItemComponent';
+import ListItemComponent, { ListItemContent } from './ListItemComponent';
+import LoadingItem from './LoadingItem';
 
 const VirtualItemWrapper: React.FC<VirtualItemWrapperProps<any, any>> = ({
   virtualItem,
   listItem,
   ItemComponent = ListItemComponent,
+  ItemContentComponent = ListItemContent,
+  ItemLoadingComponent = LoadingItem,
   onItemClick,
   onItemMouseEnter,
   onItemMouseLeave,
@@ -61,14 +64,19 @@ const VirtualItemWrapper: React.FC<VirtualItemWrapperProps<any, any>> = ({
       }}
     >
       <div ref={ref}>
-        <ItemComponent
-          key={`item-${listItem?.uid || index}`}
-          index={index}
-          item={listItem}
-          onClick={onItemClick}
-          onMouseEnter={onItemMouseEnter}
-          onMouseLeave={onItemMouseLeave}
-        />
+        {listItem?.loadingStatus === LoadingStatus.Loading && <ItemLoadingComponent />}
+        {listItem?.loadingStatus !== LoadingStatus.Loading && listItem && listItem.data && (
+          <ItemComponent
+            key={`item-${listItem?.uid || index}`}
+            index={index}
+            item={listItem}
+            data={listItem.data}
+            onClick={onItemClick}
+            onMouseEnter={onItemMouseEnter}
+            onMouseLeave={onItemMouseLeave}
+            ItemContentComponent={ItemContentComponent}
+          />
+        )}
       </div>
     </div>
   );
@@ -77,6 +85,8 @@ const VirtualItemWrapper: React.FC<VirtualItemWrapperProps<any, any>> = ({
 const VirtualListComponent: React.FC<VirtualListProps<any, any>> = ({
   items,
   ItemComponent = ListItemComponent,
+  ItemLoadingComponent = LoadingItem,
+  ItemContentComponent = ListItemContent,
   onItemClick,
   onItemMouseEnter,
   onItemMouseLeave,
@@ -92,6 +102,8 @@ const VirtualListComponent: React.FC<VirtualListProps<any, any>> = ({
             listItem={listItem}
             virtualItem={virtualItem}
             ItemComponent={ItemComponent}
+            ItemLoadingComponent={ItemLoadingComponent}
+            ItemContentComponent={ItemContentComponent}
             onItemClick={onItemClick}
             onItemMouseEnter={onItemMouseEnter}
             onItemMouseLeave={onItemMouseLeave}

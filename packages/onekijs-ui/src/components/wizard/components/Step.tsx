@@ -16,6 +16,7 @@ const Step: FCC<StepProps> = ({
   icon,
   uid,
   optional = false,
+  showTitle = true,
 }) => {
   const { animate, forwardOnly } = useWizardState();
   const service = useWizardService();
@@ -60,7 +61,10 @@ const Step: FCC<StepProps> = ({
   return (
     <FormContext.Provider value={fieldContainer.context}>
       <CSSTransition in={true} timeout={animate} appear={true} onEnter={onEnter} onEntering={onEntering}>
-        <div className="o-step-content">{children}</div>
+        <div className="o-step-content">
+          {showTitle && <div className="o-step-content-title">{title}</div>}
+          {children}
+        </div>
       </CSSTransition>
     </FormContext.Provider>
   );
