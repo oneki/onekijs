@@ -1,5 +1,6 @@
 import { Comment, CommentDisplayPart, CommentTag } from 'typedoc/dist/lib/serialization/schema';
 import ParsedElement, { Description, Props } from '../lib/context';
+import texts from '../text/pre-defined-text';
 
 const getBlockTags = (tag: string, comment?: Comment): CommentTag[] => {
   if (!comment) return [];
@@ -12,9 +13,15 @@ export const handleComment = (element: Description, comment?: Comment, useHtml =
   if (!comment) return;
   element.description = commentToDescription(comment, useHtml);
   element.example = blockTagToString('@example', comment, useHtml);
-  element.remarks = blockTagToString('@remarks', comment, useHtml);
+  element.remarks = remarks(blockTagToString('@remarks', comment, useHtml));
   element.returnComment = blockTagToString('@returns', comment, useHtml);
   element.defaultValue = blockTagToString('@defaultValue', comment, useHtml);
+};
+
+export const remarks = (remark: string) => {
+  if (remark.trim() === '#styled#') return texts.styled;
+  if (remark.trim() === '#notStyled#') return texts.notStyled;
+  return remark;
 };
 
 export const commentToDescription = (comment?: Comment, useHtml = true): string => {
@@ -25,7 +32,7 @@ export const commentToDescription = (comment?: Comment, useHtml = true): string 
 export const commentPartsToString = (comment: CommentDisplayPart[], useHtml = true): string => {
   return comment.reduce((description, summary) => {
     let text = summary.text;
-    if (useHtml) {
+    if (useHtml || summary.kind === 'text') {
       text = text.replace(/>/g, '\\>');
     }
 
@@ -38,6 +45,7 @@ export const commentPartsToString = (comment: CommentDisplayPart[], useHtml = tr
         text = text.replace(/____double_new_line____/g, '\n\n');
       }
     } else if (summary.kind === 'code' && useHtml) {
+      text = text.replace('```ts\n', '<pre>');
       text = text.replace('```\n', '<pre>');
       text = text.replace('\n```', '</pre>');
       text = text.replace('`', '<code>');

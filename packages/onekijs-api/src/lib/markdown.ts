@@ -250,7 +250,7 @@ sidebar_label: ${this.element.name}
     let markdown = '';
     const remarks = this.element.remarks;
     if (remarks) {
-      markdown += `\n\n:::info Remark\n${remarks}\n:::`;
+      markdown += `\n\n:::note Note\n${remarks}\n:::`;
     }
     this.markdown += markdown;
     return this;

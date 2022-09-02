@@ -1,4 +1,6 @@
-import { FC } from 'react';
+import { FC, PropsWithChildren } from 'react';
+
+export declare type FCC<P = any> = FC<PropsWithChildren<P>>;
 
 // /**
 //  * Comment of NotificationService class
@@ -162,38 +164,38 @@ export type ComponentProps = {
    *
    * @remarks #doc#
    */
-  options?: string;
+  options?: ComponentOptions;
 };
 
-// /**
-//  * This is the documentation of the component
-//  * The goal is to have **markdown** tag in the descrition
-//  *
-//  * This description could be quite long
-//  *
-//  * ```
-//  * const test = useForm('toto):
-//  * ```
-//  * <br/>
-//  *
-//  * @example
-//  * ```
-//  * <MyCompnent name="foo" />
-//  * ```
-//  *
-//  * @remarks
-//  * This is a useful remark !
-//  *
-//  * ```
-//  * With some code in it !
-//  * ```
-//  *
-//  * @group Form
-//  * @category Components
-//  */
-// export const MyComponent: FC<ComponentProps> = ({ name }) => {
-//   return null;
-// };
+/**
+ * This is the documentation of the component
+ * The goal is to have **markdown** tag in the descrition
+ *
+ * This description could be quite long
+ *
+ * ```
+ * const test = useForm('toto):
+ * ```
+ * <br/>
+ *
+ * @example
+ * ```
+ * <MyCompnent name="foo" />
+ * ```
+ *
+ * @remarks
+ * This is a useful remark !
+ *
+ * ```
+ * With some code in it !
+ * ```
+ *
+ * @group Form
+ * @category Components
+ */
+export const MyComponent: FCC<ComponentProps> = ({ name }) => {
+  return null;
+};
 
 // // export interface Notification {
 // //   payload: any;

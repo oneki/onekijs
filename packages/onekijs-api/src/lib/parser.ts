@@ -27,10 +27,6 @@ export interface Context {
   doNotBuildLink?: boolean;
 }
 
-function cloneContext(context: Context): Context {
-  return Object.assign({}, context);
-}
-
 export class ElementParser {
   // private element: ParsedElement;
 
@@ -52,19 +48,7 @@ export class ElementParser {
     parsedElement.categories = indexedElement.categories;
     this.indexer.parsedElements[subject.id] = parsedElement;
 
-    // Check if it's not an alias for another component
-    const see = blockTagToString('@see', subject.comment, false);
-    if (see !== undefined && see !== '') {
-      const aliasElement = this.indexer.elementsByName[see];
-      const aliasParsedElement = this.getIndexedParsedElement(aliasElement.element.id);
-      if (aliasParsedElement) {
-        this.indexer.parsedElements[subject.id] = Object.assign({}, aliasParsedElement, {
-          name: parsedElement.name,
-          type: parsedElement.type,
-        });
-        return this.indexer.parsedElements[subject.id];
-      }
-    }
+    if (this.isAlias(subject, parsedElement)) return this.indexer.parsedElements[subject.id];
 
     const context: Context = {
       element: parsedElement,
@@ -80,6 +64,30 @@ export class ElementParser {
     this.handleDeclarationReflection(subject, context);
 
     return parsedElement;
+  }
+
+  protected isAlias(subject: DeclarationReflection, parsedElement: ParsedElement) {
+    // Check if it's not an alias for another component
+    const comment = subject.comment || (subject.signatures ? subject.signatures[0]?.comment : undefined);
+
+    const see = blockTagToString('@see', comment, false);
+    if (see !== undefined && see !== '') {
+      const aliasElement = this.indexer.elementsByName[see];
+      if (!aliasElement || !aliasElement.element) return false;
+      console.log('aliasElement', parsedElement.name);
+      const aliasParsedElement = this.getIndexedParsedElement(aliasElement.element.id);
+      handleComment(parsedElement, comment, false);
+      if (aliasParsedElement) {
+        this.indexer.parsedElements[subject.id] = Object.assign({}, aliasParsedElement, {
+          name: parsedElement.name,
+          type: parsedElement.type,
+          remarks: parsedElement.remarks,
+          example: parsedElement.example,
+        });
+        return true;
+      }
+    }
+    return false;
   }
 
   protected getIndexedParsedElement(id: number) {
@@ -356,7 +364,6 @@ export class ElementParser {
   // }
 
   protected handleType(type: SomeType, context: Context) {
-    console.log('handleType', type.type);
     if (type.type === 'reference') {
       if (type.id) {
         const parsedElement = this.getIndexedParsedElement(type.id);
