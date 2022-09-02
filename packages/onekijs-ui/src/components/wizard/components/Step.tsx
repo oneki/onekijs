@@ -1,5 +1,5 @@
 import { FCC, FormContext, useFieldContainer } from 'onekijs-framework';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import useStep from '../hooks/useStep';
 import useWizardService from '../hooks/useWizardService';
@@ -43,6 +43,9 @@ const Step: FCC<StepProps> = ({
     },
   });
 
+  const touched = step?.touched;
+  const touchAllFields = fieldContainer.touchAllFields;
+
   const onEnter = (node: HTMLElement) => {
     node.style.opacity = '0';
   };
@@ -53,6 +56,12 @@ const Step: FCC<StepProps> = ({
       node.style.transition = `opacity ${animate}ms ease-in-out`;
     }, 0);
   };
+
+  useEffect(() => {
+    if (touched) {
+      touchAllFields();
+    }
+  }, [touched, touchAllFields]);
 
   if (!step || !step.active) {
     return null;

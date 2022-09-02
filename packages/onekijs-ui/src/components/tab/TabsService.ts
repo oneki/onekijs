@@ -3,9 +3,10 @@ import { ReactNode } from 'react';
 import { TabsState, TabState } from './typings';
 
 @service
-export class TabsService<M extends TabState = TabState, S extends TabsState<M> = TabsState<M>> extends DefaultService<
-  S
-> {
+export class TabsService<
+  M extends TabState = TabState,
+  S extends TabsState<M> = TabsState<M>,
+> extends DefaultService<S> {
   @reducer
   activate(uid: string): void {
     const currentMember = this.state.members[this.getCurrentActiveIndex()];

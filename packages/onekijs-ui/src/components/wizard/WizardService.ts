@@ -5,7 +5,7 @@ import { StepState, WizardState } from './typings';
 @service
 export class WizardService<
   M extends StepState = StepState,
-  S extends WizardState<M> = WizardState<M>
+  S extends WizardState<M> = WizardState<M>,
 > extends TabsService<M, S> {
   @reducer
   activateNext(): void {
@@ -69,6 +69,14 @@ export class WizardService<
     return false;
   }
 
+  isCurrentStepInVisibleError(): boolean {
+    if (this.state.active) {
+      const currentStep = this.getMember(this.state.active);
+      return currentStep?.touchingError !== undefined;
+    }
+    return false;
+  }
+
   @saga(SagaEffect.Leading)
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   *done() {
@@ -81,12 +89,19 @@ export class WizardService<
 
   @reducer
   next(): void {
-    let result = true;
-    if (this.state.onNext) {
-      result = this.state.onNext(this.getCurrentStep() as M, this.getNextStep() as M);
-    }
-    if (result) {
-      this.activateNext();
+    if (this.isCurrentStepInError()) {
+      const currentStep = this.getCurrentStep();
+      if (currentStep) {
+        this.touched(currentStep.uid);
+      }
+    } else {
+      let result = true;
+      if (this.state.onNext) {
+        result = this.state.onNext(this.getCurrentStep() as M, this.getNextStep() as M);
+      }
+      if (result) {
+        this.activateNext();
+      }
     }
   }
 

@@ -3,7 +3,7 @@ import { alignItems } from '../../styles/alignment';
 import { display } from '../../styles/display';
 import { flexDirection } from '../../styles/flex';
 import { cursor } from '../../styles/interactivity';
-import { height } from '../../styles/size';
+import { height, minHeight } from '../../styles/size';
 import { marginLeft } from '../../styles/spacing';
 import { ComponentStyle } from '../../styles/typings';
 import { color, fontSize } from '../../styles/typography';
@@ -44,6 +44,7 @@ export const fieldDescriptionStyle: ComponentStyle<FieldDescriptionProps> = ({ t
   return css`
     ${fontSize(t.descriptionFontSize)}
     ${color(t.descriptionColor)}
+    ${minHeight('14px')}
     &.o-field-description-error {
       ${color('danger')}
     }

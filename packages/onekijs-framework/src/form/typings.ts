@@ -31,6 +31,7 @@ export interface FieldContainer {
   value: AnonymousObject<any>;
   touchedValidation: ContainerValidation;
   allValidation: ContainerValidation;
+  touchAllFields: () => void;
 }
 
 export interface FieldProps {

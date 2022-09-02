@@ -1,6 +1,5 @@
 import { LoadingStatus } from 'onekijs-framework';
 import React from 'react';
-import LoadingIcon from '../../icon/LoadingIcon';
 import { StandardListProps } from '../typings';
 import ListItemComponent, { ListItemContent } from './ListItemComponent';
 import LoadingItem from './LoadingItem';

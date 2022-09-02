@@ -147,12 +147,10 @@ const FieldLayoutComponent: FCC<FieldLayoutProps> = React.memo(
             xl={xlFieldLabelWidth !== undefined ? ((12 - xlFieldLabelWidth) as GridSize) : undefined}
             className="o-form-field-description"
           >
-            {(description || message) && (
-              <DescriptionComponent
-                content={message ? message : description || ''}
-                className={status !== undefined ? `o-field-description-${status}` : undefined}
-              />
-            )}
+            <DescriptionComponent
+              content={message ? message : description || ''}
+              className={status !== undefined ? `o-field-description-${status}` : undefined}
+            />
           </Col>
         </Row>
       );

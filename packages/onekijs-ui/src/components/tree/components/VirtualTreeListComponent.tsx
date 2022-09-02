@@ -1,7 +1,8 @@
-import { AnonymousObject, useLogger, useLogLevel } from 'onekijs-framework';
+import { AnonymousObject, LoadingStatus, useLogger, useLogLevel } from 'onekijs-framework';
 import React, { useEffect, useRef } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import useIsomorphicLayoutEffect from '../../../vendor/useIsomorphicLayoutEffect';
+import LoadingItem from '../../list/components/LoadingItem';
 import { VirtualItem } from '../../list/typings';
 import { useTreeConfig } from '../hooks/useTreeConfig';
 import useTreeService from '../hooks/useTreeService';
@@ -112,30 +113,22 @@ const VirtualTreeListItemComponent: React.FC<VirtualTreeListItemProps> = ({
 
   return (
     <div ref={itemRef}>
-      <div
-        className="o-virtual-item"
-        key={`virtual-item-${item?.uid || index}`}
-        ref={ref}
-        // style={{
-        //   position: 'absolute',
-        //   top: 0,
-        //   left: 0,
-        //   width: '100%',
-        //   minHeight: '20px',
-        //   transform: `translateY(${start - offset}px)`,
-        // }}
-      >
-        <ItemComponent
-          key={`item-${item?.uid || index}`}
-          className={className}
-          index={index}
-          item={item}
-          onClick={onClick}
-          onMouseEnter={onMouseEnter}
-          onMouseLeave={onMouseLeave}
-          onExpand={expand}
-          onCollapse={collapse}
-        />
+      <div className="o-virtual-item" key={`virtual-item-${item?.uid || index}`} ref={ref}>
+        {item?.loadingStatus === LoadingStatus.Loading && <LoadingItem />}
+        {item?.loadingStatus !== LoadingStatus.Loading && item && item.data && (
+          <ItemComponent
+            key={`item-${item?.uid || index}`}
+            className={className}
+            index={index}
+            item={item}
+            data={item.data}
+            onClick={onClick}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+            onExpand={expand}
+            onCollapse={collapse}
+          />
+        )}
       </div>
       <CSSTransition
         in={expanded}

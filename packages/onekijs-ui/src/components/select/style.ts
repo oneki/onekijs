@@ -143,11 +143,15 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
       ${position('relative')}
       input {
         ${backgroundColor('inherit')}
+        ${cursor('pointer')}
       }
       &.o-select-input-focus {
         ${borderColor('primary')}
         ${borderWidth(2)}
         ${padding(0)}
+        input {
+          ${cursor('auto')}
+        }
       }
       .o-select-remover {
         ${cursor('pointer')}
@@ -156,6 +160,7 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
         ${paddingX('sm')}
       }
     }
+
     &.o-select-close {
       .o-select-input {
         ${clickable ? cursor('pointer') : ''}

@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useRef } from 'react';
+import { useCallback, useEffect, useReducer, useRef } from 'react';
 import useLazyRef from '../core/useLazyRef';
 import { ValidationStatus } from '../types/form';
 import { AnonymousObject } from '../types/object';
@@ -48,7 +48,7 @@ const useFieldContainer = ({
   const containerContextRef = useLazyRef<FormService>(() => {
     const handler = {
       get: function (target: FormService, prop: string | number | symbol, receiver?: FormService): any {
-        if (prop === 'init') {
+        if (prop === 'initField') {
           return (
             name: string,
             validators: AnonymousObject<Validator> = {},
@@ -101,7 +101,6 @@ const useFieldContainer = ({
       const validationListener = (fieldName: string): FormValidationListener => {
         return (validation) => {
           fieldValidationsRef.current[fieldName] = validation;
-          console.log(fieldValidationsRef.current, form.fields);
           touchedValidationRef.current = form.getContainerFieldValidation(
             fieldValidationsRef.current,
             form.fields,
@@ -142,11 +141,16 @@ const useFieldContainer = ({
     };
   }, [form]);
 
+  const touchAllFields = useCallback(() => {
+    fieldsRef.current.forEach((field) => form.touch(field));
+  }, [form]);
+
   return {
     context: containerContextRef.current,
     value: valueRef.current,
     touchedValidation: touchedValidationRef.current,
     allValidation: allValidationRef.current,
+    touchAllFields,
   };
 };
 
