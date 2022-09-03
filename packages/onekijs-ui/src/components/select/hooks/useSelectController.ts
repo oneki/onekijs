@@ -12,7 +12,7 @@ const useSelectController = <T = any>(
   SelectState<T, SelectItem<T>>,
   SelectService<T, SelectItem<T>, SelectState<T, SelectItem<T>>>
 > => {
-  const initialState = useCollectionInitialState(dataSource, options);
+  const initialState = useCollectionInitialState(dataSource, Object.assign({ initialLimit: 20 }, options));
   const collection = useCollectionProxy(dataSource, SelectService, initialState);
 
   return collection;

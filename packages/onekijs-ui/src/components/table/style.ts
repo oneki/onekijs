@@ -3,7 +3,7 @@ import { alignItems, justifyContent } from '../../styles/alignment';
 import { backgroundColor } from '../../styles/background';
 import { borderBottomColor, borderBottomStyle, borderBottomWidth, borderWidth, boxShadow } from '../../styles/border';
 import { display } from '../../styles/display';
-import { flexDirection } from '../../styles/flex';
+import { flexDirection, flexGrow } from '../../styles/flex';
 import { boxSizing, cursor, outline } from '../../styles/interactivity';
 import { overflow, overflowX, overflowY } from '../../styles/overflow';
 import { height, width } from '../../styles/size';
@@ -23,7 +23,7 @@ import { ComponentStyle } from '../../styles/typings';
 import { color, fontSize, fontWeight, textTransform } from '../../styles/typography';
 import { TableProps } from './typings';
 
-export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme }) => {
+export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true }) => {
   const t = theme.table;
   return css`
     ${boxShadow(t.shadow)}
@@ -42,6 +42,7 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme }) => {
       background-color: ${(props) => props.theme.palette.colors[props.theme.colors.light]};
       border: 3px solid ${(props) => props.theme.palette.colors[props.theme.colors.lighter]};
     }
+    ${(props) => (fit ? 'flex-grow: 1;' : '')}
 
     .o-table-not-found {
       ${display('flex')}

@@ -135,23 +135,19 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
       ${backgroundColor('white')}
       ${display('flex')}
       ${alignItems('center')}
-      ${borderWidth(1)}
+      ${borderWidth('1px')}
       ${borderColor('gray-300')}
       ${borderRadius('md')}
-      ${clickable ? cursor('pointer') : ''}
+      ${clickable ? cursor('pointer') : cursor('auto')}
       ${padding('1px')}
       ${position('relative')}
       input {
         ${backgroundColor('inherit')}
-        ${cursor('pointer')}
       }
       &.o-select-input-focus {
         ${borderColor('primary')}
-        ${borderWidth(2)}
+        ${borderWidth('2px')}
         ${padding(0)}
-        input {
-          ${cursor('auto')}
-        }
       }
       .o-select-remover {
         ${cursor('pointer')}
@@ -163,7 +159,7 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
 
     &.o-select-close {
       .o-select-input {
-        ${clickable ? cursor('pointer') : ''}
+        ${cursor('pointer')}
       }
     }
     &.o-select-open {

@@ -621,6 +621,19 @@ export default class CollectionService<
   }
 
   @reducer
+  setUrl(url: string) {
+    this.cache = {};
+    this.state.url = url;
+    this.state.items = undefined;
+    const nextQuery = this.getQuery();
+    this._clearOffset(nextQuery);
+    this[dispatch]({
+      type: this[types]._fetch.actionType,
+      payload: toPayload([nextQuery, true]),
+    });
+  }
+
+  @reducer
   sort(dir: QuerySortDir): void {
     const query = Object.assign({}, this.getQuery());
     this._setLoading({ limit: this.state.limit, offset: 0 });
@@ -752,6 +765,16 @@ export default class CollectionService<
         return new RegExp(String(right)).test(String(left));
       case 'i_regex':
         return new RegExp(String(right), 'i').test(String(left));
+      case 'gt':
+        return left > (right || 0);
+      case 'gte':
+        return left >= (right || 0);
+      case 'lt':
+        return left < (right || 0);
+      case 'lte':
+        return left <= (right || 0);
+      case 'in':
+        return toArray(right || []).includes(left);
       default:
         return true;
     }
@@ -937,7 +960,7 @@ export default class CollectionService<
             resetData,
           );
         }
-        const fetcher: Fetcher<CollectionFetcherResult<T>, T | Query | undefined> = options.fetcher || asyncHttp;
+        const fetcher: Fetcher<CollectionFetcherResult<T>, Query | undefined> = options.fetcher || asyncHttp;
         const method = this.state.method ?? HttpMethod.Get;
         const body = this.state.method === HttpMethod.Get ? undefined : Object.assign({}, query);
 
@@ -1100,7 +1123,11 @@ export default class CollectionService<
       if (isNull(data)) {
         return _context?.position;
       }
-      if (!isNull(data.id)) {
+      if (Array.isArray(data) && (typeof data[0] === 'string' || !isNaN(data[0]))) {
+        return data[0];
+      } else if (typeof data === 'string' || !isNaN(data)) {
+        return data;
+      } else if (!isNull(data.id)) {
         return data.id;
       } else {
         return _context?.position;
@@ -1110,8 +1137,10 @@ export default class CollectionService<
       if (isNull(data)) {
         return undefined;
       }
-      if (typeof data === 'string') {
-        return data as string;
+      if (Array.isArray(data)) {
+        return getText(data[1]);
+      } else if (typeof data === 'string' || !isNaN(data) || data === true || data === false) {
+        return String(data);
       } else if (!isNull(data.text)) {
         return String(data.text);
       } else {

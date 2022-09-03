@@ -299,7 +299,8 @@ export type QueryFilterCriteriaOperator =
   | 'gt'
   | 'lt'
   | 'gte'
-  | 'lte';
+  | 'lte'
+  | 'in';
 
 export type QueryFilterCriteriaValue = Primitive | null;
 

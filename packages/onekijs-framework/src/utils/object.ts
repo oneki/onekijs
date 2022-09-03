@@ -340,7 +340,7 @@ export function shallowEqual(objA: AnonymousObject | null, objB: AnonymousObject
   return true;
 }
 
-export function useShallowEqual<T>(obj: T): T {
+export function useShallowEqual<T = any>(obj: AnonymousObject<T>): AnonymousObject<T> {
   const ref = useRef(obj);
   if (shallowEqual(ref.current, obj)) {
     obj = ref.current;

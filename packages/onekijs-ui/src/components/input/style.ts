@@ -4,19 +4,19 @@ import { backgroundColor } from '../../styles/background';
 import { borderColor, borderRadius, borderStyle, borderWidth } from '../../styles/border';
 import { display } from '../../styles/display';
 import { flexGrow } from '../../styles/flex';
-import { appearance, boxSizing, outline } from '../../styles/interactivity';
+import { appearance, boxSizing, cursor, outline } from '../../styles/interactivity';
 import { width } from '../../styles/size';
 import { padding, paddingX, paddingY } from '../../styles/spacing';
 import { ComponentStyle } from '../../styles/typings';
 import { color, fontSize } from '../../styles/typography';
 import { InputProps } from './typings';
 
-const inputStyle: ComponentStyle<InputProps> = ({ theme }) => {
+const inputStyle: ComponentStyle<InputProps> = ({ theme, disabled }) => {
   const t = theme.input;
   return css`
     ${boxSizing('border-box')}
     ${width(t.width)}
-    ${backgroundColor(t.bgColor)}
+    ${backgroundColor(disabled ? 'lighter' : t.bgColor)}
     ${display('flex')}
     ${alignItems('center')}
     ${borderWidth(t.borderWidth)}
@@ -24,6 +24,10 @@ const inputStyle: ComponentStyle<InputProps> = ({ theme }) => {
     ${borderRadius(t.borderRadius)}
     ${borderStyle(t.borderStyle)}
     ${padding('1px')}
+    ${cursor(disabled ? 'not-allowed' : 'auto')}
+    input {
+      ${cursor(disabled ? 'not-allowed' : 'auto')}
+    }
     &.o-input-focus {
       ${borderColor(t.borderFocusColor)}
       ${borderWidth(t.borderFocusWidth)}

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useReducer, useRef } from 'react';
 import useLazyRef from '../core/useLazyRef';
 import { ValidationStatus } from '../types/form';
 import { AnonymousObject } from '../types/object';
-import { diffArrays, set } from '../utils/object';
+import { clone, diffArrays, set } from '../utils/object';
 import { generateUniqueId } from '../utils/string';
 import ContainerValidation from './ContainerValidation';
 import FieldValidation from './FieldValidation';
@@ -82,7 +82,7 @@ const useFieldContainer = ({
     diff.added.forEach((fieldName) => {
       const valueListener = (fieldName: string): FormValueListener => {
         return (value) => {
-          set(valueRef.current, fieldName, value);
+          set(valueRef.current, fieldName, clone(value));
           if (onValueChange) {
             onValueChange(fieldName, value);
           } else {

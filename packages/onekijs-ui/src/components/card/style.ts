@@ -20,7 +20,13 @@ import { ComponentStyle } from '../../styles/typings';
 import { color, fontSize, fontWeight, letterSpacing, textTransform } from '../../styles/typography';
 import { CardProps } from './typings';
 
-export const cardStyle: ComponentStyle<CardProps> = ({ theme, collapsable = true, animate = 150, bordered = true }) => {
+export const cardStyle: ComponentStyle<CardProps> = ({
+  theme,
+  collapsable = true,
+  animate = 150,
+  bordered = true,
+  open,
+}) => {
   const t = theme.card;
   return css`
     ${backgroundColor(t.bgColor)}
@@ -28,7 +34,7 @@ export const cardStyle: ComponentStyle<CardProps> = ({ theme, collapsable = true
     ${borderColor(t.borderColor)}
     ${borderStyle(t.borderStyle)}
     ${borderRadius(t.borderRadius)}
-    ${boxShadow(t.shadow)}
+    ${boxShadow(bordered ? t.shadow : 'none')}
     .o-card-animate-enter-active, .o-card-animate-exit-active {
       ${overflow('hidden')}
       ${transitionDuration(`${animate}ms`)}
@@ -44,7 +50,7 @@ export const cardStyle: ComponentStyle<CardProps> = ({ theme, collapsable = true
       ${fontWeight(t.fontWeight)}
       ${fontSize(t.fontSize)}
       ${borderBottomWidth(t.titleBorderBottomWidth)}
-      ${borderBottomColor(t.borderColor)}
+      ${borderBottomColor(bordered || open ? t.borderColor : 'transparent')}
       ${borderBottomStyle(t.borderStyle)}
       ${paddingX(t.paddingX)}
       ${paddingY(t.paddingY)}
@@ -58,6 +64,5 @@ export const cardStyle: ComponentStyle<CardProps> = ({ theme, collapsable = true
       ${paddingX(t.paddingX)}
       ${paddingY(t.paddingY)}
     }
-
   `;
 };
