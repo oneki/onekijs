@@ -11,14 +11,62 @@ import { AnyState } from '../types/state';
 export const CONTEXT_ID = Symbol();
 export type AppErrorCallback<T extends BasicError = DefaultBasicError> = AppResultCallback<T>;
 export interface AppProps {
+  /**
+   * Settings is a object usually defined in the file `src/settings.ts`
+   * Data defined in settings.ts is available throughout the application and contains configuration data.
+   * **[More info here](/framework/configuration/introduction)**
+   *
+   * @defaultValue {}
+   */
   settings?: AppSettings | Promise<AppSettings>;
+  /**
+   * A standard Redux store, **but created via the helper** `createReduxStore` from onekijs
+   * The store must be created via this helper so onekijs can control it
+   *
+   * @defaultValue A store created by `<App/>` (recommended)
+   */
   store?: AppStore;
+  /**
+   * The initial state passed to the Redux store when it is created
+   *
+   * @defaultValue `undefined`
+   */
   initialState?: AnyState | Promise<AnyState>;
+  /**
+   * A list of services that will be available globally in the application.
+   * **[More info here](/framework/service/introduction)**
+   */
   services?: Class<DefaultService>[];
+  /**
+   * A component expected by `<Suspense>` (used to display a loading indicator)
+   *
+   * @defaultValue `<DefaultLoadingComponent />` that displays "Loading..."
+   */
   LoadingComponent?: ElementType;
+  /**
+   * Property to indicate the language to be used by default
+   *
+   * @defaultValue `undefined`
+   */
   initialLocale?: string;
+  /**
+   * An object containing the translations
+   * **[More info here](/framework/i18n/introduction)**
+   *
+   * @defaultValue `undefined`
+   */
   translations?: AnonymousObject<AnonymousObject<string>>;
+  /**
+   * **[More info here](/framework/i18n/introduction)**
+   *
+   * @defaultValue `undefined`
+   */
   i18nNs?: string[];
+  /**
+   * The component displayed when an error occurs during the rendering phase
+   *
+   * @defaultValue no error boundary component
+   */
   ErrorBoundaryComponent?: ComponentType<ErrorBoundaryComponentProps>;
 }
 export interface AppProviderProps extends Omit<AppProps, 'initialState' | 'LoadingComponent'> {

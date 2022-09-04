@@ -19,8 +19,10 @@ indexer.buildIndexes(api);
 
 indexer.elements.forEach((e) => {
   const parser = new ElementParser(indexer);
-  const parsedElement = parser.parse(e);
-  console.log(JSON.stringify(parsedElement, null, 2));
-  const builder = new MarkdownBuilder(parsedElement, outputDir);
-  builder.build();
+  const parsedElement = parser.parse(e.element.id);
+
+  if (parsedElement) {
+    const builder = new MarkdownBuilder(parsedElement, outputDir);
+    builder.build();
+  }
 });

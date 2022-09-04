@@ -5,18 +5,18 @@ import { AccordionServiceContext } from '../hooks/useAccordionService';
 import { AccordionStateContext } from '../hooks/useAccordionState';
 import { AccordionProps, AccordionState } from '../typings';
 import AccordionContainer from './AccordionContainer';
+
 /**
- * This is the comment for AccordionComponent
+ * This is the comment for AccordionComponent 2
  *
  * @example
- * If there is a code block, then both TypeDoc and VSCode will treat
- * text outside of the code block as regular text.
- * ```ts
- * factorial(1)
+ * ```tsx
+ * <AccordionComponent multiActive="true" />
  * ```
  *
- * @param param0 test param0
- * @returns a AccordionCompont
+ * @group Accordion
+ * @category Components
+ * @remarks #notStyled#
  */
 const AccordionComponent: FCC<AccordionProps> = ({ Component = AccordionContainer, ...props }) => {
   const [state, service] = useService(AccordionService, {

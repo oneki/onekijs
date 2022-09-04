@@ -1,4 +1,5 @@
 import { DeclarationReflection } from 'typedoc/dist/lib/serialization/schema';
+import ParsedElement from './context';
 
 type CategoryType = 'Components' | 'Hooks' | 'Other';
 
@@ -10,9 +11,13 @@ export interface IndexedElement {
 
 export class Indexer {
   elements: IndexedElement[];
+  elementsByName: any;
+  parsedElements: ParsedElement[];
 
   constructor() {
     this.elements = [];
+    this.parsedElements = [];
+    this.elementsByName = {};
   }
 
   buildIndexes(api: DeclarationReflection) {
@@ -21,6 +26,11 @@ export class Indexer {
     if (children) {
       children.forEach((child) => {
         this.elements[child.id] = {
+          element: child,
+          groups: [],
+          categories: [],
+        };
+        this.elementsByName[child.name] = {
           element: child,
           groups: [],
           categories: [],

@@ -1,4 +1,85 @@
 import { existsSync, mkdirSync, WriteFileOptions, writeFileSync } from 'fs';
+import { join } from 'path';
+import ParsedElement from '../lib/context';
+
+const directoriesConfig = new Map<string, { label: string; directory: string }>([
+  [
+    'Enumerations',
+    {
+      label: 'Enumerations',
+      directory: 'enum',
+    },
+  ],
+  [
+    'Type Aliases',
+    {
+      label: 'Types',
+      directory: 'types',
+    },
+  ],
+  [
+    'Type Literals',
+    {
+      label: 'Types',
+      directory: 'types',
+    },
+  ],
+  [
+    'Functions',
+    {
+      label: 'Functions',
+      directory: 'functions',
+    },
+  ],
+  [
+    'Interfaces',
+    {
+      label: 'Interfaces',
+      directory: 'interfaces',
+    },
+  ],
+  [
+    'Components',
+    {
+      label: 'Components',
+      directory: 'components',
+    },
+  ],
+  [
+    'Hooks',
+    {
+      label: 'Hooks',
+      directory: 'hooks',
+    },
+  ],
+]);
+
+const outputDir = process.argv[3];
+const baseDocusaurusPath = process.argv[4];
+
+export function getAbsoluteFilepath(element: ParsedElement) {
+  return join(outputDir, getFilepath(element));
+}
+
+export function getDocusaurusPath(element: ParsedElement) {
+  return join(baseDocusaurusPath, getFilepath(element));
+}
+
+export function getFilepath(element: ParsedElement) {
+  let path = '';
+  if (element.groups[0]) {
+    const dirConfig = directoriesConfig.get(element.groups[0]);
+    if (dirConfig) path += `/${dirConfig.directory}`;
+    else path += `/${element.groups[0].toLowerCase()}`;
+  }
+  if (element.categories[0]) {
+    const dirConfig = directoriesConfig.get(element.categories[0]);
+    if (dirConfig) path += `/${dirConfig.directory}`;
+    else path += `/${element.categories[0].toLowerCase()}`;
+  }
+  path += `/${element.name}.md`;
+  return path;
+}
 
 // code from https://gist.github.com/drodsou/de2ba6291aea67ffc5bc4b52d8c32abd
 export function writeFileSyncRecursive(
