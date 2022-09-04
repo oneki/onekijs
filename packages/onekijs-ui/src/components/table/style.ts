@@ -3,7 +3,7 @@ import { alignItems, justifyContent } from '../../styles/alignment';
 import { backgroundColor } from '../../styles/background';
 import { borderBottomColor, borderBottomStyle, borderBottomWidth, borderWidth, boxShadow } from '../../styles/border';
 import { display } from '../../styles/display';
-import { flexDirection, flexGrow } from '../../styles/flex';
+import { flexDirection } from '../../styles/flex';
 import { boxSizing, cursor, outline } from '../../styles/interactivity';
 import { overflow, overflowX, overflowY } from '../../styles/overflow';
 import { height, width } from '../../styles/size';
@@ -42,7 +42,7 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true 
       background-color: ${(props) => props.theme.palette.colors[props.theme.colors.light]};
       border: 3px solid ${(props) => props.theme.palette.colors[props.theme.colors.lighter]};
     }
-    ${(props) => (fit ? 'flex-grow: 1;' : '')}
+    ${() => (fit ? 'flex-grow: 1;' : '')}
 
     .o-table-not-found {
       ${display('flex')}
@@ -203,6 +203,7 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true 
 
     &.o-form-table {
       ${boxShadow('none')}
+      ${paddingRight('none')}
       .o-table-body-row:hover {
         ${backgroundColor(t.bgColor)}
         ${color(t.tdFontColor)}

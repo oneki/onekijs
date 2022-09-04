@@ -136,7 +136,7 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
       ${display('flex')}
       ${alignItems('center')}
       ${borderWidth('1px')}
-      ${borderColor('gray-300')}
+      ${borderColor('light')}
       ${borderRadius('md')}
       ${clickable ? cursor('pointer') : cursor('auto')}
       ${padding('1px')}
@@ -154,6 +154,32 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
         ${color('light')}
         ${fontFamily('Arial')}
         ${paddingX('sm')}
+      }
+    }
+
+    &.o-select-disabled {
+      .o-select-input-container {
+        ${backgroundColor('lighter')}
+        ${cursor('not-allowed')}
+        input {
+          ${cursor('not-allowed')}
+        }
+      }
+
+      .o-select-icon-container {
+        ${cursor('not-allowed')}
+        .o-select-icon {
+          ${cursor('not-allowed')}
+        }
+      }
+
+      .o-select-input-data {
+        .o-select-token {
+          ${cursor('not-allowed')}
+          .o-select-token-remove {
+            ${cursor('not-allowed')}
+          }
+        }
       }
     }
 
@@ -280,7 +306,7 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
       ${borderTopLeftRadius(0)}
       ${borderTopRightRadius(0)}
       ${boxShadow('lg')}
-      ${zIndex(1000)}
+      ${zIndex(2000)}
       ${backgroundColor('white')}
       ${borderWidth(1)}
       ${borderColor('light')}

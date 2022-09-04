@@ -1,7 +1,7 @@
-import { CollectionBroker, extractValidators, useField, useValidation } from 'onekijs-framework';
+import { CollectionBroker } from 'onekijs-framework';
 import React, { useEffect } from 'react';
-import FieldDescription from '../../../field/FieldDescription';
-import Select from '../../../select';
+import { addClassname } from '../../../../utils/style';
+import FormSelect from '../../../select/FormSelect';
 import useSelectController from '../../../select/hooks/useSelectController';
 import { SelectItem } from '../../../select/typings';
 import useFormTableContext from '../../hooks/useFormTableContext';
@@ -11,18 +11,11 @@ const SelectCellComponent = (
   options: UseSelectColumnOptions<any, SelectItem<any>>,
   broker: CollectionBroker<any, SelectItem<any>>,
 ): React.FC<TableBodyCellProps> => {
-  const SelectCellComponent: React.FC<TableBodyCellProps> = ({ column, rowIndex }) => {
+  const SelectCellComponent: React.FC<TableBodyCellProps> = ({ item, column, rowIndex }) => {
     const { tableName } = useFormTableContext();
-    const [validators] = extractValidators(options);
-    const field = useField(`${tableName}.${rowIndex}.${column.id}`, validators, {
-      defaultValue: options.defaultValue ? options.defaultValue : options.multiple ? [] : null,
-    });
-    const validation = useValidation(`${tableName}.${rowIndex}.${column.id}`);
-    const status = validation?.status;
-    const message = validation?.message;
-    const size = options.size || 'small';
-
     const controller = useSelectController(options.dataSource, Object.assign({}, options, broker.getInitialQuery()));
+    const className =
+      typeof options.className === 'function' ? options.className(item, column, rowIndex) : options.className;
 
     useEffect(() => {
       broker.addSubscriber(controller);
@@ -32,17 +25,13 @@ const SelectCellComponent = (
     }, [controller]);
 
     return (
-      <>
-        <Select
-          {...options}
-          size={size}
-          {...field}
-          controller={controller}
-          className={'o-table-select'}
-          status={validation.status}
-        />
-        {message && <FieldDescription content={message} className={`o-field-description-${status.toLowerCase()}`} />}
-      </>
+      <FormSelect
+        size="small"
+        layout="table"
+        {...options}
+        name={`${tableName}.${rowIndex}.${column.id}`}
+        className={addClassname('o-table-select', className)}
+      />
     );
   };
   SelectCellComponent.displayName = 'SelectCellComponent';

@@ -186,6 +186,7 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
       marginY: 'xs',
       helperColor: 'primary',
       helperMarginLeft: 'sm',
+      helperMarginRight: 'xs',
       descriptionFontSize: 'sm',
       descriptionColor: 'gray-600',
     },
@@ -479,6 +480,9 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
     set(theme, `tooltip.${kind}`, {
       bgColor: kind,
       color: ['light', 'lightest', 'white'].includes(kind) ? 'darkest' : 'white',
+      linkColor: ['light', 'lightest', 'white'].includes(kind)
+        ? 'primary'
+        : lighten(get(theme.colors, 'primary', ''), 200),
       borderColor: kind,
       borderRadius: 'sm',
       borderStyle: 'solid',

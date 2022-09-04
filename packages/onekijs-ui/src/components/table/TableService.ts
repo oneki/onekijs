@@ -56,12 +56,16 @@ class TableService<T = any, I extends TableItem<T> = TableItem<T>, S extends Tab
 
   @reducer
   addColumn(column: TableColumn<T, I>, position?: number): void {
-    if (position === undefined) {
-      this.state.columns.push(column);
-    } else {
-      this.state.columns.splice(position, 0, column);
+    // check if column is not already there
+    const exist = this.state.columns.find((c) => c.id === column.id);
+    if (exist === undefined) {
+      if (position === undefined) {
+        this.state.columns.push(column);
+      } else {
+        this.state.columns.splice(position, 0, column);
+      }
+      this.resetWidth();
     }
-    this.resetWidth();
   }
 
   get columns(): TableColumn<T, I>[] {

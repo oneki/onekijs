@@ -25,6 +25,7 @@ export type FieldDescriptionProps = {
   className?: string;
   content: string | JSX.Element;
   size?: TshirtSize;
+  layout?: FormLayout;
 };
 
 export type FieldHelpProps = {
@@ -32,6 +33,7 @@ export type FieldHelpProps = {
   content?: string | JSX.Element;
   visible?: boolean;
   size?: TshirtSize;
+  layout?: FormLayout;
 };
 
 export type FieldLayoutProps = {

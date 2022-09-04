@@ -4,7 +4,7 @@ import { display } from '../../styles/display';
 import { flexDirection } from '../../styles/flex';
 import { cursor } from '../../styles/interactivity';
 import { height, minHeight } from '../../styles/size';
-import { marginLeft } from '../../styles/spacing';
+import { marginLeft, marginRight } from '../../styles/spacing';
 import { ComponentStyle } from '../../styles/typings';
 import { color, fontSize } from '../../styles/typography';
 import { FieldDescriptionProps, FieldHelpProps, FieldLayoutProps } from './typings';
@@ -24,12 +24,13 @@ export const fieldStyle: ComponentStyle<FieldLayoutProps> = () => {
   `;
 };
 
-export const fieldHelpStyle: ComponentStyle<FieldHelpProps> = ({ visible = true, theme }) => {
+export const fieldHelpStyle: ComponentStyle<FieldHelpProps> = ({ visible = true, theme, layout }) => {
   const t = theme.fieldLayout;
   return css`
     ${fontSize('2xl')}
     ${color(t.helperColor)}
-      ${marginLeft(t.helperMarginLeft)}
+      ${marginLeft(layout === 'horizontal' ? 0 : t.helperMarginLeft)}
+      ${marginRight(layout === 'horizontal' ? t.helperMarginRight : 0)}
       ${height('100%')}
       ${display('flex')}
       ${alignItems('center')}
@@ -39,12 +40,12 @@ export const fieldHelpStyle: ComponentStyle<FieldHelpProps> = ({ visible = true,
   `;
 };
 
-export const fieldDescriptionStyle: ComponentStyle<FieldDescriptionProps> = ({ theme }) => {
+export const fieldDescriptionStyle: ComponentStyle<FieldDescriptionProps> = ({ theme, layout }) => {
   const t = theme.fieldLayout;
   return css`
     ${fontSize(t.descriptionFontSize)}
     ${color(t.descriptionColor)}
-    ${minHeight('14px')}
+    ${minHeight(layout === 'table' ? 0 : '14px')}
     &.o-field-description-error {
       ${color('danger')}
     }

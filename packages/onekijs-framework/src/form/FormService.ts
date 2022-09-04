@@ -32,6 +32,7 @@ import {
   ValidatorAsyncFunction,
   ValidatorSyncFunction,
 } from './typings';
+import { getNonIndexedProp } from './utils';
 
 @service
 export default class FormService extends DefaultService<FormState> {
@@ -251,17 +252,31 @@ export default class FormService extends DefaultService<FormState> {
     return result;
   }
 
-  protected _getSubWatchs(watch: string): string[] {
+  protected _getSubWatchs(watch: string, value: any): string[] {
+    const nonIndexedWatch = getNonIndexedProp(watch);
     let result: string[] = [];
     // check if the index if something listens on the key "watch"
     const index = watch === '' ? this.watchIndex[''] : get(this.watchIndex, watch);
     if (index) {
-      // if the value "addresses" changes, addresses.0.street should be alerted as well as addresses.street, .....
-      for (const i in index) {
-        result = result.concat(this._getSubWatchs(`${watch}.${i}`));
-      }
       // direct listener on "addresses" are also alerted
       result.push(watch);
+    }
+    if (nonIndexedWatch !== undefined) {
+      const nonIndex = get(this.watchIndex, nonIndexedWatch);
+      if (nonIndex) {
+        result.push(watch);
+      }
+    }
+
+    // if the value "addresses" changes, addresses.0.street should be alerted, .....
+    if (Array.isArray(value)) {
+      value.forEach((v, i) => {
+        result = result.concat(this._getSubWatchs(`${watch}.${i}`, v));
+      });
+    } else if (typeof value === 'object' && value !== 'undefined' && value !== null) {
+      Object.keys(value).forEach((k) => {
+        result = result.concat(this._getSubWatchs(`${watch}.${k}`, value[k]));
+      });
     }
 
     // if addresses.0.street is changed, addresses should be alerted (becasue the object has been changed)
@@ -733,7 +748,7 @@ export default class FormService extends DefaultService<FormState> {
         field.touched = true;
       }
       set(this.state, `values.${key}`, values[key]);
-      this._getSubWatchs(key).forEach((key) => this.pendingDispatch.valueChange.add(key));
+      this._getSubWatchs(key, values[key]).forEach((key) => this.pendingDispatch.valueChange.add(key));
     });
     this.compileValidations(Object.keys(validations));
   }

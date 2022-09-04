@@ -23,7 +23,13 @@ const FormTable: FC<FormTableProps<any, TableItem<any>>> = React.memo((props) =>
 
   return (
     <FieldLayout {...fieldLayoutProps} required={props.required}>
-      <Component {...fieldComponentProps} name={props.name} />
+      <Component
+        {...fieldComponentProps}
+        name={props.name}
+        required={props.required}
+        minLength={props.minLength ?? props.min}
+        maxLength={props.maxLength ?? props.max}
+      />
     </FieldLayout>
   );
 });

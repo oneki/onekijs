@@ -171,18 +171,18 @@ export function find(content: any, property: string | number, populate = false):
           content[index] = {};
         }
       } else {
-        return [undefined, undefined];
+        return [undefined, undefined, parentContent, parentIndex];
       }
     }
     parentContent = content;
     parentIndex = index;
     content = content[index];
     if (isNull(content)) {
-      return [undefined, undefined];
+      return [undefined, undefined, parentContent, parentIndex];
     }
   }
   const index = !isNaN(Number(parts[parts.length - 1])) ? parseInt(parts[parts.length - 1]) : parts[parts.length - 1];
-  return [content, index];
+  return [content, index, parentContent, parentIndex];
 }
 
 export function get<T = any>(content: any, property: string): T | undefined;
@@ -246,10 +246,44 @@ export function set<T>(content: any, property: string | number, value: any, forc
     }
   }
 
-  const [subContent, index] = find(content, property, true);
+  // eslint-disable-next-line prefer-const
+  let [subContent, index, parentContent, parentIndex] = find(content, property, true);
   if (!isNull(subContent)) {
+    if (force) {
+      if (!isNaN(index)) {
+        if (!Array.isArray(subContent) && parentContent) {
+          parentContent[parentIndex] = [];
+          subContent = parentContent[parentIndex];
+        }
+      } else {
+        if ((typeof subContent !== 'object' || subContent === null) && parentContent) {
+          parentContent[parentIndex] = {};
+          subContent = parentContent[parentIndex];
+        }
+      }
+    }
+
     if (force || subContent[index] === undefined) {
-      subContent[index] = value;
+      try {
+        subContent[index] = value;
+      } catch (e) {
+        if (force) {
+          if (!isNaN(index)) {
+            if (!Array.isArray(subContent) && parentContent) {
+              parentContent[parentIndex] = [];
+              subContent = parentContent[parentIndex];
+            }
+          } else {
+            if ((typeof subContent !== 'object' || subContent === null) && parentContent) {
+              parentContent[parentIndex] = {};
+              subContent = parentContent[parentIndex];
+            }
+          }
+          subContent[index] = value;
+        } else {
+          throw e;
+        }
+      }
     }
   }
   return content;

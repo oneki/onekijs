@@ -83,10 +83,11 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   minChars = 0,
   openOnFocus = false,
   clickable = true,
-  dropdownWidthModifier = 'min',
+  dropdownWidthModifier = 'same',
   preload = 100,
   increment = 100,
   animationMs = 200,
+  disabled,
 }) => {
   const [open, setOpen] = useState(false);
   const [focus, setFocus] = useState(false);
@@ -198,13 +199,15 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
 
   const onRemoveToken: SelectOptionHandler<any, SelectItem<any>> = useCallback(
     (item) => {
-      service.removeSelected('item', item);
-      if (onChange) {
-        const nextValue = (service.state.selected || []).map((uid) => service.getItem(uid)?.data);
-        onChange(nextValue);
+      if (!disabled) {
+        service.removeSelected('item', item);
+        if (onChange) {
+          const nextValue = (service.state.selected || []).map((uid) => service.getItem(uid)?.data);
+          onChange(nextValue);
+        }
       }
     },
-    [service, onChange],
+    [service, onChange, disabled],
   );
 
   const onActivate = useCallback(
@@ -322,9 +325,9 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   const style: React.CSSProperties = {};
 
   const classNames = addClassname(
-    `o-select o-select-size-${size} o-select-${open ? 'open' : 'close'}${
-      status ? ' o-select-status-' + status.toLowerCase() : ''
-    }${multiple ? ' o-select-multiple' : ''}`,
+    `o-select ${disabled ? 'o-select-disabled' : 'o-select-enabled'} o-select-size-${size} o-select-${
+      open ? 'open' : 'close'
+    }${status ? ' o-select-status-' + status.toLowerCase() : ''}${multiple ? ' o-select-multiple' : ''}`,
     className,
   );
 
@@ -396,6 +399,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
           clickable={clickable}
           minChars={minChars}
           ref={triggerRef}
+          disabled={disabled}
         />
         <Dropdown
           attachToBody={attachDropdownToBody}
@@ -406,6 +410,8 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
           onCollapseDone={onClosed}
           placement="bottom"
           widthModifier={dropdownWidthModifier}
+          className={className}
+          zIndex={attachDropdownToBody ? 2000 : undefined}
         >
           <ListBodyComponent
             className="o-select-options"

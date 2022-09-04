@@ -60,6 +60,9 @@ export type FormTableContext<T = any> = {
   tableName: string;
   onSelect: (item: TableItem<T>, selected: boolean) => void;
   addLabel: string;
+  required?: boolean;
+  maxLength?: number;
+  minLength?: number;
 };
 
 export type TableBodyCellProps<T = any, I extends TableItem<T> = TableItem<T>> = {

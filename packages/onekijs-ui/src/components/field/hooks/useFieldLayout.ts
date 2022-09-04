@@ -1,9 +1,11 @@
-import { useField, useForm, useFormMetadata, useTrySetting, useValidation } from 'onekijs-framework';
+import { AnonymousObject, useField, useForm, useFormMetadata, useTrySetting, useValidation } from 'onekijs-framework';
 import { useId } from 'react';
 import { FieldComponentProps, FieldLayoutProps, UseFieldLayoutProps } from '../typings';
 import { extractFieldLayoutProps } from '../util';
 
-const useFieldLayout = <T>(props: UseFieldLayoutProps<T>): [FieldLayoutProps, FieldComponentProps<T>] => {
+const useFieldLayout = <T extends AnonymousObject>(
+  props: UseFieldLayoutProps<T>,
+): [FieldLayoutProps, FieldComponentProps<T>] => {
   const { validators, fieldLayoutProps, name, fieldOptions, fieldProps } = extractFieldLayoutProps(props);
   const { FieldComponent, ...fieldComponentProps } = fieldProps;
   const { value, onFocus, onBlur, onChange } = useField(name, validators, fieldOptions);

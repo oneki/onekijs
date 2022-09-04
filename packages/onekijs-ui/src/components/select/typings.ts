@@ -136,6 +136,7 @@ export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omi
   OptionLoadingComponent?: FC;
   MultiOptionsComponent?: FC<SelectOptionProps>;
   animationMs?: number;
+  disabled?: boolean;
 };
 
 export type SelectState<T = any, I extends SelectItem<T> = SelectItem<T>> = ListState<T, I>;

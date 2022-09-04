@@ -87,6 +87,7 @@ const FieldLayoutComponent: FCC<FieldLayoutProps> = React.memo(
           {(description || message) && (
             <Col size={12} className="o-form-field-description">
               <DescriptionComponent
+                layout={fieldLayout}
                 content={message ? message : description || ''}
                 className={status !== undefined ? `o-field-description-${status}` : undefined}
               />
@@ -128,7 +129,6 @@ const FieldLayoutComponent: FCC<FieldLayoutProps> = React.memo(
             className="o-form-field-content"
           >
             {children}
-            {<HelpComponent content={help} visible={help ? true : false} />}
           </Col>
           <Col
             size={fieldLabelWidth}
@@ -148,11 +148,23 @@ const FieldLayoutComponent: FCC<FieldLayoutProps> = React.memo(
             className="o-form-field-description"
           >
             <DescriptionComponent
+              layout={fieldLayout}
               content={message ? message : description || ''}
               className={status !== undefined ? `o-field-description-${status}` : undefined}
             />
           </Col>
         </Row>
+      );
+    } else if (fieldLayout === 'table') {
+      return (
+        <>
+          {children}
+          <DescriptionComponent
+            layout={fieldLayout}
+            content={message ? message : description || ''}
+            className={status !== undefined ? `o-field-description-${status}` : undefined}
+          />
+        </>
       );
     }
     return null;

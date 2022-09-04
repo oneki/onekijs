@@ -15,6 +15,7 @@ import {
   FormValueListener,
 } from './typings';
 import useForm, { FormContext } from './useForm';
+import { getNonIndexedProp } from './utils';
 
 const configKeys: (keyof FormConfig)[] = [
   'touchOn',
@@ -37,16 +38,6 @@ const FormComponent: FCC<React.FormHTMLAttributes<HTMLFormElement>> = (props) =>
     service.onMount();
   }, [service]);
   return <form {...props} />;
-};
-
-const getNonIndexedProp = (prop: string): string | undefined => {
-  let result: string | undefined = undefined;
-  const tokens = prop.split('.');
-  if (tokens.length <= 1) return undefined;
-  if (!isNaN(Number(tokens.slice(-1)[0]))) return undefined;
-  result = tokens.filter((token) => isNaN(Number(token))).join('.');
-  if (result === prop) return undefined;
-  return result;
 };
 
 const Form: FCC<FormProps> = (props) => {

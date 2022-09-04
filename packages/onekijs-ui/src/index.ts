@@ -169,6 +169,7 @@ export { default as useInputColumn } from './components/table/columns/useInputCo
 export { default as useLinkColumn } from './components/table/columns/useLinkColumn';
 export { default as useSelectColumn } from './components/table/columns/useSelectColumn';
 export { default as FormTable } from './components/table/FormTable';
+export { default as useFormTableContext } from './components/table/hooks/useFormTableContext';
 export { default as useTableController } from './components/table/hooks/useTableController';
 export {
   ArrayTableProps,
