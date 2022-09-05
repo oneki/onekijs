@@ -1,6 +1,6 @@
 {
   "name": "next-step03-global-state",
-  "version": "0.15.0",
+  "version": "0.15.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "next": "^12.2.4",
-    "onekijs-next": "^0.15.0",
-    "onekijs-ssr": "^0.15.0",
+    "onekijs-next": "^0.15.1",
+    "onekijs-ssr": "^0.15.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

@@ -1,6 +1,6 @@
 {
   "name": "onekijs",
-  "version": "0.15.0",
+  "version": "0.15.1",
   "description": "Opiniated React framework built on top of Next.js",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -29,7 +29,7 @@
   "license": "MIT",
   "dependencies": {
     "history": "^4.10.1",
-    "onekijs-framework": "^0.15.0",
+    "onekijs-framework": "^0.15.1",
     "react-router": "^6.3.0",
     "react-router-dom": "^6.3.0"
   },
