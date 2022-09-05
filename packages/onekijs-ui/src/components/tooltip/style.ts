@@ -9,10 +9,9 @@ import {
   borderStyle,
   borderTopColor,
   borderWidth,
-  boxShadow,
+  boxShadow
 } from '../../styles/border';
 import { display } from '../../styles/display';
-import { flexDirection } from '../../styles/flex';
 import { cursor, pointerEvents } from '../../styles/interactivity';
 import { bottom, left, position, right, top, zIndex } from '../../styles/position';
 import { height, width } from '../../styles/size';

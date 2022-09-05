@@ -6,7 +6,6 @@ import Row from '../../grid/Row';
 import { GridSize } from '../../grid/typings';
 import Label from '../../label';
 import FieldDescription from '../FieldDescription';
-import FieldHelp from '../FieldHelp';
 import { FieldLayoutProps } from '../typings';
 
 const FieldLayoutComponent: FCC<FieldLayoutProps> = React.memo(
@@ -14,7 +13,6 @@ const FieldLayoutComponent: FCC<FieldLayoutProps> = React.memo(
     className,
     description,
     help,
-    HelpComponent = FieldHelp,
     id,
     label,
     LabelComponent = Label,

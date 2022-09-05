@@ -625,7 +625,7 @@ export default class CollectionService<
     this.cache = {};
     this.state.url = url;
     this.state.items = undefined;
-    const nextQuery = this.getQuery();
+    const nextQuery = clone(this.getQuery());
     this._clearOffset(nextQuery);
     this[dispatch]({
       type: this[types]._fetch.actionType,
