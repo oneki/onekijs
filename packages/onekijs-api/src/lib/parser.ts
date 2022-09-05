@@ -57,6 +57,7 @@ export class ElementParser {
 
     if (this.indexer.isComponent(subject.id)) {
       context.specialType = 'component';
+      context.element.type = 'Component';
     } else {
       context.specialType = 'element';
     }

@@ -170,14 +170,11 @@ sidebar_label: ${this.element.name}
 
   private section2() {
     const label = this.sectionLabel(2);
-    this.markdown += `\n\n### ${label}\n\n`;
     let props = this.sortProps(this.element.props);
     if (this.element.type === 'Function' || this.element.type === 'Method') {
-      // We only display properties
-      this.markdown += this.return();
+      this.markdown += this.return(label);
       return this;
     } else if (this.element.type === 'Class') {
-      // We only display properties
       props = props.filter((prop) => {
         if (prop.flags.isPrivate || prop.flags.isProtected) return false;
         return prop.kind === 'Method' || prop.kind === ReflectionKind.Method;
@@ -187,6 +184,7 @@ sidebar_label: ${this.element.name}
     }
 
     const depth = this.depth(props);
+    this.markdown += `\n\n### ${label}\n\n`;
     this.markdown += `| ${label} ${this.buildHeaderDepth(depth, '|   ')}| ${this.typeLabel(2)} | Description |\n`;
     this.markdown += `| --------- ${this.buildHeaderDepth(depth, '| -- ')}| ---- | ----------- |\n`;
     props.forEach((prop) => {
@@ -229,10 +227,11 @@ sidebar_label: ${this.element.name}
     return 'Type';
   }
 
-  private return() {
+  private return(label: string) {
     let markdown = '';
     const returns = this.element.returns;
     if (returns) {
+      markdown += `\n\n### ${label}\n\n`;
       markdown += '\n\nThe return is of type <code>';
       if (typeof returns === 'string') {
         markdown += returns.replace(/>/g, '\\>');

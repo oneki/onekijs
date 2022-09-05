@@ -36,11 +36,11 @@ const AppRouter: FCC = ({ children }) => {
  * #### Custom redux store
  *
  * A custom Redux store can be created by calling the helper `createReduxStore` from Oneki.js
- * This helper expects an initial state and an array of Redux middlewares.
  *
  * ```ts
  * const store = createReduxStore((initialState = {}), (middlewares = []));
  * ```
+ * This helper expects an initial state and an array of Redux middlewares.
  *
  * @group Application
  * @category Components
