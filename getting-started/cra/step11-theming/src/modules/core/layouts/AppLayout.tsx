@@ -1,10 +1,9 @@
-import { Outlet } from 'onekijs';
+import { FCC } from 'onekijs';
 import { DashboardBody, DashboardHeader, useDashboard } from 'onekijs-ui';
-import { FC } from 'react';
 import Navbar from '../components/Navbar';
 import NotificationCenter from '../components/NotificationCenter';
 
-const AppLayout: FC = () => {
+const AppLayout: FCC = ({ children }) => {
   const [Dashboard] = useDashboard();
   return (
     <div>
@@ -14,9 +13,7 @@ const AppLayout: FC = () => {
           <Navbar />
         </DashboardHeader>
 
-        <DashboardBody>
-          <Outlet />
-        </DashboardBody>
+        <DashboardBody>{children}</DashboardBody>
       </Dashboard>
     </div>
   );
