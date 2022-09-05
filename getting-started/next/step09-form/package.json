@@ -1,6 +1,6 @@
 {
   "name": "next-step09-form",
-  "version": "0.14.7",
+  "version": "0.15.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "next": "^12.2.4",
-    "onekijs-next": "^0.14.7",
-    "onekijs-ssr": "^0.14.7",
+    "onekijs-next": "^0.15.0",
+    "onekijs-ssr": "^0.15.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

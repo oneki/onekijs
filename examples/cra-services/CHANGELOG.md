@@ -3,6 +3,58 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.15.0 (2022-09-05)
+
+
+### Code Refactoring
+
+* **onekijs:** convert project to Typescript ([a47fc98](https://github.com/oneki/onekijs/commit/a47fc9815fbb51271c12505a65cd8b38a1ab04e3))
+
+
+* refactor!: merge onekijs/cra,onekijs/next and @oneki/xxx into onekijs (#20) ([7af6c32](https://github.com/oneki/onekijs/commit/7af6c322a52ccc9e28800baf699c34c050f05328)), closes [#20](https://github.com/oneki/onekijs/issues/20)
+
+
+### BREAKING CHANGES
+
+* the code specific to a CRA app is imported via
+- import {xxx} from 'onekijs/cra'
+instead of
+- import {xxx} from 'onekijs'
+
+* chore: getting-started next: step01 and step02
+
+* refactor: merge everything in onekijs package
+
+* core: fix wrong import
+
+* core: fix style component dependency
+
+* chore: put next and cra into onekijs
+
+* chore: add getting started next step04
+
+* chore: add getting started next step05
+
+* chore: add getting started next step06
+
+* chore: add getting started next step07
+
+* chore: add getting started next step08
+
+* chore: add getting started next step09
+
+* feat: support filtering and sorting for grid
+
+* chore: add getting started next step10
+
+Co-authored-by: Olivier Franki <olivier.franki@gmail.com>
+Co-authored-by: Bruno Franki <bruno.franki@gmail.com>
+* **onekijs:** Rename some classes
+
+
+
+
+
 ## [0.14.7](https://github.com/oneki/onekijs/compare/v0.14.6...v0.14.7) (2021-10-17)
 
 **Note:** Version bump only for package cra-services
