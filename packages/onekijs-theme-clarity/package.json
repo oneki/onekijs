@@ -1,6 +1,6 @@
 {
   "name": "onekijs-theme-clarity",
-  "private": true,
+  "private": false,
   "version": "0.14.7",
   "description": "Opiniated React framework built on top of Next.js",
   "source": "src/index.ts",

@@ -15,6 +15,7 @@ const ModalComponent: FCC<ModalProps> = ({
   animationDuration = 150,
   closeIcon = true,
   onClose,
+  onClosed,
   title,
   buttons = [],
   closeOnClickOutside,
@@ -69,6 +70,9 @@ const ModalComponent: FCC<ModalProps> = ({
     if (ref.current) {
       ref.current.style.transition = '';
       ref.current.style.transform = '';
+    }
+    if (onClosed) {
+      onClosed();
     }
   };
 

@@ -1,4 +1,4 @@
-import { AnonymousObject, LoadingStatus, useLogger, useLogLevel } from 'onekijs-framework';
+import { AnonymousObject, LoadingStatus, useLogger } from 'onekijs-framework';
 import React, { useEffect, useRef } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import useIsomorphicLayoutEffect from '../../../vendor/useIsomorphicLayoutEffect';
@@ -181,7 +181,6 @@ const VirtualTreeListComponent: React.FC<VirtualTreeListProps> = ({
   onItemMouseLeave,
   virtualItems,
 }) => {
-  const logLevel = useLogLevel();
   const logger = useLogger();
   logger.debug('virtualItems', virtualItems);
   // we keep a reference of the expanded status of virtualItems
@@ -265,18 +264,6 @@ const VirtualTreeListComponent: React.FC<VirtualTreeListProps> = ({
       logger.debug('next node lower level', Object.assign({}, node), 'item', item);
     }
   });
-
-  const printNode = (nodes: VirtualTreeItem[], level = 0, parentNode: VirtualTreeItem | undefined = undefined) => {
-    nodes.forEach((node) => {
-      console.log(`${'  '.repeat(level || 0)}${node.item?.text}`);
-      console.log('parentNode =', Object.assign({}, parentNode), 'children =', node.children);
-      printNode(node.children, level + 1, node);
-    });
-  };
-  if (logLevel === 'debug') {
-    console.log('-----------------');
-    printNode(rootItem.children);
-  }
 
   expandedStatusRef.current = nextExpandedStatus;
   return (

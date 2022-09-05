@@ -2,7 +2,7 @@ import { useCallback, useEffect, useReducer, useRef } from 'react';
 import useLazyRef from '../core/useLazyRef';
 import { ValidationStatus } from '../types/form';
 import { AnonymousObject } from '../types/object';
-import { clone, diffArrays, set } from '../utils/object';
+import { clone, diffArrays, get, set } from '../utils/object';
 import { generateUniqueId } from '../utils/string';
 import ContainerValidation from './ContainerValidation';
 import FieldValidation from './FieldValidation';
@@ -61,6 +61,21 @@ const useFieldContainer = ({
               set(valueRef.current, name, field.value);
             }
             return field;
+          };
+        } else if (prop === 'remove') {
+          return (fieldArrayName: string, index: number): void => {
+            const currentArrayValue = get(valueRef.current, fieldArrayName, []);
+            if (currentArrayValue.length - 1 >= index) {
+              fieldsRef.current = fieldsRef.current.filter(
+                (name) => !name.startsWith(`${fieldArrayName}.${currentArrayValue.length - 1}`),
+              );
+              Object.keys(fieldValidationsRef.current).forEach((key) => {
+                if (key.startsWith(`${fieldArrayName}.${currentArrayValue.length - 1}`)) {
+                  delete fieldValidationsRef.current[key];
+                }
+              });
+            }
+            form.remove(fieldArrayName, index);
           };
         } else {
           return Reflect.get(target, prop, receiver);

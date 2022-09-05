@@ -1,13 +1,11 @@
-import React, { SyntheticEvent, useCallback, useEffect, useRef } from 'react';
+import React, { SyntheticEvent, useCallback, useEffect } from 'react';
 import { FCC } from '../types/core';
-import { AnonymousObject } from '../types/object';
 import { get, omit, pick, shallowEqual } from '../utils/object';
 import ContainerValidation from './ContainerValidation';
 import FieldValidation from './FieldValidation';
 import {
   FormConfig,
   FormListenerType,
-  FormMetadata,
   FormMetadataListener,
   FormProps,
   FormSubmitListener,
@@ -34,18 +32,16 @@ const configKeys: (keyof FormConfig)[] = [
 
 const FormComponent: FCC<React.FormHTMLAttributes<HTMLFormElement>> = (props) => {
   const service = useForm();
+  const initializing = service.initializing;
   useEffect(() => {
-    service.onMount();
-  }, [service]);
+    if (initializing) {
+      service.onMount();
+    }
+  }, [service, initializing]);
   return <form {...props} />;
 };
 
 const Form: FCC<FormProps> = (props) => {
-  const prevValuesRef = useRef({});
-  const prevValidationsRef = useRef<AnonymousObject<FieldValidation>>({});
-  const prevSubmittingRef = useRef(false);
-  const prevMetadataRef = useRef<AnonymousObject<FormMetadata>>({});
-
   const { controller, className, LoadingComponent, onSubmit, ..._props } = props;
   const config = pick<FormConfig>(props, configKeys);
   controller.config = config;
@@ -72,7 +68,7 @@ const Form: FCC<FormProps> = (props) => {
             for (const listener of controller.listeners[type][watch]) {
               let changed = false;
               if (type === 'valueChange') {
-                const prev = get(prevValuesRef.current, prop);
+                const prev = get(controller.prevValues, prop);
                 const next = get(controller.state.values, prop, '');
                 if (prev !== next) {
                   changed = true;
@@ -84,7 +80,7 @@ const Form: FCC<FormProps> = (props) => {
                 // check if w is a field or a composition
                 if (!controller.fields[watch]) {
                   prev = controller.getContainerFieldValidation(
-                    prevValidationsRef.current,
+                    controller.prevValidations,
                     controller.fields,
                     watch,
                     false,
@@ -99,7 +95,7 @@ const Form: FCC<FormProps> = (props) => {
                     changed = true;
                   }
                 } else {
-                  prev = prevValidationsRef.current[watch];
+                  prev = controller.prevValidations[watch];
                   const nextValidations = controller.state.validations || {};
                   next = nextValidations[watch];
                   if (prev !== next) {
@@ -111,15 +107,15 @@ const Form: FCC<FormProps> = (props) => {
                   (listener.listener as FormValidationListener)(next, prev, watch);
                 }
               } else if (type === 'submittingChange') {
-                changed = prevSubmittingRef.current !== controller.state.submitting;
+                changed = controller.prevSubmitting !== controller.state.submitting;
                 if (changed) {
                   (listener.listener as FormSubmitListener)(
                     controller.state.submitting || false,
-                    prevSubmittingRef.current,
+                    controller.prevSubmitting,
                   );
                 }
               } else if (type === 'metadataChange') {
-                const prev = prevMetadataRef.current[watch];
+                const prev = controller.prevMetadata[watch];
                 const next = controller.state.metadata[watch];
                 if (!shallowEqual(prev, next)) {
                   changed = true;
@@ -137,10 +133,10 @@ const Form: FCC<FormProps> = (props) => {
       controller.pendingDispatch[type].clear();
     }
 
-    prevValuesRef.current = controller.state.values || {};
-    prevValidationsRef.current = controller.state.validations || {};
-    prevSubmittingRef.current = controller.state.submitting || false;
-    prevMetadataRef.current = controller.state.metadata || {};
+    controller.prevValues = controller.state.values || {};
+    controller.prevValidations = controller.state.validations || {};
+    controller.prevSubmitting = controller.state.submitting || false;
+    controller.prevMetadata = controller.state.metadata || {};
   });
 
   const classNames = className ? `${className} o-form` : 'o-form';

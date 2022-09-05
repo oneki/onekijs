@@ -36,6 +36,11 @@ import { getNonIndexedProp } from './utils';
 
 @service
 export default class FormService extends DefaultService<FormState> {
+  public prevValues: AnonymousObject = {};
+  public prevValidations: AnonymousObject<FieldValidation> = {};
+  public prevSubmitting = false;
+  public prevMetadata: AnonymousObject<FormMetadata> = {};
+
   public fields: AnonymousObject<Field>;
   public decorators: AnonymousObject<FormDecorator>;
   public listeners: {
@@ -565,12 +570,32 @@ export default class FormService extends DefaultService<FormState> {
     const currentArrayValue = get(this.state.values, fieldArrayName, []);
     if (currentArrayValue.length - 1 >= index) {
       const nextValues: AnonymousObject = {};
-      // need to modifiy all values with an index superior to the removed one
+      // need to modifiy all values / metadata / validations with an index superior to the removed one
       for (let i = index + 1; i < currentArrayValue.length; i++) {
         Object.keys(currentArrayValue[i]).forEach((fieldName) => {
-          nextValues[`${fieldArrayName}.${i - 1}.${fieldName}`] = currentArrayValue[i][fieldName];
+          // nextValues[`${fieldArrayName}.${i - 1}.${fieldName}`] = currentArrayValue[i][fieldName];
+          this.state.validations[`${fieldArrayName}.${i - 1}.${fieldName}`] =
+            this.state.validations[`${fieldArrayName}.${i}.${fieldName}`];
+          this.state.metadata[`${fieldArrayName}.${i - 1}.${fieldName}`] =
+            this.state.metadata[`${fieldArrayName}.${i}.${fieldName}`];
+          this.fields[`${fieldArrayName}.${i - 1}.${fieldName}`] = Object.assign(
+            this.fields[`${fieldArrayName}.${i}.${fieldName}`],
+            {
+              name: this.fields[`${fieldArrayName}.${i - 1}.${fieldName}`].name,
+              context: this.fields[`${fieldArrayName}.${i - 1}.${fieldName}`].context,
+            },
+          );
+          if (i === currentArrayValue.length - 1) {
+            delete this.state.metadata[`${fieldArrayName}.${i}.${fieldName}`];
+            delete this.state.validations[`${fieldArrayName}.${i}.${fieldName}`];
+            delete this.fields[`${fieldArrayName}.${i}.${fieldName}`];
+          }
+          this.pendingDispatch.validationChange.add(`${fieldArrayName}.${i - 1}.${fieldName}`);
+          this.pendingDispatch.metadataChange.add(`${fieldArrayName}.${i - 1}.${fieldName}`);
         });
       }
+      this.pendingDispatch.validationChange.add('');
+
       nextValues[fieldArrayName] = currentArrayValue.filter((_a: never, i: number): boolean => i !== index);
       this.setValues(nextValues);
     }
@@ -587,6 +612,14 @@ export default class FormService extends DefaultService<FormState> {
     for (let i = 0; i < props.length; i++) {
       delete this.decorators[props[i]];
     }
+
+    this.prevValues = {};
+    this.prevValidations = {};
+    this.prevSubmitting = false;
+    this.prevMetadata = {};
+
+    this.defaultValues = {};
+    this.defaultMetadata = {};
 
     this.listeners = {
       valueChange: {},
@@ -611,7 +644,7 @@ export default class FormService extends DefaultService<FormState> {
     } else {
       this.state.values = undefined;
       this.state.fetching = true;
-      this.loadInitialValues(this.state.initialValues);
+      this.callSaga('loadInitialValues', this.state.initialValues);
     }
     this.state.validations = {};
     this.initializing = true;

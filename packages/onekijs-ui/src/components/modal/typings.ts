@@ -14,6 +14,7 @@ export type ModalProps = {
   closeOnEscape?: boolean;
   closeOnClickOutside?: boolean;
   onClose: () => void;
+  onClosed: () => void;
   buttons?: ReactNode[];
   title?: ReactNode;
 };
