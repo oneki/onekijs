@@ -1,14 +1,15 @@
-import { Input, SubmitButton, useForm, useLogin, useTranslation } from 'onekijs';
+import { Form, Input, SubmitButton, useFormController, useLogin, useTranslation } from 'onekijs';
 import React from 'react';
 
 const LoginPage: React.FC = () => {
   const [error, , submit] = useLogin();
   const [T, t] = useTranslation();
-  const { Form, submitting } = useForm(submit);
+  const form = useFormController();
+  const { submitting } = form.state;
 
   return (
     <div className="login-container">
-      <Form className="login-form">
+      <Form className="login-form" controller={form} onSubmit={submit}>
         {error && <div className="error">Error: {error.message}</div>}
         <p>
           <T>Use any username / password (no check performed)</T>

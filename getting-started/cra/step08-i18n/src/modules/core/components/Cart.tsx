@@ -37,7 +37,7 @@ const Cart: React.FC<CartProps> = ({ cart }) => {
       {nbItems > 0 && (
         <h4>
           <T count={nbItems}>
-            There is <u>{{ nbItems }} item</u> in the shopping cart !
+            There is {{ nbItems } in the shopping cart !
           </T>
         </h4>
       )}
