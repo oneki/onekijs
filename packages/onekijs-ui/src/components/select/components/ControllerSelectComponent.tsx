@@ -1,6 +1,5 @@
 import {
   AnonymousObject,
-  Collection,
   first,
   get,
   isCollectionFetching,
@@ -20,43 +19,10 @@ import LoadingItem from '../../list/components/LoadingItem';
 import useListView from '../../list/hooks/useListView';
 import { SelectConfigContext } from '../hooks/useSelectConfig';
 import { ControllerSelectProps, SelectConfig, SelectItem, SelectOptionHandler } from '../typings';
+import { findSelectItem, findSelectItemIndex } from '../util';
 import SelectInputComponent from './SelectInputComponent';
 import SelectNotFoundComponent from './SelectNotFoundComponent';
 import SelectOptionComponent, { MultiSelectOptionComponent, SelectOptionContent } from './SelectOptionComponent';
-
-const findItem = (controller: Collection<any, SelectItem<any>>, pattern: string): SelectItem<any> | undefined => {
-  let result = undefined;
-  if (controller.items === undefined) {
-    return undefined;
-  }
-  for (const item of controller.items) {
-    if (item === undefined || item.text === undefined) {
-      continue;
-    }
-    if (item.text.toLowerCase().startsWith(pattern.toLowerCase())) {
-      return item;
-    }
-    if (result === undefined && item.text.toLowerCase().includes(pattern.toLowerCase())) {
-      result = item;
-    }
-  }
-  return result;
-};
-
-const findItemIndex = (controller: Collection<any, SelectItem<any>>, item?: Item<any>): number => {
-  if (controller.items === undefined) {
-    return -1;
-  }
-  return controller.items.findIndex((i) => {
-    if (i === undefined) {
-      return false;
-    }
-    if (i.id === undefined) {
-      return false;
-    }
-    return i.id === item?.id;
-  });
-};
 
 const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   attachDropdownToBody = false,
@@ -121,7 +87,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
     if (showActiveRef.current && controller.state.active && controller.state.active.length > 0) {
       return controller.getItem(controller.state.active[0]);
     } else if (focus && search) {
-      const item = findItem(controller, search.toString());
+      const item = findSelectItem(controller, search.toString());
       if (item === undefined && !isCollectionFetching(controller)) {
         return get(controller, 'items.0');
       }
@@ -174,7 +140,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   useEffect(() => {
     const search = controller.getSearch();
     if (open && focus && search && search !== previousSearchRef.current) {
-      const item = findItem(controller, search.toString());
+      const item = findSelectItem(controller, search.toString());
       const activated = get<string>(controller.state.active, '0');
       if (item !== undefined && !isCollectionFetching(controller)) {
         previousSearchRef.current = search;
@@ -184,6 +150,41 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
       }
     }
   }, [controller, focus, open]);
+
+  useEffect(() => {
+    console.log('set seletected', value);
+    if (!multiple) {
+      if (value) {
+        service.setSelected('item', service.adapt(value));
+      } else {
+        service.setSelected('item', []);
+      }
+    } else {
+      if (value && Array.isArray(value)) {
+        service.setSelected(
+          'item',
+          value.map((v) => service.adapt(v)),
+        );
+      } else {
+        service.setSelected('item', []);
+      }
+    }
+  }, [multiple, value, service]);
+
+  // useEffect(() => {
+  //   const search = controller.getSearch();
+  //   if (!search && controller.state.invalidItems.length > 0) {
+  //     if (multiple) {
+  //     } else {
+  //       const currentItem = controller.adapt(value);
+  //       controller.state.invalidItems.forEach((i) => {
+  //         if (i.id === currentItem.id) {
+  //           onChange && onChange(null);
+  //         }
+  //       });
+  //     }
+  //   }
+  // }, [controller, multiple, onChange, value]);
 
   const onInputChange = (nextValue: string | null) => {
     showActiveRef.current = false;
@@ -279,7 +280,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
               const selectedUid = e.key === 'ArrowDown' ? first(service.state.selected) : last(service.state.selected);
               if (selectedUid !== undefined) {
                 const selectedItem = service.getItem(selectedUid);
-                const selectedIndex = findItemIndex(service, selectedItem);
+                const selectedIndex = findSelectItemIndex(service, selectedItem);
                 if (selectedIndex !== undefined) {
                   nextIndex =
                     e.key === 'ArrowDown'
@@ -351,7 +352,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
     const selectedUid = first(service.state.selected);
     if (selectedUid !== undefined) {
       const selectedItem = service.getItem(selectedUid);
-      const selectedIndex = findItemIndex(service, selectedItem);
+      const selectedIndex = findSelectItemIndex(service, selectedItem);
       if (selectedItem !== undefined && selectedIndex > 0) {
         scrollTo.index = selectedIndex;
         scrollTo.align = 'center';

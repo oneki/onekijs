@@ -139,7 +139,9 @@ export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omi
   disabled?: boolean;
 };
 
-export type SelectState<T = any, I extends SelectItem<T> = SelectItem<T>> = ListState<T, I>;
+export type SelectState<T = any, I extends SelectItem<T> = SelectItem<T>> = ListState<T, I> & {
+  invalidItems: I[];
+};
 
 export interface SelectTokensProps<T = any, I extends SelectItem<T> = SelectItem<T>> {
   tokens?: I[];

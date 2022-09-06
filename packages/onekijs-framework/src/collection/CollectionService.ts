@@ -653,7 +653,9 @@ export default class CollectionService<
     const adaptee = this.state.adapter === undefined || data === undefined ? {} : this.state.adapter(data);
 
     const item: I = this._buildItem(data, adaptee, context);
-    this._indexItem(item, context);
+    if (context === undefined || !context.doNotIndex) {
+      this._indexItem(item, context);
+    }
     return item;
   }
 
