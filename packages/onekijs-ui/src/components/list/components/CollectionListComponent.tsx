@@ -5,13 +5,16 @@ import { ListStateContext } from '../hooks/useListState';
 import useListView from '../hooks/useListView';
 import { CollectionListProps } from '../typings';
 import ListBodyComponent from './ListBodyComponent';
-import ListItemComponent from './ListItemComponent';
+import ListItemComponent, { ListItemContent } from './ListItemComponent';
+import LoadingItem from './LoadingItem';
 
 const CollectionListComponent: FC<CollectionListProps> = ({
   className,
   controller,
   height,
   ItemComponent = ListItemComponent,
+  ItemLoadingComponent = LoadingItem,
+  ItemContentComponent = ListItemContent,
   NotFoundComponent,
   itemHeight,
   preload,
@@ -45,7 +48,9 @@ const CollectionListComponent: FC<CollectionListProps> = ({
         <ListBodyComponent
           className={addClassname('o-list', className)}
           height={height}
+          ItemLoadingComponent={ItemLoadingComponent}
           ItemComponent={ItemComponent}
+          ItemContentComponent={ItemContentComponent}
           NotFoundComponent={NotFoundComponent}
           items={items}
           keyboardNavigable={keyboardNavigable}

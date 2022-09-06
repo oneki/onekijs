@@ -32,12 +32,11 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
   const itemHeight = useCallback(() => {
     return 20;
   }, []);
-
   const { items, isVirtual, totalSize, virtualItems, measure } = useListView({
     controller: service,
     height: height,
     ref: tableRef,
-    overscan: 20,
+    overscan: 10,
     itemHeight,
     preload,
     increment,

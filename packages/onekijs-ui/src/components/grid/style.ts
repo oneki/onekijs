@@ -80,7 +80,7 @@ export const rowStyle: ComponentStyle<RowProps> = ({
     ${marginRight(`calc(${marginRightStr} - ${gapXStr}/2)`)}
     ${marginTop(`calc(${marginTopStr} - ${gapYStr}/2)`)}
     ${marginBottom(`calc(${marginBottomStr} - ${gapYStr}/2)`)}
-    .o-col {
+    & > .o-col {
       ${marginX(`calc(${gapXStr}/2)`)}
       ${marginY(`calc(${gapYStr}/2)`)}
     }

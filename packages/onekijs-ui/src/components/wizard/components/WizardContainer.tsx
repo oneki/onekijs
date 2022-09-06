@@ -79,7 +79,13 @@ const WizardContainer: FCC<Omit<WizardProps, 'Component'>> = ({
         <div className="o-wizard-content">{children}</div>
         <div className="o-wizard-control">
           {onCancel && (
-            <Button kind="primary" pattern="flat" className="o-wizard-control-button" type="button">
+            <Button
+              kind="primary"
+              pattern="flat"
+              className="o-wizard-control-button"
+              type="button"
+              onClick={() => onCancel()}
+            >
               {cancelLabel}
             </Button>
           )}
@@ -96,10 +102,10 @@ const WizardContainer: FCC<Omit<WizardProps, 'Component'>> = ({
           )}
           {!service.isLastStep() && (
             <Button
-              kind="primary"
+              kind={service.isCurrentStepInVisibleError() ? 'danger' : 'primary'}
               pattern="solid"
               className="o-wizard-control-button"
-              disabled={service.isCurrentStepInError()}
+              disabled={service.isCurrentStepInVisibleError()}
               onClick={() => service.next()}
               type="button"
             >

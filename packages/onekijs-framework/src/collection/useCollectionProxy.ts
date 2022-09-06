@@ -23,7 +23,7 @@ const useCollectionProxy = <
   T,
   I extends Item<T> = Item<T>,
   S extends CollectionState<T, I> = CollectionState<T, I>,
-  C extends CollectionService<T, I, S> = CollectionService<T, I, S>
+  C extends CollectionService<T, I, S> = CollectionService<T, I, S>,
 >(
   dataSource:
     | T[]

@@ -5,14 +5,17 @@ import { ThemeContext } from 'styled-components';
 import { useClickOutside } from '../../../utils/event';
 import { addClassname } from '../../../utils/style';
 import { ModalProps } from '../typings';
+import ReactDOM from 'react-dom';
 
 const ModalComponent: FCC<ModalProps> = ({
+  attachToBody = false,
   className,
   children,
   open,
   animationDuration = 150,
   closeIcon = true,
   onClose,
+  onClosed,
   title,
   buttons = [],
   closeOnClickOutside,
@@ -68,6 +71,9 @@ const ModalComponent: FCC<ModalProps> = ({
       ref.current.style.transition = '';
       ref.current.style.transform = '';
     }
+    if (onClosed) {
+      onClosed();
+    }
   };
 
   useClickOutside(ref, () => {
@@ -82,7 +88,7 @@ const ModalComponent: FCC<ModalProps> = ({
     }
   });
 
-  return (
+  const element = (
     <CSSTransition
       in={open}
       classNames="o-modal"
@@ -115,6 +121,12 @@ const ModalComponent: FCC<ModalProps> = ({
       </div>
     </CSSTransition>
   );
+
+  if (attachToBody) {
+    return <>{ReactDOM.createPortal(element, document.body)}</>;
+  } else {
+    return <>{element}</>;
+  }
 };
 
 export default ModalComponent;

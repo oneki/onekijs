@@ -6,7 +6,6 @@ import Row from '../../grid/Row';
 import { GridSize } from '../../grid/typings';
 import Label from '../../label';
 import FieldDescription from '../FieldDescription';
-import FieldHelp from '../FieldHelp';
 import { FieldLayoutProps } from '../typings';
 
 const FieldLayoutComponent: FCC<FieldLayoutProps> = React.memo(
@@ -14,7 +13,6 @@ const FieldLayoutComponent: FCC<FieldLayoutProps> = React.memo(
     className,
     description,
     help,
-    HelpComponent = FieldHelp,
     id,
     label,
     LabelComponent = Label,
@@ -87,6 +85,7 @@ const FieldLayoutComponent: FCC<FieldLayoutProps> = React.memo(
           {(description || message) && (
             <Col size={12} className="o-form-field-description">
               <DescriptionComponent
+                layout={fieldLayout}
                 content={message ? message : description || ''}
                 className={status !== undefined ? `o-field-description-${status}` : undefined}
               />
@@ -128,7 +127,6 @@ const FieldLayoutComponent: FCC<FieldLayoutProps> = React.memo(
             className="o-form-field-content"
           >
             {children}
-            {<HelpComponent content={help} visible={help ? true : false} />}
           </Col>
           <Col
             size={fieldLabelWidth}
@@ -147,14 +145,24 @@ const FieldLayoutComponent: FCC<FieldLayoutProps> = React.memo(
             xl={xlFieldLabelWidth !== undefined ? ((12 - xlFieldLabelWidth) as GridSize) : undefined}
             className="o-form-field-description"
           >
-            {(description || message) && (
-              <DescriptionComponent
-                content={message ? message : description || ''}
-                className={status !== undefined ? `o-field-description-${status}` : undefined}
-              />
-            )}
+            <DescriptionComponent
+              layout={fieldLayout}
+              content={message ? message : description || ''}
+              className={status !== undefined ? `o-field-description-${status}` : undefined}
+            />
           </Col>
         </Row>
+      );
+    } else if (fieldLayout === 'table') {
+      return (
+        <>
+          {children}
+          <DescriptionComponent
+            layout={fieldLayout}
+            content={message ? message : description || ''}
+            className={status !== undefined ? `o-field-description-${status}` : undefined}
+          />
+        </>
       );
     }
     return null;

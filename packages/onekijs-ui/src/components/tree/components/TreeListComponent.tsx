@@ -120,6 +120,7 @@ const TreeListItemComponent: React.FC<TreeListItemProps> = ({
           className={className}
           index={index}
           item={item}
+          data={item.data}
           onClick={onClick}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}

@@ -11,7 +11,7 @@ const useCollectionService = <
   T,
   I extends Item<T> = Item<T>,
   S extends CollectionState<T, I> = CollectionState<T, I>,
-  C extends CollectionService<T, I, S> = CollectionService<T, I, S>
+  C extends CollectionService<T, I, S> = CollectionService<T, I, S>,
 >(
   ctor: Class<C>,
   initialState: S,
@@ -20,8 +20,8 @@ const useCollectionService = <
 
   useEffect(() => {
     if (typeof initialState.dataSource === 'string' && initialState.fetchOnce) {
-      const fetcher: Fetcher<CollectionFetcherResult<T>, Query | undefined> =
-        initialState.fetchOptions?.fetcher || asyncHttp;
+      const fetcher: Fetcher<CollectionFetcherResult<T>, Query | undefined> = initialState.fetchOptions?.fetcher ||
+      asyncHttp;
       service.setStatus(LoadingStatus.Loading);
       fetcher(initialState.dataSource, initialState.method || HttpMethod.Get, undefined, state.fetchOptions).then(
         (result) => {

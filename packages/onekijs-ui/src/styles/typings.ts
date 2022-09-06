@@ -318,6 +318,7 @@ export type Theme = {
   fieldLayout: {
     marginY: MarginProperty<TLength> | SpacingPropertyTheme;
     helperMarginLeft: MarginProperty<TLength> | SpacingPropertyTheme;
+    helperMarginRight: MarginProperty<TLength> | SpacingPropertyTheme;
     helperColor: ColorProperty | ColorPropertyTheme;
     descriptionFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
     descriptionColor: ColorProperty | ColorPropertyTheme;
@@ -417,6 +418,7 @@ export type Theme = {
     [k in ColorKeys]: {
       bgColor: ColorPropertyTheme | BackgroundColorProperty;
       color: ColorPropertyTheme | ColorProperty;
+      linkColor: ColorPropertyTheme | ColorProperty;
       borderColor: ColorPropertyTheme | BackgroundColorProperty;
       borderRadius: BorderRadiusProperty<TLength> | RadiusPropertyTheme;
       borderStyle: BorderStyleProperty;

@@ -12,9 +12,9 @@ const TableHeaderComponent: React.FC<TableHeaderProps> = ({ columns, className }
   };
 
   const service = useTableService();
-  const { fixHeader = true, filterable, sortable } = useTableConfig();
+  const { fixHeader = true, filterable, sortable, height } = useTableConfig();
 
-  if (fixHeader) {
+  if (fixHeader && height) {
     headerStyle.position = 'sticky';
     headerStyle.top = 0;
     headerStyle.zIndex = 1;

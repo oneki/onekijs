@@ -1,8 +1,8 @@
-import { useEffect, useReducer, useRef } from 'react';
+import { useCallback, useEffect, useReducer, useRef } from 'react';
 import useLazyRef from '../core/useLazyRef';
 import { ValidationStatus } from '../types/form';
 import { AnonymousObject } from '../types/object';
-import { diffArrays, set } from '../utils/object';
+import { clone, diffArrays, get, set } from '../utils/object';
 import { generateUniqueId } from '../utils/string';
 import ContainerValidation from './ContainerValidation';
 import FieldValidation from './FieldValidation';
@@ -48,7 +48,7 @@ const useFieldContainer = ({
   const containerContextRef = useLazyRef<FormService>(() => {
     const handler = {
       get: function (target: FormService, prop: string | number | symbol, receiver?: FormService): any {
-        if (prop === 'init') {
+        if (prop === 'initField') {
           return (
             name: string,
             validators: AnonymousObject<Validator> = {},
@@ -61,6 +61,21 @@ const useFieldContainer = ({
               set(valueRef.current, name, field.value);
             }
             return field;
+          };
+        } else if (prop === 'remove') {
+          return (fieldArrayName: string, index: number): void => {
+            const currentArrayValue = get(valueRef.current, fieldArrayName, []);
+            if (currentArrayValue.length - 1 >= index) {
+              fieldsRef.current = fieldsRef.current.filter(
+                (name) => !name.startsWith(`${fieldArrayName}.${currentArrayValue.length - 1}`),
+              );
+              Object.keys(fieldValidationsRef.current).forEach((key) => {
+                if (key.startsWith(`${fieldArrayName}.${currentArrayValue.length - 1}`)) {
+                  delete fieldValidationsRef.current[key];
+                }
+              });
+            }
+            form.remove(fieldArrayName, index);
           };
         } else {
           return Reflect.get(target, prop, receiver);
@@ -82,7 +97,7 @@ const useFieldContainer = ({
     diff.added.forEach((fieldName) => {
       const valueListener = (fieldName: string): FormValueListener => {
         return (value) => {
-          set(valueRef.current, fieldName, value);
+          set(valueRef.current, fieldName, clone(value));
           if (onValueChange) {
             onValueChange(fieldName, value);
           } else {
@@ -101,7 +116,6 @@ const useFieldContainer = ({
       const validationListener = (fieldName: string): FormValidationListener => {
         return (validation) => {
           fieldValidationsRef.current[fieldName] = validation;
-          console.log(fieldValidationsRef.current, form.fields);
           touchedValidationRef.current = form.getContainerFieldValidation(
             fieldValidationsRef.current,
             form.fields,
@@ -142,11 +156,16 @@ const useFieldContainer = ({
     };
   }, [form]);
 
+  const touchAllFields = useCallback(() => {
+    fieldsRef.current.forEach((field) => form.touch(field));
+  }, [form]);
+
   return {
     context: containerContextRef.current,
     value: valueRef.current,
     touchedValidation: touchedValidationRef.current,
     allValidation: allValidationRef.current,
+    touchAllFields,
   };
 };
 

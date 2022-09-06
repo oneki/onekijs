@@ -31,6 +31,7 @@ export interface FieldContainer {
   value: AnonymousObject<any>;
   touchedValidation: ContainerValidation;
   allValidation: ContainerValidation;
+  touchAllFields: () => void;
 }
 
 export interface FieldProps {
@@ -196,6 +197,16 @@ export type ValidatorsType = {
   requiredMessage?: string;
   regex?: string | RegExp;
   regexMessage?: string;
+  email?: boolean;
+  emailMessage?: string;
+  minLength?: number;
+  minLengthMessage?: string;
+  maxLength?: number;
+  maxLengthMessage?: string;
+  min?: number;
+  minMessage?: string;
+  max?: number;
+  maxMessage?: string;
   validators?: Validator[];
 };
 

@@ -6,4 +6,4 @@ export enum ValidationStatus {
   None = '',
 }
 
-export type FormLayout = 'horizontal' | 'vertical';
+export type FormLayout = 'horizontal' | 'vertical' | 'table';

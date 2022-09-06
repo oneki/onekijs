@@ -23,7 +23,7 @@ import { ComponentStyle } from '../../styles/typings';
 import { color, fontSize, fontWeight, textTransform } from '../../styles/typography';
 import { TableProps } from './typings';
 
-export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme }) => {
+export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true }) => {
   const t = theme.table;
   return css`
     ${boxShadow(t.shadow)}
@@ -42,6 +42,7 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme }) => {
       background-color: ${(props) => props.theme.palette.colors[props.theme.colors.light]};
       border: 3px solid ${(props) => props.theme.palette.colors[props.theme.colors.lighter]};
     }
+    ${() => (fit ? 'flex-grow: 1;' : '')}
 
     .o-table-not-found {
       ${display('flex')}
@@ -202,6 +203,7 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme }) => {
 
     &.o-form-table {
       ${boxShadow('none')}
+      ${paddingRight('none')}
       .o-table-body-row:hover {
         ${backgroundColor(t.bgColor)}
         ${color(t.tdFontColor)}

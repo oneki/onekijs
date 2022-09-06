@@ -19,7 +19,7 @@ export type ListBodyProps<
   T = any,
   I extends ListItem<T> = ListItem<T>,
   S extends ListState<T, I> = ListState<T, I>,
-  C extends ListCollection<T, I, S> = ListCollection<T, I, S>
+  C extends ListCollection<T, I, S> = ListCollection<T, I, S>,
 > = Pick<
   CollectionListProps<T, I>,
   | 'onItemSelect'
@@ -36,7 +36,9 @@ export type ListBodyProps<
 > & {
   bodyRef?: React.RefObject<HTMLDivElement>;
   className?: string;
+  ItemLoadingComponent?: FC;
   ItemComponent?: FC<ListItemProps<T, I>>;
+  ItemContentComponent?: FC<ListItemProps<T, I>>;
   items: (I | undefined)[];
   ListComponent?: FC<StandardListProps<T, I>>;
   parentRef?: React.RefObject<HTMLDivElement>;
@@ -53,7 +55,7 @@ export type CollectionListProps<
   T = any,
   I extends ListItem<T> = ListItem<T>,
   S extends ListState<T, I> = ListState<T, I>,
-  C extends ListCollection<T, I, S> = ListCollection<T, I, S>
+  C extends ListCollection<T, I, S> = ListCollection<T, I, S>,
 > = ListConfig<T, I> & {
   controller: CollectionProxy<T, I, S, C>;
 };
@@ -61,7 +63,7 @@ export type CollectionListProps<
 export type ListCollection<
   T,
   I extends ListItem<T> = ListItem<T>,
-  S extends ListState<T, I> = ListState<T, I>
+  S extends ListState<T, I> = ListState<T, I>,
 > = Collection<T, I, S>;
 
 export type ListFooterProps = {
@@ -84,7 +86,9 @@ export type ListItemHandler<T = any, I extends ListItem<T> = ListItem<T>> = (ite
 
 export interface ListItemProps<T = any, I extends ListItem<T> = ListItem<T>> {
   index: number;
-  item?: I;
+  item: I;
+  data: T;
+  ItemContentComponent?: FC<ListItemProps<T, I>>;
   onClick?: ListItemHandler<T, I>;
   onMouseEnter?: ListItemHandler<T, I>;
   onMouseLeave?: ListItemHandler<T, I>;
@@ -96,7 +100,9 @@ export type ListConfig<T = any, I extends ListItem<T> = ListItem<T>> = {
   className?: string;
   height?: number | string;
   increment?: number;
+  ItemLoadingComponent?: FC;
   ItemComponent?: FC<ListItemProps<T, I>>;
+  ItemContentComponent?: FC<ListItemProps<T, I>>;
   NotFoundComponent?: FC<ListNotFoundProps>;
   itemHeight?: number | ((index: number) => number);
   keyboardNavigable?: boolean;
@@ -121,7 +127,7 @@ export type ListProps<
   T = any,
   I extends ListItem<T> = ListItem<T>,
   S extends ListState<T, I> = ListState<T, I>,
-  C extends ListCollection<T, I, S> = ListCollection<T, I, S>
+  C extends ListCollection<T, I, S> = ListCollection<T, I, S>,
 > = ListConfig<T, I> & {
   adapter?: ListItemAdapter<T>;
   controller?: CollectionProxy<T, I, S, C>;
@@ -143,7 +149,7 @@ export enum ListStatus {
 
 export type StandardListProps<T = any, I extends ListItem<T> = ListItem<T>> = Pick<
   ListBodyProps<T, I>,
-  'items' | 'ItemComponent'
+  'items' | 'ItemComponent' | 'ItemLoadingComponent' | 'ItemContentComponent'
 > & {
   onItemClick?: ListItemHandler<T, I>;
   onItemMouseEnter?: ListItemHandler<T, I>;
@@ -167,7 +173,9 @@ export type VirtualListProps<T = any, I extends ListItem<T> = ListItem<T>> = Sta
 };
 
 export type VirtualItemWrapperProps<T = any, I extends ListItem<T> = ListItem<T>> = {
+  ItemLoadingComponent?: FC;
   ItemComponent?: FC<ListItemProps<T, I>>;
+  ItemContentComponent?: FC<ListItemProps<T, I>>;
   listItem: any;
   onItemClick?: ListItemHandler<T, I>;
   onItemMouseEnter?: ListItemHandler<T, I>;

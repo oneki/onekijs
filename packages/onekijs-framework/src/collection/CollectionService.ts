@@ -74,6 +74,8 @@ export default class CollectionService<
   protected positionIndex: AnonymousObject<string> = {};
   protected db?: I[];
   protected unregisterRouterListener?: UnregisterCallback;
+  protected refreshing = false;
+  protected currentQuery?: string;
 
   init(): void {
     this.initialState = this.state;
@@ -439,6 +441,7 @@ export default class CollectionService<
   @reducer
   refresh(query?: Query): void {
     const path = this.state.router.location.pathname;
+    this.refreshing = true;
     this.state.router.push(urlBuilder(path, {}, urlSerializer(query || this.getQuery())));
   }
 
@@ -618,6 +621,19 @@ export default class CollectionService<
   }
 
   @reducer
+  setUrl(url: string) {
+    this.cache = {};
+    this.state.url = url;
+    this.state.items = undefined;
+    const nextQuery = clone(this.getQuery());
+    this._clearOffset(nextQuery);
+    this[dispatch]({
+      type: this[types]._fetch.actionType,
+      payload: toPayload([nextQuery, true]),
+    });
+  }
+
+  @reducer
   sort(dir: QuerySortDir): void {
     const query = Object.assign({}, this.getQuery());
     this._setLoading({ limit: this.state.limit, offset: 0 });
@@ -749,6 +765,16 @@ export default class CollectionService<
         return new RegExp(String(right)).test(String(left));
       case 'i_regex':
         return new RegExp(String(right), 'i').test(String(left));
+      case 'gt':
+        return left > (right || 0);
+      case 'gte':
+        return left >= (right || 0);
+      case 'lt':
+        return left < (right || 0);
+      case 'lte':
+        return left <= (right || 0);
+      case 'in':
+        return toArray(right || []).includes(left);
       default:
         return true;
     }
@@ -887,13 +913,12 @@ export default class CollectionService<
     comparators: AnonymousObject<QuerySortComparator>,
   ): I[] {
     // apply filters to data
-    let result = items;
+    let result: I[] = Object.assign([], items);
     if (query.filter) {
-      result = items.filter((item) => this._applyFilter(item, formatFilter(query.filter)));
-    } else if (query.search) {
-      result = items.filter((item) => this._applySearch(item, query.search));
-    } else {
-      result = Object.assign([], items);
+      result = result.filter((item) => this._applyFilter(item, formatFilter(query.filter)));
+    }
+    if (query.search) {
+      result = result.filter((item) => this._applySearch(item, query.search));
     }
 
     // apply sort
@@ -935,12 +960,13 @@ export default class CollectionService<
             resetData,
           );
         }
-        const fetcher: Fetcher<CollectionFetcherResult<T>, T | Query | undefined> = options.fetcher || asyncHttp;
+        const fetcher: Fetcher<CollectionFetcherResult<T>, Query | undefined> = options.fetcher || asyncHttp;
         const method = this.state.method ?? HttpMethod.Get;
         const body = this.state.method === HttpMethod.Get ? undefined : Object.assign({}, query);
 
         const fetchOptions = method === HttpMethod.Get ? Object.assign({}, options, { query: oQuery }) : options;
         result = yield fetcher(this.url, method, body, fetchOptions);
+
         this.cache[sQuery] = result;
         if (loadingTask !== null) {
           yield cancel(loadingTask);
@@ -1097,7 +1123,11 @@ export default class CollectionService<
       if (isNull(data)) {
         return _context?.position;
       }
-      if (!isNull(data.id)) {
+      if (Array.isArray(data) && (typeof data[0] === 'string' || !isNaN(data[0]))) {
+        return data[0];
+      } else if (typeof data === 'string' || !isNaN(data)) {
+        return data;
+      } else if (!isNull(data.id)) {
         return data.id;
       } else {
         return _context?.position;
@@ -1107,8 +1137,10 @@ export default class CollectionService<
       if (isNull(data)) {
         return undefined;
       }
-      if (typeof data === 'string') {
-        return data as string;
+      if (Array.isArray(data)) {
+        return getText(data[1]);
+      } else if (typeof data === 'string' || !isNaN(data) || data === true || data === false) {
+        return String(data);
       } else if (!isNull(data.text)) {
         return String(data.text);
       } else {
@@ -1124,10 +1156,11 @@ export default class CollectionService<
     if (currentItem !== undefined) {
       return Object.assign({}, currentItem, { data }, result);
     } else {
+      const uid = generateUniqueId();
       return Object.assign(
         {
           data,
-          uid: generateUniqueId(),
+          uid,
           loadingStatus: data !== undefined ? LoadingStatus.Loaded : LoadingStatus.NotInitialized,
         },
         result,
@@ -1170,6 +1203,8 @@ export default class CollectionService<
 
   @reducer
   protected _onLocationChange(location: Location): void {
+    if (!this.refreshing) return;
+    this.refreshing = false;
     const nextQuery = this._parseLocation(location);
     if (this.state.local) {
       this._setQuery(nextQuery);

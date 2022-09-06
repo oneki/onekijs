@@ -26,6 +26,7 @@ const SelectInputComponent = React.forwardRef<HTMLDivElement, SelectInputProps>(
       nullable,
       clickable,
       minChars,
+      disabled,
     },
     ref,
   ) => {
@@ -174,13 +175,15 @@ const SelectInputComponent = React.forwardRef<HTMLDivElement, SelectInputProps>(
 
     const onIconClick = useCallback(
       (e: any) => {
-        if (!open) {
-          inputRef.current && inputRef.current.select();
+        if (!disabled) {
+          if (!open) {
+            inputRef.current && inputRef.current.select();
+          }
+          forwardFocus && forwardFocus(e);
+          setOpen(!open);
         }
-        forwardFocus && forwardFocus(e);
-        setOpen(!open);
       },
-      [open, forwardFocus, setOpen],
+      [open, forwardFocus, setOpen, disabled],
     );
 
     const onNullify = useCallback(() => {
@@ -214,10 +217,11 @@ const SelectInputComponent = React.forwardRef<HTMLDivElement, SelectInputProps>(
               autoComplete="off"
               autoCorrect="off"
               spellCheck="false"
+              disabled={disabled}
             />
           </div>
         </div>
-        {!multiple && nullable && value && (
+        {!multiple && nullable && value && !disabled && (
           <div className="o-select-remover" onClick={onNullify}>
             &#10006;
           </div>

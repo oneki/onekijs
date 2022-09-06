@@ -16,6 +16,7 @@ import { useClickOutside, useFocusOutside } from '../../../utils/event';
 import { addClassname } from '../../../utils/style';
 import useDropdown from '../../dropdown/hooks/useDropdown';
 import ListBodyComponent from '../../list/components/ListBodyComponent';
+import LoadingItem from '../../list/components/LoadingItem';
 import useListView from '../../list/hooks/useListView';
 import { SelectConfigContext } from '../hooks/useSelectConfig';
 import { ControllerSelectProps, SelectConfig, SelectItem, SelectOptionHandler } from '../typings';
@@ -64,8 +65,9 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   controller,
   InputComponent = SelectInputComponent,
   IconComponent,
-  ItemComponent = SelectOptionContent,
+  OptionContentComponent = SelectOptionContent,
   OptionComponent = SelectOptionComponent,
+  OptionLoadingComponent = LoadingItem,
   MultiOptionsComponent = MultiSelectOptionComponent,
   NotFoundComponent = SelectNotFoundComponent,
   autoFocus,
@@ -81,10 +83,11 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   minChars = 0,
   openOnFocus = false,
   clickable = true,
-  dropdownWidthModifier = 'min',
+  dropdownWidthModifier = 'same',
   preload = 100,
   increment = 100,
   animationMs = 200,
+  disabled,
 }) => {
   const [open, setOpen] = useState(false);
   const [focus, setFocus] = useState(false);
@@ -100,9 +103,10 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
 
   const config: SelectConfig = useMemo(() => {
     return {
-      ItemComponent,
+      OptionContentComponent,
+      OptionLoadingComponent,
     };
-  }, [ItemComponent]);
+  }, [OptionContentComponent, OptionLoadingComponent]);
 
   const tokens = useMemo<SelectItem<any>[]>(() => {
     return (controller.state.selected || [])
@@ -195,13 +199,15 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
 
   const onRemoveToken: SelectOptionHandler<any, SelectItem<any>> = useCallback(
     (item) => {
-      service.removeSelected('item', item);
-      if (onChange) {
-        const nextValue = (service.state.selected || []).map((uid) => service.getItem(uid)?.data);
-        onChange(nextValue);
+      if (!disabled) {
+        service.removeSelected('item', item);
+        if (onChange) {
+          const nextValue = (service.state.selected || []).map((uid) => service.getItem(uid)?.data);
+          onChange(nextValue);
+        }
       }
     },
-    [service, onChange],
+    [service, onChange, disabled],
   );
 
   const onActivate = useCallback(
@@ -319,9 +325,9 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   const style: React.CSSProperties = {};
 
   const classNames = addClassname(
-    `o-select o-select-size-${size} o-select-${open ? 'open' : 'close'}${
-      status ? ' o-select-status-' + status.toLowerCase() : ''
-    }${multiple ? ' o-select-multiple' : ''}`,
+    `o-select ${disabled ? 'o-select-disabled' : 'o-select-enabled'} o-select-size-${size} o-select-${
+      open ? 'open' : 'close'
+    }${status ? ' o-select-status-' + status.toLowerCase() : ''}${multiple ? ' o-select-multiple' : ''}`,
     className,
   );
 
@@ -393,6 +399,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
           clickable={clickable}
           minChars={minChars}
           ref={triggerRef}
+          disabled={disabled}
         />
         <Dropdown
           attachToBody={attachDropdownToBody}
@@ -403,12 +410,16 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
           onCollapseDone={onClosed}
           placement="bottom"
           widthModifier={dropdownWidthModifier}
+          className={className}
+          zIndex={attachDropdownToBody ? 2000 : undefined}
         >
           <ListBodyComponent
             className="o-select-options"
             bodyRef={optionsRef}
             height={height}
             ItemComponent={multiple ? MultiOptionsComponent : OptionComponent}
+            ItemLoadingComponent={OptionLoadingComponent}
+            ItemContentComponent={OptionContentComponent}
             NotFoundComponent={NotFoundComponent}
             items={selectItems}
             onItemSelect={onSelect}

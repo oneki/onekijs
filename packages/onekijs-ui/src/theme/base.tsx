@@ -74,8 +74,7 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
 
     font: {
       families: {
-        sans:
-          'Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
+        sans: 'Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
         serif: 'Georgia, Cambria, "Times New Roman", Times, serif',
         mono: 'Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
       },
@@ -187,6 +186,7 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
       marginY: 'xs',
       helperColor: 'primary',
       helperMarginLeft: 'sm',
+      helperMarginRight: 'xs',
       descriptionFontSize: 'sm',
       descriptionColor: 'gray-600',
     },
@@ -480,6 +480,9 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
     set(theme, `tooltip.${kind}`, {
       bgColor: kind,
       color: ['light', 'lightest', 'white'].includes(kind) ? 'darkest' : 'white',
+      linkColor: ['light', 'lightest', 'white'].includes(kind)
+        ? 'primary'
+        : lighten(get(theme.colors, 'primary', ''), 200),
       borderColor: kind,
       borderRadius: 'sm',
       borderStyle: 'solid',

@@ -9,10 +9,9 @@ import {
   borderStyle,
   borderTopColor,
   borderWidth,
-  boxShadow,
+  boxShadow
 } from '../../styles/border';
 import { display } from '../../styles/display';
-import { flexDirection } from '../../styles/flex';
 import { cursor, pointerEvents } from '../../styles/interactivity';
 import { bottom, left, position, right, top, zIndex } from '../../styles/position';
 import { height, width } from '../../styles/size';
@@ -38,12 +37,13 @@ const tooltipStyle: ComponentStyle<TooltipProps> = ({ kind = 'secondary', theme 
       ${borderColor(bColor)}
       ${boxShadow(t.boxShadow)}
       ${color(fColor)}
-      ${display('flex')}
-      ${flexDirection('column')}
       ${transition('opacity 0.3s')}
       ${zIndex(9999)}
       ${padding(t.padding)}
       ${fontSize(t.fontSize)}
+      a {
+        ${color(t.linkColor)}
+      }
       &[data-popper-interactive='false'] {
         ${pointerEvents('none')}
       }

@@ -135,10 +135,10 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
       ${backgroundColor('white')}
       ${display('flex')}
       ${alignItems('center')}
-      ${borderWidth(1)}
-      ${borderColor('gray-300')}
+      ${borderWidth('1px')}
+      ${borderColor('light')}
       ${borderRadius('md')}
-      ${clickable ? cursor('pointer') : ''}
+      ${clickable ? cursor('pointer') : cursor('auto')}
       ${padding('1px')}
       ${position('relative')}
       input {
@@ -146,7 +146,7 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
       }
       &.o-select-input-focus {
         ${borderColor('primary')}
-        ${borderWidth(2)}
+        ${borderWidth('2px')}
         ${padding(0)}
       }
       .o-select-remover {
@@ -156,9 +156,36 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
         ${paddingX('sm')}
       }
     }
+
+    &.o-select-disabled {
+      .o-select-input-container {
+        ${backgroundColor('lighter')}
+        ${cursor('not-allowed')}
+        input {
+          ${cursor('not-allowed')}
+        }
+      }
+
+      .o-select-icon-container {
+        ${cursor('not-allowed')}
+        .o-select-icon {
+          ${cursor('not-allowed')}
+        }
+      }
+
+      .o-select-input-data {
+        .o-select-token {
+          ${cursor('not-allowed')}
+          .o-select-token-remove {
+            ${cursor('not-allowed')}
+          }
+        }
+      }
+    }
+
     &.o-select-close {
       .o-select-input {
-        ${clickable ? cursor('pointer') : ''}
+        ${cursor('pointer')}
       }
     }
     &.o-select-open {
@@ -279,7 +306,7 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
       ${borderTopLeftRadius(0)}
       ${borderTopRightRadius(0)}
       ${boxShadow('lg')}
-      ${zIndex(1000)}
+      ${zIndex(2000)}
       ${backgroundColor('white')}
       ${borderWidth(1)}
       ${borderColor('light')}

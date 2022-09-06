@@ -1,7 +1,7 @@
-import { isItemLoading, LoadingStatus } from 'onekijs-framework';
+import { isItemLoading } from 'onekijs-framework';
 import React, { FC, useMemo } from 'react';
 import Checkbox from '../../checkbox';
-import LoadingIcon from '../../icon/LoadingIcon';
+import LoadingItem from '../../list/components/LoadingItem';
 import { useSelectConfig } from '../hooks/useSelectConfig';
 import { SelectOptionProps } from '../typings';
 
@@ -12,23 +12,12 @@ export const MultiSelectOptionComponent: FC<SelectOptionProps> = React.memo((pro
 MultiSelectOptionComponent.displayName = 'MultiSelectOptionComponent';
 
 export const SelectOptionContent: FC<SelectOptionProps> = ({ item }) => {
-  let content = '';
-  if (item?.data === undefined && isItemLoading(item)) {
-    content = 'loading';
-  } else {
-    content = item?.text || '';
-  }
-
-  return (
-    <div className="o-select-option-data">
-      {item?.data === undefined && item?.loadingStatus === LoadingStatus.Loading ? <LoadingIcon /> : content}
-    </div>
-  );
+  return <div className="o-select-option-data">{item.text}</div>;
 };
 
 const SelectOptionComponent: FC<SelectOptionProps> = React.memo((props) => {
   const { item, index, onClick, onMouseEnter, onMouseLeave, multiple = false } = props;
-  const { ItemComponent = SelectOptionContent } = useSelectConfig();
+  const { OptionContentComponent = SelectOptionContent, OptionLoadingComponent = LoadingItem } = useSelectConfig();
   let clickable = !!onClick && !item?.disabled;
   let hoverable = true;
   if (item?.data === undefined && isItemLoading(item)) {
@@ -57,6 +46,12 @@ const SelectOptionComponent: FC<SelectOptionProps> = React.memo((props) => {
     return classNames.join(' ');
   }, [item, clickable, hoverable]);
 
+  if (isItemLoading(item)) {
+    return <OptionLoadingComponent />;
+  }
+
+  if (!item || !item.data) return null;
+
   return (
     <div
       className={classNames}
@@ -73,7 +68,7 @@ const SelectOptionComponent: FC<SelectOptionProps> = React.memo((props) => {
           className="o-select-option-multiple-checkbox"
         ></Checkbox>
       )}
-      <ItemComponent {...props} />
+      <OptionContentComponent {...props} />
     </div>
   );
 });

@@ -10,10 +10,13 @@ import ControllerTableComponent from './ControllerTableComponent';
 
 const DeleteRowComponent: React.FC<TableBodyCellProps> = ({ rowIndex }) => {
   const form = useForm();
-  const { tableName } = useFormTableContext();
+  const { tableName, minLength = 0, required } = useFormTableContext();
   const removeRow = () => {
     form.remove(tableName, rowIndex);
   };
+
+  const min = Math.max(minLength, required ? 1 : 0);
+  if (rowIndex < min) return null;
 
   return (
     <div className="o-form-table-remove" onClick={removeRow}>
@@ -31,11 +34,13 @@ const SelectRowComponent: React.FC<TableBodyCellProps> = ({ item }) => {
 
 const FooterComponent: React.FC<TableFooterProps> = () => {
   const form = useForm();
-  const { tableName, addLabel } = useFormTableContext();
+  const { tableName, addLabel, maxLength } = useFormTableContext();
   const addRow: React.MouseEventHandler<HTMLDivElement> = (e) => {
     form.add(tableName);
     e.preventDefault();
   };
+  const currentSize = (form.getValue(tableName) || []).length;
+  if (maxLength !== undefined && currentSize >= maxLength) return null;
   return (
     <div className="o-form-table-add" onClick={addRow}>
       <TogglerIcon open={false} model="plus" color="currentColor" />
@@ -45,7 +50,19 @@ const FooterComponent: React.FC<TableFooterProps> = () => {
 };
 
 const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.memo(
-  ({ addLabel = 'add', controller, value, onChange, className, name, format = 'auto', ...props }) => {
+  ({
+    addLabel = 'add',
+    controller,
+    value,
+    onChange,
+    className,
+    name,
+    format = 'auto',
+    required,
+    minLength,
+    maxLength,
+    ...props
+  }) => {
     const form = useForm();
     const tableService = controller.asService();
     const formatRef = useLazyRef<'id' | 'object'>(() => {
@@ -68,7 +85,7 @@ const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.
           onChange && onChange(currentValues.filter((v: any) => getId(v) !== getId(value)));
         }
       };
-      return { tableName: name, onSelect, addLabel };
+      return { tableName: name, onSelect, addLabel, required, minLength, maxLength };
     });
 
     useEffect(() => {

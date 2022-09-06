@@ -11,6 +11,7 @@ export type ControlledWizardProps = WizardProps & {
 
 export type StepProps = TabProps & {
   optional?: boolean;
+  showTitle?: boolean;
 };
 
 export type StepState = TabState & {

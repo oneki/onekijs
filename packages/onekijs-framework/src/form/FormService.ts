@@ -32,9 +32,15 @@ import {
   ValidatorAsyncFunction,
   ValidatorSyncFunction,
 } from './typings';
+import { getNonIndexedProp } from './utils';
 
 @service
 export default class FormService extends DefaultService<FormState> {
+  public prevValues: AnonymousObject = {};
+  public prevValidations: AnonymousObject<FieldValidation> = {};
+  public prevSubmitting = false;
+  public prevMetadata: AnonymousObject<FormMetadata> = {};
+
   public fields: AnonymousObject<Field>;
   public decorators: AnonymousObject<FormDecorator>;
   public listeners: {
@@ -251,17 +257,31 @@ export default class FormService extends DefaultService<FormState> {
     return result;
   }
 
-  protected _getSubWatchs(watch: string): string[] {
+  protected _getSubWatchs(watch: string, value: any): string[] {
+    const nonIndexedWatch = getNonIndexedProp(watch);
     let result: string[] = [];
     // check if the index if something listens on the key "watch"
     const index = watch === '' ? this.watchIndex[''] : get(this.watchIndex, watch);
     if (index) {
-      // if the value "addresses" changes, addresses.0.street should be alerted as well as addresses.street, .....
-      for (const i in index) {
-        result = result.concat(this._getSubWatchs(`${watch}.${i}`));
-      }
       // direct listener on "addresses" are also alerted
       result.push(watch);
+    }
+    if (nonIndexedWatch !== undefined) {
+      const nonIndex = get(this.watchIndex, nonIndexedWatch);
+      if (nonIndex) {
+        result.push(watch);
+      }
+    }
+
+    // if the value "addresses" changes, addresses.0.street should be alerted, .....
+    if (Array.isArray(value)) {
+      value.forEach((v, i) => {
+        result = result.concat(this._getSubWatchs(`${watch}.${i}`, v));
+      });
+    } else if (typeof value === 'object' && value !== 'undefined' && value !== null) {
+      Object.keys(value).forEach((k) => {
+        result = result.concat(this._getSubWatchs(`${watch}.${k}`, value[k]));
+      });
     }
 
     // if addresses.0.street is changed, addresses should be alerted (becasue the object has been changed)
@@ -427,6 +447,14 @@ export default class FormService extends DefaultService<FormState> {
     return this.fields[name].context;
   }
 
+  isTouched(fieldName: string): boolean {
+    const field = this.fields[fieldName];
+    if (field) {
+      return field.touched;
+    }
+    return false;
+  }
+
   @saga(SagaEffect.Leading)
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   *loadInitialValues(fetcher: string | (() => AnonymousObject | Promise<AnonymousObject>)) {
@@ -542,12 +570,32 @@ export default class FormService extends DefaultService<FormState> {
     const currentArrayValue = get(this.state.values, fieldArrayName, []);
     if (currentArrayValue.length - 1 >= index) {
       const nextValues: AnonymousObject = {};
-      // need to modifiy all values with an index superior to the removed one
+      // need to modifiy all values / metadata / validations with an index superior to the removed one
       for (let i = index + 1; i < currentArrayValue.length; i++) {
         Object.keys(currentArrayValue[i]).forEach((fieldName) => {
-          nextValues[`${fieldArrayName}.${i - 1}.${fieldName}`] = currentArrayValue[i][fieldName];
+          // nextValues[`${fieldArrayName}.${i - 1}.${fieldName}`] = currentArrayValue[i][fieldName];
+          this.state.validations[`${fieldArrayName}.${i - 1}.${fieldName}`] =
+            this.state.validations[`${fieldArrayName}.${i}.${fieldName}`];
+          this.state.metadata[`${fieldArrayName}.${i - 1}.${fieldName}`] =
+            this.state.metadata[`${fieldArrayName}.${i}.${fieldName}`];
+          this.fields[`${fieldArrayName}.${i - 1}.${fieldName}`] = Object.assign(
+            this.fields[`${fieldArrayName}.${i}.${fieldName}`],
+            {
+              name: this.fields[`${fieldArrayName}.${i - 1}.${fieldName}`].name,
+              context: this.fields[`${fieldArrayName}.${i - 1}.${fieldName}`].context,
+            },
+          );
+          if (i === currentArrayValue.length - 1) {
+            delete this.state.metadata[`${fieldArrayName}.${i}.${fieldName}`];
+            delete this.state.validations[`${fieldArrayName}.${i}.${fieldName}`];
+            delete this.fields[`${fieldArrayName}.${i}.${fieldName}`];
+          }
+          this.pendingDispatch.validationChange.add(`${fieldArrayName}.${i - 1}.${fieldName}`);
+          this.pendingDispatch.metadataChange.add(`${fieldArrayName}.${i - 1}.${fieldName}`);
         });
       }
+      this.pendingDispatch.validationChange.add('');
+
       nextValues[fieldArrayName] = currentArrayValue.filter((_a: never, i: number): boolean => i !== index);
       this.setValues(nextValues);
     }
@@ -564,6 +612,14 @@ export default class FormService extends DefaultService<FormState> {
     for (let i = 0; i < props.length; i++) {
       delete this.decorators[props[i]];
     }
+
+    this.prevValues = {};
+    this.prevValidations = {};
+    this.prevSubmitting = false;
+    this.prevMetadata = {};
+
+    this.defaultValues = {};
+    this.defaultMetadata = {};
 
     this.listeners = {
       valueChange: {},
@@ -588,7 +644,7 @@ export default class FormService extends DefaultService<FormState> {
     } else {
       this.state.values = undefined;
       this.state.fetching = true;
-      this.loadInitialValues(this.state.initialValues);
+      this.callSaga('loadInitialValues', this.state.initialValues);
     }
     this.state.validations = {};
     this.initializing = true;
@@ -725,7 +781,7 @@ export default class FormService extends DefaultService<FormState> {
         field.touched = true;
       }
       set(this.state, `values.${key}`, values[key]);
-      this._getSubWatchs(key).forEach((key) => this.pendingDispatch.valueChange.add(key));
+      this._getSubWatchs(key, values[key]).forEach((key) => this.pendingDispatch.valueChange.add(key));
     });
     this.compileValidations(Object.keys(validations));
   }
