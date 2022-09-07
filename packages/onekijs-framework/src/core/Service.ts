@@ -216,6 +216,7 @@ export default class DefaultService<S extends State = AnyState> implements Servi
     };
     this[sagasFromReducers][type] = function (...args: any[]) {
       return new Promise((resolve, reject) => {
+        console.log('self', self, 'dispatch', self[dispatch])
         self[dispatch]({
           type: actionType,
           payload: toPayload(args),

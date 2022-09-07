@@ -152,7 +152,6 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   }, [controller, focus, open]);
 
   useEffect(() => {
-    console.log('set seletected', value);
     if (!multiple) {
       if (value) {
         service.setSelected('item', service.adapt(value));
@@ -171,20 +170,32 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
     }
   }, [multiple, value, service]);
 
-  // useEffect(() => {
-  //   const search = controller.getSearch();
-  //   if (!search && controller.state.invalidItems.length > 0) {
-  //     if (multiple) {
-  //     } else {
-  //       const currentItem = controller.adapt(value);
-  //       controller.state.invalidItems.forEach((i) => {
-  //         if (i.id === currentItem.id) {
-  //           onChange && onChange(null);
-  //         }
-  //       });
-  //     }
-  //   }
-  // }, [controller, multiple, onChange, value]);
+  // Manage the result of a check after a change of the value from the outside
+  // if the selected item is invalid, do a onChange to remove the value
+  useEffect(() => {
+    const search = controller.getSearch();
+    if (!search && controller.state.invalidItems && controller.state.invalidItems.length > 0) {
+      if (multiple) {
+        const validTokens: SelectItem[] = [];
+        tokens.forEach((t) => {
+          const invalidToken = controller.state.invalidItems.find((i) => t.uid === i.uid);
+          if (!invalidToken) {
+            validTokens.push(t);
+          }
+        });
+        if (validTokens.length !== tokens.length && onChange) {
+          onChange(validTokens.map(t => t.data))
+        }
+      } else {
+        const currentItem = controller.adapt(value);
+        controller.state.invalidItems.forEach((i) => {
+          if (i.id === currentItem.id) {
+            onChange && onChange(null);
+          }
+        });
+      }
+    }
+  }, [controller, multiple, onChange, value]);
 
   const onInputChange = (nextValue: string | null) => {
     showActiveRef.current = false;

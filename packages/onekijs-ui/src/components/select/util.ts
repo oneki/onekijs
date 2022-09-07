@@ -1,4 +1,4 @@
-import { Collection, Item } from 'onekijs-framework';
+import { Collection, isSameFilter, Item, Query, shallowEqual } from 'onekijs-framework';
 import { SelectItem } from './typings';
 
 export const findSelectItem = (
@@ -36,4 +36,11 @@ export const findSelectItemIndex = (controller: Collection<any, SelectItem<any>>
     }
     return i.id === item?.id;
   });
+};
+
+export const shouldCheckSelect = (currentQuery: Query, lastCheckQuery?: Query): boolean => {
+  if (lastCheckQuery === undefined) return true;
+  if (!isSameFilter(currentQuery.filter, lastCheckQuery.filter)) return true;
+  if (!shallowEqual(currentQuery.params || null, lastCheckQuery.params || null)) return true;
+  return false;
 };

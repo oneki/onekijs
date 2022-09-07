@@ -137,6 +137,8 @@ export { default as SelectOptionComponent } from './components/select/components
 export { default as SelectTokensComponent } from './components/select/components/SelectTokensComponent';
 export { default as FormSelect } from './components/select/FormSelect';
 export { default as useSelectController } from './components/select/hooks/useSelectController';
+export { default as SelectService } from './components/select/SelectService';
+export { findSelectItem, findSelectItemIndex, shouldCheckSelect } from './components/select/util';
 export {
   FormSelectProps,
   SelectIconProps,
