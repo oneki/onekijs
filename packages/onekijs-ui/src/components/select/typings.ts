@@ -47,7 +47,9 @@ export type SelectController<
   T,
   I extends SelectItem<T> = SelectItem<T>,
   S extends SelectState<T, I> = SelectState<T, I>,
-> = Collection<T, I, S>;
+> = Collection<T, I, S> & {
+  check: () => void;
+};
 
 export interface SelectIconProps {
   open: boolean;

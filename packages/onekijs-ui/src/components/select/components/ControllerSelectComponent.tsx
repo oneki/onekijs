@@ -168,6 +168,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
         service.setSelected('item', []);
       }
     }
+    service.check();
   }, [multiple, value, service]);
 
   // Manage the result of a check after a change of the value from the outside
@@ -184,7 +185,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
           }
         });
         if (validTokens.length !== tokens.length && onChange) {
-          onChange(validTokens.map(t => t.data))
+          onChange(validTokens.map((t) => t.data));
         }
       } else {
         const currentItem = controller.adapt(value);
@@ -195,7 +196,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
         });
       }
     }
-  }, [controller, multiple, onChange, value]);
+  }, [controller, multiple, onChange, value, tokens]);
 
   const onInputChange = (nextValue: string | null) => {
     showActiveRef.current = false;

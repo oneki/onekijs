@@ -940,10 +940,32 @@ export default class CollectionService<
   @saga(SagaEffect.Throttle, 'state.throttle', 1)
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   protected *_fetch(query: Query, resetData: boolean) {
-    let loadingTask: Task | null = null;
     const options = this.state.fetchOptions || {};
     const { onSuccess, onError } = options;
 
+    try {
+      const result: CollectionFetcherResult<T> = yield this._executeFetch(query, options, resetData);
+      yield this._fetchSuccess(result, resetData, query); // to update the store and trigger a re-render.
+      if (onSuccess) {
+        yield onSuccess(result);
+      }
+    } catch (e) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Fetch error', e);
+      }
+      yield this._fetchError(e, query);
+
+      if (onError) {
+        yield onError(DefaultBasicError.of(e));
+      } else {
+        throw e;
+      }
+    }
+  }
+
+  protected *_executeFetch(query: Query, options: S['fetchOptions'], resetData: boolean) {
+    options = options || {};
+    let loadingTask: Task | null = null;
     try {
       const oQuery = this.serializeQuery(query);
       const sQuery = Object.keys(oQuery)
@@ -974,24 +996,12 @@ export default class CollectionService<
           yield cancel(loadingTask);
         }
       }
-      yield this._fetchSuccess(result, resetData, query); // to update the store and trigger a re-render.
-      if (onSuccess) {
-        yield onSuccess(result);
-      }
+      return result;
     } catch (e) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Fetch error', e);
-      }
       if (loadingTask !== null) {
         yield cancel(loadingTask);
       }
-      yield this._fetchError(e, query);
-
-      if (onError) {
-        yield onError(DefaultBasicError.of(e));
-      } else {
-        throw e;
-      }
+      throw e;
     }
   }
 
