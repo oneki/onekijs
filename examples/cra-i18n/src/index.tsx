@@ -11,6 +11,7 @@ const IndexPage = () => {
   const lastname = 'Franki';
   const firstname = 'Bruno';
   const date = new Date();
+
   return (
     <div>
       <div
@@ -22,30 +23,32 @@ const IndexPage = () => {
       >
         <h1>I18n App</h1>
         <h4>
-          Change locale via buttons:{' '}
-          <button onClick={() => i18nService.changeLocale('en')}>en</button> |{' '}
+          Change locale via buttons: <button onClick={() => i18nService.changeLocale('en')}>en</button> |{' '}
           <button onClick={() => i18nService.changeLocale('fr')}>fr</button>
         </h4>
         <h4>
           Change locale via dropdown:
-          <select
-            value={locale}
-            onChange={e => i18nService.changeLocale(e.target.value)}
-          >
-            {locales && locales.map(l => (
-              <option key={l} value={l}>
-                {l}
-              </option>
-            ))}
+          <select value={locale} onChange={(e) => i18nService.changeLocale(e.target.value)}>
+            {locales &&
+              locales.map((l) => (
+                <option key={l} value={l}>
+                  {l}
+                </option>
+              ))}
           </select>
         </h4>
       </div>
       <div>
+        <T>hello <>{{lastname}}</> test</T>
         <div>
           <T alias="hello">
             Hello{' '}
             <b>
-              <i>mister</i> {{ firstname }} {{ lastname }} <i>male</i>
+              <i>mister</i>{' '}
+              <>
+                {{ firstname }} {{ lastname }}
+              </>{' '}
+              <i>male</i>
             </b>{' '}
             <u>address</u>
           </T>
@@ -54,17 +57,24 @@ const IndexPage = () => {
           <T count={2}>
             Hello{' '}
             <b>
-              <i>mister</i> {{ firstname }} {{ lastname }} <i>male</i>
+              <i>mister</i>{' '}
+              <>
+                {{ firstname }} {{ lastname }}
+              </>{' '}
+              <i>male</i>
             </b>{' '}
             <u>address</u>
           </T>
         </div>
         <div>
-          <T>Welcome {{ lastname }} on Flora</T>
+          <T>Welcome <>{{ lastname }}</> on Flora</T>
         </div>
         <div>
           <T>
-            Welcome {{ lastname }} on Flora. Current date = {{ date }}
+            Welcome{' '}
+            <>
+              {{ lastname }} on Flora. Current date = {{ date }}
+            </>
           </T>
         </div>
         <div title={t('Welcome')}>
@@ -75,7 +85,11 @@ const IndexPage = () => {
           <T>
             Hello{' '}
             <b>
-              <i>mister</i> {{ firstname }} {{ lastname }} <i>male</i>
+              <i>mister</i>{' '}
+              <>
+                {{ firstname }} {{ lastname }}
+              </>{' '}
+              <i>male</i>
             </b>{' '}
             <u>address</u> <span title={t('Welcome')}>Welcome</span>
           </T>
@@ -95,5 +109,5 @@ ReactDOM.render(
   <App settings={settings}>
     <IndexPage />
   </App>,
-  document.getElementById('root')
+  document.getElementById('root'),
 );

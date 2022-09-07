@@ -58,19 +58,28 @@ export const parseJsx = (
 };
 
 export const stringifyJsx = (reactElement: JSX.Element, ctx: AnonymousObject = {}, idx = 1): [string, number] => {
-  const children = [].concat(reactElement.props.children);
-  const str = children.reduce((accumulator, child) => {
-    if (typeof child === 'string') return `${accumulator}${child}`;
+  const children: any[] = [].concat(reactElement.props.children);
+  const stringifiedJsx = children.reduce((stringifiedJsx, child) => {
+    if (typeof child === 'string') return `${stringifiedJsx}${child}`;
     if (React.isValidElement(child)) {
-      const [childStr, nextIdx] = stringifyJsx(child, ctx, idx + 1);
-      const str = `${accumulator}<${idx}>${childStr}</${idx}>`;
+      let str = '';
+      let nextIdx = 0;
+      if (child.type === React.Fragment) {
+        const [childStr, _] = stringifyJsx(child, ctx, idx);
+        nextIdx = _;
+        str = `${stringifiedJsx}${childStr}`;
+      } else {
+        const [childStr, _] = stringifyJsx(child, ctx, idx + 1);
+        nextIdx = _;
+        str = `${stringifiedJsx}<${idx}>${childStr}</${idx}>`;
+      }
       ctx[`el-${idx}`] = child;
       idx = nextIdx;
       return str;
     } else {
       set(ctx, `vars.${Object.keys(child)[0]}`, Object.values(child)[0]);
-      return `${accumulator}{{${Object.keys(child)[0]}}}`;
+      return `${stringifiedJsx}{{${Object.keys(child)[0]}}}`;
     }
   }, '');
-  return [str, idx];
+  return [stringifiedJsx, idx];
 };

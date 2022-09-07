@@ -72,7 +72,6 @@ const useTranslation = (
       const ctx = {};
       let jsx = null;
       const candidateKeys: string[] = [];
-
       if (typeof content !== 'string') {
         jsx = content;
         const [jsxKey] = stringifyJsx(content, ctx);
@@ -84,7 +83,6 @@ const useTranslation = (
           key = content;
         }
       }
-
       if (count >= 1) {
         const prefix = count > 1 ? 'plural' : 'singular';
         // candidateKeys.push(`${prefix}::${key}`);
@@ -103,8 +101,10 @@ const useTranslation = (
       });
 
       for (const candidateKey of candidateKeys) {
-        if (translations[candidateKey] !== undefined)
-          return buildJsx(translations[candidateKey], ctx, jsx, i18nService, locale);
+        if (translations[candidateKey] !== undefined) {
+          const result = buildJsx(translations[candidateKey], ctx, jsx, i18nService, locale);
+          return result;
+        }
       }
       return null;
     },
