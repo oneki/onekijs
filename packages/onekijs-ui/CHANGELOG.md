@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.2](https://github.com/oneki/onekijs/compare/v0.14.7...v0.15.2) (2022-09-07)
+
+
+### Features
+
+* add onekijs-theme-clarity package ([ec1f556](https://github.com/oneki/onekijs/commit/ec1f556f3c06cd6068f47502f5c505a718050277))
+
+
+
+
+
 ## [0.15.1](https://github.com/oneki/onekijs/compare/v0.15.0...v0.15.1) (2022-09-05)
 
 **Note:** Version bump only for package onekijs-ui
