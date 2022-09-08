@@ -747,17 +747,17 @@ export default class CollectionService<
     right?: QueryFilterCriteriaValue | QueryFilterCriteriaValue[],
   ): boolean {
     switch (operator) {
-      case 'ends_with':
+      case 'ew':
         return String(left).endsWith(String(right));
-      case 'i_ends_with':
+      case 'i_ew':
         return String(left).toUpperCase().endsWith(String(right).toUpperCase());
       case 'like':
         return String(left).includes(String(right));
       case 'i_like':
         return String(left).toUpperCase().includes(String(right).toUpperCase());
-      case 'starts_with':
+      case 'sw':
         return String(left).startsWith(String(right));
-      case 'i_starts_with':
+      case 'i_sw':
         return String(left).toUpperCase().startsWith(String(right).toUpperCase());
       case 'eq':
         return String(left).startsWith(String(right));
@@ -963,8 +963,7 @@ export default class CollectionService<
     }
   }
 
-  protected *_executeFetch(query: Query, options: S['fetchOptions'], resetData: boolean) {
-    options = options || {};
+  protected *_executeFetch(query: Query, options: S['fetchOptions'] = {}, resetData: boolean) {
     let loadingTask: Task | null = null;
     try {
       const oQuery = this.serializeQuery(query);
