@@ -142,7 +142,7 @@ export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omi
 };
 
 export type SelectState<T = any, I extends SelectItem<T> = SelectItem<T>> = ListState<T, I> & {
-  invalidItems: I[];
+  invalidItems?: I[];
 };
 
 export interface SelectTokensProps<T = any, I extends SelectItem<T> = SelectItem<T>> {

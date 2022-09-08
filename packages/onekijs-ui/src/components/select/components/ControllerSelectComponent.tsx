@@ -175,11 +175,12 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   // if the selected item is invalid, do a onChange to remove the value
   useEffect(() => {
     const search = controller.getSearch();
-    if (!search && controller.state.invalidItems && controller.state.invalidItems.length > 0) {
+    const invalidItems = controller.state.invalidItems || [];
+    if (!search && invalidItems.length > 0) {
       if (multiple) {
         const validTokens: SelectItem[] = [];
         tokens.forEach((t) => {
-          const invalidToken = controller.state.invalidItems.find((i) => t.uid === i.uid);
+          const invalidToken = invalidItems.find((i) => t.uid === i.uid);
           if (!invalidToken) {
             validTokens.push(t);
           }
@@ -189,7 +190,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
         }
       } else {
         const currentItem = controller.adapt(value);
-        controller.state.invalidItems.forEach((i) => {
+        invalidItems.forEach((i) => {
           if (i.id === currentItem.id) {
             onChange && onChange(null);
           }

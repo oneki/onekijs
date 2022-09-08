@@ -22,7 +22,6 @@ class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends 
   @saga(SagaEffect.Latest)
   *check() {
     const invalidItems: I[] = [];
-    console.log(this.state.selected);
     if (this.state.selected !== undefined && this.state.selected.length > 0) {
       let query = clone(this.getQuery());
       this._clearSearch(query);
