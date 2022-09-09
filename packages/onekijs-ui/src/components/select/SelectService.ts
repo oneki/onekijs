@@ -9,7 +9,7 @@ import {
   SagaEffect,
   service,
 } from 'onekijs-framework';
-import { SelectController, SelectItem, SelectState } from './typings';
+import { SelectConfig, SelectController, SelectItem, SelectState } from './typings';
 import { shouldCheckSelect } from './util';
 
 @service
@@ -17,7 +17,12 @@ class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends 
   extends CollectionService<T, I, S>
   implements SelectController<T, I>
 {
+  public config: SelectConfig<T, I> = {};
   protected lastCheckQuery: Query | undefined;
+
+  get defaultValue() {
+    return this.config.defaultValue;
+  }
 
   @saga(SagaEffect.Latest)
   *check() {
@@ -81,6 +86,13 @@ class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends 
   setData(data: T[]): void {
     this.lastCheckQuery = undefined;
     super.setData(data);
+  }
+
+  setValue(value: null | T | T[]) {
+    const onChange = this.config.onChange
+    if (onChange) {
+      onChange(value);
+    }
   }
 
   @reducer

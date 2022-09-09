@@ -17,8 +17,8 @@ import useDropdown from '../../dropdown/hooks/useDropdown';
 import ListBodyComponent from '../../list/components/ListBodyComponent';
 import LoadingItem from '../../list/components/LoadingItem';
 import useListView from '../../list/hooks/useListView';
-import { SelectConfigContext } from '../hooks/useSelectConfig';
-import { ControllerSelectProps, SelectConfig, SelectItem, SelectOptionHandler } from '../typings';
+import { SelectServiceContext } from '../hooks/useSelectService';
+import { ControllerSelectProps, SelectItem, SelectOptionHandler } from '../typings';
 import { findSelectItem, findSelectItemIndex } from '../util';
 import SelectInputComponent from './SelectInputComponent';
 import SelectNotFoundComponent from './SelectNotFoundComponent';
@@ -54,11 +54,43 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   increment = 100,
   animationMs = 200,
   disabled,
+  defaultValue,
 }) => {
   const [open, setOpen] = useState(false);
   const [focus, setFocus] = useState(false);
   const stateRef = useRef<AnonymousObject>({});
   const service = controller.asService();
+  service.config = {
+    attachDropdownToBody,
+    className,
+    placeholder,
+    InputComponent,
+    IconComponent,
+    OptionContentComponent,
+    OptionComponent,
+    OptionLoadingComponent,
+    MultiOptionsComponent,
+    NotFoundComponent,
+    autoFocus,
+    value,
+    onChange,
+    onBlur: forwardBlur,
+    onFocus: forwardFocus,
+    height,
+    multiple,
+    status,
+    size,
+    nullable,
+    minChars,
+    openOnFocus,
+    clickable,
+    dropdownWidthModifier,
+    preload,
+    increment,
+    animationMs,
+    disabled,
+    defaultValue,
+  }
 
   const loading = isCollectionLoading(controller);
   const fetching = isCollectionFetching(controller);
@@ -66,13 +98,6 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
 
   const previousSearchRef = useRef<Primitive>();
-
-  const config: SelectConfig = useMemo(() => {
-    return {
-      OptionContentComponent,
-      OptionLoadingComponent,
-    };
-  }, [OptionContentComponent, OptionLoadingComponent]);
 
   const tokens = useMemo<SelectItem<any>[]>(() => {
     return (controller.state.selected || [])
@@ -186,15 +211,19 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
           }
         });
         if (validTokens.length !== tokens.length && onChange) {
-          onChange(validTokens.map((t) => t.data));
+          let validData = validTokens.map((t) => t.data);
+          if (validData.length === 0 && Array.isArray(controller.defaultValue)) {
+            validData = controller.defaultValue;
+          }
+          onChange(validData);
         }
       } else {
         const currentItem = controller.adapt(value);
-        invalidItems.forEach((i) => {
-          if (i.id === currentItem.id) {
-            onChange && onChange(null);
-          }
-        });
+        if (invalidItems.find((i) => i.id === currentItem.id)) {
+          // reset to default value or null if not defined
+          const value = controller.defaultValue || null;
+          onChange && onChange(value);
+        }
       }
     }
   }, [controller, multiple, onChange, value, tokens]);
@@ -385,7 +414,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   useEventListener('keydown', onKeyDown, false);
 
   return (
-    <SelectConfigContext.Provider value={config}>
+    <SelectServiceContext.Provider value={service}>
       <div
         className={classNames}
         ref={containerRef}
@@ -448,7 +477,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
           />
         </Dropdown>
       </div>
-    </SelectConfigContext.Provider>
+    </SelectServiceContext.Provider>
   );
 };
 

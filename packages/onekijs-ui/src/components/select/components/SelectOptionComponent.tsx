@@ -2,7 +2,7 @@ import { isItemLoading } from 'onekijs-framework';
 import React, { FC, useMemo } from 'react';
 import Checkbox from '../../checkbox';
 import LoadingItem from '../../list/components/LoadingItem';
-import { useSelectConfig } from '../hooks/useSelectConfig';
+import { useSelectService } from '../hooks/useSelectService';
 import { SelectOptionProps } from '../typings';
 
 export const MultiSelectOptionComponent: FC<SelectOptionProps> = React.memo((props) => {
@@ -17,7 +17,8 @@ export const SelectOptionContent: FC<SelectOptionProps> = ({ item }) => {
 
 const SelectOptionComponent: FC<SelectOptionProps> = React.memo((props) => {
   const { item, index, onClick, onMouseEnter, onMouseLeave, multiple = false } = props;
-  const { OptionContentComponent = SelectOptionContent, OptionLoadingComponent = LoadingItem } = useSelectConfig();
+  const service = useSelectService();
+  const { OptionContentComponent = SelectOptionContent, OptionLoadingComponent = LoadingItem } = service.config;
   let clickable = !!onClick && !item?.disabled;
   let hoverable = true;
   if (item?.data === undefined && isItemLoading(item)) {

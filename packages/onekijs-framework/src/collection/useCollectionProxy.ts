@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { Class } from '../types/object';
+import { get } from '../utils/object';
 import CollectionService from './CollectionService';
 import { Collection, CollectionProxy, CollectionState, Item, LoadingStatus } from './typings';
 import useCollectionService from './useCollectionService';

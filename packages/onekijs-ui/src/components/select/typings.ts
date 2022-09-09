@@ -48,7 +48,9 @@ export type SelectController<
   I extends SelectItem<T> = SelectItem<T>,
   S extends SelectState<T, I> = SelectState<T, I>,
 > = Collection<T, I, S> & {
+  config: SelectConfig<T, I>
   check: () => void;
+  defaultValue: T | T[] | null | undefined;
 };
 
 export interface SelectIconProps {
@@ -119,7 +121,7 @@ export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omi
   NotFoundComponent?: FC<SelectNotFoundProps>;
   placeholder?: string;
   value?: T | T[] | null;
-  onChange?: ChangeHandler<T>;
+  onChange?: ChangeHandler<T | T[] | null>;
   onFocus?: () => void;
   onBlur?: () => void;
   autoFocus?: boolean;
@@ -139,6 +141,7 @@ export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omi
   MultiOptionsComponent?: FC<SelectOptionProps>;
   animationMs?: number;
   disabled?: boolean;
+  defaultValue?: T | T[] | null;
 };
 
 export type SelectState<T = any, I extends SelectItem<T> = SelectItem<T>> = ListState<T, I> & {
