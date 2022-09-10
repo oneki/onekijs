@@ -414,7 +414,9 @@ export const parseSortBy = (sortBy: string): QuerySortBy[] => {
 };
 
 export const serializeCriteria = (criteria: QueryFilterCriteria): string => {
-  return `${criteria.field} ${criteria.not ? 'not ': ''}${criteria.operator || 'eq'} ${serializeValue(criteria.value)}`;
+  return `${criteria.field} ${criteria.not ? 'not ' : ''}${criteria.operator || 'eq'} ${serializeValue(
+    criteria.value,
+  )}`;
 };
 
 export const serializeFields = (fields: string[] | undefined): string | void => {

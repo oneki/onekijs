@@ -98,6 +98,7 @@ export {
   ensureType,
   ErrorBoundaryComponentProps,
   ErrorCallback,
+  eventLocks,
   every,
   external,
   extractState,

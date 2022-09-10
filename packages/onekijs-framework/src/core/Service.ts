@@ -189,7 +189,7 @@ export default class DefaultService<S extends State = AnyState> implements Servi
       }
     };
 
-    if (effect) {
+    if (effect && effect !== take) {
       if (delay) {
         this[sagas][actionType] = function* () {
           yield effect(delay, actionType, wrapper);

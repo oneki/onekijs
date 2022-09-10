@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { AnonymousObject } from '../types/object';
 
 const useEventListener = <K extends keyof DocumentEventMap>(
   eventName: K,
@@ -22,5 +23,7 @@ const useEventListener = <K extends keyof DocumentEventMap>(
     [handler, eventName, capture], // Re-run if eventName or element changes
   );
 };
+
+export const eventLocks: AnonymousObject<string[]> = {};
 
 export default useEventListener;

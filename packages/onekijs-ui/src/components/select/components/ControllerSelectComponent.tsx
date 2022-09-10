@@ -10,7 +10,7 @@ import {
   useEventListener,
   ValidationStatus,
 } from 'onekijs-framework';
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useClickOutside, useFocusOutside } from '../../../utils/event';
 import { addClassname } from '../../../utils/style';
 import useDropdown from '../../dropdown/hooks/useDropdown';
@@ -90,7 +90,9 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
     animationMs,
     disabled,
     defaultValue,
-  }
+  };
+
+  const id = useId();
 
   const loading = isCollectionLoading(controller);
   const fetching = isCollectionFetching(controller);
@@ -174,7 +176,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
         }
       }
     }
-  }, [controller, focus, open]);
+  }, [controller, focus, open, id]);
 
   useEffect(() => {
     if (!multiple) {
@@ -199,8 +201,8 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   // Manage the result of a check after a change of the value from the outside
   // if the selected item is invalid, do a onChange to remove the value
   useEffect(() => {
-    const search = controller.getSearch();
-    const invalidItems = controller.state.invalidItems || [];
+    const search = service.getSearch();
+    const invalidItems = service.state.invalidItems || [];
     if (!search && invalidItems.length > 0) {
       if (multiple) {
         const validTokens: SelectItem[] = [];
@@ -212,21 +214,20 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
         });
         if (validTokens.length !== tokens.length && onChange) {
           let validData = validTokens.map((t) => t.data);
-          if (validData.length === 0 && Array.isArray(controller.defaultValue)) {
-            validData = controller.defaultValue;
+          if (validData.length === 0 && Array.isArray(service.state.validDefaultValue)) {
+            validData = service.state.validDefaultValue;
           }
           onChange(validData);
         }
       } else {
-        const currentItem = controller.adapt(value);
+        const currentItem = service.adapt(value);
         if (invalidItems.find((i) => i.id === currentItem.id)) {
-          // reset to default value or null if not defined
-          const value = controller.defaultValue || null;
-          onChange && onChange(value);
+          // set the defaultValue if it's a valid value otherwise set null
+          onChange && onChange(service.state.validDefaultValue || null);
         }
       }
     }
-  }, [controller, multiple, onChange, value, tokens]);
+  }, [service, multiple, onChange, value, tokens, service.state.invalidItems, service.state.validDefaultValue]);
 
   const onInputChange = (nextValue: string | null) => {
     showActiveRef.current = false;
@@ -302,6 +303,9 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
     if (['ArrowDown', 'ArrowUp', 'Enter', 'Escape'].includes(e.key)) {
       stateRef.current.keepFocus = true;
     }
+
+    if (e.key === 'Escape') {
+    }
   }, []);
 
   const onKeyDown = useCallback(
@@ -359,10 +363,11 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
             }
           }
           stateRef.current.keepFocus = false;
+
           break;
       }
     },
-    [service, open, setOpen, focus, multiple, clearSearch],
+    [service, open, setOpen, focus, multiple, clearSearch, id],
   );
 
   const style: React.CSSProperties = {};

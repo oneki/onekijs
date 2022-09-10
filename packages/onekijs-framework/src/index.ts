@@ -209,7 +209,7 @@ export { DefaultAppContext } from './core/context';
 export { default as FetchService } from './core/FetchService';
 export { default as HTTPError } from './core/HTTPError';
 export { default as DefaultService, handler } from './core/Service';
-export { default as useEventListener } from './core/useEventListener';
+export { default as useEventListener, eventLocks } from './core/useEventListener';
 export { useIsomorphicLayoutEffect } from './core/useIsomorphicLayoutEffect';
 export { default as useLazyRef } from './core/useLazyRef';
 export { default as useLocalReducer } from './core/useLocalReducer';
