@@ -48,7 +48,7 @@ export type SelectController<
   I extends SelectItem<T> = SelectItem<T>,
   S extends SelectState<T, I> = SelectState<T, I>,
 > = Collection<T, I, S> & {
-  config: SelectConfig<T, I>
+  config: SelectConfig<T, I>;
   check: () => void;
   defaultValue: T | T[] | null | undefined;
 };
@@ -146,6 +146,8 @@ export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omi
 
 export type SelectState<T = any, I extends SelectItem<T> = SelectItem<T>> = ListState<T, I> & {
   invalidItems?: I[];
+  validDefaultValue?: T | T[] | null;
+  defaultValue?: T | T[] | null;
 };
 
 export interface SelectTokensProps<T = any, I extends SelectItem<T> = SelectItem<T>> {

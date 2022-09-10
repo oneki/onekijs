@@ -8,7 +8,9 @@ import {
   saga,
   SagaEffect,
   service,
+  toArray,
 } from 'onekijs-framework';
+import { all, call } from 'redux-saga/effects';
 import { SelectConfig, SelectController, SelectItem, SelectState } from './typings';
 import { shouldCheckSelect } from './util';
 
@@ -21,63 +23,41 @@ class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends 
   protected lastCheckQuery: Query | undefined;
 
   get defaultValue() {
-    return this.config.defaultValue;
+    return this.state.defaultValue ?? this.config.defaultValue;
   }
 
-  @saga(SagaEffect.Latest)
+  @saga(SagaEffect.Serial)
   *check() {
-    const invalidItems: I[] = [];
-    if (this.state.selected !== undefined && this.state.selected.length > 0) {
-      let query = clone(this.getQuery());
-      this._clearSearch(query);
-      this._clearLimit(query);
-      this._clearOffset(query);
-      this.lastCheckQuery = query;
+    let invalidItems: I[] = [];
+    const defaultItems: I[] = this.state.defaultValue
+      ? toArray(this.state.defaultValue).map((v) => this._adapt(v))
+      : [];
 
-      for (const uid of this.state.selected) {
-        if (!this.state.items || !this.state.items.find((i) => i?.uid === uid)) {
-          const item = this.getItem(uid);
-          if (item && item.text) {
-            query = Object.assign({}, query, { search: item.text });
-            if (this.state.local) {
-              const queryEngine = this.state.queryEngine || this._execute.bind(this);
-              const result = queryEngine(
-                this.db || [],
-                query,
-                this.state.comparator || defaultComparator,
-                this.state.comparators || {},
-              );
-              if (!result.find((i) => i.id === item.id)) {
-                invalidItems.push(item);
-              }
-            } else {
-              const oQuery = this.serializeQuery(query);
-              const sQuery = Object.keys(oQuery)
-                .map((k) => `${k}=${oQuery[k]}`)
-                .join('&');
-              let result: CollectionFetcherResult<T>;
-              if (this.cache[sQuery]) {
-                result = this.cache[sQuery];
-              } else {
-                const options = Object.assign({}, this.state.fetchOptions, { delayLoading: 0 });
-                result = yield super._executeFetch(query, options, false);
-              }
-              const data: T[] = Array.isArray(result) ? result : result[this.state.dataKey];
-              let invalid = true;
-              for (const itemData of data) {
-                const adaptee = this.adapt(itemData);
-                if (adaptee.id === item.id) {
-                  invalid = false;
-                  break;
-                }
-              }
-              if (invalid) {
-                invalidItems.push(item);
-              }
-            }
-          }
-        }
-      }
+    const query = clone(this.getQuery());
+    this._clearSearch(query);
+    this._clearLimit(query);
+    this._clearOffset(query);
+    this.lastCheckQuery = query;
+
+    const filterDefaultItems: (I | undefined)[] = yield all(
+      defaultItems.map((i) => call([this, this._filterItem], i, query, true)),
+    );
+    const validDefaultValue = (filterDefaultItems.filter((i) => i !== undefined && i.data) as I[]).map(
+      (i) => i.data,
+    ) as T[];
+
+    if (Array.isArray(this.defaultValue)) {
+      this._setValidDefaultValue(validDefaultValue);
+    } else if (validDefaultValue.length > 0) {
+      this._setValidDefaultValue(validDefaultValue[0]);
+    } else {
+      this._setValidDefaultValue(null);
+    }
+
+    if (this.state.selected !== undefined) {
+      const item = this.getItem(this.state.selected[0]);
+      const filterItems: (I | undefined)[] = yield all([this._filterItem(item, query, false)]);
+      invalidItems = filterItems.filter((i) => i !== undefined) as I[];
     }
     yield this._setInvalidItems(invalidItems);
   }
@@ -88,8 +68,23 @@ class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends 
     super.setData(data);
   }
 
+  @saga(SagaEffect.Latest)
+  *setDefaultValue(value: T | T[] | null | undefined) {
+    yield this._setDefaultValue(value);
+    yield this.check(); // validate the default value
+    if (
+      value !== undefined &&
+      this.state.validDefaultValue &&
+      (this.config.value === undefined ||
+        this.config.value === null ||
+        (Array.isArray(this.config.value) && this.config.value.length === 0))
+    ) {
+      yield this.setValue(value);
+    }
+  }
+
   setValue(value: null | T | T[]) {
-    const onChange = this.config.onChange
+    const onChange = this.config.onChange;
     if (onChange) {
       onChange(value);
     }
@@ -102,6 +97,16 @@ class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends 
   }
 
   @reducer
+  _setDefaultValue(value: T | T[] | null | undefined) {
+    this.state.defaultValue = value;
+  }
+
+  @reducer
+  _setValidDefaultValue(value: T | T[] | null) {
+    this.state.validDefaultValue = value;
+  }
+
+  @reducer
   _setInvalidItems(invalidItems: I[]) {
     this.state.invalidItems = invalidItems;
   }
@@ -111,6 +116,47 @@ class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends 
     if (shouldCheckSelect(this.getQuery(), this.lastCheckQuery)) {
       this.callSaga('check');
     }
+  }
+
+  *_filterItem(item: I | undefined, query: Query, valid: boolean) {
+    if (item === undefined) return item;
+    let isValid = false;
+    if (!this.state.items || !this.state.items.find((i) => i?.uid === item.uid)) {
+      query = Object.assign({}, query, { search: item.text });
+      if (this.state.local) {
+        const queryEngine = this.state.queryEngine || this._execute.bind(this);
+        const result = queryEngine(
+          this.db || [],
+          query,
+          this.state.comparator || defaultComparator,
+          this.state.comparators || {},
+        );
+        isValid = !!result.find((i) => i.id === item.id);
+      } else {
+        const oQuery = this.serializeQuery(query);
+        const sQuery = Object.keys(oQuery)
+          .map((k) => `${k}=${oQuery[k]}`)
+          .join('&');
+        let result: CollectionFetcherResult<T>;
+        if (this.cache[sQuery]) {
+          result = this.cache[sQuery];
+        } else {
+          const options = Object.assign({}, this.state.fetchOptions, { delayLoading: 0 });
+          result = yield super._executeFetch(query, options, false);
+        }
+        const data: T[] = Array.isArray(result) ? result : result[this.state.dataKey];
+        for (const itemData of data) {
+          const adaptee = this.adapt(itemData);
+          if (adaptee.id === item.id) {
+            isValid = true;
+            break;
+          }
+        }
+      }
+    } else {
+      isValid = true;
+    }
+    return valid === isValid ? item : undefined;
   }
 }
 

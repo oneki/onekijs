@@ -1,11 +1,11 @@
 import { FCC, useEventListener } from 'onekijs-framework';
 import React, { useContext, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import { CSSTransition } from 'react-transition-group';
 import { ThemeContext } from 'styled-components';
 import { useClickOutside } from '../../../utils/event';
 import { addClassname } from '../../../utils/style';
 import { ModalProps } from '../typings';
-import ReactDOM from 'react-dom';
 
 const ModalComponent: FCC<ModalProps> = ({
   attachToBody = false,
