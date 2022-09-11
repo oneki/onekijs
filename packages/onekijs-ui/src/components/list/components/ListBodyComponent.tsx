@@ -1,8 +1,9 @@
-import { get, Item, last, useEventListener } from 'onekijs-framework';
+import { get, isCollectionInitializing, Item, last, LoadingStatus, useEventListener } from 'onekijs-framework';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { addStyle } from '../../../utils/style';
 import { ListBodyProps } from '../typings';
 import ListItemComponent, { ListItemContent } from './ListItemComponent';
+import ListLoadingComponent from './ListLoadingComponent';
 import LoadingItem from './LoadingItem';
 import StandardListComponent from './StandardListComponent';
 import DefaultVirtualListComponent from './VirtualListComponent';
@@ -48,6 +49,7 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
   totalSize,
   virtualItems,
   VirtualListComponent = DefaultVirtualListComponent,
+  LoadingComponent = ListLoadingComponent,
 }) => {
   const scrollAlignRef = useRef<'center' | 'auto'>('center');
   const lastActiveItemUid = useRef<string>();
@@ -173,12 +175,23 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
 
   const overflow = parentRef && parentRef !== bodyRef ? 'visible' : 'auto';
   if (virtualItems !== undefined) {
-    if (virtualItems.length === 0 && NotFoundComponent) {
-      return (
-        <div className={className}>
-          <NotFoundComponent />
-        </div>
-      );
+    if (virtualItems.length === 0) {
+      if (isCollectionInitializing(service) || service.status === LoadingStatus.Fetching) {
+        return null;
+      }
+      if (service.status === LoadingStatus.Loading) {
+        return (
+          <div className={className}>
+            <LoadingComponent />
+          </div>
+        );
+      } else if (NotFoundComponent) {
+        return (
+          <div className={className}>
+            <NotFoundComponent />
+          </div>
+        );
+      }
     }
     return (
       <div
@@ -215,12 +228,23 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
       </div>
     );
   } else {
-    if (items.length === 0 && NotFoundComponent) {
-      return (
-        <div className={className}>
-          <NotFoundComponent />
-        </div>
-      );
+    if (items.length === 0) {
+      if (isCollectionInitializing(service) || service.status === LoadingStatus.Fetching) {
+        return null;
+      }
+      if (service.status === LoadingStatus.Loading) {
+        return (
+          <div className={className}>
+            <LoadingComponent />
+          </div>
+        );
+      } else if (NotFoundComponent) {
+        return (
+          <div className={className}>
+            <NotFoundComponent />
+          </div>
+        );
+      }
     }
     if (height !== undefined) {
       style = addStyle(

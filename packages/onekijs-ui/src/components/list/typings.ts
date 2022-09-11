@@ -8,6 +8,7 @@ import {
   UseCollectionOptions,
 } from 'onekijs-framework';
 import React, { FC } from 'react';
+import { StylableProps } from '../../styles/typings';
 
 export type ArrayListProps<T = any, I extends ListItem<T> = ListItem<T>> = ListConfig<T, I> & {
   adapter?: ListItemAdapter<T>;
@@ -31,6 +32,7 @@ export type ListBodyProps<
   | 'multiSelect'
   | 'ItemComponent'
   | 'NotFoundComponent'
+  | 'LoadingComponent'
   | 'height'
   | 'keyboardNavigable'
 > & {
@@ -104,6 +106,7 @@ export type ListConfig<T = any, I extends ListItem<T> = ListItem<T>> = {
   ItemComponent?: FC<ListItemProps<T, I>>;
   ItemContentComponent?: FC<ListItemProps<T, I>>;
   NotFoundComponent?: FC<ListNotFoundProps>;
+  LoadingComponent?: FC<StylableProps>;
   itemHeight?: number | ((index: number) => number);
   keyboardNavigable?: boolean;
   multiSelect?: boolean;
@@ -149,7 +152,7 @@ export enum ListStatus {
 
 export type StandardListProps<T = any, I extends ListItem<T> = ListItem<T>> = Pick<
   ListBodyProps<T, I>,
-  'items' | 'ItemComponent' | 'ItemLoadingComponent' | 'ItemContentComponent'
+  'items' | 'ItemComponent' | 'ItemLoadingComponent' | 'ItemContentComponent' | 'LoadingComponent'
 > & {
   onItemClick?: ListItemHandler<T, I>;
   onItemMouseEnter?: ListItemHandler<T, I>;

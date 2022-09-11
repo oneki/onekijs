@@ -1,5 +1,5 @@
-import { FCC, useEventListener } from 'onekijs-framework';
-import React, { useContext, useRef } from 'react';
+import { eventLocks, FCC, useEventListener } from 'onekijs-framework';
+import React, { useContext, useId, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { CSSTransition } from 'react-transition-group';
 import { ThemeContext } from 'styled-components';
@@ -21,11 +21,13 @@ const ModalComponent: FCC<ModalProps> = ({
   closeOnClickOutside,
   closeOnEscape = true,
 }) => {
+  const id = useId();
   const theme = useContext(ThemeContext);
   const maskOpacity = theme.modal.maskOpacity;
   const ref = useRef<HTMLDivElement | null>(null);
 
   const onEntering = (node: HTMLElement): void => {
+    eventLocks.lock('escape', id);
     node.style.opacity = '0';
     node.style.transition = `opacity ${animationDuration}ms ease-out`;
     if (ref.current) {
@@ -65,6 +67,7 @@ const ModalComponent: FCC<ModalProps> = ({
   };
 
   const onExited = (node: HTMLElement): void => {
+    eventLocks.unlock('escape', id);
     node.style.opacity = '';
     node.style.transition = '';
     if (ref.current) {
@@ -82,8 +85,8 @@ const ModalComponent: FCC<ModalProps> = ({
     }
   });
 
-  useEventListener('keyup', (e) => {
-    if (closeOnEscape && e.key === 'Escape') {
+  useEventListener('keydown', (e) => {
+    if (closeOnEscape && e.key === 'Escape' && eventLocks.isLockedBy('escape', id)) {
       onClose();
     }
   });

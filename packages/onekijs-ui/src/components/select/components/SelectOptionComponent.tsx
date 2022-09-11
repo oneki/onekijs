@@ -18,7 +18,7 @@ export const SelectOptionContent: FC<SelectOptionProps> = ({ item }) => {
 const SelectOptionComponent: FC<SelectOptionProps> = React.memo((props) => {
   const { item, index, onClick, onMouseEnter, onMouseLeave, multiple = false } = props;
   const service = useSelectService();
-  const { OptionContentComponent = SelectOptionContent, OptionLoadingComponent = LoadingItem } = service.config;
+  const { OptionContentComponent = SelectOptionContent, OptionLoadingComponent = LoadingItem } = service.config || {};
   let clickable = !!onClick && !item?.disabled;
   let hoverable = true;
   if (item?.data === undefined && isItemLoading(item)) {

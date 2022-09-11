@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { height, minHeight, width } from '../../../styles/size';
+import { marginY } from '../../../styles/spacing';
 import { addClassname } from '../../../utils/style';
 
 const LoadingItem: React.FC<{ className?: string }> = ({ className }) => {
@@ -10,7 +11,8 @@ const LoadingItem: React.FC<{ className?: string }> = ({ className }) => {
 export default styled(LoadingItem)`
   ${height('full')}
   ${width('full')}
-  ${minHeight('20px')}
+  ${minHeight('30px')}
+  ${marginY('1px')}
   animation: skeleton-loading 1s linear infinite alternate;
 
   @keyframes skeleton-loading {

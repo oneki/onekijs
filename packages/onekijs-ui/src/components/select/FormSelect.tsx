@@ -17,7 +17,7 @@ const FormSelect: FC<FormSelectProps> = React.memo((props) => {
 
   return (
     <FieldLayout {...fieldLayoutProps} required={props.required}>
-      <Component {...fieldComponentProps} />
+      <Component {...fieldComponentProps} required={props.required} defaultValue={props.defaultValue} />
     </FieldLayout>
   );
 });

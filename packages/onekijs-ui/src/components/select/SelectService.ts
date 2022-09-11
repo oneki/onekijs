@@ -19,19 +19,17 @@ class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends 
   extends CollectionService<T, I, S>
   implements SelectController<T, I>
 {
-  public config: SelectConfig<T, I> = {};
+  public config: SelectConfig<T, I> | undefined;
   protected lastCheckQuery: Query | undefined;
 
   get defaultValue() {
-    return this.state.defaultValue ?? this.config.defaultValue;
+    return this.state.defaultValue ?? this.config?.defaultValue;
   }
 
   @saga(SagaEffect.Serial)
   *check() {
     let invalidItems: I[] = [];
-    const defaultItems: I[] = this.state.defaultValue
-      ? toArray(this.state.defaultValue).map((v) => this._adapt(v))
-      : [];
+    const defaultItems: I[] = this.defaultValue ? toArray(this.defaultValue).map((v) => this._adapt(v)) : [];
 
     const query = clone(this.getQuery());
     this._clearSearch(query);
@@ -42,6 +40,7 @@ class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends 
     const filterDefaultItems: (I | undefined)[] = yield all(
       defaultItems.map((i) => call([this, this._filterItem], i, query, true)),
     );
+
     const validDefaultValue = (filterDefaultItems.filter((i) => i !== undefined && i.data) as I[]).map(
       (i) => i.data,
     ) as T[];
@@ -51,7 +50,13 @@ class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends 
     } else if (validDefaultValue.length > 0) {
       this._setValidDefaultValue(validDefaultValue[0]);
     } else {
-      this._setValidDefaultValue(null);
+      this._setValidDefaultValue(
+        this.config === undefined || this.config.nullable || !this.state.items
+          ? null
+          : this.config.defaultValue === undefined || this.state.defaultValue === null
+          ? this.state.items[0]?.data || null
+          : null,
+      );
     }
 
     if (this.state.selected !== undefined) {
@@ -75,8 +80,8 @@ class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends 
     if (
       value !== undefined &&
       this.state.validDefaultValue &&
-      (this.config.value === undefined ||
-        this.config.value === null ||
+      (this.config?.value === undefined ||
+        this.config?.value === null ||
         (Array.isArray(this.config.value) && this.config.value.length === 0))
     ) {
       yield this.setValue(value);
@@ -84,7 +89,7 @@ class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends 
   }
 
   setValue(value: null | T | T[]) {
-    const onChange = this.config.onChange;
+    const onChange = this.config?.onChange;
     if (onChange) {
       onChange(value);
     }

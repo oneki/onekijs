@@ -304,9 +304,6 @@ export default class CollectionService<
   }
 
   get url(): string {
-    if (!this.state.local && !this.state.url) {
-      throw new DefaultBasicError('URL is required for a remote collection');
-    }
     return this.state.url || '';
   }
 
@@ -623,14 +620,19 @@ export default class CollectionService<
   @reducer
   setUrl(url: string) {
     this.cache = {};
+    this.state.dataSource = url;
     this.state.url = url;
     this.state.items = undefined;
     const nextQuery = clone(this.getQuery());
     this._clearOffset(nextQuery);
-    this[dispatch]({
-      type: this[types]._fetch.actionType,
-      payload: toPayload([nextQuery, true]),
-    });
+    if (this.state.fetchOnce) {
+      this.callSaga('_fetchOnce');
+    } else {
+      this[dispatch]({
+        type: this[types]._fetch.actionType,
+        payload: toPayload([nextQuery, true]),
+      });
+    }
   }
 
   @reducer
@@ -937,6 +939,25 @@ export default class CollectionService<
     return result;
   }
 
+  @saga(SagaEffect.Latest)
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  *_fetchOnce() {
+    if (typeof this.state.dataSource === 'string' && this.state.fetchOnce) {
+      yield this.setStatus(LoadingStatus.Loading);
+      const result: CollectionFetcherResult<T> = yield this._executeFetch(
+        this.getQuery(),
+        this.state.fetchOptions,
+        false,
+      );
+      yield this.setStatus(LoadingStatus.Loaded);
+      if (Array.isArray(result)) {
+        yield this.setData(result);
+      } else {
+        yield this.setData(result[this.state.dataKey]);
+      }
+    }
+  }
+
   @saga(SagaEffect.Throttle, 'state.throttle', 1)
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   protected *_fetch(query: Query, resetData: boolean) {
@@ -964,6 +985,9 @@ export default class CollectionService<
   }
 
   protected *_executeFetch(query: Query, options: S['fetchOptions'] = {}, resetData: boolean) {
+    if (!this.url) {
+      return [];
+    }
     let loadingTask: Task | null = null;
     try {
       const oQuery = this.serializeQuery(query);

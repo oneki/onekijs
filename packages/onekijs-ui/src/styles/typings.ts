@@ -640,3 +640,7 @@ export type ShadowPropertyTheme = keyof typeof ShadowKeys;
 export type ComponentStyle<P, T extends Theme = Theme> = (
   propsWithTheme: ThemedStyledProps<P, T>,
 ) => FlattenInterpolation<SytledThemeProps<T>>;
+
+export type StylableProps = {
+  className?: string;
+};

@@ -1,5 +1,6 @@
 import {
   AnonymousObject,
+  eventLocks,
   first,
   get,
   isCollectionFetching,
@@ -45,7 +46,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   multiple = false,
   status = ValidationStatus.None,
   size = 'medium',
-  nullable = true,
+  nullable,
   minChars = 0,
   openOnFocus = false,
   clickable = true,
@@ -55,7 +56,11 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   animationMs = 200,
   disabled,
   defaultValue,
+  required = false,
 }) => {
+  if (nullable === undefined) {
+    nullable = !required;
+  }
   const [open, setOpen] = useState(false);
   const [focus, setFocus] = useState(false);
   const stateRef = useRef<AnonymousObject>({});
@@ -226,8 +231,19 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
           onChange && onChange(service.state.validDefaultValue || null);
         }
       }
+    } else if (!nullable && value === null && service.state.validDefaultValue) {
+      onChange && onChange(service.state.validDefaultValue);
     }
-  }, [service, multiple, onChange, value, tokens, service.state.invalidItems, service.state.validDefaultValue]);
+  }, [
+    service,
+    multiple,
+    onChange,
+    value,
+    tokens,
+    service.state.invalidItems,
+    service.state.validDefaultValue,
+    nullable,
+  ]);
 
   const onInputChange = (nextValue: string | null) => {
     showActiveRef.current = false;
@@ -303,9 +319,6 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
     if (['ArrowDown', 'ArrowUp', 'Enter', 'Escape'].includes(e.key)) {
       stateRef.current.keepFocus = true;
     }
-
-    if (e.key === 'Escape') {
-    }
   }, []);
 
   const onKeyDown = useCallback(
@@ -355,7 +368,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
 
         case 'Escape':
           if (focus) {
-            if (open) {
+            if (open && eventLocks.isLockedBy('escape', id)) {
               setOpen(false);
             }
             if (service.getSearch()) {
@@ -395,23 +408,25 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   });
 
   const onOpen = useCallback(() => {
+    eventLocks.lock('escape', id);
     const scrollTo: { index: number; align: 'start' | 'center' | 'end' | 'auto' } = { index: 0, align: 'start' };
     const selectedUid = first(service.state.selected);
     if (selectedUid !== undefined) {
       const selectedItem = service.getItem(selectedUid);
       const selectedIndex = findSelectItemIndex(service, selectedItem);
-      if (selectedItem !== undefined && selectedIndex > 0) {
+      if (selectedItem !== undefined && selectedIndex >= 0) {
         scrollTo.index = selectedIndex;
         scrollTo.align = 'center';
         service.setActive('item', selectedItem);
       }
     }
     scrollToIndex(scrollTo.index, { align: scrollTo.align });
-  }, [service, scrollToIndex]);
-
+  }, [service, scrollToIndex, id]);
   const onClosed = useCallback(() => {
+    eventLocks.unlock('escape', id);
     service.setActive('item', []);
-  }, [service]);
+    service.setHighlighted('item', []);
+  }, [service, id]);
 
   const [Dropdown, triggerRef] = useDropdown();
 

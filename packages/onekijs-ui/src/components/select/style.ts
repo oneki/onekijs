@@ -345,8 +345,9 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
           ${color('inherit')}
         }
         &.o-select-option-active {
-          ${backgroundColor('primary')}
-          ${color('white')}
+          ${backgroundColor(lighten(theme.colors.primary, 600))}
+          ${color('primary')}
+          ${fontWeight('bold')}
         }
 
         .o-select-option-icon {

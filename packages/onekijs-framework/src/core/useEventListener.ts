@@ -24,6 +24,32 @@ const useEventListener = <K extends keyof DocumentEventMap>(
   );
 };
 
-export const eventLocks: AnonymousObject<string[]> = {};
+class EventLock {
+  protected locks: AnonymousObject<(string | number)[]> = {};
+
+  lock(type: string, id: string | number): void {
+    const locks = this.locks[type] || [];
+    if (!locks.find((l) => l === id)) {
+      locks.unshift(id);
+    }
+    this.locks[type] = locks;
+  }
+
+  unlock(type: string, id: string | number): void {
+    const locks = this.locks[type] || [];
+    const index = locks.findIndex((l) => l === id);
+    if (index >= 0) {
+      locks.splice(index, 1);
+    }
+    this.locks[type] = locks;
+  }
+
+  isLockedBy(type: string, id: string | number): boolean {
+    if (this.locks[type] === undefined) return true; // the lock if free for everybody
+    return this.locks[type][0] === id;
+  }
+}
+
+export const eventLocks = new EventLock();
 
 export default useEventListener;

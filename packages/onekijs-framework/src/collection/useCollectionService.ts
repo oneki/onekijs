@@ -1,10 +1,8 @@
 import { useEffect } from 'react';
 import useService from '../core/useService';
-import { asyncHttp } from '../core/xhr';
-import { Fetcher, HttpMethod } from '../types/fetch';
 import { Class } from '../types/object';
 import CollectionService from './CollectionService';
-import { CollectionFetcherResult, CollectionState, Item, LoadingStatus, Query } from './typings';
+import { CollectionState, Item } from './typings';
 import { isCollection } from './utils';
 
 const useCollectionService = <
@@ -19,20 +17,8 @@ const useCollectionService = <
   const [state, service] = useService<S, C>(ctor, initialState);
 
   useEffect(() => {
-    if (typeof initialState.dataSource === 'string' && initialState.fetchOnce) {
-      const fetcher: Fetcher<CollectionFetcherResult<T>, Query | undefined> = initialState.fetchOptions?.fetcher ||
-      asyncHttp;
-      service.setStatus(LoadingStatus.Loading);
-      fetcher(initialState.dataSource, initialState.method || HttpMethod.Get, undefined, state.fetchOptions).then(
-        (result) => {
-          service.setStatus(LoadingStatus.Loaded);
-          if (Array.isArray(result)) {
-            service.setData(result);
-          } else {
-            service.setData(result.result);
-          }
-        },
-      );
+    if (initialState.fetchOnce) {
+      service._fetchOnce();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
