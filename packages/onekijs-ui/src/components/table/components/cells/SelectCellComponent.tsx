@@ -1,4 +1,4 @@
-import { CollectionBroker } from 'onekijs-framework';
+import { clone, CollectionBroker } from 'onekijs-framework';
 import React, { useEffect } from 'react';
 import { addClassname } from '../../../../utils/style';
 import FormSelect from '../../../select/FormSelect';
@@ -13,16 +13,17 @@ const SelectCellComponent = (
 ): React.FC<TableBodyCellProps> => {
   const SelectCellComponent: React.FC<TableBodyCellProps> = ({ item, column, rowIndex }) => {
     const { tableName } = useFormTableContext();
-    const controller = useSelectController(options.dataSource, Object.assign({}, options, broker.getInitialQuery()));
+    const controller = useSelectController(broker.getInitialDataSource() || [], Object.assign({}, options, broker.getInitialQuery()));
+    const service = controller.asService();
     const className =
       typeof options.className === 'function' ? options.className(item, column, rowIndex) : options.className;
 
     useEffect(() => {
-      broker.addSubscriber(controller);
+      broker.addSubscriber(service);
       return () => {
-        broker.removeSubscriber(controller);
+        broker.removeSubscriber(service);
       };
-    }, [controller]);
+    }, [service]);
 
     return (
       <FormSelect
@@ -31,6 +32,7 @@ const SelectCellComponent = (
         {...options}
         name={`${tableName}.${rowIndex}.${column.id}`}
         className={addClassname('o-table-select', className)}
+        controller={controller}
       />
     );
   };

@@ -14,6 +14,7 @@ import {
   QueryFilterOrCriteria,
   QuerySortBy,
   QuerySortDir,
+  UseCollectionOptions,
 } from './typings';
 import { formatFilter, formatSortBy, rootFilterId, visitFilter, isSameSortBy } from './utils';
 
@@ -31,6 +32,21 @@ export default class DefaultCollectionBroker<
   protected currentSearch: Primitive | undefined;
   protected currentSort: QuerySortDir | undefined;
   protected data: T[] | undefined;
+  protected url: string | undefined;
+
+  constructor(dataSource: T[]| string | undefined, options: UseCollectionOptions<T, I>) {
+    if (Array.isArray(dataSource)) {
+      this.data = dataSource;
+    } else if (typeof dataSource === 'string') {
+      this.url = dataSource;
+    }
+    this.filters = options.initialFilter;
+    this.sortBys = options.initialSortBy;
+    this.fields = options.initialFields;
+    this.params = options.initialParams;
+    this.currentSearch = options.initialSearch;
+    this.currentSort = options.initialSort;
+  }
 
   addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId: QueryFilterId = rootFilterId): void {
     const filter = formatFilter(filterOrCriteria);
@@ -158,6 +174,13 @@ export default class DefaultCollectionBroker<
     };
   }
 
+  getInitialDataSource(): T[] | string | undefined {
+    if (Array.isArray(this.data)) {
+      return this.data;
+    }
+    return this.url;
+  }
+
   removeFilter(id: QueryFilterId): void {
     const filter = formatFilter(this.filters);
     if (filter) {
@@ -215,6 +238,11 @@ export default class DefaultCollectionBroker<
   setParams(params: AnonymousObject): void {
     this.params = params;
     this.subscribers.forEach((s) => s.setParams(params));
+  }
+
+  setUrl(url: string): void {
+    this.url = url;
+    this.subscribers.forEach((s) => s.setUrl(url));
   }
 
   sort(dir: QuerySortDir): void {

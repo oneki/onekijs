@@ -4,7 +4,7 @@ import { SelectColumn, TableItem, UseSelectColumnOptions } from '../typings';
 
 const useSelectColumn = <T = any>(options: UseSelectColumnOptions<T, TableItem<T>>): SelectColumn<T, TableItem<T>> => {
   const broker = useLazyRef<CollectionBroker<T, TableItem<T>>>(() => {
-    return new DefaultCollectionBroker();
+    return new DefaultCollectionBroker(options.dataSource, options);
   });
   const Component = options.CellComponent || SelectCellComponent;
   const optionsRef = useLazyRef<SelectColumn<T, TableItem<T>>>(() => {

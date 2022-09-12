@@ -231,7 +231,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
           onChange && onChange(service.state.validDefaultValue || null);
         }
       }
-    } else if (!nullable && value === null && service.state.validDefaultValue) {
+    } else if (!search && !nullable && !value && service.state.validDefaultValue) {
       onChange && onChange(service.state.validDefaultValue);
     }
   }, [

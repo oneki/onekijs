@@ -76,6 +76,7 @@ export default class CollectionService<
   protected unregisterRouterListener?: UnregisterCallback;
   protected refreshing = false;
   protected currentQuery?: string;
+  protected initialQuery?: Query;
 
   init(): void {
     this.initialState = this.state;
@@ -100,6 +101,8 @@ export default class CollectionService<
     if (this.state.local && this.state.dataSource !== undefined) {
       this.refresh();
     }
+
+    this.initialQuery = this.getQuery();
   }
 
   destroy(): void {
@@ -748,6 +751,12 @@ export default class CollectionService<
     left: any,
     right?: QueryFilterCriteriaValue | QueryFilterCriteriaValue[],
   ): boolean {
+    if (Array.isArray(left)) {
+      return left.map((v) => this._applyOperator(operator, v, right)).filter((r) => r === true).length > 0;
+    }
+    if (Array.isArray(right)) {
+      return right.map((v) => this._applyOperator(operator, left, v)).filter((r) => r === true).length > 0;
+    }
     switch (operator) {
       case 'ew':
         return String(left).endsWith(String(right));
@@ -918,9 +927,11 @@ export default class CollectionService<
   ): I[] {
     // apply filters to data
     let result: I[] = Object.assign([], items);
+
     if (query.filter) {
       result = result.filter((item) => this._applyFilter(item, formatFilter(query.filter)));
     }
+
     if (query.search) {
       result = result.filter((item) => this._applySearch(item, query.search));
     }
@@ -945,7 +956,7 @@ export default class CollectionService<
     if (typeof this.state.dataSource === 'string' && this.state.fetchOnce) {
       yield this.setStatus(LoadingStatus.Loading);
       const result: CollectionFetcherResult<T> = yield this._executeFetch(
-        this.getQuery(),
+        Object.assign({}, this.initialQuery, { limit: undefined, offset: undefined }),
         this.state.fetchOptions,
         false,
       );

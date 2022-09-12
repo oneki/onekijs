@@ -7,7 +7,7 @@ export type ChangeHandler<T> = (value: T) => void;
 
 export type Collection<T, I extends Item<T> = Item<T>, S extends CollectionState<T, I> = CollectionState<T, I>> = Omit<
   CollectionBroker<T, I, S>,
-  'addSubscriber' | 'removeSubscriber' | 'getInitialQuery'
+  'addSubscriber' | 'removeSubscriber' | 'getInitialQuery' | 'getInitialDataSource'
 > & {
   adapt(data: T | undefined): I;
   addActive<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
@@ -94,6 +94,7 @@ export type CollectionBroker<
   clearSort(): void;
   clearSortBy(): void;
   filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | null): void;
+  getInitialDataSource(): T[] | string | undefined;
   getInitialQuery(): Pick<
     CollectionOptions<T, I>,
     'initialFields' | 'initialFilter' | 'initialParams' | 'initialSearch' | 'initialSort' | 'initialSortBy'
@@ -106,6 +107,7 @@ export type CollectionBroker<
   setFields(fields: string[]): void;
   setParam(key: string, value: any): void;
   setParams(params: AnonymousObject): void;
+  setUrl(url: string): void;
   sort(dir: QuerySortDir): void;
   sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void;
 };
