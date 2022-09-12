@@ -1,13 +1,22 @@
-import { CollectionBroker, DefaultCollectionBroker, useLazyRef } from 'onekijs-framework';
+import { useLazyRef } from 'onekijs-framework';
+import DefaultSelectBroker from '../../select/SelectBroker';
+import { SelectBroker, SelectItem } from '../../select/typings';
 import SelectCellComponent from '../components/cells/SelectCellComponent';
-import { SelectColumn, TableItem, UseSelectColumnOptions } from '../typings';
+import { SelectCell, SelectColumn, TableItem, UseSelectColumnOptions } from '../typings';
 
-const useSelectColumn = <T = any>(options: UseSelectColumnOptions<T, TableItem<T>>): SelectColumn<T, TableItem<T>> => {
-  const broker = useLazyRef<CollectionBroker<T, TableItem<T>>>(() => {
-    return new DefaultCollectionBroker(options.dataSource, options);
+const useSelectColumn = <
+  T = any,
+  S = any,
+  TI extends TableItem<T> = TableItem<T>,
+  SI extends SelectItem<S> = SelectItem<S>,
+>(
+  options: UseSelectColumnOptions<T, S, TI, SI>,
+): SelectColumn<T, S, TI, SI> => {
+  const broker = useLazyRef<SelectBroker<S, SI>>(() => {
+    return new DefaultSelectBroker(options.dataSource, options);
   });
-  const Component = options.CellComponent || SelectCellComponent;
-  const optionsRef = useLazyRef<SelectColumn<T, TableItem<T>>>(() => {
+  const Component: SelectCell<T, S, TI, SI> = options.CellComponent || (SelectCellComponent as any);
+  const optionsRef = useLazyRef<SelectColumn<T, S, TI, SI>>(() => {
     return Object.assign(
       {
         filterable: false,

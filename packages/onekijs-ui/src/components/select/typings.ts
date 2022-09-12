@@ -2,6 +2,7 @@ import {
   AnyFunction,
   ChangeHandler,
   Collection,
+  CollectionBroker,
   CollectionProxy,
   FormFieldProps,
   ValidationStatus,
@@ -51,6 +52,7 @@ export type SelectController<
   config?: SelectConfig<T, I>;
   check: () => void;
   defaultValue: T | T[] | null | undefined;
+  setDefaultValue: (defaultValue: T | T[] | null | undefined) => void;
 };
 
 export interface SelectIconProps {
@@ -112,6 +114,15 @@ export type SelectProps<
   controller?: CollectionProxy<T, I, S, C>;
   dataSource?: T[] | string;
   fetchOnce?: boolean;
+};
+
+export type SelectBroker<
+  T,
+  I extends SelectItem<T> = SelectItem<T>,
+  S extends SelectState<T, I> = SelectState<T, I>,
+  C extends SelectController<T, I, S> = SelectController<T, I, S>,
+> = CollectionBroker<T, I, S, C> & {
+  setDefaultValue: (defaultValue: T | T[] | null | undefined) => void;
 };
 
 export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omit<ListConfig<T, I>, 'ItemComponent'> & {

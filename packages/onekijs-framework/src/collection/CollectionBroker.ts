@@ -16,15 +16,16 @@ import {
   QuerySortDir,
   UseCollectionOptions,
 } from './typings';
-import { formatFilter, formatSortBy, rootFilterId, visitFilter, isSameSortBy } from './utils';
+import { formatFilter, formatSortBy, isSameSortBy, rootFilterId, visitFilter } from './utils';
 
 export default class DefaultCollectionBroker<
   T = any,
   I extends Item<T> = Item<T>,
   S extends CollectionState<T, I> = CollectionState<T, I>,
+  C extends Collection<T, I, S> = Collection<T, I, S>,
 > implements CollectionBroker<T, I, S>
 {
-  protected subscribers: Collection<T, I, S>[] = [];
+  protected subscribers: C[] = [];
   protected filters: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | undefined;
   protected sortBys: string | QuerySortBy | QuerySortBy[] | undefined;
   protected fields: string[] | undefined;
@@ -34,7 +35,7 @@ export default class DefaultCollectionBroker<
   protected data: T[] | undefined;
   protected url: string | undefined;
 
-  constructor(dataSource: T[]| string | undefined, options: UseCollectionOptions<T, I>) {
+  constructor(dataSource: T[] | string | undefined, options: UseCollectionOptions<T, I>) {
     if (Array.isArray(dataSource)) {
       this.data = dataSource;
     } else if (typeof dataSource === 'string') {
@@ -110,7 +111,7 @@ export default class DefaultCollectionBroker<
     this.subscribers.forEach((s) => s.addSortBy(sortBy, prepend));
   }
 
-  addSubscriber(subscriber: Collection<T, I, S>): void {
+  addSubscriber(subscriber: C): void {
     const index = this.subscribers.indexOf(subscriber);
     if (index === -1) {
       this.subscribers.push(subscriber);
@@ -207,7 +208,7 @@ export default class DefaultCollectionBroker<
     this.subscribers.forEach((s) => s.removeSortBy(id));
   }
 
-  removeSubscriber(subscriber: Collection<T, I>): void {
+  removeSubscriber(subscriber: C): void {
     this.subscribers = this.subscribers.filter((s) => s !== subscriber);
   }
 

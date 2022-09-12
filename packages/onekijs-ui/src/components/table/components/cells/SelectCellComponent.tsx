@@ -1,19 +1,21 @@
-import { clone, CollectionBroker } from 'onekijs-framework';
 import React, { useEffect } from 'react';
 import { addClassname } from '../../../../utils/style';
 import FormSelect from '../../../select/FormSelect';
 import useSelectController from '../../../select/hooks/useSelectController';
-import { SelectItem } from '../../../select/typings';
+import { SelectBroker, SelectItem } from '../../../select/typings';
 import useFormTableContext from '../../hooks/useFormTableContext';
-import { TableBodyCellProps, UseSelectColumnOptions } from '../../typings';
+import { TableBodyCellProps, TableItem, UseSelectColumnOptions } from '../../typings';
 
 const SelectCellComponent = (
-  options: UseSelectColumnOptions<any, SelectItem<any>>,
-  broker: CollectionBroker<any, SelectItem<any>>,
+  options: UseSelectColumnOptions<any, any, TableItem<any>, SelectItem<any>>,
+  broker: SelectBroker<any, SelectItem<any>>,
 ): React.FC<TableBodyCellProps> => {
   const SelectCellComponent: React.FC<TableBodyCellProps> = ({ item, column, rowIndex }) => {
     const { tableName } = useFormTableContext();
-    const controller = useSelectController(broker.getInitialDataSource() || [], Object.assign({}, options, broker.getInitialQuery()));
+    const controller = useSelectController(
+      broker.getInitialDataSource() || [],
+      Object.assign({}, options, broker.getInitialQuery()),
+    );
     const service = controller.asService();
     const className =
       typeof options.className === 'function' ? options.className(item, column, rowIndex) : options.className;

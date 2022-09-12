@@ -5,10 +5,11 @@ import { Router } from '../types/router';
 
 export type ChangeHandler<T> = (value: T) => void;
 
-export type Collection<T, I extends Item<T> = Item<T>, S extends CollectionState<T, I> = CollectionState<T, I>> = Omit<
-  CollectionBroker<T, I, S>,
-  'addSubscriber' | 'removeSubscriber' | 'getInitialQuery' | 'getInitialDataSource'
-> & {
+export type Collection<
+  T,
+  I extends Item<T> = Item<T>,
+  S extends CollectionState<T, I> = CollectionState<T, I>,
+> = CollectionBase<T> & {
   adapt(data: T | undefined): I;
   addActive<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
   addDisabled<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
@@ -70,11 +71,7 @@ export type Collection<T, I extends Item<T> = Item<T>, S extends CollectionState
   readonly total?: number;
 };
 
-export type CollectionBroker<
-  T,
-  I extends Item<T> = Item<T>,
-  S extends CollectionState<T, I> = CollectionState<T, I>,
-> = {
+export type CollectionBase<T> = {
   addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId?: QueryFilterId): void;
   addFilterCriteria(
     field: string,
@@ -85,7 +82,7 @@ export type CollectionBroker<
     parentFilterId?: QueryFilterId,
   ): void;
   addSortBy(sortBy: QuerySortBy, prepend?: boolean): void;
-  addSubscriber(collection: Collection<T, I, S>): void;
+
   clearFields(): void;
   clearFilter(): void;
   clearParams(): void;
@@ -94,14 +91,8 @@ export type CollectionBroker<
   clearSort(): void;
   clearSortBy(): void;
   filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | null): void;
-  getInitialDataSource(): T[] | string | undefined;
-  getInitialQuery(): Pick<
-    CollectionOptions<T, I>,
-    'initialFields' | 'initialFilter' | 'initialParams' | 'initialSearch' | 'initialSort' | 'initialSortBy'
-  >;
   removeFilter(filterId: QueryFilterId): void;
   removeSortBy(id: string): void;
-  removeSubscriber(collection: Collection<T, I, S>): void;
   search(search: Primitive): void;
   setData(data: T[]): void;
   setFields(fields: string[]): void;
@@ -110,6 +101,21 @@ export type CollectionBroker<
   setUrl(url: string): void;
   sort(dir: QuerySortDir): void;
   sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void;
+};
+
+export type CollectionBroker<
+  T,
+  I extends Item<T> = Item<T>,
+  S extends CollectionState<T, I> = CollectionState<T, I>,
+  C extends Collection<T, I, S> = Collection<T, I, S>,
+> = CollectionBase<T> & {
+  addSubscriber(subscriber: C): void;
+  getInitialDataSource(): T[] | string | undefined;
+  getInitialQuery(): Pick<
+    CollectionOptions<T, I>,
+    'initialFields' | 'initialFilter' | 'initialParams' | 'initialSearch' | 'initialSort' | 'initialSortBy'
+  >;
+  removeSubscriber(collection: C): void;
 };
 
 export type CollectionBy<T, I extends Item<T> = Item<T>> = {

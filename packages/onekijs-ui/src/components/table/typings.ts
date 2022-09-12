@@ -1,6 +1,5 @@
 import {
   Collection,
-  CollectionBroker,
   CollectionBy,
   CollectionProxy,
   FormFieldProps,
@@ -17,7 +16,7 @@ import { CheckboxProps } from '../checkbox/typings';
 import { FieldLayoutProps } from '../field/typings';
 import { InputProps } from '../input/typings';
 import { ListItemProps, ListItems, ListNotFoundProps, ListState, UseListOptions } from '../list/typings';
-import { SelectItem, SelectProps } from '../select/typings';
+import { SelectBroker, SelectItem, SelectProps } from '../select/typings';
 
 export type ArrayTableProps<T = any, I extends TableItem<T> = TableItem<T>> = TableConfig<T, I> & {
   adapter?: TableItemAdapter<T>;
@@ -270,8 +269,13 @@ export type CheckboxColumn<T = any, I extends TableItem<T> = TableItem<T>> = Tab
 
 export type InputColumn<T = any, I extends TableItem<T> = TableItem<T>> = TableColumn<T, I>;
 
-export type SelectColumn<T = any, I extends TableItem<T> = TableItem<T>> = TableColumn<T, I> & {
-  broker: CollectionBroker<T, I>;
+export type SelectColumn<
+  T = any,
+  F = any,
+  I extends TableItem<T> = TableItem<T>,
+  FI extends SelectItem<F> = SelectItem<F>,
+> = TableColumn<T, I> & {
+  broker: SelectBroker<F, FI>;
 };
 
 export type UseLinkColumnOptions<T = any, I extends TableItem<T> = TableItem<T>> = Omit<
@@ -302,19 +306,22 @@ export type UseInputColumnOptions<T = any, I extends TableItem<T> = TableItem<T>
 
 export type UseSelectColumnOptions<
   T = any,
-  I extends TableItem<T> = TableItem<T>,
-  F = any,
-  FI extends SelectItem<F> = SelectItem<F>,
-> = Omit<TableColumnSpec<T, I>, 'CellComponent'> &
-  Omit<SelectProps, 'className' | 'onFocus' | 'onChange' | 'onBlur' | 'items'> &
+  S = any,
+  TI extends TableItem<T> = TableItem<T>,
+  SI extends SelectItem<S> = SelectItem<S>,
+> = Omit<TableColumnSpec<T, TI>, 'CellComponent'> &
+  Omit<SelectProps<S, SI>, 'className' | 'onFocus' | 'onChange' | 'onBlur' | 'items'> &
   Omit<FormFieldProps, 'name'> &
-  UseCollectionOptions<F, FI> & {
-    dataSource: string | F[];
-    CellComponent?: (
-      options: UseSelectColumnOptions<F, FI>,
-      broker: CollectionBroker<F, FI>,
-    ) => React.FC<TableBodyCellProps<T, I>>;
+  UseCollectionOptions<S, SI> & {
+    CellComponent?: SelectCell<T, S, TI, SI>;
   };
+
+export type SelectCell<
+  T = any,
+  S = any,
+  TI extends TableItem<T> = TableItem<T>,
+  SI extends SelectItem<S> = SelectItem<S>,
+> = (options: UseSelectColumnOptions<T, S, TI, SI>, broker: SelectBroker<S, SI>) => React.FC<TableBodyCellProps<T, TI>>;
 
 export type UseTableOptions<T = any, I extends TableItem<T> = TableItem<T>> = UseListOptions<T, I> & {
   adapter?: TableItemAdapter<T>;

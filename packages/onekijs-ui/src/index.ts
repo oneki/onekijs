@@ -137,21 +137,30 @@ export { default as SelectOptionComponent } from './components/select/components
 export { default as SelectTokensComponent } from './components/select/components/SelectTokensComponent';
 export { default as FormSelect } from './components/select/FormSelect';
 export { default as useSelectController } from './components/select/hooks/useSelectController';
+export { default as DefaultSelectBroker } from './components/select/SelectBroker';
 export { default as SelectService } from './components/select/SelectService';
-export { findSelectItem, findSelectItemIndex, shouldCheckSelect } from './components/select/util';
 export {
+  ArraySelectProps,
+  ControllerSelectProps,
   FormSelectProps,
+  SelectBroker,
+  SelectConfig,
+  SelectController,
   SelectIconProps,
   SelectInputProps,
   SelectItem,
+  SelectItemAdaptee,
   SelectItemAdapter as SelectAdapter,
+  SelectNotFoundProps,
   SelectOptionHandler,
   SelectOptionProps,
   SelectOptionSelectionHandler,
   SelectProps,
+  SelectState,
   SelectTokenProps,
   SelectTokensProps,
 } from './components/select/typings';
+export { findSelectItem, findSelectItemIndex, shouldCheckSelect } from './components/select/util';
 export { default as Tabs } from './components/tab';
 export { default as Tab } from './components/tab/components/Tab';
 export { default as TabTitle } from './components/tab/components/TabTitle';
