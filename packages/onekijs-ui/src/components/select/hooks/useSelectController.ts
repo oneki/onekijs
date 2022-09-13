@@ -4,7 +4,7 @@ import SelectService from '../SelectService';
 import { SelectItem, SelectState } from '../typings';
 
 const useSelectController = <T = any>(
-  dataSource: T[] | string,
+  dataSource: T[] | string | undefined,
   options: UseListOptions<T, SelectItem<T>> = {},
 ): CollectionProxy<
   T,

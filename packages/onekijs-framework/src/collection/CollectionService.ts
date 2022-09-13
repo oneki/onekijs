@@ -22,25 +22,22 @@ import {
   CollectionStatus,
   Item,
   LoadingItemStatus,
-  LoadingStatus,
-  LocalQuery,
-  Query,
+  LoadingStatus, LocalQuery, Query,
   QueryFilter,
   QueryFilterCriteria,
   QueryFilterCriteriaOperator,
   QueryFilterCriteriaValue,
   QueryFilterId,
   QueryFilterOrCriteria,
+  QuerySearcher,
   QuerySerializerResult,
   QuerySortBy,
-  QuerySortByField,
-  QuerySortByMultiFields,
-  QuerySortComparator,
-  QuerySortDir,
+  QuerySortByField, QuerySortComparator, QuerySortDir
 } from './typings';
 import {
   addFilter as aFilter,
   defaultComparator,
+  defaultQueryEngine,
   defaultSerializer,
   formatFilter,
   formatSortBy,
@@ -53,10 +50,8 @@ import {
   rootFilterId,
   shouldResetData,
   urlSerializer,
-  visitFilter,
+  visitFilter
 } from './utils';
-
-const defaultSearcher = 'i_like';
 
 export default class CollectionService<
     T = any,
@@ -519,7 +514,7 @@ export default class CollectionService<
   }
 
   @reducer
-  setData(data: T[]): void {
+  setData(data: T[], query?: Query): void {
     if (!this.state.local) {
       throw new DefaultBasicError('Call to unsupported method setData of a remote collection');
     }
@@ -528,7 +523,9 @@ export default class CollectionService<
     // this.uidIndex = {};
     this.positionIndex = {};
     this.state.items = undefined;
-    const query = this.getQuery();
+    if (query === undefined) {
+      query = this.getQuery();
+    }
     this._clearOffset(query);
     this.initDb(data);
     this.refresh(query);
@@ -621,12 +618,18 @@ export default class CollectionService<
   }
 
   @reducer
-  setUrl(url: string) {
+  setUrl(url: string, query?: Query) {
     this.cache = {};
     this.state.dataSource = url;
     this.state.url = url;
     this.state.items = undefined;
-    const nextQuery = clone(this.getQuery());
+    this.state.local = this.state.fetchOnce || false;
+    if (query === undefined) {
+      query = this.getQuery();
+    } else {
+      this._setQuery(query);
+    }
+    const nextQuery = clone(query);
     this._clearOffset(nextQuery);
     if (this.state.fetchOnce) {
       this.callSaga('_fetchOnce');
@@ -700,166 +703,6 @@ export default class CollectionService<
     query.sortBy = currentSortBy;
   }
 
-  protected _applyCriteria(item: I, criteria: QueryFilterCriteria): boolean {
-    const operator = criteria.operator || 'eq';
-    const value = criteria.value;
-    const source = get(item.data, criteria.field);
-    const not = criteria.not;
-    const result = this._applyOperator(operator, source, value);
-    return not ? !result : result;
-  }
-
-  protected _applyFields(items: I[], fields?: string[]): I[] {
-    if (fields && fields.length > 0) {
-      return items.map((item) => {
-        const { data, ...nextItem } = item;
-        if (data) {
-          return fields.reduce((accumulator, field) => {
-            accumulator.data = accumulator.data || {};
-            accumulator.data[field] = (item as any).data[field];
-            return accumulator;
-          }, nextItem as any) as I;
-        }
-        return item;
-      });
-    }
-    return items;
-  }
-
-  protected _applyFilter(item: I, filter?: QueryFilter): boolean {
-    let result = true;
-
-    if (filter) {
-      const operator = filter.operator || 'and';
-      for (const filterOrCriteria of filter.criterias) {
-        if (isQueryFilterCriteria(filterOrCriteria)) {
-          result = this._applyCriteria(item, filterOrCriteria);
-        } else {
-          result = this._applyFilter(item, filterOrCriteria);
-        }
-
-        if (!result && operator === 'and') return false;
-        if (result && operator === 'or') return true;
-      }
-    }
-    return result;
-  }
-
-  protected _applyOperator(
-    operator: QueryFilterCriteriaOperator,
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    left: any,
-    right?: QueryFilterCriteriaValue | QueryFilterCriteriaValue[],
-  ): boolean {
-    if (Array.isArray(left)) {
-      return left.map((v) => this._applyOperator(operator, v, right)).filter((r) => r === true).length > 0;
-    }
-    if (Array.isArray(right)) {
-      return right.map((v) => this._applyOperator(operator, left, v)).filter((r) => r === true).length > 0;
-    }
-    switch (operator) {
-      case 'ew':
-        return String(left).endsWith(String(right));
-      case 'i_ew':
-        return String(left).toUpperCase().endsWith(String(right).toUpperCase());
-      case 'like':
-        return String(left).includes(String(right));
-      case 'i_like':
-        return String(left).toUpperCase().includes(String(right).toUpperCase());
-      case 'sw':
-        return String(left).startsWith(String(right));
-      case 'i_sw':
-        return String(left).toUpperCase().startsWith(String(right).toUpperCase());
-      case 'eq':
-        return String(left).startsWith(String(right));
-      case 'i_eq':
-        return String(left).toUpperCase().startsWith(String(right).toUpperCase());
-      case 'regex':
-        return new RegExp(String(right)).test(String(left));
-      case 'i_regex':
-        return new RegExp(String(right), 'i').test(String(left));
-      case 'gt':
-        return left > (right || 0);
-      case 'gte':
-        return left >= (right || 0);
-      case 'lt':
-        return left < (right || 0);
-      case 'lte':
-        return left <= (right || 0);
-      case 'in':
-        return toArray(right || []).includes(left);
-      default:
-        return true;
-    }
-  }
-
-  protected _applySearch(item: I, search?: QueryFilterCriteriaValue): boolean {
-    const searcher = this.state.searcher || defaultSearcher;
-    if (item.data === undefined) {
-      return false;
-    }
-    if (typeof searcher === 'function') {
-      return searcher(item.data, search);
-    }
-    return this._applyOperator(searcher, item.text, search);
-  }
-
-  protected _applySort(items: I[], dir: QuerySortDir, comparator: QuerySortComparator): I[] {
-    if (dir) {
-      const itemComparator = function (a: I, b: I): number {
-        const reverse = dir === 'desc' ? -1 : 1;
-        return reverse * comparator(a.data, b.data);
-      };
-
-      items = items.sort(itemComparator);
-    }
-    return items;
-  }
-
-  protected _applySortBy(items: I[], sortBy: QuerySortBy[], comparators: AnonymousObject<QuerySortComparator>): I[] {
-    if (sortBy.length > 0) {
-      const comparator = function () {
-        return function (a: I, b: I): number {
-          let result = 0;
-          sort_loop: for (const sort of sortBy) {
-            let s: QuerySortByMultiFields | undefined;
-            if (isQuerySortByField(sort)) {
-              s = {
-                id: sort.id,
-                fields: [
-                  {
-                    name: sort.field,
-                    comparator: sort.comparator,
-                  },
-                ],
-                dir: sort.dir,
-              };
-            } else if (isQuerySortByMultiFields(sort)) {
-              s = sort;
-            }
-
-            if (s) {
-              for (const field of s.fields) {
-                const fieldName = typeof field === 'string' ? field : field.name;
-                const comparator =
-                  typeof field === 'string' || !field.comparator
-                    ? defaultComparator
-                    : comparators[field.comparator] || defaultComparator;
-                const reverse = s.dir === 'desc' ? -1 : 1;
-
-                result = reverse * comparator(get(a.data, fieldName), get(b.data, fieldName));
-                if (result !== 0) break sort_loop;
-              }
-            }
-          }
-          return result;
-        };
-      };
-      items = items.sort(comparator());
-    }
-    return items;
-  }
-
   protected _clearFields(query: Query): void {
     query.fields = undefined;
   }
@@ -919,36 +762,6 @@ export default class CollectionService<
     });
   }
 
-  protected _execute(
-    items: I[],
-    query: LocalQuery,
-    comparator: QuerySortComparator,
-    comparators: AnonymousObject<QuerySortComparator>,
-  ): I[] {
-    // apply filters to data
-    let result: I[] = Object.assign([], items);
-
-    if (query.filter) {
-      result = result.filter((item) => this._applyFilter(item, formatFilter(query.filter)));
-    }
-
-    if (query.search) {
-      result = result.filter((item) => this._applySearch(item, query.search));
-    }
-
-    // apply sort
-    if (query.sortBy) {
-      result = this._applySortBy(result, formatSortBy(query.sortBy) || [], comparators);
-    } else if (query.sort) {
-      result = this._applySort(result, query.sort || 'asc', comparator);
-    }
-
-    // apply field subset
-    if (query.fields && query.fields.length > 0) {
-      result = this._applyFields(result, query.fields);
-    }
-    return result;
-  }
 
   @saga(SagaEffect.Latest)
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -1214,6 +1027,16 @@ export default class CollectionService<
     }
   }
 
+  protected _execute(
+    items: I[],
+    query: LocalQuery,
+    comparator: QuerySortComparator,
+    comparators: AnonymousObject<QuerySortComparator>,
+    searcher: QuerySearcher<T>,
+  ): I[] {
+    return defaultQueryEngine(items, query, comparator, comparators, searcher);
+  }
+
   protected _getId(data: T): string | number | undefined {
     return this.adapt(data).id;
   }
@@ -1257,13 +1080,14 @@ export default class CollectionService<
       if (location.relativeurl && this.cache[location.relativeurl]) {
         this._setItems(this.cache[location.relativeurl]);
       } else {
-        const queryEngine = this.state.queryEngine || this._execute.bind(this);
+        const queryEngine = this.state.queryEngine || defaultQueryEngine;
         this._setItems(
           queryEngine(
             this.db || [],
             nextQuery,
             this.state.comparator || defaultComparator,
             this.state.comparators || {},
+            this.state.searcher,
           ),
         );
         if (location.relativeurl) {

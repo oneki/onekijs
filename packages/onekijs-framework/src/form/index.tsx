@@ -70,7 +70,7 @@ const Form: FCC<FormProps> = (props) => {
               if (type === 'valueChange') {
                 const prev = get(controller.prevValues, prop);
                 const next = get(controller.state.values, prop, '');
-                if (prev !== next) {
+                if (prev !== next || !controller.triggered[prop]) {
                   changed = true;
                   (listener.listener as FormValueListener)(next, prev, prop);
                 }
@@ -128,6 +128,9 @@ const Form: FCC<FormProps> = (props) => {
               }
             }
           }
+        }
+        if (type === 'valueChange') {
+          controller.triggered[prop] = true;
         }
       }
       controller.pendingDispatch[type].clear();

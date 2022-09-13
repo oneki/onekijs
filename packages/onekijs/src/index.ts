@@ -11,6 +11,13 @@ export {
   AppErrorCallback,
   AppExtraFetchOptions,
   AppFetchOptions,
+  applyCriteria,
+  applyFields,
+  applyFilter,
+  applyOperator,
+  applySearch,
+  applySort,
+  applySortBy,
   AppProvider,
   AppProviderProps,
   AppResultCallback,
@@ -80,8 +87,7 @@ export {
   defaultIdpSettings,
   DefaultLoadingComponent,
   defaultLocaleSymbol,
-  DefaultLocalService,
-  defaultSerializer,
+  DefaultLocalService, defaultQueryEngine, defaultSerializer,
   DefaultService,
   defaultSettings,
   defaultValidation,
@@ -493,7 +499,7 @@ export {
   visitFilter,
   withLayout,
   wrap,
-  xhr,
+  xhr
 } from 'onekijs-framework';
 export {
   BrowserRouter,
@@ -557,7 +563,7 @@ export {
   useParams,
   useResolvedPath,
   useRoutes,
-  useSearchParams,
+  useSearchParams
 } from 'react-router-dom';
 export { App } from './App';
 export { default as FadeSwitch } from './router/FadeRoutes';

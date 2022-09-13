@@ -13,8 +13,8 @@ const SelectCellComponent = (
   const SelectCellComponent: React.FC<TableBodyCellProps> = ({ item, column, rowIndex }) => {
     const { tableName } = useFormTableContext();
     const controller = useSelectController(
-      broker.getInitialDataSource() || [],
-      Object.assign({}, options, broker.getInitialQuery()),
+      options.dataSource,
+      options,
     );
     const service = controller.asService();
     const className =

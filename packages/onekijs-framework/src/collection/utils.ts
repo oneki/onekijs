@@ -3,12 +3,13 @@ import DefaultBasicError from '../core/BasicError';
 import { Primitive } from '../types/core';
 import { AnonymousObject } from '../types/object';
 import { isSameArray } from '../utils/array';
-import { clone, shallowEqual, toArray } from '../utils/object';
+import { clone, get, shallowEqual, toArray } from '../utils/object';
 import {
   Collection,
   CollectionState,
   Item,
   LoadingStatus,
+  LocalQuery,
   Query,
   QueryFilter,
   QueryFilterCriteria,
@@ -16,16 +17,179 @@ import {
   QueryFilterCriteriaValue,
   QueryFilterId,
   QueryFilterOrCriteria,
+  QuerySearcher,
   QuerySerializer,
   QuerySerializerResult,
   QuerySortBy,
   QuerySortByField,
   QuerySortByMultiFields,
-  QuerySortDir,
+  QuerySortComparator,
+  QuerySortDir
 } from './typings';
 
 let filterUid = 0;
 export const rootFilterId = Symbol();
+
+
+export const applyCriteria = <T = any, I extends Item<T> = Item<T>>(item: I, criteria: QueryFilterCriteria): boolean => {
+  const operator = criteria.operator || 'eq';
+  const value = criteria.value;
+  const source = get(item.data, criteria.field);
+  const not = criteria.not;
+  const result = applyOperator(operator, source, value);
+  return not ? !result : result;
+}
+
+export const applyFields = <T = any, I extends Item<T> = Item<T>>(items: I[], fields?: string[]): I[] => {
+  if (fields && fields.length > 0) {
+    return items.map((item) => {
+      const { data, ...nextItem } = item;
+      if (data) {
+        return fields.reduce((accumulator, field) => {
+          accumulator.data = accumulator.data || {};
+          accumulator.data[field] = (item as any).data[field];
+          return accumulator;
+        }, nextItem as any) as I;
+      }
+      return item;
+    });
+  }
+  return items;
+}
+
+export const applyFilter = <T = any, I extends Item<T> = Item<T>>(item: I, filter?: QueryFilter): boolean => {
+  let result = true;
+
+  if (filter) {
+    const operator = filter.operator || 'and';
+    for (const filterOrCriteria of filter.criterias) {
+      if (isQueryFilterCriteria(filterOrCriteria)) {
+        result = applyCriteria(item, filterOrCriteria);
+      } else {
+        result = applyFilter(item, filterOrCriteria);
+      }
+
+      if (!result && operator === 'and') return false;
+      if (result && operator === 'or') return true;
+    }
+  }
+  return result;
+}
+
+export const applyOperator = (
+  operator: QueryFilterCriteriaOperator,
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  left: any,
+  right?: QueryFilterCriteriaValue | QueryFilterCriteriaValue[],
+): boolean => {
+  if (Array.isArray(left)) {
+    return left.map((v) => applyOperator(operator, v, right)).filter((r) => r === true).length > 0;
+  }
+  if (Array.isArray(right)) {
+    return right.map((v) => applyOperator(operator, left, v)).filter((r) => r === true).length > 0;
+  }
+  switch (operator) {
+    case 'ew':
+      return String(left).endsWith(String(right));
+    case 'i_ew':
+      return String(left).toUpperCase().endsWith(String(right).toUpperCase());
+    case 'like':
+      return String(left).includes(String(right));
+    case 'i_like':
+      return String(left).toUpperCase().includes(String(right).toUpperCase());
+    case 'sw':
+      return String(left).startsWith(String(right));
+    case 'i_sw':
+      return String(left).toUpperCase().startsWith(String(right).toUpperCase());
+    case 'eq':
+      return String(left).startsWith(String(right));
+    case 'i_eq':
+      return String(left).toUpperCase().startsWith(String(right).toUpperCase());
+    case 'regex':
+      return new RegExp(String(right)).test(String(left));
+    case 'i_regex':
+      return new RegExp(String(right), 'i').test(String(left));
+    case 'gt':
+      return left > (right || 0);
+    case 'gte':
+      return left >= (right || 0);
+    case 'lt':
+      return left < (right || 0);
+    case 'lte':
+      return left <= (right || 0);
+    case 'in':
+      return toArray(right || []).includes(left);
+    default:
+      return true;
+  }
+}
+
+export const applySearch = <T = any, I extends Item<T> = Item<T>>(item: I, search?: QueryFilterCriteriaValue, searcher?: QuerySearcher<T>): boolean => {
+  searcher = searcher ?? 'i_like';
+  if (item.data === undefined) {
+    return false;
+  }
+  if (typeof searcher === 'function') {
+    return searcher(item.data, search);
+  }
+  return applyOperator(searcher, item.text, search);
+}
+
+export const applySort = <T = any, I extends Item<T> = Item<T>>(items: I[], dir: QuerySortDir, comparator: QuerySortComparator): I[] => {
+  if (dir) {
+    const itemComparator = function (a: I, b: I): number {
+      const reverse = dir === 'desc' ? -1 : 1;
+      return reverse * comparator(a.data, b.data);
+    };
+
+    items = items.sort(itemComparator);
+  }
+  return items;
+}
+
+export const applySortBy = <T = any, I extends Item<T> = Item<T>>(items: I[], sortBy: QuerySortBy[], comparators: AnonymousObject<QuerySortComparator>): I[] => {
+  if (sortBy.length > 0) {
+    const comparator = function () {
+      return function (a: I, b: I): number {
+        let result = 0;
+        sort_loop: for (const sort of sortBy) {
+          let s: QuerySortByMultiFields | undefined;
+          if (isQuerySortByField(sort)) {
+            s = {
+              id: sort.id,
+              fields: [
+                {
+                  name: sort.field,
+                  comparator: sort.comparator,
+                },
+              ],
+              dir: sort.dir,
+            };
+          } else if (isQuerySortByMultiFields(sort)) {
+            s = sort;
+          }
+
+          if (s) {
+            for (const field of s.fields) {
+              const fieldName = typeof field === 'string' ? field : field.name;
+              const comparator =
+                typeof field === 'string' || !field.comparator
+                  ? defaultComparator
+                  : comparators[field.comparator] || defaultComparator;
+              const reverse = s.dir === 'desc' ? -1 : 1;
+
+              result = reverse * comparator(get(a.data, fieldName), get(b.data, fieldName));
+              if (result !== 0) break sort_loop;
+            }
+          }
+        }
+        return result;
+      };
+    };
+    items = items.sort(comparator());
+  }
+  return items;
+}
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const defaultComparator = (a: any, b: any) => {
@@ -39,9 +203,43 @@ export const defaultComparator = (a: any, b: any) => {
   return a < b ? -1 : 1;
 };
 
+export const defaultQueryEngine = <T = any, I extends Item<T> = Item<T>>(
+  items: I[],
+  query: LocalQuery,
+  comparator: QuerySortComparator,
+  comparators: AnonymousObject<QuerySortComparator>,
+  searcher?: QuerySearcher<T>,
+): I[] => {
+  // apply filters to data
+  let result: I[] = Object.assign([], items);
+
+  if (query.filter) {
+    result = result.filter((item) => applyFilter(item, formatFilter(query.filter)));
+  }
+
+  if (query.search) {
+    result = result.filter((item) => applySearch(item, query.search, searcher));
+  }
+
+  // apply sort
+  if (query.sortBy) {
+    result = applySortBy(result, formatSortBy(query.sortBy) || [], comparators);
+  } else if (query.sort) {
+    result = applySort(result, query.sort || 'asc', comparator);
+  }
+
+  // apply field subset
+  if (query.fields && query.fields.length > 0) {
+    result = applyFields(result, query.fields);
+  }
+  return result;
+}
+
 export const defaultSerializer: QuerySerializer = (query) => {
   return _serializer(query, false);
 };
+
+
 
 export const urlSerializer: QuerySerializer = (query) => {
   return _serializer(query, true);

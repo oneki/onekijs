@@ -10,6 +10,7 @@ import {
   LoadingStatus,
   LocalQuery,
   Query,
+  QuerySearcher,
   QuerySortComparator,
   reducer,
   saga,
@@ -19,6 +20,7 @@ import {
 import { Task } from 'redux-saga';
 import { cancel, delay, fork } from 'redux-saga/effects';
 import { TreeController, TreeItem, TreeItemAdaptee, TreeState } from './typings';
+import { defaultTreeQueryEngine } from './util';
 
 @service
 class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeState<T, I> = TreeState<T, I>>
@@ -227,25 +229,9 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     query: LocalQuery,
     comparator: QuerySortComparator,
     comparators: AnonymousObject<QuerySortComparator>,
+    searcher: QuerySearcher<T>,
   ): I[] {
-    let result: I[] = [];
-    if (!query.filter) {
-      // remove all children of non expanded items
-      let visible = 1;
-      items.forEach((item) => {
-        if (item.level <= visible) {
-          result.push(item);
-          if (item.expanded) {
-            visible = item.level + 1;
-          } else {
-            visible = item.level;
-          }
-        }
-      });
-    } else {
-      result = items;
-    }
-    return super._execute(result, query, comparator, comparators);
+    return defaultTreeQueryEngine(items, query, comparator, comparators, searcher);
   }
 
   @reducer
@@ -307,7 +293,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
           yield this.setMeta('item', item, 'loadingStatus', LoadingStatus.Loading);
         }
 
-        const fetcher: Fetcher<CollectionFetcherResult<T>, T | Query | undefined> = options.fetcher || asyncHttp;
+        const fetcher: Fetcher<CollectionFetcherResult<T>, Query | undefined> = options.fetcher || asyncHttp;
         const method = this.state.method ?? HttpMethod.Get;
         const body = this.state.method === HttpMethod.Get ? undefined : Object.assign({}, query);
 

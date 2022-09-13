@@ -3,6 +3,7 @@ import {
   CollectionFetcherResult,
   CollectionService,
   defaultComparator,
+  defaultQueryEngine,
   Query,
   reducer,
   saga,
@@ -129,7 +130,7 @@ class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends 
     if (!this.state.items || !this.state.items.find((i) => i?.uid === item.uid)) {
       query = Object.assign({}, query, { search: item.text });
       if (this.state.local) {
-        const queryEngine = this.state.queryEngine || this._execute.bind(this);
+        const queryEngine = this.state.queryEngine || defaultQueryEngine;
         const result = queryEngine(
           this.db || [],
           query,

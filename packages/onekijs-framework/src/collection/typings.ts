@@ -94,11 +94,11 @@ export type CollectionBase<T> = {
   removeFilter(filterId: QueryFilterId): void;
   removeSortBy(id: string): void;
   search(search: Primitive): void;
-  setData(data: T[]): void;
+  setData(data: T[], query?: Query): void;
   setFields(fields: string[]): void;
   setParam(key: string, value: any): void;
   setParams(params: AnonymousObject): void;
-  setUrl(url: string): void;
+  setUrl(url: string, query?: Query): void;
   sort(dir: QuerySortDir): void;
   sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void;
 };
@@ -111,10 +111,7 @@ export type CollectionBroker<
 > = CollectionBase<T> & {
   addSubscriber(subscriber: C): void;
   getInitialDataSource(): T[] | string | undefined;
-  getInitialQuery(): Pick<
-    CollectionOptions<T, I>,
-    'initialFields' | 'initialFilter' | 'initialParams' | 'initialSearch' | 'initialSort' | 'initialSortBy'
-  >;
+  getInitialQuery(): Query;
   removeSubscriber(collection: C): void;
 };
 
@@ -277,6 +274,7 @@ export type QueryEngine<T, I extends Item<T>> = (
   query: LocalQuery,
   comparator: QuerySortComparator,
   comparators: AnonymousObject<QuerySortComparator>,
+  searcher?: QuerySearcher<T>,
 ) => I[];
 
 export interface QueryFilter {

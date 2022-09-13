@@ -30,16 +30,22 @@ import {
   ValidationResult,
   Validator,
   ValidatorAsyncFunction,
-  ValidatorSyncFunction,
+  ValidatorSyncFunction
 } from './typings';
 import { getNonIndexedProp } from './utils';
 
 @service
 export default class FormService extends DefaultService<FormState> {
+  // keep the previous values (once the changes have been triggered, this field contains the current values)
   public prevValues: AnonymousObject = {};
+  // keep the previous validations (once the changes have been triggered, this field contains the current validations)
   public prevValidations: AnonymousObject<FieldValidation> = {};
+  // keep the previous submitting value (once the changes have been triggered, this field contains the current submitting value)
   public prevSubmitting = false;
+  // keep the previous metadata (once the changes have been triggered, this field contains the current metadata)
   public prevMetadata: AnonymousObject<FormMetadata> = {};
+  // keep all fields that has been triggered at least once (used to be sure that all field initialization are listened by listeners)
+  public triggered: AnonymousObject<boolean> = {};
 
   public fields: AnonymousObject<Field>;
   public decorators: AnonymousObject<FormDecorator>;
@@ -257,7 +263,7 @@ export default class FormService extends DefaultService<FormState> {
     return result;
   }
 
-  protected _getSubWatchs(watch: string, value: any): string[] {
+  protected _getSubWatchs(watch: string): string[] {
     const nonIndexedWatch = getNonIndexedProp(watch);
     let result: string[] = [];
     // check if the index if something listens on the key "watch"
@@ -273,16 +279,21 @@ export default class FormService extends DefaultService<FormState> {
       }
     }
 
+
     // if the value "addresses" changes, addresses.0.street should be alerted, .....
-    if (Array.isArray(value)) {
-      value.forEach((v, i) => {
-        result = result.concat(this._getSubWatchs(`${watch}.${i}`, v));
-      });
-    } else if (typeof value === 'object' && value !== 'undefined' && value !== null) {
-      Object.keys(value).forEach((k) => {
-        result = result.concat(this._getSubWatchs(`${watch}.${k}`, value[k]));
-      });
-    }
+    result.concat(this._getSubFieldNames(watch));
+
+    // console.log('sub watch value', id, value, Array.isArray(value), typeof value === 'object');
+    // if (Array.isArray(value)) {
+    //   value.forEach((v, i) => {
+    //     result = result.concat(this._getSubWatchs(`${watch}.${i}`, v));
+    //   });
+    // } else if (typeof value === 'object' && value !== 'undefined' && value !== null) {
+    //   Object.keys(value).forEach((k) => {
+    //     result = result.concat(this._getSubWatchs(`${watch}.${k}`, value[k]));
+    //   });
+    // }
+
 
     // if addresses.0.street is changed, addresses should be alerted (becasue the object has been changed)
     // we will also alert adresses.street but it would be done in form/index.tsx
@@ -419,9 +430,7 @@ export default class FormService extends DefaultService<FormState> {
               if (value && value.nativeEvent && value.nativeEvent instanceof Event) {
                 value = value.target.value;
               }
-              if (get(this.state.values, name) !== value) {
-                this.setValue(name, value);
-              }
+              this.setValue(name, value);
             },
             onFocus: (): void => {
               const field = this.fields[name];
@@ -617,6 +626,7 @@ export default class FormService extends DefaultService<FormState> {
     this.prevValidations = {};
     this.prevSubmitting = false;
     this.prevMetadata = {};
+    this.triggered = {};
 
     this.defaultValues = {};
     this.defaultMetadata = {};
@@ -781,7 +791,7 @@ export default class FormService extends DefaultService<FormState> {
         field.touched = true;
       }
       set(this.state, `values.${key}`, values[key]);
-      this._getSubWatchs(key, values[key]).forEach((key) => this.pendingDispatch.valueChange.add(key));
+      this._getSubWatchs(key).forEach((key) => this.pendingDispatch.valueChange.add(key));
     });
     this.compileValidations(Object.keys(validations));
   }

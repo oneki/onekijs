@@ -3,9 +3,8 @@ import { Primitive } from '../types/core';
 import { AnonymousObject } from '../types/object';
 import {
   Collection,
-  CollectionBroker,
-  CollectionOptions,
-  Item,
+  CollectionBroker, Item,
+  Query,
   QueryFilter,
   QueryFilterCriteria,
   QueryFilterCriteriaOperator,
@@ -14,9 +13,9 @@ import {
   QueryFilterOrCriteria,
   QuerySortBy,
   QuerySortDir,
-  UseCollectionOptions,
+  UseCollectionOptions
 } from './typings';
-import { formatFilter, formatSortBy, isSameSortBy, rootFilterId, visitFilter } from './utils';
+import { addFilter, formatFilter, formatSortBy, isSameSortBy, rootFilterId, visitFilter } from './utils';
 
 export default class DefaultCollectionBroker<
   T = any,
@@ -32,6 +31,8 @@ export default class DefaultCollectionBroker<
   protected params: AnonymousObject | undefined;
   protected currentSearch: Primitive | undefined;
   protected currentSort: QuerySortDir | undefined;
+  protected initialLimit: number | undefined;
+  protected initialOffset: number | undefined;
   protected data: T[] | undefined;
   protected url: string | undefined;
 
@@ -50,29 +51,11 @@ export default class DefaultCollectionBroker<
   }
 
   addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId: QueryFilterId = rootFilterId): void {
-    const filter = formatFilter(filterOrCriteria);
-    if (!filter) return;
+    const query = this._getQuery();
+    addFilter(query, filterOrCriteria, parentFilterId);
+    this.filters = query.filter;
 
-    const thisFilter = formatFilter(this.filters) || { id: rootFilterId, operator: 'and', criterias: [] };
-
-    visitFilter(thisFilter, (filter) => {
-      if (filter.id === parentFilterId) {
-        let index = -1;
-        if (filterOrCriteria.id !== undefined) {
-          index = filter.criterias.findIndex((entry) => filterOrCriteria.id === entry.id);
-        }
-        if (index === -1) {
-          filter.criterias.push(filterOrCriteria);
-        } else {
-          filter.criterias[index] = filterOrCriteria;
-        }
-        return true;
-      }
-      return false;
-    });
-    this.filters = thisFilter;
-
-    this.subscribers.forEach((s) => s.addFilter(filter, parentFilterId));
+    this.subscribers.forEach((s) => s.addFilter(filterOrCriteria, parentFilterId));
   }
 
   addFilterCriteria(
@@ -115,6 +98,13 @@ export default class DefaultCollectionBroker<
     const index = this.subscribers.indexOf(subscriber);
     if (index === -1) {
       this.subscribers.push(subscriber);
+      if (Array.isArray(this.data)) {
+        subscriber.setData(this.data, this.getInitialQuery());
+      } else if (this.url !== undefined) {
+        subscriber.setUrl(this.url, this.getInitialQuery());
+      } else {
+        subscriber.query(this.getInitialQuery());
+      }
     }
   }
 
@@ -161,17 +151,16 @@ export default class DefaultCollectionBroker<
     this.subscribers.forEach((s) => s.filter(filter));
   }
 
-  getInitialQuery(): Pick<
-    CollectionOptions<T, I>,
-    'initialFields' | 'initialFilter' | 'initialParams' | 'initialSearch' | 'initialSort' | 'initialSortBy'
-  > {
+  getInitialQuery(): Query {
     return {
-      initialFilter: this.filters,
-      initialSortBy: this.sortBys,
-      initialFields: this.fields,
-      initialSearch: this.currentSearch,
-      initialSort: this.currentSort,
-      initialParams: this.params,
+      filter: formatFilter(this.filters),
+      sortBy: formatSortBy(this.sortBys),
+      fields: this.fields,
+      search: this.currentSearch,
+      sort: this.currentSort,
+      params: this.params,
+      limit: this.initialLimit,
+      offset: this.initialOffset,
     };
   }
 
@@ -254,5 +243,16 @@ export default class DefaultCollectionBroker<
   sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void {
     this.sortBys = formatSortBy(sortBy);
     this.subscribers.forEach((s) => s.sortBy(sortBy));
+  }
+
+  protected _getQuery(): Query {
+    return {
+      filter: formatFilter(this.filters),
+      sortBy: formatSortBy(this.sortBys),
+      fields: this.fields,
+      search: this.currentSearch,
+      sort: this.currentSort,
+      params: this.params,
+    };
   }
 }

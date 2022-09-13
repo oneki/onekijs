@@ -245,6 +245,7 @@ export { default as useTreeInitialState } from './components/tree/hooks/useTreeI
 export { default as useTreeService, TreeServiceContext } from './components/tree/hooks/useTreeService';
 export { TreeStateContext, useTreeState } from './components/tree/hooks/useTreeState';
 export { default as TreeService } from './components/tree/TreeService';
+export { defaultTreeQueryEngine } from './components/tree/util';
 export {
   ArrayTreeProps,
   ControllerTreeProps,
