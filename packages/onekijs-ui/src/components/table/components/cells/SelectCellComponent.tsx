@@ -12,27 +12,25 @@ const SelectCellComponent = (
 ): React.FC<TableBodyCellProps> => {
   const SelectCellComponent: React.FC<TableBodyCellProps> = ({ item, column, rowIndex }) => {
     const { tableName } = useFormTableContext();
-    const controller = useSelectController(
-      options.dataSource,
-      options,
-    );
+    const controller = useSelectController(options.dataSource, options);
     const service = controller.asService();
     const className =
       typeof options.className === 'function' ? options.className(item, column, rowIndex) : options.className;
+    const name = `${tableName}.${rowIndex}.${column.id}`;
 
     useEffect(() => {
-      broker.addSubscriber(service);
+      broker.addSubscriber(name, service);
       return () => {
-        broker.removeSubscriber(service);
+        broker.removeSubscriber(name);
       };
-    }, [service]);
+    }, [name, service]);
 
     return (
       <FormSelect
         size="small"
         layout="table"
         {...options}
-        name={`${tableName}.${rowIndex}.${column.id}`}
+        name={name}
         className={addClassname('o-table-select', className)}
         controller={controller}
       />

@@ -22,7 +22,9 @@ import {
   CollectionStatus,
   Item,
   LoadingItemStatus,
-  LoadingStatus, LocalQuery, Query,
+  LoadingStatus,
+  LocalQuery,
+  Query,
   QueryFilter,
   QueryFilterCriteria,
   QueryFilterCriteriaOperator,
@@ -32,7 +34,9 @@ import {
   QuerySearcher,
   QuerySerializerResult,
   QuerySortBy,
-  QuerySortByField, QuerySortComparator, QuerySortDir
+  QuerySortByField,
+  QuerySortComparator,
+  QuerySortDir,
 } from './typings';
 import {
   addFilter as aFilter,
@@ -50,7 +54,7 @@ import {
   rootFilterId,
   shouldResetData,
   urlSerializer,
-  visitFilter
+  visitFilter,
 } from './utils';
 
 export default class CollectionService<
@@ -761,7 +765,6 @@ export default class CollectionService<
       resetData,
     });
   }
-
 
   @saga(SagaEffect.Latest)
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types

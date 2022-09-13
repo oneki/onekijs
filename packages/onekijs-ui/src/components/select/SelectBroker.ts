@@ -12,8 +12,10 @@ export default class DefaultSelectBroker<
 {
   protected defaultValue: T | T[] | null | undefined;
 
-  setDefaultValue(defaultValue: T | T[] | null | undefined): void {
-    this.defaultValue = defaultValue;
-    this.subscribers.forEach((s) => s.setDefaultValue(defaultValue));
+  setDefaultValue(defaultValue: T | T[] | null | undefined, subscriberId?: string): void {
+    if (subscriberId === undefined) {
+      this.defaultValue = defaultValue;
+    }
+    this._getSubscribers(subscriberId).forEach((s) => s.setDefaultValue(defaultValue));
   }
 }

@@ -1,9 +1,11 @@
 import { CollectionState } from '..';
 import { Primitive } from '../types/core';
 import { AnonymousObject } from '../types/object';
+import { toArray } from '../utils/object';
 import {
   Collection,
-  CollectionBroker, Item,
+  CollectionBroker,
+  Item,
   Query,
   QueryFilter,
   QueryFilterCriteria,
@@ -13,7 +15,7 @@ import {
   QueryFilterOrCriteria,
   QuerySortBy,
   QuerySortDir,
-  UseCollectionOptions
+  UseCollectionOptions,
 } from './typings';
 import { addFilter, formatFilter, formatSortBy, isSameSortBy, rootFilterId, visitFilter } from './utils';
 
@@ -24,7 +26,7 @@ export default class DefaultCollectionBroker<
   C extends Collection<T, I, S> = Collection<T, I, S>,
 > implements CollectionBroker<T, I, S>
 {
-  protected subscribers: C[] = [];
+  protected subscribers: AnonymousObject<C> = {};
   protected filters: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | undefined;
   protected sortBys: string | QuerySortBy | QuerySortBy[] | undefined;
   protected fields: string[] | undefined;
@@ -50,12 +52,17 @@ export default class DefaultCollectionBroker<
     this.currentSort = options.initialSort;
   }
 
-  addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId: QueryFilterId = rootFilterId): void {
-    const query = this._getQuery();
-    addFilter(query, filterOrCriteria, parentFilterId);
-    this.filters = query.filter;
-
-    this.subscribers.forEach((s) => s.addFilter(filterOrCriteria, parentFilterId));
+  addFilter(
+    filterOrCriteria: QueryFilterOrCriteria,
+    parentFilterId: QueryFilterId = rootFilterId,
+    subscriberId?: string,
+  ): void {
+    if (subscriberId === undefined) {
+      const query = this._getQuery();
+      addFilter(query, filterOrCriteria, parentFilterId);
+      this.filters = query.filter;
+    }
+    this._getSubscribers(subscriberId).forEach((s) => s.addFilter(filterOrCriteria, parentFilterId));
   }
 
   addFilterCriteria(
@@ -65,6 +72,7 @@ export default class DefaultCollectionBroker<
     not?: boolean | undefined,
     id?: string | number | symbol | undefined,
     parentFilterId?: string | number | symbol | undefined,
+    subscriberId?: string,
   ): void {
     this.addFilter(
       {
@@ -75,29 +83,31 @@ export default class DefaultCollectionBroker<
         id,
       },
       parentFilterId,
+      subscriberId,
     );
   }
 
-  addSortBy(sortBy: QuerySortBy, prepend?: boolean): void {
-    const sortBys = formatSortBy(this.sortBys);
-    if (sortBys) {
-      this.sortBys = sortBys.filter((s) => !isSameSortBy(sortBy, s));
+  addSortBy(sortBy: QuerySortBy, prepend?: boolean, subscriberId?: string): void {
+    if (subscriberId === undefined) {
+      const sortBys = formatSortBy(this.sortBys);
+      if (sortBys) {
+        this.sortBys = sortBys.filter((s) => !isSameSortBy(sortBy, s));
+      }
+      const currentSortBy = (formatSortBy(this.sortBys) || []).slice(0);
+      if (prepend) {
+        currentSortBy.unshift(sortBy);
+      } else {
+        currentSortBy.push(sortBy);
+      }
+      this.sortBys = currentSortBy;
     }
 
-    const currentSortBy = (formatSortBy(this.sortBys) || []).slice(0);
-    if (prepend) {
-      currentSortBy.unshift(sortBy);
-    } else {
-      currentSortBy.push(sortBy);
-    }
-    this.sortBys = currentSortBy;
-    this.subscribers.forEach((s) => s.addSortBy(sortBy, prepend));
+    this._getSubscribers(subscriberId).forEach((s) => s.addSortBy(sortBy, prepend));
   }
 
-  addSubscriber(subscriber: C): void {
-    const index = this.subscribers.indexOf(subscriber);
-    if (index === -1) {
-      this.subscribers.push(subscriber);
+  addSubscriber(id: string, subscriber: C): void {
+    if (!this.subscribers[id]) {
+      this.subscribers[id] = subscriber;
       if (Array.isArray(this.data)) {
         subscriber.setData(this.data, this.getInitialQuery());
       } else if (this.url !== undefined) {
@@ -108,47 +118,61 @@ export default class DefaultCollectionBroker<
     }
   }
 
-  clearFields(): void {
-    this.fields = [];
-    this.subscribers.forEach((s) => s.clearFields());
+  clearFields(subscriberId?: string): void {
+    if (subscriberId === undefined) {
+      this.fields = [];
+    }
+    this._getSubscribers(subscriberId).forEach((s) => s.clearFields());
   }
 
-  clearFilter(): void {
-    this.filters = [];
-    this.subscribers.forEach((s) => s.clearFilter());
+  clearFilter(subscriberId?: string): void {
+    if (subscriberId === undefined) {
+      this.filters = [];
+    }
+    this._getSubscribers(subscriberId).forEach((s) => s.clearFilter());
   }
 
-  clearParam(key: string): void {
-    if (this.params !== undefined) {
+  clearParam(key: string, subscriberId?: string): void {
+    if (this.params !== undefined && subscriberId === undefined) {
       delete this.params[key];
     }
 
-    this.subscribers.forEach((s) => s.clearParam(key));
+    this._getSubscribers(subscriberId).forEach((s) => s.clearParam(key));
   }
 
-  clearParams(): void {
-    this.params = {};
-    this.subscribers.forEach((s) => s.clearParams());
+  clearParams(subscriberId?: string): void {
+    if (subscriberId === undefined) {
+      this.params = {};
+    }
+    this._getSubscribers(subscriberId).forEach((s) => s.clearParams());
   }
 
-  clearSearch(): void {
-    this.currentSearch = undefined;
-    this.subscribers.forEach((s) => s.clearSearch());
+  clearSearch(subscriberId?: string): void {
+    if (subscriberId === undefined) {
+      this.currentSearch = undefined;
+    }
+    this._getSubscribers(subscriberId).forEach((s) => s.clearSearch());
   }
 
-  clearSort(): void {
-    this.currentSort = undefined;
-    this.subscribers.forEach((s) => s.clearSort());
+  clearSort(subscriberId?: string): void {
+    if (subscriberId === undefined) {
+      this.currentSort = undefined;
+    }
+    this._getSubscribers(subscriberId).forEach((s) => s.clearSort());
   }
 
-  clearSortBy(): void {
-    this.sortBys = [];
-    this.subscribers.forEach((s) => s.clearSortBy());
+  clearSortBy(subscriberId?: string): void {
+    if (subscriberId === undefined) {
+      this.sortBys = [];
+    }
+    this._getSubscribers(subscriberId).forEach((s) => s.clearSortBy());
   }
 
-  filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[]): void {
-    this.filters = formatFilter(filter);
-    this.subscribers.forEach((s) => s.filter(filter));
+  filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[], subscriberId?: string): void {
+    if (subscriberId === undefined) {
+      this.filters = formatFilter(filter);
+    }
+    this._getSubscribers(subscriberId).forEach((s) => s.filter(filter));
   }
 
   getInitialQuery(): Query {
@@ -171,78 +195,108 @@ export default class DefaultCollectionBroker<
     return this.url;
   }
 
-  removeFilter(id: QueryFilterId): void {
-    const filter = formatFilter(this.filters);
-    if (filter) {
-      visitFilter(filter, (filter) => {
-        for (const i in filter.criterias) {
-          if (filter.criterias[i].id === id) {
-            filter.criterias.splice(parseInt(i), 1);
-            return true;
+  removeFilter(id: QueryFilterId, subscriberId?: string): void {
+    if (subscriberId === undefined) {
+      const filter = formatFilter(this.filters);
+      if (filter) {
+        visitFilter(filter, (filter) => {
+          for (const i in filter.criterias) {
+            if (filter.criterias[i].id === id) {
+              filter.criterias.splice(parseInt(i), 1);
+              return true;
+            }
           }
-        }
-        return false;
-      });
-      this.filters = filter;
+          return false;
+        });
+        this.filters = filter;
+      }
     }
 
-    this.subscribers.forEach((s) => s.removeFilter(id));
+    this._getSubscribers(subscriberId).forEach((s) => s.removeFilter(id));
   }
 
-  removeSortBy(id: string): void {
-    const sortBy = formatSortBy(this.sortBys);
-    if (sortBy) {
-      this.sortBys = sortBy.filter((sort) => sort.id !== id);
+  removeSortBy(id: string, subscriberId?: string): void {
+    if (subscriberId === undefined) {
+      const sortBy = formatSortBy(this.sortBys);
+      if (sortBy) {
+        this.sortBys = sortBy.filter((sort) => sort.id !== id);
+      }
     }
-    this.subscribers.forEach((s) => s.removeSortBy(id));
+    this._getSubscribers(subscriberId).forEach((s) => s.removeSortBy(id));
   }
 
-  removeSubscriber(subscriber: C): void {
-    this.subscribers = this.subscribers.filter((s) => s !== subscriber);
+  removeSubscriber(id: string): void {
+    delete this.subscribers[id];
   }
 
-  search(search: Primitive): void {
-    this.currentSearch = search;
-    this.subscribers.forEach((s) => s.search(search));
+  search(search: Primitive, subscriberId?: string): void {
+    if (subscriberId === undefined) {
+      this.currentSearch = search;
+    }
+    this._getSubscribers(subscriberId).forEach((s) => s.search(search));
   }
 
-  setData(data: T[]): void {
-    this.data = data;
-    this.subscribers.forEach((s) => s.setData(data));
+  setData(data: T[], query?: Query, subscriberId?: string): void {
+    if (subscriberId === undefined) {
+      this.data = data;
+      if (query) {
+        this._setQuery(query);
+      }
+    }
+    this._getSubscribers(subscriberId).forEach((s) => s.setData(data, query));
   }
 
-  setFields(fields: string[]): void {
-    this.fields = [];
-    this.subscribers.forEach((s) => s.setFields(fields));
+  setFields(fields: string[], subscriberId?: string): void {
+    if (subscriberId === undefined) {
+      this.fields = [];
+    }
+    this._getSubscribers(subscriberId).forEach((s) => s.setFields(fields));
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  setParam(key: string, value: any): void {
-    if (this.params === undefined) {
-      this.params = {};
+  setParam(key: string, value: any, subscriberId?: string): void {
+    if (subscriberId === undefined) {
+      if (this.params === undefined) {
+        this.params = {};
+      }
+      this.params[key] = value;
     }
-    this.params[key] = value;
-    this.subscribers.forEach((s) => s.setParam(key, value));
+    this._getSubscribers(subscriberId).forEach((s) => s.setParam(key, value));
   }
 
-  setParams(params: AnonymousObject): void {
-    this.params = params;
-    this.subscribers.forEach((s) => s.setParams(params));
+  setParams(params: AnonymousObject, subscriberId?: string): void {
+    if (subscriberId === undefined) {
+      this.params = params;
+    }
+    this._getSubscribers(subscriberId).forEach((s) => s.setParams(params));
   }
 
-  setUrl(url: string): void {
-    this.url = url;
-    this.subscribers.forEach((s) => s.setUrl(url));
+  setUrl(url: string, query?: Query, subscriberId?: string): void {
+    if (subscriberId === undefined) {
+      this.url = url;
+      if (query) {
+        this._setQuery(query);
+      }
+    }
+    this._getSubscribers(subscriberId).forEach((s) => s.setUrl(url, query));
   }
 
-  sort(dir: QuerySortDir): void {
-    this.currentSort = dir;
-    this.subscribers.forEach((s) => s.sort(dir));
+  sort(dir: QuerySortDir, subscriberId?: string): void {
+    if (subscriberId === undefined) {
+      this.currentSort = dir;
+    }
+    this._getSubscribers(subscriberId).forEach((s) => s.sort(dir));
   }
 
-  sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void {
-    this.sortBys = formatSortBy(sortBy);
-    this.subscribers.forEach((s) => s.sortBy(sortBy));
+  sortBy(sortBy: string | QuerySortBy | QuerySortBy[], subscriberId?: string): void {
+    if (subscriberId === undefined) {
+      this.sortBys = formatSortBy(sortBy);
+    }
+    this._getSubscribers(subscriberId).forEach((s) => s.sortBy(sortBy));
+  }
+
+  protected _getSubscribers(subscriberId?: string) {
+    return subscriberId !== undefined ? toArray(this.subscribers[subscriberId]) : Object.values(this.subscribers);
   }
 
   protected _getQuery(): Query {
@@ -254,5 +308,14 @@ export default class DefaultCollectionBroker<
       sort: this.currentSort,
       params: this.params,
     };
+  }
+
+  protected _setQuery(query: Query): void {
+    this.filters = query.filter;
+    this.sortBys = query.sortBy;
+    this.fields = query.fields;
+    this.currentSearch = query.search;
+    this.currentSort = query.sort;
+    this.params = query.params;
   }
 }

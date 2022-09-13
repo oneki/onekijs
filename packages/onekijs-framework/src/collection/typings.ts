@@ -108,11 +108,42 @@ export type CollectionBroker<
   I extends Item<T> = Item<T>,
   S extends CollectionState<T, I> = CollectionState<T, I>,
   C extends Collection<T, I, S> = Collection<T, I, S>,
-> = CollectionBase<T> & {
-  addSubscriber(subscriber: C): void;
+> = {
+  addSubscriber(id: string, subscriber: C): void;
   getInitialDataSource(): T[] | string | undefined;
   getInitialQuery(): Query;
-  removeSubscriber(collection: C): void;
+  removeSubscriber(id: string): void;
+
+  addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId?: QueryFilterId, subscriberId?: string): void;
+  addFilterCriteria(
+    field: string,
+    operator: QueryFilterCriteriaOperator,
+    value: QueryFilterCriteriaValue | QueryFilterCriteriaValue[],
+    not?: boolean,
+    id?: QueryFilterId,
+    parentFilterId?: QueryFilterId,
+    subscriberId?: string,
+  ): void;
+  addSortBy(sortBy: QuerySortBy, prepend?: boolean): void;
+
+  clearFields(subscriberId?: string): void;
+  clearFilter(subscriberId?: string): void;
+  clearParams(subscriberId?: string): void;
+  clearParam(key: string, subscriberId?: string): void;
+  clearSearch(subscriberId?: string): void;
+  clearSort(subscriberId?: string): void;
+  clearSortBy(subscriberId?: string): void;
+  filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | null, subscriberId?: string): void;
+  removeFilter(filterId: QueryFilterId, subscriberId?: string): void;
+  removeSortBy(id: string, subscriberId?: string): void;
+  search(search: Primitive, subscriberId?: string): void;
+  setData(data: T[], query?: Query, subscriberId?: string): void;
+  setFields(fields: string[], subscriberId?: string): void;
+  setParam(key: string, value: any, subscriberId?: string): void;
+  setParams(params: AnonymousObject, subscriberId?: string): void;
+  setUrl(url: string, query?: Query, subscriberId?: string): void;
+  sort(dir: QuerySortDir, subscriberId?: string): void;
+  sortBy(sortBy: string | QuerySortBy | QuerySortBy[], subscriberId?: string): void;
 };
 
 export type CollectionBy<T, I extends Item<T> = Item<T>> = {

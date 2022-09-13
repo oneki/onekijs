@@ -122,7 +122,7 @@ export type SelectBroker<
   S extends SelectState<T, I> = SelectState<T, I>,
   C extends SelectController<T, I, S> = SelectController<T, I, S>,
 > = CollectionBroker<T, I, S, C> & {
-  setDefaultValue: (defaultValue: T | T[] | null | undefined) => void;
+  setDefaultValue: (defaultValue: T | T[] | null | undefined, subscriberId?: string) => void;
 };
 
 export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omit<ListConfig<T, I>, 'ItemComponent'> & {

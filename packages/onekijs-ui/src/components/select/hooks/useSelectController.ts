@@ -3,17 +3,16 @@ import { UseListOptions } from '../../list/typings';
 import SelectService from '../SelectService';
 import { SelectItem, SelectState } from '../typings';
 
-const useSelectController = <T = any>(
+const useSelectController = <T = any, I extends SelectItem<T> = SelectItem<T>>(
   dataSource: T[] | string | undefined,
-  options: UseListOptions<T, SelectItem<T>> = {},
-): CollectionProxy<
-  T,
-  SelectItem<T>,
-  SelectState<T, SelectItem<T>>,
-  SelectService<T, SelectItem<T>, SelectState<T, SelectItem<T>>>
-> => {
-  const initialState = useCollectionInitialState(dataSource, Object.assign({ initialLimit: 20 }, options));
-  const collection = useCollectionProxy(dataSource, SelectService, initialState);
+  options: UseListOptions<T, I> = {},
+): CollectionProxy<T, I, SelectState<T, I>, SelectService<T, I, SelectState<T, I>>> => {
+  const initialState = useCollectionInitialState<T, I>(dataSource, Object.assign({ initialLimit: 20 }, options));
+  const collection = useCollectionProxy<T, I, SelectState<T, I>, SelectService<T, I, SelectState<T, I>>>(
+    dataSource,
+    SelectService,
+    initialState,
+  );
 
   return collection;
 };

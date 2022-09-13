@@ -447,8 +447,9 @@ export const isGetterOrSetter = (obj: any, property: string): boolean => {
   return descriptor !== undefined && (descriptor.get !== undefined || descriptor.set !== undefined);
 };
 
-export const toArray = <T>(a: T | T[]): T[] => {
+export const toArray = <T>(a: T | T[] | undefined): T[] => {
   if (Array.isArray(a)) return a;
+  if (a === undefined) return [];
   return [a];
 };
 

@@ -30,7 +30,7 @@ import {
   ValidationResult,
   Validator,
   ValidatorAsyncFunction,
-  ValidatorSyncFunction
+  ValidatorSyncFunction,
 } from './typings';
 import { getNonIndexedProp } from './utils';
 
@@ -265,7 +265,7 @@ export default class FormService extends DefaultService<FormState> {
 
   protected _getSubWatchs(watch: string): string[] {
     const nonIndexedWatch = getNonIndexedProp(watch);
-    let result: string[] = [];
+    const result: string[] = [];
     // check if the index if something listens on the key "watch"
     const index = watch === '' ? this.watchIndex[''] : get(this.watchIndex, watch);
     if (index) {
@@ -278,7 +278,6 @@ export default class FormService extends DefaultService<FormState> {
         result.push(watch);
       }
     }
-
 
     // if the value "addresses" changes, addresses.0.street should be alerted, .....
     result.concat(this._getSubFieldNames(watch));
@@ -293,7 +292,6 @@ export default class FormService extends DefaultService<FormState> {
     //     result = result.concat(this._getSubWatchs(`${watch}.${k}`, value[k]));
     //   });
     // }
-
 
     // if addresses.0.street is changed, addresses should be alerted (becasue the object has been changed)
     // we will also alert adresses.street but it would be done in form/index.tsx
