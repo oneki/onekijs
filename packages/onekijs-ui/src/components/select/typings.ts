@@ -154,6 +154,7 @@ export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omi
   disabled?: boolean;
   defaultValue?: T | T[] | null;
   required?: boolean;
+  sameWidth?: boolean;
 };
 
 export type SelectState<T = any, I extends SelectItem<T> = SelectItem<T>> = ListState<T, I> & {

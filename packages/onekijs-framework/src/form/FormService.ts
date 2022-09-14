@@ -456,23 +456,19 @@ export default class FormService extends DefaultService<FormState> {
 
   @reducer
   insert(fieldArrayName: string, index: number, initialValue = {}): void {
-    // get current value
-    this.setValue(`${fieldArrayName}.${index}`, initialValue || {});
-
-
     const currentArrayValue = get(this.state.values, fieldArrayName, []);
     if (currentArrayValue.length - 1 >= index) {
       const nextValues: AnonymousObject = {};
       // need to modifiy all values / metadata / validations with an index superior or equal to the added one
-      for (let i = currentArrayValue.length-1; i >= index; i--) {
+      for (let i = currentArrayValue.length - 1; i >= index; i--) {
         Object.keys(currentArrayValue[i]).forEach((fieldName) => {
           this.state.validations[`${fieldArrayName}.${i + 1}.${fieldName}`] =
             this.state.validations[`${fieldArrayName}.${i}.${fieldName}`];
           this.state.metadata[`${fieldArrayName}.${i + 1}.${fieldName}`] =
             this.state.metadata[`${fieldArrayName}.${i}.${fieldName}`];
 
-          if (i === currentArrayValue.length-1) {
-            const name = `${fieldArrayName}.${i+1}.${fieldName}`;
+          if (i === currentArrayValue.length - 1) {
+            const name = `${fieldArrayName}.${i + 1}.${fieldName}`;
             this.addField(
               Object.assign({}, this.fields[`${fieldArrayName}.${i}.${fieldName}`], {
                 name,
@@ -518,14 +514,16 @@ export default class FormService extends DefaultService<FormState> {
           this.pendingDispatch.metadataChange.add(`${fieldArrayName}.${i + 1}.${fieldName}`);
         });
       }
-      del(this.fieldIndex, `${fieldArrayName}.${index}`)
       this.pendingDispatch.validationChange.add('');
 
-      nextValues[fieldArrayName][index] = initialValue || {};
+      nextValues[fieldArrayName] = (currentArrayValue.slice(0, index) as any[])
+        .concat([initialValue])
+        .concat(currentArrayValue.slice(index) as any[]);
+
       this.setValues(nextValues);
+    } else {
+      this.add(fieldArrayName, initialValue);
     }
-
-
   }
 
   isTouched(fieldName: string): boolean {

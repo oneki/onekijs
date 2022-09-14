@@ -9,6 +9,8 @@ import {
   last,
   Primitive,
   useEventListener,
+  useIsomorphicLayoutEffect,
+  useThrottle,
   ValidationStatus,
 } from 'onekijs-framework';
 import React, { FC, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
@@ -51,12 +53,14 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   openOnFocus = false,
   clickable = true,
   dropdownWidthModifier = 'same',
-  preload = 100,
-  increment = 100,
+  preload = 50,
+  increment = 50,
   animationMs = 200,
   disabled,
   defaultValue,
   required = false,
+  sameWidth = true,
+  overscan,
 }) => {
   if (nullable === undefined) {
     nullable = !required;
@@ -95,6 +99,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
     animationMs,
     disabled,
     defaultValue,
+    sameWidth,
   };
 
   const id = useId();
@@ -404,6 +409,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
     height: height,
     ref: optionsRef,
     preload,
+    overscan,
     increment,
   });
 
@@ -432,6 +438,43 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
 
   useEventListener('keydown', onKeyDownCapture, true);
   useEventListener('keydown', onKeyDown, false);
+
+  const update = useCallback(() => {
+    if (optionsRef.current && !sameWidth) {
+      if (optionsRef.current.scrollWidth > optionsRef.current.offsetWidth) {
+        optionsRef.current.style.width = `${
+          optionsRef.current.scrollWidth + optionsRef.current.offsetWidth - optionsRef.current.clientWidth + 5
+        }px`;
+      }
+    }
+  }, [sameWidth]);
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  const throttleUpdate = useThrottle(update, 20);
+
+  const resizeObserver = useMemo(() => {
+    return new ResizeObserver(() => {
+      throttleUpdate();
+    });
+  }, [throttleUpdate]);
+
+  useIsomorphicLayoutEffect(() => {
+    const el = optionsRef;
+    if (el.current) {
+      resizeObserver.observe(el.current);
+    }
+    return () => {
+      if (el.current) {
+        resizeObserver.unobserve(el.current);
+      }
+    };
+  }, [optionsRef]);
+
+  useIsomorphicLayoutEffect(() => {
+    if (open) {
+      setTimeout(update, 0);
+    }
+  }, [open, update]);
 
   return (
     <SelectServiceContext.Provider value={service}>
