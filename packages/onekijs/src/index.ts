@@ -499,7 +499,9 @@ export {
   visitFilter,
   withLayout,
   wrap,
-  xhr
+  xhr,
+  getNonIndexedProp,
+  extractWatchProps,
 } from 'onekijs-framework';
 export {
   BrowserRouter,

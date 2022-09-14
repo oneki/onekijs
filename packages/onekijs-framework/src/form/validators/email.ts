@@ -1,7 +1,7 @@
 import regex from './regex';
 import { Validator } from '../typings';
 
-const email = (message: string): Validator => {
+const email = (message?: string): Validator => {
   return regex(
     new RegExp(
       // eslint-disable-next-line

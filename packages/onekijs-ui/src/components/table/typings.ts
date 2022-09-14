@@ -10,7 +10,7 @@ import {
   UseCollectionOptions,
   ValidationStatus,
 } from 'onekijs-framework';
-import React, { FC } from 'react';
+import React, { FC, ReactNode } from 'react';
 import { TshirtSize } from '../../styles/typings';
 import { CheckboxProps } from '../checkbox/typings';
 import { FieldLayoutProps } from '../field/typings';
@@ -174,6 +174,7 @@ export type TableColumnSpec<T, I extends TableItem<T> = TableItem<T>> = {
   TitleComponent?: React.FC<TableHeaderCellProps<T, I>>;
   weight?: number;
   width?: string;
+  help?: ReactNode;
 };
 
 export type TableColumnWidth = {

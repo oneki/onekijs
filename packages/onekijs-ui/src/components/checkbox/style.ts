@@ -1,5 +1,6 @@
 import { css } from 'styled-components';
 import { alignItems } from '../../styles/alignment';
+import { backgroundColor } from '../../styles/background';
 import { borderColor, borderRadius, borderStyle, borderWidth } from '../../styles/border';
 import { display } from '../../styles/display';
 import { opacity } from '../../styles/effects';
@@ -52,6 +53,18 @@ const checkboxStyle: ComponentStyle<CheckboxProps> = ({
       ${width('full')};
     }
 
+    &.o-checkbox-disabled {
+      .o-checkbox-svg {
+        ${backgroundColor('lighter')}
+      }
+      .o-checkbox-input {
+        ${cursor('not-allowed')}
+      }
+      label {
+        ${cursor('not-allowed')}
+      }
+    }
+
     .o-checkbox-svg-stroke {
       ${stroke(checkboxColor)}
       ${fill('none')}
@@ -68,6 +81,15 @@ const checkboxStyle: ComponentStyle<CheckboxProps> = ({
       align-items: center;
       .o-checkbox-label {
         ${marginLeft('md')}
+      }
+    }
+
+    &.o-checkbox-disabled {
+      .o-checkbox-container {
+        ${borderColor('dark')}
+      }
+      .o-checkbox-svg-stroke {
+        ${borderColor('dark')}
       }
     }
 

@@ -17,7 +17,7 @@ import { flexDirection, flexGrow, flexWrap } from '../../styles/flex';
 import { appearance, cursor, outline, userSelect } from '../../styles/interactivity';
 import { overflowY } from '../../styles/overflow';
 import { bottom, left, position, right, top, zIndex } from '../../styles/position';
-import { height, minWidth, width } from '../../styles/size';
+import { height, maxWidth, minWidth, width } from '../../styles/size';
 import { margin, marginRight, marginY, padding, paddingLeft, paddingX, paddingY } from '../../styles/spacing';
 import { verticalAlign } from '../../styles/table';
 import { transitionDuration, transitionProperty, transitionTimingFunction } from '../../styles/transition';
@@ -201,6 +201,7 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
       ${flexWrap('wrap')}
       ${alignItems('center')}
       ${paddingX('sm')}
+      ${maxWidth('calc(100% - 32px)')}
       .o-select-input-wrapper {
         ${flexGrow(1)}
         ${color('gray-800')}

@@ -3,7 +3,7 @@ import { alignItems } from '../../styles/alignment';
 import { display } from '../../styles/display';
 import { flexDirection } from '../../styles/flex';
 import { cursor } from '../../styles/interactivity';
-import { height, minHeight } from '../../styles/size';
+import { height, minHeight, width } from '../../styles/size';
 import { marginLeft, marginRight } from '../../styles/spacing';
 import { ComponentStyle } from '../../styles/typings';
 import { color, fontSize } from '../../styles/typography';
@@ -11,7 +11,9 @@ import { FieldDescriptionProps, FieldHelpProps, FieldLayoutProps } from './typin
 
 export const fieldStyle: ComponentStyle<FieldLayoutProps> = () => {
   return css`
-    ${display('flex')}
+    &.o-form-field {
+      ${display('flex')}
+    }
     &.o-form-field-vertical {
       ${flexDirection('column')}
     }
@@ -36,6 +38,16 @@ export const fieldHelpStyle: ComponentStyle<FieldHelpProps> = ({ visible = true,
       ${alignItems('center')}
       .o-tooltip {
       ${cursor(visible ? 'pointer' : 'default')}
+    }
+    &.o-helper-icon-small {
+      .o-tooltip {
+        ${width(5)}
+      }
+    }
+    &.o-helper-icon-large {
+      .o-tooltip {
+        ${width(8)}
+      }
     }
   `;
 };

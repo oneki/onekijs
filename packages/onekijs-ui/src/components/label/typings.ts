@@ -1,14 +1,14 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { FormLayout } from 'onekijs-framework';
 import { FieldDescriptionProps, FieldHelpProps } from '../field/typings';
 import { TshirtSize } from '../../styles/typings';
 
 export interface LabelProps {
   className?: string;
-  description?: string | JSX.Element;
+  description?: ReactNode;
   DescriptionComponent?: React.FC<FieldDescriptionProps>;
   htmlFor?: string | number;
-  help?: string | JSX.Element;
+  help?: ReactNode;
   HelpComponent?: React.FC<FieldHelpProps>;
   layout?: FormLayout;
   required?: boolean;

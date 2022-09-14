@@ -6,7 +6,7 @@ import {
   FormLayout,
   ValidationStatus,
 } from 'onekijs-framework';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { TshirtSize } from '../../styles/typings';
 import { GridSize } from '../grid/typings';
 import { LabelProps } from '../label/typings';
@@ -23,14 +23,14 @@ export type FieldComponentProps<T extends AnonymousObject> = T & {
 
 export type FieldDescriptionProps = {
   className?: string;
-  content: string | JSX.Element;
+  content: ReactNode;
   size?: TshirtSize;
   layout?: FormLayout;
 };
 
 export type FieldHelpProps = {
   className?: string;
-  content?: string | JSX.Element;
+  content?: ReactNode;
   visible?: boolean;
   size?: TshirtSize;
   layout?: FormLayout;
@@ -38,10 +38,10 @@ export type FieldHelpProps = {
 
 export type FieldLayoutProps = {
   className?: string;
-  description?: string | JSX.Element;
+  description?: ReactNode;
   disabled?: boolean;
   DescriptionComponent?: React.FC<FieldDescriptionProps>;
-  help?: string | JSX.Element;
+  help?: ReactNode;
   HelpComponent?: React.FC<FieldHelpProps>;
   id?: string | number;
   label?: string;

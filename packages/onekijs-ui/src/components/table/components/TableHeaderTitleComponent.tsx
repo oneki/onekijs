@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useRef } from 'react';
 import { addClassname } from '../../../utils/style';
+import FieldHelp from '../../field/FieldHelp';
 import { useTableConfig } from '../hooks/useTableConfig';
 import useTableService from '../hooks/useTableService';
 import { TableHeaderCellProps } from '../typings';
@@ -23,6 +24,7 @@ export const DefaultTableHeaderTitleComponent: FC<TableHeaderCellProps> = ({ col
   return (
     <div onClick={isSortable ? onSort : undefined} style={{ display: 'flex', alignItems: 'center' }}>
       <span className="o-table-header-title">{column.title}</span>
+      {column.help && <FieldHelp content={column.help} size="small" />}
       {isSortable && <TableSortComponent sort={sort} column={column} />}
     </div>
   );

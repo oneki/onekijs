@@ -1,6 +1,6 @@
 import { Validator } from '../typings';
 
-const min = (min: number, message: string): Validator => {
+const min = (min: number, message?: string): Validator => {
   return (value: any) => {
     if (!isNaN(value)) {
       if (!message) {

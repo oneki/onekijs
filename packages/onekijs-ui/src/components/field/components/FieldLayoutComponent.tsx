@@ -155,14 +155,14 @@ const FieldLayoutComponent: FCC<FieldLayoutProps> = React.memo(
       );
     } else if (fieldLayout === 'table') {
       return (
-        <>
+        <div className={className}>
           {children}
           <DescriptionComponent
             layout={fieldLayout}
             content={message ? message : description || ''}
             className={status !== undefined ? `o-field-description-${status}` : undefined}
           />
-        </>
+        </div>
       );
     }
     return null;

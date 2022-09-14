@@ -14,8 +14,9 @@ import {
   padding,
   paddingBottom,
   paddingRight,
+  paddingTop,
   paddingX,
-  paddingY,
+  paddingY
 } from '../../styles/spacing';
 import { verticalAlign } from '../../styles/table';
 import { transitionDuration, transitionProperty, transitionTimingFunction } from '../../styles/transition';
@@ -94,22 +95,23 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true 
       ${borderBottomStyle(t.tdBorderBottomStyle)}
       ${boxShadow('default')}
       ${backgroundColor(t.bgColor)}
+    }
 
-      .o-table-body-cell {
-        ${paddingX(t.tdPaddingX)}
-        ${paddingY(t.tdPaddingY)}
-        ${boxSizing('border-box')}
-        ${overflow('hidden')}
-        &.o-table-cell-expander {
-          ${padding(0)}
-          .o-table-cell-expander-content {
-            ${paddingX(t.tdPaddingX)}
-            ${paddingY(t.tdPaddingY)}
-            ${cursor('pointer')}
-          }
+    .o-table-body-cell {
+      ${paddingX(t.tdPaddingX)}
+      ${paddingY(t.tdPaddingY)}
+      ${boxSizing('border-box')}
+      ${overflow('hidden')}
+      &.o-table-cell-expander {
+        ${padding(0)}
+        .o-table-cell-expander-content {
+          ${paddingX(t.tdPaddingX)}
+          ${paddingY(t.tdPaddingY)}
+          ${cursor('pointer')}
         }
       }
     }
+
     .o-table-body-row-even {
       ${backgroundColor(t.tdStripBgColor)}
     }
@@ -235,14 +237,25 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true 
     .o-form-table-remove {
       ${display('inline-flex')}
       ${alignItems('center')}
-      ${color('primary')}
+      ${color('danger')}
       ${cursor('pointer')}
+      ${paddingTop('sm')}
     }
 
     .o-form-table-remove-cell {
       ${display('flex')}
-      ${alignItems('center')}
+      ${alignItems('start')}
       ${justifyContent('center')}
+    }
+
+    .o-checkbox-cell {
+      ${display('flex')}
+      ${justifyContent('center')}
+      .o-table-checkbox {
+        ${paddingTop('xs')}
+        ${display('flex')}
+        ${alignItems('start')}
+      }
     }
   `;
 };

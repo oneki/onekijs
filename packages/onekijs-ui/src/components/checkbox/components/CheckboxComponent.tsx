@@ -18,7 +18,7 @@ const CheckboxComponent: FC<CheckboxProps> = ({
   };
 
   return (
-    <div className={addClassname(`o-checkbox${status ? ' o-checkbox-status-' + status.toLowerCase() : ''}`, className)}>
+    <div className={addClassname(`o-checkbox ${checkboxProps.disabled ? 'o-checkbox-disabled' : 'o-checkbox-enabled'}${status ? ' o-checkbox-status-' + status.toLowerCase() : ''}`, className)}>
       <label htmlFor={id} onClick={(e) => e.stopPropagation()}>
         <div className="o-checkbox-container">
           <svg className="o-checkbox-svg" viewBox="-281 373 48 48">

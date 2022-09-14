@@ -1,6 +1,6 @@
 import { Validator } from '../typings';
 
-const max = (max: number, message: string): Validator => {
+const max = (max: number, message?: string): Validator => {
   return (value: any) => {
     if (!isNaN(value)) {
       if (!message) {

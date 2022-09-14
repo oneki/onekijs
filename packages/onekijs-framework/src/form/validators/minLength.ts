@@ -1,7 +1,7 @@
 import { isNullOrEmpty } from '../../utils/object';
 import { Validator } from '../typings';
 
-const minLength = (minLength: number, message: string): Validator => {
+const minLength = (minLength: number, message?: string): Validator => {
   return (value: any) => {
     if (typeof value === 'string') {
       if (isNullOrEmpty(value)) {

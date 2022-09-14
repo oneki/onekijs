@@ -1,7 +1,7 @@
 import { isNullOrEmpty } from '../../utils/object';
 import { Validator } from '../typings';
 
-const regex = (regex: string | RegExp, message: string): Validator => {
+const regex = (regex: string | RegExp, message?: string): Validator => {
   return (value: string) => {
     if (isNullOrEmpty(value)) {
       return {

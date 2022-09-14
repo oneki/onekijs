@@ -454,6 +454,80 @@ export default class FormService extends DefaultService<FormState> {
     return this.fields[name].context;
   }
 
+  @reducer
+  insert(fieldArrayName: string, index: number, initialValue = {}): void {
+    // get current value
+    this.setValue(`${fieldArrayName}.${index}`, initialValue || {});
+
+
+    const currentArrayValue = get(this.state.values, fieldArrayName, []);
+    if (currentArrayValue.length - 1 >= index) {
+      const nextValues: AnonymousObject = {};
+      // need to modifiy all values / metadata / validations with an index superior or equal to the added one
+      for (let i = currentArrayValue.length-1; i >= index; i--) {
+        Object.keys(currentArrayValue[i]).forEach((fieldName) => {
+          this.state.validations[`${fieldArrayName}.${i + 1}.${fieldName}`] =
+            this.state.validations[`${fieldArrayName}.${i}.${fieldName}`];
+          this.state.metadata[`${fieldArrayName}.${i + 1}.${fieldName}`] =
+            this.state.metadata[`${fieldArrayName}.${i}.${fieldName}`];
+
+          if (i === currentArrayValue.length-1) {
+            const name = `${fieldArrayName}.${i+1}.${fieldName}`;
+            this.addField(
+              Object.assign({}, this.fields[`${fieldArrayName}.${i}.${fieldName}`], {
+                name,
+                context: {
+                  name,
+                  onChange: (value: any): void => {
+                    if (value && value.nativeEvent && value.nativeEvent instanceof Event) {
+                      value = value.target.value;
+                    }
+                    this.setValue(name, value);
+                  },
+                  onFocus: (): void => {
+                    const field = this.fields[name];
+                    if (field.touchOn === 'focus' && !field.touched) {
+                      this.touch(name);
+                    }
+                  },
+                  onBlur: (): void => {
+                    const field = this.fields[name];
+                    if (field.touchOn === 'blur' && !field.touched) {
+                      this.touch(name);
+                    }
+                  },
+                },
+              }),
+            );
+          } else {
+            this.fields[`${fieldArrayName}.${i + 1}.${fieldName}`] = Object.assign(
+              this.fields[`${fieldArrayName}.${i}.${fieldName}`],
+              {
+                name: this.fields[`${fieldArrayName}.${i + 1}.${fieldName}`].name,
+                context: this.fields[`${fieldArrayName}.${i + 1}.${fieldName}`].context,
+              },
+            );
+          }
+
+          if (i === index) {
+            delete this.state.metadata[`${fieldArrayName}.${i}.${fieldName}`];
+            delete this.state.validations[`${fieldArrayName}.${i}.${fieldName}`];
+            delete this.fields[`${fieldArrayName}.${i}.${fieldName}`];
+          }
+          this.pendingDispatch.validationChange.add(`${fieldArrayName}.${i + 1}.${fieldName}`);
+          this.pendingDispatch.metadataChange.add(`${fieldArrayName}.${i + 1}.${fieldName}`);
+        });
+      }
+      del(this.fieldIndex, `${fieldArrayName}.${index}`)
+      this.pendingDispatch.validationChange.add('');
+
+      nextValues[fieldArrayName][index] = initialValue || {};
+      this.setValues(nextValues);
+    }
+
+
+  }
+
   isTouched(fieldName: string): boolean {
     const field = this.fields[fieldName];
     if (field) {
@@ -600,6 +674,7 @@ export default class FormService extends DefaultService<FormState> {
           this.pendingDispatch.validationChange.add(`${fieldArrayName}.${i - 1}.${fieldName}`);
           this.pendingDispatch.metadataChange.add(`${fieldArrayName}.${i - 1}.${fieldName}`);
         });
+        del(this.fieldIndex, `${fieldArrayName}.${currentArrayValue.length - 1}`);
       }
       this.pendingDispatch.validationChange.add('');
 

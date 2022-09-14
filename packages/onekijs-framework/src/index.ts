@@ -310,7 +310,7 @@ export { default as useFormWatcher } from './form/useFormWatcher';
 export { default as useSubmit } from './form/useSubmit';
 export { default as useValidation } from './form/useValidation';
 export { default as useValue } from './form/useValue';
-export { extractValidators } from './form/utils';
+export { extractValidators, getNonIndexedProp, extractWatchProps } from './form/utils';
 export { default as email } from './form/validators/email';
 export { default as max } from './form/validators/max';
 export { default as maxLength } from './form/validators/maxLength';

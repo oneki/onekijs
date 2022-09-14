@@ -12,7 +12,6 @@ import { overflow } from '../../styles/overflow';
 import { bottom, left, position, right, top, zIndex } from '../../styles/position';
 import { height, maxHeight, maxWidth, width } from '../../styles/size';
 import { marginLeft, padding } from '../../styles/spacing';
-import { transform } from '../../styles/transform';
 import { ComponentStyle, SizePropertyTheme, TLength } from '../../styles/typings';
 import { color, fontSize, fontWeight, lineHeight } from '../../styles/typography';
 import { ModalProps } from './typings';
@@ -65,7 +64,6 @@ export const modalStyle: ComponentStyle<ModalProps> = ({ width: w, height: h, si
       ${color('transparent')}
       text-shadow: 0 0 0 ${themeFontColor};
       ${cursor('pointer')}
-      ${transform('rotate(45deg)')}
     }
     .o-modal-header {
       ${fontSize('4xl')}
