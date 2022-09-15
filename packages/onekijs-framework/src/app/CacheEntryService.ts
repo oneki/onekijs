@@ -111,7 +111,7 @@ export default class CacheEntryService<T> extends DefaultGlobalService {
         fetching: false,
         error: undefined,
       });
-      const onSuccess = options.onSuccess;
+      const onSuccess = options.onFetchSuccess;
       if (onSuccess) {
         yield call(onSuccess as any, result);
       }
@@ -123,7 +123,7 @@ export default class CacheEntryService<T> extends DefaultGlobalService {
         yield cancel(loadingTask);
       }
       yield this.setError(url, e as BasicError);
-      const onError = options.onError;
+      const onError = options.onFetchError;
       if (onError) {
         yield call(onError, e as BasicError);
       } else {

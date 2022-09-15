@@ -50,7 +50,7 @@ export default class FetchService<S extends FetchState = FetchState> extends Def
       const result: Response = yield fetcher(url, method, body, options);
       yield cancel(loadingTask as Task);
       yield this.fetchSuccess(result); // to update the store and trigger a re-render.
-      const onSuccess = options.onSuccess;
+      const onSuccess = options.onFetchSuccess;
       if (onSuccess) {
         yield call(onSuccess as any, result);
       }
@@ -62,7 +62,7 @@ export default class FetchService<S extends FetchState = FetchState> extends Def
         yield cancel(loadingTask);
       }
       yield this.fetchError(e);
-      const onError = options.onError;
+      const onError = options.onFetchError;
       if (onError) {
         yield call(onError, DefaultBasicError.of(e));
       } else {

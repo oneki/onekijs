@@ -83,6 +83,7 @@ class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends 
       this.state.validDefaultValue &&
       (this.config?.value === undefined ||
         this.config?.value === null ||
+        this.config?.value === '' ||
         (Array.isArray(this.config.value) && this.config.value.length === 0))
     ) {
       yield this.setValue(value);
