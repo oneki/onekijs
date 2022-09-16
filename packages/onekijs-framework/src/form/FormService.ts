@@ -30,6 +30,8 @@ import {
   ValidationResult,
   Validator,
   ValidatorAsyncFunction,
+  ValidatorFunction,
+  ValidatorObject,
   ValidatorSyncFunction,
 } from './typings';
 import { getNonIndexedProp } from './utils';
@@ -155,7 +157,14 @@ export default class FormService extends DefaultService<FormState> {
   disableValidator(fieldName: string, validatorName: string) {
     const field = this.fields[fieldName];
     if (field) {
-      const validator = field.validators[validatorName];
+      let validator = field.validators[validatorName];
+      if (typeof validator !== 'object') {
+        field.validators[validatorName] = {
+          validator: field.validators[validatorName] as ValidatorFunction,
+          disabled: false,
+        };
+      }
+      validator = field.validators[validatorName] as ValidatorObject;
       if (validator && !validator.disabled) {
         validator.disabled = true;
         this.clearValidation(fieldName, validatorName, ValidationCode.Error, true);
@@ -172,14 +181,22 @@ export default class FormService extends DefaultService<FormState> {
   enableValidator(fieldName: string, validatorName: string): void {
     const field = this.fields[fieldName];
     if (field) {
-      const validator = field.validators[validatorName];
+      let validator = field.validators[validatorName];
+      if (typeof validator !== 'object') {
+        field.validators[validatorName] = {
+          validator: field.validators[validatorName] as ValidatorFunction,
+          disabled: false,
+        };
+      }
+      validator = field.validators[validatorName] as ValidatorObject;
       if (validator && validator.disabled) {
         validator.disabled = false;
-        const validatorSync: ValidatorSyncFunction =
-          typeof validator.validator === 'object'
-            ? (validator.validator.validator as ValidatorSyncFunction)
-            : (validator.validator as ValidatorSyncFunction);
-        this.validateSync(fieldName, validatorName, validatorSync, this.getValue(fieldName));
+        this.validateSync(
+          fieldName,
+          validatorName,
+          validator.validator as ValidatorSyncFunction,
+          this.getValue(fieldName),
+        );
         this.compileValidations(fieldName);
       }
     }
@@ -408,17 +425,10 @@ export default class FormService extends DefaultService<FormState> {
     if (!this.fields[name]) {
       options.defaultValue = options.defaultValue === undefined ? '' : options.defaultValue;
       options.touchOn = options.touchOn || this.config.touchOn || TouchOn.Blur;
-      const fieldValidators: AnonymousObject<{ disabled?: boolean; validator: Validator }> = {};
-      Object.keys(validators).forEach((k) => {
-        fieldValidators[k] = {
-          disabled: false,
-          validator: validators[k],
-        };
-      });
       this.addField(
         Object.assign({}, options, {
           name,
-          validators: fieldValidators,
+          validators,
           validations: [],
           touched: options.touchOn === TouchOn.Load,
           touchOn: options.touchOn,
@@ -978,16 +988,18 @@ export default class FormService extends DefaultService<FormState> {
         const validators = field.validators;
         tasks[fieldName] = [];
         for (const validatorName in validators) {
-          if (!validators[validatorName].disabled) {
-            const validator = validators[validatorName].validator;
-            if (typeof validator === 'object' && validator.async === true) {
+          const validator = validators[validatorName];
+          const disabled = typeof validator === 'object' && validator.disabled === true;
+          const async = typeof validator === 'object' && validator.async === true;
+          if (!disabled) {
+            if (async) {
               this.setValidation(fieldName, validatorName, ValidationCode.Loading, '', false);
               this.callSaga(
                 'validateAsync',
                 fieldName,
                 validatorName,
                 validator.validator as ValidatorAsyncFunction,
-                get(values[key], fieldName.substr(key.length + 1)),
+                get(values[key], fieldName.slice(key.length + 1)),
               );
             } else {
               const validatorSync: ValidatorSyncFunction =
@@ -998,7 +1010,7 @@ export default class FormService extends DefaultService<FormState> {
                 fieldName,
                 validatorName,
                 validatorSync,
-                get(values[key], fieldName.substr(key.length + 1)),
+                get(values[key], fieldName.slice(key.length + 1)),
               );
             }
           }

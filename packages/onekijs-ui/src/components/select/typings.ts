@@ -81,7 +81,15 @@ export interface SelectInputProps<T = any, I extends SelectItem<T> = SelectItem<
   minChars: number;
 }
 
-export type SelectItem<T = any> = ListItem<T>;
+export type SelectItem<T = any> = ListItem<T> & {
+  group?:
+    | string
+    | {
+        text: string;
+        [k: string]: any;
+      };
+  type: 'standard' | 'group';
+};
 
 export type SelectItemAdaptee = ListItemAdaptee;
 

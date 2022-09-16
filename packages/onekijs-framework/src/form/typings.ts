@@ -22,7 +22,7 @@ export interface Field extends FieldOptions {
   name: string;
   validations: AnonymousObject<string>[];
   touchOn: TouchOnType;
-  validators: AnonymousObject<{ disabled?: boolean; validator: Validator }>;
+  validators: AnonymousObject<Validator>;
   context: FieldProps;
 }
 
@@ -157,7 +157,7 @@ export interface UseForm {
   add: (fieldArrayName: string, initialValue?: any) => void;
   clearValidation: (fieldName: string, validatorName: string, code: ValidationCode) => void;
   fetching: boolean;
-  field: (name: string, validators?: Validator[], options?: FieldOptions) => FieldProps;
+  field: (name: string, validators?: AnonymousObject<Validator>, options?: FieldOptions) => FieldProps;
   Form: FCC<FormProps>;
   getValue<T = any>(fieldName: string): T | undefined;
   getValue<T = any>(fieldName: string, defaultValue: undefined): T | undefined;
@@ -207,16 +207,16 @@ export type ValidatorsType = {
   minMessage?: string;
   max?: number;
   maxMessage?: string;
-  validators?: Validator[];
+  validators?: AnonymousObject<Validator>;
 };
 
 export type ValidatorFunction = ValidatorSyncFunction | ValidatorAsyncFunction;
 export type ValidatorSyncFunction = (value: any) => ValidationResult;
 export type ValidatorAsyncFunction = (value: any) => Promise<ValidationResult>;
+export type ValidatorObject = {
+  async?: boolean;
+  disabled?: boolean;
+  validator: ValidatorFunction;
+};
 
-export type Validator =
-  | ValidatorFunction
-  | {
-      async: boolean;
-      validator: ValidatorFunction;
-    };
+export type Validator = ValidatorFunction | ValidatorObject;
