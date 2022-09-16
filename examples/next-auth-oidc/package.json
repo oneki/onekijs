@@ -14,7 +14,7 @@
     "autoprefixer": "^9.7.6",
     "axios": "^0.19.2",
     "dotenv-load": "^2.0.0",
-    "jose": "^1.27.0",
+    "jose": "^4.9.2",
     "next": "^9.3.5",
     "next-env": "^1.1.1",
     "onekijs": "^0.11.0",
