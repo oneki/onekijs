@@ -5,7 +5,7 @@ import {
   CollectionBroker,
   CollectionProxy,
   FormFieldProps,
-  ValidationStatus,
+  ValidationStatus
 } from 'onekijs-framework';
 import React, { FC } from 'react';
 import { TshirtSize } from '../../styles/typings';
@@ -19,7 +19,7 @@ import {
   ListItemHandler,
   ListItemProps,
   ListNotFoundProps,
-  ListState,
+  ListState
 } from '../list/typings';
 
 export type ArraySelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = SelectConfig<T, I> & {
@@ -81,17 +81,18 @@ export interface SelectInputProps<T = any, I extends SelectItem<T> = SelectItem<
   minChars: number;
 }
 
-export type SelectItem<T = any> = ListItem<T> & {
-  group?:
-    | string
-    | {
-        text: string;
-        [k: string]: any;
-      };
-  type: 'standard' | 'group';
+export type SelectGroup = string | {
+  text: string;
+  [k: string]: any;
 };
 
-export type SelectItemAdaptee = ListItemAdaptee;
+export type SelectItem<T = any> = ListItem<T> & {
+  group?: SelectGroup;
+};
+
+export type SelectItemAdaptee = ListItemAdaptee & {
+  group?: SelectGroup;
+};
 
 export type SelectItemAdapter<T = any> = ListItemAdapter<T>;
 
@@ -155,6 +156,7 @@ export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omi
   clickable?: boolean;
   dropdownWidthModifier?: DropdownWidthModifier;
   OptionComponent?: FC<SelectOptionProps>;
+  OptionGroupComponent?: FC<SelectOptionProps>;
   OptionContentComponent?: FC<SelectOptionProps>;
   OptionLoadingComponent?: FC;
   MultiOptionsComponent?: FC<SelectOptionProps>;

@@ -783,9 +783,6 @@ export default class CollectionService<
         } else {
           yield this.setData(result[this.state.dataKey]);
         }
-        if (this.state.fetchOptions?.onFetchSuccess) {
-          yield this.state.fetchOptions.onFetchSuccess(result);
-        }
       } catch (e) {
         if (process.env.NODE_ENV === 'development') {
           console.error('Fetch error', e);
@@ -804,14 +801,11 @@ export default class CollectionService<
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   protected *_fetch(query: Query, resetData: boolean) {
     const options = this.state.fetchOptions || {};
-    const { onFetchSuccess, onFetchError } = options;
+    const { onFetchError } = options;
 
     try {
       const result: CollectionFetcherResult<T> = yield this._executeFetch(query, options, resetData);
       yield this._fetchSuccess(result, resetData, query); // to update the store and trigger a re-render.
-      if (onFetchSuccess) {
-        yield onFetchSuccess(result);
-      }
     } catch (e) {
       if (process.env.NODE_ENV === 'development') {
         console.error('Fetch error', e);
@@ -856,7 +850,12 @@ export default class CollectionService<
         const fetchOptions = method === HttpMethod.Get ? Object.assign({}, options, { query: oQuery }) : options;
         result = yield fetcher(this.url, method, body, fetchOptions);
 
-        if (this.state)
+        if (this.state.fetchOptions?.onFetchSuccess) {
+          const formattedResult: CollectionFetcherResult<T> | undefined = yield this.state.fetchOptions.onFetchSuccess(result);
+          if (formattedResult !== undefined) {
+            result = formattedResult;
+          }
+        }
 
         this.cache[sQuery] = result;
         if (loadingTask !== null) {

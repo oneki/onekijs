@@ -18,6 +18,7 @@ export const userAdapter: SelectItemAdapter<User> = (data?: User) => {
   return {
     id: data ? String(data.id) : undefined,
     text: data ? `${data.firstname} ${data.lastname}` : '',
+    //group: data ? data.lastname : undefined,
     data
   };
 };

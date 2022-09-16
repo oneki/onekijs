@@ -4,6 +4,7 @@ import Checkbox from '../../checkbox';
 import LoadingItem from '../../list/components/LoadingItem';
 import { useSelectService } from '../hooks/useSelectService';
 import { SelectOptionProps } from '../typings';
+import { getGroupText } from '../util';
 
 export const MultiSelectOptionComponent: FC<SelectOptionProps> = React.memo((props) => {
   return <SelectOptionComponent {...props} multiple={true} />;
@@ -12,13 +13,20 @@ export const MultiSelectOptionComponent: FC<SelectOptionProps> = React.memo((pro
 MultiSelectOptionComponent.displayName = 'MultiSelectOptionComponent';
 
 export const SelectOptionContent: FC<SelectOptionProps> = ({ item }) => {
-  return <div className="o-select-option-data">{item.text}</div>;
+  return <div className={`o-select-option-data${item.group ? ' o-select-option-group-item' : ''}`}>{item.text}</div>;
+};
+
+export const SelectOptionGroup: FC<SelectOptionProps> = ({ item }) => {
+  return <div className="o-select-option-group">{getGroupText(item)}</div>;
 };
 
 const SelectOptionComponent: FC<SelectOptionProps> = React.memo((props) => {
   const { item, index, onClick, onMouseEnter, onMouseLeave, multiple = false } = props;
   const service = useSelectService();
-  const { OptionContentComponent = SelectOptionContent, OptionLoadingComponent = LoadingItem } = service.config || {};
+  const previousItem = service.items[index-1];
+  const displayGroup = getGroupText(item) !== getGroupText(previousItem);
+
+  const { OptionContentComponent = SelectOptionContent, OptionLoadingComponent = LoadingItem, OptionGroupComponent = SelectOptionGroup } = service.config || {};
   let clickable = !!onClick && !item?.disabled;
   let hoverable = true;
   if (item?.data === undefined && isItemLoading(item)) {
@@ -54,23 +62,26 @@ const SelectOptionComponent: FC<SelectOptionProps> = React.memo((props) => {
   if (!item || !item.data) return null;
 
   return (
-    <div
-      className={classNames}
-      onMouseEnter={() => hoverable && onMouseEnter && item && onMouseEnter(item, index)}
-      onMouseLeave={() => hoverable && onMouseLeave && item && onMouseLeave(item, index)}
-      onClick={() => clickable && onClick && item && onClick(item, index)}
-    >
-      {/* {multiple && <div className="o-select-option-icon">{meta?.selected? <>&#10003;</>:<></>}</div> } */}
-      {multiple && (
-        <Checkbox
-          value={item?.selected ? true : false}
-          onChange={() => undefined}
-          color="currentColor"
-          className="o-select-option-multiple-checkbox"
-        ></Checkbox>
-      )}
-      <OptionContentComponent {...props} />
-    </div>
+    <>
+      {displayGroup && <OptionGroupComponent {...props} />}
+      <div
+        className={classNames}
+        onMouseEnter={() => hoverable && onMouseEnter && item && onMouseEnter(item, index)}
+        onMouseLeave={() => hoverable && onMouseLeave && item && onMouseLeave(item, index)}
+        onClick={() => clickable && onClick && item && onClick(item, index)}
+      >
+        {/* {multiple && <div className="o-select-option-icon">{meta?.selected? <>&#10003;</>:<></>}</div> } */}
+        {multiple && (
+          <Checkbox
+            value={item?.selected ? true : false}
+            onChange={() => clickable && onClick && item && onClick(item, index)}
+            color="currentColor"
+            className="o-select-option-multiple-checkbox"
+          ></Checkbox>
+        )}
+        <OptionContentComponent {...props} />
+      </div>
+    </>
   );
 });
 

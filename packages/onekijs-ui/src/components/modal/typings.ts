@@ -13,8 +13,8 @@ export type ModalProps = {
   closeIcon?: boolean;
   closeOnEscape?: boolean;
   closeOnClickOutside?: boolean;
-  onClose: () => void;
-  onClosed: () => void;
+  onClose?: () => void;
+  onClosed?: () => void;
   buttons?: ReactNode[];
   title?: ReactNode;
 };

@@ -1,9 +1,12 @@
 import {
+  AnonymousObject,
   clone,
   CollectionFetcherResult,
   CollectionService,
   defaultComparator,
   defaultQueryEngine,
+  ensureFieldValue,
+  isNull,
   Query,
   reducer,
   saga,
@@ -12,7 +15,7 @@ import {
   toArray,
 } from 'onekijs-framework';
 import { all, call } from 'redux-saga/effects';
-import { SelectConfig, SelectController, SelectItem, SelectState } from './typings';
+import { SelectConfig, SelectController, SelectGroup, SelectItem, SelectItemAdaptee, SelectState } from './typings';
 import { shouldCheckSelect } from './util';
 
 @service
@@ -81,9 +84,7 @@ class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends 
     if (
       value !== undefined &&
       this.state.validDefaultValue &&
-      (this.config?.value === undefined ||
-        this.config?.value === null ||
-        this.config?.value === '' ||
+      (!this.config?.value ||
         (Array.isArray(this.config.value) && this.config.value.length === 0))
     ) {
       yield this.setValue(value);
@@ -103,29 +104,27 @@ class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends 
     super.setUrl(url);
   }
 
-  @reducer
-  _setDefaultValue(value: T | T[] | null | undefined) {
-    this.state.defaultValue = value;
+  protected _buildItem(data: T | undefined, adaptee: unknown, context?: AnonymousObject): I {
+    context = context || {};
+
+    const getGroup = (data: any): SelectGroup | undefined => {
+      if (isNull(data)) {
+        return undefined;
+      }
+      if (!isNull(data.group)) {
+        return data.group;
+      } else {
+        return undefined;
+      }
+    };
+
+    const selectAdaptee = adaptee as SelectItemAdaptee;
+    ensureFieldValue(selectAdaptee, 'group', getGroup(data));
+
+    return super._buildItem(data, selectAdaptee, context) as I;
   }
 
-  @reducer
-  _setValidDefaultValue(value: T | T[] | null) {
-    this.state.validDefaultValue = value;
-  }
-
-  @reducer
-  _setInvalidItems(invalidItems: I[]) {
-    this.state.invalidItems = invalidItems;
-  }
-
-  protected _setItems(items: (I | undefined)[]): void {
-    super._setItems(items);
-    if (shouldCheckSelect(this.getQuery(), this.lastCheckQuery)) {
-      this.callSaga('check');
-    }
-  }
-
-  *_filterItem(item: I | undefined, query: Query, valid: boolean) {
+  protected *_filterItem(item: I | undefined, query: Query, valid: boolean) {
     if (item === undefined) return item;
     let isValid = false;
     if (!this.state.items || !this.state.items.find((i) => i?.uid === item.uid)) {
@@ -165,6 +164,30 @@ class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends 
     }
     return valid === isValid ? item : undefined;
   }
+
+  @reducer
+  _setDefaultValue(value: T | T[] | null | undefined) {
+    this.state.defaultValue = value;
+  }
+
+  @reducer
+  _setValidDefaultValue(value: T | T[] | null) {
+    this.state.validDefaultValue = value;
+  }
+
+  @reducer
+  _setInvalidItems(invalidItems: I[]) {
+    this.state.invalidItems = invalidItems;
+  }
+
+  protected _setItems(items: (I | undefined)[]): void {
+    super._setItems(items);
+    if (shouldCheckSelect(this.getQuery(), this.lastCheckQuery)) {
+      this.callSaga('check');
+    }
+  }
+
+
 }
 
 export default SelectService;

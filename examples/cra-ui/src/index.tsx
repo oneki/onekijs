@@ -1,5 +1,5 @@
 import { App, Link, Route, Routes } from 'onekijs';
-import { ClarityTheme } from 'onekijs-ui';
+import { ClarityTheme } from 'onekijs-theme-clarity';
 import { createRoot } from 'react-dom/client';
 import { AccordionPage } from './pages/accordion';
 import { ActionMenuPage } from './pages/actionmenu';

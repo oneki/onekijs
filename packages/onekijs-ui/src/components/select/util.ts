@@ -44,3 +44,10 @@ export const shouldCheckSelect = (currentQuery: Query, lastCheckQuery?: Query): 
   if (!shallowEqual(currentQuery.params || null, lastCheckQuery.params || null)) return true;
   return false;
 };
+
+export const getGroupText = (item: SelectItem<unknown> | undefined): string | undefined => {
+  if (item === undefined) return undefined;
+  if (item.group === undefined) return undefined;
+  if (typeof item.group === 'string') return item.group;
+  return item.group.text;
+}

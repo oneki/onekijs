@@ -157,14 +157,14 @@ export default class FormService extends DefaultService<FormState> {
   disableValidator(fieldName: string, validatorName: string) {
     const field = this.fields[fieldName];
     if (field) {
-      let validator = field.validators[validatorName];
-      if (typeof validator !== 'object') {
+      let validator: Validator | undefined = field.validators[validatorName];
+      if (validator && typeof validator !== 'object') {
         field.validators[validatorName] = {
           validator: field.validators[validatorName] as ValidatorFunction,
           disabled: false,
         };
       }
-      validator = field.validators[validatorName] as ValidatorObject;
+      validator = field.validators[validatorName] as ValidatorObject | undefined;
       if (validator && !validator.disabled) {
         validator.disabled = true;
         this.clearValidation(fieldName, validatorName, ValidationCode.Error, true);
@@ -181,14 +181,14 @@ export default class FormService extends DefaultService<FormState> {
   enableValidator(fieldName: string, validatorName: string): void {
     const field = this.fields[fieldName];
     if (field) {
-      let validator = field.validators[validatorName];
-      if (typeof validator !== 'object') {
+      let validator: Validator | undefined = field.validators[validatorName];
+      if (validator && typeof validator !== 'object') {
         field.validators[validatorName] = {
           validator: field.validators[validatorName] as ValidatorFunction,
           disabled: false,
         };
       }
-      validator = field.validators[validatorName] as ValidatorObject;
+      validator = field.validators[validatorName] as ValidatorObject | undefined;
       if (validator && validator.disabled) {
         validator.disabled = false;
         this.validateSync(
@@ -298,17 +298,6 @@ export default class FormService extends DefaultService<FormState> {
 
     // if the value "addresses" changes, addresses.0.street should be alerted, .....
     result.concat(this._getSubFieldNames(watch));
-
-    // console.log('sub watch value', id, value, Array.isArray(value), typeof value === 'object');
-    // if (Array.isArray(value)) {
-    //   value.forEach((v, i) => {
-    //     result = result.concat(this._getSubWatchs(`${watch}.${i}`, v));
-    //   });
-    // } else if (typeof value === 'object' && value !== 'undefined' && value !== null) {
-    //   Object.keys(value).forEach((k) => {
-    //     result = result.concat(this._getSubWatchs(`${watch}.${k}`, value[k]));
-    //   });
-    // }
 
     // if addresses.0.street is changed, addresses should be alerted (becasue the object has been changed)
     // we will also alert adresses.street but it would be done in form/index.tsx

@@ -31,7 +31,7 @@ export type Fetcher<R = any, T = any> = (
 
 export interface FetchOptions<R = any, T = any> extends Omit<RequestInit, 'method' | 'url'> {
   onFetchError?: ErrorCallback;
-  onFetchSuccess?: SuccessCallback<R>;
+  onFetchSuccess?: (result: R) => void | R | Promise<undefined | R>;
   delayLoading?: number;
   auth?: AnonymousObject<any>;
   headers?: AnonymousObject<string>;

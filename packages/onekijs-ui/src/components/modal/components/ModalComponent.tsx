@@ -81,13 +81,13 @@ const ModalComponent: FCC<ModalProps> = ({
 
   useClickOutside(ref, () => {
     if (closeOnClickOutside) {
-      onClose();
+      onClose && onClose();
     }
   });
 
   useEventListener('keydown', (e) => {
     if (closeOnEscape && e.key === 'Escape' && eventLocks.isLockedBy('escape', id)) {
-      onClose();
+      onClose && onClose();
     }
   });
 

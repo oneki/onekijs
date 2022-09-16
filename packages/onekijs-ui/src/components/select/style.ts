@@ -17,8 +17,8 @@ import { flexDirection, flexGrow, flexWrap } from '../../styles/flex';
 import { appearance, cursor, outline, userSelect } from '../../styles/interactivity';
 import { overflowY } from '../../styles/overflow';
 import { bottom, left, position, right, top, zIndex } from '../../styles/position';
-import { height, maxWidth, minWidth, width } from '../../styles/size';
-import { margin, marginRight, marginY, padding, paddingLeft, paddingX, paddingY } from '../../styles/spacing';
+import { height, maxWidth, minHeight, minWidth, width } from '../../styles/size';
+import { margin, marginRight, marginY, padding, paddingLeft, paddingTop, paddingX, paddingY } from '../../styles/spacing';
 import { verticalAlign } from '../../styles/table';
 import { transitionDuration, transitionProperty, transitionTimingFunction } from '../../styles/transition';
 import { ComponentStyle } from '../../styles/typings';
@@ -330,14 +330,25 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
       }
       ${overflowY('hidden')}
 
+      .o-select-option-group {
+        ${paddingX('md')}
+        ${userSelect('none')}
+        ${fontWeight('bold')}
+        ${paddingTop('sm')}
+      }
+      .o-select-option-group-item {
+        ${paddingLeft('sm')}
+      }
+
       .o-select-option {
         ${width('full')}
         ${paddingX('lg')}
-        ${paddingY('sm')}
+        ${paddingY('xs')}
         ${display('flex')}
         ${alignItems('center')}
         ${backgroundColor('transparent', { hover: 'gray-200' })}
         ${userSelect('none')}
+        ${minHeight('32px')}
         &.o-select-option-clickable {
           ${cursor('pointer')}
         }
