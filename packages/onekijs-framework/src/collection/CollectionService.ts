@@ -45,6 +45,7 @@ import {
   defaultSerializer,
   formatFilter,
   formatSortBy,
+  isCollectionReady,
   isQueryFilterCriteria,
   isQuerySortByField,
   isQuerySortByMultiFields,
@@ -297,7 +298,12 @@ export default class CollectionService<
   }
 
   get status(): CollectionStatus {
-    const defaultStatus = this.state.local ? LoadingStatus.Loaded : LoadingStatus.NotInitialized;
+    const defaultStatus =
+      this.state.url === undefined && this.db === undefined
+        ? LoadingStatus.NotReady
+        : this.state.local
+        ? LoadingStatus.Loaded
+        : LoadingStatus.NotInitialized;
     return this.state.status || defaultStatus;
   }
 
@@ -439,9 +445,11 @@ export default class CollectionService<
 
   @reducer
   refresh(query?: Query): void {
-    const path = this.state.router.location.pathname;
-    this.refreshing = true;
-    this.state.router.push(urlBuilder(path, {}, urlSerializer(query || this.getQuery())));
+    if (isCollectionReady(this)) {
+      const path = this.state.router.location.pathname;
+      this.refreshing = true;
+      this.state.router.push(urlBuilder(path, {}, urlSerializer(query || this.getQuery())));
+    }
   }
 
   @reducer
@@ -793,7 +801,6 @@ export default class CollectionService<
           throw e;
         }
       }
-
     }
   }
 
@@ -851,7 +858,9 @@ export default class CollectionService<
         result = yield fetcher(this.url, method, body, fetchOptions);
 
         if (this.state.fetchOptions?.onFetchSuccess) {
-          const formattedResult: CollectionFetcherResult<T> | undefined = yield this.state.fetchOptions.onFetchSuccess(result);
+          const formattedResult: CollectionFetcherResult<T> | undefined = yield this.state.fetchOptions.onFetchSuccess(
+            result,
+          );
           if (formattedResult !== undefined) {
             result = formattedResult;
           }
@@ -1219,58 +1228,60 @@ export default class CollectionService<
       resetData?: boolean;
     } = {},
   ): void {
-    if (this.state.local) {
-      this.state.limit = options.limit;
-      this.state.offset = options.offset;
-    } else {
-      const resetData = options.resetData ?? true;
-      const resetLimit = options.resetLimit ?? true;
-
-      if (options.status === undefined) {
-        options.status =
-          this.state.fetchOptions?.delayLoading !== undefined && this.state.fetchOptions?.delayLoading > 0
-            ? LoadingStatus.Fetching
-            : LoadingStatus.Loading;
-      }
-
-      const setItemStatus = (item: I | undefined, status: LoadingItemStatus): I => {
-        if (item === undefined) {
-          item = this.adapt(undefined);
-        }
-        item.loadingStatus = status;
-        const result = Object.assign({}, item);
-        this._indexItem(result);
-        return result;
-      };
-
-      if (resetLimit) {
+    if (isCollectionReady(this)) {
+      if (this.state.local) {
         this.state.limit = options.limit;
         this.state.offset = options.offset;
-      }
-
-      const offset = options.offset || 0;
-      if (this.state.items) {
-        if (options.limit && !resetData) {
-          for (let i = offset; i < options.limit + offset; i++) {
-            this.state.items[i] = setItemStatus(this.state.items[i], options.status);
-          }
-          this.state.status = `${resetData ? '' : 'partial_'}${options.status}` as CollectionStatus;
-        } else {
-          for (const i in this.state.items) {
-            this.state.items[i] = setItemStatus(this.state.items[i], options.status);
-          }
-          this.state.status = options.status;
-        }
       } else {
-        if (options.limit) {
-          this.state.items = Array(offset + options.limit);
-          for (let i = offset; i < offset + options.limit; i++) {
-            this.state.items[i] = setItemStatus(this.state.items[i], options.status);
+        const resetData = options.resetData ?? true;
+        const resetLimit = options.resetLimit ?? true;
+
+        if (options.status === undefined) {
+          options.status =
+            this.state.fetchOptions?.delayLoading !== undefined && this.state.fetchOptions?.delayLoading > 0
+              ? LoadingStatus.Fetching
+              : LoadingStatus.Loading;
+        }
+
+        const setItemStatus = (item: I | undefined, status: LoadingItemStatus): I => {
+          if (item === undefined) {
+            item = this.adapt(undefined);
           }
-          this.state.status = `${resetData ? '' : 'partial_'}${options.status}` as CollectionStatus;
+          item.loadingStatus = status;
+          const result = Object.assign({}, item);
+          this._indexItem(result);
+          return result;
+        };
+
+        if (resetLimit) {
+          this.state.limit = options.limit;
+          this.state.offset = options.offset;
+        }
+
+        const offset = options.offset || 0;
+        if (this.state.items) {
+          if (options.limit && !resetData) {
+            for (let i = offset; i < options.limit + offset; i++) {
+              this.state.items[i] = setItemStatus(this.state.items[i], options.status);
+            }
+            this.state.status = `${resetData ? '' : 'partial_'}${options.status}` as CollectionStatus;
+          } else {
+            for (const i in this.state.items) {
+              this.state.items[i] = setItemStatus(this.state.items[i], options.status);
+            }
+            this.state.status = options.status;
+          }
         } else {
-          // no items yet, so we are sure that the collection is either full loading of full fetching
-          this.state.status = options.status;
+          if (options.limit) {
+            this.state.items = Array(offset + options.limit);
+            for (let i = offset; i < offset + options.limit; i++) {
+              this.state.items[i] = setItemStatus(this.state.items[i], options.status);
+            }
+            this.state.status = `${resetData ? '' : 'partial_'}${options.status}` as CollectionStatus;
+          } else {
+            // no items yet, so we are sure that the collection is either full loading of full fetching
+            this.state.status = options.status;
+          }
         }
       }
     }

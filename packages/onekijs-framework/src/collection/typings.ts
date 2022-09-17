@@ -240,6 +240,7 @@ export interface CollectionState<T, I extends Item<T>> extends FetchState {
 }
 
 export type CollectionStatus =
+  | 'not_ready'
   | 'not_initialized'
   | 'loading'
   | 'fetching'
@@ -277,6 +278,7 @@ export type ItemAdapter<T = any> = (data: T) => ItemAdaptee;
 export type LoadingItemStatus = 'not_initialized' | 'loading' | 'fetching' | 'loaded' | 'error';
 
 export enum LoadingStatus {
+  NotReady = 'not_ready',
   NotInitialized = 'not_initialized',
   Loading = 'loading',
   Fetching = 'fetching',

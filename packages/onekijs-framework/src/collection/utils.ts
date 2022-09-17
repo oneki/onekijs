@@ -24,21 +24,23 @@ import {
   QuerySortByField,
   QuerySortByMultiFields,
   QuerySortComparator,
-  QuerySortDir
+  QuerySortDir,
 } from './typings';
 
 let filterUid = 0;
 export const rootFilterId = Symbol();
 
-
-export const applyCriteria = <T = any, I extends Item<T> = Item<T>>(item: I, criteria: QueryFilterCriteria): boolean => {
+export const applyCriteria = <T = any, I extends Item<T> = Item<T>>(
+  item: I,
+  criteria: QueryFilterCriteria,
+): boolean => {
   const operator = criteria.operator || 'eq';
   const value = criteria.value;
   const source = get(item.data, criteria.field);
   const not = criteria.not;
   const result = applyOperator(operator, source, value);
   return not ? !result : result;
-}
+};
 
 export const applyFields = <T = any, I extends Item<T> = Item<T>>(items: I[], fields?: string[]): I[] => {
   if (fields && fields.length > 0) {
@@ -55,7 +57,7 @@ export const applyFields = <T = any, I extends Item<T> = Item<T>>(items: I[], fi
     });
   }
   return items;
-}
+};
 
 export const applyFilter = <T = any, I extends Item<T> = Item<T>>(item: I, filter?: QueryFilter): boolean => {
   let result = true;
@@ -74,7 +76,7 @@ export const applyFilter = <T = any, I extends Item<T> = Item<T>>(item: I, filte
     }
   }
   return result;
-}
+};
 
 export const applyOperator = (
   operator: QueryFilterCriteriaOperator,
@@ -122,9 +124,13 @@ export const applyOperator = (
     default:
       return true;
   }
-}
+};
 
-export const applySearch = <T = any, I extends Item<T> = Item<T>>(item: I, search?: QueryFilterCriteriaValue, searcher?: QuerySearcher<T>): boolean => {
+export const applySearch = <T = any, I extends Item<T> = Item<T>>(
+  item: I,
+  search?: QueryFilterCriteriaValue,
+  searcher?: QuerySearcher<T>,
+): boolean => {
   searcher = searcher ?? 'i_like';
   if (item.data === undefined) {
     return false;
@@ -133,9 +139,13 @@ export const applySearch = <T = any, I extends Item<T> = Item<T>>(item: I, searc
     return searcher(item.data, search);
   }
   return applyOperator(searcher, item.text, search);
-}
+};
 
-export const applySort = <T = any, I extends Item<T> = Item<T>>(items: I[], dir: QuerySortDir, comparator: QuerySortComparator): I[] => {
+export const applySort = <T = any, I extends Item<T> = Item<T>>(
+  items: I[],
+  dir: QuerySortDir,
+  comparator: QuerySortComparator,
+): I[] => {
   if (dir) {
     const itemComparator = function (a: I, b: I): number {
       const reverse = dir === 'desc' ? -1 : 1;
@@ -145,9 +155,13 @@ export const applySort = <T = any, I extends Item<T> = Item<T>>(items: I[], dir:
     items = items.sort(itemComparator);
   }
   return items;
-}
+};
 
-export const applySortBy = <T = any, I extends Item<T> = Item<T>>(items: I[], sortBy: QuerySortBy[], comparators: AnonymousObject<QuerySortComparator>): I[] => {
+export const applySortBy = <T = any, I extends Item<T> = Item<T>>(
+  items: I[],
+  sortBy: QuerySortBy[],
+  comparators: AnonymousObject<QuerySortComparator>,
+): I[] => {
   if (sortBy.length > 0) {
     const comparator = function () {
       return function (a: I, b: I): number {
@@ -189,7 +203,7 @@ export const applySortBy = <T = any, I extends Item<T> = Item<T>>(items: I[], so
     items = items.sort(comparator());
   }
   return items;
-}
+};
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const defaultComparator = (a: any, b: any) => {
@@ -233,13 +247,11 @@ export const defaultQueryEngine = <T = any, I extends Item<T> = Item<T>>(
     result = applyFields(result, query.fields);
   }
   return result;
-}
+};
 
 export const defaultSerializer: QuerySerializer = (query) => {
   return _serializer(query, false);
 };
-
-
 
 export const urlSerializer: QuerySerializer = (query) => {
   return _serializer(query, true);
@@ -272,6 +284,10 @@ const _serializer = (query: Query, url: boolean) => {
 
 export const generateFilterId = (): number => {
   return ++filterUid;
+};
+
+export const isCollectionReady = <T, I extends Item<T>>(collection: Collection<T, I>): boolean => {
+  return !!(collection && collection.status !== 'not_ready');
 };
 
 export const isCollectionLoading = <T, I extends Item<T>>(collection: Collection<T, I>): boolean => {

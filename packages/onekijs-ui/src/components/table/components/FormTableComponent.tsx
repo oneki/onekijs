@@ -1,5 +1,5 @@
-import { useForm, useLazyRef } from 'onekijs-framework';
-import React, { useEffect } from 'react';
+import { FormValueListener, useForm, useLazyRef } from 'onekijs-framework';
+import React, { useEffect, useId, useState } from 'react';
 import { addClassname } from '../../../utils/style';
 import Checkbox from '../../checkbox';
 import RemoveIcon from '../../icon/RemoveIcon';
@@ -64,6 +64,7 @@ const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.
     ...props
   }) => {
     const form = useForm();
+    const id = useId();
     const tableService = controller.asService();
     const formatRef = useLazyRef<'id' | 'object'>(() => {
       if (format === 'auto') {
@@ -71,6 +72,7 @@ const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.
       }
       return format;
     });
+    const [mounted, setMounted] = useState(false);
 
     const formTableContext = useLazyRef<FormTableContext>(() => {
       const onSelect = (item: TableItem<any>, selected: boolean) => {
@@ -88,13 +90,26 @@ const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.
       return { tableName: name, onSelect, addLabel, required, minLength, maxLength };
     });
 
-    useEffect(() => {
-      if (tableService.dataSource) {
-        tableService.setSelected('value', value || []);
-      } else if (value !== undefined) {
-        tableService.setData(value);
-      }
-    }, [tableService, value, formatRef]);
+    // listen on value change from the form
+    // for the initial value in the table controller
+    // delay the rendering of the table until the value has been set in the controller
+    useEffect((): (() => void) => {
+      const watch = [name];
+      const listener: FormValueListener = (value) => {
+        if (tableService.dataSource) {
+          tableService.setSelected('value', value || []);
+        } else if (value !== undefined) {
+          tableService.setData(value);
+        }
+      };
+      form.onValueChange(id, listener, watch);
+      listener(value, undefined, name);
+      setMounted(true);
+      return (): void => {
+        form.offValueChange(id);
+      };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
       if (tableService.dataSource) {
@@ -122,6 +137,8 @@ const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.
         );
       }
     }, [tableService]);
+
+    if (!mounted) return null;
 
     return (
       <DefaultFormTableContext.Provider value={formTableContext.current}>

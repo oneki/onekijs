@@ -1,4 +1,4 @@
-import { Item, LoadingStatus } from 'onekijs-framework';
+import { isCollectionReady, Item, LoadingStatus } from 'onekijs-framework';
 import { RefObject, useCallback, useEffect, useReducer } from 'react';
 import { useVirtual } from '../../../vendor/reactVirtual';
 //import { useVirtual } from 'react-virtual';
@@ -74,18 +74,20 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
   });
 
   useEffect(() => {
-    if (isVirtual) {
-      if (state.status === LoadingStatus.NotInitialized) {
-        controller.load(preload);
-      } else if (canFetchMore(controller)) {
-        const lastVirtualItem = virtualItems[virtualItems.length - 1];
-        const lastVirtualItemIndex = lastVirtualItem ? lastVirtualItem.index : 0;
-        if (lastVirtualItemIndex >= (state.items?.length || 0) - preload / 2) {
-          controller.load(increment, ((state.items || []) as any[]).length);
+    if (controller.status !== LoadingStatus.NotReady) {
+      if (isVirtual) {
+        if (state.status === LoadingStatus.NotInitialized) {
+          controller.load(preload);
+        } else if (canFetchMore(controller)) {
+          const lastVirtualItem = virtualItems[virtualItems.length - 1];
+          const lastVirtualItemIndex = lastVirtualItem ? lastVirtualItem.index : 0;
+          if (lastVirtualItemIndex >= (state.items?.length || 0) - preload / 2) {
+            controller.load(increment, ((state.items || []) as any[]).length);
+          }
         }
+      } else if (controller.status === LoadingStatus.NotInitialized) {
+        controller.load();
       }
-    } else if (controller.status === LoadingStatus.NotInitialized) {
-      controller.load();
     }
   }, [controller, state, preload, virtualItems, increment, isVirtual]);
 

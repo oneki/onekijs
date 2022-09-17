@@ -87,7 +87,9 @@ export {
   defaultIdpSettings,
   DefaultLoadingComponent,
   defaultLocaleSymbol,
-  DefaultLocalService, defaultQueryEngine, defaultSerializer,
+  DefaultLocalService,
+  defaultQueryEngine,
+  defaultSerializer,
   DefaultService,
   defaultSettings,
   defaultValidation,
@@ -110,6 +112,7 @@ export {
   extractState,
   extractTag,
   extractValidators,
+  extractWatchProps,
   FCC,
   Fetcher,
   FetchMethod,
@@ -165,6 +168,7 @@ export {
   getIdpName,
   getIdpStorage,
   getItem,
+  getNonIndexedProp,
   getQueryFilter,
   getQueryFilterCriteria,
   getQueryFilterCriteriaValue,
@@ -212,6 +216,7 @@ export {
   isCollectionFetching,
   isCollectionInitializing,
   isCollectionLoading,
+  isCollectionReady,
   isExternal,
   isFalse,
   isFunction,
@@ -500,8 +505,6 @@ export {
   withLayout,
   wrap,
   xhr,
-  getNonIndexedProp,
-  extractWatchProps,
 } from 'onekijs-framework';
 export {
   BrowserRouter,
@@ -565,7 +568,7 @@ export {
   useParams,
   useResolvedPath,
   useRoutes,
-  useSearchParams
+  useSearchParams,
 } from 'react-router-dom';
 export { App } from './App';
 export { default as FadeSwitch } from './router/FadeRoutes';

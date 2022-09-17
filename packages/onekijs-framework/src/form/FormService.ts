@@ -114,6 +114,19 @@ export default class FormService extends DefaultService<FormState> {
   }
 
   @reducer
+  addValidator(fieldName: string, validatorName: string, validator: Validator): void {
+    // get current value
+    const field = this.fields[fieldName];
+    if (field) {
+      field.validators[validatorName] = validator;
+    }
+    const validations = this.validateAll({
+      [fieldName]: this.getValue(fieldName),
+    });
+    this.compileValidations(Object.keys(validations));
+  }
+
+  @reducer
   clearValidation(fieldName: string, validatorName: string, code: ValidationCode, compile = true): void {
     del(this.fields[fieldName], `validations.${code}.${validatorName}`);
     if (compile) {
@@ -238,7 +251,7 @@ export default class FormService extends DefaultService<FormState> {
     const result = new ContainerValidation('', ValidationStatus.None, ValidationCode.None, {});
 
     for (const fieldName of Object.keys(validations).filter((k) => k.startsWith(prefix))) {
-      if (!touchedOnly || fields[fieldName].touched) {
+      if (fields[fieldName] && (!touchedOnly || fields[fieldName].touched)) {
         const validation = validations[fieldName];
         if (validation.code <= result.code && validation.code < ValidationCode.None) {
           if (validation.code < result.code) {
@@ -646,7 +659,8 @@ export default class FormService extends DefaultService<FormState> {
   @reducer
   remove(fieldArrayName: string, index: number): void {
     const currentArrayValue = get(this.state.values, fieldArrayName, []);
-    if (currentArrayValue.length - 1 >= index) {
+    const last = currentArrayValue.length - 1;
+    if (last >= index) {
       const nextValues: AnonymousObject = {};
       // need to modifiy all values / metadata / validations with an index superior to the removed one
       for (let i = index + 1; i < currentArrayValue.length; i++) {
@@ -663,21 +677,34 @@ export default class FormService extends DefaultService<FormState> {
               context: this.fields[`${fieldArrayName}.${i - 1}.${fieldName}`].context,
             },
           );
-          if (i === currentArrayValue.length - 1) {
-            delete this.state.metadata[`${fieldArrayName}.${i}.${fieldName}`];
-            delete this.state.validations[`${fieldArrayName}.${i}.${fieldName}`];
-            delete this.fields[`${fieldArrayName}.${i}.${fieldName}`];
-          }
           this.pendingDispatch.validationChange.add(`${fieldArrayName}.${i - 1}.${fieldName}`);
           this.pendingDispatch.metadataChange.add(`${fieldArrayName}.${i - 1}.${fieldName}`);
         });
-        del(this.fieldIndex, `${fieldArrayName}.${currentArrayValue.length - 1}`);
       }
+      del(this.fieldIndex, `${fieldArrayName}.${last}`);
+      Object.keys(currentArrayValue[last]).forEach((fieldName) => {
+        delete this.state.metadata[`${fieldArrayName}.${last}.${fieldName}`];
+        delete this.state.validations[`${fieldArrayName}.${last}.${fieldName}`];
+        delete this.fields[`${fieldArrayName}.${last}.${fieldName}`];
+      });
       this.pendingDispatch.validationChange.add('');
 
       nextValues[fieldArrayName] = currentArrayValue.filter((_a: never, i: number): boolean => i !== index);
       this.setValues(nextValues);
     }
+  }
+
+  @reducer
+  removeValidator(fieldName: string, validatorName: string): void {
+    // get current value
+    const field = this.fields[fieldName];
+    if (field) {
+      delete field.validators[validatorName];
+    }
+    const validations = this.validateAll({
+      [fieldName]: this.getValue(fieldName),
+    });
+    this.compileValidations(Object.keys(validations));
   }
 
   @reducer
@@ -915,7 +942,7 @@ export default class FormService extends DefaultService<FormState> {
 
   @reducer
   touch(fieldName: string): void {
-    if (!this.fields[fieldName].touched) {
+    if (this.fields[fieldName] && !this.fields[fieldName].touched) {
       this.fields[fieldName].touched = true;
       this.compileValidations(fieldName, true);
     }

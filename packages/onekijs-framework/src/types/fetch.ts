@@ -1,8 +1,7 @@
-import { SuccessCallback } from './callback';
+import { Task } from '@redux-saga/types';
 import { BasicError, ErrorCallback } from './error';
 import { AnonymousObject } from './object';
 import { State } from './state';
-import { Task } from '@redux-saga/types';
 
 export interface FetchState extends State {
   loading?: boolean;

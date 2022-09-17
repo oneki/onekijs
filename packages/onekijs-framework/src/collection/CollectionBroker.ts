@@ -1,7 +1,7 @@
 import { CollectionState } from '..';
 import { Primitive } from '../types/core';
 import { AnonymousObject } from '../types/object';
-import { toArray } from '../utils/object';
+import { clone, toArray } from '../utils/object';
 import {
   Collection,
   CollectionBroker,
@@ -197,7 +197,7 @@ export default class DefaultCollectionBroker<
 
   removeFilter(id: QueryFilterId, subscriberId?: string): void {
     if (subscriberId === undefined) {
-      const filter = formatFilter(this.filters);
+      const filter = clone(formatFilter(this.filters));
       if (filter) {
         visitFilter(filter, (filter) => {
           for (const i in filter.criterias) {

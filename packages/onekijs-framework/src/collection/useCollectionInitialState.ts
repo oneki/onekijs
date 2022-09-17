@@ -9,12 +9,20 @@ import {
   CollectionFetcherResult,
   CollectionProxy,
   CollectionState,
+  CollectionStatus,
   Item,
   LoadingStatus,
   Query,
   UseCollectionOptions,
 } from './typings';
 import { isCollection } from './utils';
+
+const getDefaultStatus = (dataOrUrl: any[] | string | undefined, fetchOnce?: boolean): CollectionStatus => {
+  if (dataOrUrl === undefined) return LoadingStatus.NotReady;
+  if (Array.isArray(dataOrUrl)) return LoadingStatus.Loaded;
+  if (fetchOnce) return LoadingStatus.Loading;
+  return LoadingStatus.NotInitialized;
+};
 
 const useCollectionInitialState = <T = any, I extends Item<T> = Item<T>>(
   dataSource:
@@ -87,11 +95,7 @@ const useCollectionInitialState = <T = any, I extends Item<T> = Item<T>>(
       params: options.initialParams,
       queryEngine: options.queryEngine,
       router,
-      status: Array.isArray(dataOrUrl)
-        ? LoadingStatus.Loaded
-        : options.fetchOnce
-        ? LoadingStatus.Loading
-        : LoadingStatus.NotInitialized,
+      status: getDefaultStatus(dataOrUrl, options.fetchOnce),
       search: options.initialSearch,
       searcher: options.searcher,
       serializer: options.serializer,

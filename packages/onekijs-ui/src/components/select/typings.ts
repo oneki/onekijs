@@ -5,7 +5,7 @@ import {
   CollectionBroker,
   CollectionProxy,
   FormFieldProps,
-  ValidationStatus
+  ValidationStatus,
 } from 'onekijs-framework';
 import React, { FC } from 'react';
 import { TshirtSize } from '../../styles/typings';
@@ -19,7 +19,7 @@ import {
   ListItemHandler,
   ListItemProps,
   ListNotFoundProps,
-  ListState
+  ListState,
 } from '../list/typings';
 
 export type ArraySelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = SelectConfig<T, I> & {
@@ -81,10 +81,12 @@ export interface SelectInputProps<T = any, I extends SelectItem<T> = SelectItem<
   minChars: number;
 }
 
-export type SelectGroup = string | {
-  text: string;
-  [k: string]: any;
-};
+export type SelectGroup =
+  | string
+  | {
+      text: string;
+      [k: string]: any;
+    };
 
 export type SelectItem<T = any> = ListItem<T> & {
   group?: SelectGroup;

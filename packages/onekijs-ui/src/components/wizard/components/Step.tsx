@@ -36,7 +36,7 @@ const Step: FCC<StepProps> = ({
   });
 
   const fieldContainer = useFieldContainer({
-    onValidationChange: (_field, _validation, touchedValidation, allValidation) => {
+    onValidationChange: (touchedValidation, allValidation) => {
       if (step) {
         service.onValidationChange(step.uid, touchedValidation, allValidation);
       }

@@ -23,13 +23,8 @@ const useFieldContainer = ({
   onValueChange,
   onValidationChange,
 }: {
-  onValueChange?: (field: string, value: any) => void;
-  onValidationChange?: (
-    field: string,
-    validation: FieldValidation,
-    touchedValidation: ContainerValidation,
-    allValidation: ContainerValidation,
-  ) => void;
+  onValueChange?: (value: any) => void;
+  onValidationChange?: (touchedValidation: ContainerValidation, allValidation: ContainerValidation) => void;
 }): FieldContainer => {
   const fieldsRef = useRef<string[]>([]);
   const fieldValidationsRef = useRef<AnonymousObject<FieldValidation>>({});
@@ -58,7 +53,7 @@ const useFieldContainer = ({
             field.value = form.getValue(name, '');
             if (!fieldsRef.current.includes(name)) {
               fieldsRef.current.push(name);
-              set(valueRef.current, name, field.value);
+              set(valueRef.current, name, clone(field.value));
             }
             return field;
           };
@@ -92,6 +87,13 @@ const useFieldContainer = ({
       form.offValidationChange(validationListenersRef.current[fieldName].id);
       delete valueListenersRef.current[fieldName];
       delete validationListenersRef.current[fieldName];
+      touchedValidationRef.current = form.getContainerFieldValidation(
+        fieldValidationsRef.current,
+        form.fields,
+        '',
+        true,
+      );
+      allValidationRef.current = form.getContainerFieldValidation(fieldValidationsRef.current, form.fields, '', false);
     });
 
     diff.added.forEach((fieldName) => {
@@ -99,7 +101,7 @@ const useFieldContainer = ({
         return (value) => {
           set(valueRef.current, fieldName, clone(value));
           if (onValueChange) {
-            onValueChange(fieldName, value);
+            onValueChange(valueRef.current);
           } else {
             forceRender();
           }
@@ -129,7 +131,7 @@ const useFieldContainer = ({
             false,
           );
           if (onValidationChange) {
-            onValidationChange(fieldName, validation, touchedValidationRef.current, allValidationRef.current);
+            onValidationChange(touchedValidationRef.current, allValidationRef.current);
           } else {
             forceRender();
           }
@@ -144,6 +146,15 @@ const useFieldContainer = ({
         listener: validationFieldListener,
       };
     });
+    if (diff.added.length > 0 || diff.removed.length > 0) {
+      if (onValidationChange) {
+        onValidationChange(touchedValidationRef.current, allValidationRef.current);
+      }
+      if (onValueChange) {
+        onValueChange(valueRef.current);
+      }
+      forceRender();
+    }
   });
 
   useEffect(() => {

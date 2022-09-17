@@ -28,7 +28,7 @@ export {
   GlobalSelectorFunction,
   LogLevel,
   SetGlobalStateFunction,
-  UseLogger
+  UseLogger,
 } from './app/typings';
 export { default as useAppContext } from './app/useAppContext';
 export { default as useAppService } from './app/useAppService';
@@ -71,7 +71,7 @@ export {
   LogoutOptions,
   LogoutState,
   SecurePageProps,
-  SecureRouteProps
+  SecureRouteProps,
 } from './auth/typings';
 export { default as useAuth } from './auth/useAuth';
 export { default as useAuthService } from './auth/useAuthService';
@@ -99,7 +99,7 @@ export {
   oidcServer,
   parseHashToken,
   parseJwt,
-  validateToken
+  validateToken,
 } from './auth/utils';
 export { default as DefaultCollectionBroker } from './collection/CollectionBroker';
 export { default as CollectionService } from './collection/CollectionService';
@@ -138,14 +138,24 @@ export {
   QuerySortByMultiFields,
   QuerySortComparator,
   QuerySortDir,
-  UseCollectionOptions
+  UseCollectionOptions,
 } from './collection/typings';
 export { default as useCollection } from './collection/useCollection';
 export { default as useCollectionInitialState } from './collection/useCollectionInitialState';
 export { collectionProxyHandler, default as useCollectionProxy } from './collection/useCollectionProxy';
 export { default as useCollectionService } from './collection/useCollectionService';
 export {
-  addFilter, applyCriteria, applyFields, applyFilter, applyOperator, applySearch, applySort, applySortBy, defaultComparator, defaultQueryEngine, defaultSerializer,
+  addFilter,
+  applyCriteria,
+  applyFields,
+  applyFilter,
+  applyOperator,
+  applySearch,
+  applySort,
+  applySortBy,
+  defaultComparator,
+  defaultQueryEngine,
+  defaultSerializer,
   dummyLogMetadata,
   formatFilter,
   formatSortBy,
@@ -158,6 +168,7 @@ export {
   isCollectionFetching,
   isCollectionInitializing,
   isCollectionLoading,
+  isCollectionReady,
   isItemFetching,
   isItemLoading,
   isQueryFilter,
@@ -187,7 +198,7 @@ export {
   serializeValue,
   shouldResetData,
   urlSerializer,
-  visitFilter
+  visitFilter,
 } from './collection/utils';
 export {
   asReducer,
@@ -200,7 +211,7 @@ export {
   saga,
   serial,
   service,
-  throttle
+  throttle,
 } from './core/annotations';
 export { default as DefaultBasicError } from './core/BasicError';
 export { DefaultAppContext } from './core/context';
@@ -232,7 +243,7 @@ export {
   asyncPut,
   encodeFormData,
   formatAsyncResponse,
-  xhr
+  xhr,
 } from './core/xhr';
 export { AppExtraFetchOptions, AppFetchOptions, UseGetOptions } from './fetch/typings';
 export { default as useDelete } from './fetch/useDelete';
@@ -297,7 +308,7 @@ export {
   ValidatorAsyncFunction,
   ValidatorFunction,
   ValidatorsType,
-  ValidatorSyncFunction
+  ValidatorSyncFunction,
 } from './form/typings';
 export { default as useField } from './form/useField';
 export { default as useFieldContainer } from './form/useFieldContainer';
@@ -310,7 +321,7 @@ export { default as useFormWatcher } from './form/useFormWatcher';
 export { default as useSubmit } from './form/useSubmit';
 export { default as useValidation } from './form/useValidation';
 export { default as useValue } from './form/useValue';
-export { extractValidators, getNonIndexedProp, extractWatchProps } from './form/utils';
+export { extractValidators, extractWatchProps, getNonIndexedProp } from './form/utils';
 export { default as email } from './form/validators/email';
 export { default as max } from './form/validators/max';
 export { default as maxLength } from './form/validators/maxLength';
@@ -351,7 +362,7 @@ export {
   Router,
   RouterContext,
   RouterPushOptions,
-  UnregisterCallback
+  UnregisterCallback,
 } from './types/router';
 export { Saga, SagaEffect } from './types/saga';
 export {
@@ -369,7 +380,7 @@ export {
   serviceClass,
   ServiceFactory,
   stop,
-  types
+  types,
 } from './types/service';
 export { AnyState, State } from './types/state';
 export {
@@ -378,7 +389,7 @@ export {
   indexedLocalesSymbol,
   localeNoPathSymbol,
   localesModeSymbol,
-  SERVICE_TYPE_ID
+  SERVICE_TYPE_ID,
 } from './types/symbol';
 export { first, isSameArray, last } from './utils/array';
 export { isBrowser, isMobile } from './utils/browser';
@@ -412,7 +423,7 @@ export {
   toArray,
   toPayload,
   update,
-  useShallowEqual
+  useShallowEqual,
 } from './utils/object';
 export { absoluteUrl, isAbsoluteUrl, urlBuilder } from './utils/router';
 export { indexedLocales, isLocaleDomain, isLocalePath, isLocaleSimple } from './utils/settings';
@@ -424,7 +435,7 @@ export {
   onStorageChange,
   removeCookie,
   removeItem,
-  setItem
+  setItem,
 } from './utils/storage';
 export {
   generateRandomString,
@@ -438,7 +449,7 @@ export {
   trimEnd,
   trimStart,
   ucfirst,
-  wrap
+  wrap,
 } from './utils/string';
 export {
   ensureType,
@@ -449,7 +460,7 @@ export {
   isFunctionOrPromise,
   isInteger,
   isPromise,
-  isTrue
+  isTrue,
 } from './utils/type';
 
 // declare module 'react' {

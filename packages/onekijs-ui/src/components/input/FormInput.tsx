@@ -17,7 +17,7 @@ const FormInput: FC<FormInputProps> = React.memo((props) => {
 
   return (
     <FieldLayout {...fieldLayoutProps} required={props.required}>
-      <Component {...fieldComponentProps} />
+      <Component {...fieldComponentProps} value={!fieldComponentProps.value ? '' : fieldComponentProps.value} />
     </FieldLayout>
   );
 });
