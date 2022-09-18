@@ -110,8 +110,8 @@ export type CollectionBroker<
   C extends Collection<T, I, S> = Collection<T, I, S>,
 > = {
   addSubscriber(id: string, subscriber: C): void;
-  getInitialDataSource(): T[] | string | undefined;
-  getInitialQuery(): Query;
+  getInitialDataSource(subscriberId?: string,): T[] | string | undefined;
+  getInitialQuery(subscriberId?: string,): Query;
   removeSubscriber(id: string): void;
 
   addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId?: QueryFilterId, subscriberId?: string): void;
@@ -206,6 +206,8 @@ export interface CollectionState<T, I extends Item<T>> extends FetchState {
   active?: string[];
   adapter?: ItemAdapter<T>;
   autoload?: boolean;
+  brokerable?: boolean;
+  brokered?: boolean;
   comparator?: QuerySortComparator;
   comparators?: AnonymousObject<QuerySortComparator>;
   dataKey: string;

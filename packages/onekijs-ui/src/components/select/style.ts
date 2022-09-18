@@ -18,7 +18,16 @@ import { appearance, cursor, outline, userSelect } from '../../styles/interactiv
 import { overflowY } from '../../styles/overflow';
 import { bottom, left, position, right, top, zIndex } from '../../styles/position';
 import { height, maxWidth, minHeight, minWidth, width } from '../../styles/size';
-import { margin, marginRight, marginY, padding, paddingLeft, paddingTop, paddingX, paddingY } from '../../styles/spacing';
+import {
+  margin,
+  marginRight,
+  marginY,
+  padding,
+  paddingLeft,
+  paddingTop,
+  paddingX,
+  paddingY,
+} from '../../styles/spacing';
 import { verticalAlign } from '../../styles/table';
 import { transitionDuration, transitionProperty, transitionTimingFunction } from '../../styles/transition';
 import { ComponentStyle } from '../../styles/typings';
@@ -27,7 +36,7 @@ import { lighten } from '../../utils/color';
 import { preflight } from '../../utils/style';
 import { SelectProps } from './typings';
 
-const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
+const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable = true, searchable = true }) => {
   return css`
     ${preflight()}
     ${width('100%')}
@@ -149,12 +158,13 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
         ${borderWidth('2px')}
         ${padding(0)}
       }
-      .o-select-remover {
-        ${cursor('pointer')}
-        ${color('light')}
-        ${fontFamily('Arial')}
-        ${paddingX('sm')}
-      }
+    }
+
+    .o-select-remover {
+      ${cursor('pointer')}
+      ${color('light')}
+      ${fontFamily('Arial')}
+      ${paddingX('sm')}
     }
 
     &.o-select-disabled {
@@ -168,30 +178,43 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
 
       .o-select-icon-container {
         ${cursor('not-allowed')}
-        .o-select-icon {
-          ${cursor('not-allowed')}
-        }
       }
 
-      .o-select-input-data {
-        .o-select-token {
-          ${cursor('not-allowed')}
-          .o-select-token-remove {
-            ${cursor('not-allowed')}
-          }
-        }
+      .o-select-icon {
+        ${color('dark')}
+        ${cursor('not-allowed')}
       }
+
+      .o-select-token {
+        ${cursor('not-allowed')}
+        ${backgroundColor('dark')}
+      }
+
+      .o-select-token-remove {
+        ${cursor('not-allowed')}
+      }
+    }
+
+    input.o-select-input {
+      ${!searchable ? width(0) : ''}
+    }
+
+    .o-select-input-text {
+      ${userSelect('none')}
     }
 
     &.o-select-close {
       .o-select-input {
-        ${cursor('pointer')}
+        ${cursor(clickable ? 'pointer' : 'auto')}
       }
     }
     &.o-select-open {
       .o-select-input-container {
         ${borderBottomRightRadius(0)}
         ${borderBottomLeftRadius(0)}
+      }
+      .o-select-input {
+        ${cursor(searchable ? 'auto' : 'pointer')}
       }
     }
 
@@ -202,50 +225,54 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
       ${alignItems('center')}
       ${paddingX('sm')}
       ${maxWidth('calc(100% - 32px)')}
-      .o-select-input-wrapper {
-        ${flexGrow(1)}
-        ${color('gray-800')}
-        ${position('relative')}
-        ${display('inline-block')}
-        ${minWidth('50px')}
-        .o-select-input-auto-sizer {
-          ${visibility(false)}
-          ${display('inline-block')}
-          ${whiteSpace('pre')}
-        }
-        .o-select-input {
-          ${position('absolute')}
-          ${top(0)}
-          ${left(0)}
-          ${right(0)}
-          ${bottom(0)}
-          ${appearance('none')}
-          ${outline('none')}
-          ${width('full')}
-          ${color('gray-800', { placeholder: 'gray-400' })}
-        }
-      }
+    }
 
-      .o-select-token {
-        ${cursor('default')}
-        ${whiteSpace('pre')}
-        ${backgroundColor('primary')}
-        ${color('white')}
-        ${marginRight('sm')}
-        ${borderRadius('md')}
-        ${fontSize('sm')}
-        ${display('flex')}
-        .o-select-token-text {
-          ${flexGrow(1)}
-          ${paddingLeft('sm')}
-        }
-        .o-select-token-remove {
-          ${cursor('pointer')}
-          ${color('white', { hover: 'danger' })}
-          ${fontFamily('Arial')}
-          ${paddingX('sm')}
-        }
-      }
+    .o-select-input-wrapper {
+      ${flexGrow(1)}
+      ${color('gray-800')}
+      ${position('relative')}
+      ${display('inline-block')}
+      ${minWidth('50px')}
+    }
+
+    .o-select-input-auto-sizer {
+      ${visibility(false)}
+      ${display('inline-block')}
+      ${whiteSpace('pre')}
+    }
+
+    .o-select-input {
+      ${position('absolute')}
+      ${top(0)}
+      ${left(0)}
+      ${right(0)}
+      ${bottom(0)}
+      ${appearance('none')}
+      ${outline('none')}
+      ${width('full')}
+      ${color('gray-800', { placeholder: 'gray-400' })}
+    }
+
+    .o-select-token {
+      ${cursor('default')}
+      ${whiteSpace('pre')}
+      ${backgroundColor('primary')}
+      ${color('white')}
+      ${marginRight('sm')}
+      ${borderRadius('md')}
+      ${fontSize('sm')}
+      ${display('flex')}
+    }
+
+    .o-select-token-text {
+      ${flexGrow(1)}
+      ${paddingLeft('sm')}
+    }
+    .o-select-token-remove {
+      ${cursor('pointer')}
+      ${color('white', { hover: 'danger' })}
+      ${fontFamily('Arial')}
+      ${paddingX('sm')}
     }
 
     .o-select-icon-container {
@@ -257,23 +284,23 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
       ${display('flex')}
       ${alignItems('center')}
       ${borderColor('gray-200')}
-      .o-select-icon {
-        ${color('primary')}
-        ${cursor('pointer')}
-        ${width(4)}
-        ${height(4)}
-        ${outline('none', { focus: 'none' })}
-        ${backgroundColor('transparent')}
-        ${padding(0)}
-      }
-      .o-select-arrow-svg {
-        ${display('block')}
-        ${verticalAlign('middle')}
-        ${margin('px')}
-        ${transitionDuration('.5s')}
-        ${transitionProperty('all')}
-        ${transitionTimingFunction('ease-in-out')}
-      }
+    }
+    .o-select-icon {
+      ${color('primary')}
+      ${cursor('pointer')}
+      ${width(4)}
+      ${height(4)}
+      ${outline('none', { focus: 'none' })}
+      ${backgroundColor('transparent')}
+      ${padding(0)}
+    }
+    .o-select-arrow-svg {
+      ${display('block')}
+      ${verticalAlign('middle')}
+      ${margin('px')}
+      ${transitionDuration('.5s')}
+      ${transitionProperty('all')}
+      ${transitionTimingFunction('ease-in-out')}
     }
 
     &.o-select-multiple {
@@ -317,16 +344,16 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable }) => {
     .o-select-options {
       scrollbar-width: thin;
       scrollbar-color: ${(props) => props.theme.palette.colors[props.theme.colors.primary]}
-        ${(props) => props.theme.colors['gray-200']};
+        ${(props) => props.theme.colors[props.theme.colors.lighter]};
       &::-webkit-scrollbar {
         width: 12px;
       }
       &::-webkit-scrollbar-track {
-        background: ${(props) => props.theme.palette.colors['gray-200']};
+        background: ${(props) => props.theme.palette.colors[props.theme.colors.lighter]};
       }
       &::-webkit-scrollbar-thumb {
         background-color: ${(props) => props.theme.palette.colors[props.theme.colors.primary]};
-        border: 3px solid ${(props) => props.theme.palette.colors['gray-200']};
+        border: 3px solid ${(props) => props.theme.palette.colors[props.theme.colors.lighter]};
       }
       ${overflowY('hidden')}
 

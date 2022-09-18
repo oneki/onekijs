@@ -127,11 +127,21 @@ export default class FormService extends DefaultService<FormState> {
   }
 
   @reducer
+  clearError(fieldName: string, validatorName: string, compile = true): void {
+    this.clearValidation(fieldName, validatorName, ValidationCode.Error, compile);
+  }
+
+  @reducer
   clearValidation(fieldName: string, validatorName: string, code: ValidationCode, compile = true): void {
     del(this.fields[fieldName], `validations.${code}.${validatorName}`);
     if (compile) {
       this.compileValidations(fieldName);
     }
+  }
+
+  @reducer
+  clearWarning(fieldName: string, validatorName: string, compile = true): void {
+    this.clearValidation(fieldName, validatorName, ValidationCode.Warning, compile);
   }
 
   @reducer

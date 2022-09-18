@@ -26,6 +26,11 @@ export const extractFieldLayoutProps = (
     'layout',
     'required',
     'size',
+    'xsLabelWidth',
+    'smLabelWidth',
+    'mdLabelWidth',
+    'lgLabelWidth',
+    'xlLabelWidth',
   ];
   const fieldOptionsKeys = ['defaultValue', 'touchedOn', 'disabled', 'visible'];
   Object.keys(nonValidatorProps).forEach((k) => {

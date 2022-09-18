@@ -7,6 +7,7 @@ import {
   defaultQueryEngine,
   ensureFieldValue,
   isNull,
+  LoadingStatus,
   Query,
   reducer,
   saga,
@@ -32,6 +33,9 @@ class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends 
 
   @saga(SagaEffect.Serial)
   *check() {
+    if (this.state.local && this.status !== LoadingStatus.Loaded) {
+      return; // this validation will be done when the data will be loaded (can be delayed due to a fetchOnce)
+    }
     let invalidItems: I[] = [];
     const defaultItems: I[] = this.defaultValue ? toArray(this.defaultValue).map((v) => this._adapt(v)) : [];
 
@@ -84,8 +88,7 @@ class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends 
     if (
       value !== undefined &&
       this.state.validDefaultValue &&
-      (!this.config?.value ||
-        (Array.isArray(this.config.value) && this.config.value.length === 0))
+      (!this.config?.value || (Array.isArray(this.config.value) && this.config.value.length === 0))
     ) {
       yield this.setValue(value);
     }
@@ -186,8 +189,6 @@ class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends 
       this.callSaga('check');
     }
   }
-
-
 }
 
 export default SelectService;

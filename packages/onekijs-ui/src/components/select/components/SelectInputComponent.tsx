@@ -25,6 +25,7 @@ const SelectInputComponent = React.forwardRef<HTMLDivElement, SelectInputProps>(
       style,
       nullable,
       clickable,
+      searchable,
       minChars,
       disabled,
     },
@@ -153,15 +154,21 @@ const SelectInputComponent = React.forwardRef<HTMLDivElement, SelectInputProps>(
     const onClick = useCallback(() => {
       if (!open && clickable) {
         setOpen(true);
+        inputRef.current && inputRef.current.focus();
       }
-    }, [open, setOpen, clickable]);
+      if (open && !searchable) {
+        setOpen(false);
+      }
+    }, [open, setOpen, clickable, searchable]);
 
     const onFocus = useCallback(
       (e: React.FocusEvent<HTMLInputElement, Element>) => {
-        inputRef.current && inputRef.current.select();
+        if (searchable) {
+          inputRef.current && inputRef.current.select();
+        }
         forwardFocus && forwardFocus(e);
       },
-      [forwardFocus],
+      [forwardFocus, searchable],
     );
 
     const onBlur = useCallback(
@@ -176,16 +183,15 @@ const SelectInputComponent = React.forwardRef<HTMLDivElement, SelectInputProps>(
     const onIconClick = useCallback(
       (e: any) => {
         if (!disabled) {
-          if (!open) {
+          if (!open && searchable) {
             inputRef.current && inputRef.current.select();
           }
           forwardFocus && forwardFocus(e);
           setOpen(!open);
         }
       },
-      [open, forwardFocus, setOpen, disabled],
+      [open, forwardFocus, setOpen, disabled, searchable],
     );
-
     const onNullify = useCallback(() => {
       onChange(null);
     }, [onChange]);
@@ -219,6 +225,11 @@ const SelectInputComponent = React.forwardRef<HTMLDivElement, SelectInputProps>(
               spellCheck="false"
               disabled={disabled}
             />
+            {!searchable && (
+              <span className="o-select-input o-select-input-text" onClick={onClick}>
+                {proxyValue || ''}
+              </span>
+            )}
           </div>
         </div>
         {!multiple && nullable && value && !disabled && (

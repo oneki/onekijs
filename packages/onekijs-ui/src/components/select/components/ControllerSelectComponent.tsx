@@ -51,7 +51,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   nullable,
   minChars = 0,
   openOnFocus = false,
-  clickable = true,
+  searchable = true,
   dropdownWidthModifier = 'same',
   preload = 50,
   increment = 50,
@@ -61,6 +61,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   required = false,
   sameWidth = true,
   overscan,
+  clickable = true,
 }) => {
   if (nullable === undefined) {
     nullable = !required;
@@ -92,6 +93,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
     nullable,
     minChars,
     openOnFocus,
+    searchable,
     clickable,
     dropdownWidthModifier,
     preload,
@@ -294,11 +296,13 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
         clearSearch();
       }
 
-      if (multiple && item && !item.selected) {
+      const isSelected = item?.selected;
+
+      if (multiple && item && !isSelected) {
         service.addSelected('item', item);
-      } else if (multiple && item && item.selected) {
+      } else if (multiple && item && isSelected) {
         service.removeSelected('item', item);
-      } else if (item && !item.selected) {
+      } else if (item && !isSelected) {
         service.setSelected('item', item);
       } else {
         service.setSelected('item', []);
@@ -306,7 +310,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
 
       if (onChange) {
         if (multiple) {
-          if (item && item.selected) {
+          if (item && isSelected) {
             onRemoveToken(item, index);
           } else {
             const nextValue = (service.state.selected || []).map((uid) => service.getItem(uid)?.data);
@@ -502,6 +506,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
           style={style}
           nullable={nullable}
           IconComponent={IconComponent}
+          searchable={searchable}
           clickable={clickable}
           minChars={minChars}
           ref={triggerRef}
@@ -529,6 +534,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
             NotFoundComponent={NotFoundComponent}
             items={selectItems}
             onItemSelect={onSelect}
+            onItemUnselect={onSelect}
             totalSize={totalSize}
             virtualItems={isVirtual ? virtualItems : undefined}
             scrollToIndex={scrollToIndex}

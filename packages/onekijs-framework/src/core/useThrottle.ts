@@ -8,7 +8,7 @@ const useThrottle = <F extends Function>(fn: F, delayMs: number): F => {
   const delayRef = useRef(false);
 
   const result: F = useMemo(() => {
-    return (((...args: ArgumentTypes<F>) => {
+    return ((...args: ArgumentTypes<F>) => {
       if (!delayRef.current) {
         delayRef.current = true;
         fn(...args);
@@ -23,7 +23,7 @@ const useThrottle = <F extends Function>(fn: F, delayMs: number): F => {
       } else {
         argsRef.current = args;
       }
-    }) as unknown) as F;
+    }) as unknown as F;
   }, [fn, delayMs]);
 
   return result;

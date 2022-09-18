@@ -77,6 +77,7 @@ export interface SelectInputProps<T = any, I extends SelectItem<T> = SelectItem<
   onRemove: SelectOptionHandler<T, I>;
   style?: React.CSSProperties;
   nullable?: boolean;
+  searchable: boolean;
   clickable: boolean;
   minChars: number;
 }
@@ -156,6 +157,7 @@ export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omi
   minChars?: number;
   openOnFocus?: boolean;
   clickable?: boolean;
+  searchable?: boolean;
   dropdownWidthModifier?: DropdownWidthModifier;
   OptionComponent?: FC<SelectOptionProps>;
   OptionGroupComponent?: FC<SelectOptionProps>;

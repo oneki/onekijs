@@ -23,10 +23,14 @@ export const SelectOptionGroup: FC<SelectOptionProps> = ({ item }) => {
 const SelectOptionComponent: FC<SelectOptionProps> = React.memo((props) => {
   const { item, index, onClick, onMouseEnter, onMouseLeave, multiple = false } = props;
   const service = useSelectService();
-  const previousItem = service.items[index-1];
+  const previousItem = service.items[index - 1];
   const displayGroup = getGroupText(item) !== getGroupText(previousItem);
 
-  const { OptionContentComponent = SelectOptionContent, OptionLoadingComponent = LoadingItem, OptionGroupComponent = SelectOptionGroup } = service.config || {};
+  const {
+    OptionContentComponent = SelectOptionContent,
+    OptionLoadingComponent = LoadingItem,
+    OptionGroupComponent = SelectOptionGroup,
+  } = service.config || {};
   let clickable = !!onClick && !item?.disabled;
   let hoverable = true;
   if (item?.data === undefined && isItemLoading(item)) {

@@ -54,6 +54,12 @@ const checkboxStyle: ComponentStyle<CheckboxProps> = ({
     }
 
     &.o-checkbox-disabled {
+      .o-checkbox-container {
+        ${borderColor('dark')}
+      }
+      .o-checkbox-svg-stroke {
+        ${borderColor('dark')}
+      }
       .o-checkbox-svg {
         ${backgroundColor('lighter')}
       }
@@ -62,6 +68,9 @@ const checkboxStyle: ComponentStyle<CheckboxProps> = ({
       }
       label {
         ${cursor('not-allowed')}
+      }
+      .o-checkbox-svg-stroke {
+        ${stroke('dark')}
       }
     }
 
@@ -81,15 +90,6 @@ const checkboxStyle: ComponentStyle<CheckboxProps> = ({
       align-items: center;
       .o-checkbox-label {
         ${marginLeft('md')}
-      }
-    }
-
-    &.o-checkbox-disabled {
-      .o-checkbox-container {
-        ${borderColor('dark')}
-      }
-      .o-checkbox-svg-stroke {
-        ${borderColor('dark')}
       }
     }
 

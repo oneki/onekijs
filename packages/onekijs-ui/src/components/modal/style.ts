@@ -116,7 +116,7 @@ export const modalStyle: ComponentStyle<ModalProps> = ({ width: w, height: h, si
       ${overflow('auto')}
       ${height('100%')}
       scrollbar-width: thin;
-      scrollbar-color: ${(props) => props.theme.palette.colors[props.theme.colors.light]}
+      scrollbar-color: ${(props) => props.theme.palette.colors[props.theme.colors.primary]}
         ${(props) => props.theme.colors[props.theme.colors.lighter]};
       &::-webkit-scrollbar {
         width: 12px;
@@ -125,7 +125,7 @@ export const modalStyle: ComponentStyle<ModalProps> = ({ width: w, height: h, si
         background: ${(props) => props.theme.palette.colors[props.theme.colors.lighter]};
       }
       &::-webkit-scrollbar-thumb {
-        background-color: ${(props) => props.theme.palette.colors[props.theme.colors.light]};
+        background-color: ${(props) => props.theme.palette.colors[props.theme.colors.primary]};
         border: 3px solid ${(props) => props.theme.palette.colors[props.theme.colors.lighter]};
       }
     }

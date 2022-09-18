@@ -1,4 +1,4 @@
-import { isCollectionReady, Item, LoadingStatus } from 'onekijs-framework';
+import { Item, LoadingStatus } from 'onekijs-framework';
 import { RefObject, useCallback, useEffect, useReducer } from 'react';
 import { useVirtual } from '../../../vendor/reactVirtual';
 //import { useVirtual } from 'react-virtual';
