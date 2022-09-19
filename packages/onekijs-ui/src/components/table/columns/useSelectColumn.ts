@@ -12,19 +12,20 @@ const useSelectColumn = <
 >(
   options: UseSelectColumnOptions<T, S, TI, SI>,
 ): SelectColumn<T, S, TI, SI> => {
+  const opts = Object.assign({}, options, { brokerable: true })
   const broker = useLazyRef<SelectBroker<S, SI>>(() => {
-    return new DefaultSelectBroker(options.dataSource, options);
+    return new DefaultSelectBroker(opts.dataSource, opts);
   });
-  const Component: SelectCell<T, S, TI, SI> = options.CellComponent || (SelectCellComponent as any);
+  const Component: SelectCell<T, S, TI, SI> = opts.CellComponent || (SelectCellComponent as any);
   const optionsRef = useLazyRef<SelectColumn<T, S, TI, SI>>(() => {
     return Object.assign(
       {
         filterable: false,
         sortable: false,
       },
-      options,
+      opts,
       {
-        CellComponent: Component(options, broker.current),
+        CellComponent: Component(opts, broker.current),
         broker: broker.current,
       },
     );

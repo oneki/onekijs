@@ -76,7 +76,7 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
   useEffect(() => {
     if (controller.status !== LoadingStatus.NotReady) {
       if (isVirtual) {
-        if (state.status === LoadingStatus.NotInitialized) {
+        if (controller.status === LoadingStatus.NotInitialized) {
           controller.load(preload);
         } else if (canFetchMore(controller)) {
           const lastVirtualItem = virtualItems[virtualItems.length - 1];

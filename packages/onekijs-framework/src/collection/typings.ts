@@ -37,6 +37,7 @@ export type Collection<
   getSortById(id: string): QuerySortBy | undefined;
   readonly hasMore: boolean;
   load(limit?: number, offset?: number): void;
+  onSubscribe(initialData: T[] | undefined, initialUrl: string | undefined, initialQuery: Query): void;
   query(query: Query): void;
   refresh(query?: Query): void;
   removeActive<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
@@ -167,6 +168,7 @@ export interface CollectionOptions<T, I extends Item<T>> {
   active?: T[];
   adapter?: ItemAdapter<T>;
   autoload?: boolean;
+  brokerable?: boolean;
   comparator?: QuerySortComparator;
   comparators?: AnonymousObject<QuerySortComparator>;
   dataKey?: string;

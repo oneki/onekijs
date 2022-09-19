@@ -387,6 +387,38 @@ export type Theme = {
     placeholderColor: ColorPropertyTheme | ColorProperty;
   };
 
+  textarea: {
+    bgColor: ColorPropertyTheme | BackgroundColorProperty;
+    width: SizePropertyTheme | WidthProperty<TLength>;
+    borderWidth: number | BorderWidthProperty<TLength>;
+    borderColor: ColorPropertyTheme | BorderColorProperty;
+    borderRadius: RadiusPropertyTheme | string;
+    borderStyle: BorderBottomStyleProperty;
+    borderFocusColor: ColorPropertyTheme | BorderColorProperty;
+    borderFocusWidth: number | BorderWidthProperty<TLength>;
+    paddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
+    paddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
+    xsPaddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
+    xsPaddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
+    xsFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
+    smPaddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
+    smPaddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
+    smFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
+    mdPaddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
+    mdPaddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
+    mdFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
+    lgPaddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
+    lgPaddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
+    lgFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
+    xlPaddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
+    xlPaddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
+    xlFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
+    appearance: AppearanceProperty;
+    outline: OutlineProperty<TLength>;
+    fontColor: ColorPropertyTheme | ColorProperty;
+    placeholderColor: ColorPropertyTheme | ColorProperty;
+  };
+
   checkbox: {
     bgColor: ColorPropertyTheme | BackgroundColorProperty;
     color: ColorPropertyTheme | BackgroundColorProperty;

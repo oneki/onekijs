@@ -172,8 +172,8 @@ export default class FormService extends DefaultService<FormState> {
   }
 
   @reducer
-  disable(fieldName: string): void {
-    this.setMetadata(fieldName, 'disabled', true);
+  disable(fieldName: string, match = true): void {
+    this.setMetadata(fieldName, 'disabled', match);
   }
 
   @reducer
@@ -196,8 +196,8 @@ export default class FormService extends DefaultService<FormState> {
   }
 
   @reducer
-  enable(fieldName: string): void {
-    this.setMetadata(fieldName, 'disabled', false);
+  enable(fieldName: string, match = true): void {
+    this.setMetadata(fieldName, 'disabled', !match);
   }
 
   @reducer
@@ -393,8 +393,8 @@ export default class FormService extends DefaultService<FormState> {
   }
 
   @reducer
-  hide(fieldName: string): void {
-    this.setMetadata(fieldName, 'visible', false);
+  hide(fieldName: string, match = true): void {
+    this.setMetadata(fieldName, 'visible', !match);
   }
 
   /**
@@ -909,9 +909,11 @@ export default class FormService extends DefaultService<FormState> {
   }
 
   @reducer
-  show(fieldName: string): void {
-    this.setMetadata(fieldName, 'visible', true);
-    this.enableValidator(fieldName, 'required');
+  show(fieldName: string, match = true): void {
+    this.setMetadata(fieldName, 'visible', match);
+    if (match) {
+      this.enableValidator(fieldName, 'required');
+    }
   }
 
   @saga(SagaEffect.Leading)

@@ -45,6 +45,7 @@ import {
   defaultSerializer,
   formatFilter,
   formatSortBy,
+  getDefaultCollectionStatus,
   isCollectionReady,
   isQueryFilterCriteria,
   isQuerySortByField,
@@ -298,12 +299,7 @@ export default class CollectionService<
   }
 
   get status(): CollectionStatus {
-    const defaultStatus =
-      this.state.url === undefined && this.db === undefined
-        ? LoadingStatus.NotReady
-        : this.state.local
-        ? LoadingStatus.Loaded
-        : LoadingStatus.NotInitialized;
+    const defaultStatus = getDefaultCollectionStatus(this.db || this.state.url, this.state.brokerable, this.state.brokered, this.state.fetchOnce);
     return this.state.status || defaultStatus;
   }
 
@@ -428,6 +424,18 @@ export default class CollectionService<
     const resetData = this.state.items ? false : true;
     this._setLoading({ limit, offset, resetData });
     this.refresh();
+  }
+
+  @reducer
+  onSubscribe(initialData: T[] | undefined, initialUrl: string | undefined, initialQuery: Query):void {
+    this.state.brokered = true;
+    if (Array.isArray(initialData)) {
+      this.setData(initialData, initialQuery);
+    } else if (initialUrl !== undefined) {
+      this.setUrl(initialUrl, initialQuery)
+    } else {
+      this.query(initialQuery);
+    }
   }
 
   @reducer
@@ -777,7 +785,7 @@ export default class CollectionService<
   @saga(SagaEffect.Latest)
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   *_fetchOnce() {
-    if (typeof this.state.dataSource === 'string' && this.state.fetchOnce) {
+    if (typeof this.state.dataSource === 'string' && this.state.fetchOnce && this.status !== LoadingStatus.NotReady) {
       yield this.setStatus(LoadingStatus.Loading);
       try {
         const result: CollectionFetcherResult<T> = yield this._executeFetch(
@@ -1040,13 +1048,19 @@ export default class CollectionService<
 
     const currentItem = this.idIndex[String(result.id)];
 
+    const d = Array.isArray(data) ? data[0] : data;
+
     if (currentItem !== undefined) {
-      return Object.assign({}, currentItem, { data }, result);
+      if (currentItem.id === data) {
+        // do not erase with new text or id, just get the current item
+        return Object.assign({}, currentItem);
+      }
+      return Object.assign({}, currentItem, { data: d }, result);
     } else {
       const uid = generateUniqueId();
       return Object.assign(
         {
-          data,
+          data: d,
           uid,
           loadingStatus: data !== undefined ? LoadingStatus.Loaded : LoadingStatus.NotInitialized,
         },

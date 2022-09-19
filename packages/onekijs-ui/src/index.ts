@@ -8,7 +8,7 @@ export {
   AccordionPanelState,
   AccordionPanelTitleProps,
   AccordionProps,
-  AccordionState,
+  AccordionState
 } from './components/accordion/typings';
 export { default as Button } from './components/button';
 export { default as DropdownButton } from './components/button/DropdownButton';
@@ -39,7 +39,7 @@ export { DashboardService } from './components/dashboard/DashboardService';
 export { default as useDashboard } from './components/dashboard/hooks/useDashboard';
 export {
   DashboardServiceContext,
-  default as useDashboardService,
+  default as useDashboardService
 } from './components/dashboard/hooks/useDashboardService';
 export { DashboardStateContext, default as useDashboardState } from './components/dashboard/hooks/useDashboardState';
 export {
@@ -58,7 +58,7 @@ export {
   DashboardTogglerProps,
   DashboardVerticalArea,
   DashboardVerticalPanel,
-  DashboardVerticalPanelProps,
+  DashboardVerticalPanelProps
 } from './components/dashboard/typings';
 export { default as Dropdown } from './components/dropdown';
 export { default as DropdownComponent } from './components/dropdown/components/DropdownComponent';
@@ -76,7 +76,7 @@ export {
   FieldDescriptionProps,
   FieldHelpProps,
   FieldLayoutProps,
-  UseFieldLayoutProps,
+  UseFieldLayoutProps
 } from './components/field/typings';
 export { default as Col } from './components/grid/Col';
 export { default as Row } from './components/grid/Row';
@@ -116,7 +116,7 @@ export {
   ListState,
   ListStatus,
   UseListOptions,
-  VirtualItem,
+  VirtualItem
 } from './components/list/typings';
 export { default as Modal } from './components/modal';
 export { default as ModalComponent } from './components/modal/components/ModalComponent';
@@ -136,6 +136,12 @@ export { default as SelectInputComponent } from './components/select/components/
 export { default as SelectOptionComponent } from './components/select/components/SelectOptionComponent';
 export { default as SelectTokensComponent } from './components/select/components/SelectTokensComponent';
 export { default as FormSelect } from './components/select/FormSelect';
+export { default as InputCellComponent } from './components/table/components/cells/InputCellComponent';
+export { default as CheckboxCellComponent } from './components/table/components/cells/CheckboxCellComponent';
+export { default as DefaultCellComponent } from './components/table/components/cells/DefaultCellComponent';
+export { default as ExpandedCellComponent } from './components/table/components/cells/ExpandedCellComponent';
+export { default as SelectCellComponent } from './components/table/components/cells/SelectCellComponent';
+export { default as TextareaCellComponent } from './components/table/components/cells/TextareaCellComponent';
 export { default as useSelectController } from './components/select/hooks/useSelectController';
 export { default as DefaultSelectBroker } from './components/select/SelectBroker';
 export { default as SelectService } from './components/select/SelectService';
@@ -158,7 +164,7 @@ export {
   SelectProps,
   SelectState,
   SelectTokenProps,
-  SelectTokensProps,
+  SelectTokensProps
 } from './components/select/typings';
 export { findSelectItem, findSelectItemIndex, shouldCheckSelect } from './components/select/util';
 export { default as Tabs } from './components/tab';
@@ -171,7 +177,7 @@ export {
   TabsState,
   TabState,
   TabTitleProps,
-  UseTabsController,
+  UseTabsController
 } from './components/tab/typings';
 export { default as Table } from './components/table';
 export { default as useCheckboxColumn } from './components/table/columns/useCheckboxColumn';
@@ -179,6 +185,7 @@ export { default as useColumn } from './components/table/columns/useColumn';
 export { default as useInputColumn } from './components/table/columns/useInputColumn';
 export { default as useLinkColumn } from './components/table/columns/useLinkColumn';
 export { default as useSelectColumn } from './components/table/columns/useSelectColumn';
+export { default as useTextareaColumn } from './components/table/columns/useTextareaColumn';
 export { default as FormTable } from './components/table/FormTable';
 export { default as useFormTableContext } from './components/table/hooks/useFormTableContext';
 export { default as useTableController } from './components/table/hooks/useTableController';
@@ -189,8 +196,7 @@ export {
   ControllerTableProps,
   FormTableContext,
   FormTableProps,
-  InputColumn,
-  SelectColumn,
+  InputColumn, SelectCell, SelectColumn,
   TableBodyCellProps,
   TableBodyProps,
   TableBodyRowProps,
@@ -214,17 +220,20 @@ export {
   TableProps,
   TableRowHandler,
   TableSortProps,
-  TableState,
-  UseCheckboxColumnOptions,
+  TableState, TextareaColumn, UseCheckboxColumnOptions,
   UseInputColumnOptions,
   UseLinkColumnOptions,
   UseSelectColumnOptions,
-  UseTableOptions,
+  UseTableOptions, UseTextareaColumnOptions
 } from './components/table/typings';
 export { default as Tag } from './components/tag';
 export { default as TagComponent } from './components/tag/components/TagComponent';
 export { tagStyle } from './components/tag/style';
 export { TagProps } from './components/tag/typings';
+export { default as Textarea } from './components/textarea';
+export { default as TextareaComponent } from './components/textarea/components/TextareaComponent';
+export { default as FormTextarea } from './components/textarea/FormTextarea';
+export { FormTextareaProps, TextareaProps } from './components/textarea/typings';
 export { default as Tooltip } from './components/tooltip';
 export { default as Tree } from './components/tree';
 export { default as ArrayTreeComponent } from './components/tree/components/ArrayTreeComponent';
@@ -234,7 +243,7 @@ export { default as TreeComponent } from './components/tree/components/TreeCompo
 export {
   default as TreeItemComponent,
   TreeItemContent,
-  TreeItemToggler,
+  TreeItemToggler
 } from './components/tree/components/TreeItemComponent';
 export { default as TreeListComponent } from './components/tree/components/TreeListComponent';
 export { default as VirtualTreeBodyComponent } from './components/tree/components/VirtualTreeBodyComponent';
@@ -245,7 +254,6 @@ export { default as useTreeInitialState } from './components/tree/hooks/useTreeI
 export { default as useTreeService, TreeServiceContext } from './components/tree/hooks/useTreeService';
 export { TreeStateContext, useTreeState } from './components/tree/hooks/useTreeState';
 export { default as TreeService } from './components/tree/TreeService';
-export { defaultTreeQueryEngine } from './components/tree/util';
 export {
   ArrayTreeProps,
   ControllerTreeProps,
@@ -261,8 +269,9 @@ export {
   TreeProps,
   TreeState,
   UseTreeOptions,
-  VirtualTreeListProps,
+  VirtualTreeListProps
 } from './components/tree/typings';
+export { defaultTreeQueryEngine } from './components/tree/util';
 export { default as Wizard } from './components/wizard';
 export { default as ControlledWizardComponent } from './components/wizard/components/ControlledWizardComponent';
 export { default as Step } from './components/wizard/components/Step';
@@ -280,7 +289,7 @@ export {
   UseWizardController,
   WizardModalProps,
   WizardProps,
-  WizardState,
+  WizardState
 } from './components/wizard/typings';
 export { default as WizardModal } from './components/wizard/WizardModal';
 export { WizardService } from './components/wizard/WizardService';

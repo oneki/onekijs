@@ -17,6 +17,7 @@ import { FieldLayoutProps } from '../field/typings';
 import { InputProps } from '../input/typings';
 import { ListItemProps, ListItems, ListNotFoundProps, ListState, UseListOptions } from '../list/typings';
 import { SelectBroker, SelectItem, SelectProps } from '../select/typings';
+import { TextareaProps } from '../textarea/typings';
 
 export type ArrayTableProps<T = any, I extends TableItem<T> = TableItem<T>> = TableConfig<T, I> & {
   adapter?: TableItemAdapter<T>;
@@ -279,6 +280,8 @@ export type SelectColumn<
   broker: SelectBroker<F, FI>;
 };
 
+export type TextareaColumn<T = any, I extends TableItem<T> = TableItem<T>> = TableColumn<T, I>;
+
 export type UseLinkColumnOptions<T = any, I extends TableItem<T> = TableItem<T>> = Omit<
   TableColumnSpec<T, I>,
   'CellComponent'
@@ -315,6 +318,15 @@ export type UseSelectColumnOptions<
   Omit<FormFieldProps, 'name'> &
   UseCollectionOptions<S, SI> & {
     CellComponent?: SelectCell<T, S, TI, SI>;
+  };
+
+  export type UseTextareaColumnOptions<T = any, I extends TableItem<T> = TableItem<T>> = Omit<
+  TableColumnSpec<T, I>,
+  'CellComponent'
+> &
+  Omit<FormFieldProps, 'name'> &
+  Omit<TextareaProps, 'className' | 'onFocus' | 'onChange' | 'onBlur'> & {
+    CellComponent?: (options: UseTextareaColumnOptions<T, I>) => React.FC<TableBodyCellProps<T, I>>;
   };
 
 export type SelectCell<

@@ -167,13 +167,8 @@ export default class DefaultCollectionBroker<
       this.subscribers[subscriberId] = subscriber;
       const initialData = this.getData(subscriberId);
       const initialUrl = this.getUrl(subscriberId);
-      if (Array.isArray(initialData)) {
-        subscriber.setData(initialData, this.getInitialQuery(subscriberId));
-      } else if (initialUrl !== undefined) {
-        subscriber.setUrl(initialUrl, this.getInitialQuery(subscriberId));
-      } else {
-        subscriber.query(this.getInitialQuery(subscriberId));
-      }
+      const initialQuery = this.getInitialQuery(subscriberId)
+      subscriber.onSubscribe(initialData, initialUrl, initialQuery);
     }
   }
 

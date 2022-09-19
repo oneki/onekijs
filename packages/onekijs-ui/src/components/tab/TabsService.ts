@@ -19,6 +19,7 @@ export class TabsService<
         t.active = false;
       });
       member.active = true;
+      member.touched = false;
       this.state.active = uid;
       this.touching(this.state.active);
     }

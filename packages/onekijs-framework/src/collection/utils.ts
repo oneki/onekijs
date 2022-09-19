@@ -7,6 +7,7 @@ import { clone, get, shallowEqual, toArray } from '../utils/object';
 import {
   Collection,
   CollectionState,
+  CollectionStatus,
   Item,
   LoadingStatus,
   LocalQuery,
@@ -837,4 +838,11 @@ export const formatSortBy = (sortBy?: string | QuerySortBy | QuerySortBy[]): Que
     ];
   }
   return [sortBy];
+};
+
+export const getDefaultCollectionStatus = (dataOrUrl: any[] | string | undefined, brokerable?: boolean, brokered?: boolean, fetchOnce?: boolean): CollectionStatus => {
+  if (dataOrUrl === undefined || (brokerable && !brokered)) return LoadingStatus.NotReady;
+  if (Array.isArray(dataOrUrl)) return LoadingStatus.Loaded;
+  if (fetchOnce) return LoadingStatus.Loading;
+  return LoadingStatus.NotInitialized;
 };

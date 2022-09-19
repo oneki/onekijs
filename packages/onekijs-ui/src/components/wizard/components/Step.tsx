@@ -1,6 +1,7 @@
 import { FCC, FormContext, useFieldContainer } from 'onekijs-framework';
 import React, { useEffect } from 'react';
 import { CSSTransition } from 'react-transition-group';
+import { addClassname } from '../../../utils/style';
 import useStep from '../hooks/useStep';
 import useWizardService from '../hooks/useWizardService';
 import { useWizardState } from '../hooks/useWizardState';
@@ -17,6 +18,7 @@ const Step: FCC<StepProps> = ({
   uid,
   optional = false,
   showTitle = true,
+  className,
 }) => {
   const { animate, forwardOnly } = useWizardState();
   const service = useWizardService();
@@ -70,7 +72,7 @@ const Step: FCC<StepProps> = ({
   return (
     <FormContext.Provider value={fieldContainer.context}>
       <CSSTransition in={true} timeout={animate} appear={true} onEnter={onEnter} onEntering={onEntering}>
-        <div className="o-step-content">
+        <div className={addClassname('o-step-content', className)}>
           {showTitle && <div className="o-step-content-title">{title}</div>}
           {children}
         </div>

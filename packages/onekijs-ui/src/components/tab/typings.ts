@@ -10,6 +10,7 @@ export type TabProps = {
   disabled?: boolean;
   icon?: ReactNode;
   uid?: string;
+  className?: string;
 };
 
 export type TabTitleProps<M extends TabState = TabState> = {

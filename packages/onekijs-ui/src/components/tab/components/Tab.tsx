@@ -1,6 +1,7 @@
 import { FCC } from 'onekijs-framework';
 import React from 'react';
 import { CSSTransition } from 'react-transition-group';
+import { addClassname } from '../../../utils/style';
 import useTab from '../hooks/useTab';
 import { useTabsState } from '../hooks/useTabsState';
 import { TabProps } from '../typings';
@@ -14,6 +15,7 @@ const Tab: FCC<TabProps> = ({
   children,
   icon,
   uid,
+  className,
 }) => {
   const tab = useTab({
     title,
@@ -47,7 +49,7 @@ const Tab: FCC<TabProps> = ({
 
   return (
     <CSSTransition in={true} timeout={animate} appear={true} onEnter={onEnter} onEntering={onEntering}>
-      <div className="o-tab">{children}</div>
+      <div className={addClassname('o-tab', className)}>{children}</div>
     </CSSTransition>
   );
 };

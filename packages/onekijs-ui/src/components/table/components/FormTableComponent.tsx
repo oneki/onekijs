@@ -12,14 +12,16 @@ const DeleteRowComponent: React.FC<TableBodyCellProps> = ({ rowIndex }) => {
   const form = useForm();
   const { tableName, minLength = 0, required } = useFormTableContext();
   const removeRow = () => {
-    form.remove(tableName, rowIndex);
+    if (rowIndex >= min) {
+      form.remove(tableName, rowIndex);
+    }
+
   };
 
   const min = Math.max(minLength, required ? 1 : 0);
-  if (rowIndex < min) return null;
 
   return (
-    <div className="o-form-table-remove" onClick={removeRow}>
+    <div className={`o-form-table-remove${rowIndex < min ? ' o-form-table-remove-disabled' : ''}`} onClick={removeRow}>
       <RemoveIcon width="14px" height="14px" />
     </div>
   );

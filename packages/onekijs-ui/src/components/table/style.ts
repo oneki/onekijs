@@ -240,6 +240,10 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true 
       ${color('danger')}
       ${cursor('pointer')}
       ${paddingTop('sm')}
+      &.o-form-table-remove-disabled {
+        ${color('dark')}
+        ${cursor('not-allowed')}
+      }
     }
 
     .o-form-table-remove-cell {
