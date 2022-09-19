@@ -139,8 +139,6 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
     }
   }, [focus, controller, value, multiple]);
 
-  console.log('proxyItem', proxyItem);
-
   const clearSearch = useCallback(() => {
     setTimeout(service.clearSearch, animationMs);
   }, [service, animationMs]);

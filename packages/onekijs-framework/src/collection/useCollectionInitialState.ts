@@ -13,9 +13,7 @@ import {
   Query,
   UseCollectionOptions,
 } from './typings';
-import { getDefaultCollectionStatus, isCollection } from './utils';
-
-
+import { isCollection } from './utils';
 
 const useCollectionInitialState = <T = any, I extends Item<T> = Item<T>>(
   dataSource:

@@ -152,14 +152,14 @@ const SelectInputComponent = React.forwardRef<HTMLDivElement, SelectInputProps>(
     }, [focus]);
 
     const onClick = useCallback(() => {
-      if (!open && clickable) {
+      if (!open && clickable && !disabled) {
         setOpen(true);
         inputRef.current && inputRef.current.focus();
       }
       if (open && !searchable) {
         setOpen(false);
       }
-    }, [open, setOpen, clickable, searchable]);
+    }, [open, setOpen, clickable, searchable, disabled]);
 
     const onFocus = useCallback(
       (e: React.FocusEvent<HTMLInputElement, Element>) => {

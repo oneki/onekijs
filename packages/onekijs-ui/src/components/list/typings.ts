@@ -7,7 +7,7 @@ import {
   ItemAdapter,
   UseCollectionOptions,
 } from 'onekijs-framework';
-import React, { FC } from 'react';
+import React, { FC, ReactNode } from 'react';
 import { StylableProps } from '../../styles/typings';
 
 export type ArrayListProps<T = any, I extends ListItem<T> = ListItem<T>> = ListConfig<T, I> & {
@@ -123,7 +123,7 @@ export type ListConfig<T = any, I extends ListItem<T> = ListItem<T>> = {
 };
 
 export type ListNotFoundProps = {
-  text?: string;
+  text?: ReactNode | ReactNode[];
 };
 
 export type ListProps<

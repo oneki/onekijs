@@ -193,6 +193,11 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable = true, sea
       .o-select-token-remove {
         ${cursor('not-allowed')}
       }
+      &.o-select-close {
+        .o-select-input {
+          ${cursor('not-allowed')}
+        }
+      }
     }
 
     input.o-select-input {

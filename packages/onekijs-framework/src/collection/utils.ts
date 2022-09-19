@@ -105,9 +105,9 @@ export const applyOperator = (
     case 'i_sw':
       return String(left).toUpperCase().startsWith(String(right).toUpperCase());
     case 'eq':
-      return String(left).startsWith(String(right));
+      return String(left) === String(right);
     case 'i_eq':
-      return String(left).toUpperCase().startsWith(String(right).toUpperCase());
+      return String(left).toUpperCase() === String(right).toUpperCase();
     case 'regex':
       return new RegExp(String(right)).test(String(left));
     case 'i_regex':
@@ -840,7 +840,12 @@ export const formatSortBy = (sortBy?: string | QuerySortBy | QuerySortBy[]): Que
   return [sortBy];
 };
 
-export const getDefaultCollectionStatus = (dataOrUrl: any[] | string | undefined, brokerable?: boolean, brokered?: boolean, fetchOnce?: boolean): CollectionStatus => {
+export const getDefaultCollectionStatus = (
+  dataOrUrl: any[] | string | undefined,
+  brokerable?: boolean,
+  brokered?: boolean,
+  fetchOnce?: boolean,
+): CollectionStatus => {
   if (dataOrUrl === undefined || (brokerable && !brokered)) return LoadingStatus.NotReady;
   if (Array.isArray(dataOrUrl)) return LoadingStatus.Loaded;
   if (fetchOnce) return LoadingStatus.Loading;

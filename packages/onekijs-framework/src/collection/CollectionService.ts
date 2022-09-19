@@ -299,7 +299,12 @@ export default class CollectionService<
   }
 
   get status(): CollectionStatus {
-    const defaultStatus = getDefaultCollectionStatus(this.db || this.state.url, this.state.brokerable, this.state.brokered, this.state.fetchOnce);
+    const defaultStatus = getDefaultCollectionStatus(
+      this.db || this.state.url,
+      this.state.brokerable,
+      this.state.brokered,
+      this.state.fetchOnce,
+    );
     return this.state.status || defaultStatus;
   }
 
@@ -427,12 +432,12 @@ export default class CollectionService<
   }
 
   @reducer
-  onSubscribe(initialData: T[] | undefined, initialUrl: string | undefined, initialQuery: Query):void {
+  onSubscribe(initialData: T[] | undefined, initialUrl: string | undefined, initialQuery: Query): void {
     this.state.brokered = true;
     if (Array.isArray(initialData)) {
       this.setData(initialData, initialQuery);
     } else if (initialUrl !== undefined) {
-      this.setUrl(initialUrl, initialQuery)
+      this.setUrl(initialUrl, initialQuery);
     } else {
       this.query(initialQuery);
     }
@@ -1074,7 +1079,7 @@ export default class CollectionService<
     query: LocalQuery,
     comparator: QuerySortComparator,
     comparators: AnonymousObject<QuerySortComparator>,
-    searcher: QuerySearcher<T>,
+    searcher?: QuerySearcher<T>,
   ): I[] {
     return defaultQueryEngine(items, query, comparator, comparators, searcher);
   }
@@ -1122,7 +1127,7 @@ export default class CollectionService<
       if (location.relativeurl && this.cache[location.relativeurl]) {
         this._setItems(this.cache[location.relativeurl]);
       } else {
-        const queryEngine = this.state.queryEngine || defaultQueryEngine;
+        const queryEngine = this.state.queryEngine || this._execute.bind(this);
         this._setItems(
           queryEngine(
             this.db || [],
