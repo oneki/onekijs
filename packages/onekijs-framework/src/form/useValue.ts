@@ -3,10 +3,10 @@ import { get, isNullOrEmpty } from '../utils/object';
 import { FormValueListener } from './typings';
 import useForm from './useForm';
 
-const useValue = (fieldName: string): any => {
+const useValue = (fieldName?: string): any => {
   const form = useForm();
   const id = useId();
-  const nameRef = useRef(fieldName);
+  const nameRef = useRef(fieldName || '');
   const [value, setValue] = useState((): any => {
     if (isNullOrEmpty(nameRef.current)) {
       return form.state.values;
