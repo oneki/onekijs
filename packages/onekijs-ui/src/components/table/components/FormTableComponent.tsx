@@ -15,7 +15,6 @@ const DeleteRowComponent: React.FC<TableBodyCellProps> = ({ rowIndex }) => {
     if (rowIndex >= min) {
       form.remove(tableName, rowIndex);
     }
-
   };
 
   const min = Math.max(minLength, required ? 1 : 0);
