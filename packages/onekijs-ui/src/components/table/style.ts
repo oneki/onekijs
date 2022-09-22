@@ -16,7 +16,7 @@ import {
   paddingRight,
   paddingTop,
   paddingX,
-  paddingY
+  paddingY,
 } from '../../styles/spacing';
 import { verticalAlign } from '../../styles/table';
 import { transitionDuration, transitionProperty, transitionTimingFunction } from '../../styles/transition';
@@ -216,8 +216,8 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true 
       }
       .o-table-header-title-container {
         ${paddingY('xs')}
-        ${borderBottomWidth('1px')}
-        ${borderBottomColor('primary')}
+        ${borderBottomWidth(t.thBorderBottomWidth)}
+        ${borderBottomColor(t.thBorderBottomColor)}
       }
     }
 
@@ -229,7 +229,7 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true 
       ${textTransform('uppercase')}
       ${fontSize('xs')}
       ${cursor('pointer')}
-      ${color('primary')}
+      ${color('pink')}
       .o-toggler-icon-container {
         ${marginBottom('px')}
       }
@@ -241,7 +241,7 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true 
       ${cursor('pointer')}
       ${paddingTop('sm')}
       &.o-form-table-remove-disabled {
-        ${color('dark')}
+        ${color('light')}
         ${cursor('not-allowed')}
       }
     }

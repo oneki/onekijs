@@ -195,15 +195,37 @@ export function get(content: any, property?: any, defaultValue?: any): any {
   if (property === undefined || property === null || property === '') {
     return content;
   }
-  const [subContent, index] = find(content, property);
-  try {
-    if (isNull(subContent) || !(index in subContent)) {
-      return defaultValue;
-    }
-    return subContent[index] === undefined ? defaultValue : subContent[index];
-  } catch (e) {
+
+  if (typeof property !== 'string') {
+    property = `${property}`;
+  }
+
+  if (isNull(content)) {
     return defaultValue;
   }
+
+  const parts = property.split('.');
+  for (let i = 0; i <= parts.length - 1; i++) {
+    const part = parts[i];
+    const isNumber = !isNaN(Number(part));
+    const index = isNumber ? parseInt(part) : part;
+    try {
+      if (Array.isArray(content) && !isNumber) {
+        content = content.map((c) => c[index]).flat();
+      } else if (!(index in content) || content[index] === undefined) {
+        return defaultValue;
+      } else {
+        content = content[index];
+        if (isNull(content) && i !== part.length - 1) {
+          return defaultValue;
+        }
+      }
+    } catch (e) {
+      return defaultValue;
+    }
+  }
+
+  return content;
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types

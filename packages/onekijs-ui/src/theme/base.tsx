@@ -200,7 +200,7 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
       thBorderBottomColor: 'lightest',
       thBgColor: 'lightest',
       thFontWeigth: 'semibold',
-      thFontColor: 'darker',
+      thFontColor: 'primary',
       thFontCase: 'uppercase',
       thFontSize: 'xs',
       thLetterSpacing: 'xl',
