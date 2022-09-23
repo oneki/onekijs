@@ -30,6 +30,7 @@ const tooltipStyle: ComponentStyle<TooltipProps> = ({ kind = 'secondary', theme 
     ${cursor('pointer')}
     ${display('inline-flex')}
     .o-tooltip-container {
+      ${cursor('default')}
       ${backgroundColor(bgColor)}
       ${borderRadius(t.borderRadius)}
       ${borderWidth(t.borderWidth)}

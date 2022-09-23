@@ -30,13 +30,13 @@ export const fieldHelpStyle: ComponentStyle<FieldHelpProps> = ({ visible = true,
   const t = theme.fieldLayout;
   return css`
     ${fontSize('2xl')}
+    ${marginLeft(layout === 'horizontal' ? 0 : t.helperMarginLeft)}
+    ${marginRight(layout === 'horizontal' ? t.helperMarginRight : 0)}
+    ${height('100%')}
+    ${display('flex')}
+    ${alignItems('center')}
     ${color(t.helperColor)}
-      ${marginLeft(layout === 'horizontal' ? 0 : t.helperMarginLeft)}
-      ${marginRight(layout === 'horizontal' ? t.helperMarginRight : 0)}
-      ${height('100%')}
-      ${display('flex')}
-      ${alignItems('center')}
-      .o-tooltip {
+    .o-tooltip {
       ${cursor(visible ? 'pointer' : 'default')}
     }
     &.o-helper-icon-small {

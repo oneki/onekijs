@@ -54,7 +54,6 @@ const labelStyle: ComponentStyle<LabelProps> = ({ theme }) => {
 
       .o-helper-icon {
         ${fontSize('xl')}
-        ${color(t.helperIconColor)}
         ${marginLeft(t.helperMarginLeft)}
       }
 

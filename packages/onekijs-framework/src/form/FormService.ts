@@ -676,19 +676,26 @@ export default class FormService extends DefaultService<FormState> {
       for (let i = index + 1; i < currentArrayValue.length; i++) {
         Object.keys(currentArrayValue[i]).forEach((fieldName) => {
           // nextValues[`${fieldArrayName}.${i - 1}.${fieldName}`] = currentArrayValue[i][fieldName];
-          this.state.validations[`${fieldArrayName}.${i - 1}.${fieldName}`] =
-            this.state.validations[`${fieldArrayName}.${i}.${fieldName}`];
-          this.state.metadata[`${fieldArrayName}.${i - 1}.${fieldName}`] =
-            this.state.metadata[`${fieldArrayName}.${i}.${fieldName}`];
-          this.fields[`${fieldArrayName}.${i - 1}.${fieldName}`] = Object.assign(
-            this.fields[`${fieldArrayName}.${i}.${fieldName}`],
-            {
-              name: this.fields[`${fieldArrayName}.${i - 1}.${fieldName}`].name,
-              context: this.fields[`${fieldArrayName}.${i - 1}.${fieldName}`].context,
-            },
-          );
-          this.pendingDispatch.validationChange.add(`${fieldArrayName}.${i - 1}.${fieldName}`);
-          this.pendingDispatch.metadataChange.add(`${fieldArrayName}.${i - 1}.${fieldName}`);
+
+          if (this.fields[`${fieldArrayName}.${i}.${fieldName}`]) {
+            this.state.validations[`${fieldArrayName}.${i - 1}.${fieldName}`] =
+              this.state.validations[`${fieldArrayName}.${i}.${fieldName}`];
+            this.state.metadata[`${fieldArrayName}.${i - 1}.${fieldName}`] =
+              this.state.metadata[`${fieldArrayName}.${i}.${fieldName}`];
+            this.fields[`${fieldArrayName}.${i - 1}.${fieldName}`] = Object.assign(
+              this.fields[`${fieldArrayName}.${i}.${fieldName}`],
+              {
+                name: this.fields[`${fieldArrayName}.${i - 1}.${fieldName}`].name,
+                context: this.fields[`${fieldArrayName}.${i - 1}.${fieldName}`].context,
+              },
+            );
+            this.pendingDispatch.validationChange.add(`${fieldArrayName}.${i - 1}.${fieldName}`);
+            this.pendingDispatch.metadataChange.add(`${fieldArrayName}.${i - 1}.${fieldName}`);
+          } else {
+            delete this.state.validations[`${fieldArrayName}.${i - 1}.${fieldName}`];
+            delete this.state.metadata[`${fieldArrayName}.${i}.${fieldName}`];
+            delete this.fields[`${fieldArrayName}.${i-1}.${fieldName}`]
+          }
         });
       }
       del(this.fieldIndex, `${fieldArrayName}.${last}`);
