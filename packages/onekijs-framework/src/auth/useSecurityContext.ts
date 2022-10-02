@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useStore } from 'react-redux';
 import useGlobalProp from '../app/useGlobalProp';
 import { get } from '../utils/object';
 import useAuthService from './useAuthService';
