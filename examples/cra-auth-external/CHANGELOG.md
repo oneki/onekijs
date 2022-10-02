@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.4](https://github.com/oneki/onekijs/compare/v0.15.3...v0.15.4) (2022-10-02)
+
+**Note:** Version bump only for package cra-auth-external
+
+
+
+
+
 ## [0.15.3](https://github.com/oneki/onekijs/compare/v0.15.1...v0.15.3) (2022-10-02)
 
 **Note:** Version bump only for package cra-auth-external
