@@ -1,12 +1,12 @@
 {
   "name": "step01-react-app",
-  "version": "0.15.2",
+  "version": "0.15.3",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^14.4.3",
-    "onekijs": "^0.15.2",
+    "onekijs": "^0.15.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1"
