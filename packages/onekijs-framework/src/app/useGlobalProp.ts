@@ -7,7 +7,9 @@ function useGlobalProp<T = any>(prop: string, defaultValue: null): T | null;
 function useGlobalProp<T = any>(prop: string, defaultValue: T): T;
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 function useGlobalProp(prop: string, defaultValue?: any): any {
-  const value = useSelector((state: unknown) => get(state, prop));
+  const value = useSelector((state: unknown) => {
+    return get(state, prop);
+  });
   return value === undefined ? defaultValue : value;
 }
 

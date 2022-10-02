@@ -7,7 +7,6 @@ import { AuthErrorProps } from './typings';
 const DefaultAuthErrorComponent: FCC<AuthErrorProps> = ({ error }) => {
   const router = useRouter();
   const loginRoute = useSetting('routes.login', '/login');
-
   useEffect(() => {
     if (error.code === 401) {
       router.push(loginRoute);

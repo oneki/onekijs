@@ -324,6 +324,7 @@ export { default as useValue } from './form/useValue';
 export { extractValidators, extractWatchProps, getNonIndexedProp } from './form/utils';
 export { default as email } from './form/validators/email';
 export { default as max } from './form/validators/max';
+export { default as integer } from './form/validators/integer';
 export { default as maxLength } from './form/validators/maxLength';
 export { default as min } from './form/validators/min';
 export { default as minLength } from './form/validators/minLength';

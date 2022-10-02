@@ -2,6 +2,7 @@ import { AnonymousObject } from '../types/object';
 import { isFalse } from '../utils/type';
 import { Validator } from './typings';
 import email from './validators/email';
+import integer from './validators/integer';
 import max from './validators/max';
 import maxLength from './validators/maxLength';
 import min from './validators/min';
@@ -27,6 +28,8 @@ export const extractValidators = (props: AnonymousObject): [AnonymousObject<Vali
     minLengthMessage,
     maxLength: maxLengthValidator,
     maxLengthMessage,
+    integer: integerValidator,
+    integerMessage,
     validators: extraValidators,
     ...extraProps
   } = props;
@@ -52,6 +55,9 @@ export const extractValidators = (props: AnonymousObject): [AnonymousObject<Vali
   if (maxLengthValidator) {
     validators.maxLength = maxLength(maxLengthValidator, maxLengthMessage);
   }
+  if (integerValidator && !isFalse(integerValidator)) {
+    validators.integer = integer(integerMessage);
+  }
   if (extraValidators) {
     validators = Object.assign(validators, extraValidators);
   }
@@ -69,8 +75,8 @@ export const getNonIndexedProp = (prop: string): string | undefined => {
 };
 
 export const extractWatchProps = (watch: string): [string, number, string] => {
-  const line = watch.split('.').slice(0,-1).join('.');
+  const line = watch.split('.').slice(0, -1).join('.');
   const index = parseInt(watch.split('.')[1]);
   const prop = watch.split('.').slice(-1)[0];
   return [line, index, prop];
-}
+};

@@ -216,7 +216,7 @@ export function get(content: any, property?: any, defaultValue?: any): any {
         return defaultValue;
       } else {
         content = content[index];
-        if (isNull(content) && i !== part.length - 1) {
+        if (isNull(content) && i !== parts.length - 1) {
           return defaultValue;
         }
       }

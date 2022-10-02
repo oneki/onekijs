@@ -207,6 +207,8 @@ export type ValidatorsType = {
   minMessage?: string;
   max?: number;
   maxMessage?: string;
+  integer?: boolean;
+  integerMessage?: string;
   validators?: AnonymousObject<Validator>;
 };
 
