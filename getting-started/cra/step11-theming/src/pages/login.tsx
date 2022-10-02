@@ -1,14 +1,15 @@
-import { Input, Link, SubmitButton, useForm, useLogin, useTranslation } from 'onekijs';
+import { Form, Input, Link, SubmitButton, useFormController, useLogin, useTranslation } from 'onekijs';
 import React from 'react';
 
 const LoginPage: React.FC = () => {
   const [error, , submit] = useLogin();
   const [T, t] = useTranslation();
-  const { Form, values, getValidation } = useForm(submit);
+  const form = useFormController();
+  const { values } = form.state;
 
   return (
     <div className="login-container">
-      <Form className="login-form">
+      <Form className="login-form" controller={form} onSubmit={submit}>
         {error && <div className="error">Error: {error.message}</div>}
         <div className="no-account">
           <T>Dont have an account yet ?</T>
@@ -19,7 +20,7 @@ const LoginPage: React.FC = () => {
         <div>
           <label>
             <T>Username</T>
-            <span className="error">{getValidation('username').message}</span>
+            <span className="error">{form.getValidation('username').message}</span>
           </label>
           <Input
             name="username"
@@ -33,7 +34,7 @@ const LoginPage: React.FC = () => {
         <div>
           <label>
             <T>Password</T>
-            <span className="error">{getValidation('password').message}</span>
+            <span className="error">{form.getValidation('password').message}</span>
           </label>
           <Input name="password" type="password" required={true} requiredMessage={t('Password is mandatory')} />
         </div>

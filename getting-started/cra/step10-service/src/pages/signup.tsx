@@ -1,12 +1,13 @@
 import {
   asyncGet,
+  Form,
   Input,
   SubmitButton,
   useAuthService,
-  useForm,
-  useRouter,
+  useFormController,
+  useFormWatcher,
   usePost,
-  useRule,
+  useRouter,
   useTranslation,
 } from 'onekijs';
 import React from 'react';
@@ -18,39 +19,35 @@ const SignupPage: React.FC = () => {
   const [submit] = usePost('/auth/signup', {
     onSuccess: (user) => {
       // the API returns the user in the response
-      // we set the securityContext to log in the user
+      // we set the user in the securityContext
       authService.setSecurityContext(user);
       router.push('/');
     },
   });
-  const { Form, getValidation, getValue, setError } = useForm(submit);
 
-  useRule(
-    async (username) => {
-      // username is coming from getValue('username') below
-      // (second parameter of useRule)
-      let isError = false;
-      try {
-        await asyncGet(`/users/${username}`);
-        isError = true; // user already exists on the server
-      } catch {} // server returned a 404 response
-      setError(
-        'username', // field to put in error
-        'usernameAlreadyExists', // validator name - must be unique by field
-        t('Username already exists'), // error message
-        isError, //flag indicating if there is an error or not
-      );
-    },
-    [getValue('username')], // a list of fields on which the rule reacts
-  );
+  const form = useFormController();
+
+  useFormWatcher(form, 'username', async (username) => {
+    let isError = false;
+    try {
+      await asyncGet(`/users/${username}`);
+      isError = true; // user already exists on the server
+    } catch {} // server returned a 404 response
+    form.setError(
+      'username', // field to put in error
+      'usernameAlreadyExists', // validator name - must be unique by field
+      t('Username already exists'), // error message
+      isError, //flag indicating if there is an error or not
+    );
+  });
 
   return (
     <div className="signup-container">
-      <Form className="signup-form">
+      <Form className="signup-form" controller={form} onSubmit={submit}>
         <div>
           <label>
             <T>Username</T>
-            <span className="error">{getValidation('username').message}</span>
+            <span className="error">{form.getValidation('username').message}</span>
           </label>
           <Input
             name="username"
@@ -64,7 +61,7 @@ const SignupPage: React.FC = () => {
         <div>
           <label>
             <T>Password</T>
-            <span className="error">{getValidation('password').message}</span>
+            <span className="error">{form.getValidation('password').message}</span>
           </label>
           <Input name="password" type="password" required={true} requiredMessage={t('Password is mandatory')} />
         </div>
