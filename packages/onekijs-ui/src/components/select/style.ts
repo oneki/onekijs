@@ -39,8 +39,7 @@ import { SelectProps } from './typings';
 const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable = true, searchable = true }) => {
   return css`
     ${preflight()}
-    ${width('100%')}
-
+    ${flexGrow(1)}
     &.o-select-status-error {
       .o-select-input-container,
       .o-select-input-container.o-select-input-focus {

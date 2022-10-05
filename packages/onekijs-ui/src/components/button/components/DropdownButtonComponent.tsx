@@ -10,7 +10,7 @@ const DropdownButtonComponent: FC<DropDownButtonProps> = ({
   animationTimeout = 200,
   attachDropdownToBody = false,
   distance = 0,
-  placement = "bottom-start",
+  placement = 'bottom-start',
   className,
   children,
   listElement,

@@ -200,7 +200,7 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
         style={addStyle(
           {
             maxHeight: `${typeof height === 'string' ? height : `${height}px`}`,
-            overflow: overflow,
+            overflowY: overflow,
           },
           style,
         )}
@@ -250,7 +250,7 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
       style = addStyle(
         {
           maxHeight: `${typeof height === 'string' ? height : `${height}px`}`,
-          overflow: 'auto',
+          overflowY: 'auto',
         },
         style,
       );

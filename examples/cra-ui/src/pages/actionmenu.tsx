@@ -1,14 +1,31 @@
-import { BasicError, DefaultBasicError, Form, Input, useFormController } from 'onekijs';
-import { ComponentStyle, DropdownButton, MenuIcon, Modal, Step, Wizard } from 'onekijs-ui';
+import { HeightProperty, WidthProperty } from 'csstype';
+import { AnonymousObject, BasicError, DefaultBasicError, Form, Input, useFormController } from 'onekijs';
+import { ComponentStyle, DropdownButton, MenuIcon, Modal, SizePropertyTheme, Step, TLength, TshirtSize, Wizard } from 'onekijs-ui';
 import React, { useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { ActionMenu, ActionMenuItem, ActionMenuList } from './typing';
+
+export type ActionMenu<T extends AnonymousObject = {}> = React.FC<{
+  items: ActionMenuItem<T>[];
+  className?: string;
+}>
+
+export type ActionMenuList<T extends AnonymousObject = {}> = React.FC<{
+  items: ActionMenuItem<T>[];
+  onSelect: (title: string) => void;
+}>
+
+export type ActionMenuItem<T extends AnonymousObject = {}> = React.FC<T> & {
+  title: string;
+  size?: TshirtSize;
+  width?: TshirtSize | SizePropertyTheme | WidthProperty<TLength>;
+  height?: TshirtSize | SizePropertyTheme | HeightProperty<TLength>;
+};
 
 const actionMenuStyle: ComponentStyle<{}> = () => {
   return css``;
 };
 
-type ActionProps = {
+export type ActionProps = {
   title: string;
   onSuccess: (title: string, requestNumber: number) => void;
   onError: (title: string, error: BasicError) => void;
