@@ -12,9 +12,9 @@ const ButtonComponent = React.forwardRef<HTMLButtonElement, ButtonProps>((props,
     classNames = addClassname('o-button-disabled', classNames);
   }
   return (
-    <span className={classNames} onClick={onClick}>
+    <span className={classNames} onClick={onClick} ref={ref}>
       {IconComponent && <IconComponent {...props} onClick={undefined} className="o-button-icon" />}
-      <button {...buttonProps} ref={ref} className="o-button-content" />
+      <button {...buttonProps}  className="o-button-content" />
     </span>
   );
 });

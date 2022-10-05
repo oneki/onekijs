@@ -10,7 +10,7 @@ const DropdownButtonComponent: FC<DropDownButtonProps> = ({
   animationTimeout = 200,
   attachDropdownToBody = false,
   distance = 0,
-  placement = 'bottom',
+  placement = "bottom-start",
   className,
   children,
   listElement,
@@ -26,7 +26,7 @@ const DropdownButtonComponent: FC<DropDownButtonProps> = ({
   onCollapseDone,
   onCollapsing,
   onUpdate,
-  widthModifier,
+  widthModifier = 'min',
   zIndex = 1000,
   ...buttonProps
 }) => {
