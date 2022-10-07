@@ -283,6 +283,13 @@ export default class FormService extends DefaultService<FormState> {
     return result;
   }
 
+  getContext(key?: string, defaultValue?: any): any {
+    if (key === undefined || key === '') {
+      return this.state.context ?? defaultValue;
+    }
+    return get(this.state.context, key, defaultValue);
+  }
+
   protected _getSubFieldNames(fieldName: string): string[] {
     let result: string[] = [];
     const index = get(this.fieldIndex, fieldName);
@@ -694,7 +701,7 @@ export default class FormService extends DefaultService<FormState> {
           } else {
             delete this.state.validations[`${fieldArrayName}.${i - 1}.${fieldName}`];
             delete this.state.metadata[`${fieldArrayName}.${i}.${fieldName}`];
-            delete this.fields[`${fieldArrayName}.${i-1}.${fieldName}`]
+            delete this.fields[`${fieldArrayName}.${i - 1}.${fieldName}`];
           }
         });
       }
@@ -786,6 +793,15 @@ export default class FormService extends DefaultService<FormState> {
         return ValidationStatus.Ok;
       default:
         return ValidationStatus.None;
+    }
+  }
+
+  @reducer
+  setContext(key = '', value: any): any {
+    if (key === '') {
+      this.state.context = value ?? {};
+    } else {
+      set(this.state.context, key, value);
     }
   }
 

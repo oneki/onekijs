@@ -17,8 +17,11 @@ const useFormController = (initialValues?: any, formOptions: FormOptions = {}): 
   // formOptions cannot be changed afterwards. Used as initialState for the service
   // we copy initialValues to values to be able to reset the form to its initial state
   // immer will not kept a reference between to two objects. So changing values will not change initialValues
+  const initialContext = formOptions.initialContext ?? {};
   const [, service] = useService(FormService, (): FormState => {
     const initialState: FormState = Object.assign({}, formOptions, {
+      initialContext,
+      context: initialContext,
       validations: {},
       metadata: {},
       submitting: false,

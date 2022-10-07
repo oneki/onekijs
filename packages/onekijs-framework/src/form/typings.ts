@@ -100,6 +100,7 @@ export type FormMetadataListener = (
 
 export interface FormOptions {
   delayLoading?: number;
+  initialContext?: AnonymousObject;
 }
 
 export type FormProps = Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onSubmit'> &
@@ -114,6 +115,8 @@ export interface FormState extends State, FormOptions {
   metadata: AnonymousObject<FormMetadata>;
   values?: AnonymousObject;
   initialValues?: AnonymousObject;
+  context: AnonymousObject;
+  initialContext: AnonymousObject;
   submitting?: boolean;
   loading?: boolean;
   fetching?: boolean;
