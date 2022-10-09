@@ -111,8 +111,8 @@ export type CollectionBroker<
   C extends Collection<T, I, S> = Collection<T, I, S>,
 > = {
   addSubscriber(id: string, subscriber: C): void;
-  getInitialDataSource(subscriberId?: string,): T[] | string | undefined;
-  getInitialQuery(subscriberId?: string,): Query;
+  getInitialDataSource(subscriberId?: string): T[] | string | undefined;
+  getInitialQuery(subscriberId?: string): Query;
   removeSubscriber(id: string): void;
 
   addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId?: QueryFilterId, subscriberId?: string): void;
