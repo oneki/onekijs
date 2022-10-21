@@ -1,13 +1,16 @@
 import { NotificationLevel, useNotificationService } from 'onekijs';
-import { Button, ComponentStyle, Notifications } from 'onekijs-ui';
-import React, { ReactNode } from 'react';
+import { Button, ComponentStyle, Notifications, paddingX } from 'onekijs-ui';
+import React, { ReactNode, useState } from 'react';
 import styled, { css } from 'styled-components';
 
 const notifcationsStyle: ComponentStyle<{}> = () => {
-  return css``;
+  return css`
+    ${paddingX('400px')}
+  `;
 };
 
 const Page: React.FC<{ className?: string }> = ({ className }) => {
+  const [position, setPosition] = useState('bottom-right');
   const service = useNotificationService();
   const sendNotification = (level: NotificationLevel, message: ReactNode) => {
     switch (level) {
@@ -33,8 +36,18 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
   };
 
   return (
-    <>
-      <Button kind="danger" onClick={() => sendNotification(NotificationLevel.Error, <>This is an <b>error</b></>)}>
+    <div className={className}>
+      <Button
+        kind="danger"
+        onClick={() =>
+          sendNotification(
+            NotificationLevel.Error,
+            <>
+              This is an <b>error</b>
+            </>,
+          )
+        }
+      >
         Send Error
       </Button>
       <Button kind="info" onClick={() => sendNotification(NotificationLevel.Info, 'This is an info')}>
@@ -49,8 +62,14 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
       <Button kind="warning" onClick={() => sendNotification(NotificationLevel.Warning, 'This is a warning')}>
         Send Warning
       </Button>
-      <Notifications />
-    </>
+      <br />
+      <br />
+      <Button onClick={() => setPosition('top-left')}>Top Left</Button>
+      <Button onClick={() => setPosition('bottom-left')}>Bottom Left</Button>
+      <Button onClick={() => setPosition('bottom-right')}>Bottom Right</Button>
+      <Button onClick={() => setPosition('top-right')}>Top Right</Button>
+      <Notifications position={position as any} />
+    </div>
   );
 };
 

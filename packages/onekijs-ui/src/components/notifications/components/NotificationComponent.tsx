@@ -35,7 +35,7 @@ const NotificationComponent: React.FC<NotificationProps> = ({ className, notific
   return (
     <div className={classNames}>
       <span className="o-notification-close">
-        <CloseIcon onClick={() => notificationService.remove(notification.id)} />
+        <CloseIcon width="20px" height="20px" onClick={() => notificationService.remove(notification.id)} />
       </span>
       {Icon && <div className="o-notification-icon">{Icon}</div>}
       <div className="o-notification-content">{content}</div>
