@@ -13,6 +13,7 @@ import { GridPage } from './pages/grid';
 import { InputPage } from './pages/input';
 import { ListPage } from './pages/list';
 import { ModalPage } from './pages/modal';
+import { NotificationsPage } from './pages/notifications';
 import { PropertiesPage } from './pages/properties';
 import { SelectPage } from './pages/select';
 import { TabsPage } from './pages/tab';
@@ -47,7 +48,7 @@ root.render(
           <Link href="/accordion">Accordion</Link> | <Link href="/tab">Tab</Link> | <Link href="/card">Card</Link> |{' '}
           <Link href="/grid">Grid</Link> | <Link href="/properties">Properties</Link> |{' '}
           <Link href="/checkbox">Checkbox</Link> | <Link href="/tag">Tag</Link> | <Link href="/modal">Modal</Link> |{' '}
-          <Link href="/wizard">Wizard</Link> | <Link href="/form">Form</Link> | <Link href="/actionmenu">Action Menu</Link>
+          <Link href="/wizard">Wizard</Link> | <Link href="/form">Form</Link> | <Link href="/actionmenu">Action Menu</Link> | <Link href="/notifications">Notifications</Link>
         </div>
         <div style={{ paddingLeft: '100px', paddingRight: '100px' }}>
           <Routes>
@@ -70,6 +71,7 @@ root.render(
             <Route path="/wizard" element={<WizardPage />} />
             <Route path="/form" element={<FormPage />} />
             <Route path="/actionmenu" element={<ActionMenuPage />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
           </Routes>
         </div>
       </div>

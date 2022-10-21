@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { delay } from 'redux-saga/effects';
 import DefaultGlobalService from '../app/GlobalService';
 import { reducer, saga, service } from '../core/annotations';
@@ -5,6 +6,7 @@ import { AppSettings } from '../types/app';
 import { SagaEffect } from '../types/saga';
 import { append, get, isNull, set } from '../utils/object';
 import { Notification, NotificationContent, NotificationLevel } from './typings';
+import { isNotificationContent } from './utils';
 
 let nextId = 1;
 
@@ -48,11 +50,11 @@ export default class NotificationService extends DefaultGlobalService {
   }
 
   formatNotification(
-    notificationContent: NotificationContent | string,
+    notificationContent: NotificationContent | ReactNode,
     settings: AppSettings,
     notificationService: NotificationService,
   ): Notification {
-    if (typeof notificationContent === 'string') {
+    if (!isNotificationContent(notificationContent)) {
       notificationContent = {
         payload: notificationContent,
       };
@@ -86,8 +88,11 @@ export default class NotificationService extends DefaultGlobalService {
     return notification;
   }
 
-  formatLevelNotification(level: NotificationLevel, notification: NotificationContent | string): NotificationContent {
-    if (typeof notification === 'string') {
+  formatLevelNotification(
+    level: NotificationLevel,
+    notification: NotificationContent | ReactNode,
+  ): NotificationContent {
+    if (!isNotificationContent(notification)) {
       notification = {
         topic: level,
         payload: {
@@ -95,10 +100,7 @@ export default class NotificationService extends DefaultGlobalService {
         },
       };
     } else {
-      notification = {
-        topic: level,
-        payload: notification,
-      };
+      notification = Object.assign({ topic: level }, notification);
     }
     return notification;
   }
@@ -135,9 +137,9 @@ export default class NotificationService extends DefaultGlobalService {
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
-  *send(notificationContent: NotificationContent | string) {
+  *send(notificationContent: NotificationContent | ReactNode) {
     const { store, settings } = this.context;
-    if (!(typeof notificationContent === 'string') && !isNull((notificationContent as NotificationContent).id)) {
+    if (isNotificationContent(notificationContent) && !isNull(notificationContent.id)) {
       // check if this notification is already present
       const topic = notificationContent.topic || 'default';
       const notifications: Notification[] = get(store.getState(), `notifications.${topic}`, []);

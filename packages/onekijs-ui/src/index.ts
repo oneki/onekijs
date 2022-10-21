@@ -87,6 +87,8 @@ export { default as CrossIcon } from './components/icon/CrossIcon';
 export { default as FileIcon } from './components/icon/FileIcon';
 export { default as FolderIcon } from './components/icon/FolderIcon';
 export { default as LoadingIcon } from './components/icon/LoadingIcon';
+export { default as SuccessIcon } from './components/icon/SuccessIcon';
+export { default as ErrorIcon } from './components/icon/ErrorIcon';
 export { default as MenuIcon } from './components/icon/MenuIcon';
 export { default as SearchIcon } from './components/icon/SearchIcon';
 export { default as TogglerIcon } from './components/icon/TogglerIcon';
@@ -137,6 +139,13 @@ export { default as SelectNotFoundComponent } from './components/select/componen
 export { default as SelectOptionComponent } from './components/select/components/SelectOptionComponent';
 export { default as SelectTokensComponent } from './components/select/components/SelectTokensComponent';
 export { default as FormSelect } from './components/select/FormSelect';
+
+export { default as Notifications } from './components/notifications';
+export { default as NotificationsComponent } from './components/notifications/components/NotificationsComponent';
+export { default as NotificationComponent } from './components/notifications/components/NotificationComponent';
+export { notifcationsStyle } from './components/notifications/style';
+export { NotificationProps, NotificationsProps } from './components/notifications/typings';
+
 export { default as useSelectController } from './components/select/hooks/useSelectController';
 export { default as DefaultSelectBroker } from './components/select/SelectBroker';
 export { default as SelectService } from './components/select/SelectService';

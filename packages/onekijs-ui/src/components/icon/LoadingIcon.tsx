@@ -54,7 +54,6 @@ export default styled(IconComponent)`
     .o-icon-loading-svg-circle {
       animation: 1.4s ease-in-out infinite both ${iconCircleKeyFrame};
       fill: transparent;
-      stroke: currentColor;
       ${stroke(cssColor)}
       stroke-dasharray: 285;
       stroke-linecap: round;

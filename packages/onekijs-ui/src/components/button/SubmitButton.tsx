@@ -34,9 +34,8 @@ const SubmitButton: FCC<SubmitButtonProps> = React.memo((opts) => {
   }
 
   // eslint-disable-next-line react/prop-types
-  let children = props.children;
+
   if (submitting) {
-    children = <>Loading...</>;
     disabled = true;
   }
 
@@ -47,8 +46,8 @@ const SubmitButton: FCC<SubmitButtonProps> = React.memo((opts) => {
       kind="danger"
       delayHide={0}
     >
-      <Button {...props} disabled={disabled} type={type}>
-        {children ? children : 'Submit'}
+      <Button {...props} disabled={disabled} type={type} loading={submitting}>
+        {props.children ? props.children : 'Submit'}
       </Button>
     </Tooltip>
   );

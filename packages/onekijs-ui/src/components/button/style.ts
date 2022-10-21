@@ -7,7 +7,7 @@ import { display } from '../../styles/display';
 import { opacity } from '../../styles/effects';
 import { cursor, outline } from '../../styles/interactivity';
 import { position } from '../../styles/position';
-import { marginLeft, paddingLeft, paddingX, paddingY } from '../../styles/spacing';
+import { marginLeft, marginRight, paddingLeft, paddingX, paddingY } from '../../styles/spacing';
 import { ComponentStyle } from '../../styles/typings';
 import {
   color,
@@ -72,6 +72,9 @@ const buttonStyle: ComponentStyle<ButtonProps> = ({
       ${opacity(disabled ? 0.6 : 1)}
       ${marginLeft(IconComponent ? 'xs' : 'none')}
       ${outline('none')}
+    }
+    .o-icon-loading-container {
+      ${marginRight('xs')}
     }
   `;
 };
