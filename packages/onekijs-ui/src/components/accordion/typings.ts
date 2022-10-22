@@ -4,12 +4,14 @@ export type AccordionPanelProps<T = string> = {
   initialActive?: boolean;
   title: T;
   Component?: FCC<AccordionPanelTitleProps<T>>;
+  link?: string;
 };
 
 export type AccordionPanelTitleProps<T = string> = {
   title: T;
   active: boolean;
   onClick: AnyFunction;
+  link?: string;
 };
 
 export type AccordionPanelState = {

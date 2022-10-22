@@ -1,4 +1,4 @@
-import { FCC } from 'onekijs-framework';
+import { FCC, useTryRouter } from 'onekijs-framework';
 import React from 'react';
 import { CSSTransition } from 'react-transition-group';
 import useAccordionPanel from '../hooks/useAccordionPanel';
@@ -12,14 +12,21 @@ const AccordionPanel: FCC<AccordionPanelProps<any>> = ({
   initialActive,
   children,
   Component = AccordionPanelTitle,
+  link,
 }) => {
   const panel = useAccordionPanel(initialActive);
   const service = useAccordionService();
   const { animate } = useAccordionState();
+  const router = useTryRouter();
 
   const toggle = () => {
     if (!panel) return;
-    if (panel.active) {
+    if (link) {
+      if (!panel.active && router) {
+        service.expand(panel.uid);
+        router.push(link);
+      }
+    } else if (panel.active) {
       service.collapse(panel.uid);
     } else {
       service.expand(panel.uid);
@@ -51,7 +58,7 @@ const AccordionPanel: FCC<AccordionPanelProps<any>> = ({
 
   return (
     <div className={`o-accordion-panel${panel.active ? ' o-accordion-panel-active' : ''}`}>
-      <Component title={title} active={panel.active} onClick={toggle} />
+      <Component title={title} active={panel.active} onClick={toggle} link={link} />
       <CSSTransition
         in={panel.active}
         classNames="o-accordion-animate"
@@ -63,9 +70,7 @@ const AccordionPanel: FCC<AccordionPanelProps<any>> = ({
         onEntering={onEntering}
         onEntered={onEntered}
       >
-        <div>
-          <div className="o-accordion-content">{children}</div>
-        </div>
+        <div>{!link && <div className="o-accordion-content">{children}</div>}</div>
       </CSSTransition>
     </div>
   );

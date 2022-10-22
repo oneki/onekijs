@@ -12,11 +12,11 @@ const NotificationsComponent: React.FC<NotificationsProps> = ({
   NotificationComponent = DefaultNotificationComponent,
   max,
   animate = 500,
-  position = 'top-right',
+  position = 'bottom-right',
+  showTimer,
 }) => {
   const classNames = addClassname('o-notifications', className);
   const translateX = position === 'top-right' || position === 'bottom-right' ? '250px' : '-250px';
-  const translateY = position === 'bottom-right' || position === 'bottom-left' ? '250px' : '-250px';
   let notifications = useNotifications(topics);
   if (max) {
     notifications = notifications.slice(0, max);
@@ -106,7 +106,7 @@ const NotificationsComponent: React.FC<NotificationsProps> = ({
             onExited={onExited}
           >
             <div className="o-notification-container">
-              <NotificationComponent notification={notification} index={index} />
+              <NotificationComponent notification={notification} index={index} showTimer={showTimer} />
             </div>
           </CSSTransition>
         ))}

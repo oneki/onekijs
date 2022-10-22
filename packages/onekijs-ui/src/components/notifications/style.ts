@@ -6,14 +6,20 @@ import { display } from '../../styles/display';
 import { opacity } from '../../styles/effects';
 import { cursor } from '../../styles/interactivity';
 import { bottom, left, position, right, top, zIndex } from '../../styles/position';
-import { height, minHeight, minWidth } from '../../styles/size';
+import { minHeight, minWidth } from '../../styles/size';
 import { marginBottom, marginRight, padding } from '../../styles/spacing';
 import { transform } from '../../styles/transform';
 import { ComponentStyle } from '../../styles/typings';
+import { color } from '../../styles/typography';
 import { NotificationsProps } from './typings';
 
-export const notifcationsStyle: ComponentStyle<NotificationsProps> = ({ position: pos = 'top-right' }) => {
-  const translate = pos === 'top-right' || pos === 'bottom-right' ? '250px' : '-250px';
+export const notifcationsStyle: ComponentStyle<NotificationsProps> = ({ position: pos = 'bottom-right' }) => {
+  const translate =
+    pos === 'bottom-left' || pos === 'bottom-right'
+      ? 'translateY(250px)'
+      : pos === 'top-left'
+      ? 'translateX(-250px)'
+      : 'translateX(250px)';
   return css`
     ${position('absolute')}
     ${pos === 'top-right' || pos === 'top-left' ? top(0) : bottom(0)}
@@ -21,12 +27,12 @@ export const notifcationsStyle: ComponentStyle<NotificationsProps> = ({ position
     ${padding('2xl')}
     ${zIndex(2000)}
     .o-notification-container {
-      ${transform(`translateY(${translate})`)}
+      ${transform(translate)}
       ${opacity(0)}
       ${display('flex')}
     }
     .o-notification {
-      ${minWidth(64)}
+      ${minWidth('350px')}
       ${minHeight(24)}
       ${backgroundColor('white')}
       ${borderRadius('sm')}
@@ -42,18 +48,30 @@ export const notifcationsStyle: ComponentStyle<NotificationsProps> = ({ position
       &.o-notification-error {
         ${backgroundColor('red-100')}
         ${borderColor('red-200')}
+        .o-notification-timer {
+          ${color('danger')}
+        }
       }
       &.o-notification-success {
         ${backgroundColor('green-0')}
         ${borderColor('green-100')}
+        .o-notification-timer {
+          ${color('green-500')}
+        }
       }
       &.o-notification-info {
         ${backgroundColor('blue-0')}
         ${borderColor('blue-200')}
+        .o-notification-timer {
+          ${color('blue-500')}
+        }
       }
       &.o-notification-warning {
         ${backgroundColor('yellow-100')}
         ${borderColor('yellow-200')}
+        .o-notification-timer {
+          ${color('warning')}
+        }
       }
     }
     .o-notification-icon {
@@ -65,6 +83,13 @@ export const notifcationsStyle: ComponentStyle<NotificationsProps> = ({ position
       ${right(0)}
       ${padding('sm')}
       ${cursor('pointer')}
+    }
+
+    .o-notification-timer {
+      ${position('absolute')}
+      ${bottom(0)}
+      ${right(0)}
+      ${padding('sm')}
     }
   `;
 };

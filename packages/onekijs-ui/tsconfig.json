@@ -27,6 +27,6 @@
     "downlevelIteration": true,
     "outDir": "./dist/",
     "incremental": true,
-    "tsBuildInfoFile": "./.buildcache/tsconfig.tsbuildinfo",
+    "tsBuildInfoFile": "./.buildcache/tsconfig.tsbuildinfo"
   }
 }

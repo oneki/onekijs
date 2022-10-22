@@ -66,11 +66,19 @@ export default class NotificationService extends DefaultGlobalService {
       get(settings, `notification.default.persist`, true),
     );
 
+    if (notificationContent.ttl === undefined) {
+      notificationContent.ttl = get(
+        settings,
+        `notification.${notificationContent.topic}.ttl`,
+        get<number | undefined>(settings, `notification.default.ttl`),
+      );
+    }
+
     const timestamp =
       notificationContent.timestamp === undefined ? new Date().getTime() : notificationContent.timestamp;
     const id = notificationContent.id === undefined ? `oneki-id-${++nextId}` : notificationContent.id;
     const topic = notificationContent.topic === undefined ? 'default' : notificationContent.topic;
-    const expires = notificationContent.ttl === undefined ? null : timestamp + notificationContent.ttl;
+    const expires = notificationContent.ttl ? timestamp + notificationContent.ttl : null;
 
     const notification: Notification = {
       id,
@@ -102,6 +110,19 @@ export default class NotificationService extends DefaultGlobalService {
     } else {
       notification = Object.assign({ topic: level }, notification);
     }
+    return notification;
+  }
+
+  getNotification(notificationId: string | number | symbol): Notification | void {
+    let notification: Notification | undefined = undefined;
+    Object.keys(this.state.notifications || {}).forEach((topic) => {
+      for (let i = 0; i < this.state.notifications[topic].length; i++) {
+        if (this.state.notifications[topic][i].id === notificationId) {
+          notification = this.state.notifications[topic][i];
+          break;
+        }
+      }
+    });
     return notification;
   }
 
@@ -149,19 +170,8 @@ export default class NotificationService extends DefaultGlobalService {
     }
 
     const notification = this.formatNotification(notificationContent, settings, this);
-    if (notification.ttl === undefined) {
-      notification.ttl = get(
-        settings,
-        `notification.${notification.topic}.ttl`,
-        get<number | undefined>(settings, `notification.default.ttl`),
-      );
-    }
     yield this.add(notification);
-
-    if (notification.ttl) {
-      yield delay(notification.ttl);
-      yield this.remove(notification.id);
-    }
+    yield this._delayRemove(notification);
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -171,10 +181,56 @@ export default class NotificationService extends DefaultGlobalService {
     yield this.send(this.formatLevelNotification(NotificationLevel.Success, payload));
   }
 
+  /**
+   * This method is called whenever the auto-removal of the notification should be suspended
+   * @param notificationId
+   */
+  @reducer
+  touch(notificationId: string | number | symbol, permanent = false): void {
+    const notification = this.getNotification(notificationId);
+    if (notification && notification.ttl && notification.expires) {
+      notification.ttl = permanent ? undefined : notification.expires - new Date().getTime();
+      notification.expires = null;
+    }
+  }
+
+  /**
+   * This method is called whenever the auto-removal of the notification should be reactivated
+   * @param notificationId
+   */
+  @saga(SagaEffect.Every)
+  *untouch(notificationId: string | number | symbol) {
+    const notification = this.getNotification(notificationId);
+    if (notification && notification.ttl) {
+      this._setExpires(notification.id, new Date().getTime() + notification.ttl);
+      yield this._delayRemove(notification);
+    }
+  }
+
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   *warning(payload: any) {
     yield this.send(this.formatLevelNotification(NotificationLevel.Warning, payload));
+  }
+
+  @reducer
+  _setExpires(notificationId: string | number | symbol, expires: number | null): void {
+    const notification = this.getNotification(notificationId);
+    if (notification) {
+      notification.expires = expires;
+    }
+  }
+
+  @saga(SagaEffect.Every)
+  *_delayRemove(notification: Notification) {
+    if (notification.ttl) {
+      yield delay(notification.ttl);
+      const refreshedNotification = this.getNotification(notification.id);
+      if (refreshedNotification && refreshedNotification.expires) {
+        // if ttl > 0 and notifcation.expires is null, it means that the removal is suspended
+        yield this.remove(refreshedNotification.id);
+      }
+    }
   }
 }
