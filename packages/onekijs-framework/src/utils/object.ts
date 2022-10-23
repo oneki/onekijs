@@ -485,3 +485,7 @@ export const ensureFieldValue = <T, K extends keyof T>(object: T, field: K, valu
   }
   return object;
 };
+
+export const isDictionary = (object: unknown): object is Record<keyof never, unknown> => {
+  return object instanceof Object && object.constructor === Object;
+};

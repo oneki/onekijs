@@ -22,7 +22,11 @@ export const createReduxStore = (
 ): AppStore => {
   let sagaMiddleware = middlewares.find((middleware) => middleware.name === 'sagaMiddleware');
   if (!sagaMiddleware) {
-    sagaMiddleware = createSagaMiddleware();
+    sagaMiddleware = createSagaMiddleware({
+      onError: (e) => {
+        throw e;
+      },
+    });
     middlewares.push(sagaMiddleware);
   }
 

@@ -258,7 +258,7 @@ export { default as useSecurePatch } from './fetch/useSecurePatch';
 export { default as useSecurePost } from './fetch/useSecurePost';
 export { default as useSecurePostPutPatch } from './fetch/useSecurePostPutPatch';
 export { default as useSecurePut } from './fetch/useSecurePut';
-export { asFetchOptions } from './fetch/utils';
+export { useFetchOptions } from './fetch/useFetchOptions';
 export { default as Form } from './form';
 export { default as AsyncBindService } from './form/AsyncBindService';
 export { default as Input } from './form/components/Input';

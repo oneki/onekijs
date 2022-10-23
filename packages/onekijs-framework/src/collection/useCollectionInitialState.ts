@@ -2,17 +2,7 @@ import useLazyRef from '../core/useLazyRef';
 import useTryRouter from '../core/useTryRouter';
 import useTryStore from '../core/useTryStore';
 import LocalRouter from '../router/LocalRouter';
-import { FetchOptions } from '../types/fetch';
-import { omit } from '../utils/object';
-import {
-  Collection,
-  CollectionFetcherResult,
-  CollectionProxy,
-  CollectionState,
-  Item,
-  Query,
-  UseCollectionOptions,
-} from './typings';
+import { Collection, CollectionProxy, CollectionState, Item, UseCollectionOptions } from './typings';
 import { isCollection } from './utils';
 
 const useCollectionInitialState = <T = any, I extends Item<T> = Item<T>>(
@@ -46,25 +36,7 @@ const useCollectionInitialState = <T = any, I extends Item<T> = Item<T>>(
     } else if (options.auth === false) {
       options.auth = undefined;
     }
-    const fetchOptions = Object.assign(
-      { delayLoading: 0 },
-      omit<FetchOptions<CollectionFetcherResult<T>, Query | undefined>>(options, [
-        'adapter',
-        'comparator',
-        'comparators',
-        'fetchOnce',
-        'initialFields',
-        'initialFilter',
-        'initialSearch',
-        'initialSort',
-        'initialSortBy',
-        'method',
-        'queryEngine',
-        'searcher',
-        'serializer',
-        'throttle',
-      ]),
-    );
+    const fetchOptions = Object.assign({ delayLoading: 0 }, options);
 
     return {
       adapter: options.adapter,

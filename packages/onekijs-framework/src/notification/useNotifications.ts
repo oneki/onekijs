@@ -7,13 +7,13 @@ const mergeNotifications = (a: Notification[], b: Notification[]): Notification[
   return a.concat(b).sort((a, b) => a.timestamp - b.timestamp);
 };
 
-const extractNotifications = (
-  notifications: Notification[] | AnonymousObject,
-  accumulator: Notification[],
-): Notification[] => {
+const extractNotifications = (notifications: AnonymousObject, accumulator: Notification[]): Notification[] => {
   if (Array.isArray(notifications)) return mergeNotifications(accumulator, notifications);
   return Object.keys(notifications).reduce((accumulator, key) => {
-    return extractNotifications(notifications[key], accumulator);
+    if (notifications[key] !== undefined) {
+      return mergeNotifications(notifications[key], accumulator);
+    }
+    return accumulator;
   }, accumulator);
 };
 

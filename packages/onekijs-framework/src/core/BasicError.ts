@@ -4,11 +4,15 @@ import { AnonymousObject } from '../types/object';
 export default class DefaultBasicError extends Error implements BasicError {
   code: string | number;
   payload: AnonymousObject;
+  message: string;
+
   constructor(message: string, code?: string | number, payload: AnonymousObject = {}) {
     super(message);
     this.code = code || 'default';
     this.payload = payload;
+    this.message = message;
   }
+
   static of(error: unknown): BasicError {
     if (error instanceof Error) {
       return new DefaultBasicError(error.message, error.name, { stack: error.stack });

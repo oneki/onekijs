@@ -96,21 +96,11 @@ export default class NotificationService extends DefaultGlobalService {
     return notification;
   }
 
-  formatLevelNotification(
-    level: NotificationLevel,
-    notification: NotificationContent | ReactNode,
-  ): NotificationContent {
-    if (!isNotificationContent(notification)) {
-      notification = {
-        topic: level,
-        payload: {
-          message: notification,
-        },
-      };
-    } else {
-      notification = Object.assign({ topic: level }, notification);
-    }
-    return notification;
+  formatLevelNotification(level: NotificationLevel, payload: any): NotificationContent {
+    return {
+      topic: level,
+      payload,
+    };
   }
 
   getNotification(notificationId: string | number | symbol): Notification | void {

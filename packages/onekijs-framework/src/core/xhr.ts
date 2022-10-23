@@ -1,21 +1,19 @@
 import { FetchMethod, FetchOptions } from '../types/fetch';
 import { AnonymousObject } from '../types/object';
-import { get, set } from '../utils/object';
+import { get, isDictionary, set } from '../utils/object';
 import { urlBuilder } from '../utils/router';
 import HTTPError from './HTTPError';
 
-export const encodeFormData = (data: AnonymousObject): string => {
-  return Object.keys(data)
-    .map((key) => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
-    .join('&');
+export const encodeFormData = (data: unknown): string => {
+  if (isDictionary(data)) {
+    return Object.keys(data)
+      .map((key) => encodeURIComponent(key) + '=' + encodeURIComponent(`${data[key]}`))
+      .join('&');
+  }
+  return '';
 };
 
-export async function xhr(
-  url: string,
-  method: string,
-  body?: AnonymousObject,
-  options: FetchOptions = {},
-): Promise<Response> {
+export async function xhr(url: string, method: string, body?: unknown, options: FetchOptions = {}): Promise<Response> {
   url = urlBuilder(url, options.params || {}, options.query || {});
   const fetchOptions: RequestInit = {
     method,
@@ -77,14 +75,14 @@ export async function formatAsyncResponse(response: Response): Promise<any> {
     try {
       return await response.json();
     } catch (e) {
-      return clone.text();
+      return await clone.text();
     }
   }
   let result;
   try {
     result = await response.json();
   } catch (e) {
-    throw new HTTPError(response.status, undefined, e as AnonymousObject);
+    throw new HTTPError(response.status, await clone.text());
   }
   throw new HTTPError(response.status, result.message, result);
 }
@@ -92,7 +90,7 @@ export async function formatAsyncResponse(response: Response): Promise<any> {
 export async function asyncHttp(
   url: string,
   method: FetchMethod,
-  body?: AnonymousObject,
+  body?: unknown,
   options: AnonymousObject = {},
 ): Promise<any> {
   return formatAsyncResponse(await xhr(url, method, body, options));
@@ -106,14 +104,14 @@ export async function asyncDelete(url: string, options: AnonymousObject = {}): P
   return await asyncHttp(url, 'DELETE', undefined, options);
 }
 
-export async function asyncPost(url: string, body?: AnonymousObject, options: AnonymousObject = {}): Promise<any> {
+export async function asyncPost(url: string, body?: unknown, options: AnonymousObject = {}): Promise<any> {
   return await asyncHttp(url, 'POST', body, options);
 }
 
-export async function asyncPut(url: string, body?: AnonymousObject, options: AnonymousObject = {}): Promise<any> {
+export async function asyncPut(url: string, body?: unknown, options: AnonymousObject = {}): Promise<any> {
   return await asyncHttp(url, 'PUT', body, options);
 }
 
-export async function asyncPatch(url: string, body?: AnonymousObject, options: AnonymousObject = {}): Promise<any> {
+export async function asyncPatch(url: string, body?: unknown, options: AnonymousObject = {}): Promise<any> {
   return await asyncHttp(url, 'PATCH', body, options);
 }

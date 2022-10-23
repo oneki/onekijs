@@ -21,7 +21,7 @@ export default class FetchService<S extends FetchState = FetchState> extends Def
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
-  *delete<R = any>(url: string, options?: FetchOptions<R, never>) {
+  *delete<R = any>(url: string, options?: FetchOptions<R>) {
     yield this.fetch(url, HttpMethod.Delete, undefined, options);
   }
 
@@ -42,7 +42,7 @@ export default class FetchService<S extends FetchState = FetchState> extends Def
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
-  *fetch<R = any, T = any>(url: string, method: FetchMethod, body?: T, options: FetchOptions<R, T> = {}) {
+  *fetch<R = any>(url: string, method: FetchMethod, body?: unknown, options: FetchOptions<R> = {}) {
     let loadingTask: Task | null = null;
     try {
       loadingTask = yield fork([this, this.delayLoading], options.delayLoading);
@@ -73,12 +73,12 @@ export default class FetchService<S extends FetchState = FetchState> extends Def
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
-  *get<R = any>(url: string, options?: FetchOptions<R, never>): any {
+  *get<R = any>(url: string, options?: FetchOptions<R>): any {
     yield this.fetch(url, HttpMethod.Get, undefined, options);
   }
 
   @saga(SagaEffect.Every)
-  *pollFetch(url: string, fixedRateInMs: number, options?: FetchOptions<any, never>): any {
+  *pollFetch(url: string, fixedRateInMs: number, options?: FetchOptions<any>): any {
     yield this.fetch(url, HttpMethod.Get, undefined, options);
     if (fixedRateInMs > 0) {
       yield delay(fixedRateInMs);
@@ -88,7 +88,7 @@ export default class FetchService<S extends FetchState = FetchState> extends Def
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
-  *poll(url: string, fixedRateInMs: number, options?: FetchOptions<any, never>): any {
+  *poll(url: string, fixedRateInMs: number, options?: FetchOptions<any>): any {
     const task: Task = yield spawn([this, this.pollFetch], url, fixedRateInMs, options);
     return task;
   }
@@ -101,19 +101,19 @@ export default class FetchService<S extends FetchState = FetchState> extends Def
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
-  *patch<R = any, T = any>(url: string, body: T, options?: FetchOptions<R, T>) {
+  *patch<R = any>(url: string, body: unknown, options?: FetchOptions<R>) {
     yield this.fetch(url, HttpMethod.Patch, body, options);
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
-  *post<R = any, T = any>(url: string, body: T, options?: FetchOptions<R, T>) {
+  *post<R = any>(url: string, body: unknown, options?: FetchOptions<R>) {
     yield this.fetch(url, HttpMethod.Post, body, options);
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
-  *put<R = any, T = any>(url: string, body: T, options?: FetchOptions<R, T>) {
+  *put<R = any>(url: string, body: unknown, options?: FetchOptions<R>) {
     yield this.fetch(url, HttpMethod.Put, body, options);
   }
 

@@ -6,7 +6,7 @@ import { display } from '../../styles/display';
 import { opacity } from '../../styles/effects';
 import { cursor } from '../../styles/interactivity';
 import { bottom, left, position, right, top, zIndex } from '../../styles/position';
-import { minHeight, minWidth } from '../../styles/size';
+import { maxWidth, minHeight, minWidth } from '../../styles/size';
 import { marginBottom, marginRight, padding } from '../../styles/spacing';
 import { transform } from '../../styles/transform';
 import { ComponentStyle } from '../../styles/typings';
@@ -33,6 +33,7 @@ export const notifcationsStyle: ComponentStyle<NotificationsProps> = ({ position
     }
     .o-notification {
       ${minWidth('350px')}
+      ${maxWidth('450px')}
       ${minHeight(24)}
       ${backgroundColor('white')}
       ${borderRadius('sm')}

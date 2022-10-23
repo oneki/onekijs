@@ -1,7 +1,7 @@
 import { AppErrorCallback, AppSuccessCallback } from '../app/typings';
 import { FetchMethod, FetchOptions } from '../types/fetch';
 
-export interface AppFetchOptions<T = any> extends Omit<FetchOptions<T>, 'onError' | 'onSuccess'> {
+export interface AppFetchOptions<T = any> extends Omit<FetchOptions<T>, 'onFetchError' | 'onFetchSuccess'> {
   onError?: AppErrorCallback;
   onSuccess?: AppSuccessCallback<T>;
 }

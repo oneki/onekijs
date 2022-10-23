@@ -21,14 +21,14 @@ export enum HttpMethod {
 
 export type FetchMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
-export type Fetcher<R = any, T = any> = (
+export type Fetcher<R = any> = (
   url: string,
   method: FetchMethod,
-  body?: T,
-  options?: FetchOptions<R, T>,
+  body?: unknown,
+  options?: FetchOptions<R>,
 ) => Promise<R>;
 
-export interface FetchOptions<R = any, T = any> extends Omit<RequestInit, 'method' | 'url'> {
+export interface FetchOptions<R = any> extends Omit<RequestInit, 'method' | 'url'> {
   onFetchError?: ErrorCallback;
   onFetchSuccess?: (result: R) => void | R | Promise<undefined | R>;
   delayLoading?: number;
@@ -36,5 +36,5 @@ export interface FetchOptions<R = any, T = any> extends Omit<RequestInit, 'metho
   headers?: AnonymousObject<string>;
   params?: AnonymousObject<string>;
   query?: AnonymousObject<string>;
-  fetcher?: Fetcher<R, T>;
+  fetcher?: Fetcher<R>;
 }

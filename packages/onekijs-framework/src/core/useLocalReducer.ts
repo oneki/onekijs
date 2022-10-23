@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 import { runSaga, stdChannel } from 'redux-saga';
+import useNotificationService from '../notification/useNotificationService';
 import { combinedReducers, dispatch, reducers, sagas } from '../types/service';
 import { State } from '../types/state';
 import Service from './Service';
@@ -52,7 +53,19 @@ const useLocalReducer = <S extends State, T extends Service<S>>(service: T, init
   useEffect(() => {
     const tasks: any[] = [];
     Object.keys(service[sagas]).forEach((type) => {
-      tasks.push(runSaga({ channel: channelRef.current, dispatch: dispatcher, getState }, service[sagas][type]));
+      tasks.push(
+        runSaga(
+          {
+            channel: channelRef.current,
+            dispatch: dispatcher,
+            getState,
+            onError: (e) => {
+              throw e;
+            },
+          },
+          service[sagas][type],
+        ),
+      );
     });
     return () => {
       for (const task of tasks) {

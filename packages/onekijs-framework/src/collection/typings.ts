@@ -154,11 +154,11 @@ export type CollectionBy<T, I extends Item<T> = Item<T>> = {
   value: T;
 };
 
-export type CollectionFetcher<T> = Fetcher<CollectionFetcherResult<T>, Query | undefined>;
+export type CollectionFetcher<T> = Fetcher<CollectionFetcherResult<T>>;
 
 export type CollectionFetcherResult<T> = T[] | AnonymousObject;
 
-export type CollectionFetchOptions<R = any, T = any> = Omit<FetchOptions<R, T>, 'auth'> & {
+export type CollectionFetchOptions<R = any> = Omit<FetchOptions<R>, 'auth'> & {
   auth?: AnonymousObject<any> | boolean;
 };
 
@@ -216,7 +216,7 @@ export interface CollectionState<T, I extends Item<T>> extends FetchState {
   dataSource?: T[] | string;
   disabled?: string[];
   fetchOnce?: boolean;
-  fetchOptions?: FetchOptions<CollectionFetcherResult<T>, Query | undefined>;
+  fetchOptions?: FetchOptions<CollectionFetcherResult<T>>;
   fields?: string[];
   filter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[];
   hasMore?: boolean;
@@ -384,4 +384,4 @@ export type QuerySortDir = 'asc' | 'desc';
 
 export interface UseCollectionOptions<T, I extends Item<T> = Item<T>>
   extends CollectionOptions<T, I>,
-    CollectionFetchOptions<CollectionFetcherResult<T>, Query | undefined> {}
+    CollectionFetchOptions<CollectionFetcherResult<T>> {}

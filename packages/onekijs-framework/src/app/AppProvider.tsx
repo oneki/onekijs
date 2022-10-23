@@ -68,12 +68,9 @@ const AppProvider: FCC<AppProviderProps> = ({
   return (
     <ContainerContext.Provider value={container.current}>
       <DefaultAppContext.Provider value={appContext}>
-        {ErrorBoundaryComponent && (
-          <AppErrorBoundary ErrorBoundaryComponent={ErrorBoundaryComponent} context={appContext}>
-            {children}
-          </AppErrorBoundary>
-        )}
-        {!ErrorBoundaryComponent && children}
+        <AppErrorBoundary ErrorBoundaryComponent={ErrorBoundaryComponent} context={appContext}>
+          {children}
+        </AppErrorBoundary>
       </DefaultAppContext.Provider>
     </ContainerContext.Provider>
   );
