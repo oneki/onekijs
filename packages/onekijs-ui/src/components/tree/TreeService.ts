@@ -9,7 +9,6 @@ import {
   isNull,
   LoadingStatus,
   LocalQuery,
-  Query,
   QuerySearcher,
   QuerySortComparator,
   reducer,
@@ -25,7 +24,8 @@ import { defaultTreeQueryEngine } from './util';
 @service
 class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeState<T, I> = TreeState<T, I>>
   extends CollectionService<T, I, S>
-  implements TreeController<T, I> {
+  implements TreeController<T, I>
+{
   adapt(data: T | undefined): I {
     return this._adapt(data);
   }
@@ -293,7 +293,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
           yield this.setMeta('item', item, 'loadingStatus', LoadingStatus.Loading);
         }
 
-        const fetcher: Fetcher<CollectionFetcherResult<T>, Query | undefined> = options.fetcher || asyncHttp;
+        const fetcher: Fetcher<CollectionFetcherResult<T>> = options.fetcher || asyncHttp;
         const method = this.state.method ?? HttpMethod.Get;
         const body = this.state.method === HttpMethod.Get ? undefined : Object.assign({}, query);
 

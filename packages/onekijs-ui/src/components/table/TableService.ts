@@ -1,6 +1,7 @@
-import { AnonymousObject, CollectionService, reducer, service } from 'onekijs-framework';
+import { AnonymousObject, CollectionService, reducer, saga, SagaEffect, service } from 'onekijs-framework';
 import React from 'react';
-import { TableColumn, TableColumnWidth, TableController, TableItem, TableState } from './typings';
+import { Task } from 'redux-saga';
+import { TableColumn, TableColumnWidth, TableConfig, TableController, TableItem, TableState } from './typings';
 
 export const parseColumnWidth = (width: string | number = 'auto'): TableColumnWidth => {
   const regex = /^\s*(auto|(?:(?:([0-9]+)|(?:([0-9]+)\s*(px|%)))\s*(grow|force)?)|(grow))\s*$/;
@@ -48,6 +49,12 @@ class TableService<T = any, I extends TableItem<T> = TableItem<T>, S extends Tab
   // ref of the body container
   protected contentRef: React.RefObject<HTMLDivElement> | null = null;
 
+  // config coming from the component
+  public config: TableConfig<T, I> | undefined;
+
+  // autoRefresh task that can be cancelled
+  protected pullTask?: Task;
+
   adapt(data: T | undefined): I {
     const item = super.adapt(data);
     item.selected = this.state.selected && this.state.selected.includes(item.uid);
@@ -66,6 +73,11 @@ class TableService<T = any, I extends TableItem<T> = TableItem<T>, S extends Tab
       }
       this.resetWidth();
     }
+  }
+
+  @saga(SagaEffect.Leading)
+  autoRefresh(interval: number) {
+
   }
 
   get columns(): TableColumn<T, I>[] {

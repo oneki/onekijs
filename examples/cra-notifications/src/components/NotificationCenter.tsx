@@ -1,4 +1,4 @@
-import { useNotifications, useNotificationService } from 'onekijs';
+import { useNotifications, useNotificationService, useSecurityContext } from 'onekijs';
 import React, { FC } from 'react';
 
 // Very simple Notification Widget

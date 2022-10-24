@@ -10,6 +10,7 @@ import TableFooterComponent from './TableFooterComponent';
 import TableHeaderComponent from './TableHeaderComponent';
 
 const ControllerTableComponent: React.FC<ControllerTableProps> = ({
+  autoRefresh,
   controller,
   className,
   bodyClassName,
@@ -51,6 +52,7 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
 
   const config: TableConfig = useMemo(() => {
     return {
+      autoRefresh,
       bodyClassName,
       BodyComponent,
       className,
@@ -83,6 +85,7 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
       stripRows,
     };
   }, [
+    autoRefresh,
     bodyClassName,
     BodyComponent,
     className,
@@ -115,6 +118,8 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
     stripRows,
   ]);
 
+  service.config = config;
+
   useEffect(() => {
     if (ExpandedComponent) {
       const currentColumn = service.state.columns.find((c) => c.id === 'system.expander');
@@ -133,6 +138,12 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
       }
     }
   }, [service, ExpandedComponent]);
+
+  useEffect(() => {
+    if (autoRefresh) {
+      service.autoRefresh(autoRefresh);
+    }
+  }, [service, autoRefresh]);
 
   return (
     <TableServiceContext.Provider value={controller.asService()}>

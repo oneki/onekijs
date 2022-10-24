@@ -42,7 +42,7 @@ export const AjaxListPage = () => {
   } as CollectionState<User, Item<User>>);
 
   const fetcher: Fetcher = useCallback(
-    async (url, method, body, options) => {
+    async (url, method, body: any, options) => {
       await new Promise((r) => setTimeout(r, 1000 + Math.floor(Math.random() * Math.floor(300))));
       service.query(body as Query);
       return service.items

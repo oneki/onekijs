@@ -101,6 +101,7 @@ export type TableBodyRowProps<T = any, I extends TableItem<T> = TableItem<T>> = 
 };
 
 export type TableConfig<T = any, I extends TableItem<T> = TableItem<T>> = {
+  autoRefresh?: number;
   bodyClassName?: string;
   BodyComponent?: React.FC<TableBodyProps<T, I>>;
   className?: string;
@@ -141,6 +142,7 @@ export type TableController<
   addColumn(column: TableColumn<T, I>, position?: number): void;
   addSelected<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
   columns: TableColumn<T, I>[];
+  config?: TableConfig<T, I>;
   initCell(
     rowIndex: number | 'header-title' | 'header-filter' | 'footer',
     colId: string,
@@ -320,7 +322,7 @@ export type UseSelectColumnOptions<
     CellComponent?: SelectCell<T, S, TI, SI>;
   };
 
-  export type UseTextareaColumnOptions<T = any, I extends TableItem<T> = TableItem<T>> = Omit<
+export type UseTextareaColumnOptions<T = any, I extends TableItem<T> = TableItem<T>> = Omit<
   TableColumnSpec<T, I>,
   'CellComponent'
 > &

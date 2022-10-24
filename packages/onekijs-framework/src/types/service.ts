@@ -36,7 +36,7 @@ export interface Service<S extends State = AnyState> {
   [sagasFromReducers]: any;
 }
 
-export interface AppService<S> extends Service<S> {
+export interface AppService<S extends State = AnyState> extends Service<S> {
   context: AppContext;
 }
 

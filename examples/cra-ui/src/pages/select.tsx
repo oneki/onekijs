@@ -12,7 +12,7 @@ export const SelectPage = () => {
 
 
   const fetcher: Fetcher = useCallback(
-    async (url, method, body, options) => {
+    async (url, method, body: any, options) => {
       // await new Promise((r) => setTimeout(r, delay + Math.floor(Math.random() * Math.floor(300))));
       await new Promise((r) => setTimeout(r, 0));
       const query = body as Query;

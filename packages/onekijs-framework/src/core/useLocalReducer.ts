@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 import { runSaga, stdChannel } from 'redux-saga';
-import useNotificationService from '../notification/useNotificationService';
 import { combinedReducers, dispatch, reducers, sagas } from '../types/service';
 import { State } from '../types/state';
 import Service from './Service';

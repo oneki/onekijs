@@ -32,7 +32,7 @@ export const notifcationsStyle: ComponentStyle<NotificationsProps> = ({ position
       ${display('flex')}
     }
     .o-notification {
-      ${minWidth('350px')}
+      ${minWidth('450px')}
       ${maxWidth('450px')}
       ${minHeight(24)}
       ${backgroundColor('white')}
