@@ -1,6 +1,7 @@
 import { AnonymousObject, CollectionService, reducer, saga, SagaEffect, service } from 'onekijs-framework';
 import React from 'react';
 import { Task } from 'redux-saga';
+import { delay, fork } from 'redux-saga/effects';
 import { TableColumn, TableColumnWidth, TableConfig, TableController, TableItem, TableState } from './typings';
 
 export const parseColumnWidth = (width: string | number = 'auto'): TableColumnWidth => {
@@ -76,13 +77,26 @@ class TableService<T = any, I extends TableItem<T> = TableItem<T>, S extends Tab
   }
 
   @saga(SagaEffect.Leading)
-  *autoRefresh(interval: number) {
-
+  *startAutoRefresh(interval: number) {
+    this.stopAutoRefresh();
+    this.pullTask = yield fork([this, this._autoRefresh], interval);
   }
 
   @saga(SagaEffect.Leading)
   protected *_autoRefresh(interval: number) {
+    while (true) {
+      console.log('_autoRefresh');
+      yield delay(interval * 1000);
+      yield this.refresh();
+    }
+  }
 
+  @saga(SagaEffect.Leading)
+  *stopAutoRefresh() {
+    if (this.pullTask) {
+      yield this.pullTask.cancel();
+      this.pullTask = undefined;
+    }
   }
 
   get columns(): TableColumn<T, I>[] {

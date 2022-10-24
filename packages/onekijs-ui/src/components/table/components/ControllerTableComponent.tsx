@@ -141,7 +141,9 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
 
   useEffect(() => {
     if (autoRefresh) {
-      service.autoRefresh(autoRefresh);
+      service.startAutoRefresh(autoRefresh);
+    } else {
+      service.stopAutoRefresh();
     }
   }, [service, autoRefresh]);
 

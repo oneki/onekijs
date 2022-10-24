@@ -461,7 +461,9 @@ export default class CollectionService<
     if (isCollectionReady(this)) {
       const path = this.state.router.location.pathname;
       this.refreshing = true;
-      this.state.router.push(urlBuilder(path, {}, urlSerializer(query || this.getQuery())));
+      query = query ?? this.getQuery();
+      this._setParam(query, 'noCache', true);
+      this.state.router.push(urlBuilder(path, {}, urlSerializer(query)));
     }
   }
 
@@ -846,12 +848,13 @@ export default class CollectionService<
     }
     let loadingTask: Task | null = null;
     try {
+      const noCache = get(query, 'params.noCache', false);
       const oQuery = this.serializeQuery(query);
       const sQuery = Object.keys(oQuery)
         .map((k) => `${k}=${oQuery[k]}`)
         .join('&');
       let result: CollectionFetcherResult<T>;
-      if (this.cache[sQuery]) {
+      if (this.cache[sQuery] && !noCache) {
         result = this.cache[sQuery];
       } else {
         if (options.delayLoading) {

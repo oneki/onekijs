@@ -154,6 +154,8 @@ export type TableController<
     target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
   ): I[];
   setSelected<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
+  startAutoRefresh: (interval: number) => void;
+  stopAutoRefresh: () => void;
   toggle(item: I): void;
 };
 
