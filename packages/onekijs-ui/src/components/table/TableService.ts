@@ -76,7 +76,12 @@ class TableService<T = any, I extends TableItem<T> = TableItem<T>, S extends Tab
   }
 
   @saga(SagaEffect.Leading)
-  autoRefresh(interval: number) {
+  *autoRefresh(interval: number) {
+
+  }
+
+  @saga(SagaEffect.Leading)
+  protected *_autoRefresh(interval: number) {
 
   }
 
