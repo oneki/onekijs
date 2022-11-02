@@ -15,14 +15,15 @@ import {
   toArray,
 } from 'onekijs-framework';
 import { all, call } from 'redux-saga/effects';
-import { SelectConfig, SelectController, SelectGroup, SelectItem, SelectItemAdaptee, SelectState } from './typings';
+import { SelectConfig, SelectGroup, SelectItem, SelectItemAdaptee, SelectState } from './typings';
 import { shouldCheckSelect } from './util';
 
 @service
-class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends SelectState<T, I> = SelectState<T, I>>
-  extends CollectionService<T, I, S>
-  implements SelectController<T, I>
-{
+class SelectService<
+  T = any,
+  I extends SelectItem<T> = SelectItem<T>,
+  S extends SelectState<T, I> = SelectState<T, I>,
+> extends CollectionService<T, I, S> {
   public config: SelectConfig<T, I> | undefined;
   protected lastCheckQuery: Query | undefined;
 
@@ -75,9 +76,9 @@ class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends 
   }
 
   @reducer
-  setData(data: T[]): void {
+  setData(data: T[], query?: Query): void {
     this.lastCheckQuery = undefined;
-    super.setData(data);
+    super.setData(data, query);
   }
 
   @saga(SagaEffect.Latest)
@@ -101,12 +102,12 @@ class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends 
   }
 
   @reducer
-  setUrl(url: string) {
+  setUrl(url: string, query?: Query) {
     this.lastCheckQuery = undefined;
-    super.setUrl(url);
+    super.setUrl(url, query);
   }
 
-  protected _buildItem(data: T | undefined, adaptee: unknown, context?: AnonymousObject): I {
+  _buildItem(data: T | undefined, adaptee: unknown, context?: AnonymousObject): I {
     context = context || {};
 
     const getGroup = (data: any): SelectGroup | undefined => {
@@ -126,7 +127,7 @@ class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends 
     return super._buildItem(data, selectAdaptee, context) as I;
   }
 
-  protected *_filterItem(item: I | undefined, query: Query, valid: boolean) {
+  *_filterItem(item: I | undefined, query: Query, valid: boolean) {
     if (item === undefined) return item;
     let isValid = false;
     if (!this.state.items || !this.state.items.find((i) => i?.uid === item.uid)) {
@@ -134,7 +135,7 @@ class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends 
       if (this.state.local) {
         const queryEngine = this.state.queryEngine || this._execute.bind(this);
         const result = queryEngine(
-          this.db || [],
+          this._db || [],
           query,
           this.state.comparator || defaultComparator,
           this.state.comparators || {},
@@ -146,8 +147,8 @@ class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends 
           .map((k) => `${k}=${oQuery[k]}`)
           .join('&');
         let result: CollectionFetcherResult<T>;
-        if (this.cache[sQuery]) {
-          result = this.cache[sQuery];
+        if (this._cache[sQuery]) {
+          result = this._cache[sQuery];
         } else {
           const options = Object.assign({}, this.state.fetchOptions, { delayLoading: 0 });
           result = yield super._executeFetch(query, options, false);
@@ -182,7 +183,7 @@ class SelectService<T = any, I extends SelectItem<T> = SelectItem<T>, S extends 
     this.state.invalidItems = invalidItems;
   }
 
-  protected _setItems(items: (I | undefined)[]): void {
+  _setItems(items: (I | undefined)[]): void {
     super._setItems(items);
     if (shouldCheckSelect(this.getQuery(), this.lastCheckQuery)) {
       this.callSaga('check');

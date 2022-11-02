@@ -6,7 +6,7 @@ import useTreeService from '../hooks/useTreeService';
 import { ControllerTreeProps } from '../typings';
 import VirtualTreeListComponent from './VirtualTreeListComponent';
 
-const VirtualTreeBodyComponent: React.FC<ControllerTreeProps> = ({ className, controller }) => {
+const VirtualTreeBodyComponent: React.FC<ControllerTreeProps> = ({ className, controller, height }) => {
   const service = useTreeService();
   const ref = useRef<HTMLDivElement>(null);
   const { items, totalSize, virtualItems } = useListView({
@@ -26,6 +26,7 @@ const VirtualTreeBodyComponent: React.FC<ControllerTreeProps> = ({ className, co
       service={service}
       state={service.state}
       VirtualListComponent={VirtualTreeListComponent}
+      height={height}
     />
   );
 };

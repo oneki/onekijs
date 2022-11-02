@@ -538,6 +538,10 @@ export type Theme = {
     hoverFontColor: ColorPropertyTheme | ColorProperty;
     marginBefore: SpacingPropertyTheme | MarginProperty<TLength>;
     marginAfter: SpacingPropertyTheme | MarginProperty<TLength>;
+    modalStepsBgColor: ColorPropertyTheme | BackgroundColorProperty;
+    modalStepsBorderColor: ColorPropertyTheme | BorderColorProperty;
+    modalStepsBorderStyle: BorderStyleProperty;
+    modalStepsBorderWidth: BorderWidthProperty<TLength>;
     paddingRight: SpacingPropertyTheme | PaddingProperty<TLength>;
     paddingLeft: SpacingPropertyTheme | PaddingProperty<TLength>;
     paddingTop: SpacingPropertyTheme | PaddingProperty<TLength>;

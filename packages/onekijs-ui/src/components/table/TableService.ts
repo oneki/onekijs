@@ -85,7 +85,6 @@ class TableService<T = any, I extends TableItem<T> = TableItem<T>, S extends Tab
   @saga(SagaEffect.Leading)
   protected *_autoRefresh(interval: number) {
     while (true) {
-      console.log('_autoRefresh');
       yield delay(interval * 1000);
       yield this.refresh();
     }

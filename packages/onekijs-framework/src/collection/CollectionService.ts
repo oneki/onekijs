@@ -68,19 +68,19 @@ export default class CollectionService<
   implements Collection<T, I, S>
 {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  protected initialState: S = null!;
-  protected cache: AnonymousObject<any> = {};
-  protected idIndex: AnonymousObject<I> = {};
-  protected uidIndex: AnonymousObject<I> = {};
-  protected positionIndex: AnonymousObject<string> = {};
-  protected db?: I[];
-  protected unregisterRouterListener?: UnregisterCallback;
-  protected refreshing = false;
-  protected currentQuery?: string;
-  protected initialQuery?: Query;
+  _initialState: S = null!;
+  _cache: AnonymousObject<any> = {};
+  _idIndex: AnonymousObject<I> = {};
+  _uidIndex: AnonymousObject<I> = {};
+  _positionIndex: AnonymousObject<string> = {};
+  _db?: I[];
+  _unregisterRouterListener?: UnregisterCallback;
+  _refreshing = false;
+  _currentQuery?: string;
+  _initialQuery?: Query;
 
   init(): void {
-    this.initialState = this.state;
+    this._initialState = this.state;
     if (this.state.filter) {
       this.state.filter = formatFilter(this.state.filter);
     }
@@ -88,7 +88,7 @@ export default class CollectionService<
       this.state.router = new LocalRouter();
     }
     // listen on location change and adapt filters, sort, ... with these values
-    this.unregisterRouterListener = this.state.router.listen((location: Location) => this._onLocationChange(location));
+    this._unregisterRouterListener = this.state.router.listen((location: Location) => this._onLocationChange(location));
     // retrieve params from URL and initiate filter, sort ... with these values
     this._setQuery(this._parseLocation(this.state.router.location), false);
 
@@ -103,19 +103,19 @@ export default class CollectionService<
       this.refresh();
     }
 
-    this.initialQuery = this.getQuery();
+    this._initialQuery = this.getQuery();
   }
 
   destroy(): void {
-    if (this.unregisterRouterListener) {
-      this.unregisterRouterListener();
+    if (this._unregisterRouterListener) {
+      this._unregisterRouterListener();
     }
   }
 
   initDb(dataSource: T[] | string | undefined): void {
     if (Array.isArray(dataSource)) {
       this.state.status = LoadingStatus.Loaded;
-      this.db = [];
+      this._db = [];
       dataSource.map((entry, index) => this._adapt(entry, { position: index }));
     }
   }
@@ -295,12 +295,12 @@ export default class CollectionService<
   }
 
   get index(): AnonymousObject<I> {
-    return this.idIndex;
+    return this._idIndex;
   }
 
   get status(): CollectionStatus {
     const defaultStatus = getDefaultCollectionStatus(
-      this.db || this.state.url,
+      this._db || this.state.url,
       this.state.brokerable,
       this.state.brokered,
       this.state.fetchOnce,
@@ -317,7 +317,7 @@ export default class CollectionService<
   }
 
   getDb(): I[] {
-    return this.db || [];
+    return this._db || [];
   }
 
   getFields(): string[] | undefined {
@@ -350,7 +350,7 @@ export default class CollectionService<
   }
 
   getItem(uid: string): I | undefined {
-    return this.uidIndex[uid];
+    return this._uidIndex[uid];
   }
 
   getOffset(): number | undefined {
@@ -460,7 +460,7 @@ export default class CollectionService<
   refresh(query?: Query): void {
     if (isCollectionReady(this)) {
       const path = this.state.router.location.pathname;
-      this.refreshing = true;
+      this._refreshing = true;
       query = query ?? this.getQuery();
       this._setParam(query, 'noCache', true);
       this.state.router.push(urlBuilder(path, {}, urlSerializer(query)));
@@ -517,7 +517,7 @@ export default class CollectionService<
 
   @reducer
   reset(): void {
-    this.state = this.initialState;
+    this.state = this._initialState;
     this._setLoading({ limit: this.state.limit, offset: this.state.offset });
     this.refresh();
   }
@@ -545,10 +545,10 @@ export default class CollectionService<
     if (!this.state.local) {
       throw new DefaultBasicError('Call to unsupported method setData of a remote collection');
     }
-    this.cache = {};
+    this._cache = {};
     // this.idIndex = {};
     // this.uidIndex = {};
-    this.positionIndex = {};
+    this._positionIndex = {};
     this.state.items = undefined;
     if (query === undefined) {
       query = this.getQuery();
@@ -590,13 +590,13 @@ export default class CollectionService<
     target = toArray(target);
     switch (by) {
       case 'id':
-        items = target.map((t) => this.idIndex[String(t)]).filter((t) => t !== undefined);
+        items = target.map((t) => this._idIndex[String(t)]).filter((t) => t !== undefined);
         break;
       case 'uid':
-        items = target.map((t) => this.uidIndex[String(t)]).filter((t) => t !== undefined);
+        items = target.map((t) => this._uidIndex[String(t)]).filter((t) => t !== undefined);
         break;
       case 'item':
-        items = target.map((t) => this.uidIndex[(t as I).uid]).filter((t) => t !== undefined);
+        items = target.map((t) => this._uidIndex[(t as I).uid]).filter((t) => t !== undefined);
         break;
       case 'value':
         items = target.map((t) => this.adapt(t as T));
@@ -646,7 +646,7 @@ export default class CollectionService<
 
   @reducer
   setUrl(url: string, query?: Query) {
-    this.cache = {};
+    this._cache = {};
     this.state.dataSource = url;
     this.state.url = url;
     this.state.items = undefined;
@@ -684,7 +684,7 @@ export default class CollectionService<
     this.refresh(query);
   }
 
-  protected _adapt(data: T | undefined, context?: AnonymousObject): I {
+  _adapt(data: T | undefined, context?: AnonymousObject): I {
     const adaptee = this.state.adapter === undefined || data === undefined ? {} : this.state.adapter(data);
 
     const item: I = this._buildItem(data, adaptee, context);
@@ -694,7 +694,7 @@ export default class CollectionService<
     return item;
   }
 
-  protected _addByMeta<B extends keyof CollectionBy<T, I>>(
+  _addByMeta<B extends keyof CollectionBy<T, I>>(
     field: 'active' | 'disabled' | 'highlighted' | 'selected',
     by: B,
     target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
@@ -711,7 +711,7 @@ export default class CollectionService<
     return items;
   }
 
-  protected _addFilter(
+  _addFilter(
     query: Query,
     filterOrCriteria: QueryFilterOrCriteria,
     parentFilterId: QueryFilterId = rootFilterId,
@@ -719,7 +719,7 @@ export default class CollectionService<
     return aFilter(query, filterOrCriteria, parentFilterId);
   }
 
-  protected _addSortBy(query: Query, sortBy: QuerySortBy, prepend = true): void {
+  _addSortBy(query: Query, sortBy: QuerySortBy, prepend = true): void {
     this._removeSortBy(query, sortBy);
     const currentSortBy = (formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(query, 'sortBy')) || []).slice(0);
     if (prepend) {
@@ -730,49 +730,49 @@ export default class CollectionService<
     query.sortBy = currentSortBy;
   }
 
-  protected _clearFields(query: Query): void {
+  _clearFields(query: Query): void {
     query.fields = undefined;
   }
 
-  protected _clearFilter(query: Query): void {
+  _clearFilter(query: Query): void {
     query.filter = undefined;
   }
 
-  protected _clearOffset(query: Query): void {
+  _clearOffset(query: Query): void {
     query.offset = undefined;
   }
 
-  protected _clearParam(query: Query, key: string): void {
+  _clearParam(query: Query, key: string): void {
     if (query.params) {
       delete query.params[key];
     }
   }
 
-  protected _clearParams(query: Query): void {
+  _clearParams(query: Query): void {
     query.params = undefined;
   }
 
-  protected _clearSearch(query: Query): void {
+  _clearSearch(query: Query): void {
     query.search = undefined;
   }
 
   @reducer
-  protected _clearLimit(query: Query): void {
+  _clearLimit(query: Query): void {
     query.limit = undefined;
   }
 
   @reducer
-  protected _clearSortBy(query: Query): void {
+  _clearSortBy(query: Query): void {
     query.sortBy = undefined;
   }
 
   @reducer
-  protected _clearSort(query: Query): void {
+  _clearSort(query: Query): void {
     query.sort = undefined;
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  protected *_delayLoading(delay_ms: number, limit?: number | string, offset?: number | string, resetData?: boolean) {
+  *_delayLoading(delay_ms: number, limit?: number | string, offset?: number | string, resetData?: boolean) {
     if (typeof limit === 'string') {
       limit = parseInt(limit);
     }
@@ -796,7 +796,7 @@ export default class CollectionService<
       yield this.setStatus(LoadingStatus.Loading);
       try {
         const result: CollectionFetcherResult<T> = yield this._executeFetch(
-          Object.assign({}, this.initialQuery, { limit: undefined, offset: undefined }),
+          Object.assign({}, this._initialQuery, { limit: undefined, offset: undefined }),
           this.state.fetchOptions,
           false,
         );
@@ -821,7 +821,7 @@ export default class CollectionService<
 
   @saga(SagaEffect.Throttle, 'state.throttle', 1)
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  protected *_fetch(query: Query, resetData: boolean) {
+  *_fetch(query: Query, resetData: boolean) {
     const options = this.state.fetchOptions || {};
     const { onFetchError } = options;
 
@@ -842,7 +842,7 @@ export default class CollectionService<
     }
   }
 
-  protected *_executeFetch(query: Query, options: S['fetchOptions'] = {}, resetData: boolean) {
+  *_executeFetch(query: Query, options: S['fetchOptions'] = {}, resetData: boolean) {
     if (!this.url) {
       return [];
     }
@@ -854,8 +854,8 @@ export default class CollectionService<
         .map((k) => `${k}=${oQuery[k]}`)
         .join('&');
       let result: CollectionFetcherResult<T>;
-      if (this.cache[sQuery] && !noCache) {
-        result = this.cache[sQuery];
+      if (this._cache[sQuery] && !noCache) {
+        result = this._cache[sQuery];
       } else {
         if (options.delayLoading) {
           loadingTask = yield fork(
@@ -882,7 +882,7 @@ export default class CollectionService<
           }
         }
 
-        this.cache[sQuery] = result;
+        this._cache[sQuery] = result;
         if (loadingTask !== null) {
           yield cancel(loadingTask);
         }
@@ -898,7 +898,7 @@ export default class CollectionService<
 
   @reducer
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  protected _fetchError(e: any, query: Query): void {
+  _fetchError(e: any, query: Query): void {
     this.state.error = e;
     this._setLoading({
       resetLimit: false,
@@ -912,7 +912,7 @@ export default class CollectionService<
 
   @reducer
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  protected _fetchSuccess(result: CollectionFetcherResult<T>, resetData: boolean, query: Query): void {
+  _fetchSuccess(result: CollectionFetcherResult<T>, resetData: boolean, query: Query): void {
     const limit = query.limit;
     const offset = query.offset || 0;
     const currentQuery = this.getQuery();
@@ -968,9 +968,9 @@ export default class CollectionService<
           .forEach(
             (item) =>
               item &&
-              this.uidIndex[item.uid] &&
-              this.uidIndex[item.uid].id === undefined &&
-              delete this.uidIndex[item.uid],
+              this._uidIndex[item.uid] &&
+              this._uidIndex[item.uid].id === undefined &&
+              delete this._uidIndex[item.uid],
           );
         items.splice(offset, limit, ...itemResult.slice(0, limit));
 
@@ -985,9 +985,9 @@ export default class CollectionService<
             .forEach(
               (item) =>
                 item &&
-                this.uidIndex[item.uid] &&
-                this.uidIndex[item.uid].id === undefined &&
-                delete this.uidIndex[item.uid],
+                this._uidIndex[item.uid] &&
+                this._uidIndex[item.uid].id === undefined &&
+                delete this._uidIndex[item.uid],
             );
         }
 
@@ -1009,9 +1009,9 @@ export default class CollectionService<
       this.state.status = hasMore ? LoadingStatus.PartialLoaded : LoadingStatus.Loaded;
     } else {
       // need to calculate the status as we cannot be sure that there is not another running request
-      if (Object.values(this.uidIndex).find((item) => item.loadingStatus === LoadingStatus.Loading)) {
+      if (Object.values(this._uidIndex).find((item) => item.loadingStatus === LoadingStatus.Loading)) {
         this.state.status = LoadingStatus.PartialLoading;
-      } else if (Object.values(this.uidIndex).find((item) => item.loadingStatus === LoadingStatus.Fetching)) {
+      } else if (Object.values(this._uidIndex).find((item) => item.loadingStatus === LoadingStatus.Fetching)) {
         this.state.status = LoadingStatus.PartialFetching;
       } else {
         this.state.status = hasMore ? LoadingStatus.PartialLoaded : LoadingStatus.Loaded;
@@ -1019,7 +1019,7 @@ export default class CollectionService<
     }
   }
 
-  protected _buildItem(data: T | undefined, adaptee: unknown, _context?: { position?: number }): I {
+  _buildItem(data: T | undefined, adaptee: unknown, _context?: AnonymousObject): I {
     const result = adaptee as I;
 
     const getId = (data: any): string | number | undefined => {
@@ -1054,7 +1054,7 @@ export default class CollectionService<
     ensureFieldValue(result, 'id', getId(data));
     ensureFieldValue(result, 'text', getText(data));
 
-    const currentItem = this.idIndex[String(result.id)];
+    const currentItem = this._idIndex[String(result.id)];
 
     const d = Array.isArray(data) ? data[0] : data;
 
@@ -1077,7 +1077,7 @@ export default class CollectionService<
     }
   }
 
-  protected _execute(
+  _execute(
     items: I[],
     query: LocalQuery,
     comparator: QuerySortComparator,
@@ -1087,53 +1087,53 @@ export default class CollectionService<
     return defaultQueryEngine(items, query, comparator, comparators, searcher);
   }
 
-  protected _getId(data: T): string | number | undefined {
+  _getId(data: T): string | number | undefined {
     return this.adapt(data).id;
   }
 
-  protected _indexDb(item: I, _context?: AnonymousObject): void {
-    if (this.positionIndex[item.uid] !== undefined && this.db) {
-      set(this.db, this.positionIndex[item.uid], item);
+  _indexDb(item: I, _context?: AnonymousObject): void {
+    if (this._positionIndex[item.uid] !== undefined && this._db) {
+      set(this._db, this._positionIndex[item.uid], item);
     }
   }
 
-  protected _indexId(item: I, _context?: AnonymousObject): void {
+  _indexId(item: I, _context?: AnonymousObject): void {
     if (item.id !== undefined) {
-      this.idIndex[item.id] = item;
+      this._idIndex[item.id] = item;
     }
   }
 
-  protected _indexItem(item: I, context?: AnonymousObject): void {
+  _indexItem(item: I, context?: AnonymousObject): void {
     this._indexUid(item, context);
     this._indexId(item, context);
     this._indexPosition(item, context);
     this._indexDb(item, context);
   }
 
-  protected _indexPosition(item: I, context?: AnonymousObject): void {
+  _indexPosition(item: I, context?: AnonymousObject): void {
     if (context?.position !== undefined) {
-      this.positionIndex[item.uid] = `${context.position}`;
+      this._positionIndex[item.uid] = `${context.position}`;
     }
   }
 
-  protected _indexUid(item: I, _context?: AnonymousObject): void {
-    this.uidIndex[item.uid] = item;
+  _indexUid(item: I, _context?: AnonymousObject): void {
+    this._uidIndex[item.uid] = item;
   }
 
   @reducer
-  protected _onLocationChange(location: Location): void {
-    if (!this.refreshing) return;
-    this.refreshing = false;
+  _onLocationChange(location: Location): void {
+    if (!this._refreshing) return;
+    this._refreshing = false;
     const nextQuery = this._parseLocation(location);
     if (this.state.local) {
       this._setQuery(nextQuery);
-      if (location.relativeurl && this.cache[location.relativeurl]) {
-        this._setItems(this.cache[location.relativeurl]);
+      if (location.relativeurl && this._cache[location.relativeurl]) {
+        this._setItems(this._cache[location.relativeurl]);
       } else {
         const queryEngine = this.state.queryEngine || this._execute.bind(this);
         this._setItems(
           queryEngine(
-            this.db || [],
+            this._db || [],
             nextQuery,
             this.state.comparator || defaultComparator,
             this.state.comparators || {},
@@ -1141,11 +1141,11 @@ export default class CollectionService<
           ),
         );
         if (location.relativeurl) {
-          const keys = Object.keys(this.cache);
+          const keys = Object.keys(this._cache);
           if (keys.length > 100) {
-            delete this.cache[keys[0]];
+            delete this._cache[keys[0]];
           }
-          this.cache[location.relativeurl] = this.state.items;
+          this._cache[location.relativeurl] = this.state.items;
         }
       }
     } else {
@@ -1161,12 +1161,12 @@ export default class CollectionService<
     }
   }
 
-  protected _parseLocation(location: Location): Query {
+  _parseLocation(location: Location): Query {
     return parseQuery(location.query || {});
   }
 
   @reducer
-  protected _removeByMeta<B extends keyof CollectionBy<T, I>>(
+  _removeByMeta<B extends keyof CollectionBy<T, I>>(
     field: 'active' | 'disabled' | 'highlighted' | 'selected',
     by: B,
     target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
@@ -1177,7 +1177,7 @@ export default class CollectionService<
     return items;
   }
 
-  protected _removeFilter(query: Query, filterId: QueryFilterId): void {
+  _removeFilter(query: Query, filterId: QueryFilterId): void {
     const filter = clone(formatFilter(query.filter));
     if (filter) {
       visitFilter(filter, (filter) => {
@@ -1193,21 +1193,21 @@ export default class CollectionService<
     }
   }
 
-  protected _removeSortBy(query: Query, sort: QuerySortBy): void {
+  _removeSortBy(query: Query, sort: QuerySortBy): void {
     const sortBy = formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(query, 'sortBy'));
     if (sortBy) {
       query.sortBy = sortBy.filter((s) => !isSameSortBy(sort, s));
     }
   }
 
-  protected _removeSortById(query: Query, id: string): void {
+  _removeSortById(query: Query, id: string): void {
     const sortBy = formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(query, 'sortBy'));
     if (sortBy) {
       query.sortBy = sortBy.filter((sort) => sort.id !== id);
     }
   }
 
-  protected _setByMeta<B extends keyof CollectionBy<T, I>>(
+  _setByMeta<B extends keyof CollectionBy<T, I>>(
     field: 'active' | 'disabled' | 'highlighted' | 'selected',
     by: B,
     target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
@@ -1219,29 +1219,29 @@ export default class CollectionService<
     return items;
   }
 
-  protected _setFields(query: Query, fields: string[]): void {
+  _setFields(query: Query, fields: string[]): void {
     query.fields = fields;
   }
 
-  protected _setFilter(query: Query, filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[]): void {
+  _setFilter(query: Query, filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[]): void {
     query.filter = formatFilter(filter);
   }
 
-  protected _setItems(items: (I | undefined)[]): void {
+  _setItems(items: (I | undefined)[]): void {
     this.state.items = items;
   }
 
-  protected _setLimit(query: Query, limit: number): void {
+  _setLimit(query: Query, limit: number): void {
     query.limit = limit;
   }
 
-  protected _setLimitOffset(query: Query, limit?: number, offset?: number): void {
+  _setLimitOffset(query: Query, limit?: number, offset?: number): void {
     query.limit = limit;
     query.offset = offset;
   }
 
   @reducer
-  protected _setLoading(
+  _setLoading(
     options: {
       status?: LoadingItemStatus;
       limit?: number;
@@ -1310,7 +1310,7 @@ export default class CollectionService<
   }
 
   @reducer
-  protected _setQuery(query: Query, force = true): void {
+  _setQuery(query: Query, force = true): void {
     const nextFilter = formatFilter(query.filter);
     if (force || nextFilter) this.state.filter = nextFilter;
     const nextSortBy = formatSortBy(query.sortBy);
@@ -1323,31 +1323,31 @@ export default class CollectionService<
     if (force || query.params) this.state.params = query.params;
   }
 
-  protected _setOffset(query: Query, offset: number): void {
+  _setOffset(query: Query, offset: number): void {
     query.offset = offset;
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  protected _setParam(query: Query, key: string, value: any): void {
+  _setParam(query: Query, key: string, value: any): void {
     if (!query.params) {
       query.params = {};
     }
     query.params[key] = value;
   }
 
-  protected _setParams(query: Query, params: AnonymousObject): void {
+  _setParams(query: Query, params: AnonymousObject): void {
     query.params = params;
   }
 
-  protected _setSearch(query: Query, search: Primitive): void {
+  _setSearch(query: Query, search: Primitive): void {
     query.search = search;
   }
 
-  protected _setSort(query: Query, dir: QuerySortDir): void {
+  _setSort(query: Query, dir: QuerySortDir): void {
     query.sort = dir;
   }
 
-  protected _setSortBy(query: Query, sortBy: string | QuerySortBy | QuerySortBy[]): void {
+  _setSortBy(query: Query, sortBy: string | QuerySortBy | QuerySortBy[]): void {
     query.sortBy = formatSortBy(sortBy);
   }
 }

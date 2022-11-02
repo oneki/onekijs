@@ -35,6 +35,7 @@ export type WizardProps<M extends StepState = StepState> = Omit<
   Component?: FCC<Omit<WizardProps, 'Component'>>;
   doneLabel?: string;
   forwardOnly?: boolean;
+  inModal?: boolean;
   nextLabel?: string;
   previousLabel?: string;
   stepSize?: GridSize;

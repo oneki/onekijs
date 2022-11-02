@@ -105,7 +105,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
 
   initDb(dataSource: T[] | string | undefined): void {
     if (Array.isArray(dataSource)) {
-      this.db = [];
+      this._db = [];
       const context: AnonymousObject = {
         nextPosition: 0,
       };
@@ -129,7 +129,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
   //   return query;
   // }
 
-  protected _adapt(data: T | undefined, context?: AnonymousObject): I {
+  _adapt(data: T | undefined, context?: AnonymousObject): I {
     if (context === undefined) {
       context = {
         level: 0,
@@ -138,7 +138,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     return super._adapt(data, context);
   }
 
-  protected _buildItem(data: T | undefined, adaptee: unknown, context?: AnonymousObject): I {
+  _buildItem(data: T | undefined, adaptee: unknown, context?: AnonymousObject): I {
     context = context || {};
     const getChildren = (data: any): T[] | undefined => {
       if (isNull(data)) {
@@ -219,17 +219,17 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  protected *_delayChildrenLoading(delay_ms: number, item: I) {
+  *_delayChildrenLoading(delay_ms: number, item: I) {
     yield delay(delay_ms);
     yield this.setMeta('item', item, 'loadingStatus', LoadingStatus.Loading);
   }
 
-  protected _execute(
+  _execute(
     items: I[],
     query: LocalQuery,
     comparator: QuerySortComparator,
     comparators: AnonymousObject<QuerySortComparator>,
-    searcher: QuerySearcher<T>,
+    searcher?: QuerySearcher<T>,
   ): I[] {
     return defaultTreeQueryEngine(items, query, comparator, comparators, searcher);
   }
@@ -272,7 +272,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
 
   @saga(SagaEffect.Every)
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  protected *_fetchChildren(item: I, callbackSuccess?: (item: I) => void, callbackError?: (item: I) => void) {
+  *_fetchChildren(item: I, callbackSuccess?: (item: I) => void, callbackError?: (item: I) => void) {
     let loadingTask: Task | null = null;
     const options = this.state.fetchOptions || {};
     const query = this.getQuery();
@@ -283,8 +283,8 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
         .map((k) => `${k}=${oQuery[k]}`)
         .join('&');
       let result: CollectionFetcherResult<T>;
-      if (this.cache[sQuery]) {
-        result = this.cache[sQuery];
+      if (this._cache[sQuery]) {
+        result = this._cache[sQuery];
       } else {
         if (options.delayLoading) {
           yield this.setMeta('item', item, 'loadingStatus', LoadingStatus.Fetching);
@@ -299,7 +299,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
 
         const fetchOptions = method === HttpMethod.Get ? Object.assign({}, options, { query: oQuery }) : options;
         result = yield fetcher(this.url, method, body, fetchOptions);
-        this.cache[sQuery] = result;
+        this._cache[sQuery] = result;
         if (loadingTask !== null) {
           yield cancel(loadingTask);
         }
@@ -327,16 +327,16 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
 
   @reducer
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  protected _fetchChildrenError(e: any, item: I): void {
+  _fetchChildrenError(e: any, item: I): void {
     this.state.error = e;
     this.setMeta('item', item, 'loadingStatus', LoadingStatus.Error);
   }
 
   @reducer
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  protected _fetchChildrenSuccess(item: I, result: CollectionFetcherResult<T>): void {
+  _fetchChildrenSuccess(item: I, result: CollectionFetcherResult<T>): void {
     const children: T[] = Array.isArray(result) ? result : result[this.state.dataKey];
-    const itemPosition = this.positionIndex[item.uid];
+    const itemPosition = this._positionIndex[item.uid];
     const context = {
       position: 0,
       nextPosition: 1,
@@ -345,9 +345,9 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
 
     let dbClone: I[] = [];
 
-    if (this.db && itemPosition !== undefined) {
+    if (this._db && itemPosition !== undefined) {
       // we need to make some place for the new items in the index
-      dbClone = this.db.slice(parseInt(itemPosition) + 1);
+      dbClone = this._db.slice(parseInt(itemPosition) + 1);
       context.position = parseInt(itemPosition);
       context.nextPosition = context.position + 1;
     }
@@ -364,9 +364,9 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     let nextPosition = context.nextPosition;
 
     dbClone.forEach((toMove: I) => {
-      if (this.db !== undefined) {
-        this.db[nextPosition] = toMove;
-        this.positionIndex[toMove.uid] = `${nextPosition}`;
+      if (this._db !== undefined) {
+        this._db[nextPosition] = toMove;
+        this._positionIndex[toMove.uid] = `${nextPosition}`;
         nextPosition++;
       }
     });

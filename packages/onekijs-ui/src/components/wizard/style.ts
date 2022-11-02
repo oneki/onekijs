@@ -20,7 +20,7 @@ import { ComponentStyle } from '../../styles/typings';
 import { color, fontSize, fontWeight, lineHeight, textDecoration } from '../../styles/typography';
 import { WizardModalProps, WizardProps } from './typings';
 
-export const wizardStyle: ComponentStyle<WizardProps> = ({ layout = 'vertical', theme }) => {
+export const wizardStyle: ComponentStyle<WizardProps> = ({ layout = 'vertical', theme, inModal }) => {
   const t = theme.wizard;
   const stepBorderWidthFn = layout === 'horizontal' ? borderBottomWidth : borderLeftWidth;
   const stepBorderStyleFn = layout === 'horizontal' ? borderBottomStyle : borderLeftStyle;
@@ -35,14 +35,14 @@ export const wizardStyle: ComponentStyle<WizardProps> = ({ layout = 'vertical', 
       ${display('flex')}
       ${flexDirection(layout === 'horizontal' ? 'row' : 'column')}
       ${alignItems(layout === 'horizontal' ? 'flex-end' : 'stretch')}
-      ${wizardBorderStyleFn(t.stepsBorderStyle)}
-      ${wizardBorderWidthFn(t.stepsBorderWidth)}
-      ${wizardBorderColorFn(t.stepsBorderColor)}
+      ${wizardBorderStyleFn(inModal ? t.modalStepsBorderStyle : t.stepsBorderStyle)}
+      ${wizardBorderWidthFn(inModal ? t.modalStepsBorderWidth : t.stepsBorderWidth)}
+      ${wizardBorderColorFn(inModal ? t.modalStepsBorderColor : t.stepsBorderColor)}
       ${paddingRight(t.stepsPaddingRight)}
       ${paddingTop(t.stepsPaddingTop)}
       ${paddingLeft(t.stepsPaddingLeft)}
       ${paddingBottom(t.stepsPaddingBottom)}
-      ${backgroundColor(t.stepsBgColor)}
+      ${backgroundColor(inModal ? t.modalStepsBgColor : t.stepsBgColor)}
     }
 
     .o-step {

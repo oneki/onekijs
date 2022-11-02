@@ -7,7 +7,7 @@ import { WizardModalProps } from '../typings';
 const WizardModalComponent: FCC<WizardModalProps> = ({ title, doneLabel = 'Submit', ...props }) => {
   return (
     <Modal {...props}>
-      <Wizard {...props} title={title} doneLabel={doneLabel} />
+      <Wizard {...props} title={title} doneLabel={doneLabel} inModal={true} />
     </Modal>
   );
 };

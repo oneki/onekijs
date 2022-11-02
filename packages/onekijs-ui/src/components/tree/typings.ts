@@ -20,7 +20,7 @@ export type ControllerTreeProps<
   T = any,
   I extends TreeItem<T> = TreeItem<T>,
   S extends TreeState<T, I> = TreeState<T, I>,
-  C extends TreeController<T, I, S> = TreeController<T, I, S>
+  C extends TreeController<T, I, S> = TreeController<T, I, S>,
 > = TreeConfig<T, I> & {
   controller: CollectionProxy<T, I, S, C>;
 };
@@ -44,7 +44,7 @@ export type TreeConfig<T = any, I extends TreeItem<T> = TreeItem<T>> = {
 export type TreeController<
   T = any,
   I extends TreeItem<T> = TreeItem<T>,
-  S extends TreeState<T, I> = TreeState<T, I>
+  S extends TreeState<T, I> = TreeState<T, I>,
 > = Collection<T, I, S> & {
   collapse: TreeItemHandler<T, I>;
   collapsing: TreeItemHandler<T, I>;
@@ -97,7 +97,7 @@ export type TreeProps<
   T = any,
   I extends TreeItem<T> = TreeItem<T>,
   S extends TreeState<T, I> = TreeState<T, I>,
-  C extends TreeController<T, I, S> = TreeController<T, I, S>
+  C extends TreeController<T, I, S> = TreeController<T, I, S>,
 > = TreeConfig<T, I> & {
   adapter?: TreeItemAdapter<T>;
   controller?: CollectionProxy<T, I, S, C>;

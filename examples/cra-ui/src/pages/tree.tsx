@@ -4,7 +4,7 @@ import React from 'react';
 import styled, { css } from 'styled-components';
 import { generateTree, User, userAdapter } from '../data/users';
 
-const tableStyle: ComponentStyle<{}> = () => {
+const treeStyle: ComponentStyle<{}> = () => {
   return css``;
 };
 
@@ -29,11 +29,11 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
   return (
     <>
       <button onClick={toggleDebug}>{logLevel ? 'Disable Debug' : 'Activate Debug'}</button>
-      <Tree controller={controller} />
+      <Tree controller={controller} height={400} />
     </>
   );
 };
 
 export const TreePage = styled(Page)`
-  ${tableStyle}
+  ${treeStyle}
 `;

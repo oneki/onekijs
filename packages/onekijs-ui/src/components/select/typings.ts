@@ -21,12 +21,15 @@ import {
   ListNotFoundProps,
   ListState,
 } from '../list/typings';
+import { TreeController, TreeItem, TreeState } from '../tree/typings';
 
 export type ArraySelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = SelectConfig<T, I> & {
   adapter?: SelectItemAdapter<T>;
   dataSource: T[] | string;
   fetchOnce?: boolean;
 };
+
+export type ArrayTreeSelectProps<T = any, I extends TreeSelectItem<T> = TreeSelectItem<T>> = ArraySelectProps<T, I>;
 
 export type ControllerSelectProps<
   T = any,
@@ -36,6 +39,13 @@ export type ControllerSelectProps<
 > = SelectConfig<T, I> & {
   controller: CollectionProxy<T, I, S, C>;
 };
+
+export type ControllerTreeSelectProps<
+  T = any,
+  I extends TreeSelectItem<T> = TreeSelectItem<T>,
+  S extends TreeSelectState<T, I> = TreeSelectState<T, I>,
+  C extends TreeSelectController<T, I, S> = TreeSelectController<T, I, S>,
+> = ControllerSelectProps<T, I, S, C>;
 
 export type FormSelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = SelectProps<T, I> &
   FormFieldProps &
@@ -187,3 +197,21 @@ export interface SelectTokenProps<T = any, I extends SelectItem<T> = SelectItem<
   onRemove: SelectOptionHandler<T, I>;
   index: number;
 }
+
+export type TreeSelectController<
+  T,
+  I extends TreeSelectItem<T> = TreeSelectItem<T>,
+  S extends TreeSelectState<T, I> = TreeSelectState<T, I>,
+> = SelectController<T, I, S> & TreeController<T, I, S>;
+
+export type TreeSelectItem<T = any> = SelectItem<T> & TreeItem<T>;
+
+export type TreeSelectProps<
+  T = any,
+  I extends TreeSelectItem<T> = TreeSelectItem<T>,
+  S extends TreeSelectState<T, I> = TreeSelectState<T, I>,
+  C extends TreeSelectController<T, I, S> = TreeSelectController<T, I, S>,
+> = SelectProps<T, I, S, C>;
+
+export type TreeSelectState<T = any, I extends TreeSelectItem<T> = TreeSelectItem<T>> = SelectState<T, I> &
+  TreeState<T, I>;
