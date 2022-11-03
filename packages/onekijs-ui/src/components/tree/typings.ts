@@ -28,10 +28,10 @@ export type ControllerTreeProps<
 export type TreeConfig<T = any, I extends TreeItem<T> = TreeItem<T>> = {
   className?: string;
   height?: number;
-  itemClassName?: string | ((item: I) => string);
-  ItemComponent?: React.FC<TreeItemProps<T, I>>;
-  IconComponent?: React.FC<TreeItemProps<T, I>>;
-  TogglerComponent?: React.FC<TreeItemToggleProps>;
+  treeItemClassName?: string | ((item: I) => string);
+  TreeItemComponent?: React.FC<TreeItemProps<T, I>>;
+  TreeIconComponent?: React.FC<TreeItemProps<T, I>>;
+  TreeTogglerComponent?: React.FC<TreeItemToggleProps<T, I>>;
   onActivate?: TreeItemHandler<T, I>;
   onSelect?: TreeItemHandler<T, I>;
   virtual?: boolean;
@@ -80,16 +80,19 @@ export type TreeItemAdapter<T> = (data: T) => TreeItemAdaptee<T>;
 
 export type TreeItemHandler<T = any, I extends TreeItem<T> = TreeItem<T>> = ListItemHandler<T, I>;
 
-export type TreeItemProps<T = any, I extends TreeItem<T> = TreeItem<T>> = ListItemProps<T, I> & {
+export type TreeItemContext<T = any, I extends TreeItem<T> = TreeItem<T>> = {
   className?: string;
   onCollapse: TreeItemHandler<T, I>;
   onExpand: TreeItemHandler<T, I>;
 };
 
+export type TreeItemProps<T = any, I extends TreeItem<T> = TreeItem<T>> = ListItemProps<T, I>;
+
 export type TreeItemToggleProps<T = any, I extends TreeItem<T> = TreeItem<T>> = Pick<
   TreeItemProps<T, I>,
-  'item' | 'onExpand' | 'onCollapse' | 'index'
->;
+  'item' | 'index'
+> &
+  Pick<TreeItemContext<T, I>, 'onCollapse' | 'onExpand'>;
 
 export type TreeListProps<T = any, I extends TreeItem<T> = TreeItem<T>> = StandardListProps<T, I>;
 

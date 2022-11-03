@@ -1,28 +1,34 @@
 import { isItemLoading } from 'onekijs-framework';
-import React, { FC, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import Checkbox from '../../checkbox';
 import LoadingItem from '../../list/components/LoadingItem';
 import { useSelectService } from '../hooks/useSelectService';
-import { SelectOptionProps } from '../typings';
+import { SelectItem, SelectOptionProps } from '../typings';
 import { getGroupText } from '../util';
 
-export const MultiSelectOptionComponent: FC<SelectOptionProps> = React.memo((props) => {
+const MultiSelectOptionComponentInner = <T, I extends SelectItem<T> = SelectItem<T>>(
+  props: SelectOptionProps<T, I>,
+) => {
   return <SelectOptionComponent {...props} multiple={true} />;
-});
+};
 
-MultiSelectOptionComponent.displayName = 'MultiSelectOptionComponent';
+MultiSelectOptionComponentInner.displayName = 'MultiSelectOptionComponent';
 
-export const SelectOptionContent: FC<SelectOptionProps> = ({ item }) => {
+export const MultiSelectOptionComponent = React.memo(
+  MultiSelectOptionComponentInner,
+) as typeof MultiSelectOptionComponentInner;
+
+export const SelectOptionContent = <T, I extends SelectItem<T> = SelectItem<T>>({ item }: SelectOptionProps<T, I>) => {
   return <div className={`o-select-option-data${item.group ? ' o-select-option-group-item' : ''}`}>{item.text}</div>;
 };
 
-export const SelectOptionGroup: FC<SelectOptionProps> = ({ item }) => {
+export const SelectOptionGroup = <T, I extends SelectItem<T> = SelectItem<T>>({ item }: SelectOptionProps<T, I>) => {
   return <div className="o-select-option-group">{getGroupText(item)}</div>;
 };
 
-const SelectOptionComponent: FC<SelectOptionProps> = React.memo((props) => {
+const SelectOptionComponentInner = <T, I extends SelectItem<T> = SelectItem<T>>(props: SelectOptionProps<T, I>) => {
   const { item, index, onClick, onMouseEnter, onMouseLeave, multiple = false } = props;
-  const service = useSelectService();
+  const service = useSelectService<T, I>();
   const previousItem = service.items[index - 1];
   const displayGroup = getGroupText(item) !== getGroupText(previousItem);
 
@@ -87,8 +93,10 @@ const SelectOptionComponent: FC<SelectOptionProps> = React.memo((props) => {
       </div>
     </>
   );
-});
+};
 
-SelectOptionComponent.displayName = 'SelectOptionComponent';
+SelectOptionComponentInner.displayName = 'SelectOptionComponent';
+
+const SelectOptionComponent = React.memo(SelectOptionComponentInner) as typeof SelectOptionComponentInner;
 
 export default SelectOptionComponent;

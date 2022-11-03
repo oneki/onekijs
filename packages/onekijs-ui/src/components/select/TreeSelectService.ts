@@ -8,15 +8,15 @@ class TreeSelectService<
   T = any,
   I extends TreeSelectItem<T> = TreeSelectItem<T>,
   S extends TreeSelectState<T, I> = TreeSelectState<T, I>,
-> extends TreeService<T, I, S> {}
+> extends SelectService<T, I, S> {}
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface TreeSelectService<
   T = any,
   I extends TreeSelectItem<T> = TreeSelectItem<T>,
   S extends TreeSelectState<T, I> = TreeSelectState<T, I>,
-> extends TreeService<T, I, S>,
-    SelectService<T, I, S> {}
+> extends TreeService<T, I, S> {}
 
-applyMixins(TreeSelectService, [SelectService]);
+applyMixins(TreeSelectService, [TreeService]);
 
 export default TreeSelectService;

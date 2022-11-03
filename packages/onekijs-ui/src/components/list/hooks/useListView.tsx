@@ -91,6 +91,9 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
     }
   }, [controller, state, preload, virtualItems, increment, isVirtual]);
 
+  controller.scrollToIndex = scrollToIndex;
+  controller.scrollToOffset = scrollToOffset;
+
   return {
     items: state.items || [],
     isVirtual,

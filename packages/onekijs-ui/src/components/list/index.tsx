@@ -6,4 +6,4 @@ const List = styled(ListComponent)`
   ${listStyle}
 `;
 
-export default List;
+export default List as typeof ListComponent;

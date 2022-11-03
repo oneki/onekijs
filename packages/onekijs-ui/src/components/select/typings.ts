@@ -12,16 +12,16 @@ import { TshirtSize } from '../../styles/typings';
 import { DropdownWidthModifier } from '../dropdown/typings';
 import { FieldLayoutProps } from '../field/typings';
 import {
+  CollectionListProps,
   ListConfig,
   ListItem,
   ListItemAdaptee,
-  ListItemAdapter,
   ListItemHandler,
   ListItemProps,
   ListNotFoundProps,
   ListState,
 } from '../list/typings';
-import { TreeController, TreeItem, TreeState } from '../tree/typings';
+import { TreeController, TreeItem, TreeProps, TreeState } from '../tree/typings';
 
 export type ArraySelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = SelectConfig<T, I> & {
   adapter?: SelectItemAdapter<T>;
@@ -45,7 +45,7 @@ export type ControllerTreeSelectProps<
   I extends TreeSelectItem<T> = TreeSelectItem<T>,
   S extends TreeSelectState<T, I> = TreeSelectState<T, I>,
   C extends TreeSelectController<T, I, S> = TreeSelectController<T, I, S>,
-> = ControllerSelectProps<T, I, S, C>;
+> = ControllerSelectProps<T, I, S, C> & TreeProps<T, I, S, C>;
 
 export type FormSelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = SelectProps<T, I> &
   FormFieldProps &
@@ -77,7 +77,7 @@ export interface SelectInputProps<T = any, I extends SelectItem<T> = SelectItem<
   IconComponent?: FC<SelectIconProps>;
   focus: boolean;
   value?: string;
-  tokens?: SelectItem<T>[];
+  tokens?: I[];
   open: boolean;
   loading: boolean;
   fetching: boolean;
@@ -107,7 +107,7 @@ export type SelectItemAdaptee = ListItemAdaptee & {
   group?: SelectGroup;
 };
 
-export type SelectItemAdapter<T = any> = ListItemAdapter<T>;
+export type SelectItemAdapter<T = any> = (data: T) => SelectItemAdaptee;
 
 // export type SelectInternalProps<T = any, M extends ItemMeta = SelectOptionMeta> = Omit<SelectProps, 'items'> & {
 //   collection: Collection<T, M>;
@@ -149,7 +149,9 @@ export type SelectBroker<
 
 export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omit<ListConfig<T, I>, 'ItemComponent'> & {
   attachDropdownToBody?: boolean;
-  InputComponent?: FC<SelectInputProps<T, I>>;
+  InputComponent?: React.ForwardRefExoticComponent<
+    React.PropsWithoutRef<SelectInputProps<T, I>> & React.RefAttributes<HTMLDivElement>
+  >;
   IconComponent?: FC<SelectIconProps>;
   NotFoundComponent?: FC<SelectNotFoundProps>;
   placeholder?: string;
@@ -169,16 +171,17 @@ export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omi
   clickable?: boolean;
   searchable?: boolean;
   dropdownWidthModifier?: DropdownWidthModifier;
-  OptionComponent?: FC<SelectOptionProps>;
-  OptionGroupComponent?: FC<SelectOptionProps>;
-  OptionContentComponent?: FC<SelectOptionProps>;
+  OptionComponent?: FC<SelectOptionProps<T, I>>;
+  OptionGroupComponent?: FC<SelectOptionProps<T, I>>;
+  OptionContentComponent?: FC<SelectOptionProps<T, I>>;
   OptionLoadingComponent?: FC;
-  MultiOptionsComponent?: FC<SelectOptionProps>;
+  MultiOptionsComponent?: FC<SelectOptionProps<T, I>>;
   animationMs?: number;
   disabled?: boolean;
   defaultValue?: T | T[] | null;
   required?: boolean;
   sameWidth?: boolean;
+  ListComponent?: React.FC<CollectionListProps<T, I>>;
 };
 
 export type SelectState<T = any, I extends SelectItem<T> = SelectItem<T>> = ListState<T, I> & {

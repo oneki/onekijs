@@ -6,4 +6,4 @@ const Select = styled(SelectComponent)`
   ${selectStyle}
 `;
 
-export default Select;
+export default Select as typeof SelectComponent;

@@ -1,14 +1,20 @@
 import { AnonymousObject, isItemLoading } from 'onekijs-framework';
-import React, { CSSProperties, FC, ReactNode, useRef } from 'react';
+import React, { CSSProperties, ReactNode, useRef } from 'react';
 import { addClassname } from '../../../utils/style';
 import FileIcon from '../../icon/FileIcon';
 import FolderIcon from '../../icon/FolderIcon';
 import LoadingIcon from '../../icon/LoadingIcon';
 import TogglerIcon from '../../icon/TogglerIcon';
 import { useTreeConfig } from '../hooks/useTreeConfig';
-import { TreeItemProps, TreeItemToggleProps } from '../typings';
+import { useTreeItemContext } from '../hooks/useTreeItemContext';
+import { TreeItem, TreeItemProps, TreeItemToggleProps } from '../typings';
 
-export const TreeItemToggler: React.FC<TreeItemToggleProps> = ({ item, onExpand, onCollapse, index }) => {
+export const TreeItemToggler = <T = any, I extends TreeItem<T> = TreeItem<T>>({
+  item,
+  onExpand,
+  onCollapse,
+  index,
+}: TreeItemToggleProps<T, I>) => {
   if (item === undefined) return null;
 
   const isFolder = item.type !== 'leaf' && (item.children === undefined || item.children.length > 0);
@@ -28,16 +34,16 @@ export const TreeItemToggler: React.FC<TreeItemToggleProps> = ({ item, onExpand,
   );
 };
 
-export const TreeItemContent: React.FC<TreeItemProps> = (props) => {
+export const TreeItemContent = <T = any, I extends TreeItem<T> = TreeItem<T>>(props: TreeItemProps<T, I>) => {
   const { item } = props;
-  const { IconComponent } = useTreeConfig();
+  const { TreeIconComponent } = useTreeConfig<T, I>();
 
   if (item === undefined) return null;
 
   const isFolder = item.type !== 'leaf' && (item.children === undefined || item.children.length > 0);
   let iconElement: ReactNode = null;
-  if (IconComponent) {
-    iconElement = <IconComponent {...props} />;
+  if (TreeIconComponent) {
+    iconElement = <TreeIconComponent {...props} />;
   } else {
     iconElement = item.icon;
   }
@@ -51,15 +57,16 @@ export const TreeItemContent: React.FC<TreeItemProps> = (props) => {
   );
 };
 
-const TreeItemComponent: FC<TreeItemProps> = React.memo((props) => {
+const TreeItemComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>(props: TreeItemProps<T, I>) => {
   const {
-    ItemComponent = TreeItemContent,
-    TogglerComponent = TreeItemToggler,
+    TreeItemComponent = TreeItemContent,
+    TreeTogglerComponent = TreeItemToggler,
     gap = 20,
     paddingLeft = 0,
     paddingRight = 0,
-  } = useTreeConfig();
-  const { className, item, onExpand, onCollapse, index } = props;
+  } = useTreeConfig<T, I>();
+  const { item, index } = props;
+  const { className, onExpand, onCollapse } = useTreeItemContext<T, I>();
   const ref = useRef<AnonymousObject>({});
   ref.current.item = item;
   let itemClassName = addClassname('o-tree-item', className);
@@ -88,13 +95,13 @@ const TreeItemComponent: FC<TreeItemProps> = React.memo((props) => {
   return (
     <>
       <div className={itemClassName} style={style}>
-        <TogglerComponent item={item} onExpand={onExpand} onCollapse={onCollapse} index={index} />
-        <ItemComponent {...props} />
+        <TreeTogglerComponent item={item} onExpand={onExpand} onCollapse={onCollapse} index={index} />
+        <TreeItemComponent {...props} />
       </div>
     </>
   );
-});
+};
 
 TreeItemComponent.displayName = 'TreeItemComponent';
 
-export default TreeItemComponent;
+export default React.memo(TreeItemComponent) as typeof TreeItemComponent;

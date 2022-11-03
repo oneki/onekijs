@@ -10,7 +10,7 @@ export type Collection<
   I extends Item<T> = Item<T>,
   S extends CollectionState<T, I> = CollectionState<T, I>,
 > = CollectionBase<T> & {
-  adapt(data: T | undefined): I;
+  adapt(data: T | null | undefined): I;
   addActive<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
   addDisabled<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
   addHighlighted<B extends keyof CollectionBy<T, I>>(
@@ -54,6 +54,8 @@ export type Collection<
     target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
   ): I[];
   reset(): void;
+  scrollToIndex?: (index: number, options?: { align: 'start' | 'center' | 'end' | 'auto' }) => void;
+  scrollToOffset?: (offsetInPixels: number, options?: { align: 'start' | 'center' | 'end' | 'auto' }) => void;
   setMeta<B extends keyof CollectionBy<T, I>, K extends keyof I>(
     by: B,
     target: CollectionBy<T, I>[B],

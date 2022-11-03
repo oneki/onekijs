@@ -56,7 +56,7 @@ class TableService<T = any, I extends TableItem<T> = TableItem<T>, S extends Tab
   // autoRefresh task that can be cancelled
   protected pullTask?: Task;
 
-  adapt(data: T | undefined): I {
+  adapt(data: T | null | undefined): I {
     const item = super.adapt(data);
     item.selected = this.state.selected && this.state.selected.includes(item.uid);
     return item;

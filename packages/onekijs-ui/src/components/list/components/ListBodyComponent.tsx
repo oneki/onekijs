@@ -1,7 +1,7 @@
 import { get, isCollectionInitializing, Item, last, LoadingStatus, useEventListener } from 'onekijs-framework';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { addStyle } from '../../../utils/style';
-import { ListBodyProps } from '../typings';
+import { ListBodyProps, ListItem } from '../typings';
 import ListItemComponent, { ListItemContent } from './ListItemComponent';
 import ListLoadingComponent from './ListLoadingComponent';
 import LoadingItem from './LoadingItem';
@@ -23,7 +23,7 @@ const findItemIndex = (items?: (Item<unknown> | undefined)[], uid?: string): num
   });
 };
 
-const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
+const ListBodyComponent = <T = any, I extends ListItem<T> = ListItem<T>>({
   bodyRef,
   className,
   height,
@@ -50,7 +50,7 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
   virtualItems,
   VirtualListComponent = DefaultVirtualListComponent,
   LoadingComponent = ListLoadingComponent,
-}) => {
+}: ListBodyProps<T, I>) => {
   const scrollAlignRef = useRef<'center' | 'auto'>('center');
   const lastActiveItemUid = useRef<string>();
   const virtualRef = useRef<HTMLDivElement>(null!);
@@ -106,7 +106,7 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
     (e: KeyboardEvent) => {
       if (!keyboardNavigable) return;
       let nextIndex: number | undefined;
-      let nextItem: Item<any> | undefined;
+      let nextItem: I | undefined;
       if (['ArrowDown', 'ArrowUp', 'Enter', 'Escape'].includes(e.key)) {
         const activeUid = last(state.active);
         const activeItem = activeUid !== undefined ? service.getItem(activeUid) : undefined;
@@ -145,7 +145,7 @@ const ListBodyComponent: React.FC<ListBodyProps<any, any>> = ({
             break;
 
           case 'Escape':
-            if (onItemDeactivate) {
+            if (onItemDeactivate && activeItem !== undefined) {
               onItemDeactivate(activeItem, activeIndex);
             } else {
               service.setActive('item', []);

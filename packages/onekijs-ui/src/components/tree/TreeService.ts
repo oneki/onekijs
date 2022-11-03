@@ -26,7 +26,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
   extends CollectionService<T, I, S>
   implements TreeController<T, I>
 {
-  adapt(data: T | undefined): I {
+  adapt(data: T | null | undefined): I {
     return this._adapt(data);
   }
 
@@ -129,7 +129,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
   //   return query;
   // }
 
-  _adapt(data: T | undefined, context?: AnonymousObject): I {
+  _adapt(data: T | null | undefined, context?: AnonymousObject): I {
     if (context === undefined) {
       context = {
         level: 0,

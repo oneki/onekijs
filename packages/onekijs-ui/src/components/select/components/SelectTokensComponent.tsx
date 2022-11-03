@@ -1,9 +1,12 @@
-import React, { FC, useRef } from 'react';
+import React, { useRef } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import { SelectTokensProps } from '../typings';
+import { SelectItem, SelectTokensProps } from '../typings';
 import SelectTokenComponent from './SelectTokenComponent';
 
-const SelectTokensComponent: FC<SelectTokensProps> = React.memo(({ tokens, onRemove }) => {
+const SelectTokensComponent = <T, I extends SelectItem<T> = SelectItem<T>>({
+  tokens,
+  onRemove,
+}: SelectTokensProps<T, I>) => {
   const widthRef = useRef<number>();
 
   const onExiting = (node: HTMLElement) => {
@@ -43,8 +46,8 @@ const SelectTokensComponent: FC<SelectTokensProps> = React.memo(({ tokens, onRem
     );
   }
   return null;
-});
+};
 
 SelectTokensComponent.displayName = 'SelectTokensComponent';
 
-export default SelectTokensComponent;
+export default React.memo(SelectTokensComponent) as typeof SelectTokensComponent;

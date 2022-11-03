@@ -1,10 +1,10 @@
 import { LoadingStatus, useThrottle } from 'onekijs-framework';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { VirtualItemWrapperProps, VirtualListProps } from '../typings';
+import { ListItem, VirtualItemWrapperProps, VirtualListProps } from '../typings';
 import ListItemComponent, { ListItemContent } from './ListItemComponent';
 import LoadingItem from './LoadingItem';
 
-const VirtualItemWrapper: React.FC<VirtualItemWrapperProps<any, any>> = ({
+const VirtualItemWrapper = <T = any, I extends ListItem<T> = ListItem<T>>({
   virtualItem,
   listItem,
   ItemComponent = ListItemComponent,
@@ -13,7 +13,7 @@ const VirtualItemWrapper: React.FC<VirtualItemWrapperProps<any, any>> = ({
   onItemClick,
   onItemMouseEnter,
   onItemMouseLeave,
-}) => {
+}: VirtualItemWrapperProps<T, I>) => {
   const { index, measureRef, start } = virtualItem;
   const ref = useRef<HTMLDivElement>(null!);
   const previousHeightRef = useRef<number | undefined>();
@@ -82,7 +82,7 @@ const VirtualItemWrapper: React.FC<VirtualItemWrapperProps<any, any>> = ({
   );
 };
 
-const VirtualListComponent: React.FC<VirtualListProps<any, any>> = ({
+const VirtualListComponent = <T = any, I extends ListItem<T> = ListItem<T>>({
   items,
   ItemComponent = ListItemComponent,
   ItemLoadingComponent = LoadingItem,
@@ -91,7 +91,7 @@ const VirtualListComponent: React.FC<VirtualListProps<any, any>> = ({
   onItemMouseEnter,
   onItemMouseLeave,
   virtualItems,
-}) => {
+}: VirtualListProps<T, I>) => {
   return (
     <>
       {virtualItems.map((virtualItem) => {

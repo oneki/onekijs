@@ -1,7 +1,11 @@
-import React, { FC } from 'react';
-import { SelectTokenProps } from '../typings';
+import React from 'react';
+import { SelectItem, SelectTokenProps } from '../typings';
 
-const SelectTokenComponent: FC<SelectTokenProps> = React.memo(({ token, onRemove, index }) => {
+const SelectTokenComponent = <T, I extends SelectItem<T> = SelectItem<T>>({
+  token,
+  onRemove,
+  index,
+}: SelectTokenProps<T, I>) => {
   return (
     <div className="o-select-token">
       <div className="o-select-token-text" key="o-select-token-text">
@@ -18,8 +22,8 @@ const SelectTokenComponent: FC<SelectTokenProps> = React.memo(({ token, onRemove
       </div>
     </div>
   );
-});
+};
 
 SelectTokenComponent.displayName = 'SelectTokenComponent';
 
-export default SelectTokenComponent;
+export default React.memo(SelectTokenComponent) as typeof SelectTokenComponent;

@@ -94,13 +94,14 @@ export interface ListItemProps<T = any, I extends ListItem<T> = ListItem<T>> {
   onClick?: ListItemHandler<T, I>;
   onMouseEnter?: ListItemHandler<T, I>;
   onMouseLeave?: ListItemHandler<T, I>;
+  className?: string;
 }
 
 export type ListItems<T = any, I extends ListItem<T> = ListItem<T>> = T[] | ListCollection<T, I>;
 
 export type ListConfig<T = any, I extends ListItem<T> = ListItem<T>> = {
   className?: string;
-  height?: number | string;
+  height?: number;
   increment?: number;
   ItemLoadingComponent?: FC;
   ItemComponent?: FC<ListItemProps<T, I>>;

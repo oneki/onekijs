@@ -5,7 +5,6 @@ import {
   get,
   isCollectionFetching,
   isCollectionLoading,
-  Item,
   last,
   Primitive,
   useEventListener,
@@ -13,21 +12,99 @@ import {
   useThrottle,
   ValidationStatus,
 } from 'onekijs-framework';
-import React, { FC, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useClickOutside, useFocusOutside } from '../../../utils/event';
 import { addClassname } from '../../../utils/style';
 import useDropdown from '../../dropdown/hooks/useDropdown';
 import ListBodyComponent from '../../list/components/ListBodyComponent';
 import LoadingItem from '../../list/components/LoadingItem';
 import useListView from '../../list/hooks/useListView';
-import { SelectServiceContext } from '../hooks/useSelectService';
-import { ControllerSelectProps, SelectItem, SelectOptionHandler } from '../typings';
+import { CollectionListProps } from '../../list/typings';
+import { SelectServiceContext, useSelectService } from '../hooks/useSelectService';
+import { ControllerSelectProps, SelectController, SelectItem, SelectOptionHandler, SelectState } from '../typings';
 import { findSelectItem, findSelectItemIndex } from '../util';
 import SelectInputComponent from './SelectInputComponent';
 import SelectNotFoundComponent from './SelectNotFoundComponent';
 import SelectOptionComponent, { MultiSelectOptionComponent, SelectOptionContent } from './SelectOptionComponent';
 
-const ControllerSelectComponent: FC<ControllerSelectProps> = ({
+const DefaultSelectListComponent = <T = any, I extends SelectItem<T> = SelectItem<T>>(
+  props: CollectionListProps<T, I>,
+) => {
+  const optionsRef = useRef<HTMLDivElement>(null);
+  const service = useSelectService();
+
+  const update = useCallback(() => {
+    if (optionsRef.current && get<boolean>(service, 'config.sameWidth')) {
+      if (optionsRef.current.scrollWidth > optionsRef.current.offsetWidth) {
+        optionsRef.current.style.width = `${
+          optionsRef.current.scrollWidth + optionsRef.current.offsetWidth - optionsRef.current.clientWidth + 5
+        }px`;
+      }
+    }
+  }, [service]);
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  const throttleUpdate = useThrottle(update, 20);
+
+  const resizeObserver = useMemo(() => {
+    return new ResizeObserver(() => {
+      throttleUpdate();
+    });
+  }, [throttleUpdate]);
+
+  useIsomorphicLayoutEffect(() => {
+    const el = optionsRef;
+    if (el.current) {
+      resizeObserver.observe(el.current);
+    }
+    return () => {
+      if (el.current) {
+        resizeObserver.unobserve(el.current);
+      }
+    };
+  }, [optionsRef]);
+
+  useIsomorphicLayoutEffect(() => {
+    setTimeout(update, 0);
+  }, [update]);
+
+  const {
+    items: selectItems,
+    isVirtual,
+    totalSize,
+    virtualItems,
+    scrollToIndex,
+  } = useListView({
+    controller: props.controller,
+    height: props.height,
+    ref: optionsRef,
+    preload: props.preload,
+    overscan: props.overscan,
+    increment: props.increment,
+  });
+
+  return (
+    <ListBodyComponent
+      {...props}
+      className="o-select-options"
+      bodyRef={optionsRef}
+      items={selectItems}
+      totalSize={totalSize}
+      virtualItems={isVirtual ? virtualItems : undefined}
+      scrollToIndex={scrollToIndex}
+      keyboardNavigable={true}
+      service={props.controller?.asService()}
+      state={props.controller.state}
+    />
+  );
+};
+
+const ControlledSelectComponent = <
+  T = any,
+  I extends SelectItem<T> = SelectItem<T>,
+  S extends SelectState<T, I> = SelectState<T, I>,
+  C extends SelectController<T, I, S> = SelectController<T, I, S>,
+>({
   attachDropdownToBody = false,
   className = '',
   placeholder,
@@ -44,7 +121,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   onChange,
   onBlur: forwardBlur,
   onFocus: forwardFocus,
-  height = '220px',
+  height = 220,
   multiple = false,
   status = ValidationStatus.None,
   size = 'medium',
@@ -62,7 +139,8 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   sameWidth = true,
   overscan,
   clickable = true,
-}) => {
+  ListComponent = DefaultSelectListComponent,
+}: ControllerSelectProps<T, I, S, C>) => {
   if (nullable === undefined) {
     nullable = !required;
   }
@@ -113,10 +191,10 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
 
   const previousSearchRef = useRef<Primitive>();
 
-  const tokens = useMemo<SelectItem<any>[]>(() => {
+  const tokens = useMemo<I[]>(() => {
     return (controller.state.selected || [])
       .map((uid) => service.getItem(uid))
-      .filter((item) => item !== undefined) as SelectItem<any>[];
+      .filter((item) => item !== undefined) as I[];
   }, [controller.state.selected, service]);
 
   const showActiveRef = useRef(false);
@@ -135,7 +213,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
       return controller.getItem(controller.state.active[0]);
     }
     if (!multiple) {
-      return controller.adapt(value);
+      return controller.adapt(value as T | null | undefined);
     }
   }, [focus, controller, value, multiple]);
 
@@ -193,7 +271,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   useEffect(() => {
     if (!multiple) {
       if (value) {
-        service.setSelected('item', service.adapt(value));
+        service.setSelected('item', service.adapt(value as T | null | undefined));
       } else {
         service.setSelected('item', []);
       }
@@ -232,7 +310,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
           onChange(validData);
         }
       } else {
-        const currentItem = service.adapt(value);
+        const currentItem = service.adapt(value as T | null | undefined);
         if (invalidItems.find((i) => i.id === currentItem.id)) {
           // set the defaultValue if it's a valid value otherwise set null
           onChange && onChange(service.state.validDefaultValue || null);
@@ -264,13 +342,13 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
     }
   };
 
-  const onRemoveToken: SelectOptionHandler<any, SelectItem<any>> = useCallback(
+  const onRemoveToken: SelectOptionHandler<T, I> = useCallback(
     (item) => {
       if (!disabled) {
         service.removeSelected('item', item);
         if (onChange) {
           const nextValue = (service.state.selected || []).map((uid) => service.getItem(uid)?.data);
-          onChange(nextValue);
+          onChange(nextValue as T[]);
         }
       }
     },
@@ -278,7 +356,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   );
 
   const onActivate = useCallback(
-    (item: Item) => {
+    (item: I) => {
       showActiveRef.current = true;
       service.setActive('item', item);
     },
@@ -286,7 +364,7 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   );
 
   const onSelect = useCallback(
-    (item: Item | null, index = 0) => {
+    (item: I | null, index = 0) => {
       if (!multiple) {
         setOpen(false);
         service.setActive('item', []);
@@ -314,10 +392,10 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
             onRemoveToken(item, index);
           } else {
             const nextValue = (service.state.selected || []).map((uid) => service.getItem(uid)?.data);
-            onChange(nextValue);
+            onChange(nextValue as T[]);
           }
         } else {
-          onChange(item ? item.data : null);
+          onChange(item ? (item.data as T) : null);
         }
       }
     },
@@ -401,37 +479,24 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
     className,
   );
 
-  const optionsRef = useRef<HTMLDivElement>(null);
-  const {
-    items: selectItems,
-    isVirtual,
-    totalSize,
-    virtualItems,
-    scrollToIndex,
-  } = useListView({
-    controller,
-    height: height,
-    ref: optionsRef,
-    preload,
-    overscan,
-    increment,
-  });
-
   const onOpen = useCallback(() => {
     eventLocks.lock('escape', id);
-    const scrollTo: { index: number; align: 'start' | 'center' | 'end' | 'auto' } = { index: 0, align: 'start' };
-    const selectedUid = first(service.state.selected);
-    if (selectedUid !== undefined) {
-      const selectedItem = service.getItem(selectedUid);
-      const selectedIndex = findSelectItemIndex(service, selectedItem);
-      if (selectedItem !== undefined && selectedIndex >= 0) {
-        scrollTo.index = selectedIndex;
-        scrollTo.align = 'center';
-        service.setActive('item', selectedItem);
+    if (service.scrollToIndex) {
+      const scrollTo: { index: number; align: 'start' | 'center' | 'end' | 'auto' } = { index: 0, align: 'start' };
+      const selectedUid = first(service.state.selected);
+      if (selectedUid !== undefined) {
+        const selectedItem = service.getItem(selectedUid);
+        const selectedIndex = findSelectItemIndex(service, selectedItem);
+        if (selectedItem !== undefined && selectedIndex >= 0) {
+          scrollTo.index = selectedIndex;
+          scrollTo.align = 'center';
+          service.setActive('item', selectedItem);
+        }
       }
+      service.scrollToIndex(scrollTo.index, { align: scrollTo.align });
     }
-    scrollToIndex(scrollTo.index, { align: scrollTo.align });
-  }, [service, scrollToIndex, id]);
+  }, [service, id]);
+
   const onClosed = useCallback(() => {
     eventLocks.unlock('escape', id);
     service.setActive('item', []);
@@ -442,43 +507,6 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
 
   useEventListener('keydown', onKeyDownCapture, true);
   useEventListener('keydown', onKeyDown, false);
-
-  const update = useCallback(() => {
-    if (optionsRef.current && !sameWidth) {
-      if (optionsRef.current.scrollWidth > optionsRef.current.offsetWidth) {
-        optionsRef.current.style.width = `${
-          optionsRef.current.scrollWidth + optionsRef.current.offsetWidth - optionsRef.current.clientWidth + 5
-        }px`;
-      }
-    }
-  }, [sameWidth]);
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const throttleUpdate = useThrottle(update, 20);
-
-  const resizeObserver = useMemo(() => {
-    return new ResizeObserver(() => {
-      throttleUpdate();
-    });
-  }, [throttleUpdate]);
-
-  useIsomorphicLayoutEffect(() => {
-    const el = optionsRef;
-    if (el.current) {
-      resizeObserver.observe(el.current);
-    }
-    return () => {
-      if (el.current) {
-        resizeObserver.unobserve(el.current);
-      }
-    };
-  }, [optionsRef]);
-
-  useIsomorphicLayoutEffect(() => {
-    if (open) {
-      setTimeout(update, 0);
-    }
-  }, [open, update]);
 
   return (
     <SelectServiceContext.Provider value={service}>
@@ -524,22 +552,16 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
           className={className}
           zIndex={attachDropdownToBody ? 2000 : undefined}
         >
-          <ListBodyComponent
+          <ListComponent
             className="o-select-options"
-            bodyRef={optionsRef}
             height={height}
             ItemComponent={multiple ? MultiOptionsComponent : OptionComponent}
             ItemLoadingComponent={OptionLoadingComponent}
             ItemContentComponent={OptionContentComponent}
             NotFoundComponent={NotFoundComponent}
-            items={selectItems}
             onItemSelect={onSelect}
             onItemUnselect={onSelect}
-            totalSize={totalSize}
-            virtualItems={isVirtual ? virtualItems : undefined}
-            scrollToIndex={scrollToIndex}
-            service={controller.asService()}
-            state={controller.state}
+            controller={controller}
             keyboardNavigable={true}
             multiSelect={multiple}
             onItemActivate={onActivate}
@@ -550,4 +572,4 @@ const ControllerSelectComponent: FC<ControllerSelectProps> = ({
   );
 };
 
-export default ControllerSelectComponent;
+export default ControlledSelectComponent;

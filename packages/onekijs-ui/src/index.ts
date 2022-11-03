@@ -1,3 +1,5 @@
+export { useTreeItemContext } from './components/tree/hooks/useTreeItemContext';
+
 export { default as Accordion } from './components/accordion';
 export { default as AccordionComponent } from './components/accordion/components/AccordionComponent';
 export { default as AccordionContainer } from './components/accordion/components/AccordionContainer';
@@ -136,7 +138,10 @@ export { propertiesStyle } from './components/properties/style';
 export { PropertiesContext, PropertiesList, PropertiesProps, PropertyProps } from './components/properties/typings';
 export { default as Select } from './components/select';
 export { default as ArraySelectComponent } from './components/select/components/ArraySelectComponent';
-export { default as ControllerSelectComponent } from './components/select/components/ControllerSelectComponent';
+export { default as ArrayTreeSelectComponent } from './components/select/components/ArrayTreeSelectComponent';
+export { default as TreeSelectComponent } from './components/select/components/TreeSelectComponent';
+export { default as TreeSelect } from './components/select/TreeSelect';
+export { default as ControlledSelectComponent } from './components/select/components/ControlledSelectComponent';
 export { default as SelectComponent } from './components/select/components/SelectComponent';
 export { default as SelectIconComponent } from './components/select/components/SelectIconComponent';
 export { default as SelectInputComponent } from './components/select/components/SelectInputComponent';
@@ -145,8 +150,10 @@ export { default as SelectOptionComponent } from './components/select/components
 export { default as SelectTokensComponent } from './components/select/components/SelectTokensComponent';
 export { default as FormSelect } from './components/select/FormSelect';
 export { default as useSelectController } from './components/select/hooks/useSelectController';
+export { default as useTreeSelectController } from './components/select/hooks/useTreeSelectController';
 export { default as DefaultSelectBroker } from './components/select/SelectBroker';
 export { default as SelectService } from './components/select/SelectService';
+
 export {
   ArraySelectProps,
   ControllerSelectProps,

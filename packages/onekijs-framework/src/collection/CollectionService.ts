@@ -78,6 +78,8 @@ export default class CollectionService<
   _refreshing = false;
   _currentQuery?: string;
   _initialQuery?: Query;
+  scrollToIndex?: (index: number, options?: { align: 'start' | 'center' | 'end' | 'auto' }) => void;
+  scrollToOffset?: (offsetInPixels: number, options?: { align: 'start' | 'center' | 'end' | 'auto' }) => void;
 
   init(): void {
     this._initialState = this.state;
@@ -120,7 +122,7 @@ export default class CollectionService<
     }
   }
 
-  adapt(data: T | undefined): I {
+  adapt(data: T | null | undefined): I {
     return this._adapt(data);
   }
 
@@ -684,8 +686,9 @@ export default class CollectionService<
     this.refresh(query);
   }
 
-  _adapt(data: T | undefined, context?: AnonymousObject): I {
-    const adaptee = this.state.adapter === undefined || data === undefined ? {} : this.state.adapter(data);
+  _adapt(data: T | null | undefined, context?: AnonymousObject): I {
+    const adaptee =
+      this.state.adapter === undefined || data === undefined || data === null ? {} : this.state.adapter(data);
 
     const item: I = this._buildItem(data, adaptee, context);
     if (context === undefined || !context.doNotIndex) {
@@ -1019,7 +1022,7 @@ export default class CollectionService<
     }
   }
 
-  _buildItem(data: T | undefined, adaptee: unknown, _context?: AnonymousObject): I {
+  _buildItem(data: T | null | undefined, adaptee: unknown, _context?: AnonymousObject): I {
     const result = adaptee as I;
 
     const getId = (data: any): string | number | undefined => {
@@ -1329,10 +1332,7 @@ export default class CollectionService<
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   _setParam(query: Query, key: string, value: any): void {
-    if (!query.params) {
-      query.params = {};
-    }
-    query.params[key] = value;
+    query.params = Object.assign({}, query.params, { [key]: value });
   }
 
   _setParams(query: Query, params: AnonymousObject): void {

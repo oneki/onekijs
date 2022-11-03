@@ -1,12 +1,11 @@
-import { Item } from 'onekijs-framework';
-import React, { FC } from 'react';
-import { ListItemProps } from '../typings';
+import React from 'react';
+import { ListItem, ListItemProps } from '../typings';
 
-export const ListItemContent: FC<ListItemProps<any, Item<any>>> = ({ item }) => {
+export const ListItemContent = <T = any, I extends ListItem<T> = ListItem<T>>({ item }: ListItemProps<T, I>) => {
   return <>{item.text || ''}</>;
 };
 
-const ListItemComponent: FC<ListItemProps<any, Item<any>>> = React.memo((props) => {
+const ListItemComponent = <T = any, I extends ListItem<T> = ListItem<T>>(props: ListItemProps<T, I>) => {
   const { item, index, onMouseEnter, onMouseLeave, onClick, ItemContentComponent = ListItemContent } = props;
   return (
     <div
@@ -20,8 +19,8 @@ const ListItemComponent: FC<ListItemProps<any, Item<any>>> = React.memo((props) 
       <ItemContentComponent {...props} />
     </div>
   );
-});
+};
 
 ListItemComponent.displayName = 'ListItemComponent';
 
-export default ListItemComponent;
+export default React.memo(ListItemComponent) as typeof ListItemComponent;

@@ -1,10 +1,10 @@
-import React, { FC } from 'react';
+import React from 'react';
 import useListController from '../hooks/useListController';
-import { ArrayListProps } from '../typings';
+import { ArrayListProps, ListItem } from '../typings';
 import CollectionListComponent from './CollectionListComponent';
 
-const ArrayListComponent: FC<ArrayListProps> = (props) => {
-  const controller = useListController(props.dataSource, { adapter: props.adapter, fetchOnce: props.fetchOnce });
+const ArrayListComponent = <T = any, I extends ListItem<T> = ListItem<T>>(props: ArrayListProps<T, I>) => {
+  const controller = useListController<T, I>(props.dataSource, { adapter: props.adapter, fetchOnce: props.fetchOnce });
   return <CollectionListComponent {...props} controller={controller} />;
 };
 

@@ -1,11 +1,14 @@
-import React, { FC } from 'react';
+import React from 'react';
 import useSelectController from '../hooks/useSelectController';
-import { ArraySelectProps } from '../typings';
-import ControllerSelectComponent from './ControllerSelectComponent';
+import { ArraySelectProps, SelectItem } from '../typings';
+import ControlledSelectComponent from './ControlledSelectComponent';
 
-const ArraySelectComponent: FC<ArraySelectProps> = (props) => {
-  const controller = useSelectController(props.dataSource, { adapter: props.adapter, fetchOnce: props.fetchOnce });
-  return <ControllerSelectComponent {...props} controller={controller} />;
+const ArraySelectComponent = <T = any, I extends SelectItem<T> = SelectItem<T>>(props: ArraySelectProps<T, I>) => {
+  const controller = useSelectController<T, I>(props.dataSource, {
+    adapter: props.adapter,
+    fetchOnce: props.fetchOnce,
+  });
+  return <ControlledSelectComponent {...props} controller={controller} />;
 };
 
 export default ArraySelectComponent;

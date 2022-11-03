@@ -4,6 +4,7 @@ import { CSSTransition } from 'react-transition-group';
 import LoadingItem from '../../list/components/LoadingItem';
 import { VirtualItem } from '../../list/typings';
 import { useTreeConfig } from '../hooks/useTreeConfig';
+import { DefaultTreeItemContext } from '../hooks/useTreeItemContext';
 import useTreeService from '../hooks/useTreeService';
 import { TreeItem, TreeItemHandler, TreeItemProps, VirtualTreeListProps } from '../typings';
 import TreeItemComponent from './TreeItemComponent';
@@ -16,7 +17,7 @@ type VirtualTreeItem<T = any, I extends TreeItem<T> = TreeItem<T>> = VirtualItem
 };
 
 type VirtualTreeListItemProps<T = any, I extends TreeItem<T> = TreeItem<T>> = {
-  virtualItem: VirtualTreeItem;
+  virtualItem: VirtualTreeItem<T, I>;
   itemClassName?: string | ((item: I) => string);
   ItemComponent: React.FC<TreeItemProps<T, I>>;
   onClick?: TreeItemHandler<T, I>;
@@ -25,20 +26,20 @@ type VirtualTreeListItemProps<T = any, I extends TreeItem<T> = TreeItem<T>> = {
   defer?: () => void;
 };
 
-const VirtualTreeListItemComponent: React.FC<VirtualTreeListItemProps> = ({
+const VirtualTreeListItemComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
   itemClassName,
   ItemComponent,
   virtualItem,
   onClick,
   onMouseEnter,
   onMouseLeave,
-}) => {
+}: VirtualTreeListItemProps<T, I>) => {
   const { index, measureRef, children, item } = virtualItem;
   const className = typeof itemClassName !== 'function' ? itemClassName : item ? itemClassName(item) : undefined;
   const service = useTreeService();
   const { animate } = useTreeConfig();
 
-  const expand: TreeItemHandler<any, TreeItem<any>> = (item, index) => {
+  const expand: TreeItemHandler<T, I> = (item, index) => {
     if (animate) {
       service.expanding(item, index);
     } else {
@@ -46,7 +47,7 @@ const VirtualTreeListItemComponent: React.FC<VirtualTreeListItemProps> = ({
     }
   };
 
-  const collapse: TreeItemHandler<any, TreeItem<any>> = (item, index) => {
+  const collapse: TreeItemHandler<T, I> = (item, index) => {
     service.collapse(item, index);
   };
 
@@ -83,18 +84,23 @@ const VirtualTreeListItemComponent: React.FC<VirtualTreeListItemProps> = ({
       <div className="o-virtual-item" key={`virtual-item-${item?.uid || index}`} ref={measureRef}>
         {(!item || !item.data) && <LoadingItem />}
         {item && item.data && (
-          <ItemComponent
-            key={`item-${item?.uid || index}`}
-            className={className}
-            index={index}
-            item={item}
-            data={item.data}
-            onClick={onClick}
-            onMouseEnter={onMouseEnter}
-            onMouseLeave={onMouseLeave}
-            onExpand={expand}
-            onCollapse={collapse}
-          />
+          <DefaultTreeItemContext.Provider
+            value={{
+              onExpand: expand,
+              onCollapse: collapse,
+              className,
+            }}
+          >
+            <ItemComponent
+              key={`item-${item?.uid || index}`}
+              index={index}
+              item={item}
+              data={item.data}
+              onClick={onClick}
+              onMouseEnter={onMouseEnter}
+              onMouseLeave={onMouseLeave}
+            />
+          </DefaultTreeItemContext.Provider>
         )}
       </div>
       <CSSTransition
@@ -140,23 +146,23 @@ type NodeItem = {
   level: number;
 };
 
-const VirtualTreeListComponent: React.FC<VirtualTreeListProps> = ({
+const VirtualTreeListComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
   items,
   onItemClick,
   onItemMouseEnter,
   onItemMouseLeave,
   virtualItems,
-}) => {
+}: VirtualTreeListProps<T, I>) => {
   const logger = useLogger();
   logger.debug('virtualItems', virtualItems);
   // we keep a reference of the expanded status of virtualItems
   const expandedStatusRef = useRef<AnonymousObject<boolean>>({});
   const nextExpandedStatus: AnonymousObject<boolean> = {};
-  const { ItemComponent = TreeItemComponent } = useTreeConfig();
+  const { TreeItemComponent: ItemComponent = TreeItemComponent } = useTreeConfig<T, I>();
 
   // we create a fake rootItem because we need a structure with one root item only
   // the virtualTreeItems will be the children of this root item
-  const rootItem: { children: VirtualTreeItem[] } = {
+  const rootItem: { children: VirtualTreeItem<T, I>[] } = {
     children: [],
   };
 

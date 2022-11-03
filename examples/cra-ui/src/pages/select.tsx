@@ -1,7 +1,9 @@
 import { CollectionService, CollectionState, Fetcher, Form, Query, useFormController, useService } from 'onekijs';
-import { FormSelect, SelectItem, useSelectController } from 'onekijs-ui';
+import { FormSelect, SelectItem, TreeSelect, useSelectController, useTreeController, useTreeSelectController } from 'onekijs-ui';
 import React, { useCallback } from 'react';
-import { User, userAdapter, users, userSearcher } from '../data/users';
+import { generateTree, User, userAdapter, users, userSearcher } from '../data/users';
+
+const u: User[] = generateTree();
 
 export const SelectPage = () => {
   const [, service] = useService<CollectionState<User, SelectItem<User>>, CollectionService<User, SelectItem<User>, CollectionState<User, SelectItem<User>>>>(CollectionService, {
@@ -32,15 +34,29 @@ export const SelectPage = () => {
     [service],
   );
 
-  const collection = useSelectController<User>('http://localhost', {
-    adapter: userAdapter,
-    fetcher
-  });
+  // const collection = useSelectController<User>('http://localhost', {
+  //   adapter: userAdapter,
+  //   fetcher
+  // });
 
-  const collection2 = useSelectController<User>('http://localhost', {
+  // const collection2 = useSelectController<User>('http://localhost', {
+  //   adapter: userAdapter,
+  //   fetcher
+  // });
+
+  console.log(u);
+
+  const treeCollection = useTreeSelectController<User>(u, {
     adapter: userAdapter,
-    fetcher
-  });
+  })
+
+  console.log('1', treeCollection.items)
+
+  // const treeCollection2 = useTreeController<User>(u, {
+  //   adapter: userAdapter,
+  // })
+
+  // console.log('2', treeCollection2.items)
 
   // const [value, setValue] = useState(users[1]);
   // const [value2, setValue2] = useState([users[2],users[1]]);
@@ -49,7 +65,7 @@ export const SelectPage = () => {
   return (
     <Form controller={formController} onSubmit={() => {}}>
 
-    <div style={{display: 'flex', justifyContent: 'center'}}>
+    {/* <div style={{display: 'flex', justifyContent: 'center'}}>
       <div style={{width: '800px', padding: '10px'}}>
           <FormSelect label="Simple select" help="help" size="xsmall" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" controller={collection} name="simple" required /><br/>
           <FormSelect label="Simple select" help="help" size="small" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" controller={collection} name="simple" required /><br/>
@@ -67,6 +83,9 @@ export const SelectPage = () => {
 
 
       </div>
+    </div> */}
+    <div style={{display: 'flex', justifyContent: 'center'}}>
+      <TreeSelect controller={treeCollection} />
     </div>
     </Form>
   );

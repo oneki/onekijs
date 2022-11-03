@@ -1,17 +1,16 @@
 import { CollectionProxy, CollectionService, useCollectionInitialState, useCollectionProxy } from 'onekijs-framework';
 import { ListItem, ListState, UseListOptions } from '../typings';
 
-const useListController = <T = any>(
+const useListController = <T = any, I extends ListItem<T> = ListItem<T>>(
   dataSource: T[] | string,
-  options: UseListOptions<T, ListItem<T>> = {},
-): CollectionProxy<
-  T,
-  ListItem<T>,
-  ListState<T, ListItem<T>>,
-  CollectionService<T, ListItem<T>, ListState<T, ListItem<T>>>
-> => {
-  const initialState = useCollectionInitialState(dataSource, options);
-  const collection = useCollectionProxy(dataSource, CollectionService, initialState);
+  options: UseListOptions<T, I> = {},
+): CollectionProxy<T, I, ListState<T, I>, CollectionService<T, I, ListState<T, I>>> => {
+  const initialState = useCollectionInitialState<T, I>(dataSource, options);
+  const collection = useCollectionProxy<T, I, ListState<T, I>, CollectionService<T, I, ListState<T, I>>>(
+    dataSource,
+    CollectionService,
+    initialState,
+  );
 
   return collection;
 };

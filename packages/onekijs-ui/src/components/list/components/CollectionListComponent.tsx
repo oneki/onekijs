@@ -3,12 +3,12 @@ import { addClassname } from '../../../utils/style';
 import { ListServiceContext } from '../hooks/useListService';
 import { ListStateContext } from '../hooks/useListState';
 import useListView from '../hooks/useListView';
-import { CollectionListProps } from '../typings';
+import { CollectionListProps, ListItem } from '../typings';
 import ListBodyComponent from './ListBodyComponent';
 import ListItemComponent, { ListItemContent } from './ListItemComponent';
 import LoadingItem from './LoadingItem';
 
-const CollectionListComponent: FC<CollectionListProps> = ({
+const CollectionListComponent = <T = any, I extends ListItem<T> = ListItem<T>>({
   className,
   controller,
   height,
@@ -29,7 +29,7 @@ const CollectionListComponent: FC<CollectionListProps> = ({
   onItemUnselect,
   virtual,
   style,
-}) => {
+}: CollectionListProps<T, I>) => {
   const ref = useRef<HTMLDivElement>(null);
 
   const { items, isVirtual, totalSize, virtualItems, scrollToIndex } = useListView({

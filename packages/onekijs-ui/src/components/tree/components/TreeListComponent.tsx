@@ -2,6 +2,7 @@ import { AnonymousObject } from 'onekijs-framework';
 import React, { useEffect, useRef } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { useTreeConfig } from '../hooks/useTreeConfig';
+import { DefaultTreeItemContext } from '../hooks/useTreeItemContext';
 import useTreeService from '../hooks/useTreeService';
 import { TreeController, TreeItem, TreeItemHandler, TreeItemProps, TreeListProps, TreeState } from '../typings';
 import TreeItemComponent from './TreeItemComponent';
@@ -29,7 +30,7 @@ type TreeListItemProps<T = any, I extends TreeItem<T> = TreeItem<T>> = {
   defer?: () => void;
 };
 
-const TreeListItemComponent: React.FC<TreeListItemProps> = ({
+const TreeListItemComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
   index,
   item,
   itemClassName,
@@ -37,10 +38,10 @@ const TreeListItemComponent: React.FC<TreeListItemProps> = ({
   onClick,
   onMouseEnter,
   onMouseLeave,
-}) => {
+}: TreeListItemProps<T, I>) => {
   const className = typeof itemClassName !== 'function' ? itemClassName : item ? itemClassName(item) : undefined;
   const service = useTreeService();
-  const { animate } = useTreeConfig();
+  const { animate } = useTreeConfig<T, I>();
 
   const childrenAnimateRef = useRef<HTMLDivElement>(null);
   const childrenRef = useRef<HTMLDivElement>(null);
@@ -115,18 +116,23 @@ const TreeListItemComponent: React.FC<TreeListItemProps> = ({
   return (
     <div ref={itemRef}>
       <div className="o-tree-item-container" key={`tree-item-container-${item?.uid || index}`}>
-        <ItemComponent
-          key={`item-${item?.uid || index}`}
-          className={className}
-          index={index}
-          item={item}
-          data={item.data}
-          onClick={onClick}
-          onMouseEnter={onMouseEnter}
-          onMouseLeave={onMouseLeave}
-          onExpand={expand}
-          onCollapse={collapse}
-        />
+        <DefaultTreeItemContext.Provider
+          value={{
+            onExpand: expand,
+            onCollapse: collapse,
+            className,
+          }}
+        >
+          <ItemComponent
+            key={`item-${item?.uid || index}`}
+            index={index}
+            item={item}
+            data={item.data as T}
+            onClick={onClick}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+          />
+        </DefaultTreeItemContext.Provider>
       </div>
       <CSSTransition
         in={expanded}
@@ -152,7 +158,7 @@ const TreeListItemComponent: React.FC<TreeListItemProps> = ({
                 <TreeListItemComponent
                   key={`virtual-item-${childItem?.uid || childIndex}`}
                   index={childIndex}
-                  item={childItem as TreeItem}
+                  item={childItem as I}
                   ItemComponent={ItemComponent}
                   onClick={onClick}
                   onMouseEnter={onMouseEnter}
@@ -167,14 +173,19 @@ const TreeListItemComponent: React.FC<TreeListItemProps> = ({
   );
 };
 
-const TreeListComponent: React.FC<TreeListProps> = ({ items, onItemClick, onItemMouseEnter, onItemMouseLeave }) => {
+const TreeListComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
+  items,
+  onItemClick,
+  onItemMouseEnter,
+  onItemMouseLeave,
+}: TreeListProps<T, I>) => {
   // we keep a reference of the expanded status of items
   const expandedStatusRef = useRef<AnonymousObject<boolean>>({});
   const nextExpandedStatus: AnonymousObject<boolean> = {};
 
   expandedStatusRef.current = nextExpandedStatus;
 
-  const rootItems = items.filter((item) => item && item.level === 0) as TreeItem[];
+  const rootItems = items.filter((item) => item && item.level === 0) as I[];
 
   return (
     <div>
@@ -184,7 +195,7 @@ const TreeListComponent: React.FC<TreeListProps> = ({ items, onItemClick, onItem
             key={`tree-item-${rooItem?.uid || index}`}
             item={rooItem}
             index={index}
-            ItemComponent={TreeItemComponent}
+            ItemComponent={TreeItemComponent<T, I>}
             onClick={onItemClick}
             onMouseEnter={onItemMouseEnter}
             onMouseLeave={onItemMouseLeave}

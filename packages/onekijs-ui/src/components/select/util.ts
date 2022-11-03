@@ -1,10 +1,15 @@
-import { Collection, isSameFilter, Item, Query, shallowEqual } from 'onekijs-framework';
-import { SelectItem } from './typings';
+import { CollectionProxy, isSameFilter, Query, shallowEqual } from 'onekijs-framework';
+import { SelectController, SelectItem, SelectState } from './typings';
 
-export const findSelectItem = (
-  controller: Collection<any, SelectItem<any>>,
+export const findSelectItem = <
+  T = any,
+  I extends SelectItem<T> = SelectItem<T>,
+  S extends SelectState<T, I> = SelectState<T, I>,
+  C extends SelectController<T, I, S> = SelectController<T, I, S>,
+>(
+  controller: CollectionProxy<T, I, S, C> | C,
   pattern: string,
-): SelectItem<any> | undefined => {
+): I | undefined => {
   let result = undefined;
   if (controller.items === undefined) {
     return undefined;
@@ -23,7 +28,15 @@ export const findSelectItem = (
   return result;
 };
 
-export const findSelectItemIndex = (controller: Collection<any, SelectItem<any>>, item?: Item<any>): number => {
+export const findSelectItemIndex = <
+  T = any,
+  I extends SelectItem<T> = SelectItem<T>,
+  S extends SelectState<T, I> = SelectState<T, I>,
+  C extends SelectController<T, I, S> = SelectController<T, I, S>,
+>(
+  controller: CollectionProxy<T, I, S, C> | C,
+  item?: I,
+): number => {
   if (controller.items === undefined) {
     return -1;
   }
@@ -50,4 +63,4 @@ export const getGroupText = (item: SelectItem<unknown> | undefined): string | un
   if (item.group === undefined) return undefined;
   if (typeof item.group === 'string') return item.group;
   return item.group.text;
-}
+};
