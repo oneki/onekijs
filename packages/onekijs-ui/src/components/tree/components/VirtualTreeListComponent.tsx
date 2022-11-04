@@ -2,11 +2,12 @@ import { AnonymousObject, useLogger } from 'onekijs-framework';
 import React, { useRef } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import LoadingItem from '../../list/components/LoadingItem';
-import { VirtualItem } from '../../list/typings';
+import { ListItemProps, VirtualItem } from '../../list/typings';
 import { useTreeConfig } from '../hooks/useTreeConfig';
 import { DefaultTreeItemContext } from '../hooks/useTreeItemContext';
 import useTreeService from '../hooks/useTreeService';
-import { TreeItem, TreeItemHandler, TreeItemProps, VirtualTreeListProps } from '../typings';
+import { TreeItem, TreeItemHandler, VirtualTreeListProps } from '../typings';
+import { isTreeItemExpanded } from '../util';
 import TreeItemComponent from './TreeItemComponent';
 
 const timeout = 500;
@@ -19,7 +20,7 @@ type VirtualTreeItem<T = any, I extends TreeItem<T> = TreeItem<T>> = VirtualItem
 type VirtualTreeListItemProps<T = any, I extends TreeItem<T> = TreeItem<T>> = {
   virtualItem: VirtualTreeItem<T, I>;
   itemClassName?: string | ((item: I) => string);
-  ItemComponent: React.FC<TreeItemProps<T, I>>;
+  ItemComponent: React.FC<ListItemProps<T, I>>;
   onClick?: TreeItemHandler<T, I>;
   onMouseEnter?: TreeItemHandler<T, I>;
   onMouseLeave?: TreeItemHandler<T, I>;
@@ -77,7 +78,7 @@ const VirtualTreeListItemComponent = <T = any, I extends TreeItem<T> = TreeItem<
     }
   };
 
-  const expanded = !!(item && item.expanded && !item.collapsing);
+  const expanded = !!(item && isTreeItemExpanded(item, service));
 
   return (
     <div>
@@ -239,7 +240,7 @@ const VirtualTreeListComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>(
 
   expandedStatusRef.current = nextExpandedStatus;
   return (
-    <div style={{ position: 'absolute', top: rootItem.children[0]?.start }}>
+    <div style={{ position: 'absolute', top: rootItem.children[0]?.start, left: 0, right: 0 }}>
       {rootItem.children.map((virtualTreeItem) => {
         return (
           <VirtualTreeListItemComponent

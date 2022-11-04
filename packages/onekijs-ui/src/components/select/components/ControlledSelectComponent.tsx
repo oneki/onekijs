@@ -25,7 +25,7 @@ import { ControllerSelectProps, SelectController, SelectItem, SelectOptionHandle
 import { findSelectItem, findSelectItemIndex } from '../util';
 import SelectInputComponent from './SelectInputComponent';
 import SelectNotFoundComponent from './SelectNotFoundComponent';
-import SelectOptionComponent, { MultiSelectOptionComponent, SelectOptionContent } from './SelectOptionComponent';
+import SelectOptionComponent, { SelectOptionContent } from './SelectOptionComponent';
 
 const DefaultSelectListComponent = <T = any, I extends SelectItem<T> = SelectItem<T>>(
   props: CollectionListProps<T, I>,
@@ -114,7 +114,7 @@ const ControlledSelectComponent = <
   OptionContentComponent = SelectOptionContent,
   OptionComponent = SelectOptionComponent,
   OptionLoadingComponent = LoadingItem,
-  MultiOptionsComponent = MultiSelectOptionComponent,
+  MultiOptionsComponent = SelectOptionComponent,
   NotFoundComponent = SelectNotFoundComponent,
   autoFocus,
   value,
@@ -180,6 +180,7 @@ const ControlledSelectComponent = <
     disabled,
     defaultValue,
     sameWidth,
+    overscan,
   };
 
   const id = useId();
@@ -381,6 +382,7 @@ const ControlledSelectComponent = <
       } else if (multiple && item && isSelected) {
         service.removeSelected('item', item);
       } else if (item && !isSelected) {
+        console.log('set selected', item);
         service.setSelected('item', item);
       } else {
         service.setSelected('item', []);

@@ -30,6 +30,7 @@ export type TreeConfig<T = any, I extends TreeItem<T> = TreeItem<T>> = {
   height?: number;
   treeItemClassName?: string | ((item: I) => string);
   TreeItemComponent?: React.FC<TreeItemProps<T, I>>;
+  TreeItemContentComponent?: React.FC<TreeItemProps<T, I>>;
   TreeIconComponent?: React.FC<TreeItemProps<T, I>>;
   TreeTogglerComponent?: React.FC<TreeItemToggleProps<T, I>>;
   onActivate?: TreeItemHandler<T, I>;
@@ -59,6 +60,7 @@ export type TreeItem<T = any> = Item<T> & {
   children?: string[];
   collapsing?: boolean;
   expanded?: boolean;
+  filterExpanded?: boolean;
   expanding?: boolean;
   icon?: ReactNode;
   level: number;

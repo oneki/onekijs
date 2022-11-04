@@ -2,11 +2,11 @@ import React, { useMemo } from 'react';
 import { TreeConfigContext } from '../hooks/useTreeConfig';
 import { TreeServiceContext } from '../hooks/useTreeService';
 import { TreeStateContext } from '../hooks/useTreeState';
-import { ControllerTreeProps, TreeConfig } from '../typings';
+import { ControllerTreeProps, TreeConfig, TreeItem } from '../typings';
 import TreeBodyComponent from './TreeBodyComponent';
 import VirtualTreeBodyComponent from './VirtualTreeBodyComponent';
 
-const ControllerTreeComponent: React.FC<ControllerTreeProps> = ({
+const ControllerTreeComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
   controller,
   className,
   onActivate,
@@ -16,13 +16,14 @@ const ControllerTreeComponent: React.FC<ControllerTreeProps> = ({
   gap,
   TreeIconComponent,
   TreeItemComponent,
+  TreeItemContentComponent,
   treeItemClassName,
   TreeTogglerComponent,
   paddingLeft,
   paddingRight,
   animate = true,
-}) => {
-  const config: TreeConfig = useMemo(() => {
+}: ControllerTreeProps<T, I>) => {
+  const config: TreeConfig<T, I> = useMemo(() => {
     return {
       className,
       onActivate,
@@ -33,6 +34,7 @@ const ControllerTreeComponent: React.FC<ControllerTreeProps> = ({
       gap,
       TreeIconComponent,
       TreeItemComponent,
+      TreeItemContentComponent,
       treeItemClassName,
       TreeTogglerComponent,
       paddingLeft,
@@ -48,6 +50,7 @@ const ControllerTreeComponent: React.FC<ControllerTreeProps> = ({
     gap,
     TreeIconComponent,
     TreeItemComponent,
+    TreeItemContentComponent,
     treeItemClassName,
     TreeTogglerComponent,
     paddingLeft,

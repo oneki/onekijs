@@ -6,4 +6,4 @@ const Tree = styled(TreeComponent)`
   ${treeStyle}
 `;
 
-export default Tree;
+export default Tree as typeof TreeComponent;

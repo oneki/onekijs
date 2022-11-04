@@ -26,28 +26,39 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
   extends CollectionService<T, I, S>
   implements TreeController<T, I>
 {
+  _filterExpanded: I[] = [];
+
   adapt(data: T | null | undefined): I {
     return this._adapt(data);
   }
 
   @reducer
   collapse(item: I): void {
-    this.setMeta('item', item, 'expanded', false);
-    if (this.state.expanded) {
-      this.state.expanded = this.state.expanded.filter((uid) => uid !== item.uid);
-      this.setParam('expanded', this.state.expanded.join(','));
+    if (this.isFiltered()) {
+      this.setMeta('item', item, 'filterExpanded', false);
+    } else {
+      this.setMeta('item', item, 'expanded', false);
+      if (this.state.expanded) {
+        this.state.expanded = this.state.expanded.filter((uid) => uid !== item.uid);
+        this.setParam('expanded', this.state.expanded.join(','));
+      }
     }
     this.refresh();
   }
 
   @reducer
   collpased(item: I): void {
-    this.setMeta('item', item, 'expanded', false);
-    this.setMeta('item', item, 'collapsing', false);
-    if (this.state.expanded) {
-      this.state.expanded = this.state.expanded.filter((uid) => uid !== item.uid);
-      this.setParam('expanded', this.state.expanded.join(','));
+    if (this.isFiltered()) {
+      this.setMeta('item', item, 'filterExpanded', false);
+    } else {
+      this.setMeta('item', item, 'expanded', false);
+      if (this.state.expanded) {
+        this.state.expanded = this.state.expanded.filter((uid) => uid !== item.uid);
+        this.setParam('expanded', this.state.expanded.join(','));
+      }
     }
+
+    this.setMeta('item', item, 'collapsing', false);
     if (this.state.collapsing) {
       this.state.collapsing = this.state.collapsing.filter((uid) => uid !== item.uid);
       this.setParam('collapsing', this.state.collapsing.join(','));
@@ -172,10 +183,12 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     const c = getChildren(data);
     ensureFieldValue(treeAdaptee, 'children', c);
     ensureFieldValue(treeAdaptee, 'icon', getIcon(data));
-    ensureFieldValue(treeAdaptee, 'type', getType(c));
+    const type = getType(c);
+    ensureFieldValue(treeAdaptee, 'type', type);
+    ensureFieldValue(treeAdaptee, 'selectable', type === 'leaf');
 
     const level = context.level || 0;
-    const position = context.position || 0;
+    const position = context.position;
 
     const result = super._buildItem(data, treeAdaptee, context) as I;
     const children =
@@ -231,37 +244,52 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     comparators: AnonymousObject<QuerySortComparator>,
     searcher?: QuerySearcher<T>,
   ): I[] {
-    return defaultTreeQueryEngine(items, query, comparator, comparators, searcher);
+    const result = defaultTreeQueryEngine(items, query, comparator, comparators, searcher);
+    if (this._isFiltered(query)) {
+      this.setMeta('item', result, 'filterExpanded', true);
+    }
+    return result;
   }
 
   @reducer
   _expand(item: I): void {
-    this.setMeta('item', item, 'expanded', true);
-    if (this.state.expanded) {
-      this.state.expanded.push(item.uid);
+    if (this._isFiltered(this.getQuery())) {
+      this.setMeta('item', item, 'filterExpanded', true);
     } else {
-      this.state.expanded = [item.uid];
+      this.setMeta('item', item, 'expanded', true);
+      if (this.state.expanded) {
+        this.state.expanded.push(item.uid);
+      } else {
+        this.state.expanded = [item.uid];
+      }
+      this.setParam('expanded', this.state.expanded.join(','));
     }
-    this.setParam('expanded', this.state.expanded.join(','));
     this.refresh();
   }
 
   @reducer
   _expanding(item: I): void {
-    this.setMeta('item', item, 'expanded', true);
+    const filtered = this._isFiltered(this.getQuery());
+
     this.setMeta('item', item, 'expanding', true);
     this.setMeta('item', item, 'collapsing', false);
-    if (this.state.expanded) {
-      this.state.expanded.push(item.uid);
+    if (filtered) {
+      this.setMeta('item', item, 'filterExpanded', true);
     } else {
-      this.state.expanded = [item.uid];
+      this.setMeta('item', item, 'expanded', true);
+      if (this.state.expanded) {
+        this.state.expanded.push(item.uid);
+      } else {
+        this.state.expanded = [item.uid];
+      }
+      this.setParam('expanded', this.state.expanded.join(','));
     }
+
     if (this.state.expanding) {
       this.state.expanding.push(item.uid);
     } else {
       this.state.expanding = [item.uid];
     }
-    this.setParam('expanded', this.state.expanded.join(','));
     this.setParam('expanding', this.state.expanding.join(','));
     if (this.state.collapsing) {
       this.state.collapsing = this.state.collapsing.filter((uid) => uid !== item.uid);

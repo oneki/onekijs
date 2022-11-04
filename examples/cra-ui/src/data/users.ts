@@ -1,4 +1,4 @@
-import { QuerySearcher } from 'onekijs';
+import { clone, get, QuerySearcher } from 'onekijs';
 import { SelectItemAdapter } from 'onekijs-ui/dist/components/select/typings';
 
 export interface User {
@@ -3444,22 +3444,36 @@ export const users: User[] = [
   },
 ];
 
+const printTree = (users: User[], level=0) => {
+  for (const user of users) {
+    console.log(`${'.'.repeat(2 * level)}${user.firstname} ${user.lastname}`)
+    printTree(user.children || [], level + 1);
+  }
+}
+
+
 export const generateTree: (maxLevel?: number, maxChildren?: number) => User[] = (maxLevel = 3, maxChildren=8) => {
-  const source = Object.assign([], users);
+  const treeSource = clone(users);
   const generateSubLevel: (level: number) => User[] = (level) => {
     const subLevel: User[] = [];
-    const max = Math.floor(Math.random() * maxChildren);
+    const max = Math.ceil(Math.random() * maxChildren);
     for (let i=0; i < max; i++) {
-      const index = Math.floor(Math.random() * source.length)
-      const user: User = source.splice(index,1)[0];
+      const index = Math.floor(Math.random() * treeSource.length)
+      const user: User = treeSource.splice(index,1)[0];
       if (user !== undefined) {
         if (level < maxLevel) {
           user.children = generateSubLevel(level + 1);
+        } else {
+          user.children = [];
         }
         subLevel[i] = user;
+      } else {
+        break;
       }
     }
     return subLevel;
   }
-  return generateSubLevel(0);
+  const result = generateSubLevel(0);
+  //printTree(result);
+  return result
 }

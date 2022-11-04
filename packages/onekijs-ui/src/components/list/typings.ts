@@ -91,7 +91,7 @@ export interface ListItemProps<T = any, I extends ListItem<T> = ListItem<T>> {
   item: I;
   data: T;
   ItemContentComponent?: FC<ListItemProps<T, I>>;
-  onClick?: ListItemHandler<T, I>;
+  onClick?: (item: I, index: number) => boolean | void;
   onMouseEnter?: ListItemHandler<T, I>;
   onMouseLeave?: ListItemHandler<T, I>;
   className?: string;

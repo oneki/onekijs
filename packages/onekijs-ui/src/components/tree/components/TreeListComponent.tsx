@@ -1,10 +1,12 @@
 import { AnonymousObject } from 'onekijs-framework';
 import React, { useEffect, useRef } from 'react';
 import { CSSTransition } from 'react-transition-group';
+import { ListItemProps } from '../../list/typings';
 import { useTreeConfig } from '../hooks/useTreeConfig';
 import { DefaultTreeItemContext } from '../hooks/useTreeItemContext';
 import useTreeService from '../hooks/useTreeService';
-import { TreeController, TreeItem, TreeItemHandler, TreeItemProps, TreeListProps, TreeState } from '../typings';
+import { TreeController, TreeItem, TreeItemHandler, TreeListProps, TreeState } from '../typings';
+import { isTreeItemExpanded } from '../util';
 import TreeItemComponent from './TreeItemComponent';
 
 const getChildrenSize = (
@@ -23,7 +25,7 @@ type TreeListItemProps<T = any, I extends TreeItem<T> = TreeItem<T>> = {
   item: I;
   index: number;
   itemClassName?: string | ((item: I) => string);
-  ItemComponent: React.FC<TreeItemProps<T, I>>;
+  ItemComponent: React.FC<ListItemProps<T, I>>;
   onClick?: TreeItemHandler<T, I>;
   onMouseEnter?: TreeItemHandler<T, I>;
   onMouseLeave?: TreeItemHandler<T, I>;
@@ -102,7 +104,7 @@ const TreeListItemComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
     }
   };
 
-  const expanded = !!(item && item.expanded && !item.collapsing);
+  const expanded = !!(item && isTreeItemExpanded(item, service));
 
   const onEntering = (node: HTMLElement) => {
     if (animate) {
@@ -187,6 +189,8 @@ const TreeListComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
 
   const rootItems = items.filter((item) => item && item.level === 0) as I[];
 
+  const { TreeItemComponent: ItemComponent = TreeItemComponent } = useTreeConfig<T, I>();
+
   return (
     <div>
       {rootItems.map((rooItem, index) => {
@@ -195,7 +199,7 @@ const TreeListComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
             key={`tree-item-${rooItem?.uid || index}`}
             item={rooItem}
             index={index}
-            ItemComponent={TreeItemComponent<T, I>}
+            ItemComponent={ItemComponent}
             onClick={onItemClick}
             onMouseEnter={onItemMouseEnter}
             onMouseLeave={onItemMouseLeave}

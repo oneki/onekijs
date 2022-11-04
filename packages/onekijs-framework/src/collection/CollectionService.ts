@@ -426,6 +426,10 @@ export default class CollectionService<
     return undefined;
   }
 
+  isFiltered(): boolean {
+    return this._isFiltered(this.getQuery());
+  }
+
   @reducer
   load(limit?: number, offset?: number): void {
     const resetData = this.state.items ? false : true;
@@ -1121,6 +1125,17 @@ export default class CollectionService<
 
   _indexUid(item: I, _context?: AnonymousObject): void {
     this._uidIndex[item.uid] = item;
+  }
+
+  _isFiltered(query: Query): boolean {
+    if (query.search !== undefined && query.search !== '') {
+      return true;
+    }
+    const filter = query.filter;
+    if (!filter) {
+      return false;
+    }
+    return filter.criterias.length > 0;
   }
 
   @reducer

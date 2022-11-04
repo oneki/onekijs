@@ -36,6 +36,7 @@ export type Collection<
   getSortByField(field: string): QuerySortByField | undefined;
   getSortById(id: string): QuerySortBy | undefined;
   readonly hasMore: boolean;
+  isFiltered(): boolean;
   load(limit?: number, offset?: number): void;
   onSubscribe(initialData: T[] | undefined, initialUrl: string | undefined, initialQuery: Query): void;
   query(query: Query): void;

@@ -1,9 +1,9 @@
 import { List, useListController } from 'onekijs-ui';
 import React from 'react';
-import { userAdapter, users } from '../data/users';
+import { User, userAdapter, users } from '../data/users';
 
 export const ListPage = () => {
-  const collection = useListController(users, {
+  const collection = useListController<User>(users, {
     adapter: userAdapter,
   });
   return (

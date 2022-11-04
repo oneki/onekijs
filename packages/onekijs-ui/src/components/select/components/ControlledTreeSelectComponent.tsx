@@ -1,11 +1,37 @@
-import { useMemo } from 'react';
-import { TreeConfigContext } from '../../tree/hooks/useTreeConfig';
-import { TreeServiceContext } from '../../tree/hooks/useTreeService';
-import { TreeStateContext } from '../../tree/hooks/useTreeState';
-import { TreeConfig } from '../../tree/typings';
+import React, { useContext } from 'react';
+import { addClassname } from '../../../utils/style';
+import { CollectionListProps } from '../../list/typings';
+import Tree from '../../tree';
+import TreeItemComponent from '../../tree/components/TreeItemComponent';
 import { ControllerTreeSelectProps, TreeSelectController, TreeSelectItem, TreeSelectState } from '../typings';
-import React from 'react';
-import { ControlledSelectComponent } from '../../..';
+import ControlledSelectComponent from './ControlledSelectComponent';
+import SelectOptionComponent from './SelectOptionComponent';
+
+export const TreeSelectPropsContext = React.createContext<ControllerTreeSelectProps<any, any, any, any>>(null!);
+export const useTreeSelectPropsContext = <
+  T = any,
+  I extends TreeSelectItem<T> = TreeSelectItem<T>,
+  S extends TreeSelectState<T, I> = TreeSelectState<T, I>,
+  C extends TreeSelectController<T, I, S> = TreeSelectController<T, I, S>,
+>(): ControllerTreeSelectProps<T, I, S, C> => {
+  return useContext(TreeSelectPropsContext);
+};
+
+const TreeSelectListComponent = <T = any, I extends TreeSelectItem<T> = TreeSelectItem<T>>(
+  props: CollectionListProps<T, I>,
+) => {
+  const treeProps = useTreeSelectPropsContext<T, I>();
+  return (
+    <Tree
+      {...props}
+      {...treeProps}
+      TreeItemComponent={SelectOptionComponent}
+      className={addClassname('o-select-options', treeProps.className)}
+      onSelect={props.onItemSelect}
+      onActivate={props.onItemActivate}
+    />
+  );
+};
 
 const ControlledTreeSelectComponent = <
   T = any,
@@ -15,46 +41,14 @@ const ControlledTreeSelectComponent = <
 >(
   props: ControllerTreeSelectProps<T, I, S, C>,
 ) => {
-  const config: TreeConfig<T, I> = useMemo(() => {
-    return {
-      className: props.className,
-      onActivate: props.onActivate,
-      animate: props.animate,
-      onSelect: props.onSelect,
-      height: props.height,
-      virtual: props.virtual,
-      gap: props.gap,
-      TreeIconComponent: props.TreeIconComponent,
-      TreeItemComponent: props.TreeItemComponent,
-      treeItemClassName: props.treeItemClassName,
-      TreeTogglerComponent: props.TreeTogglerComponent,
-      paddingLeft: props.paddingLeft,
-      paddingRight: props.paddingRight,
-    };
-  }, [
-    props.className,
-    props.onActivate,
-    props.animate,
-    props.onSelect,
-    props.height,
-    props.virtual,
-    props.gap,
-    props.TreeIconComponent,
-    props.TreeItemComponent,
-    props.treeItemClassName,
-    props.TreeTogglerComponent,
-    props.paddingLeft,
-    props.paddingRight,
-  ]);
-
   return (
-    <TreeServiceContext.Provider value={props.controller.asService()}>
-      <TreeStateContext.Provider value={props.controller.state}>
-        <TreeConfigContext.Provider value={config}>
-          <ControlledSelectComponent {...props} />
-        </TreeConfigContext.Provider>
-      </TreeStateContext.Provider>
-    </TreeServiceContext.Provider>
+    <TreeSelectPropsContext.Provider value={props}>
+      <ControlledSelectComponent
+        {...props}
+        ListComponent={TreeSelectListComponent}
+        OptionContentComponent={TreeItemComponent}
+      />
+    </TreeSelectPropsContext.Provider>
   );
 };
 

@@ -1,10 +1,10 @@
-import React, { FC } from 'react';
+import React from 'react';
 import useTreeController from '../hooks/useTreeController';
-import { ArrayTreeProps } from '../typings';
+import { ArrayTreeProps, TreeItem } from '../typings';
 import ControllerTreeComponent from './ControllerTreeComponent';
 
-const ArrayTreeComponent: FC<ArrayTreeProps> = (props) => {
-  const controller = useTreeController(props.dataSource, {
+const ArrayTreeComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>(props: ArrayTreeProps<T, I>) => {
+  const controller = useTreeController<T, I>(props.dataSource, {
     adapter: props.adapter,
     fetchOnce: props.fetchOnce,
   });

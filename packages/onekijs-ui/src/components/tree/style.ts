@@ -53,5 +53,9 @@ export const treeStyle: ComponentStyle<TreeProps<any>> = () => {
     .o-tree-item-animate-expanding {
       ${height(0)}
     }
+    .o-tree-item-content {
+      ${display('flex')}
+      ${alignItems('center')}
+    }
   `;
 };

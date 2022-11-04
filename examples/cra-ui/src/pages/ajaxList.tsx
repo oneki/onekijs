@@ -29,7 +29,7 @@ const AjaxList = styled(List)`
 .o-list-item-selected {
   background: red
 }
-`
+` as typeof List;
 
 export const AjaxListPage = () => {
   const [, service] = useService<

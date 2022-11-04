@@ -58,6 +58,7 @@ const VirtualItemWrapper = <T = any, I extends ListItem<T> = ListItem<T>>({
         position: 'absolute',
         top: 0,
         left: 0,
+        right: 0,
         width: '100%',
         minHeight: '20px',
         transform: `translateY(${start}px)`,
