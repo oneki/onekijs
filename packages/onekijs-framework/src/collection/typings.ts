@@ -264,8 +264,11 @@ export type Item<T = any> = {
   loadingStatus: LoadingItemStatus;
   uid: string; // this is a internal ID never visible from the outside
   selected?: boolean;
+  selectable?: boolean;
   highlighted?: boolean;
+  highlightable?: boolean;
   active?: boolean;
+  activable?: boolean;
   disabled?: boolean;
   visible?: boolean;
 };

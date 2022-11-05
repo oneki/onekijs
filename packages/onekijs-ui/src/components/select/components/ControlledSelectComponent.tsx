@@ -19,55 +19,23 @@ import useDropdown from '../../dropdown/hooks/useDropdown';
 import ListBodyComponent from '../../list/components/ListBodyComponent';
 import LoadingItem from '../../list/components/LoadingItem';
 import useListView from '../../list/hooks/useListView';
-import { CollectionListProps } from '../../list/typings';
-import { SelectServiceContext, useSelectService } from '../hooks/useSelectService';
-import { ControllerSelectProps, SelectController, SelectItem, SelectOptionHandler, SelectState } from '../typings';
+import { SelectServiceContext } from '../hooks/useSelectService';
+import {
+  ControllerSelectProps,
+  SelectController,
+  SelectItem,
+  SelectListComponentProps,
+  SelectOptionHandler,
+  SelectState,
+} from '../typings';
 import { findSelectItem, findSelectItemIndex } from '../util';
 import SelectInputComponent from './SelectInputComponent';
 import SelectNotFoundComponent from './SelectNotFoundComponent';
 import SelectOptionComponent, { SelectOptionContent } from './SelectOptionComponent';
 
 const DefaultSelectListComponent = <T = any, I extends SelectItem<T> = SelectItem<T>>(
-  props: CollectionListProps<T, I>,
+  props: SelectListComponentProps<T, I>,
 ) => {
-  const optionsRef = useRef<HTMLDivElement>(null);
-  const service = useSelectService();
-
-  const update = useCallback(() => {
-    if (optionsRef.current && get<boolean>(service, 'config.sameWidth')) {
-      if (optionsRef.current.scrollWidth > optionsRef.current.offsetWidth) {
-        optionsRef.current.style.width = `${
-          optionsRef.current.scrollWidth + optionsRef.current.offsetWidth - optionsRef.current.clientWidth + 5
-        }px`;
-      }
-    }
-  }, [service]);
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const throttleUpdate = useThrottle(update, 20);
-
-  const resizeObserver = useMemo(() => {
-    return new ResizeObserver(() => {
-      throttleUpdate();
-    });
-  }, [throttleUpdate]);
-
-  useIsomorphicLayoutEffect(() => {
-    const el = optionsRef;
-    if (el.current) {
-      resizeObserver.observe(el.current);
-    }
-    return () => {
-      if (el.current) {
-        resizeObserver.unobserve(el.current);
-      }
-    };
-  }, [optionsRef]);
-
-  useIsomorphicLayoutEffect(() => {
-    setTimeout(update, 0);
-  }, [update]);
-
   const {
     items: selectItems,
     isVirtual,
@@ -77,7 +45,7 @@ const DefaultSelectListComponent = <T = any, I extends SelectItem<T> = SelectIte
   } = useListView({
     controller: props.controller,
     height: props.height,
-    ref: optionsRef,
+    ref: props.optionsRef,
     preload: props.preload,
     overscan: props.overscan,
     increment: props.increment,
@@ -87,7 +55,7 @@ const DefaultSelectListComponent = <T = any, I extends SelectItem<T> = SelectIte
     <ListBodyComponent
       {...props}
       className="o-select-options"
-      bodyRef={optionsRef}
+      bodyRef={props.optionsRef}
       items={selectItems}
       totalSize={totalSize}
       virtualItems={isVirtual ? virtualItems : undefined}
@@ -192,6 +160,8 @@ const ControlledSelectComponent = <
 
   const previousSearchRef = useRef<Primitive>();
 
+  const previousProxyItemRef = useRef<I>();
+
   const tokens = useMemo<I[]>(() => {
     return (controller.state.selected || [])
       .map((uid) => service.getItem(uid))
@@ -217,6 +187,59 @@ const ControlledSelectComponent = <
       return controller.adapt(value as T | null | undefined);
     }
   }, [focus, controller, value, multiple]);
+
+  const optionsRef = useRef<HTMLDivElement>(null);
+
+  const update = useCallback(() => {
+    if (optionsRef.current && get<boolean>(service, 'config.sameWidth')) {
+      if (optionsRef.current.scrollWidth > optionsRef.current.offsetWidth) {
+        optionsRef.current.style.width = `${
+          optionsRef.current.scrollWidth + optionsRef.current.offsetWidth - optionsRef.current.clientWidth + 5
+        }px`;
+      }
+    }
+  }, [service]);
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  const throttleUpdate = useThrottle(update, 20);
+
+  const resizeObserver = useMemo(() => {
+    return new ResizeObserver(() => {
+      throttleUpdate();
+    });
+  }, [throttleUpdate]);
+
+  useIsomorphicLayoutEffect(() => {
+    const el = optionsRef;
+    if (el.current) {
+      resizeObserver.observe(el.current);
+    }
+    return () => {
+      if (el.current) {
+        resizeObserver.unobserve(el.current);
+      }
+    };
+  }, [optionsRef]);
+
+  useIsomorphicLayoutEffect(() => {
+    setTimeout(throttleUpdate, 0);
+  });
+
+  useEffect(() => {
+    if (proxyItem && service.scrollToIndex) {
+      const scrollTo: { index: number; align: 'start' | 'center' | 'end' | 'auto' } = { index: 0, align: 'start' };
+      const index = findSelectItemIndex(service, proxyItem);
+      const previousIndex = findSelectItemIndex(service, previousProxyItemRef.current);
+      if (Math.abs(index - previousIndex) > 1) {
+        if (index > 0) {
+          scrollTo.index = index;
+          scrollTo.align = 'center';
+        }
+        service.scrollToIndex(scrollTo.index, { align: scrollTo.align });
+      }
+      previousProxyItemRef.current = proxyItem;
+    }
+  }, [proxyItem, service]);
 
   const clearSearch = useCallback(() => {
     setTimeout(service.clearSearch, animationMs);
@@ -382,7 +405,6 @@ const ControlledSelectComponent = <
       } else if (multiple && item && isSelected) {
         service.removeSelected('item', item);
       } else if (item && !isSelected) {
-        console.log('set selected', item);
         service.setSelected('item', item);
       } else {
         service.setSelected('item', []);
@@ -448,7 +470,7 @@ const ControlledSelectComponent = <
 
         case 'Enter':
           if (focus) {
-            if (!open || (open && !multiple)) {
+            if (!open) {
               setOpen(!open);
             }
           }
@@ -567,6 +589,7 @@ const ControlledSelectComponent = <
             keyboardNavigable={true}
             multiSelect={multiple}
             onItemActivate={onActivate}
+            optionsRef={optionsRef}
           />
         </Dropdown>
       </div>

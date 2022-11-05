@@ -1,9 +1,16 @@
 import React, { useContext } from 'react';
 import { addClassname } from '../../../utils/style';
-import { CollectionListProps } from '../../list/typings';
+import { ListItemHandler } from '../../list/typings';
 import Tree from '../../tree';
 import TreeItemComponent from '../../tree/components/TreeItemComponent';
-import { ControllerTreeSelectProps, TreeSelectController, TreeSelectItem, TreeSelectState } from '../typings';
+import { isTreeItemExpanded } from '../../tree/util';
+import {
+  ControllerTreeSelectProps,
+  SelectListComponentProps,
+  TreeSelectController,
+  TreeSelectItem,
+  TreeSelectState,
+} from '../typings';
 import ControlledSelectComponent from './ControlledSelectComponent';
 import SelectOptionComponent from './SelectOptionComponent';
 
@@ -18,17 +25,31 @@ export const useTreeSelectPropsContext = <
 };
 
 const TreeSelectListComponent = <T = any, I extends TreeSelectItem<T> = TreeSelectItem<T>>(
-  props: CollectionListProps<T, I>,
+  props: SelectListComponentProps<T, I>,
 ) => {
   const treeProps = useTreeSelectPropsContext<T, I>();
+  const onSelect: ListItemHandler<T, I> = (item, index) => {
+    if (item.selectable !== false && props.onItemSelect) {
+      props.onItemSelect(item, index);
+      return true;
+    } else {
+      isTreeItemExpanded(item, treeProps.controller)
+        ? treeProps.controller.collapse(item, index)
+        : treeProps.controller.expand(item, index);
+      return false;
+    }
+  };
+
   return (
     <Tree
       {...props}
       {...treeProps}
       TreeItemComponent={SelectOptionComponent}
       className={addClassname('o-select-options', treeProps.className)}
-      onSelect={props.onItemSelect}
+      onSelect={onSelect}
       onActivate={props.onItemActivate}
+      keyboardNavigable={true}
+      listRef={props.optionsRef}
     />
   );
 };

@@ -15,7 +15,7 @@ export const findSelectItem = <
     return undefined;
   }
   for (const item of controller.items) {
-    if (item === undefined || item.text === undefined) {
+    if (item === undefined || item.text === undefined || item.selectable === false) {
       continue;
     }
     if (item.text.toLowerCase().startsWith(pattern.toLowerCase())) {

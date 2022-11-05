@@ -134,7 +134,7 @@ class SelectService<
       query = Object.assign({}, query, { search: item.text });
       if (this.state.local) {
         const queryEngine = this.state.queryEngine || this._execute.bind(this);
-        const result = queryEngine(
+        const result: I[] = yield queryEngine(
           this._db || [],
           query,
           this.state.comparator || defaultComparator,

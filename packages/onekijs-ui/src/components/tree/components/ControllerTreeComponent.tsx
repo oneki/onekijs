@@ -22,6 +22,8 @@ const ControllerTreeComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
   paddingLeft,
   paddingRight,
   animate = true,
+  keyboardNavigable,
+  listRef,
 }: ControllerTreeProps<T, I>) => {
   const config: TreeConfig<T, I> = useMemo(() => {
     return {
@@ -39,6 +41,8 @@ const ControllerTreeComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
       TreeTogglerComponent,
       paddingLeft,
       paddingRight,
+      keyboardNavigable,
+      listRef,
     };
   }, [
     className,
@@ -55,6 +59,8 @@ const ControllerTreeComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
     TreeTogglerComponent,
     paddingLeft,
     paddingRight,
+    keyboardNavigable,
+    listRef,
   ]);
 
   const BodyComponent = height || virtual ? VirtualTreeBodyComponent : TreeBodyComponent;

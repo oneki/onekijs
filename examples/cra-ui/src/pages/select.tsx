@@ -71,7 +71,7 @@ export const SelectPage = () => {
     <Form controller={formController} onSubmit={() => {}}>
       <div style={{display: 'flex', justifyContent: 'center'}}>
       <div style={{width: '800px', padding: '10px'}}>
-          <FormSelect label="Simple select" help="help" size="xsmall" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" controller={collection} name="simple" required /><br/>
+          <FormSelect label="Simple select" help="help" size="xsmall" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" controller={collection} name="simple" required nullable={true} /><br/>
           {/* <FormSelect label="Simple select" help="help" size="small" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" controller={collection} name="simple" required /><br/>
           <FormSelect label="Simple select" help="help" size="medium" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" controller={collection} name="simple" required /><br/>
           <FormSelect label="Simple select" help="help" size="large" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" controller={collection} name="simple" required /><br/>
@@ -89,7 +89,7 @@ export const SelectPage = () => {
       </div>
     </div>
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <TreeSelect controller={treeCollection} value={value} onChange={(nextValue) => setValue(nextValue as User | null)} />
+        <TreeSelect height={500} controller={treeCollection} value={value} onChange={(nextValue) => setValue(nextValue as User | null)} />
       </div>
     </Form>
   );

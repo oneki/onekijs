@@ -74,14 +74,13 @@ export const TreeItemContent = <T = any, I extends TreeItem<T> = TreeItem<T>>(pr
 
 const TreeItemComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>(props: ListItemProps<T, I>) => {
   const {
-    onSelect,
     TreeItemContentComponent = TreeItemContent,
     TreeTogglerComponent = TreeItemToggler,
     gap = 20,
     paddingLeft = 0,
     paddingRight = 0,
   } = useTreeConfig<T, I>();
-  const { item, index } = props;
+  const { item, index, onClick } = props;
   const { className, onExpand, onCollapse } = useTreeItemContext<T, I>();
   const ref = useRef<AnonymousObject>({});
   ref.current.item = item;
@@ -107,16 +106,6 @@ const TreeItemComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>(props: 
   if (paddingRight > 0) {
     style.paddingRight = `${paddingRight}px`;
   }
-
-  const onClick = () => {
-    if (item.selectable !== false && onSelect) {
-      onSelect(item, index);
-      return true;
-    } else {
-      item.expanded ? onCollapse(item, index) : onExpand(item, index);
-      return false;
-    }
-  };
 
   return (
     <>

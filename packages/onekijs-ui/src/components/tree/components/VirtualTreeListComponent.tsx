@@ -62,11 +62,11 @@ const VirtualTreeListItemComponent = <T = any, I extends TreeItem<T> = TreeItem<
     }
   };
 
-  const onExited = () => {
-    if (item) {
-      service.collpased(item, index);
-    }
-  };
+  // const onExited = () => {
+  //   if (item) {
+  //     service.collapsed(item, index);
+  //   }
+  // };
 
   const onEntering = (node: HTMLElement) => {
     if (animate) {
@@ -112,7 +112,6 @@ const VirtualTreeListItemComponent = <T = any, I extends TreeItem<T> = TreeItem<
         appear={false}
         unmountOnExit={true}
         onExiting={onExiting}
-        onExited={onExited}
         onEntering={onEntering}
       >
         <div
@@ -157,6 +156,7 @@ const VirtualTreeListComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>(
   const logger = useLogger();
   logger.debug('virtualItems', virtualItems);
   // we keep a reference of the expanded status of virtualItems
+  const service = useTreeService<T, I>();
   const expandedStatusRef = useRef<AnonymousObject<boolean>>({});
   const nextExpandedStatus: AnonymousObject<boolean> = {};
   const { TreeItemComponent: ItemComponent = TreeItemComponent } = useTreeConfig<T, I>();
@@ -181,7 +181,7 @@ const VirtualTreeListComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>(
     // the item is the actual data of the element
     const item = items[virtualItem.index];
     if (item) {
-      nextExpandedStatus[item.uid] = !!item.expanded;
+      nextExpandedStatus[item.uid] = isTreeItemExpanded(item, service);
     }
     // the horizontal position in the tree
     const itemLevel = item?.level || 0;
@@ -192,9 +192,9 @@ const VirtualTreeListComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>(
         item,
         animate:
           !!item &&
-          (!item.expanded ||
+          (!isTreeItemExpanded(item, service) ||
             (expandedStatusRef.current[item.uid] !== undefined &&
-              !!item.expanded !== !!expandedStatusRef.current[item.uid])),
+              isTreeItemExpanded(item, service) !== !!expandedStatusRef.current[item.uid])),
       },
       virtualItem,
     );

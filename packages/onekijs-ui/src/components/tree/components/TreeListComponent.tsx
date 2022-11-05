@@ -16,7 +16,7 @@ const getChildrenSize = (
   if (item === undefined || item.children === undefined) return 0;
   return item.children.reduce((accumulator, childUid) => {
     const child = service.getItem(childUid);
-    const expanded = !!(child && child.expanded && !child.collapsing);
+    const expanded = !!(child && isTreeItemExpanded(child, service));
     return accumulator + 1 + (expanded ? getChildrenSize(child, service) : 0);
   }, 0);
 };
@@ -81,7 +81,7 @@ const TreeListItemComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
           }
         }, timeout);
       }
-      if (childrenRef.current && childrenAnimateRef.current && !item.expanding && item.expanded && !item.collapsing) {
+      if (childrenRef.current && childrenAnimateRef.current && !item.expanding && isTreeItemExpanded(item, service)) {
         childrenAnimateRef.current.style.height = '';
       }
     }
@@ -100,7 +100,7 @@ const TreeListItemComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
 
   const onExited = () => {
     if (item) {
-      service.collpased(item, index);
+      service.collapsed(item, index);
     }
   };
 

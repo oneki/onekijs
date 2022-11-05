@@ -14,7 +14,7 @@ const VirtualTreeBodyComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>(
 }: ControllerTreeProps<T, I>) => {
   const service = useTreeService();
   const ref = useRef<HTMLDivElement>(null);
-  const { items, totalSize, virtualItems } = useListView({
+  const { items, totalSize, virtualItems, scrollToIndex } = useListView({
     controller,
     ref,
     overscan: 20,
@@ -25,8 +25,8 @@ const VirtualTreeBodyComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>(
     <ListBodyComponent
       className={addClassname('o-tree-body', className)}
       items={items}
-      parentRef={ref}
-      bodyRef={ref}
+      parentRef={config.listRef || ref}
+      bodyRef={config.listRef || ref}
       totalSize={totalSize}
       virtualItems={virtualItems}
       service={service}
@@ -35,6 +35,8 @@ const VirtualTreeBodyComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>(
       height={height}
       onItemSelect={config.onSelect}
       onItemActivate={config.onActivate}
+      keyboardNavigable={config.keyboardNavigable}
+      scrollToIndex={scrollToIndex}
     />
   );
 };

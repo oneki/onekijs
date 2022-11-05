@@ -40,6 +40,8 @@ export type TreeConfig<T = any, I extends TreeItem<T> = TreeItem<T>> = {
   paddingLeft?: number;
   paddingRight?: number;
   animate?: boolean;
+  keyboardNavigable?: boolean;
+  listRef?: React.RefObject<HTMLDivElement>;
 };
 
 export type TreeController<
@@ -49,7 +51,7 @@ export type TreeController<
 > = Collection<T, I, S> & {
   collapse: TreeItemHandler<T, I>;
   collapsing: TreeItemHandler<T, I>;
-  collpased: TreeItemHandler<T, I>;
+  collapsed: TreeItemHandler<T, I>;
   expand: TreeItemHandler<T, I>;
   expanding: TreeItemHandler<T, I>;
   expanded: TreeItemHandler<T, I>;
@@ -118,6 +120,7 @@ export type TreeState<T = any, I extends TreeItem<T> = TreeItem<T>> = Collection
   collapsing?: string[];
   expanded?: string[];
   expanding?: string[];
+  filterExpanded?: string[];
   selected?: string[];
 };
 

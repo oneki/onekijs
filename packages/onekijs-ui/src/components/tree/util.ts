@@ -20,43 +20,49 @@ export const defaultTreeQueryEngine = <T = any, I extends TreeItem<T> = TreeItem
   searcher?: QuerySearcher<T>,
 ): I[] => {
   let result: I[] = [];
-  if (!query.filter && !query.search) {
-    // remove all children of non expanded items
-    let visible = 1;
-    items.forEach((item) => {
-      if (item.level <= visible) {
-        result.push(item);
-        if (item.expanded) {
-          visible = item.level + 1;
-        } else {
-          visible = item.level;
-        }
-      }
-    });
-  } else {
-    if (query.filter || query.search) {
-      const filter = formatFilter(query.filter);
-      let hierarchy: I[] = [];
-      let last: I | undefined;
-      for (const item of items) {
-        if (
-          (query.filter && applyFilter(item, filter)) ||
-          (query.search && applySearch(item, query.search, searcher))
-        ) {
-          result = result.concat(hierarchy);
-          hierarchy = [];
-          result.push(item);
-          last = undefined;
-        } else {
-          if (last && last.level >= item.level) {
-            hierarchy = hierarchy.filter((i) => i.level < item.level);
-          }
-          last = item;
-          hierarchy.push(item);
-        }
+  let filteredItems: I[] = [];
+  const filter = formatFilter(query.filter);
+  let isFiltered = false;
+  if (query.search !== undefined && query.search !== '') {
+    isFiltered = true;
+  }
+  if (filter && filter.criterias.length > 0) {
+    isFiltered = true;
+  }
+
+  if (isFiltered) {
+    let hierarchy: I[] = [];
+    for (const item of items) {
+      hierarchy = hierarchy.filter((i) => i.level < item.level);
+      if (
+        item.selectable &&
+        (!query.filter || applyFilter(item, filter)) &&
+        (!query.search || applySearch(item, query.search, searcher))
+      ) {
+        filteredItems = filteredItems.concat(hierarchy);
+        hierarchy = [];
+        filteredItems.push(item);
+      } else {
+        hierarchy.push(item);
       }
     }
+  } else {
+    filteredItems = items;
   }
+
+  // remove all children of non expanded items
+  let visible = 1;
+  filteredItems.forEach((item) => {
+    if (item.level <= visible) {
+      result.push(item);
+      const expanded = isFiltered ? item.filterExpanded !== false : item.expanded;
+      if (expanded) {
+        visible = item.level + 1;
+      } else {
+        visible = item.level;
+      }
+    }
+  });
 
   // apply sort
   if (query.sortBy) {
@@ -71,10 +77,10 @@ export const defaultTreeQueryEngine = <T = any, I extends TreeItem<T> = TreeItem
 export const isTreeItemExpanded = <T = any, I extends TreeItem<T> = TreeItem<T>>(
   item: I,
   service: TreeController<T, I>,
-) => {
+): boolean => {
   if (item.collapsing) return false;
   if (service.isFiltered()) {
-    return item.filterExpanded;
+    return item.filterExpanded !== false;
   }
-  return item.expanded;
+  return !!item.expanded;
 };

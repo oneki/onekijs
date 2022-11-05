@@ -5,6 +5,7 @@ import {
   CollectionService,
   ensureFieldValue,
   Fetcher,
+  generateUniqueId,
   HttpMethod,
   isNull,
   LoadingStatus,
@@ -26,8 +27,6 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
   extends CollectionService<T, I, S>
   implements TreeController<T, I>
 {
-  _filterExpanded: I[] = [];
-
   adapt(data: T | null | undefined): I {
     return this._adapt(data);
   }
@@ -36,6 +35,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
   collapse(item: I): void {
     if (this.isFiltered()) {
       this.setMeta('item', item, 'filterExpanded', false);
+      this._addFilterExpanded(item);
     } else {
       this.setMeta('item', item, 'expanded', false);
       if (this.state.expanded) {
@@ -47,9 +47,10 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
   }
 
   @reducer
-  collpased(item: I): void {
+  collapsed(item: I): void {
     if (this.isFiltered()) {
       this.setMeta('item', item, 'filterExpanded', false);
+      this._addFilterExpanded(item);
     } else {
       this.setMeta('item', item, 'expanded', false);
       if (this.state.expanded) {
@@ -149,7 +150,27 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     return super._adapt(data, context);
   }
 
+  @reducer
+  _addFilterExpanded(item: I): void {
+    if (!this.state.filterExpanded) {
+      this.state.filterExpanded = [item.uid];
+    } else if (!this.state.filterExpanded.includes(item.uid)) {
+      this.state.filterExpanded.push(item.uid);
+    }
+    this.setParam('filterExpanded', `${generateUniqueId()}`); // to force refresh and avoid cache
+  }
+
+  @reducer
+  _addExpanded(item: I): void {
+    if (!this.state.expanded) {
+      this.state.expanded = [item.uid];
+    } else {
+      this.state.expanded.push(item.uid);
+    }
+  }
+
   _buildItem(data: T | undefined, adaptee: unknown, context?: AnonymousObject): I {
+    const hasContext = context !== undefined;
     context = context || {};
     const getChildren = (data: any): T[] | undefined => {
       if (isNull(data)) {
@@ -220,15 +241,16 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     // ensureFieldValue(result, 'children', children);
     result.children = children;
 
-    if (result.expanded) {
-      if (!this.state.expanded) {
-        this.state.expanded = [result.uid];
-      } else {
-        this.state.expanded.push(result.uid);
-      }
+    if (result.expanded && hasContext) {
+      //this._addExpanded(result);
     }
 
     return result;
+  }
+
+  @reducer
+  _clearFilterExpanded(): void {
+    this.state.filterExpanded = [];
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -245,8 +267,13 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     searcher?: QuerySearcher<T>,
   ): I[] {
     const result = defaultTreeQueryEngine(items, query, comparator, comparators, searcher);
-    if (this._isFiltered(query)) {
-      this.setMeta('item', result, 'filterExpanded', true);
+    if (!this.isFiltered()) {
+      if (this.state.filterExpanded) {
+        this.state.filterExpanded.forEach((uid) => {
+          this.setMeta('uid', uid, 'filterExpanded', undefined);
+        });
+        this._clearFilterExpanded();
+      }
     }
     return result;
   }
@@ -255,6 +282,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
   _expand(item: I): void {
     if (this._isFiltered(this.getQuery())) {
       this.setMeta('item', item, 'filterExpanded', true);
+      this._addFilterExpanded(item);
     } else {
       this.setMeta('item', item, 'expanded', true);
       if (this.state.expanded) {
@@ -275,6 +303,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     this.setMeta('item', item, 'collapsing', false);
     if (filtered) {
       this.setMeta('item', item, 'filterExpanded', true);
+      this._addFilterExpanded(item);
     } else {
       this.setMeta('item', item, 'expanded', true);
       if (this.state.expanded) {
@@ -400,6 +429,13 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     });
     this.setMeta('item', item, 'children', childrenItems);
     this.setMeta('item', item, 'loadingStatus', LoadingStatus.Loaded);
+  }
+
+  @reducer
+  _removeFilterExpanded(item: I): void {
+    if (this.state.filterExpanded) {
+      this.state.filterExpanded = this.state.filterExpanded.filter((uid) => uid !== item.uid);
+    }
   }
 }
 

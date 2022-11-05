@@ -19,11 +19,12 @@ const TreeBodyComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
       items={controller.items}
       ListComponent={TreeListComponent}
       parentRef={ref}
-      bodyRef={ref}
+      bodyRef={config.listRef || ref}
       service={service}
       state={service.state}
       onItemSelect={config.onSelect}
       onItemActivate={config.onActivate}
+      keyboardNavigable={config.keyboardNavigable}
     />
   );
 };

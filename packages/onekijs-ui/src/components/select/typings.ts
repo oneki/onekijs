@@ -181,7 +181,11 @@ export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omi
   defaultValue?: T | T[] | null;
   required?: boolean;
   sameWidth?: boolean;
-  ListComponent?: React.FC<CollectionListProps<T, I>>;
+  ListComponent?: React.FC<SelectListComponentProps<T, I>>;
+};
+
+export type SelectListComponentProps<T = any, I extends SelectItem<T> = SelectItem<T>> = CollectionListProps<T, I> & {
+  optionsRef: React.RefObject<HTMLDivElement>;
 };
 
 export type SelectState<T = any, I extends SelectItem<T> = SelectItem<T>> = ListState<T, I> & {
@@ -214,7 +218,7 @@ export type TreeSelectProps<
   I extends TreeSelectItem<T> = TreeSelectItem<T>,
   S extends TreeSelectState<T, I> = TreeSelectState<T, I>,
   C extends TreeSelectController<T, I, S> = TreeSelectController<T, I, S>,
-> = SelectProps<T, I, S, C>;
+> = SelectProps<T, I, S, C> & TreeProps<T, I, S, C>;
 
 export type TreeSelectState<T = any, I extends TreeSelectItem<T> = TreeSelectItem<T>> = SelectState<T, I> &
   TreeState<T, I>;
