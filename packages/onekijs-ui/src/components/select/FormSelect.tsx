@@ -1,11 +1,11 @@
-import React, { FC } from 'react';
+import React from 'react';
 import Select from '.';
 import FieldLayout from '../field/FieldLayout';
 import useFieldLayout from '../field/hooks/useFieldLayout';
-import { FormSelectProps, SelectProps } from './typings';
+import { FormSelectProps, SelectItem, SelectProps } from './typings';
 
-const FormSelect: FC<FormSelectProps> = React.memo((props) => {
-  const [fieldLayoutProps, fieldComponentProps] = useFieldLayout<SelectProps>(
+const FormSelect = <T = any, I extends SelectItem<T> = SelectItem<T>>(props: FormSelectProps<T, I>) => {
+  const [fieldLayoutProps, fieldComponentProps] = useFieldLayout<SelectProps<T, I>>(
     Object.assign(
       {
         defaultValue: props.defaultValue === undefined ? (props.multiple ? [] : null) : props.defaultValue,
@@ -20,7 +20,7 @@ const FormSelect: FC<FormSelectProps> = React.memo((props) => {
       <Component {...fieldComponentProps} required={props.required} defaultValue={props.defaultValue} />
     </FieldLayout>
   );
-});
+};
 
 FormSelect.displayName = 'FormSelect';
-export default FormSelect;
+export default React.memo(FormSelect) as typeof FormSelect;

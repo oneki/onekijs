@@ -42,8 +42,8 @@ export interface FieldProps {
   value?: any;
 }
 
-export type FieldOptions = FormMetadata & {
-  defaultValue?: any;
+export type FieldOptions<T = any> = FormMetadata & {
+  defaultValue?: T;
   touchOn?: TouchOnType;
 };
 
@@ -71,7 +71,7 @@ export type FormDecoratorOptions = FormMetadata;
 
 export type FormErrorCallback = (fields: Field[], values?: AnonymousObject) => void;
 
-export type FormFieldProps = FieldOptions &
+export type FormFieldProps<T = any> = FieldOptions<T> &
   ValidatorsType & {
     name: string;
     id?: string | number;

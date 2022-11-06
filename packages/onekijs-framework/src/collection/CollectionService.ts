@@ -1286,11 +1286,13 @@ export default class CollectionService<
         const setItemStatus = (item: I | undefined, status: LoadingItemStatus): I => {
           if (item === undefined) {
             item = this.adapt(undefined);
+            item.loadingStatus = status;
+            this._indexItem(item);
+            return item;
           }
           item.loadingStatus = status;
-          const result = Object.assign({}, item);
-          this._indexItem(result);
-          return result;
+          this.setMeta('item', item, 'loadingStatus', status);
+          return Object.assign({}, item);
         };
 
         if (resetLimit) {

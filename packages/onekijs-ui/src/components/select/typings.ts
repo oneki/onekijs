@@ -48,10 +48,10 @@ export type ControllerTreeSelectProps<
 > = ControllerSelectProps<T, I, S, C> & TreeProps<T, I, S, C>;
 
 export type FormSelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = SelectProps<T, I> &
-  FormFieldProps &
+  FormFieldProps<T> &
   FieldLayoutProps & {
     defaultValue?: T | T[] | null;
-    FieldComponent?: React.FC<SelectProps>;
+    FieldComponent?: React.FC<SelectProps<T, I>>;
   };
 
 export type SelectController<

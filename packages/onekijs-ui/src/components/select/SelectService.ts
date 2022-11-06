@@ -54,11 +54,11 @@ class SelectService<
     ) as T[];
 
     if (Array.isArray(this.defaultValue)) {
-      this._setValidDefaultValue(validDefaultValue);
+      yield this._setValidDefaultValue(validDefaultValue);
     } else if (validDefaultValue.length > 0) {
-      this._setValidDefaultValue(validDefaultValue[0]);
+      yield this._setValidDefaultValue(validDefaultValue[0]);
     } else {
-      this._setValidDefaultValue(
+      yield this._setValidDefaultValue(
         this.config === undefined || this.config.nullable || !this.state.items
           ? null
           : this.config.defaultValue === undefined || this.state.defaultValue === null
@@ -72,7 +72,7 @@ class SelectService<
       const filterItems: (I | undefined)[] = yield all([this._filterItem(item, query, false)]);
       invalidItems = filterItems.filter((i) => i !== undefined) as I[];
     }
-    yield this._setInvalidItems(invalidItems);
+    yield call(this._setInvalidItems, invalidItems);
   }
 
   @reducer
