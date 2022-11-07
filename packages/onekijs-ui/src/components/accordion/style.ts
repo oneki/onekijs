@@ -25,7 +25,8 @@ export const accordionStyle: ComponentStyle<AccordionProps> = ({ border = false,
   const t = theme.accordion;
   const bWidth = border ? t.borderWidth : 0;
   return css`
-    .o-accordion-animate-enter-active, .o-accordion-animate-exit-active {
+    .o-accordion-animate-enter-active,
+    .o-accordion-animate-exit-active {
       ${overflowY('hidden')}
       ${transitionDuration(`${animate}ms`)}
       ${transitionProperty('height,opacity')}

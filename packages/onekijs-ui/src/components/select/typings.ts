@@ -134,7 +134,7 @@ export type SelectProps<
 > = SelectConfig<T, I> & {
   adapter?: SelectItemAdapter<T>;
   controller?: CollectionProxy<T, I, S, C>;
-  dataSource?: T[] | string;
+  dataSource?: T[] | [T, string][] | string;
   fetchOnce?: boolean;
 };
 

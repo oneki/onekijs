@@ -23,6 +23,7 @@ const AccordionComponent: FCC<AccordionProps> = ({ Component = AccordionContaine
     multiActive: props.multiActive,
     panels: {},
     animate: props.animate ?? 150,
+    mode: props.mode ?? 'push',
   } as AccordionState);
 
   return (

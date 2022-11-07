@@ -1,4 +1,4 @@
-import React, { FC, useRef } from 'react';
+import React, { useRef } from 'react';
 import { addClassname } from '../../../utils/style';
 import { ListServiceContext } from '../hooks/useListService';
 import { ListStateContext } from '../hooks/useListState';
