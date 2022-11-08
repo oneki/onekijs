@@ -6,6 +6,7 @@ import {
   ensureFieldValue,
   Fetcher,
   generateUniqueId,
+  get,
   HttpMethod,
   isNull,
   LoadingStatus,
@@ -40,7 +41,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
       this.setMeta('item', item, 'expanded', false);
       if (this.state.expanded) {
         this.state.expanded = this.state.expanded.filter((uid) => uid !== item.uid);
-        this.setParam('expanded', this.state.expanded.join(','));
+        this.setParam('expanded', this.state.expanded);
       }
     }
     this.refresh();
@@ -55,14 +56,14 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
       this.setMeta('item', item, 'expanded', false);
       if (this.state.expanded) {
         this.state.expanded = this.state.expanded.filter((uid) => uid !== item.uid);
-        this.setParam('expanded', this.state.expanded.join(','));
+        this.setParam('expanded', this.state.expanded);
       }
     }
 
     this.setMeta('item', item, 'collapsing', false);
     if (this.state.collapsing) {
       this.state.collapsing = this.state.collapsing.filter((uid) => uid !== item.uid);
-      this.setParam('collapsing', this.state.collapsing.join(','));
+      this.setParam('collapsing', this.state.collapsing);
     }
     this.refresh();
   }
@@ -73,14 +74,14 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     this.setMeta('item', item, 'collapsing', true);
     if (this.state.expanding) {
       this.state.expanding = this.state.expanding.filter((uid) => uid !== item.uid);
-      this.setParam('expanding', this.state.expanding.join(','));
+      this.setParam('expanding', this.state.expanding);
     }
     if (this.state.collapsing) {
       this.state.collapsing.push(item.uid);
     } else {
       this.state.collapsing = [item.uid];
     }
-    this.setParam('collapsing', this.state.collapsing.join(','));
+    this.setParam('collapsing', this.state.collapsing);
     this.refresh();
   }
 
@@ -99,7 +100,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     this.setMeta('item', item, 'expanding', false);
     if (this.state.expanding) {
       this.state.expanding = this.state.expanding.filter((uid) => uid !== item.uid);
-      this.setParam('expanding', this.state.expanding.join(','));
+      this.setParam('expanding', this.state.expanding);
     }
     this.refresh();
   }
@@ -127,8 +128,10 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
         context.level = 0;
         this._adapt(entry, context);
       });
-      if (this.state.expanded) {
-        this.setParam('expanded', this.state.expanded.join(','));
+      if (context.expanded) {
+        this.state.expanded = context.expanded;
+        this.state.params = this.state.params || {};
+        this.state.params.expanded = context.expanded;
       }
     }
   }
@@ -136,7 +139,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
   // getQuery(): Query {
   //   const query = super.getQuery();
   //   if (this.state.expanded && this.state.expanded.length > 0) {
-  //     query.params = Object.assign({}, query.params, { expanded: this.state.expanded.join(',') });
+  //     query.params = Object.assign({}, query.params, { expanded: this.state.expanded });
   //   }
   //   return query;
   // }
@@ -158,15 +161,6 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
       this.state.filterExpanded.push(item.uid);
     }
     this.setParam('filterExpanded', `${generateUniqueId()}`); // to force refresh and avoid cache
-  }
-
-  @reducer
-  _addExpanded(item: I): void {
-    if (!this.state.expanded) {
-      this.state.expanded = [item.uid];
-    } else {
-      this.state.expanded.push(item.uid);
-    }
   }
 
   _buildItem(data: T | undefined, adaptee: unknown, context?: AnonymousObject): I {
@@ -205,8 +199,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     ensureFieldValue(treeAdaptee, 'children', c);
     ensureFieldValue(treeAdaptee, 'icon', getIcon(data));
     const type = getType(c);
-    ensureFieldValue(treeAdaptee, 'type', type);
-    ensureFieldValue(treeAdaptee, 'selectable', type === 'leaf');
+    ensureFieldValue(treeAdaptee, 'type', get(data, 'type', type));
 
     const level = context.level || 0;
     const position = context.position;
@@ -238,11 +231,17 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
       context.position = position;
     }
     ensureFieldValue(result, 'level', level);
+    ensureFieldValue(result, 'selectable', get(data, 'selectable', type === 'leaf'));
+    ensureFieldValue(result, 'expanded', get(data, 'expanded', false));
     // ensureFieldValue(result, 'children', children);
     result.children = children;
 
     if (result.expanded && hasContext) {
-      //this._addExpanded(result);
+      if (!context.expanded) {
+        context.expanded = [result.uid];
+      } else {
+        context.expanded.push(result.uid);
+      }
     }
 
     return result;
@@ -290,7 +289,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
       } else {
         this.state.expanded = [item.uid];
       }
-      this.setParam('expanded', this.state.expanded.join(','));
+      this.setParam('expanded', this.state.expanded);
     }
     this.refresh();
   }
@@ -311,7 +310,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
       } else {
         this.state.expanded = [item.uid];
       }
-      this.setParam('expanded', this.state.expanded.join(','));
+      this.setParam('expanded', this.state.expanded);
     }
 
     if (this.state.expanding) {
@@ -319,10 +318,10 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     } else {
       this.state.expanding = [item.uid];
     }
-    this.setParam('expanding', this.state.expanding.join(','));
+    this.setParam('expanding', this.state.expanding);
     if (this.state.collapsing) {
       this.state.collapsing = this.state.collapsing.filter((uid) => uid !== item.uid);
-      this.setParam('collapsing', this.state.collapsing.join(','));
+      this.setParam('collapsing', this.state.collapsing);
     }
     this.refresh();
   }
