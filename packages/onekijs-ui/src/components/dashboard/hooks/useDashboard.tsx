@@ -7,14 +7,12 @@ import { DashboardProps, DashboardState } from '../typings';
 const useDashboard = (): [FCC<DashboardProps>, DashboardService] => {
   const [, service] = useService(DashboardService, {} as DashboardState);
 
-  const DashboardRef = useLazyRef<FCC<DashboardProps>>(
-    (): FCC<DashboardProps> => {
-      const Dashboard: FCC<DashboardProps> = (props) => {
-        return <DashboardComponent {...props} service={service} />;
-      };
-      return Dashboard;
-    },
-  );
+  const DashboardRef = useLazyRef<FCC<DashboardProps>>((): FCC<DashboardProps> => {
+    const Dashboard: FCC<DashboardProps> = (props) => {
+      return <DashboardComponent {...props} service={service} />;
+    };
+    return Dashboard;
+  });
   return [DashboardRef.current, service];
 };
 

@@ -14,12 +14,12 @@ const VirtualTreeBodyComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>(
 }: ControllerTreeProps<T, I>) => {
   const service = useTreeService();
   const ref = useRef<HTMLDivElement>(null);
+  const config = useTreeConfig();
   const { items, totalSize, virtualItems, scrollToIndex } = useListView({
     controller,
-    ref,
+    ref: config.listRef || ref,
     overscan: 20,
   });
-  const config = useTreeConfig();
 
   return (
     <ListBodyComponent

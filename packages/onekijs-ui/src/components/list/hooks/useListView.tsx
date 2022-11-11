@@ -77,16 +77,16 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
     if (controller.status !== LoadingStatus.NotReady) {
       if (isVirtual) {
         if (controller.status === LoadingStatus.NotInitialized) {
-          controller.load(preload);
+          controller.load(preload, undefined, true);
         } else if (canFetchMore(controller)) {
           const lastVirtualItem = virtualItems[virtualItems.length - 1];
           const lastVirtualItemIndex = lastVirtualItem ? lastVirtualItem.index : 0;
           if (lastVirtualItemIndex >= (state.items?.length || 0) - preload / 2) {
-            controller.load(increment, ((state.items || []) as any[]).length);
+            controller.load(increment, ((state.items || []) as any[]).length, true);
           }
         }
       } else if (controller.status === LoadingStatus.NotInitialized) {
-        controller.load();
+        controller.load(undefined, undefined, true);
       }
     }
   }, [controller, state, preload, virtualItems, increment, isVirtual]);

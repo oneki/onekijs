@@ -35,7 +35,7 @@ const DropdownButtonComponent: FC<DropDownButtonProps> = ({
 
   const [Dropdown, triggerRef] = useDropdown();
 
-  useClickOutside(ref, () => onCollapse());
+  useClickOutside(ref, () => onCollapse && onCollapse());
 
   return (
     <span ref={ref}>

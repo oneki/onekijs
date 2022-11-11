@@ -150,6 +150,7 @@ export { default as SelectOptionComponent } from './components/select/components
 export { default as SelectTokensComponent } from './components/select/components/SelectTokensComponent';
 export { default as FormSelect } from './components/select/FormSelect';
 export { default as useSelectController } from './components/select/hooks/useSelectController';
+export { useSelectService } from './components/select/hooks/useSelectService';
 export { default as useTreeSelectController } from './components/select/hooks/useTreeSelectController';
 export { default as DefaultSelectBroker } from './components/select/SelectBroker';
 export { default as SelectService } from './components/select/SelectService';

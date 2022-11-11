@@ -37,7 +37,7 @@ export type Collection<
   getSortById(id: string): QuerySortBy | undefined;
   readonly hasMore: boolean;
   isFiltered(): boolean;
-  load(limit?: number, offset?: number): void;
+  load(limit?: number, offset?: number, replace?: boolean): void;
   onSubscribe(initialData: T[] | undefined, initialUrl: string | undefined, initialQuery: Query): void;
   query(query: Query): void;
   refresh(query?: Query): void;
@@ -227,6 +227,7 @@ export interface CollectionState<T, I extends Item<T>> extends FetchState {
   highlighted?: string[];
   items?: (I | undefined)[];
   method?: HttpMethod;
+  mutateUrl?: boolean;
   local: boolean;
   limit?: number;
   offset?: number;

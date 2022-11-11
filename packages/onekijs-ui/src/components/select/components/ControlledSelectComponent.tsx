@@ -192,9 +192,9 @@ const ControlledSelectComponent = <
 
   const update = useCallback(() => {
     if (optionsRef.current && get<boolean>(service, 'config.sameWidth')) {
-      if (optionsRef.current.scrollWidth > optionsRef.current.offsetWidth) {
+      if (optionsRef.current.scrollWidth > optionsRef.current.clientWidth) {
         optionsRef.current.style.width = `${
-          optionsRef.current.scrollWidth + optionsRef.current.offsetWidth - optionsRef.current.clientWidth + 5
+          optionsRef.current.scrollWidth + optionsRef.current.offsetWidth - optionsRef.current.clientWidth
         }px`;
       }
     }
@@ -205,9 +205,9 @@ const ControlledSelectComponent = <
 
   const resizeObserver = useMemo(() => {
     return new ResizeObserver(() => {
-      throttleUpdate();
+      update();
     });
-  }, [throttleUpdate]);
+  }, [update]);
 
   useIsomorphicLayoutEffect(() => {
     const el = optionsRef;
@@ -219,11 +219,20 @@ const ControlledSelectComponent = <
         resizeObserver.unobserve(el.current);
       }
     };
-  }, [optionsRef]);
+  }, [optionsRef.current]);
 
   useIsomorphicLayoutEffect(() => {
     setTimeout(throttleUpdate, 0);
   });
+
+  // // Create an observer instance linked to the callback function
+  // const observer = new MutationObserver(callback);
+
+  // // Start observing the target node for configured mutations
+  // observer.observe(targetNode, config);
+
+  // // Later, you can stop observing
+  // observer.disconnect();
 
   useEffect(() => {
     if (proxyItem && service.scrollToIndex) {

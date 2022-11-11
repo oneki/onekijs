@@ -25,11 +25,16 @@ import { TreeController, TreeItem, TreeProps, TreeState } from '../tree/typings'
 
 export type ArraySelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = SelectConfig<T, I> & {
   adapter?: SelectItemAdapter<T>;
-  dataSource: T[] | string;
+  dataSource: T[] | [T, string][] | string;
   fetchOnce?: boolean;
 };
 
-export type ArrayTreeSelectProps<T = any, I extends TreeSelectItem<T> = TreeSelectItem<T>> = ArraySelectProps<T, I>;
+export type ArrayTreeSelectProps<T = any, I extends TreeSelectItem<T> = TreeSelectItem<T>> = Omit<
+  ArraySelectProps<T, I>,
+  'dataSource'
+> & {
+  dataSource: T[] | string;
+};
 
 export type ControllerSelectProps<
   T = any,

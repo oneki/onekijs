@@ -431,10 +431,10 @@ export default class CollectionService<
   }
 
   @reducer
-  load(limit?: number, offset?: number): void {
+  load(limit?: number, offset?: number, replace = false): void {
     const resetData = this.state.items ? false : true;
     this._setLoading({ limit, offset, resetData });
-    this.refresh();
+    this.refresh(undefined, !replace);
   }
 
   @reducer
@@ -463,13 +463,14 @@ export default class CollectionService<
   }
 
   @reducer
-  refresh(query?: Query): void {
+  refresh(query?: Query, push = true): void {
     if (isCollectionReady(this)) {
       const path = this.state.router.location.pathname;
       this._refreshing = true;
       query = query ?? this.getQuery();
       this._setParam(query, 'noCache', true);
-      this.state.router.push(urlBuilder(path, {}, urlSerializer(query)));
+      const method = push ? 'push' : 'replace';
+      this.state.router[method](urlBuilder(path, {}, urlSerializer(query)));
     }
   }
 
@@ -1140,7 +1141,7 @@ export default class CollectionService<
 
   @reducer
   _onLocationChange(location: Location): void {
-    if (!this._refreshing) return;
+    if (!this._refreshing && !this.state.mutateUrl) return;
     this._refreshing = false;
     const nextQuery = this._parseLocation(location);
     if (this.state.local) {
