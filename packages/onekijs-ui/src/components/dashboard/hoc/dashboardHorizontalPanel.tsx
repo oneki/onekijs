@@ -2,6 +2,7 @@ import { FCC } from 'onekijs-framework';
 import React, { CSSProperties, useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
 import { ComponentStyle } from '../../../styles/typings';
+import { addClassname } from '../../../utils/style';
 import Resizer from '../../resizer';
 import { ResizeStep } from '../../resizer/typings';
 import useDashboardService from '../hooks/useDashboardService';
@@ -83,7 +84,11 @@ const Component: React.FC<DashboardHorizontalPanelComponentProps> = (props) => {
   });
 
   return (
-    <div className={props.className} ref={ref} style={style}>
+    <div
+      className={addClassname(props.area === 'header' ? 'o-dashboard-header' : 'o-dashboard-footer', props.className)}
+      ref={ref}
+      style={style}
+    >
       {stepRef.current && props.children}
     </div>
   );
@@ -97,7 +102,7 @@ const style: ComponentStyle<DashboardHorizontalPanelComponentProps> = (props) =>
     height: ${getDashboardPanelLength('height', 'small', props.panel)};
     width: ${getWidth('small', props)};
     transform: translate(${getTranslateX('small', props)}, ${getTranslateY('small', props)});
-    ${props.panel ? 'transition: transform 0.6s, width 0.6s, height 0.6s;' : 'transition: none'}
+    ${props.panel ? 'transition: transform 0.3s, width 0.3s, height 0.3s;' : 'transition: none'}
     ${props.panel && props.panel[getFloatingKey('small')] ? 'z-index: 1001;' : 'auto;'}
     @media only screen and (min-width: 768px) {
       height: ${getDashboardPanelLength('height', 'medium', props.panel)};
@@ -131,7 +136,7 @@ const dashboardHorizontalPanel = (area: DashboardHorizontalArea): FCC<DashboardH
     return (
       <StyledComponent {...state} {...props} area={area} panel={panel}>
         {props.resizable && (
-          <Resizer onResize={onResize} handles={[area === 'header' ? 's' : 'n']}>
+          <Resizer onResize={onResize} handles={[area === 'header' ? 's' : 'n']} gap={panel?.resizerGap}>
             {props.children}
           </Resizer>
         )}

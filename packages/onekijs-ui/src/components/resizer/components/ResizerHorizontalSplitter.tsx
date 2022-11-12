@@ -16,7 +16,7 @@ const ResizerHorizontalSplitter: FCC<ResizeHorizontalSplitterProps> = ({ childre
   if (handle === 's') {
     style.bottom = 0;
   } else {
-    style.top = 0;
+    style.top = 40;
   }
 
   useEventListener('mousemove', (e) => resizerService.onResize(e));

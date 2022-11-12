@@ -32,6 +32,7 @@ const GlobalStyles = createGlobalStyle`
     line-height: 1.2rem;
     font-weight: 400;
     ${toCss(null, colorFormatter('color'), 'gray-700', {})}
+    ${toCss(null, colorFormatter('background-color'), 'background', {})}
     margin: 0;
   }
   a {

@@ -40,6 +40,11 @@ export { default as DashboardToggler } from './components/dashboard/components/D
 export { DashboardService } from './components/dashboard/DashboardService';
 export { default as useDashboard } from './components/dashboard/hooks/useDashboard';
 export {
+  useDashboardHorizontalPanel,
+  useDashboardVerticalPanel,
+  useDashoardBodyPanel,
+} from './components/dashboard/hooks/useDashboardPanel';
+export {
   DashboardServiceContext,
   default as useDashboardService,
 } from './components/dashboard/hooks/useDashboardService';

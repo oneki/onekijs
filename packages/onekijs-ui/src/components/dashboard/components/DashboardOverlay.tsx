@@ -18,7 +18,7 @@ export const dashboardOverlayStyle: ComponentStyle<DashboardOverlayProps> = ({ s
     left: 0;
     opacity: ${show ? '1' : '0'};
     transform: translateX(${show ? '0' : '-200%'});
-    transition: opacity 0.6s ease-in ${show ? '' : ', transform 0s linear 0.6s'};
+    transition: opacity 0.3s ease-in ${show ? '' : ', transform 0s linear 0.3s'};
   `;
 };
 

@@ -14,11 +14,13 @@ export interface ResizerProps {
   maxWidth?: string | 0;
   minHeight?: string | 0;
   maxHeight?: string | 0;
+  gap?: number;
 }
 
 export interface ResizeSplitterProps {
   onResize: ResizerHandler;
   target: React.RefObject<HTMLDivElement>;
+  gap: number;
 }
 
 export interface ResizeVerticalSplitterProps extends ResizeSplitterProps {

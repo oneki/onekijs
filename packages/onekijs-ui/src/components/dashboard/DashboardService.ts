@@ -113,6 +113,7 @@ export class DashboardService extends DefaultService<DashboardState> {
       maxHeight: props.maxHeight ?? 0,
       ref,
       resizable: props.resizable || false,
+      resizerGap: props.resizerGap || 0,
     };
     this.state[area] = dashboardPanel;
     this._fillRow(area === 'header' ? 0 : 2, area);
@@ -139,6 +140,7 @@ export class DashboardService extends DefaultService<DashboardState> {
       width: props.width ?? '200px',
       ref,
       resizable: props.resizable || false,
+      resizerGap: props.resizerGap || 0,
     };
     this.state[area] = dashboardPanel;
     this._fillColumn(area === 'left' ? 0 : 2, area);
@@ -147,6 +149,12 @@ export class DashboardService extends DefaultService<DashboardState> {
   @reducer
   resizeHeight(area: DashboardHorizontalArea, nextHeight: number, step: ResizeStep): void {
     const panel = this.state[area];
+    if (panel) {
+      const maxHeight = parseInt(`${panel.maxHeight}`);
+      const minHeight = parseInt(`${panel.minHeight}`);
+      if (maxHeight > 0 && nextHeight > maxHeight) return;
+      if (minHeight > 0 && nextHeight < minHeight) return;
+    }
     const left = this.state.left;
     const right = this.state.right;
     const body = this.state.body;
@@ -233,6 +241,12 @@ export class DashboardService extends DefaultService<DashboardState> {
   @reducer
   resizeWidth(area: DashboardVerticalArea, nextWidth: number, step: ResizeStep): void {
     const panel = this.state[area];
+    if (panel) {
+      const maxWidth = parseInt(`${panel.maxWidth}`);
+      const minWidth = parseInt(`${panel.minWidth}`);
+      if (maxWidth > 0 && nextWidth > maxWidth) return;
+      if (minWidth > 0 && nextWidth < minWidth) return;
+    }
     const header = this.state.header;
     const footer = this.state.footer;
     const body = this.state.body;

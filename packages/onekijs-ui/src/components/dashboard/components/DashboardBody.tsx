@@ -3,6 +3,7 @@ import React, { CSSProperties, useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
 import { backgroundColor } from '../../../styles/background';
 import { ComponentStyle } from '../../../styles/typings';
+import { addClassname } from '../../../utils/style';
 import useDashboardService from '../hooks/useDashboardService';
 import useDashboardState from '../hooks/useDashboardState';
 import { DashboardBodyComponentProps, DashboardBodyPanelProps, DashboardSize } from '../typings';
@@ -105,7 +106,7 @@ const style: ComponentStyle<DashboardBodyComponentProps> = (props) => {
     width: ${() => getBodyLength('width', 'small', props)};
     height: ${() => getBodyLength('height', 'small', props)};
     overflow: auto;
-    transition: ${() => (props.panel ? 'transform 0.6s, width 0.6s, height 0.6s' : 'none')};
+    transition: ${() => (props.panel ? 'transform 0.3s, width 0.3s, height 0.3s' : 'none')};
     transform: translate(${() => getTranslateX('small', props)}, ${() => getTranslateY('small', props)});
     @media only screen and (min-width: 768px) {
       width: ${() => getBodyLength('width', 'medium', props)};
@@ -129,7 +130,7 @@ const DashboardBody: FCC<DashboardBodyPanelProps> = (props) => {
 
   const panel = state.body;
   return (
-    <StyledDashboardBody {...state} panel={panel} className={props.className}>
+    <StyledDashboardBody {...state} panel={panel} className={addClassname('o-dashboard-body', props.className)}>
       {props.children}
     </StyledDashboardBody>
   );

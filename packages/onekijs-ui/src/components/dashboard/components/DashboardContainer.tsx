@@ -1,6 +1,7 @@
 import { FCC } from 'onekijs-framework';
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
+import { addClassname } from '../../../utils/style';
 import { DashboardContainerProps } from '../typings';
 
 export const getDashboardTemplate = (dashboardContainerProps: DashboardContainerProps): string => {
@@ -45,7 +46,7 @@ const DashboardContainerComponent: FCC<DashboardContainerProps> = (props) => {
   }, []);
 
   return (
-    <div className={props.className} ref={ref}>
+    <div className={addClassname('o-dashboard', props.className)} ref={ref}>
       {props.children}
     </div>
   );

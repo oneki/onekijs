@@ -101,7 +101,7 @@ export type ListItems<T = any, I extends ListItem<T> = ListItem<T>> = T[] | List
 
 export type ListConfig<T = any, I extends ListItem<T> = ListItem<T>> = {
   className?: string;
-  height?: number;
+  height?: string | number;
   increment?: number;
   ItemLoadingComponent?: FC;
   ItemComponent?: FC<ListItemProps<T, I>>;

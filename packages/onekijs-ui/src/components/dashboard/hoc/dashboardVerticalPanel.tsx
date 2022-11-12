@@ -3,6 +3,7 @@ import React, { CSSProperties, useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
 import { backgroundColor } from '../../../styles/background';
 import { ComponentStyle } from '../../../styles/typings';
+import { addClassname } from '../../../utils/style';
 import Resizer from '../../resizer';
 import { ResizeStep } from '../../resizer/typings';
 import useDashboardService from '../hooks/useDashboardService';
@@ -86,7 +87,11 @@ const Component: React.FC<DashboardVerticalPanelComponentProps> = (props) => {
   });
 
   return (
-    <div className={props.className} ref={ref} style={style}>
+    <div
+      className={addClassname(props.area === 'left' ? 'o-dashboard-left' : 'o-dashboard-right', props.className)}
+      ref={ref}
+      style={style}
+    >
       {stepRef.current && props.children}
     </div>
   );
@@ -100,7 +105,7 @@ const style: ComponentStyle<DashboardVerticalPanelComponentProps> = (props) => {
     width: ${getDashboardPanelLength('width', 'small', props.panel)};
     height: ${getHeight('small', props)};
     transform: translate(${getTranslateX('small', props)}, ${getTranslateY('small', props)});
-    transition: transform 0.6s, width 0.6s, height 0.6s;
+    transition: transform 0.3s, width 0.3s, height 0.3s;
     ${props.panel && props.panel[getFloatingKey('small')] ? 'z-index: 1001;' : 'auto;'}
     @media only screen and (min-width: 768px) {
       width: ${getDashboardPanelLength('width', 'medium', props.panel)};

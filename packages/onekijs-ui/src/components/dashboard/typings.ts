@@ -1,4 +1,5 @@
 import React from 'react';
+import { StylableProps } from '../../styles/typings';
 
 export type DashboardArea = DashboardHorizontalArea | DashboardVerticalArea | 'body' | 'none';
 
@@ -58,7 +59,7 @@ type DashboardHorizontalProps = {
 
 export type DashboardHorizontalPanelProps = DashboardSidePanelProps & DashboardHorizontalProps;
 
-export type DashboardProps = {
+export type DashboardProps = StylableProps & {
   ContainerComponent?: React.FC<DashboardContainerProps>;
   OverlayComponent?: React.FC<DashboardOverlayProps>;
 };
@@ -82,6 +83,7 @@ export type DashboardSidePanelProps = {
   floatingMedium?: boolean;
   floatingLarge?: boolean;
   resizable?: boolean;
+  resizerGap?: number;
 };
 
 export type DashboardSize = 'small' | 'medium' | 'large';

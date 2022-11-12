@@ -116,7 +116,7 @@ export type TableConfig<T = any, I extends TableItem<T> = TableItem<T>> = {
   header?: boolean;
   headerClassName?: string;
   HeaderComponent?: React.FC<TableHeaderProps<T, I>>;
-  height?: number;
+  height?: string | number;
   highlightRow?: boolean;
   increment?: number;
   LoadingComponent?: React.FC;

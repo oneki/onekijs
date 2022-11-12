@@ -27,7 +27,7 @@ export type ControllerTreeProps<
 
 export type TreeConfig<T = any, I extends TreeItem<T> = TreeItem<T>> = {
   className?: string;
-  height?: number;
+  height?: string | number;
   treeItemClassName?: string | ((item: I) => string);
   TreeItemComponent?: React.FC<TreeItemProps<T, I>>;
   TreeItemContentComponent?: React.FC<TreeItemProps<T, I>>;
