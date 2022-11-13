@@ -127,6 +127,9 @@ export type TableConfig<T = any, I extends TableItem<T> = TableItem<T>> = {
   onRowLeave?: TableRowHandler<T, I>;
   onRowOver?: TableRowHandler<T, I>;
   onRowOut?: TableRowHandler<T, I>;
+  paddingEnd?: number;
+  paddingStart?: number;
+  parentRef?: React.MutableRefObject<HTMLDivElement | null>;
   preload?: number;
   rowClassName?: string | ((item: I | undefined, rowIndex: number, columns: TableColumn<T, I>[]) => string);
   RowComponent?: React.FC<TableBodyRowProps<T, I>>;

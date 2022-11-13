@@ -75,9 +75,9 @@ export default class CollectionService<
   _positionIndex: AnonymousObject<string> = {};
   _db?: I[];
   _unregisterRouterListener?: UnregisterCallback;
-  _refreshing = false;
   _currentQuery?: string;
   _initialQuery?: Query;
+  _refreshing?: boolean;
   scrollToIndex?: (index: number, options?: { align: 'start' | 'center' | 'end' | 'auto' }) => void;
   scrollToOffset?: (offsetInPixels: number, options?: { align: 'start' | 'center' | 'end' | 'auto' }) => void;
 
@@ -463,13 +463,17 @@ export default class CollectionService<
   }
 
   @reducer
-  refresh(query?: Query, push = true): void {
+  refresh(query?: Query, push = true, noCache = false): void {
     if (isCollectionReady(this)) {
       const path = this.state.router.location.pathname;
-      this._refreshing = true;
       query = query ?? this.getQuery();
-      this._setParam(query, 'noCache', true);
+      if (noCache) {
+        this._setParam(query, 'noCache', true);
+      } else {
+        this._clearParam(query, 'noCache');
+      }
       const method = push ? 'push' : 'replace';
+      this._refreshing = true;
       this.state.router[method](urlBuilder(path, {}, urlSerializer(query)));
     }
   }
@@ -1141,9 +1145,9 @@ export default class CollectionService<
 
   @reducer
   _onLocationChange(location: Location): void {
-    if (!this._refreshing && !this.state.mutateUrl) return;
-    this._refreshing = false;
     const nextQuery = this._parseLocation(location);
+    if (!this._refreshing) return;
+    this._refreshing = false;
     if (this.state.local) {
       this._setQuery(nextQuery);
       if (location.relativeurl && this._cache[location.relativeurl]) {

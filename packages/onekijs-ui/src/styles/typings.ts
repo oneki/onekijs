@@ -341,6 +341,7 @@ export type Theme = {
     thFilterInputFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
     thFilterInputPaddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
     thFilterInputPaddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
+    tdFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
     tdFontColor: ColorPropertyTheme | ColorProperty;
     tdPaddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
     tdPaddingY: SpacingPropertyTheme | PaddingProperty<TLength>;

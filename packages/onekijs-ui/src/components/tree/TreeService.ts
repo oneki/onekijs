@@ -199,7 +199,11 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     ensureFieldValue(treeAdaptee, 'children', c);
     ensureFieldValue(treeAdaptee, 'icon', getIcon(data));
     const type = getType(c);
-    ensureFieldValue(treeAdaptee, 'type', get(data, 'type', type));
+    ensureFieldValue(
+      treeAdaptee,
+      'type',
+      get(data, 'folder') === false ? 'leaf' : get(data, 'folder') === true ? 'folder' : getType(c),
+    );
 
     const level = context.level || 0;
     const position = context.position;

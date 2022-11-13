@@ -27,6 +27,8 @@ const CollectionListComponent = <T = any, I extends ListItem<T> = ListItem<T>>({
   onItemDeactivate,
   onItemUnhighlight,
   onItemUnselect,
+  paddingEnd,
+  paddingStart,
   virtual,
   style,
 }: CollectionListProps<T, I>) => {
@@ -36,6 +38,8 @@ const CollectionListComponent = <T = any, I extends ListItem<T> = ListItem<T>>({
     controller,
     height,
     itemHeight,
+    paddingEnd,
+    paddingStart,
     preload,
     increment,
     ref,

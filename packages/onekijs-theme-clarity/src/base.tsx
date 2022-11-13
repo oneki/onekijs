@@ -238,8 +238,8 @@ export const clarityTheme = (customTheme: Partial<Theme> = {}): Theme => {
         '4xl': '2.4rem',
       },
       sizes: {
-        '2xs': '.5rem',
-        xs: '.6rem',
+        '2xs': '.55rem',
+        xs: '.65rem',
         sm: '.7rem',
         md: '.8rem',
         lg: '.9rem',
@@ -328,7 +328,7 @@ export const clarityTheme = (customTheme: Partial<Theme> = {}): Theme => {
     },
 
     table: {
-      shadow: 'sm',
+      shadow: 'none',
     },
 
     GlobalStyles,

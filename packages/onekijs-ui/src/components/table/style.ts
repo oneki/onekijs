@@ -30,6 +30,7 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true 
     ${boxShadow(t.shadow)}
     ${boxSizing('border-box')}
     ${paddingRight('sm')}
+    ${fontSize(t.tdFontSize)}
     scrollbar-width: thin;
     scrollbar-color: ${(props) => props.theme.palette.colors[props.theme.colors.light]}
       ${(props) => props.theme.colors[props.theme.colors.lighter]};
@@ -60,7 +61,9 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true 
     }
 
     .o-table-body-row-container {
-      ${paddingBottom('sm')}
+      ${borderBottomColor(t.tdBorderBottomColor)}
+      ${borderBottomWidth(t.tdBorderBottomWidth)}
+      ${borderBottomStyle(t.tdBorderBottomStyle)}
     }
     .o-table-body-row-expanded {
       .o-table-body-row {
@@ -71,10 +74,6 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true 
     .o-table-body-row-expanded-content {
       ${backgroundColor(t.tdExpandedBgColor)}
       ${overflowY('hidden')}
-      ${borderBottomColor(t.tdBorderBottomColor)}
-      ${borderBottomWidth(0)}
-      ${borderBottomStyle(t.tdBorderBottomStyle)}
-      ${boxShadow('default')}
     }
 
     .o-table-body-row:hover {
@@ -90,10 +89,6 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true 
       ${display('flex')}
       ${flexDirection('row')}
       ${color(t.tdFontColor)}
-      ${borderBottomColor(t.tdBorderBottomColor)}
-      ${borderBottomWidth(0)}
-      ${borderBottomStyle(t.tdBorderBottomStyle)}
-      ${boxShadow('default')}
       ${backgroundColor(t.bgColor)}
     }
 

@@ -117,6 +117,8 @@ export type ListConfig<T = any, I extends ListItem<T> = ListItem<T>> = {
   onItemUnhighlight?: ListItemHandler<T, I>;
   onItemSelect?: ListItemHandler<T, I>;
   onItemUnselect?: ListItemHandler<T, I>;
+  paddingEnd?: number;
+  paddingStart?: number;
   overscan?: number;
   preload?: number;
   style?: React.CSSProperties;

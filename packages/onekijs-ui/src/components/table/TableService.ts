@@ -86,7 +86,7 @@ class TableService<T = any, I extends TableItem<T> = TableItem<T>, S extends Tab
   protected *_autoRefresh(interval: number) {
     while (true) {
       yield delay(interval * 1000);
-      yield this.refresh();
+      yield this.refresh(undefined, undefined, true);
     }
   }
 

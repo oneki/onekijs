@@ -18,6 +18,8 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
     controller: ListCollection<T, I>;
     scrollToFn?: (offset: number, defaultScrollToFn?: (offset: number) => void) => void;
     keyExtractor?: (index: number) => number | string;
+    paddingEnd?: number;
+    paddingStart?: number;
   },
 ) => {
   isVirtual: boolean;
@@ -37,6 +39,8 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
   keyExtractor,
   ref,
   virtual,
+  paddingEnd,
+  paddingStart,
 }) => {
   const isVirtual = virtual === undefined ? height !== undefined : virtual;
   const [force, forceMeasure] = useReducer((x) => x + 1, 0);
@@ -71,6 +75,8 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
     parentRef: ref,
     overscan: overscan,
     keyExtractor: forceKeyExtractor,
+    paddingEnd,
+    paddingStart,
   });
 
   useEffect(() => {

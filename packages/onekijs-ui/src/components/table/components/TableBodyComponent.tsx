@@ -22,6 +22,9 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
     onRowClick,
     onRowEnter,
     onRowLeave,
+    paddingEnd,
+    paddingStart,
+    parentRef,
     preload,
     RowComponent = TableBodyRowComponent,
     rowClassName,
@@ -35,9 +38,11 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
   const { items, isVirtual, totalSize, virtualItems, measure } = useListView({
     controller: service,
     height: height,
-    ref: tableRef,
+    ref: parentRef || tableRef,
     overscan: 10,
     itemHeight,
+    paddingEnd,
+    paddingStart,
     preload,
     increment,
   });
@@ -82,7 +87,7 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
       onItemSelect={onRowClick}
       onItemHighlight={onRowEnter}
       onItemUnhighlight={onRowLeave}
-      parentRef={tableRef}
+      parentRef={parentRef || tableRef}
       bodyRef={contentRef}
       service={service}
       state={state}
