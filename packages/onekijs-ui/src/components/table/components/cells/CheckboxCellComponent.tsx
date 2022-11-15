@@ -2,9 +2,9 @@ import React from 'react';
 import { addClassname } from '../../../../utils/style';
 import FormCheckbox from '../../../checkbox/FormCheckbox';
 import useFormTableContext from '../../hooks/useFormTableContext';
-import { TableBodyCellProps, UseCheckboxColumnOptions } from '../../typings';
+import { TableBodyCellProps, CheckboxColumnOptions } from '../../typings';
 
-const CheckboxCellComponent = (options: UseCheckboxColumnOptions<any, any>): React.FC<TableBodyCellProps<any, any>> => {
+const CheckboxCellComponent = (options: CheckboxColumnOptions<any, any>): React.FC<TableBodyCellProps<any, any>> => {
   const CheckboxCellComponent: React.FC<TableBodyCellProps<any, any>> = ({ item, column, rowIndex }) => {
     const { tableName } = useFormTableContext();
     // const [validators] = extractValidators(options);

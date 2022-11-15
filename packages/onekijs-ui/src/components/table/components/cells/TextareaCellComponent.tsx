@@ -2,9 +2,9 @@ import React from 'react';
 import { addClassname } from '../../../../utils/style';
 import FormTextarea from '../../../textarea/FormTextarea';
 import useFormTableContext from '../../hooks/useFormTableContext';
-import { TableBodyCellProps, UseTextareaColumnOptions } from '../../typings';
+import { TableBodyCellProps, TextareaColumnOptions } from '../../typings';
 
-const TextareaCellComponent = (options: UseTextareaColumnOptions<any, any>): React.FC<TableBodyCellProps<any, any>> => {
+const TextareaCellComponent = (options: TextareaColumnOptions<any, any>): React.FC<TableBodyCellProps<any, any>> => {
   const TextareaCellComponent: React.FC<TableBodyCellProps<any, any>> = ({ item, column, rowIndex }) => {
     const { tableName } = useFormTableContext();
 

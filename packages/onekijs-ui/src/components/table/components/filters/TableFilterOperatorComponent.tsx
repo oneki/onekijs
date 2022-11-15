@@ -87,7 +87,10 @@ const TableFilterOperatorComponent: React.FC<TableFilterOperatorProps> = ({
             openArrowPosition="n"
             width="12px"
             height="12px"
-            className="o-filter-operator-toggler"
+            className={`o-filter-operator-toggler${
+              showOperators || collapsing || dropping ? ' o-filter-operator-toggler-open' : ''
+            }`}
+            open={showOperators}
           />
         </div>
         <Dropdown

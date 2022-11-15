@@ -10,7 +10,6 @@ import { zIndex } from '../../styles/position';
 import { minHeight, width } from '../../styles/size';
 import { paddingX, paddingY } from '../../styles/spacing';
 import { color, fontWeight } from '../../styles/typography';
-import { lighten } from '../../utils/color';
 import ListComponent from './components/ListComponent';
 
 const DropdownList = styled(List)`

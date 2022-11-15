@@ -5,21 +5,13 @@ import { TableFilterOperator, TableHeaderCellProps } from '../../typings';
 import { getValueFromFilter } from '../../util';
 import TableFilterOperatorComponent from './TableFilterOperatorComponent';
 
-const operators: TableFilterOperator[] = [
-  { text: 'contains', operator: 'like', not: false },
-  { text: 'ends with', operator: 'ew', not: false },
-  { text: 'equals', operator: 'eq', not: false },
-  { text: 'starts with', operator: 'sw', not: false },
-  { text: 'does not contain', operator: 'like', not: true },
-  { text: 'does not end with', operator: 'ew', not: true },
-  { text: 'is not equal', operator: 'eq', not: true },
-  { text: 'does not start with', operator: 'sw', not: true },
-];
-
-const TableInputFilterComponent: React.FC<TableHeaderCellProps> = ({ column }) => {
+const TableInputFilterComponent: React.FC<TableHeaderCellProps & { operators: TableFilterOperator[] }> = ({
+  column,
+  operators,
+}) => {
   const controller = useTableService();
   const filter = controller.getFilterById(column.id);
-  const filterValue = getValueFromFilter(filter);
+  const filterValue = `${getValueFromFilter(filter) || ''}`;
   const [value, setValue] = useState(filterValue);
   const [currentOperator, setCurrentOperator] = useState<TableFilterOperator>(operators[0]);
   const onValueChange = (e: ChangeEvent<HTMLInputElement>) => {

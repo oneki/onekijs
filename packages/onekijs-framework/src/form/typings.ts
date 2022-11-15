@@ -74,7 +74,7 @@ export type FormErrorCallback = (fields: Field[], values?: AnonymousObject) => v
 export type FormFieldProps<T = any> = FieldOptions<T> &
   ValidatorsType & {
     name: string;
-    id?: string | number;
+    id?: string;
   };
 
 export type FormLabelWidth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;

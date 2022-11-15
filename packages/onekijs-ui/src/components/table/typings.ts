@@ -5,6 +5,7 @@ import {
   FormFieldProps,
   Item,
   ItemAdaptee,
+  Primitive,
   QueryFilterCriteriaOperator,
   QueryFilterOrCriteria,
   QuerySortBy,
@@ -302,51 +303,55 @@ export type SelectColumn<
 
 export type TextareaColumn<T = any, I extends TableItem<T> = TableItem<T>> = TableColumn<T, I>;
 
-export type UseLinkColumnOptions<T = any, I extends TableItem<T> = TableItem<T>> = Omit<
+export type EnumColumnOptions<T = any, I extends TableItem<T> = TableItem<T>> = Omit<TableColumnSpec<T, I>, 'id'> & {
+  filterDataSource: [Primitive, string][] | string[];
+};
+
+export type LinkColumnOptions<T = any, I extends TableItem<T> = TableItem<T>> = Omit<
   TableColumnSpec<T, I>,
-  'CellComponent'
+  'CellComponent' | 'id'
 > & {
   href: string | ((item: I) => string);
 };
 
-export type UseCheckboxColumnOptions<T = any, I extends TableItem<T> = TableItem<T>> = Omit<
+export type CheckboxColumnOptions<T = any, I extends TableItem<T> = TableItem<T>> = Omit<
   TableColumnSpec<T, I>,
-  'CellComponent'
+  'CellComponent' | 'id'
 > &
   Omit<FormFieldProps, 'name'> &
   Omit<CheckboxProps, 'className' | 'onFocus' | 'onChange' | 'onBlur' | 'defaultValue'> & {
-    CellComponent?: (options: UseCheckboxColumnOptions<T, I>) => React.FC<TableBodyCellProps<T, I>>;
+    CellComponent?: (options: CheckboxColumnOptions<T, I>) => React.FC<TableBodyCellProps<T, I>>;
     defaultValue?: boolean;
   };
 
-export type UseInputColumnOptions<T = any, I extends TableItem<T> = TableItem<T>> = Omit<
+export type InputColumnOptions<T = any, I extends TableItem<T> = TableItem<T>> = Omit<
   TableColumnSpec<T, I>,
-  'CellComponent'
+  'CellComponent' | 'id'
 > &
   Omit<FormFieldProps, 'name'> &
   Omit<InputProps, 'className' | 'onFocus' | 'onChange' | 'onBlur'> & {
-    CellComponent?: (options: UseInputColumnOptions<T, I>) => React.FC<TableBodyCellProps<T, I>>;
+    CellComponent?: (options: InputColumnOptions<T, I>) => React.FC<TableBodyCellProps<T, I>>;
   };
 
-export type UseSelectColumnOptions<
+export type SelectColumnOptions<
   T = any,
   S = any,
   TI extends TableItem<T> = TableItem<T>,
   SI extends SelectItem<S> = SelectItem<S>,
-> = Omit<TableColumnSpec<T, TI>, 'CellComponent'> &
+> = Omit<TableColumnSpec<T, TI>, 'CellComponent' | 'id'> &
   Omit<SelectProps<S, SI>, 'className' | 'onFocus' | 'onChange' | 'onBlur' | 'items'> &
   Omit<FormFieldProps, 'name'> &
   UseCollectionOptions<S, SI> & {
     CellComponent?: SelectCell<T, S, TI, SI>;
   };
 
-export type UseTextareaColumnOptions<T = any, I extends TableItem<T> = TableItem<T>> = Omit<
+export type TextareaColumnOptions<T = any, I extends TableItem<T> = TableItem<T>> = Omit<
   TableColumnSpec<T, I>,
-  'CellComponent'
+  'CellComponent' | 'id'
 > &
   Omit<FormFieldProps, 'name'> &
   Omit<TextareaProps, 'className' | 'onFocus' | 'onChange' | 'onBlur'> & {
-    CellComponent?: (options: UseTextareaColumnOptions<T, I>) => React.FC<TableBodyCellProps<T, I>>;
+    CellComponent?: (options: TextareaColumnOptions<T, I>) => React.FC<TableBodyCellProps<T, I>>;
   };
 
 export type SelectCell<
@@ -354,7 +359,7 @@ export type SelectCell<
   S = any,
   TI extends TableItem<T> = TableItem<T>,
   SI extends SelectItem<S> = SelectItem<S>,
-> = (options: UseSelectColumnOptions<T, S, TI, SI>, broker: SelectBroker<S, SI>) => React.FC<TableBodyCellProps<T, TI>>;
+> = (options: SelectColumnOptions<T, S, TI, SI>, broker: SelectBroker<S, SI>) => React.FC<TableBodyCellProps<T, TI>>;
 
 export type UseTableOptions<T = any, I extends TableItem<T> = TableItem<T>> = UseListOptions<T, I> & {
   adapter?: TableItemAdapter<T>;

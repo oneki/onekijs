@@ -38,15 +38,22 @@ export const getCellWidth = (column: TableColumn<any, TableItem<any>>, fit?: boo
   }
 };
 
-export const getValueFromFilter = (filter?: QueryFilterOrCriteria): string => {
+export const getValueFromFilter = (filter?: QueryFilterOrCriteria): unknown => {
   if (filter === undefined) {
-    return '';
+    return undefined;
   }
   if (isQueryFilterCriteria(filter)) {
-    return `${filter.value || ''}`;
+    return filter.value;
   }
-  if (isQueryFilterCriteria(filter.criterias[0])) {
-    return `${filter.criterias[0].value || ''}`;
+  if (filter.criterias.length === 1) {
+    if (isQueryFilterCriteria(filter.criterias[0])) {
+      return filter.criterias[0].value;
+    } else {
+      return getValueFromFilter(filter.criterias[0]);
+    }
+  } else {
+    return filter.criterias.map((c) => {
+      return getValueFromFilter(c);
+    });
   }
-  return '';
 };

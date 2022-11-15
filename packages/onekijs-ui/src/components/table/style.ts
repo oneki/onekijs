@@ -5,6 +5,7 @@ import {
   borderBottomColor,
   borderBottomStyle,
   borderBottomWidth,
+  borderColor,
   borderRadius,
   borderWidth,
   boxShadow,
@@ -13,7 +14,7 @@ import { display, visibility } from '../../styles/display';
 import { flexDirection } from '../../styles/flex';
 import { boxSizing, cursor, outline, userSelect } from '../../styles/interactivity';
 import { overflow, overflowX, overflowY } from '../../styles/overflow';
-import { height, width } from '../../styles/size';
+import { height, minWidth, width } from '../../styles/size';
 import {
   marginBottom,
   marginLeft,
@@ -217,7 +218,7 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true 
       ${paddingBottom(t.thPaddingY)}
     }
 
-    .o-table-filter-input-container {
+    .o-table-filter-input-container, .o-table-filter-select-container {
       ${color(t.tdFontColor)}
       ${display('flex')}
       ${alignItems('center')}
@@ -235,6 +236,20 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true 
       }
     }
 
+    .o-table-filter-select-container {
+      .o-select-input-container {
+        ${backgroundColor('transparent')}
+        ${borderColor('transparent')}
+      }
+      .o-select-input-wrapper {
+        ${minWidth(0)}
+      }
+      .o-select-token {
+        ${fontSize('xs')}
+      }
+    }
+
+
     .o-table-filter-input {
       ${backgroundColor('transparent')}
       ${borderWidth(0)}
@@ -244,7 +259,6 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true 
         ${fontSize(t.thFilterInputFontSize)}
       }
     }
-
 
     .o-table-filter-operator-container {
       ${width('25px')}
@@ -264,6 +278,11 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true 
       }
       .o-toggler-icon {
         ${visibility(false)}
+      }
+      .o-filter-operator-toggler-open {
+        .o-toggler-icon {
+          ${visibility(true)}
+        }
       }
       &.o-table-filter-active {
         .o-filter-operator-icon, .o-filter-operator-toggler {

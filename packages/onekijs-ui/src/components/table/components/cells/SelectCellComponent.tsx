@@ -4,10 +4,10 @@ import FormSelect from '../../../select/FormSelect';
 import useSelectController from '../../../select/hooks/useSelectController';
 import { SelectBroker, SelectItem } from '../../../select/typings';
 import useFormTableContext from '../../hooks/useFormTableContext';
-import { TableBodyCellProps, TableItem, UseSelectColumnOptions } from '../../typings';
+import { TableBodyCellProps, TableItem, SelectColumnOptions } from '../../typings';
 
 const SelectCellComponent = (
-  options: UseSelectColumnOptions<any, any, TableItem<any>, SelectItem<any>>,
+  options: SelectColumnOptions<any, any, TableItem<any>, SelectItem<any>>,
   broker: SelectBroker<any, SelectItem<any>>,
 ): React.FC<TableBodyCellProps> => {
   const SelectCellComponent: React.FC<TableBodyCellProps> = ({ item, column, rowIndex }) => {
