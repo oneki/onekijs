@@ -1,108 +1,37 @@
 import React, { ChangeEvent, useState } from 'react';
-import styled, { css } from 'styled-components';
-import { alignItems, justifyContent } from '../../../../styles/alignment';
-import { backgroundColor } from '../../../../styles/background';
-import { borderRadius } from '../../../../styles/border';
-import { display } from '../../../../styles/display';
-import { cursor, userSelect } from '../../../../styles/interactivity';
-import { width } from '../../../../styles/size';
-import { color } from '../../../../styles/typography';
-import { addClassname } from '../../../../utils/style';
-import Dropdown from '../../../dropdown';
-import SearchIcon from '../../../icon/SearchIcon';
 import Input from '../../../input';
-import { InputProps } from '../../../input/typings';
 import useTableService from '../../hooks/useTableService';
-import { TableHeaderCellProps } from '../../typings';
+import { TableFilterOperator, TableHeaderCellProps } from '../../typings';
 import { getValueFromFilter } from '../../util';
+import TableFilterOperatorComponent from './TableFilterOperatorComponent';
 
-const SearchComponent: React.FC<InputProps> = ({ className }) => {
-  const [showOperators, setShowOperators] = useState(false);
-  const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
-  const toggleOperators = () => {
-    setShowOperators(!showOperators);
-  };
-  const [dropping, setDropping] = useState(false);
-  const [collapsing, setCollapsing] = useState(false);
-
-  const style: React.CSSProperties = {};
-
-  if (dropping || collapsing) {
-    style['zIndex'] = 1001;
-  }
-  return (
-    <div
-      ref={setContainerRef}
-      className={addClassname('o-search-icon-container', className)}
-      style={{ position: 'relative' }}
-    >
-      <SearchIcon className="o-search-icon" width="14px" height="14px" onClick={toggleOperators} />
-      {showOperators && (
-        <Dropdown
-          refElement={containerRef}
-          open={showOperators}
-          distance={0}
-          animationTimeout={200}
-          onDropStart={() => {
-            setDropping(true);
-          }}
-          onCollapseStart={() => {
-            setCollapsing(true);
-          }}
-          onDropDone={() => {
-            setDropping(false);
-          }}
-          onCollapseDone={() => {
-            setCollapsing(false);
-          }}
-        >
-          <div>operators</div>
-        </Dropdown>
-      )}
-    </div>
-  );
-};
-
-const StyledSearchComponent = styled(SearchComponent)`
-  ${css`
-      ${width('20px')}
-      ${display('flex')}
-      ${alignItems('center')}
-      ${borderRadius('none')}
-      ${justifyContent('center')}
-      ${backgroundColor('inherit')}
-      ${color('primary')}
-      ${userSelect('none')}
-      .o-search-icon {
-        ${cursor('pointer')}
-      }
-  `}
-`;
-
-// const StyledInput = styled(Input)`
-//   ${css`
-//     ${backgroundColor('#eee')}
-//     ${borderWidth(0)}
-//     ${borderRadius('none')}
-//     ${padding(0)}
-//     .o-input-field {
-//       ${paddingY('xs')}
-//       ${paddingX('xs')}
-//       ${fontSize('12px')}
-//     }
-
-//   `}
-// `;
+const operators: TableFilterOperator[] = [
+  { text: 'contains', operator: 'like', not: false },
+  { text: 'ends with', operator: 'ew', not: false },
+  { text: 'equals', operator: 'eq', not: false },
+  { text: 'starts with', operator: 'sw', not: false },
+  { text: 'does not contain', operator: 'like', not: true },
+  { text: 'does not end with', operator: 'ew', not: true },
+  { text: 'is not equal', operator: 'eq', not: true },
+  { text: 'does not start with', operator: 'sw', not: true },
+];
 
 const TableInputFilterComponent: React.FC<TableHeaderCellProps> = ({ column }) => {
   const controller = useTableService();
   const filter = controller.getFilterById(column.id);
   const filterValue = getValueFromFilter(filter);
   const [value, setValue] = useState(filterValue);
+  const [currentOperator, setCurrentOperator] = useState<TableFilterOperator>(operators[0]);
   const onValueChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.value) {
       if (controller.state.local) {
-        controller.addFilterCriteria(column.id, 'like', e.target.value, false, column.id);
+        controller.addFilterCriteria(
+          column.id,
+          currentOperator.operator,
+          e.target.value,
+          currentOperator.not,
+          column.id,
+        );
       } else {
         setValue(e.target.value);
       }
@@ -112,20 +41,34 @@ const TableInputFilterComponent: React.FC<TableHeaderCellProps> = ({ column }) =
     }
   };
 
+  const onOperatorChange = (operator: TableFilterOperator) => {
+    setCurrentOperator(operator);
+    if (value) {
+      controller.addFilterCriteria(column.id, operator.operator, value, operator.not, column.id);
+    }
+  };
+
   const onKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!controller.state.local && e.key === 'Enter') {
-      controller.addFilterCriteria(column.id, 'like', value, false, column.id);
+      controller.addFilterCriteria(column.id, currentOperator.operator, value, currentOperator.not, column.id);
     }
   };
 
   return (
-    <Input
-      className="o-table-filter-input"
-      value={controller.state.local ? filterValue : value}
-      onChange={onValueChange}
-      onKeyUp={onKeyUp}
-      PrefixComponent={StyledSearchComponent}
-    />
+    <div className="o-table-filter-input-container">
+      <TableFilterOperatorComponent
+        operators={operators}
+        onChange={onOperatorChange}
+        selected={currentOperator}
+        className={filterValue ? 'o-table-filter-active' : ''}
+      />
+      <Input
+        className="o-table-filter-input"
+        value={controller.state.local ? filterValue : value}
+        onChange={onValueChange}
+        onKeyUp={onKeyUp}
+      />
+    </div>
   );
 };
 

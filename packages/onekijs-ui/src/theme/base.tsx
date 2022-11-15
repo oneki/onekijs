@@ -207,7 +207,7 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
       thFilterInputBgColor: 'lighter',
       thFilterInputFontSize: 'sm',
       thFilterInputPaddingX: 'xs',
-      thFilterInputPaddingY: 'xs',
+      thFilterInputPaddingY: '2xs',
       tdFontColor: 'darkest',
       tdFontSize: 'xs',
       tdPaddingX: 'md',
@@ -473,7 +473,7 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
     paddingY: 'sm',
   };
 
-  set(theme.table, 'thFilterInputBgColor', lighten(get(theme.colors, 'primary', ''), 400));
+  // set(theme.table, 'thFilterInputBgColor', lighten(get(theme.colors, 'primary', ''), 400));
   set(theme.table, 'tdHoverBgColor', lighten(get(theme.colors, 'primary', ''), 400));
 
   Object.keys(ColorKeys).forEach((kind) => {

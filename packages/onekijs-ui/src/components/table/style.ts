@@ -1,10 +1,17 @@
 import { css } from 'styled-components';
 import { alignItems, justifyContent } from '../../styles/alignment';
 import { backgroundColor } from '../../styles/background';
-import { borderBottomColor, borderBottomStyle, borderBottomWidth, borderWidth, boxShadow } from '../../styles/border';
-import { display } from '../../styles/display';
+import {
+  borderBottomColor,
+  borderBottomStyle,
+  borderBottomWidth,
+  borderRadius,
+  borderWidth,
+  boxShadow,
+} from '../../styles/border';
+import { display, visibility } from '../../styles/display';
 import { flexDirection } from '../../styles/flex';
-import { boxSizing, cursor, outline } from '../../styles/interactivity';
+import { boxSizing, cursor, outline, userSelect } from '../../styles/interactivity';
 import { overflow, overflowX, overflowY } from '../../styles/overflow';
 import { height, width } from '../../styles/size';
 import {
@@ -13,6 +20,7 @@ import {
   marginTop,
   padding,
   paddingBottom,
+  paddingLeft,
   paddingRight,
   paddingTop,
   paddingX,
@@ -22,7 +30,28 @@ import { verticalAlign } from '../../styles/table';
 import { transitionDuration, transitionProperty, transitionTimingFunction } from '../../styles/transition';
 import { ComponentStyle } from '../../styles/typings';
 import { color, fontSize, fontWeight, textTransform } from '../../styles/typography';
+import { ListProps } from '../list/typings';
 import { TableProps } from './typings';
+
+export const filterListStyle: ComponentStyle<ListProps> = () => {
+  return css`
+    .o-filter-operator-list-item-content {
+      ${display('flex')}
+      ${alignItems('center')}
+    }
+
+    .o-filter-operator-list-item-icon {
+      ${display('flex')}
+      ${alignItems('center')}
+
+      .o-icon-success-svg {
+        ${color('primary')}
+        ${marginBottom('2xs')}
+      }
+      ${width(6)}
+    }
+  `;
+};
 
 export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true }) => {
   const t = theme.table;
@@ -186,17 +215,66 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true 
       ${borderBottomWidth(t.thBorderBottomWidth)}
       ${borderBottomColor(t.thBorderBottomColor)}
       ${paddingBottom(t.thPaddingY)}
-      .o-table-filter-input {
-        ${marginTop('xs')}
-        ${backgroundColor(t.thFilterInputBgColor)}
-        ${borderWidth(0)}
-        .o-input-field {
-          ${paddingY(t.thFilterInputPaddingY)}
-          ${paddingX(t.thFilterInputPaddingX)}
-          ${fontSize(t.thFilterInputFontSize)}
+    }
+
+    .o-table-filter-input-container {
+      ${color(t.tdFontColor)}
+      ${display('flex')}
+      ${alignItems('center')}
+      ${backgroundColor(t.thFilterInputBgColor)}
+      ${borderRadius('sm')}
+      ${marginTop('xs')}
+      ${width('full')}
+      ${height('full')}
+      &:hover {
+        .o-table-filter-operator-container {
+          .o-toggler-icon {
+            ${visibility(true)}
+          }
         }
       }
     }
+
+    .o-table-filter-input {
+      ${backgroundColor('transparent')}
+      ${borderWidth(0)}
+      .o-input-field {
+        ${paddingY(t.thFilterInputPaddingY)}
+        ${paddingX(t.thFilterInputPaddingX)}
+        ${fontSize(t.thFilterInputFontSize)}
+      }
+    }
+
+
+    .o-table-filter-operator-container {
+      ${width('25px')}
+      ${display('flex')}
+      ${alignItems('center')}
+      ${borderRadius('none')}
+      ${justifyContent('center')}
+      ${userSelect('none')}
+      ${height('full')}
+      .o-filter-operator-icon-container {
+        ${display('flex')}
+        ${flexDirection('row')}
+        ${alignItems('center')}
+        ${color('primary')}
+        ${cursor('pointer')}
+        ${paddingLeft('xs')}
+      }
+      .o-toggler-icon {
+        ${visibility(false)}
+      }
+      &.o-table-filter-active {
+        .o-filter-operator-icon, .o-filter-operator-toggler {
+          ${color('pink')}
+        }
+      }
+    }
+
+
+
+
 
     &.o-form-table {
       ${boxShadow('none')}

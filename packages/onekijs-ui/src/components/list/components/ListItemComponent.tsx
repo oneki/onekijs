@@ -9,12 +9,14 @@ const ListItemComponent = <T = any, I extends ListItem<T> = ListItem<T>>(props: 
   const { item, index, onMouseEnter, onMouseLeave, onClick, ItemContentComponent = ListItemContent } = props;
   return (
     <div
-      className={`o-list-item${item?.selected ? ' o-list-item-selected' : ''}${
-        item?.highlighted ? ' o-list-item-highlighted' : ''
-      }${item?.active ? ' o-list-item-active' : ''}${item?.disabled ? ' o-list-item-disabled' : ''}`}
+      className={`o-list-item${item?.selectable ? ' o-list-item-selectable' : ''}${
+        item?.selected ? ' o-list-item-selected' : ''
+      }${item?.highlighted ? ' o-list-item-highlighted' : ''}${item?.active ? ' o-list-item-active' : ''}${
+        item?.disabled ? ' o-list-item-disabled' : ''
+      }`}
       onMouseEnter={() => onMouseEnter && item && onMouseEnter(item, index)}
       onMouseLeave={() => onMouseLeave && item && onMouseLeave(item, index)}
-      onClick={() => onClick && item && onClick(item, index)}
+      onClick={() => onClick && item && item.selectable && onClick(item, index)}
     >
       <ItemContentComponent {...props} />
     </div>

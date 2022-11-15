@@ -8,12 +8,15 @@ import { IconProps } from './typings';
 const SuccessIconComponent: FC<IconProps> = (props) => {
   return (
     <div {...props}>
-      <svg className="o-icon-success-svg" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+      {/* <svg className="o-icon-success-svg" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
         <path
           fillRule="evenodd"
           clipRule="evenodd"
           d="M14.431 3.323l-8.47 10-.79-.036-3.35-4.77.818-.574 2.978 4.24 8.051-9.506.764.646z"
         />
+      </svg> */}
+      <svg className="o-icon-success-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 16" fill="currentColor">
+        <path fillRule="evenodd" d="M12 5l-8 8-4-4 1.5-1.5L4 10l6.5-6.5L12 5z" />
       </svg>
     </div>
   );

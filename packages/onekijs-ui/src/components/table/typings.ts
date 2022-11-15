@@ -5,13 +5,14 @@ import {
   FormFieldProps,
   Item,
   ItemAdaptee,
+  QueryFilterCriteriaOperator,
   QueryFilterOrCriteria,
   QuerySortBy,
   UseCollectionOptions,
   ValidationStatus,
 } from 'onekijs-framework';
 import React, { FC, ReactNode } from 'react';
-import { TshirtSize } from '../../styles/typings';
+import { StylableProps, TshirtSize } from '../../styles/typings';
 import { CheckboxProps } from '../checkbox/typings';
 import { FieldLayoutProps } from '../field/typings';
 import { InputProps } from '../input/typings';
@@ -202,6 +203,18 @@ export type TableExpandedProps<T = any, I extends TableItem<T> = TableItem<T>> =
   item: I;
   rowId?: string | number;
   rowIndex: number;
+};
+
+export type TableFilterOperator = {
+  not: boolean;
+  operator: QueryFilterCriteriaOperator;
+  text: string;
+};
+
+export type TableFilterOperatorProps = StylableProps & {
+  onChange: (operator: TableFilterOperator) => void;
+  operators: TableFilterOperator[];
+  selected: TableFilterOperator;
 };
 
 export type TableFooterCellProps<T = any, I extends TableItem<T> = TableItem<T>> = {

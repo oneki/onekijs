@@ -278,8 +278,11 @@ export type ItemAdaptee = {
   id?: string | number;
   text?: string;
   selected?: boolean;
+  selectable?: boolean;
   highlighted?: boolean;
+  highlightable?: boolean;
   active?: boolean;
+  activable?: boolean;
   disabled?: boolean;
   visible?: boolean;
 };

@@ -334,7 +334,7 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable = true, sea
     }
     .o-select-options,
     .o-select-not-found {
-      ${borderRadius('md')}
+      ${borderRadius('sm')}
       ${borderTopLeftRadius(0)}
       ${borderTopRightRadius(0)}
       ${boxShadow('lg')}

@@ -105,6 +105,7 @@ export { default as FormInput } from './components/input/FormInput';
 export { FormInputProps, InputProps } from './components/input/typings';
 export { default as Label } from './components/label';
 export { default as List } from './components/list';
+export { default as DropdownList } from './components/list/DropdownList';
 export { default as ListItemComponent, ListItemContent } from './components/list/components/ListItemComponent';
 export { default as LoadingItem } from './components/list/components/LoadingItem';
 export { default as useListController } from './components/list/hooks/useListController';
@@ -195,7 +196,7 @@ export {
   UseTabsController,
 } from './components/tab/typings';
 export { default as Table } from './components/table';
-export { default as useCheckboxColumn } from './components/table/columns/useCheckboxColumn';
+export { default as checkboxColumn } from './components/table/columns/checkboxColumn';
 export { default as useColumn } from './components/table/columns/useColumn';
 export { default as useInputColumn } from './components/table/columns/useInputColumn';
 export { default as useLinkColumn } from './components/table/columns/useLinkColumn';
