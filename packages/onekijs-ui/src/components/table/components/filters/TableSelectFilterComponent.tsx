@@ -1,6 +1,8 @@
 import { toArray } from 'onekijs-framework';
 import React, { useState } from 'react';
+import { addClassname } from '../../../../utils/style';
 import Select from '../../../select';
+import { useTableConfig } from '../../hooks/useTableConfig';
 import useTableService from '../../hooks/useTableService';
 import { TableColumn, TableFilterOperator, TableHeaderCellProps } from '../../typings';
 import { getValueFromFilter } from '../../util';
@@ -50,6 +52,9 @@ const TableSelectFilterComponent: React.FC<TableHeaderCellProps & { dataSource: 
     }
   };
 
+  const { className } = useTableConfig();
+  const scClassName = className ? className.split(' ').slice(0, 2).join(' ') : '';
+
   return (
     <div className="o-table-filter-select-container">
       <TableFilterOperatorComponent
@@ -59,7 +64,7 @@ const TableSelectFilterComponent: React.FC<TableHeaderCellProps & { dataSource: 
         className={filterValue && filterValue.length > 0 ? 'o-table-filter-active' : ''}
       />
       <Select
-        className="o-table-filter-select"
+        className={addClassname('o-table-filter-select', scClassName)}
         multiple={true}
         dataSource={dataSource}
         value={filterValue}

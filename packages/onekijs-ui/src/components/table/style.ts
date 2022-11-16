@@ -30,7 +30,7 @@ import {
 import { verticalAlign } from '../../styles/table';
 import { transitionDuration, transitionProperty, transitionTimingFunction } from '../../styles/transition';
 import { ComponentStyle } from '../../styles/typings';
-import { color, fontSize, fontWeight, textTransform } from '../../styles/typography';
+import { color, fontSize, fontWeight, lineHeight, textTransform } from '../../styles/typography';
 import { ListProps } from '../list/typings';
 import { TableProps } from './typings';
 
@@ -57,24 +57,27 @@ export const filterListStyle: ComponentStyle<ListProps> = () => {
 export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true }) => {
   const t = theme.table;
   return css`
-    ${boxShadow(t.shadow)}
-    ${boxSizing('border-box')}
-    ${paddingRight('sm')}
-    ${fontSize(t.tdFontSize)}
-    scrollbar-width: thin;
-    scrollbar-color: ${(props) => props.theme.palette.colors[props.theme.colors.light]}
-      ${(props) => props.theme.colors[props.theme.colors.lighter]};
-    &::-webkit-scrollbar {
-      width: 12px;
+    &.o-table {
+      ${boxShadow(t.shadow)}
+      ${boxSizing('border-box')}
+      ${paddingRight('sm')}
+      ${fontSize(t.tdFontSize)}
+      scrollbar-width: thin;
+      scrollbar-color: ${(props) => props.theme.palette.colors[props.theme.colors.light]}
+        ${(props) => props.theme.colors[props.theme.colors.lighter]};
+      &::-webkit-scrollbar {
+        width: 12px;
+      }
+      &::-webkit-scrollbar-track {
+        background: ${(props) => props.theme.palette.colors[props.theme.colors.lighter]};
+      }
+      &::-webkit-scrollbar-thumb {
+        background-color: ${(props) => props.theme.palette.colors[props.theme.colors.light]};
+        border: 3px solid ${(props) => props.theme.palette.colors[props.theme.colors.lighter]};
+      }
+      ${() => (fit ? 'flex-grow: 1;' : '')}
     }
-    &::-webkit-scrollbar-track {
-      background: ${(props) => props.theme.palette.colors[props.theme.colors.lighter]};
-    }
-    &::-webkit-scrollbar-thumb {
-      background-color: ${(props) => props.theme.palette.colors[props.theme.colors.light]};
-      border: 3px solid ${(props) => props.theme.palette.colors[props.theme.colors.lighter]};
-    }
-    ${() => (fit ? 'flex-grow: 1;' : '')}
+
 
     .o-table-not-found {
       ${display('flex')}
@@ -275,6 +278,7 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true 
         ${color('primary')}
         ${cursor('pointer')}
         ${paddingLeft('xs')}
+        ${height('full')}
       }
       .o-toggler-icon {
         ${visibility(false)}
@@ -352,6 +356,17 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true 
         ${display('flex')}
         ${alignItems('start')}
       }
+    }
+
+    .o-table-filter-select {
+      .o-select-token {
+        ${fontSize('2xs')}
+        ${lineHeight('sm')}
+      }
+    }
+
+    &.o-table-filter-select {
+      ${marginLeft('-12px')}
     }
   `;
 };
