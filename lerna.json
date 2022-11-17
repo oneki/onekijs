@@ -1,12 +1,9 @@
 {
-  "version": "0.15.4",
+  "version": "0.15.5",
   "npmClient": "yarn",
   "command": {
     "publish": {
-      "ignoreChanges": [
-        "ignored-file",
-        "*.md"
-      ],
+      "ignoreChanges": ["ignored-file", "*.md"],
       "conventionalCommits": true
     },
     "version": {
@@ -15,11 +12,7 @@
       "allowBranch": "master"
     }
   },
-  "packages": [
-    "packages/*",
-    "examples/*",
-    "getting-started/*"
-  ],
+  "packages": ["packages/*", "examples/*", "getting-started/*"],
   "useWorkspaces": true,
   "$schema": "node_modules/lerna/schemas/lerna-schema.json",
   "useNx": false
