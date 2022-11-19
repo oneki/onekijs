@@ -107,7 +107,7 @@ class SelectService<
     super.setUrl(url, query);
   }
 
-  _buildItem(data: T | undefined, adaptee: unknown, context?: AnonymousObject): I {
+  _buildItem(data: T | null | undefined, adaptee: unknown, context?: AnonymousObject): I {
     context = context || {};
 
     const getGroup = (data: any): SelectGroup | undefined => {

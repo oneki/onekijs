@@ -163,7 +163,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     this.setParam('filterExpanded', `${generateUniqueId()}`); // to force refresh and avoid cache
   }
 
-  _buildItem(data: T | undefined, adaptee: unknown, context?: AnonymousObject): I {
+  _buildItem(data: T | null | undefined, adaptee: unknown, context?: AnonymousObject): I {
     const hasContext = context !== undefined;
     context = context || {};
     const getChildren = (data: any): T[] | undefined => {
@@ -217,8 +217,8 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
         : treeAdaptee.children.map((child) => {
             if (context !== undefined) {
               context.level = level + 1;
-              context.position = context.nextPosition;
-              context.nextPosition = context.position + 1;
+              context.position = context.nextPosition !== undefined ? context.nextPosition : undefined;
+              context.nextPosition = context.position !== undefined ? context.position + 1 : undefined;
             } else {
               context = {
                 level,
