@@ -108,6 +108,7 @@ const ControlledSelectComponent = <
   overscan,
   clickable = true,
   ListComponent = DefaultSelectListComponent,
+  autoCompleteSearch = true,
 }: ControllerSelectProps<T, I, S, C>) => {
   if (nullable === undefined) {
     nullable = !required;
@@ -149,6 +150,7 @@ const ControlledSelectComponent = <
     defaultValue,
     sameWidth,
     overscan,
+    autoCompleteSearch,
   };
 
   const id = useId();
@@ -175,7 +177,7 @@ const ControlledSelectComponent = <
     if (showActiveRef.current && controller.state.active && controller.state.active.length > 0) {
       return controller.getItem(controller.state.active[0]);
     } else if (focus && search) {
-      const item = findSelectItem(controller, search.toString());
+      const item = autoCompleteSearch ? findSelectItem(controller, search.toString()) : controller.items[0];
       if (item === undefined && !isCollectionFetching(controller)) {
         return get(controller, 'items.0');
       }
@@ -186,7 +188,7 @@ const ControlledSelectComponent = <
     if (!multiple) {
       return controller.adapt(value as T | null | undefined);
     }
-  }, [focus, controller, value, multiple]);
+  }, [focus, controller, value, multiple, autoCompleteSearch]);
 
   const optionsRef = useRef<HTMLDivElement>(null);
 
@@ -290,7 +292,7 @@ const ControlledSelectComponent = <
   useEffect(() => {
     const search = controller.getSearch();
     if (open && focus && search && search !== previousSearchRef.current) {
-      const item = findSelectItem(controller, search.toString());
+      const item = autoCompleteSearch ? findSelectItem(controller, search.toString()) : controller.items[0];
       const activated = get<string>(controller.state.active, '0');
       if (item !== undefined && !isCollectionFetching(controller)) {
         previousSearchRef.current = search;
@@ -299,7 +301,7 @@ const ControlledSelectComponent = <
         }
       }
     }
-  }, [controller, focus, open, id]);
+  }, [controller, focus, open, id, autoCompleteSearch]);
 
   useEffect(() => {
     if (!multiple) {
@@ -556,7 +558,7 @@ const ControlledSelectComponent = <
           loading={loading}
           fetching={fetching}
           onChange={onInputChange}
-          value={proxyItem ? proxyItem.text : ''}
+          value={autoCompleteSearch ? (proxyItem ? proxyItem.text : '') : controller.getSearch() || ''}
           focus={focus}
           onFocus={onFocus}
           onBlur={onBlur}
@@ -572,6 +574,7 @@ const ControlledSelectComponent = <
           minChars={minChars}
           ref={triggerRef}
           disabled={disabled}
+          autoCompleteSearch={autoCompleteSearch}
         />
         <Dropdown
           attachToBody={attachDropdownToBody}

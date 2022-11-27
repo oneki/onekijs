@@ -95,6 +95,7 @@ export interface SelectInputProps<T = any, I extends SelectItem<T> = SelectItem<
   searchable: boolean;
   clickable: boolean;
   minChars: number;
+  autoCompleteSearch: boolean;
 }
 
 export type SelectGroup =
@@ -187,6 +188,7 @@ export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omi
   required?: boolean;
   sameWidth?: boolean;
   ListComponent?: React.FC<SelectListComponentProps<T, I>>;
+  autoCompleteSearch?: boolean;
 };
 
 export type SelectListComponentProps<T = any, I extends SelectItem<T> = SelectItem<T>> = CollectionListProps<T, I> & {
