@@ -19,8 +19,9 @@ const useField = (
   useEffect(() => {
     if (!form.initializing) {
       field.onChange(field.value);
-      if (optionsRef.current.disabled) {
-        form.setMetadata(nameRef.current, 'disabled', optionsRef.current.disabled);
+      const disabled = form.config.reconfigure && !optionsRef.current.editable ? true : optionsRef.current.disabled;
+      if (disabled) {
+        form.setMetadata(nameRef.current, 'disabled', disabled);
       }
       if (optionsRef.current.visible === false) {
         form.setMetadata(nameRef.current, 'visible', optionsRef.current.visible);

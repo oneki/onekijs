@@ -61,6 +61,7 @@ export type FormConfig = {
   layout?: FormLayout;
   LoadingComponent?: React.FC;
   fieldSize?: 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge';
+  reconfigure?: boolean;
 };
 
 export type FormDecorator = {
@@ -90,6 +91,7 @@ export type FormListenerType = 'valueChange' | 'validationChange' | 'submittingC
 export type FormMetadata = {
   visible?: boolean;
   disabled?: boolean;
+  editable?: boolean;
 };
 
 export type FormMetadataListener = (

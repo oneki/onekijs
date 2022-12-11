@@ -28,6 +28,7 @@ const configKeys: (keyof FormConfig)[] = [
   'xlLabelWidth',
   'layout',
   'fieldSize',
+  'reconfigure',
 ];
 
 const FormComponent: FCC<React.FormHTMLAttributes<HTMLFormElement>> = (props) => {

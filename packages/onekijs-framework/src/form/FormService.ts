@@ -475,10 +475,14 @@ export default class FormService extends DefaultService<FormState> {
         }),
       );
       this.defaultValues[name] = get(this.state.values, name, options.defaultValue);
-      this.defaultMetadata[name] = this.state.metadata[name] || {
-        disabled: options.disabled,
-        visible: options.visible,
-      };
+      const disabled = this.config.reconfigure && !options.editable ? true : options.disabled;
+      this.defaultMetadata[name] = Object.assign(
+        {
+          disabled,
+          visible: options.visible,
+        },
+        this.state.metadata[name],
+      );
     }
     return this.fields[name].context;
   }
