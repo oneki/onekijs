@@ -73,7 +73,11 @@ const Form: FCC<FormProps> = (props) => {
                 const next = get(controller.state.values, prop, '');
                 if (prev !== next || !controller.triggered[prop]) {
                   changed = true;
-                  (listener.listener as FormValueListener)(next, prev, prop);
+                  const prevWatchs =
+                    listener.watchs.length > 1 ? listener.watchs.map((w) => get(controller.prevValues, w)) : prev;
+                  const nextWatchs =
+                    listener.watchs.length > 1 ? listener.watchs.map((w) => get(controller.state.values, w, '')) : next;
+                  (listener.listener as FormValueListener)(nextWatchs, prevWatchs, prop);
                 }
               } else if (type === 'validationChange') {
                 let prev: FieldValidation | ContainerValidation;

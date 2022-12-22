@@ -2,16 +2,16 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import FormService from './FormService';
 import { FormValueListener } from './typings';
 
-const useFormWatcher = <R = any, T = any>(
+const useFormWatcher = <R = any>(
   form: FormService,
   watchs: string | string[],
-  listener: FormValueListener<T>,
+  listener: FormValueListener,
 ): R | undefined => {
   const id = useId();
   const [result, setResult] = useState<R | undefined>();
   const watchRef = useRef(watchs);
 
-  const valueListener: FormValueListener<T> = useCallback(
+  const valueListener: FormValueListener = useCallback(
     (value, previousValue, watch) => {
       const listenerResult = listener(value, previousValue, watch);
       if (result !== listenerResult) {

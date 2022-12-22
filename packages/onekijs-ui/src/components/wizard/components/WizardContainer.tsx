@@ -57,6 +57,8 @@ const WizardContainer: FCC<Omit<WizardProps, 'Component'>> = ({
         {state.members.map((step) => {
           if (step.visible) {
             indexRef.current++;
+          } else {
+            return null;
           }
           if (step.error !== undefined) {
             errorRef.current.push({

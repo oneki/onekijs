@@ -616,6 +616,7 @@ export default class FormService extends DefaultService<FormState> {
           id,
           listener,
           once,
+          watchs,
         };
         this.listenerIndex[id][watch] = listenerContext;
         this.listeners[type][watch] = this.listeners[type][watch] || [];

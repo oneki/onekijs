@@ -83,6 +83,7 @@ export type FormLabelWidth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 export interface FormListenerProps {
   id: string;
   listener: FormValueListener | FormValidationListener | FormSubmitListener | FormMetadataListener;
+  watchs: string[];
   once?: boolean;
 }
 
@@ -132,7 +133,7 @@ export type FormValidationListener = (
   watch: string,
 ) => any;
 
-export type FormValueListener<T = any> = (value: T, previousValue: T | undefined, watch: string) => any;
+export type FormValueListener = (value: any | any[], previousValue: any | any[], watch: string) => any;
 
 export type FormWarningCallback = (fields: Field[], values?: AnonymousObject) => void;
 

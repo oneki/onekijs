@@ -37,6 +37,7 @@ export { default as DashboardRight } from './components/dashboard/components/Das
 export { default as DashboardToggler } from './components/dashboard/components/DashboardToggler';
 export { DashboardService } from './components/dashboard/DashboardService';
 export { default as useDashboard } from './components/dashboard/hooks/useDashboard';
+export { default as FormStep } from './components/wizard/components/FormStep';
 export {
   useDashboardHorizontalPanel,
   useDashboardVerticalPanel,

@@ -113,6 +113,7 @@ const useFieldContainer = ({
       valueListenersRef.current[fieldName] = {
         id: valueChangeId,
         listener: valueFieldListener,
+        watchs: [fieldName],
       };
 
       const validationListener = (fieldName: string): FormValidationListener => {
@@ -144,6 +145,7 @@ const useFieldContainer = ({
       validationListenersRef.current[fieldName] = {
         id: validationChangeId,
         listener: validationFieldListener,
+        watchs: [fieldName],
       };
     });
     if (diff.added.length > 0 || diff.removed.length > 0) {

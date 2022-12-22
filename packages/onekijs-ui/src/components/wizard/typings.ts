@@ -14,6 +14,10 @@ export type StepProps = TabProps & {
   showTitle?: boolean;
 };
 
+export type FormStepProps = StepProps & {
+  name: string;
+};
+
 export type StepState = TabState & {
   optional: boolean;
 };

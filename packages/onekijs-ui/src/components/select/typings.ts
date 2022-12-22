@@ -60,7 +60,7 @@ export type FormSelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = 
   };
 
 export type SelectController<
-  T,
+  T = any,
   I extends SelectItem<T> = SelectItem<T>,
   S extends SelectState<T, I> = SelectState<T, I>,
 > = Collection<T, I, S> & {
