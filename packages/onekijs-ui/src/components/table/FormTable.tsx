@@ -11,10 +11,19 @@ const StyledFormTableComponent = styled(FormTableComponent)`
 `;
 
 const FormTable: FC<FormTableProps<any, TableItem<any>>> = React.memo((props) => {
+  let defaultValue = props.defaultValue;
+  if (defaultValue === undefined) {
+    let minLength = (props.minLength ?? props.min) || 0;
+    if (props.required && minLength < 1) {
+      minLength = 1;
+    }
+    const isSingleColumnTable = props.controller.columns.find((c) => c.id === '');
+    defaultValue = minLength > 0 ? Array(minLength).fill(isSingleColumnTable ? undefined : {}) : [];
+  }
   const [fieldLayoutProps, fieldComponentProps] = useFieldLayout<FormTableProps<any, TableItem<any>>>(
     Object.assign(
       {
-        defaultValue: props.defaultValue === undefined ? [] : props.defaultValue,
+        defaultValue,
       },
       props,
     ),

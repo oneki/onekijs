@@ -1,4 +1,4 @@
-import { LoadingStatus } from 'onekijs-framework';
+import { LoadingStatus, isItemFetching } from 'onekijs-framework';
 import React from 'react';
 import { ListItem, StandardListProps } from '../typings';
 import ListItemComponent, { ListItemContent } from './ListItemComponent';
@@ -19,7 +19,7 @@ const StandardListComponent = <T = any, I extends ListItem<T> = ListItem<T>>({
         if (item?.loadingStatus === LoadingStatus.Loading) {
           return <ItemLoadingComponent key={`item-${index}`} />;
         }
-        if (!item || !item.data) {
+        if (!item || isItemFetching(item)) {
           return null;
         }
         return (

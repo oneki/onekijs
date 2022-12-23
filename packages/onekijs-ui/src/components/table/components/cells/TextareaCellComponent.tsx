@@ -8,6 +8,9 @@ const TextareaCellComponent = (options: TextareaColumnOptions<any, any>): React.
   const TextareaCellComponent: React.FC<TableBodyCellProps<any, any>> = ({ item, column, rowIndex }) => {
     const { tableName } = useFormTableContext();
 
+    // if the id is empty, it's a single table column and the value is the row itself
+    const name = column.id ? `${tableName}.${rowIndex}.${column.id}` : `${tableName}.${rowIndex}`;
+
     const className =
       typeof options.className === 'function' ? options.className(item, column, rowIndex) : options.className;
     return (
@@ -15,7 +18,7 @@ const TextareaCellComponent = (options: TextareaColumnOptions<any, any>): React.
         size="small"
         layout="table"
         {...options}
-        name={`${tableName}.${rowIndex}.${column.id}`}
+        name={name}
         className={addClassname('o-table-textarea', className)}
       />
     );

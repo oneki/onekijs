@@ -99,17 +99,18 @@ export default class FormService extends DefaultService<FormState> {
   }
 
   @reducer
-  add(fieldArrayName: string, initialValue = {}): void {
-    // get current value
-    const currentArrayValue = get(this.state.values, fieldArrayName, []);
-    const index = currentArrayValue.length;
-    this.setValue(`${fieldArrayName}.${index}`, initialValue || {});
+  add(fieldArrayName: string, initialValue: any): void {
+    const arrayValue = get<any>(this.state.values, fieldArrayName, []).concat([initialValue]);
+    this.setValue(`${fieldArrayName}`, arrayValue);
   }
 
   addField(field: Field): void {
     if (!this.fields[field.context.name]) {
       this.fields[field.context.name] = field;
-      set(this.fieldIndex, field.context.name, true, false);
+      const currentIndex = get(this.fieldIndex, field.context.name);
+      if (currentIndex === undefined) {
+        set(this.fieldIndex, field.context.name, true);
+      }
     }
   }
 

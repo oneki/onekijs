@@ -14,9 +14,12 @@ const SelectCellComponent = (
     const { tableName } = useFormTableContext();
     const controller = useSelectController(options.dataSource, options);
     const service = controller.asService();
+
+    // if the id is empty, it's a single table column and the value is the row itself
+    const name = column.id ? `${tableName}.${rowIndex}.${column.id}` : `${tableName}.${rowIndex}`;
+
     const className =
       typeof options.className === 'function' ? options.className(item, column, rowIndex) : options.className;
-    const name = `${tableName}.${rowIndex}.${column.id}`;
 
     useEffect(() => {
       broker.addSubscriber(name, service);

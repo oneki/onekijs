@@ -26,7 +26,7 @@ const TableBodyCellComponent: FC<Omit<TableBodyCellProps, 'data'>> = React.memo(
 
   return (
     <div ref={ref} className={addClassname('o-table-body-cell', className)} style={getCellWidth(column, fit, grow)}>
-      {props.item.data && <Component {...props} data={props.item.data} />}
+      {props.item && <Component {...props} data={props.item.data} />}
     </div>
   );
 });

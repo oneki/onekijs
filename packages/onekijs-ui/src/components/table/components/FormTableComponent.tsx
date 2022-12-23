@@ -5,6 +5,7 @@ import Checkbox from '../../checkbox';
 import RemoveIcon from '../../icon/RemoveIcon';
 import TogglerIcon from '../../icon/TogglerIcon';
 import useFormTableContext, { DefaultFormTableContext } from '../hooks/useFormTableContext';
+import useTableColumns from '../hooks/useTableColumns';
 import { FormTableContext, FormTableProps, TableBodyCellProps, TableFooterProps, TableItem } from '../typings';
 import ControllerTableComponent from './ControllerTableComponent';
 
@@ -36,8 +37,9 @@ const SelectRowComponent: React.FC<TableBodyCellProps> = ({ item }) => {
 const FooterComponent: React.FC<TableFooterProps> = () => {
   const form = useForm();
   const { tableName, addLabel, maxLength } = useFormTableContext();
+  const isSingleColumnTable = useTableColumns().find((c) => c.id === '');
   const addRow: React.MouseEventHandler<HTMLDivElement> = (e) => {
-    form.add(tableName);
+    form.add(tableName, isSingleColumnTable ? undefined : {});
     e.preventDefault();
   };
   const currentSize = (form.getValue(tableName) || []).length;
