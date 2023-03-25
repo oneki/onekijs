@@ -168,6 +168,7 @@ export type ComponentProps = {
 };
 
 /**
+ * ## Title2
  * This is the documentation of the component
  * The goal is to have **markdown** tag in the descrition
  *

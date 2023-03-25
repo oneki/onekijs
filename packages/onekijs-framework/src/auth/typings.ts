@@ -110,7 +110,18 @@ export interface Idp extends IdpSettings {
 }
 
 export interface LoginOptions {
+  /**
+   * Called if the login request failed.
+   * Mainly used for Form based authentication
+   *
+   * @defaultvalue 'a function that sends a notification on the topic `login-error`'
+   */
   onError?: AppErrorCallback;
+  /**
+   * alled if the login request was successful.<br/>Mainly used for Form based authentication
+   *
+   * @defaultvalue 'a function that redirects the user to the original requested page or the homepage'
+   */
   onSuccess?: AppSuccessCallback;
   callback?: boolean;
 }
