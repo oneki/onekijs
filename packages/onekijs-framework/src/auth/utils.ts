@@ -60,11 +60,11 @@ export function oidcBrowser(idpConfig: IdpSettings): Idp {
   return Object.assign({ type: IdpType.OidcBrowser }, defaultIdpSettings.oidc_browser, idpConfig);
 }
 
-export function getIdpName(state: AnyState): string | undefined {
+export function getIdpName(state: AnyState, identity = 'default'): string | undefined {
   return (
-    get(state, 'auth.idpName') ||
-    sessionStorage.getItem('onekijs.idpName') ||
-    localStorage.getItem('onekijs.idpName') ||
+    get(state, `auth.${identity}.idpName`) ||
+    sessionStorage.getItem(`onekijs.${identity}.idpName`) ||
+    localStorage.getItem(`onekijs.${identity}.idpName`) ||
     undefined
   );
 }

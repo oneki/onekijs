@@ -7,11 +7,12 @@ import useSecurityContext from './useSecurityContext';
 export const secure = (
   Component: ElementType,
   validator?: (securityContext: any) => boolean,
-  options: { ErrorComponent?: ElementType } = {},
+  options: { ErrorComponent?: ElementType; identity?: 'string' } = {},
 ): FCC<ComponentPropsWithoutRef<typeof Component>> => {
+  const identity = options.identity ?? 'default';
   const SecureComponent: FCC<ComponentPropsWithoutRef<typeof Component>> = memo((props) => {
-    const [securityContext, loading] = useSecurityContext();
-    const auth = useGlobalProp('auth');
+    const [securityContext, loading] = useSecurityContext(undefined, undefined, identity);
+    const auth = useGlobalProp(`auth.${identity}`);
     // const [error, setError] = useState(null);
     const ErrorComponent = options.ErrorComponent || DefaultAuthErrorComponent;
     const error = {

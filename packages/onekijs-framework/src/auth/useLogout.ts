@@ -25,14 +25,15 @@ const useLogout = (options: LogoutOptions = {}): [BasicError | undefined, boolea
   const onError = useErrorCallback(options.onError) || defaultOnError;
   const onSuccess = useSuccessCallback(options.onSuccess);
   const callback = options.callback;
+  const identity = options.identity ?? 'default';
 
   useEffect(() => {
     if (callback) {
-      service.successLogout(onError, onSuccess);
+      service.successLogout(onError, onSuccess, identity);
     } else {
-      service.logout(onError, onSuccess);
+      service.logout(onError, onSuccess, identity);
     }
-  }, [service, onError, onSuccess, callback]);
+  }, [service, onError, onSuccess, callback, identity]);
 
   return [state.error, state.loading || false];
 };
