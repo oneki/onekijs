@@ -1,6 +1,7 @@
 export interface Auth {
   token?: Token;
   basic?: BasicAuth;
+  securityContext?: any;
 }
 
 export interface OidcToken {

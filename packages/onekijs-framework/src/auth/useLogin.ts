@@ -8,8 +8,42 @@ import { AnonymousObject } from '../types/object';
 import LoginService from './LoginService';
 import { LoginOptions, LoginState } from './typings';
 
-// manage the login
-const useLogin = (idpName = 'default', options: LoginOptions = {}): [BasicError | undefined, boolean, AnyFunction] => {
+/**
+ * The **useLogin** hooks instanciates a login service
+ *
+ * ```ts
+ * const [error, loading, submit] = useLogin(idpName, options);
+ * ```
+ *
+ * @param idpName **idpName** is used to retrieve the configuration identified by the key ***idp/:idpName*** in `src/settings.ts`.
+ * @param options
+ * @returns
+ *
+ * @group Hooks
+ * @category Auth
+ */
+const useLogin = (
+  idpName = 'default',
+  options: LoginOptions = {},
+): [
+  /**
+   * Set if an error occurs during the login phase.
+   * The error object contains three properties:
+   * - **code**
+   * - **message**: the error message
+   * - **payload**: any additionnal data specific to the error
+   */
+  BasicError | undefined,
+  /**
+   * A flag to indicate that an AJAX request is in progress
+   */
+  boolean,
+  /**
+   * A function to submit the credentials to the server.
+   * Mainly used for Form based authentication
+   */
+  AnyFunction,
+] => {
   // create the local login service
   const [state, service] = useLocalService(LoginService, {
     loading: false,

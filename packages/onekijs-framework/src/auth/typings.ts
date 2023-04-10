@@ -69,6 +69,7 @@ export interface IdpSettings extends AnonymousObject {
   external?: boolean;
   externalLoginEndpoint?: string | ((idp: Idp, context: AppContext) => string);
   externalLogoutEndpoint?: string | ((idp: Idp, context: AppContext) => string);
+  identity?: string;
   jwksEndpoint?: string | ((token: any, idp: Idp, context: AppContext) => string);
   loginCallbackRoute?: string;
   loginContentType?: IdpContentType;
@@ -77,6 +78,7 @@ export interface IdpSettings extends AnonymousObject {
   logoutMethod?: IdpMethod;
   logoutCallbackRoute?: string;
   logoutEndpoint?: string | ((idp: Idp, context: AppContext) => string);
+  logoutRoute?: string;
   name?: string;
   nonce?: boolean;
   oauth2?: boolean;
@@ -110,7 +112,18 @@ export interface Idp extends IdpSettings {
 }
 
 export interface LoginOptions {
+  /**
+   * Called if the login request failed.
+   * Mainly used for Form based authentication
+   *
+   * @defaultvalue 'a function that sends a notification on the topic `login-error`'
+   */
   onError?: AppErrorCallback;
+  /**
+   * alled if the login request was successful.<br/>Mainly used for Form based authentication
+   *
+   * @defaultvalue 'a function that redirects the user to the original requested page or the homepage'
+   */
   onSuccess?: AppSuccessCallback;
   callback?: boolean;
 }
@@ -119,6 +132,7 @@ export interface LogoutOptions {
   onError?: AppErrorCallback;
   onSuccess?: AppSuccessCallback;
   callback?: boolean;
+  identity?: string;
 }
 
 export interface LoginState extends State {

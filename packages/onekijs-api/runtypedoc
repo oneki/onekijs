@@ -1,2 +1,2 @@
 #/usr/bin/sh
-typedoc --json src/api/test.json src/test.ts
+yarn typedoc --json ./dist/test.json src/test.ts && yarn ts-node src/index.ts ./dist/test.json ./dist/framework-api /framework-api

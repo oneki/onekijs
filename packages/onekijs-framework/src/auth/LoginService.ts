@@ -183,6 +183,7 @@ export default class LoginService extends DefaultLocalService<LoginState> {
     try {
       // build the IDP configuration from the settings and some default values
       const idp = getIdp(settings, idpName);
+      const identity = idp.identity ?? 'default';
 
       // get the loginCallback route the settings
       const redirectUri = absoluteUrl(idp.loginCallbackRoute || `${router.pathname}/callback`);
@@ -207,30 +208,30 @@ export default class LoginService extends DefaultLocalService<LoginState> {
 
         if (idp.nonce || (idp.responseType && idp.responseType.includes('id_token'))) {
           const nonce = generateNonce();
-          getIdpStorage(idp).setItem('onekijs.nonce', nonce);
+          getIdpStorage(idp).setItem(`onekijs.${identity}.nonce`, nonce);
           const hash = yield sha256(nonce);
           params.nonce = hash;
         } else {
-          getIdpStorage(idp).removeItem('onekijs.nonce');
+          getIdpStorage(idp).removeItem(`onekijs.${identity}.nonce`);
         }
         if (idp.state) {
           const state = generateState();
-          getIdpStorage(idp).setItem('onekijs.state', state);
+          getIdpStorage(idp).setItem(`onekijs.${identity}.state`, state);
 
           const hash = yield sha256(state);
           params.state = hash;
         } else {
-          getIdpStorage(idp).removeItem('onekijs.state');
+          getIdpStorage(idp).removeItem(`onekijs.${identity}.state`);
         }
 
         if (idp.responseType === 'code' && idp.pkce) {
           const verifier = generateCodeVerifier();
-          getIdpStorage(idp).setItem('onekijs.verifier', verifier);
+          getIdpStorage(idp).setItem(`onekijs.${identity}.verifier`, verifier);
           const challenge = yield generateCodeChallenge(verifier);
           params.code_challenge = challenge;
           params.code_challenge_method = idp.codeChallengeMethod;
         } else {
-          getIdpStorage(idp).removeItem('onekijs.verifier');
+          getIdpStorage(idp).removeItem(`onekijs.${identity}.verifier`);
         }
 
         if (typeof idp.authorizeEndpoint === 'function') {
@@ -301,6 +302,7 @@ export default class LoginService extends DefaultLocalService<LoginState> {
     try {
       // build the IDP configuration from the settings and some default values
       const idp = getIdp(settings, idpName);
+      const identity = idp.identity ?? 'default';
 
       // by default, the response is the current location containing all
       // parameters found in the URL
@@ -328,8 +330,8 @@ export default class LoginService extends DefaultLocalService<LoginState> {
             // validating the authorizeEndpoint response based on spec
             // https://openid.net/specs/openid-connect-core-1_0.html#AuthResponseValidation
             const params = router.query;
-            const state = getIdpStorage(idp).getItem('onekijs.state');
-            getIdpStorage(idp).removeItem('onekijs.state');
+            const state = getIdpStorage(idp).getItem(`onekijs.${identity}.state`);
+            getIdpStorage(idp).removeItem(`onekijs.${identity}.state`);
 
             if (!params) {
               throw new DefaultBasicError('Cannot parse the URL');
@@ -347,6 +349,7 @@ export default class LoginService extends DefaultLocalService<LoginState> {
             }
 
             const hash: string = yield sha256(state || undefined);
+            console.log('state in localstorage ', state, 'state from URL', params.state, 'hash ', hash);
             if (idp.state && hash !== params.state) {
               throw new DefaultBasicError('Invalid oauth2 state', 'invalid_state');
             }
@@ -361,6 +364,7 @@ export default class LoginService extends DefaultLocalService<LoginState> {
               client_id: idp.clientId,
               redirect_uri: absoluteUrl(idp.loginCallbackRoute || `${router.pathname}`),
               code: params.code,
+              scope: idp.scope,
             };
             if (idp.clientSecret) {
               if (idp.clientAuth === 'body') {
@@ -376,8 +380,8 @@ export default class LoginService extends DefaultLocalService<LoginState> {
             }
 
             if (idp.pkce) {
-              body.code_verifier = getIdpStorage(idp).getItem('onekijs.verifier');
-              getIdpStorage(idp).removeItem('onekijs.verifier');
+              body.code_verifier = getIdpStorage(idp).getItem(`onekijs.${identity}.verifier`);
+              getIdpStorage(idp).removeItem(`onekijs.${identity}.verifier`);
             }
 
             // get the token from the tokenEndpoint
@@ -407,9 +411,9 @@ export default class LoginService extends DefaultLocalService<LoginState> {
         // validates the nonce found in the id_token
         // https://openid.net/specs/openid-connect-core-1_0.html#TokenResponseValidation
         const id_token = parseJwt((token as { id_token: string }).id_token);
-        const nonce = getIdpStorage(idp).getItem('onekijs.nonce');
+        const nonce = getIdpStorage(idp).getItem(`onekijs.${identity}.nonce`);
         const hash: string = yield sha256(nonce || undefined);
-        getIdpStorage(idp).removeItem('onekijs.nonce');
+        getIdpStorage(idp).removeItem(`onekijs.${identity}.nonce`);
         if (hash !== id_token.nonce) {
           throw Error('Invalid oauth2 nonce');
         }
@@ -455,6 +459,7 @@ export default class LoginService extends DefaultLocalService<LoginState> {
     try {
       // build the IDP configuration from the settings and some default values
       const idp = getIdp(settings, idpName);
+      const identity = idp.identity ?? 'default';
       if (token) {
         // save the IDP and the token
         yield this.authService.saveToken(token, idp);
@@ -465,10 +470,10 @@ export default class LoginService extends DefaultLocalService<LoginState> {
 
       if (securityContext) {
         // save the securityContext
-        yield this.authService.setSecurityContext(securityContext);
+        yield this.authService.setSecurityContext(securityContext, identity);
       } else {
         // get the securityContext from the userInfo endpoint and save it
-        yield this.authService.fetchSecurityContext();
+        yield this.authService.fetchSecurityContext(undefined, undefined, identity);
       }
       // call the reducer to update the local state
       yield this.onSuccess();
@@ -521,11 +526,12 @@ export default class LoginService extends DefaultLocalService<LoginState> {
 
       // build the IDP configuration from the settings and some default values
       const idp = getIdp(settings, idpName);
+      const identity = idp.identity ?? 'default';
 
       if (isOauth(idp)) {
         // ask the authService to load the token in the store from the
         // localStorage (if not yet loaded)
-        const token: OidcToken = yield this.authService.loadToken();
+        const token: OidcToken = yield this.authService.loadToken(undefined, undefined, identity);
         if (token && token.expires_at && parseInt(token.expires_at) >= Date.now()) {
           // do a success login because the token was found and is still valid
           yield this.successLogin(token, undefined, idpName, onError, onSuccess);
@@ -535,7 +541,11 @@ export default class LoginService extends DefaultLocalService<LoginState> {
 
       // try to fetch the security context to see if we are already logged in
       try {
-        const securityContext: AnonymousObject | undefined = yield this.authService.fetchSecurityContext();
+        const securityContext: AnonymousObject | undefined = yield this.authService.fetchSecurityContext(
+          undefined,
+          undefined,
+          identity,
+        );
         // We didn't receive an 401 while loading the context, meaning that we are
         // already logged => do a success login
         yield this.successLogin(undefined, securityContext, idpName, onError, onSuccess);
