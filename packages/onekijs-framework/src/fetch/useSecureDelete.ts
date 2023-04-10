@@ -6,7 +6,7 @@ const useSecureDelete = (
   url: string,
   options: AppFetchOptions = {},
 ): [(extraOptions?: AppExtraFetchOptions) => void, boolean] => {
-  const identity = options.identity ?? 'string';
+  const identity = options.identity ?? 'default';
   const authKey = useGlobalProp('settings.auth.key') || `auth.${identity}`;
   const auth = useGlobalProp(authKey);
   options.auth = auth;

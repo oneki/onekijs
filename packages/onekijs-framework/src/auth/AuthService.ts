@@ -54,7 +54,7 @@ export default class AuthService extends DefaultGlobalService {
 
       return persist === 'localStorage' ? 'localStorage' : 'sessionStorage';
     };
-
+    console.log('SET TOKEN', `auth.${identity}.token`, token);
     if (token === null || persist === null) {
       // if the token is null or the config specifies to persist nothing,
       // we remove to token from the persistent storage
@@ -70,6 +70,7 @@ export default class AuthService extends DefaultGlobalService {
       // it's not a oauth2 token but a simple "string" token. Persist as it is
       setItem(`onekijs.${identity}.token`, token, storage('token'), idp.cookieCrypt, idp.cookieTTL, idp.cookiePath);
       // persist the token in the redux state. It can be added as a bearer to any ajax request.
+      console.log('SET IN STATE', `auth.${identity}.token`, token);
       set(this.state, `auth.${identity}.token`, token);
     } else {
       // it's an oauth2 token, persist all keys

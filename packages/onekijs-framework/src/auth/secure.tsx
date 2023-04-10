@@ -7,7 +7,7 @@ import useSecurityContext from './useSecurityContext';
 export const secure = (
   Component: ElementType,
   validator?: (securityContext: any) => boolean,
-  options: { ErrorComponent?: ElementType; identity?: 'string' } = {},
+  options: { ErrorComponent?: ElementType; identity?: string } = {},
 ): FCC<ComponentPropsWithoutRef<typeof Component>> => {
   const identity = options.identity ?? 'default';
   const SecureComponent: FCC<ComponentPropsWithoutRef<typeof Component>> = memo((props) => {

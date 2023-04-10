@@ -21,19 +21,24 @@ function useSecurityContext(selector?: string, defaultValue?: any, identity = 'd
   const [loading, setLoading] = useState(false);
   const securityContext = useGlobalProp(`auth.${identity}.securityContext`);
   const authService = useAuthService();
+  console.log('userSEcurityContext identity = ', identity);
 
   useEffect(() => {
     if (securityContext !== undefined) {
       setLoading(false);
     } else {
       setLoading(true);
-      authService.fetchSecurityContext(() => {
-        setTimeout(() => {
-          authService.setSecurityContext(null);
-        }, 0);
-      });
+      authService.fetchSecurityContext(
+        () => {
+          setTimeout(() => {
+            authService.setSecurityContext(null, identity);
+          }, 0);
+        },
+        undefined,
+        identity,
+      );
     }
-  }, [authService, securityContext]);
+  }, [authService, securityContext, identity]);
 
   return [get(securityContext, selector, defaultValue), loading];
 }

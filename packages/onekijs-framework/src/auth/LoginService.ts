@@ -349,6 +349,7 @@ export default class LoginService extends DefaultLocalService<LoginState> {
             }
 
             const hash: string = yield sha256(state || undefined);
+            console.log('state in localstorage ', state, 'state from URL', params.state, 'hash ', hash);
             if (idp.state && hash !== params.state) {
               throw new DefaultBasicError('Invalid oauth2 state', 'invalid_state');
             }
@@ -363,6 +364,7 @@ export default class LoginService extends DefaultLocalService<LoginState> {
               client_id: idp.clientId,
               redirect_uri: absoluteUrl(idp.loginCallbackRoute || `${router.pathname}`),
               code: params.code,
+              scope: idp.scope,
             };
             if (idp.clientSecret) {
               if (idp.clientAuth === 'body') {
