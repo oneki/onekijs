@@ -63,12 +63,12 @@ export default class LogoutService extends DefaultLocalService<LogoutState> {
    */
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Latest)
-  *logout(onError?: ErrorCallback, onSuccess?: SuccessCallback) {
+  *logout(onError?: ErrorCallback, onSuccess?: SuccessCallback, identity = 'default') {
     const { router, settings, store } = this.context;
     try {
-      const idpName = getIdpName(store.getState());
+      const idpName = getIdpName(store.getState(), identity);
       if (!idpName) {
-        yield this.successLogout(onError, onSuccess);
+        yield this.successLogout(onError, onSuccess, identity);
         return;
       }
 
@@ -101,7 +101,7 @@ export default class LogoutService extends DefaultLocalService<LogoutState> {
           window.location.href = `${absoluteUrl(idp.externalLogoutEndpoint, get(settings, 'server.baseUrl'))}${search}`;
         } else {
           // nothing to do, just call successLogout
-          yield this.successLogout(onError, onSuccess);
+          yield this.successLogout(onError, onSuccess, identity);
         }
       } else {
         if (typeof idp.logoutEndpoint === 'function') {
@@ -117,7 +117,7 @@ export default class LogoutService extends DefaultLocalService<LogoutState> {
         }
 
         // the logout is done => call successLogout
-        yield this.successLogout(onError, onSuccess);
+        yield this.successLogout(onError, onSuccess, identity);
       }
     } catch (e) {
       yield this.onError(e as BasicError);
@@ -134,11 +134,11 @@ export default class LogoutService extends DefaultLocalService<LogoutState> {
   }
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Latest)
-  *successLogout(onError?: ErrorCallback, onSuccess?: SuccessCallback) {
+  *successLogout(onError?: ErrorCallback, onSuccess?: SuccessCallback, identity = 'default') {
     const { router, settings } = this.context;
     try {
       // clear the token and the security context
-      yield this.authService.clear();
+      yield this.authService.clear(undefined, undefined, identity);
 
       // call the reducer to update the local state
       yield this.onSuccess();

@@ -69,6 +69,7 @@ export interface IdpSettings extends AnonymousObject {
   external?: boolean;
   externalLoginEndpoint?: string | ((idp: Idp, context: AppContext) => string);
   externalLogoutEndpoint?: string | ((idp: Idp, context: AppContext) => string);
+  identity?: string;
   jwksEndpoint?: string | ((token: any, idp: Idp, context: AppContext) => string);
   loginCallbackRoute?: string;
   loginContentType?: IdpContentType;
@@ -77,6 +78,7 @@ export interface IdpSettings extends AnonymousObject {
   logoutMethod?: IdpMethod;
   logoutCallbackRoute?: string;
   logoutEndpoint?: string | ((idp: Idp, context: AppContext) => string);
+  logoutRoute?: string;
   name?: string;
   nonce?: boolean;
   oauth2?: boolean;
@@ -130,6 +132,7 @@ export interface LogoutOptions {
   onError?: AppErrorCallback;
   onSuccess?: AppSuccessCallback;
   callback?: boolean;
+  identity?: string;
 }
 
 export interface LoginState extends State {
