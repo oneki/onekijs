@@ -65,7 +65,7 @@ export const TreeItemContent = <T = any, I extends TreeItem<T> = TreeItem<T>>(pr
 
   return (
     <div className="o-tree-item-content" onClick={onClick}>
-      {isFolder ? <FolderIcon /> : <FileIcon />}
+      {iconElement === undefined && (isFolder ? <FolderIcon /> : <FileIcon />)}
       {iconElement && <span className="o-tree-item-icon">{iconElement}</span>}
       <span className="o-tree-item-text">{item.text || ''}</span>
     </div>
