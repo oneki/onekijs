@@ -3,8 +3,10 @@ import { UseGetOptions } from './typings';
 import useGet from './useGet';
 
 const useSecureGet = <T = any>(url: string, options: UseGetOptions<T> = {}): [T, boolean, () => void] => {
-  const authKey = useGlobalProp('settings.auth.key') || 'auth';
+  const identity = options.identity ?? 'default';
+  const authKey = useGlobalProp('settings.auth.key') || `auth.${identity}`;
   const auth = useGlobalProp(authKey);
+  console.log('auth', auth);
   options.auth = auth;
   return useGet<T>(url, options);
 };

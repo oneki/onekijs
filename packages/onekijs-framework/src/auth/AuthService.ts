@@ -22,8 +22,8 @@ export default class AuthService extends DefaultGlobalService {
    * @param {object} securityContext : the security context to save
    */
   @reducer
-  setSecurityContext(securityContext?: AnonymousObject | null): void {
-    set(this.state, 'auth.securityContext', securityContext);
+  setSecurityContext(securityContext?: AnonymousObject | null, identity = 'default'): void {
+    set(this.state, `auth.${identity}.securityContext`, securityContext);
   }
 
   /**
@@ -32,8 +32,8 @@ export default class AuthService extends DefaultGlobalService {
    * @param {string|object} token : the token to save
    */
   @reducer
-  setToken(token: string | AnonymousObject | null): void {
-    const idpName = getIdpName(this.state);
+  setToken(token: string | AnonymousObject | null, identity = 'default'): void {
+    const idpName = getIdpName(this.state, identity);
     const idp = getIdp(this.context.settings, idpName);
     const persist: string | null = get(idp, 'persist', null);
     let toCookie: string | null = null;
@@ -54,35 +54,43 @@ export default class AuthService extends DefaultGlobalService {
 
       return persist === 'localStorage' ? 'localStorage' : 'sessionStorage';
     };
-
+    console.log('SET TOKEN', `auth.${identity}.token`, token);
     if (token === null || persist === null) {
       // if the token is null or the config specifies to persist nothing,
       // we remove to token from the persistent storage
       oauth2Keys.forEach((k: string) => {
-        removeItem(`onekijs.${k}`, storage(k));
+        removeItem(`onekijs.${identity}.${k}`, storage(k));
       });
-      removeItem('onekijs.token', storage('token'));
+      removeItem(`onekijs.${identity}.token`, storage('token'));
       // remove the token from the redux state.
-      del(this.state, 'auth.token');
+      del(this.state, `auth.${identity}.token`);
     } else if (persist === 'memory') {
-      set(this.state, 'auth.token', token);
+      set(this.state, `auth.${identity}.token`, token);
     } else if (typeof token === 'string') {
       // it's not a oauth2 token but a simple "string" token. Persist as it is
-      setItem('onekijs.token', token, storage('token'), idp.cookieCrypt, idp.cookieTTL, idp.cookiePath);
+      setItem(`onekijs.${identity}.token`, token, storage('token'), idp.cookieCrypt, idp.cookieTTL, idp.cookiePath);
       // persist the token in the redux state. It can be added as a bearer to any ajax request.
-      set(this.state, 'auth.token', token);
+      console.log('SET IN STATE', `auth.${identity}.token`, token);
+      set(this.state, `auth.${identity}.token`, token);
     } else {
       // it's an oauth2 token, persist all keys
       oauth2Keys.forEach((k) => {
         if (token[k]) {
-          setItem(`onekijs.${k}`, `${token[k]}`, storage(k), idp.cookieCrypt, idp.cookieTTL, idp.cookiePath);
+          setItem(
+            `onekijs.${identity}.${k}`,
+            `${token[k]}`,
+            storage(k),
+            idp.cookieCrypt,
+            idp.cookieTTL,
+            idp.cookiePath,
+          );
         }
       });
       // create a expirtes_at key for convenience
       if (token.expires_in && !token.expires_at) {
         token.expires_at = Date.now() + parseInt(token.expires_in) * 1000;
         setItem(
-          'onekijs.expires_at',
+          `onekijs.${identity}.expires_at`,
           `${token.expires_at}`,
           storage('expires_at'),
           idp.cookieCrypt,
@@ -91,7 +99,7 @@ export default class AuthService extends DefaultGlobalService {
         );
       }
       // persist the token in the redux state. It can be added as a bearer to any ajax request.
-      set(this.state, 'auth.token', token);
+      set(this.state, `auth.${identity}.token`, token);
     }
   }
 
@@ -101,18 +109,30 @@ export default class AuthService extends DefaultGlobalService {
    * @param {object} idp : the IDP to save (full object). Can be null for removal
    */
   @reducer
-  setIdp(idp?: Idp): void {
+  clearIdp(idp: Idp): void {
+    // get the persistence storage specified by the IDP (null means that
+    // nothing related to authentication is persisted on the client side)
+    const persist = get(idp, 'persist', null);
+    // the idpName is always persisted (in the localStorage except if persist is sessionStorage)
+    // This allows a user to refresh the tab (always) and open a new tab (if persist is not sessionStorage)
+    const storage = persist === 'sessionStorage' ? 'sessionStorage' : 'localStorage';
+
+    const identity = idp.identity ?? 'default';
+
+    set(this.state, `auth.${identity}.idpName`, null);
+    // and the persistence storage
+    removeItem(`onekijs.${identity}.idpName`, storage);
+  }
+
+  /**
+   * Save the idp name in the redux store
+   *
+   * @param {object} idp : the IDP to save (full object). Can be null for removal
+   */
+  @reducer
+  setIdp(idp: Idp): void {
     const { router, settings } = this.context;
     const nextIdp = idp;
-    if (isNull(idp)) {
-      // if it's a removal, we need to check in which storage the idp name was saved
-      // get the current idpName from the redux store
-      const idpName = getIdpName(this.state);
-      // if not found, the idp was already removed
-      if (isNull(idpName)) return;
-      // build the full IDP object from the settings
-      idp = getIdp(settings, idpName);
-    }
 
     // get the persistence storage specified by the IDP (null means that
     // nothing related to authentication is persisted on the client side)
@@ -121,24 +141,20 @@ export default class AuthService extends DefaultGlobalService {
     // This allows a user to refresh the tab (always) and open a new tab (if persist is not sessionStorage)
     const storage = persist === 'sessionStorage' ? 'sessionStorage' : 'localStorage';
 
-    if (nextIdp === null || nextIdp === undefined) {
-      // it's a removal, just remove from the redux store
-      set(this.state, 'auth.idpName', null);
-      // and the persistence storage
-      removeItem('onekijs.idpName', storage);
-    } else {
-      // save the idp name in the redux store
-      set(this.state, 'auth.idpName', nextIdp.name);
-      // and in the persistence storage
-      setItem('onekijs.idpName', nextIdp.name, storage);
-      if (storage === 'localStorage') {
-        // listen to change on the idpName key and logout every other tab
-        onStorageChange('onekijs.idpName', (value: string) => {
-          if (value !== nextIdp.name) {
-            router.push(get(settings, 'routes.logout') || '/logout');
-          }
-        });
-      }
+    const identity = idp.identity ?? 'default';
+
+    // save the idp name in the redux store
+    set(this.state, `auth.${identity}.idpName`, nextIdp.name);
+    // and in the persistence storage
+    setItem(`onekijs.${identity}.idpName`, nextIdp.name, storage);
+    if (storage === 'localStorage') {
+      // listen to change on the idpName key and logout every other tab
+      onStorageChange(`onekijs.${identity}.idpName`, (value: string) => {
+        if (value !== nextIdp.name) {
+          const logoutRoute = idp.logoutRoute ?? (get(settings, 'routes.logout') || '/logout');
+          router.push(logoutRoute);
+        }
+      });
     }
   }
 
@@ -152,11 +168,15 @@ export default class AuthService extends DefaultGlobalService {
    */
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Latest)
-  *clear(onError?: ErrorCallback, onSuccess?: SuccessCallback) {
+  *clear(onError?: ErrorCallback, onSuccess?: SuccessCallback, identity = 'default') {
     try {
-      yield this.setSecurityContext(undefined);
-      yield this.setToken(null);
-      yield this.setIdp();
+      yield this.setSecurityContext(undefined, identity);
+      yield this.setToken(null, identity);
+      const idpName = getIdpName(this.state, identity);
+      const idp = getIdp(this.context.settings, idpName);
+      if (idp) {
+        yield this.clearIdp(idp);
+      }
       if (onSuccess) {
         yield onSuccess({});
       }
@@ -182,10 +202,10 @@ export default class AuthService extends DefaultGlobalService {
    */
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Leading)
-  *fetchSecurityContext(onError?: ErrorCallback, onSuccess?: SuccessCallback) {
+  *fetchSecurityContext(onError?: ErrorCallback, onSuccess?: SuccessCallback, identity = 'default') {
     const { store, settings } = this.context;
     try {
-      const idpName = getIdpName(store.getState());
+      const idpName = getIdpName(store.getState(), identity);
       if (!idpName || idpName === 'null') {
         // not idp name in the stage or the persistence storage => not yet authenticated
         throw new HTTPError(401);
@@ -203,13 +223,13 @@ export default class AuthService extends DefaultGlobalService {
 
       let securityContext: AnonymousObject | null = null;
       // we fetch the token from the redux store
-      let token = get(store.getState(), 'auth.token');
+      let token = get(store.getState(), `auth.${identity}.token`);
 
       // or from the persistence storage
       if (!token) {
         // try to load it from the localStorage
-        yield this.loadToken();
-        token = get(store.getState(), 'auth.token');
+        yield this.loadToken(undefined, undefined, identity);
+        token = get(store.getState(), `auth.${identity}.token`);
       }
       if (typeof userinfoEndpoint === 'function') {
         // delegate the security context fetching to the user-passed function
@@ -229,12 +249,12 @@ export default class AuthService extends DefaultGlobalService {
         // get the security context
         securityContext = yield asyncGet(absoluteUrl(userinfoEndpoint, get(settings, 'server.baseUrl')), {
           // we add a bearer auth if a token was saved in the redux store
-          auth: get(store.getState(), 'auth'),
+          auth: get(store.getState(), `auth.${identity}`),
         });
       }
 
       // save the security context in the store
-      yield this.setSecurityContext(securityContext);
+      yield this.setSecurityContext(securityContext, identity);
       if (onSuccess) {
         // call the success callback
         yield onSuccess(securityContext);
@@ -265,12 +285,12 @@ export default class AuthService extends DefaultGlobalService {
    */
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Latest)
-  *loadToken(onError?: ErrorCallback, onSuccess?: SuccessCallback) {
+  *loadToken(onError?: ErrorCallback, onSuccess?: SuccessCallback, identity = 'default') {
     const { store, settings } = this.context;
     try {
-      let result: string | AnonymousObject | null = get(store.getState(), 'auth.token', null);
+      let result: string | AnonymousObject | null = get(store.getState(), `auth.${identity}.token`, null);
       if (isNull(result)) {
-        const idpName = getIdpName(store.getState());
+        const idpName = getIdpName(store.getState(), identity);
         if (!idpName || idpName === 'null') {
           // not authenticated
           return null;
@@ -285,10 +305,10 @@ export default class AuthService extends DefaultGlobalService {
         // TODO: manage cookie storage
         const storage = persist === 'localStorage' ? 'localStorage' : 'sessionStorage';
 
-        const expires_at = parseInt(yield getItem('onekijs.expires_at', storage));
+        const expires_at = parseInt(yield getItem(`onekijs.${identity}.expires_at`, storage));
         const clockSkew = idp.clockSkew || 60;
-        const access_token: string | undefined | null = yield getItem('onekijs.access_token', persist);
-        const refresh_token: string | undefined | null = yield getItem('onekijs.refresh_token', persist);
+        const access_token: string | undefined | null = yield getItem(`onekijs.${identity}.access_token`, persist);
+        const refresh_token: string | undefined | null = yield getItem(`onekijs.${identity}.refresh_token`, persist);
         if (access_token && expires_at >= Date.now() + clockSkew * 1000) {
           // the token is still valid
           const token: AnonymousObject = {
@@ -298,7 +318,7 @@ export default class AuthService extends DefaultGlobalService {
           // build the token
           for (const k of oauth2Keys) {
             if (!token[k]) {
-              const item: unknown = yield getItem(`onekijs.${k}`, storage);
+              const item: unknown = yield getItem(`onekijs.${identity}.${k}`, storage);
               token[k] = item;
             }
           }
@@ -310,7 +330,7 @@ export default class AuthService extends DefaultGlobalService {
           // eslint-disable-next-line @typescript-eslint/no-empty-function
           result = yield this.refreshToken({ refresh_token }, idp, true, () => {});
         } else {
-          const token: AnonymousObject | string | undefined = yield getItem('onekijs.token', persist);
+          const token: AnonymousObject | string | undefined = yield getItem(`onekijs.${identity}.token`, persist);
           if (token) {
             result = yield this.saveToken(token, idp);
           }
@@ -348,6 +368,7 @@ export default class AuthService extends DefaultGlobalService {
   @saga(SagaEffect.Every)
   *refreshToken(token: AnonymousObject, idp: Idp, force = false, onError?: ErrorCallback): AnonymousObject | undefined {
     const { store } = this.context;
+    const identity = idp.identity ?? 'default';
     try {
       if (!force && !token.hasOwnProperty('expires_at')) {
         // the token has no expiration time, so it's still valid
@@ -367,7 +388,7 @@ export default class AuthService extends DefaultGlobalService {
         }
 
         // check that the token has not been revoked or changed
-        const actualToken = get(store.getState(), 'auth.token');
+        const actualToken = get(store.getState(), `auth.${identity}.token`);
         if (token !== actualToken) {
           // another method has refresh / change the token (during the nap of this saga)
           // just return the actual one
@@ -427,7 +448,7 @@ export default class AuthService extends DefaultGlobalService {
           if (e.code >= 400 && e.code < 500) {
             // refresh token is not valid anymore
             // Clear tokens stored in local storage
-            yield this.clear();
+            yield this.clear(undefined, undefined, identity);
             // eslint-disable-next-line no-ex-assign
             e = new HTTPError(401, 'Refresh token is expired', e);
           }
@@ -453,6 +474,7 @@ export default class AuthService extends DefaultGlobalService {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
   *saveToken(token: AnonymousObject | string, idp: Idp, onError?: ErrorCallback) {
+    const identity = idp.identity ?? 'default';
     try {
       if (idp.validate) {
         if (!idp.jwksEndpoint) {
@@ -481,7 +503,7 @@ export default class AuthService extends DefaultGlobalService {
         }
       }
       yield this.setIdp(idp);
-      yield this.setToken(token);
+      yield this.setToken(token, identity);
 
       if (!(token instanceof String) && (token as AnonymousObject).refresh_token) {
         yield spawn([this, this.refreshToken], token as AnonymousObject, idp, false, onError);
