@@ -1,7 +1,7 @@
 import { call } from 'redux-saga/effects';
 import DefaultLocalService from '../app/LocalService';
-import { reducer, saga, service } from '../core/annotations';
 import DefaultBasicError from '../core/BasicError';
+import { reducer, saga, service } from '../core/annotations';
 import { asyncHttp, asyncPost } from '../core/xhr';
 import NotificationService from '../notification/NotificationService';
 import { OidcToken } from '../types/auth';
@@ -349,7 +349,6 @@ export default class LoginService extends DefaultLocalService<LoginState> {
             }
 
             const hash: string = yield sha256(state || undefined);
-            console.log('state in localstorage ', state, 'state from URL', params.state, 'hash ', hash);
             if (idp.state && hash !== params.state) {
               throw new DefaultBasicError('Invalid oauth2 state', 'invalid_state');
             }
@@ -555,7 +554,7 @@ export default class LoginService extends DefaultLocalService<LoginState> {
         // to the caller
         // for any business error (40X), we bypass the error (it's likely an
         // unauthenticate error, so we continue the login process)
-        if ((e as BasicError).code >= 500) {
+        if (((e as BasicError).code as number) >= 500) {
           throw e;
         }
       }

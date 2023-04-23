@@ -2,6 +2,7 @@ import useLazyRef from '../core/useLazyRef';
 import useTryRouter from '../core/useTryRouter';
 import useTryStore from '../core/useTryStore';
 import LocalRouter from '../router/LocalRouter';
+import { get } from '../utils/object';
 import { Collection, CollectionProxy, CollectionState, Item, UseCollectionOptions } from './typings';
 import { isCollection } from './utils';
 
@@ -13,7 +14,7 @@ const useCollectionInitialState = <T = any, I extends Item<T> = Item<T>>(
     | undefined,
   options: UseCollectionOptions<T, I> = {},
 ): CollectionState<T, I> => {
-  const auth = useTryStore()?.getState().auth;
+  const auth = get(useTryStore()?.getState(), 'auth.default');
   let router = useTryRouter();
 
   let dataOrUrl: T[] | string | undefined;

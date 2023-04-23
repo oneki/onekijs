@@ -21,7 +21,6 @@ function useSecurityContext(selector?: string, defaultValue?: any, identity = 'd
   const [loading, setLoading] = useState(false);
   const securityContext = useGlobalProp(`auth.${identity}.securityContext`);
   const authService = useAuthService();
-  console.log('userSEcurityContext identity = ', identity);
 
   useEffect(() => {
     if (securityContext !== undefined) {

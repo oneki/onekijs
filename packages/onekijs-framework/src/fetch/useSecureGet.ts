@@ -6,7 +6,6 @@ const useSecureGet = <T = any>(url: string, options: UseGetOptions<T> = {}): [T,
   const identity = options.identity ?? 'default';
   const authKey = useGlobalProp('settings.auth.key') || `auth.${identity}`;
   const auth = useGlobalProp(authKey);
-  console.log('auth', auth);
   options.auth = auth;
   return useGet<T>(url, options);
 };
