@@ -1,7 +1,7 @@
 import { Task } from '@redux-saga/types';
 import { cancel, delay, fork } from 'redux-saga/effects';
-import { reducer, saga, service } from '../core/annotations';
 import DefaultService from '../core/Service';
+import { reducer, saga, service } from '../core/annotations';
 import { asyncGet } from '../core/xhr';
 import { ValidationStatus } from '../types/form';
 import { AnonymousObject } from '../types/object';
@@ -100,8 +100,11 @@ export default class FormService extends DefaultService<FormState> {
 
   @reducer
   add(fieldArrayName: string, initialValue: any): void {
-    const arrayValue = get<any>(this.state.values, fieldArrayName, []).concat([initialValue]);
-    this.setValue(`${fieldArrayName}`, arrayValue);
+    let arrayValue = get<any>(this.state.values, fieldArrayName, []);
+    if (arrayValue === undefined || arrayValue === null || !Array.isArray(arrayValue)) {
+      arrayValue = [];
+    }
+    this.setValue(`${fieldArrayName}`, arrayValue.concat([initialValue]));
   }
 
   addField(field: Field): void {
@@ -128,20 +131,20 @@ export default class FormService extends DefaultService<FormState> {
   }
 
   @reducer
-  clearError(fieldName: string, validatorName: string, compile = true): void {
+  clearError(fieldName: string, validatorName?: string, compile = true): void {
     this.clearValidation(fieldName, validatorName, ValidationCode.Error, compile);
   }
 
   @reducer
-  clearValidation(fieldName: string, validatorName: string, code: ValidationCode, compile = true): void {
-    del(this.fields[fieldName], `validations.${code}.${validatorName}`);
+  clearValidation(fieldName: string, validatorName: string | undefined, code: ValidationCode, compile = true): void {
+    del(this.fields[fieldName], validatorName ? `validations.${code}.${validatorName}` : `validations.${code}`);
     if (compile) {
       this.compileValidations(fieldName);
     }
   }
 
   @reducer
-  clearWarning(fieldName: string, validatorName: string, compile = true): void {
+  clearWarning(fieldName: string, validatorName?: string, compile = true): void {
     this.clearValidation(fieldName, validatorName, ValidationCode.Warning, compile);
   }
 
