@@ -1,6 +1,6 @@
 {
   "name": "next-step06-notification",
-  "version": "0.15.7",
+  "version": "0.15.8",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "next": "^12.2.4",
-    "onekijs-next": "^0.15.7",
-    "onekijs-ssr": "^0.15.7",
+    "onekijs-next": "^0.15.8",
+    "onekijs-ssr": "^0.15.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

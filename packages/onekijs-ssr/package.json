@@ -1,6 +1,6 @@
 {
   "name": "onekijs-ssr",
-  "version": "0.15.7",
+  "version": "0.15.8",
   "description": "Opiniated React framework built on top of Next.js",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -28,7 +28,7 @@
   "author": "Oneki",
   "license": "MIT",
   "dependencies": {
-    "onekijs-framework": "^0.15.7"
+    "onekijs-framework": "^0.15.8"
   },
   "devDependencies": {
     "microbundle": "^0.13.3",

@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.8](https://github.com/oneki/onekijs/compare/v0.15.7...v0.15.8) (2023-05-02)
+
+**Note:** Version bump only for package next-step11-theming
+
 ## [0.15.7](https://github.com/oneki/onekijs/compare/v0.15.6...v0.15.7) (2023-01-10)
 
 **Note:** Version bump only for package next-step11-theming
