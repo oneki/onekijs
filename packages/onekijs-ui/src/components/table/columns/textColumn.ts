@@ -1,10 +1,10 @@
 import DefaultCellComponent from '../components/cells/DefaultCellComponent';
 import TableTextFilterComponent from '../components/filters/TableTextFilterComponent';
-import { TableColumn, TableColumnSpec, TableItem } from '../typings';
+import { TableColumn, TableColumnOptions, TableItem } from '../typings';
 
 const textColumn = <T = any, I extends TableItem<T> = TableItem<T>>(
   id: string,
-  options: Omit<TableColumnSpec<T, I>, 'id'>,
+  options: TableColumnOptions<T, I>,
 ): TableColumn<T, I> => {
   return Object.assign(
     {

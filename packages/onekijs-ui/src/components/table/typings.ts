@@ -345,6 +345,8 @@ export type SelectColumnOptions<
     CellComponent?: SelectCell<T, S, TI, SI>;
   };
 
+export type TableColumnOptions<T = any, I extends TableItem<T> = TableItem<T>> = Omit<TableColumnSpec<T, I>, 'id'>;
+
 export type TextareaColumnOptions<T = any, I extends TableItem<T> = TableItem<T>> = Omit<
   TableColumnSpec<T, I>,
   'CellComponent' | 'id'

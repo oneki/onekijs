@@ -6,7 +6,7 @@ import { asyncGet } from '../core/xhr';
 import { ValidationStatus } from '../types/form';
 import { AnonymousObject } from '../types/object';
 import { SagaEffect } from '../types/saga';
-import { del, get, isObject, set } from '../utils/object';
+import { del, get, isObject, set, simpleMergeDeep } from '../utils/object';
 import { generateUniqueId } from '../utils/string';
 import ContainerValidation from './ContainerValidation';
 import FieldValidation, { defaultValidation } from './FieldValidation';
@@ -69,6 +69,9 @@ export default class FormService extends DefaultService<FormState> {
     [id: string]: AnonymousObject<FormListenerProps>;
   };
 
+  // use when a rule change a field that was not yet initialized
+  protected placeholderFields: AnonymousObject<Partial<Field>>;
+
   public config: FormConfig = {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     onSubmit: () => {},
@@ -80,6 +83,7 @@ export default class FormService extends DefaultService<FormState> {
   constructor() {
     super();
     this.fields = {};
+    this.placeholderFields = {};
     this.decorators = {};
     this.listeners = {
       valueChange: {},
@@ -123,6 +127,8 @@ export default class FormService extends DefaultService<FormState> {
     const field = this.fields[fieldName];
     if (field) {
       field.validators[validatorName] = validator;
+    } else {
+      set(this.placeholderFields, `${fieldName}.validators.${validatorName}`, validator);
     }
     const validations = this.validateAll({
       [fieldName]: this.getValue(fieldName),
@@ -449,34 +455,41 @@ export default class FormService extends DefaultService<FormState> {
       options.defaultValue = options.defaultValue === undefined ? '' : options.defaultValue;
       options.touchOn = options.touchOn || this.config.touchOn || TouchOn.Blur;
       this.addField(
-        Object.assign({}, options, {
-          name,
-          validators,
-          validations: [],
-          touched: options.touchOn === TouchOn.Load,
-          touchOn: options.touchOn,
-          context: {
-            name,
-            onChange: (value: any): void => {
-              if (value && value.nativeEvent && value.nativeEvent instanceof Event) {
-                value = value.target.value;
-              }
-              this.setValue(name, value);
+        Object.assign(
+          {},
+          options,
+          simpleMergeDeep(
+            {
+              name,
+              validators,
+              validations: [],
+              touched: options.touchOn === TouchOn.Load,
+              touchOn: options.touchOn,
+              context: {
+                name,
+                onChange: (value: any): void => {
+                  if (value && value.nativeEvent && value.nativeEvent instanceof Event) {
+                    value = value.target.value;
+                  }
+                  this.setValue(name, value);
+                },
+                onFocus: (): void => {
+                  const field = this.fields[name];
+                  if (field.touchOn === 'focus' && !field.touched) {
+                    this.touch(name);
+                  }
+                },
+                onBlur: (): void => {
+                  const field = this.fields[name];
+                  if (field.touchOn === 'blur' && !field.touched) {
+                    this.touch(name);
+                  }
+                },
+              },
             },
-            onFocus: (): void => {
-              const field = this.fields[name];
-              if (field.touchOn === 'focus' && !field.touched) {
-                this.touch(name);
-              }
-            },
-            onBlur: (): void => {
-              const field = this.fields[name];
-              if (field.touchOn === 'blur' && !field.touched) {
-                this.touch(name);
-              }
-            },
-          },
-        }),
+            this.placeholderFields[name] || {},
+          ),
+        ),
       );
       this.defaultValues[name] = get(this.state.values, name, options.defaultValue);
       const disabled = this.config.reconfigure && !options.editable ? true : options.disabled;
@@ -733,6 +746,11 @@ export default class FormService extends DefaultService<FormState> {
     const field = this.fields[fieldName];
     if (field) {
       delete field.validators[validatorName];
+    } else if (
+      this.placeholderFields[fieldName] !== undefined &&
+      this.placeholderFields[fieldName].validators !== undefined
+    ) {
+      delete (this.placeholderFields[fieldName].validators as any)[validatorName];
     }
     const validations = this.validateAll({
       [fieldName]: this.getValue(fieldName),
@@ -787,6 +805,7 @@ export default class FormService extends DefaultService<FormState> {
       this.callSaga('loadInitialValues', this.state.initialValues);
     }
     this.state.validations = {};
+    this.placeholderFields = {};
     this.initializing = true;
   }
 
