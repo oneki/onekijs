@@ -113,11 +113,11 @@ export type FormProps = Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onSubmi
 
 export type FormSubmitCallback = (values: AnonymousObject) => void;
 
-export interface FormState extends State, FormOptions {
+export interface FormState<T extends object = any> extends State, FormOptions {
   validations: AnonymousObject<FieldValidation>;
   metadata: AnonymousObject<FormMetadata>;
-  values?: AnonymousObject;
-  initialValues?: AnonymousObject;
+  values?: T;
+  initialValues?: T;
   context: AnonymousObject;
   initialContext: AnonymousObject;
   submitting?: boolean;
@@ -142,6 +142,10 @@ export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   touchOn?: TouchOnType;
 } & ValidatorsType;
 
+export type LengthValidator = ValidatorObject & {
+  length: number;
+};
+
 export enum TouchOn {
   Blur = 'blur',
   Load = 'load',
@@ -149,6 +153,7 @@ export enum TouchOn {
   Change = 'change',
   Submit = 'submit',
 }
+
 export type TouchOnType = 'blur' | 'load' | 'focus' | 'change' | 'submit';
 
 export type Ruler = (...args: any[]) => void;

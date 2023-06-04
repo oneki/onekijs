@@ -1,4 +1,4 @@
-import { FormValueListener, useForm, useLazyRef } from 'onekijs-framework';
+import { FormValueListener, LengthValidator, useForm, useLazyRef } from 'onekijs-framework';
 import React, { useEffect, useId, useState } from 'react';
 import { addClassname } from '../../../utils/style';
 import Checkbox from '../../checkbox';
@@ -67,6 +67,18 @@ const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.
     ...props
   }) => {
     const form = useForm();
+    const field = form.fields[name];
+    if (field) {
+      const validators = field.validators;
+      const minlengthValidator = validators.minLength as LengthValidator | undefined;
+      if (minlengthValidator) {
+        minLength = minlengthValidator.length;
+      }
+      const maxlengthValidator = validators.maxLength as LengthValidator | undefined;
+      if (maxlengthValidator) {
+        maxLength = maxlengthValidator.length;
+      }
+    }
     const id = useId();
     const tableService = controller.asService();
     const formatRef = useLazyRef<'id' | 'object'>(() => {

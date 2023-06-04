@@ -406,7 +406,7 @@ export default class LoginService extends DefaultLocalService<LoginState> {
         [token, securityContext] = yield callback(response, idp, this.context);
       }
 
-      if (isOauth(idp) && idp.nonce && get(token, 'id_token')) {
+      if (isOauth(idp) && idp.nonce && get(token as any, 'id_token')) {
         // validates the nonce found in the id_token
         // https://openid.net/specs/openid-connect-core-1_0.html#TokenResponseValidation
         const id_token = parseJwt((token as { id_token: string }).id_token);

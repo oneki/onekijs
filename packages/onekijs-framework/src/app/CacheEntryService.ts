@@ -7,6 +7,7 @@ import { SagaEffect } from '../types/saga';
 import { get, set } from '../utils/object';
 import DefaultGlobalService from './GlobalService';
 import { CacheEntry, CacheOptions } from './typings';
+import { AnyState } from '../types/state';
 
 const now = (): number => Math.floor(Date.now() / 1000);
 export const cacheKey = (key: string): string => `oneki.cache.${key.replaceAll('.', '_')}`;
@@ -43,7 +44,7 @@ const expirationTime = (response: Response, options: CacheOptions<any>): number 
 };
 
 @service
-export default class CacheEntryService<T> extends DefaultGlobalService {
+export default class CacheEntryService<T> extends DefaultGlobalService<AnyState> {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   *delayLoading(key: string, delay_ms?: number) {
     yield this.setLoading(key, delay_ms ? false : true, true);
@@ -93,7 +94,7 @@ export default class CacheEntryService<T> extends DefaultGlobalService {
     const { store } = this.context;
     let loadingTask: Task | null = null;
     try {
-      const cacheEntry = get<CacheEntry<T>>(store.getState(), cacheKey(url));
+      const cacheEntry = get(store.getState(), cacheKey(url)) as CacheEntry<T>;
       if (cacheEntry && !force) {
         if (cacheEntry.expireAt && cacheEntry.expireAt > now()) return;
         if (cacheEntry.fetching) return;

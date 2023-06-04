@@ -4,7 +4,7 @@ import DefaultService from '../core/Service';
 import { reducer, saga, service } from '../core/annotations';
 import { asyncGet } from '../core/xhr';
 import { ValidationStatus } from '../types/form';
-import { AnonymousObject } from '../types/object';
+import { AnonymousObject, NestedKeyOf, PathType } from '../types/object';
 import { SagaEffect } from '../types/saga';
 import { del, get, isObject, set, simpleMergeDeep } from '../utils/object';
 import { generateUniqueId } from '../utils/string';
@@ -37,7 +37,7 @@ import {
 import { getNonIndexedProp } from './utils';
 
 @service
-export default class FormService extends DefaultService<FormState> {
+export default class FormService<T extends object = any> extends DefaultService<FormState<T>> {
   // keep the previous values (once the changes have been triggered, this field contains the current values)
   public prevValues: AnonymousObject = {};
   // keep the previous validations (once the changes have been triggered, this field contains the current validations)
@@ -555,6 +555,8 @@ export default class FormService extends DefaultService<FormState> {
             );
           }
 
+          delete this.triggered[`${fieldArrayName}.${i}.${fieldName}`];
+
           if (i === index) {
             delete this.state.metadata[`${fieldArrayName}.${i}.${fieldName}`];
             delete this.state.validations[`${fieldArrayName}.${i}.${fieldName}`];
@@ -586,8 +588,8 @@ export default class FormService extends DefaultService<FormState> {
 
   @saga(SagaEffect.Leading)
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  *loadInitialValues(fetcher: string | (() => AnonymousObject | Promise<AnonymousObject>)) {
-    let initialValues: AnonymousObject = {};
+  *loadInitialValues(fetcher: string | (() => T | Promise<T>)) {
+    let initialValues: T;
     let loadingTask: Task | null = null;
     try {
       loadingTask = yield fork([this, this.delayLoading], this.state.delayLoading || 0);
@@ -725,6 +727,7 @@ export default class FormService extends DefaultService<FormState> {
             delete this.state.metadata[`${fieldArrayName}.${i}.${fieldName}`];
             delete this.fields[`${fieldArrayName}.${i - 1}.${fieldName}`];
           }
+          delete this.triggered[`${fieldArrayName}.${i}.${fieldName}`];
         });
       }
       del(this.fieldIndex, `${fieldArrayName}.${last}`);
@@ -732,6 +735,7 @@ export default class FormService extends DefaultService<FormState> {
         delete this.state.metadata[`${fieldArrayName}.${last}.${fieldName}`];
         delete this.state.validations[`${fieldArrayName}.${last}.${fieldName}`];
         delete this.fields[`${fieldArrayName}.${last}.${fieldName}`];
+        delete this.triggered[`${fieldArrayName}.${last}.${fieldName}`];
       });
       this.pendingDispatch.validationChange.add('');
 
@@ -840,7 +844,7 @@ export default class FormService extends DefaultService<FormState> {
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @reducer
-  setInitialValues(values: AnonymousObject<any>): void {
+  setInitialValues(values: T): void {
     this.state.initialValues = values;
   }
 
@@ -933,7 +937,7 @@ export default class FormService extends DefaultService<FormState> {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @reducer
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  setValue(fieldName: string, value: any): void {
+  setValue<K extends NestedKeyOf<T>>(fieldName: K, value: PathType<T, K>): void {
     this.setValues({
       [fieldName]: value,
     });
@@ -941,14 +945,14 @@ export default class FormService extends DefaultService<FormState> {
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @reducer
-  setValues(values: AnonymousObject<any>): void {
+  setValues<K extends NestedKeyOf<T>>(values: Record<K, PathType<T, K>>): void {
     const validations = this.validateAll(values);
     Object.keys(values).forEach((key) => {
       const field = this.fields[key];
       if (field && field.touchOn === 'change' && !field.touched) {
         field.touched = true;
       }
-      set(this.state, `values.${key}`, values[key]);
+      set(this.state.values, `${key}`, values[key]);
       this._getSubWatchs(key).forEach((key) => this.pendingDispatch.valueChange.add(key));
     });
     this.compileValidations(Object.keys(validations));

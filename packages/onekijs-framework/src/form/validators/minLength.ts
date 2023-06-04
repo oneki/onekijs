@@ -1,8 +1,8 @@
 import { isNullOrEmpty } from '../../utils/object';
-import { Validator } from '../typings';
+import { LengthValidator } from '../typings';
 
-const minLength = (minLength: number, message?: string): Validator => {
-  return (value: any) => {
+const minLength = (minLength: number, message?: string): LengthValidator => {
+  const validator = (value: any) => {
     if (typeof value === 'string') {
       if (isNullOrEmpty(value)) {
         // this is managed by the required validator
@@ -44,6 +44,11 @@ const minLength = (minLength: number, message?: string): Validator => {
       valid: true,
       message: undefined,
     };
+  };
+
+  return {
+    validator,
+    length: minLength,
   };
 };
 

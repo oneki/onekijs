@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { AnonymousObject } from '../types/object';
+import { AnonymousObject, NestedKeyOf, PathType } from '../types/object';
 import { isSameArray } from './array';
 
 export function applyMixins(derivedCtor: any, constructors: any[]) {
@@ -199,13 +199,33 @@ export function find(content: any, property: string | number, populate = false):
   return [content, index, parentContent, parentIndex];
 }
 
-export function get<T = any>(content: any, property: string): T | undefined;
-export function get<T = any>(content: any, property: string, defaultValue: undefined): T | undefined;
-export function get<T = any>(content: any, property: string, defaultValue: null): T | null;
-export function get<T = any>(content: any, property: string, defaultValue: T): T;
-export function get<T = any>(content: any, property?: string, defaultValue?: T): T | undefined;
+// export function get<T = any>(content: any, property: string): T | undefined;
+// export function get<T = any>(content: any, property: string, defaultValue: undefined): T | undefined;
+// export function get<T = any>(content: any, property: string, defaultValue: null): T | null;
+// export function get<T = any>(content: any, property: string, defaultValue: T): T;
+// export function get<T = any>(content: any, property?: string, defaultValue?: T): T | undefined;
+export function get<T extends object | any[], K extends NestedKeyOf<T>>(
+  content: T | null | undefined,
+  property: K | undefined,
+  defaultValue?: PathType<T, K>,
+): PathType<T, K>;
+export function get<T extends object | any[], K extends NestedKeyOf<T>>(
+  content: Partial<T> | null | undefined,
+  property: K | undefined,
+  defaultValue: PathType<T, K>,
+): PathType<T, K>;
+export function get<T extends object | any[], K extends NestedKeyOf<T>>(
+  content?: Partial<T> | null,
+  property?: K,
+  defaultValue?: PathType<T, K>,
+): PathType<T, K> | undefined;
+export function get<T extends object | any[], K extends NestedKeyOf<T>>(
+  content?: Partial<T> | null,
+  property?: K,
+  defaultValue?: PathType<T, K> | null,
+): PathType<T, K> | null;
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export function get(content: any, property?: any, defaultValue?: any): any {
+export function get(content: any, property: any, defaultValue: any): any {
   if (property === undefined || property === null || property === '') {
     return content;
   }
@@ -214,7 +234,7 @@ export function get(content: any, property?: any, defaultValue?: any): any {
     property = `${property}`;
   }
 
-  if (isNull(content)) {
+  if (content === null || content === undefined) {
     return defaultValue;
   }
 
@@ -256,28 +276,34 @@ export function append<T>(content: T, property: string | number, value: any): T 
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export function set<T>(content: any, property: string | number, value: any, force = true): T {
+export function set<T extends object | any[], K extends NestedKeyOf<T>>(
+  content: Partial<T>,
+  property: K,
+  value: PathType<T, K>,
+  force = true,
+) {
   if (property === '') {
-    return value;
+    // TODO change that
+    return;
   }
 
   const parts = `${property}`.split('.');
   if (content === undefined && force) {
     if (!isNaN(Number(parts[0]))) {
-      content = [];
+      content = [] as T;
     } else {
-      content = {};
+      content = {} as T;
     }
   }
 
   if (force) {
     if (!isNaN(Number(parts[0]))) {
       if (!Array.isArray(content)) {
-        content = [];
+        content = [] as T;
       }
     } else {
       if (typeof content !== 'object' || content === null) {
-        content = {};
+        content = {} as T;
       }
     }
   }

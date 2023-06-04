@@ -1,8 +1,8 @@
 import { Task } from '@redux-saga/types';
 import { cancel, delay, fork } from 'redux-saga/effects';
-import { reducer, saga } from '../core/annotations';
 import DefaultBasicError from '../core/BasicError';
 import DefaultService from '../core/Service';
+import { reducer, saga } from '../core/annotations';
 import { asyncHttp } from '../core/xhr';
 import LocalRouter from '../router/LocalRouter';
 import { Primitive } from '../types/core';
@@ -393,7 +393,7 @@ export default class CollectionService<
   }
 
   getSortBy(): QuerySortBy[] | undefined {
-    return formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(this.state, 'sortBy'));
+    return formatSortBy(get(this.state, 'sortBy') as string | QuerySortBy | QuerySortBy[]);
   }
 
   getSortByField(field: string): QuerySortByField | undefined {
@@ -733,7 +733,7 @@ export default class CollectionService<
 
   _addSortBy(query: Query, sortBy: QuerySortBy, prepend = true): void {
     this._removeSortBy(query, sortBy);
-    const currentSortBy = (formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(query, 'sortBy')) || []).slice(0);
+    const currentSortBy = formatSortBy(get(query, 'sortBy', []) as string | QuerySortBy | QuerySortBy[]).slice(0);
     if (prepend) {
       currentSortBy.unshift(sortBy);
     } else {

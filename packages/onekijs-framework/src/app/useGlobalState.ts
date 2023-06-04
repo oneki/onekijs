@@ -11,7 +11,7 @@ function useGlobalState<T = any>(key: string, defaultValue: null): [T | null, Se
 function useGlobalState<T = any>(key: string, defaultValue: T): [T, SetGlobalStateFunction<T>];
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 function useGlobalState(key: string, defaultValue?: any): [any, (value?: any) => void] {
-  let value = useSelector((state) => get(state, key));
+  let value = useSelector((state) => get(state as any, key));
   value = value === undefined ? defaultValue : value;
   const service = useGlobalService(GlobalStateService);
   const setValue = useCallback(
