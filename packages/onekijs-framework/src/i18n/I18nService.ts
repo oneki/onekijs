@@ -53,7 +53,7 @@ export default class I18nService extends DefaultGlobalService {
   *fetchTranslations(locale: string, namespaces: string[], options: { onError?: any } = {}) {
     // TODO description options
     const { settings } = this.context;
-    const nsToFetch = namespaces.filter((ns) => !get<boolean>(this.state, `i18n.fetching.${locale}.${ns}`, false));
+    const nsToFetch = namespaces.filter((ns) => !get(this.state, `i18n.fetching.${locale}.${ns}`, false));
     try {
       yield this.setFetchingTranslations(true, locale, nsToFetch);
       const results: AnonymousObject[] = yield all(

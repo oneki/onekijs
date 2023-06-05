@@ -4,7 +4,7 @@ import DefaultService from '../core/Service';
 import { reducer, saga, service } from '../core/annotations';
 import { asyncGet } from '../core/xhr';
 import { ValidationStatus } from '../types/form';
-import { AnonymousObject, NestedKeyOf, PathType } from '../types/object';
+import { AnonymousObject, AnonymousPathObject, NestedKeyOf, PathType } from '../types/object';
 import { SagaEffect } from '../types/saga';
 import { del, get, isObject, set, simpleMergeDeep } from '../utils/object';
 import { generateUniqueId } from '../utils/string';
@@ -77,7 +77,7 @@ export default class FormService<T extends object = any> extends DefaultService<
     onSubmit: () => {},
   };
   public initializing = true;
-  protected defaultValues: AnonymousObject = {};
+  protected defaultValues: AnonymousPathObject<T> = {};
   protected defaultMetadata: AnonymousObject<FormMetadata> = {};
 
   constructor() {
@@ -103,12 +103,12 @@ export default class FormService<T extends object = any> extends DefaultService<
   }
 
   @reducer
-  add(fieldArrayName: string, initialValue: any): void {
+  add<K extends NestedKeyOf<T>>(fieldArrayName: K, initialValue: Partial<PathType<T, K>>): void {
     let arrayValue = get<any>(this.state.values, fieldArrayName, []);
     if (arrayValue === undefined || arrayValue === null || !Array.isArray(arrayValue)) {
       arrayValue = [];
     }
-    this.setValue(`${fieldArrayName}`, arrayValue.concat([initialValue]));
+    this.setValue(fieldArrayName, arrayValue.concat([initialValue]));
   }
 
   addField(field: Field): void {
@@ -253,7 +253,7 @@ export default class FormService<T extends object = any> extends DefaultService<
    *                    - onFocus
    *                    - onBlur
    */
-  field(name: string, validators: AnonymousObject<Validator> = {}, options: FieldOptions = {}): FieldProps {
+  field(name: NestedKeyOf<T>, validators: AnonymousObject<Validator> = {}, options: FieldOptions = {}): FieldProps {
     const field = this.initField(name, validators, options);
     field.value = get(this.state.values, name, options.defaultValue === undefined ? '' : options.defaultValue);
     return field;
@@ -450,7 +450,7 @@ export default class FormService<T extends object = any> extends DefaultService<
    *                    - onFocus
    *                    - onBlur
    */
-  initField(name: string, validators: AnonymousObject<Validator> = {}, options: FieldOptions = {}): FieldProps {
+  initField(name: NestedKeyOf<T>, validators: AnonymousObject<Validator> = {}, options: FieldOptions = {}): FieldProps {
     if (!this.fields[name]) {
       options.defaultValue = options.defaultValue === undefined ? '' : options.defaultValue;
       options.touchOn = options.touchOn || this.config.touchOn || TouchOn.Blur;
@@ -505,10 +505,10 @@ export default class FormService<T extends object = any> extends DefaultService<
   }
 
   @reducer
-  insert(fieldArrayName: string, index: number, initialValue = {}): void {
+  insert(fieldArrayName: NestedKeyOf<T>, index: number, initialValue = {}): void {
     const currentArrayValue = get(this.state.values, fieldArrayName, []);
     if (currentArrayValue.length - 1 >= index) {
-      const nextValues: AnonymousObject = {};
+      const nextValues: AnonymousPathObject<T> = {};
       // need to modifiy all values / metadata / validations with an index superior or equal to the added one
       for (let i = currentArrayValue.length - 1; i >= index; i--) {
         Object.keys(currentArrayValue[i]).forEach((fieldName) => {
@@ -518,7 +518,7 @@ export default class FormService<T extends object = any> extends DefaultService<
             this.state.metadata[`${fieldArrayName}.${i}.${fieldName}`];
 
           if (i === currentArrayValue.length - 1) {
-            const name = `${fieldArrayName}.${i + 1}.${fieldName}`;
+            const name = `${fieldArrayName}.${i + 1}.${fieldName}` as NestedKeyOf<T>;
             this.addField(
               Object.assign({}, this.fields[`${fieldArrayName}.${i}.${fieldName}`], {
                 name,
@@ -568,7 +568,7 @@ export default class FormService<T extends object = any> extends DefaultService<
       }
       this.pendingDispatch.validationChange.add('');
 
-      nextValues[fieldArrayName] = (currentArrayValue.slice(0, index) as any[])
+      nextValues[fieldArrayName] = (currentArrayValue.slice(0, index) as any)
         .concat([initialValue])
         .concat(currentArrayValue.slice(index) as any[]);
 
@@ -698,11 +698,11 @@ export default class FormService<T extends object = any> extends DefaultService<
   }
 
   @reducer
-  remove(fieldArrayName: string, index: number): void {
+  remove(fieldArrayName: NestedKeyOf<T>, index: number): void {
     const currentArrayValue = get(this.state.values, fieldArrayName, []);
     const last = currentArrayValue.length - 1;
     if (last >= index) {
-      const nextValues: AnonymousObject = {};
+      const nextValues: AnonymousPathObject<T> = {};
       // need to modifiy all values / metadata / validations with an index superior to the removed one
       for (let i = index + 1; i < currentArrayValue.length; i++) {
         Object.keys(currentArrayValue[i]).forEach((fieldName) => {
@@ -940,19 +940,19 @@ export default class FormService<T extends object = any> extends DefaultService<
   setValue<K extends NestedKeyOf<T>>(fieldName: K, value: PathType<T, K>): void {
     this.setValues({
       [fieldName]: value,
-    });
+    } as any);
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @reducer
-  setValues<K extends NestedKeyOf<T>>(values: Record<K, PathType<T, K>>): void {
+  setValues(values: AnonymousPathObject<T>): void {
     const validations = this.validateAll(values);
     Object.keys(values).forEach((key) => {
       const field = this.fields[key];
       if (field && field.touchOn === 'change' && !field.touched) {
         field.touched = true;
       }
-      set(this.state.values, `${key}`, values[key]);
+      set<any>(this.state.values, `${key}`, values[key as NestedKeyOf<T>]);
       this._getSubWatchs(key).forEach((key) => this.pendingDispatch.valueChange.add(key));
     });
     this.compileValidations(Object.keys(validations));

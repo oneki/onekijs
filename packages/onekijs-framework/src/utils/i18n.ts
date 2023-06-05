@@ -54,7 +54,7 @@ export function detectLocale(
   }
 
   // 5. If no locale found, return the default locale
-  return get<string>(settings, 'i18n.defaultLocale');
+  return get(settings, 'i18n.defaultLocale');
 }
 
 export const flattenTranslations = (
@@ -64,7 +64,7 @@ export const flattenTranslations = (
   Input:
   {
     "product": {
-      "key": "value" 
+      "key": "value"
     },
     "common": {
       "key1": "value1"
@@ -72,9 +72,9 @@ export const flattenTranslations = (
   }
 
   Output:
-  { 
-    "product:key": "value", 
-    "common:key1": "value1" 
+  {
+    "product:key": "value",
+    "common:key1": "value1"
   }
   */
   const result: AnonymousObject = {};

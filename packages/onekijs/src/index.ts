@@ -1,5 +1,6 @@
 export {
   AnonymousObject,
+  AnonymousPathObject,
   AnyFunction,
   AnyState,
   AppContext,

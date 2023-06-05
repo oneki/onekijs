@@ -33,7 +33,7 @@ export interface FetchOptions<R = any> extends Omit<RequestInit, 'method' | 'url
   onFetchSuccess?: (result: R) => void | R | Promise<undefined | R>;
   delayLoading?: number;
   auth?: AnonymousObject<any>;
-  headers?: AnonymousObject<string>;
+  //headers?: AnonymousObject<string>;
   params?: AnonymousObject<string>;
   query?: AnonymousObject<string>;
   fetcher?: Fetcher<R>;

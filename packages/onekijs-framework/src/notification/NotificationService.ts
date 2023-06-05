@@ -70,7 +70,7 @@ export default class NotificationService extends DefaultGlobalService {
       notificationContent.ttl = get(
         settings,
         `notification.${notificationContent.topic}.ttl`,
-        get<number | undefined>(settings, `notification.default.ttl`),
+        get(settings, `notification.default.ttl`),
       );
     }
 

@@ -33,12 +33,12 @@ const buttonStyle: ComponentStyle<ButtonProps> = ({
   theme,
 }) => {
   const t = theme.buttons[kind];
-  const bgColor = get(t, getColor('bgColor', pattern));
-  const hoverBgColor = get(t, getColor('hoverBgColor', pattern));
-  const fontColor = get(t, getColor('color', pattern));
-  const hoverFontColor = get(t, getColor('hoverColor', pattern));
-  const bColor = get(t, getColor('borderColor', pattern));
-  const hoverBorderColor = get(t, getColor('hoverBorderColor', pattern));
+  const bgColor = get(t, getColor('bgColor', pattern)) as string;
+  const hoverBgColor = get(t, getColor('hoverBgColor', pattern)) as string;
+  const fontColor = get(t, getColor('color', pattern)) as string;
+  const hoverFontColor = get(t, getColor('hoverColor', pattern)) as string;
+  const bColor = get(t, getColor('borderColor', pattern)) as string;
+  const hoverBorderColor = get(t, getColor('hoverBorderColor', pattern)) as string;
 
   return css`
     ${display('inline-flex')}

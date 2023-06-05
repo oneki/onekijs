@@ -733,7 +733,7 @@ export default class CollectionService<
 
   _addSortBy(query: Query, sortBy: QuerySortBy, prepend = true): void {
     this._removeSortBy(query, sortBy);
-    const currentSortBy = formatSortBy(get(query, 'sortBy', []) as string | QuerySortBy | QuerySortBy[]).slice(0);
+    const currentSortBy = formatSortBy(get(query, 'sortBy')).slice(0);
     if (prepend) {
       currentSortBy.unshift(sortBy);
     } else {
@@ -1217,14 +1217,14 @@ export default class CollectionService<
   }
 
   _removeSortBy(query: Query, sort: QuerySortBy): void {
-    const sortBy = formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(query, 'sortBy'));
+    const sortBy = formatSortBy(get(query, 'sortBy'));
     if (sortBy) {
       query.sortBy = sortBy.filter((s) => !isSameSortBy(sort, s));
     }
   }
 
   _removeSortById(query: Query, id: string): void {
-    const sortBy = formatSortBy(get<string | QuerySortBy | QuerySortBy[]>(query, 'sortBy'));
+    const sortBy = formatSortBy(get(query, 'sortBy'));
     if (sortBy) {
       query.sortBy = sortBy.filter((sort) => sort.id !== id);
     }

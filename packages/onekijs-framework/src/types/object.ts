@@ -34,15 +34,17 @@ type ObjectPathType<O extends object, S extends string> = {
         : O[K] extends object
         ? ObjectPathType<O[K], R>
         : O[K]
+      : O extends AnonymousObject<infer E>
+      ? PathType<E, R>
       : never
     : Key extends S
     ? O[Key]
-    : AnonymousObject extends O
-    ? O[Key]
+    : O extends AnonymousObject<infer E>
+    ? E
     : never;
 }[keyof O];
 
-export type PathType<T extends object, S extends string> = T extends Array<any>
+export type PathType<T, S extends string> = T extends Array<any>
   ? ArrayPathType<T, S>
   : T extends object
   ? ObjectPathType<T, S>
@@ -50,6 +52,6 @@ export type PathType<T extends object, S extends string> = T extends Array<any>
   ? any
   : never;
 
-export type AnonymousPathObject<T extends object> = {
+export type AnonymousPathObject<T> = {
   [P in NestedKeyOf<T>]?: PathType<T, P>;
 };

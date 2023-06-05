@@ -37,7 +37,7 @@ export const applyCriteria = <T = any, I extends Item<T> = Item<T>>(
 ): boolean => {
   const operator = criteria.operator || 'eq';
   const value = criteria.value;
-  const source = get(item.data, criteria.field);
+  const source = get(item, `data.${criteria.field}`);
   const not = criteria.not;
   const result = applyOperator(operator, source, value);
   return not ? !result : result;
@@ -193,7 +193,7 @@ export const applySortBy = <T = any, I extends Item<T> = Item<T>>(
                   : comparators[field.comparator] || defaultComparator;
               const reverse = s.dir === 'desc' ? -1 : 1;
 
-              result = reverse * comparator(get(a.data, fieldName), get(b.data, fieldName));
+              result = reverse * comparator(get(a, `data.${fieldName}`), get(b, `data.${fieldName}`));
               if (result !== 0) break sort_loop;
             }
           }
@@ -823,12 +823,12 @@ export const formatFilter = (
   }
 };
 
-export const formatSortBy = (sortBy?: string | QuerySortBy | QuerySortBy[]): QuerySortBy[] | undefined => {
+export const formatSortBy = (sortBy?: string | QuerySortBy | QuerySortBy[]): QuerySortBy[] => {
   if (Array.isArray(sortBy)) {
     return sortBy;
   }
   if (!sortBy) {
-    return;
+    return [];
   }
   if (typeof sortBy === 'string') {
     return [

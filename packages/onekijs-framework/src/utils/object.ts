@@ -204,22 +204,22 @@ export function find(content: any, property: string | number, populate = false):
 // export function get<T = any>(content: any, property: string, defaultValue: null): T | null;
 // export function get<T = any>(content: any, property: string, defaultValue: T): T;
 // export function get<T = any>(content: any, property?: string, defaultValue?: T): T | undefined;
-export function get<T extends object | any[], K extends NestedKeyOf<T>>(
+export function get<T, K extends NestedKeyOf<T> = NestedKeyOf<T>>(
   content: T | null | undefined,
   property: K | undefined,
   defaultValue?: PathType<T, K>,
 ): PathType<T, K>;
-export function get<T extends object | any[], K extends NestedKeyOf<T>>(
+export function get<T, K extends NestedKeyOf<T> = NestedKeyOf<T>>(
   content: Partial<T> | null | undefined,
   property: K | undefined,
   defaultValue: PathType<T, K>,
 ): PathType<T, K>;
-export function get<T extends object | any[], K extends NestedKeyOf<T>>(
+export function get<T, K extends NestedKeyOf<T> = NestedKeyOf<T>>(
   content?: Partial<T> | null,
   property?: K,
   defaultValue?: PathType<T, K>,
 ): PathType<T, K> | undefined;
-export function get<T extends object | any[], K extends NestedKeyOf<T>>(
+export function get<T, K extends NestedKeyOf<T> = NestedKeyOf<T>>(
   content?: Partial<T> | null,
   property?: K,
   defaultValue?: PathType<T, K> | null,
@@ -276,8 +276,8 @@ export function append<T>(content: T, property: string | number, value: any): T 
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export function set<T extends object | any[], K extends NestedKeyOf<T>>(
-  content: Partial<T>,
+export function set<T, K extends NestedKeyOf<T> = NestedKeyOf<T>>(
+  content: Partial<T> | undefined,
   property: K,
   value: PathType<T, K>,
   force = true,

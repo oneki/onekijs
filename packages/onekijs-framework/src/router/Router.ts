@@ -68,7 +68,7 @@ export default abstract class BaseRouter implements Router {
   ): JSX.Element;
 
   getOrigin(): { from: string } {
-    const from = localStorage.getItem('onekijs.from') || get<string>(this.settings, 'routes.home', '/');
+    const from = localStorage.getItem('onekijs.from') || get(this.settings, 'routes.home', '/');
     return { from };
   }
 
