@@ -21,8 +21,8 @@ export const modalStyle: ComponentStyle<ModalProps> = ({ width: w, height: h, si
   w = w ?? size;
   h = h ?? size;
 
-  const themeWidth: SizePropertyTheme | HeightProperty<TLength> = get(t, `${w}Size`) ?? w;
-  const themeHeight: SizePropertyTheme | HeightProperty<TLength> = get(t, `${h}Size`) ?? h;
+  const themeWidth: SizePropertyTheme | HeightProperty<TLength> = get<any>(t, `${w}Size`) ?? w;
+  const themeHeight: SizePropertyTheme | HeightProperty<TLength> = get<any>(t, `${h}Size`) ?? h;
   const themeFontColor = theme.palette.colors[theme.colors.primary];
 
   return css`

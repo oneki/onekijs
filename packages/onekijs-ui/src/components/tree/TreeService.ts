@@ -202,7 +202,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     ensureFieldValue(
       treeAdaptee,
       'type',
-      get(data, 'folder') === false ? 'leaf' : get(data, 'folder') === true ? 'folder' : getType(c),
+      get<any>(data, 'folder') === false ? 'leaf' : get<any>(data, 'folder') === true ? 'folder' : getType(c),
     );
 
     const level = context.level || 0;
@@ -235,8 +235,8 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
       context.position = position;
     }
     ensureFieldValue(result, 'level', level);
-    ensureFieldValue(result, 'selectable', get(data, 'selectable', type === 'leaf'));
-    ensureFieldValue(result, 'expanded', get(data, 'expanded', false));
+    ensureFieldValue(result, 'selectable', get<any>(data, 'selectable', type === 'leaf'));
+    ensureFieldValue(result, 'expanded', get<any>(data, 'expanded', false));
     // ensureFieldValue(result, 'children', children);
     result.children = children;
 

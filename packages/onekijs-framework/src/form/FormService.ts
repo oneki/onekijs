@@ -103,7 +103,7 @@ export default class FormService<T extends object = any> extends DefaultService<
   }
 
   @reducer
-  add<K extends NestedKeyOf<T>>(fieldArrayName: K, initialValue: Partial<PathType<T, K>>): void {
+  add<K extends NestedKeyOf<T>>(fieldArrayName: K, initialValue?: Partial<PathType<T, K>>): void {
     let arrayValue = get<any>(this.state.values, fieldArrayName, []);
     if (arrayValue === undefined || arrayValue === null || !Array.isArray(arrayValue)) {
       arrayValue = [];

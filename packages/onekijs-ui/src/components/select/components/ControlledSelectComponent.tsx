@@ -193,7 +193,7 @@ const ControlledSelectComponent = <
   const optionsRef = useRef<HTMLDivElement>(null);
 
   const update = useCallback(() => {
-    if (optionsRef.current && get<boolean>(service, 'config.sameWidth')) {
+    if (optionsRef.current && get(service, 'config.sameWidth')) {
       if (optionsRef.current.scrollWidth > optionsRef.current.clientWidth) {
         optionsRef.current.style.width = `${
           optionsRef.current.scrollWidth + optionsRef.current.offsetWidth - optionsRef.current.clientWidth
@@ -293,7 +293,7 @@ const ControlledSelectComponent = <
     const search = controller.getSearch();
     if (open && focus && search && search !== previousSearchRef.current) {
       const item = autoCompleteSearch ? findSelectItem(controller, search.toString()) : controller.items[0];
-      const activated = get<string>(controller.state.active, '0');
+      const activated = get(controller.state.active, '0');
       if (item !== undefined && !isCollectionFetching(controller)) {
         previousSearchRef.current = search;
         if (item.uid !== activated) {

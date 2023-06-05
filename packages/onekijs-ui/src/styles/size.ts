@@ -16,9 +16,9 @@ import { Formatter, SizePropertyTheme, Theme, TLength } from './typings';
 import { pxFormatter } from '../utils/formatter';
 import { get } from 'onekijs-framework';
 
-const sizeFormatter = (type: 'width' | 'height', value: SizePropertyTheme, theme: Theme) => {
+const sizeFormatter = (type: 'width' | 'height', value: SizePropertyTheme, theme: Theme): string => {
   if (get(theme.sizes, `${value}`) !== undefined) {
-    return get(theme.sizes, `${value}`);
+    return get(theme.sizes, `${value}`) as string;
   }
   if (value === 'auto') return 'auto';
   if (value === 'none') return 'none';

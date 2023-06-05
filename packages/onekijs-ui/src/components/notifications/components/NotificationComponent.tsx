@@ -14,7 +14,7 @@ import { NotificationProps } from '../typings';
 const NotificationComponent: React.FC<NotificationProps> = ({ className, notification, showTimer = true }) => {
   const classNames = addClassname(`o-notification o-notification-${notification.topic}`, className);
   const notificationService = useNotificationService();
-  const content = get<ReactNode>(notification, 'payload.message', get(notification, 'payload', null));
+  const content = get(notification, 'payload.message', get(notification, 'payload', null)) as ReactNode;
   let Icon = null;
   switch (notification.topic) {
     case NotificationLevel.Error:
