@@ -396,7 +396,10 @@ export default class FormService<T extends object = any> extends DefaultService<
     return defaultValidation;
   }
 
-  getValue<K extends NestedKeyOf<T>>(fieldName?: K, defaultValue?: PathType<T, K>): PathType<T, K> | undefined {
+  getValue(fieldName?: undefined | '', defaultValue?: T): T;
+  getValue<K extends NestedKeyOf<T>>(fieldName: K, defaultValue: PathType<T, K>): PathType<T, K>;
+  getValue<K extends NestedKeyOf<T>>(fieldName?: K, defaultValue?: undefined): PathType<T, K> | undefined;
+  getValue(fieldName: any, defaultValue: any): any {
     return get(this.state.values, fieldName, defaultValue);
   }
 

@@ -120,7 +120,7 @@ const ListBodyComponent = <T = any, I extends ListItem<T> = ListItem<T>>({
               nextIndex = activeIndex <= 0 ? 0 : activeIndex - 1;
             }
             do {
-              nextItem = get(state.items, nextIndex.toString());
+              nextItem = get<any>(state.items, nextIndex.toString());
               if (e.key === 'ArrowDown') {
                 nextIndex++;
               } else {
@@ -139,7 +139,7 @@ const ListBodyComponent = <T = any, I extends ListItem<T> = ListItem<T>>({
             break;
           case 'Enter':
             if (activeIndex !== -1) {
-              nextItem = get(state.items, activeIndex.toString());
+              nextItem = get<any>(state.items, activeIndex.toString());
               onItemClick(nextItem, activeIndex);
             }
             break;

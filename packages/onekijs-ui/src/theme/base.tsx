@@ -464,7 +464,7 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
     togglerIconHeight: 'md',
     bgColor: 'inherit',
     activeBgColor: 'primary',
-    hoverBgColor: lighten(get(theme.colors, 'primary', ''), 400),
+    hoverBgColor: lighten(get<any>(theme.colors, 'primary', ''), 400),
     borderColor: 'light',
     borderRadius: 'xl',
     borderStyle: 'solid',
@@ -474,10 +474,10 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
   };
 
   // set(theme.table, 'thFilterInputBgColor', lighten(get(theme.colors, 'primary', ''), 400));
-  set(theme.table, 'tdHoverBgColor', lighten(get(theme.colors, 'primary', ''), 400));
+  set<any>(theme.table, 'tdHoverBgColor', lighten(get<any>(theme.colors, 'primary', ''), 400));
 
   Object.keys(ColorKeys).forEach((kind) => {
-    set(theme, `buttons.${kind}`, {
+    set<any>(theme, `buttons.${kind}`, {
       bgColor: kind,
       bgColorFlat: 'transparent',
       bgColorOutline: 'transparent',
@@ -495,12 +495,12 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
       fontSize: 'md',
       fontWeight: 'bold',
       hoverColor: ['light', 'lightest', 'lighter', 'white'].includes(kind) ? 'black' : 'white',
-      hoverColorFlat: lighten(get(theme.colors, kind, ''), 100),
+      hoverColorFlat: lighten(get<any>(theme.colors, kind, ''), 100),
       hoverColorOutline: kind,
-      hoverBgColor: darken(get(theme.colors, kind, ''), 100),
+      hoverBgColor: darken(get<any>(theme.colors, kind, ''), 100),
       hoverBgColorFlat: 'transparent',
-      hoverBgColorOutline: lighten(get(theme.colors, kind, ''), 400),
-      hoverBorderColor: darken(get(theme.colors, kind, ''), 100),
+      hoverBgColorOutline: lighten(get<any>(theme.colors, kind, ''), 400),
+      hoverBorderColor: darken(get<any>(theme.colors, kind, ''), 100),
       hoverBorderColorFlat: 'transparent',
       hoverBorderColorOutline: kind,
       letterSpacing: 'normal',
@@ -514,12 +514,12 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
       whiteSpace: 'nowrap',
     });
 
-    set(theme, `tooltip.${kind}`, {
+    set<any>(theme, `tooltip.${kind}`, {
       bgColor: kind,
       color: ['light', 'lightest', 'white'].includes(kind) ? 'darkest' : 'white',
       linkColor: ['light', 'lightest', 'white'].includes(kind)
         ? 'primary'
-        : lighten(get(theme.colors, 'primary', ''), 200),
+        : lighten(get<any>(theme.colors, 'primary', ''), 200),
       borderColor: kind,
       borderRadius: 'sm',
       borderStyle: 'solid',

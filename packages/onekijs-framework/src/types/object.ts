@@ -9,12 +9,18 @@ type Continue = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 
 // copyright Pedro Figueiredo
 // https://dev.to/pffigueiredo/typescript-utility-keyof-nested-object-2pa3
-export type NestedKeyOf<T, I extends number = 10> = T extends object
+export type NestedKeyOf<T, I extends number = 1> = T extends object
   ? {
       [Key in keyof T & (string | number)]: I extends Continue
-        ? T[Key] extends object
+        ? T[Key] extends Array<infer E>
+          ? E extends object
+            ? `${Key}` | `${Key}.${number}` | `${Key}.${number}.${NestedKeyOf<E, Decrement<I>>}`
+            : `${Key}` | `${Key}.${number}`
+          : T[Key] extends object
           ? `${Key}` | `${Key}.${NestedKeyOf<T[Key], Decrement<I>>}`
           : `${Key}`
+        : T[Key] extends object
+        ? `${Key}` | `${Key}.${any}`
         : `${Key}`;
     }[keyof T & (string | number)]
   : string;
@@ -22,8 +28,20 @@ export type NestedKeyOf<T, I extends number = 10> = T extends object
 type ArrayPathType<A extends Array<any>, S extends string> = S extends `${infer K extends number}.${infer R}`
   ? A[K] extends Array<any>
     ? ArrayPathType<A[K], R>
+    : A[K] extends Array<any> | null
+    ? ArrayPathType<Exclude<A[K], null>, R> | null
+    : A[K] extends Array<any> | undefined
+    ? ArrayPathType<Exclude<A[K], undefined>, R> | undefined
+    : A[K] extends Array<any> | null | undefined
+    ? ArrayPathType<Exclude<A[K], null | undefined>, R> | null | undefined
     : A[K] extends object
     ? ObjectPathType<A[K], R>
+    : A[K] extends object | null
+    ? ObjectPathType<Exclude<A[K], null>, R> | null
+    : A[K] extends object | undefined
+    ? ObjectPathType<Exclude<A[K], undefined>, R> | undefined
+    : A[K] extends object | null | undefined
+    ? ObjectPathType<Exclude<A[K], null | undefined>, R> | null | undefined
     : never
   : S extends `${infer K extends number}`
   ? A[K]
@@ -34,15 +52,27 @@ type ObjectPathType<O extends object, S extends string> = {
     ? K extends Key
       ? O[K] extends Array<infer E>
         ? ArrayPathType<Array<E>, R>
+        : O[K] extends Exclude<Array<infer E>, null>
+        ? ArrayPathType<Array<E>, R> | null
+        : O[K] extends Exclude<Array<infer E>, undefined>
+        ? ArrayPathType<Array<E>, R> | undefined
+        : O[K] extends Exclude<Array<infer E>, null | undefined>
+        ? ArrayPathType<Array<E>, R> | null | undefined
         : O[K] extends object
         ? ObjectPathType<O[K], R>
+        : O[K] extends object | null
+        ? ObjectPathType<Exclude<O[K], null>, R> | null
+        : O[K] extends object | undefined
+        ? ObjectPathType<Exclude<O[K], undefined>, R> | undefined
+        : O[K] extends object | null | undefined
+        ? ObjectPathType<Exclude<O[K], null | undefined>, R> | null | undefined
         : O[K]
       : O extends AnonymousObject<infer E>
       ? PathType<E, R>
       : never
     : Key extends S
     ? O[Key]
-    : string extends NestedKeyOf<O>
+    : string extends NestedKeyOf<O, 1>
     ? O extends AnonymousObject<infer E>
       ? E
       : never

@@ -40,10 +40,10 @@ export class DashboardService extends DefaultService<DashboardState> {
   collapse(area: DashboardArea | 'all', collapse = true): void {
     if (area === 'all') {
       ['left', 'right', 'header', 'footer'].forEach((area) => {
-        set(this.state, `${area}.${this._getCollapseKey()}`, collapse);
+        set<any>(this.state, `${area}.${this._getCollapseKey()}`, collapse);
       });
     } else {
-      set(this.state, `${area}.${this._getCollapseKey()}`, collapse);
+      set<any>(this.state, `${area}.${this._getCollapseKey()}`, collapse);
     }
   }
 
@@ -61,10 +61,10 @@ export class DashboardService extends DefaultService<DashboardState> {
   float(area: DashboardArea | 'all', float = true): void {
     if (area === 'all') {
       ['left', 'right', 'header', 'footer'].forEach((area) => {
-        set(this.state, `${area}.${this._getFloatingKey()}`, float);
+        set<any>(this.state, `${area}.${this._getFloatingKey()}`, float);
       });
     } else {
-      set(this.state, `${area}.${this._getFloatingKey()}`, float);
+      set<any>(this.state, `${area}.${this._getFloatingKey()}`, float);
     }
   }
 
@@ -348,8 +348,8 @@ export class DashboardService extends DefaultService<DashboardState> {
   toggle(area: DashboardArea | 'all'): void {
     const areas: DashboardArea[] = area === 'all' ? ['left', 'right', 'header', 'footer'] : [area];
     areas.forEach((area) => {
-      const collapse: boolean = get(this.state, `${area}.${this._getCollapseKey()}`, false);
-      set(this.state, `${area}.${this._getCollapseKey()}`, !collapse);
+      const collapse: boolean = get<any>(this.state, `${area}.${this._getCollapseKey()}`, false);
+      set<any>(this.state, `${area}.${this._getCollapseKey()}`, !collapse);
     });
   }
 

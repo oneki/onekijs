@@ -179,7 +179,7 @@ const ControlledSelectComponent = <
     } else if (focus && search) {
       const item = autoCompleteSearch ? findSelectItem(controller, search.toString()) : controller.items[0];
       if (item === undefined && !isCollectionFetching(controller)) {
-        return get(controller, 'items.0');
+        return get<any>(controller, 'items.0');
       }
       return item;
     } else if (controller.state.active && controller.state.active.length > 0) {

@@ -6,7 +6,7 @@ export const booleanFormatter: Formatter<boolean> = (value): '0' | '1' => (value
 
 export const themeFormatter = (category: string): Formatter<string | number> => {
   return (value, theme) => {
-    return get(theme, `${category}.${value}`, String(value));
+    return get<any>(theme, `${category}.${value}`, String(value));
   };
 };
 

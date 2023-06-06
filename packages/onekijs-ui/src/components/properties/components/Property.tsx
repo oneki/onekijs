@@ -12,7 +12,7 @@ const Property: FC<PropertyProps> = React.memo(({ name, value }) => {
   const valueSize = (nameSize === 12 ? 12 : 12 - nameSize) as GridSize;
   const variantValueSize: AnonymousObject<GridSize | undefined> = {};
   ['sm', 'md', 'lg', 'xl'].forEach((variant) => {
-    const nameSize = get(context, variant);
+    const nameSize = get(context, variant as any);
     variantValueSize[variant] =
       nameSize === undefined ? undefined : ((nameSize === 12 ? 12 : 12 - nameSize) as GridSize);
   });
