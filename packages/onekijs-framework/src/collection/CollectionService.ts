@@ -1105,7 +1105,7 @@ export default class CollectionService<
 
   _indexDb(item: I, _context?: AnonymousObject): void {
     if (this._positionIndex[item.uid] !== undefined && this._db) {
-      set(this._db, this._positionIndex[item.uid], item);
+      set(this._db, this._positionIndex[item.uid] as any, item);
     }
   }
 

@@ -13,13 +13,16 @@ import { FormOptions, FormState } from './typings';
  * @param {Object} options
  */
 
-const useFormController = (initialValues?: any, formOptions: FormOptions = {}): FormService => {
+const useFormController = <T extends object = any>(
+  initialValues?: Partial<T>,
+  formOptions: FormOptions = {},
+): FormService<T> => {
   // formOptions cannot be changed afterwards. Used as initialState for the service
   // we copy initialValues to values to be able to reset the form to its initial state
   // immer will not kept a reference between to two objects. So changing values will not change initialValues
   const initialContext = formOptions.initialContext ?? {};
-  const [, service] = useService(FormService, (): FormState => {
-    const initialState: FormState = Object.assign({}, formOptions, {
+  const [, service] = useService(FormService, (): FormState<T> => {
+    const initialState: FormState<T> = Object.assign({}, formOptions, {
       initialContext,
       context: initialContext,
       validations: {},

@@ -13,9 +13,10 @@ const useValidation = (name = '', touchedOnly = true): FieldValidation | Contain
 
   const getFieldValidation = useCallback(
     (name: string, touchedOnly: boolean) => {
-      if (form.fields[name]) {
+      const field = form.fields[name];
+      if (field !== undefined) {
         if (touchedOnly) {
-          return form.fields[name].touched ? form.state.validations[name] || defaultValidation : defaultValidation;
+          return field.touched ? form.state.validations[name] || defaultValidation : defaultValidation;
         } else {
           return form.state.validations[name] || defaultValidation;
         }
@@ -40,7 +41,7 @@ const useValidation = (name = '', touchedOnly = true): FieldValidation | Contain
       if (isNullOrEmpty(name)) {
         setValidation(form.getContainerFieldValidation(form.state.validations, form.fields, '', touchedOnly));
       } else {
-        if (!touchedOnly || form.fields[name].touched) {
+        if (!touchedOnly || form.fields[name]?.touched) {
           setValidation(validation);
         }
       }

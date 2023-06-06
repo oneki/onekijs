@@ -1,7 +1,7 @@
 import { __metadata } from 'tslib';
 import DefaultBasicError from '../core/BasicError';
 import { Primitive } from '../types/core';
-import { AnonymousObject } from '../types/object';
+import { AnonymousObject, NestedKeyOf } from '../types/object';
 import { isSameArray } from '../utils/array';
 import { clone, get, shallowEqual, toArray } from '../utils/object';
 import {
@@ -37,7 +37,7 @@ export const applyCriteria = <T = any, I extends Item<T> = Item<T>>(
 ): boolean => {
   const operator = criteria.operator || 'eq';
   const value = criteria.value;
-  const source = get(item, `data.${criteria.field}`);
+  const source = get(item, `data.${criteria.field}` as NestedKeyOf<I>);
   const not = criteria.not;
   const result = applyOperator(operator, source, value);
   return not ? !result : result;
@@ -193,7 +193,12 @@ export const applySortBy = <T = any, I extends Item<T> = Item<T>>(
                   : comparators[field.comparator] || defaultComparator;
               const reverse = s.dir === 'desc' ? -1 : 1;
 
-              result = reverse * comparator(get(a, `data.${fieldName}`), get(b, `data.${fieldName}`));
+              result =
+                reverse *
+                comparator(
+                  get(a, `data.${fieldName}` as NestedKeyOf<I>),
+                  get(b, `data.${fieldName}` as NestedKeyOf<I>),
+                );
               if (result !== 0) break sort_loop;
             }
           }

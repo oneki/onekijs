@@ -1,15 +1,15 @@
 import { useEffect, useRef } from 'react';
-import { AnonymousObject } from '../types/object';
+import { AnonymousObject, NestedKeyOf } from '../types/object';
 import { FieldOptions, FieldProps, Validator } from './typings';
 import useForm from './useForm';
 import useValue from './useValue';
 
-const useField = (
-  fieldName: string,
+const useField = <T extends object = any>(
+  fieldName: NestedKeyOf<T>,
   validators: AnonymousObject<Validator> = {},
   options: FieldOptions = {},
 ): FieldProps => {
-  const form = useForm();
+  const form = useForm<T>();
   const field = form.initField(fieldName, validators, options);
   const value = useValue(fieldName);
   field.value = value === undefined ? (options.defaultValue === undefined ? '' : options.defaultValue) : value;

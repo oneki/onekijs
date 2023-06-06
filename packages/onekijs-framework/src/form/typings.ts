@@ -1,7 +1,7 @@
 import React, { SyntheticEvent } from 'react';
 import { FCC } from '../types/core';
 import { FormLayout } from '../types/form';
-import { AnonymousObject } from '../types/object';
+import { AnonymousObject, NestedKeyOf } from '../types/object';
 import { State } from '../types/state';
 import ContainerValidation from './ContainerValidation';
 import FieldValidation from './FieldValidation';
@@ -17,13 +17,13 @@ export interface AsyncBindState extends State {
 
 export type Binder<T> = (...args: any[]) => T;
 
-export interface Field extends FieldOptions {
+export interface Field<T extends object = any> extends FieldOptions<T> {
   touched: boolean;
   name: string;
   validations: AnonymousObject<string>[];
   touchOn: TouchOnType;
   validators: AnonymousObject<Validator>;
-  context: FieldProps;
+  context: FieldProps<T>;
 }
 
 export interface FieldContainer {
@@ -34,12 +34,12 @@ export interface FieldContainer {
   touchAllFields: () => void;
 }
 
-export interface FieldProps {
-  name: string;
+export interface FieldProps<T extends object = any> {
+  name: NestedKeyOf<T>;
   onChange: (value: any) => void;
   onFocus: () => void;
   onBlur: () => void;
-  value?: any;
+  value?: T;
 }
 
 export type FieldOptions<T = any> = FormMetadata & {
@@ -113,11 +113,11 @@ export type FormProps = Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onSubmi
 
 export type FormSubmitCallback = (values: AnonymousObject) => void;
 
-export interface FormState<T extends object = any> extends State, FormOptions {
+export interface FormState<T> extends State, FormOptions {
   validations: AnonymousObject<FieldValidation>;
   metadata: AnonymousObject<FormMetadata>;
-  values?: T;
-  initialValues?: T;
+  values?: Partial<T>;
+  initialValues?: Partial<T>;
   context: AnonymousObject;
   initialContext: AnonymousObject;
   submitting?: boolean;
@@ -133,7 +133,7 @@ export type FormValidationListener = (
   watch: string,
 ) => any;
 
-export type FormValueListener = (value: any | any[], previousValue: any | any[], watch: string) => any;
+export type FormValueListener<T = any> = (value: T, previousValue: T, watch: string) => any;
 
 export type FormWarningCallback = (fields: Field[], values?: AnonymousObject) => void;
 

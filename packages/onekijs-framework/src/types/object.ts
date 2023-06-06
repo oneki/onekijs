@@ -4,14 +4,17 @@ export interface AnonymousObject<T = any> {
 
 export type Class<T> = { new (...args: any[]): T };
 
+type Decrement<N extends number> = [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10][N];
+type Continue = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+
 // copyright Pedro Figueiredo
 // https://dev.to/pffigueiredo/typescript-utility-keyof-nested-object-2pa3
-export type NestedKeyOf<T> = T extends AnonymousObject<any>
-  ? string
-  : T extends object
+export type NestedKeyOf<T, I extends number = 10> = T extends object
   ? {
-      [Key in keyof T & (string | number)]: T[Key] extends object
-        ? `${Key}` | `${Key}.${NestedKeyOf<T[Key]>}`
+      [Key in keyof T & (string | number)]: I extends Continue
+        ? T[Key] extends object
+          ? `${Key}` | `${Key}.${NestedKeyOf<T[Key], Decrement<I>>}`
+          : `${Key}`
         : `${Key}`;
     }[keyof T & (string | number)]
   : string;
@@ -39,8 +42,10 @@ type ObjectPathType<O extends object, S extends string> = {
       : never
     : Key extends S
     ? O[Key]
-    : O extends AnonymousObject<infer E>
-    ? E
+    : string extends NestedKeyOf<O>
+    ? O extends AnonymousObject<infer E>
+      ? E
+      : never
     : never;
 }[keyof O];
 
@@ -54,4 +59,8 @@ export type PathType<T, S extends string> = T extends Array<any>
 
 export type AnonymousPathObject<T> = {
   [P in NestedKeyOf<T>]?: PathType<T, P>;
+};
+
+export type AnonymousKeyObject<T, V> = {
+  [P in NestedKeyOf<T>]?: V;
 };

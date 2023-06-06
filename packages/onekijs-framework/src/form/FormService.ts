@@ -4,7 +4,7 @@ import DefaultService from '../core/Service';
 import { reducer, saga, service } from '../core/annotations';
 import { asyncGet } from '../core/xhr';
 import { ValidationStatus } from '../types/form';
-import { AnonymousObject, AnonymousPathObject, NestedKeyOf, PathType } from '../types/object';
+import { AnonymousKeyObject, AnonymousObject, AnonymousPathObject, NestedKeyOf, PathType } from '../types/object';
 import { SagaEffect } from '../types/saga';
 import { del, get, isObject, set, simpleMergeDeep } from '../utils/object';
 import { generateUniqueId } from '../utils/string';
@@ -49,7 +49,7 @@ export default class FormService<T extends object = any> extends DefaultService<
   // keep all fields that has been triggered at least once (used to be sure that all field initialization are listened by listeners)
   public triggered: AnonymousObject<boolean> = {};
 
-  public fields: AnonymousObject<Field>;
+  public fields: AnonymousKeyObject<T, Field<T>>;
   public decorators: AnonymousObject<FormDecorator>;
   public listeners: {
     [k in FormListenerType]: AnonymousObject<FormListenerProps[]>;
@@ -58,12 +58,8 @@ export default class FormService<T extends object = any> extends DefaultService<
     [fieldName: string]: Set<string>;
   };
 
-  protected fieldIndex: {
-    [fieldName: string]: boolean;
-  };
-  protected watchIndex: {
-    [fieldName: string]: boolean;
-  };
+  protected fieldIndex: AnonymousObject;
+  protected watchIndex: AnonymousObject;
 
   protected listenerIndex: {
     [id: string]: AnonymousObject<FormListenerProps>;
@@ -111,38 +107,43 @@ export default class FormService<T extends object = any> extends DefaultService<
     this.setValue(fieldArrayName, arrayValue.concat([initialValue]));
   }
 
-  addField(field: Field): void {
+  addField(field: Field<T>): void {
     if (!this.fields[field.context.name]) {
       this.fields[field.context.name] = field;
       const currentIndex = get(this.fieldIndex, field.context.name);
       if (currentIndex === undefined) {
-        set(this.fieldIndex, field.context.name, true);
+        set(this.fieldIndex, field.context.name as string, true);
       }
     }
   }
 
   @reducer
-  addValidator(fieldName: string, validatorName: string, validator: Validator): void {
+  addValidator(fieldName: NestedKeyOf<T>, validatorName: string, validator: Validator): void {
     // get current value
     const field = this.fields[fieldName];
     if (field) {
       field.validators[validatorName] = validator;
     } else {
-      set(this.placeholderFields, `${fieldName}.validators.${validatorName}`, validator);
+      set(this.placeholderFields, `${fieldName as string}.validators.${validatorName}`, validator);
     }
     const validations = this.validateAll({
       [fieldName]: this.getValue(fieldName),
-    });
-    this.compileValidations(Object.keys(validations));
+    } as AnonymousPathObject<T>);
+    this.compileValidations(Object.keys(validations) as NestedKeyOf<T>[]);
   }
 
   @reducer
-  clearError(fieldName: string, validatorName?: string, compile = true): void {
+  clearError(fieldName: NestedKeyOf<T>, validatorName?: string, compile = true): void {
     this.clearValidation(fieldName, validatorName, ValidationCode.Error, compile);
   }
 
   @reducer
-  clearValidation(fieldName: string, validatorName: string | undefined, code: ValidationCode, compile = true): void {
+  clearValidation(
+    fieldName: NestedKeyOf<T>,
+    validatorName: string | undefined,
+    code: ValidationCode,
+    compile = true,
+  ): void {
     del(this.fields[fieldName], validatorName ? `validations.${code}.${validatorName}` : `validations.${code}`);
     if (compile) {
       this.compileValidations(fieldName);
@@ -150,12 +151,12 @@ export default class FormService<T extends object = any> extends DefaultService<
   }
 
   @reducer
-  clearWarning(fieldName: string, validatorName?: string, compile = true): void {
+  clearWarning(fieldName: NestedKeyOf<T>, validatorName?: string, compile = true): void {
     this.clearValidation(fieldName, validatorName, ValidationCode.Warning, compile);
   }
 
   @reducer
-  compileValidations(fieldNames: string[] | string, force = false): void {
+  compileValidations(fieldNames: NestedKeyOf<T>[] | NestedKeyOf<T>, force = false): void {
     if (!Array.isArray(fieldNames)) {
       fieldNames = [fieldNames];
     }
@@ -172,6 +173,10 @@ export default class FormService<T extends object = any> extends DefaultService<
     });
   }
 
+  decorator(name: string, options: FormDecoratorOptions = {}): FormDecorator {
+    return this.initDecorator(name, options);
+  }
+
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   *delayLoading(delay_ms?: number) {
     yield this.setLoading(delay_ms ? false : true, true);
@@ -182,12 +187,12 @@ export default class FormService<T extends object = any> extends DefaultService<
   }
 
   @reducer
-  disable(fieldName: string, match = true): void {
-    this.setMetadata(fieldName, 'disabled', match);
+  disable(fieldOrDecoratorName: string, match = true): void {
+    this.setMetadata(fieldOrDecoratorName, 'disabled', match);
   }
 
   @reducer
-  disableValidator(fieldName: string, validatorName: string) {
+  disableValidator(fieldName: NestedKeyOf<T>, validatorName: string) {
     const field = this.fields[fieldName];
     if (field) {
       let validator: Validator | undefined = field.validators[validatorName];
@@ -206,12 +211,12 @@ export default class FormService<T extends object = any> extends DefaultService<
   }
 
   @reducer
-  enable(fieldName: string, match = true): void {
-    this.setMetadata(fieldName, 'disabled', !match);
+  enable(fieldOrDecoratorName: string, match = true): void {
+    this.setMetadata(fieldOrDecoratorName, 'disabled', !match);
   }
 
   @reducer
-  enableValidator(fieldName: string, validatorName: string): void {
+  enableValidator(fieldName: NestedKeyOf<T>, validatorName: string): void {
     const field = this.fields[fieldName];
     if (field) {
       let validator: Validator | undefined = field.validators[validatorName];
@@ -261,7 +266,7 @@ export default class FormService<T extends object = any> extends DefaultService<
 
   getContainerFieldValidation(
     validations: AnonymousObject<FieldValidation>,
-    fields: AnonymousObject<Field>,
+    fields: AnonymousKeyObject<T, Field>,
     prefix = '',
     touchedOnly = true,
   ): ContainerValidation {
@@ -270,8 +275,10 @@ export default class FormService<T extends object = any> extends DefaultService<
     let messages = [];
     const result = new ContainerValidation('', ValidationStatus.None, ValidationCode.None, {});
 
-    for (const fieldName of Object.keys(validations).filter((k) => k.startsWith(prefix))) {
-      if (fields[fieldName] && (!touchedOnly || fields[fieldName].touched)) {
+    const keys = Object.keys(validations) as NestedKeyOf<T>[];
+    for (const fieldName of keys.filter((k: string) => k.startsWith(prefix))) {
+      const field = fields[fieldName as NestedKeyOf<T>];
+      if (field !== undefined && (!touchedOnly || field.touched)) {
         const validation = validations[fieldName];
         if (validation.code <= result.code && validation.code < ValidationCode.None) {
           if (validation.code < result.code) {
@@ -300,17 +307,17 @@ export default class FormService<T extends object = any> extends DefaultService<
     return get(this.state.context, key, defaultValue);
   }
 
-  protected _getSubFieldNames(fieldName: string): string[] {
-    let result: string[] = [];
+  protected _getSubFieldNames(fieldName: NestedKeyOf<T>): NestedKeyOf<T>[] {
+    let result: NestedKeyOf<T>[] = [];
     const index = get(this.fieldIndex, fieldName);
     if (index) {
       if (Array.isArray(index)) {
         for (const i in index) {
-          result = result.concat(this._getSubFieldNames(`${fieldName}.${i}`));
+          result = result.concat(this._getSubFieldNames(`${fieldName}.${i}` as NestedKeyOf<T>));
         }
       } else if (isObject(index)) {
         Object.keys(index).forEach((childFieldName) => {
-          result = result.concat(this._getSubFieldNames(`${fieldName}.${childFieldName}`));
+          result = result.concat(this._getSubFieldNames(`${fieldName}.${childFieldName}` as NestedKeyOf<T>));
         });
       }
       if (this.fields[fieldName]) {
@@ -320,9 +327,9 @@ export default class FormService<T extends object = any> extends DefaultService<
     return result;
   }
 
-  protected _getSubWatchs(watch: string): string[] {
+  protected _getSubWatchs(watch: NestedKeyOf<T>): (NestedKeyOf<T> | '')[] {
     const nonIndexedWatch = getNonIndexedProp(watch);
-    const result: string[] = [];
+    const result: (NestedKeyOf<T> | '')[] = [];
     // check if the index if something listens on the key "watch"
     const index = watch === '' ? this.watchIndex[''] : get(this.watchIndex, watch);
     if (index) {
@@ -342,7 +349,7 @@ export default class FormService<T extends object = any> extends DefaultService<
     // if addresses.0.street is changed, addresses should be alerted (becasue the object has been changed)
     // we will also alert adresses.street but it would be done in form/index.tsx
     while (watch.includes('.')) {
-      watch = watch.split('.').slice(0, -1).join('.');
+      watch = watch.split('.').slice(0, -1).join('.') as NestedKeyOf<T>;
       const index = watch === '' ? this.watchIndex[''] : get(this.watchIndex, watch);
       if (index) {
         result.push(watch);
@@ -354,13 +361,12 @@ export default class FormService<T extends object = any> extends DefaultService<
     return result;
   }
 
-  getValidation = (fieldName?: string, touchedOnly = true): FieldValidation | ContainerValidation => {
-    const getFieldValidation = (fieldName: string): any => {
-      if (this.fields[fieldName]) {
+  getValidation = (fieldName?: NestedKeyOf<T>, touchedOnly = true): FieldValidation | ContainerValidation => {
+    const getFieldValidation = (fieldName: NestedKeyOf<T>): any => {
+      const field = this.fields[fieldName];
+      if (field !== undefined) {
         if (touchedOnly) {
-          return this.fields[fieldName].touched
-            ? this.state.validations[fieldName] || defaultValidation
-            : defaultValidation;
+          return field.touched ? this.state.validations[fieldName] || defaultValidation : defaultValidation;
         } else {
           return this.state.validations[fieldName] || defaultValidation;
         }
@@ -376,9 +382,9 @@ export default class FormService<T extends object = any> extends DefaultService<
     }
   };
 
-  protected _getValidation(fieldName: string): FieldValidation {
-    if (this.fields[fieldName]) {
-      const field = this.fields[fieldName];
+  protected _getValidation(fieldName: NestedKeyOf<T>): FieldValidation {
+    const field = this.fields[fieldName];
+    if (field !== undefined) {
       for (const code in field.validations) {
         const iCode = parseInt(code);
         for (const id in field.validations[iCode]) {
@@ -390,14 +396,11 @@ export default class FormService<T extends object = any> extends DefaultService<
     return defaultValidation;
   }
 
-  getValue(fieldName?: string, defaultValue?: any): any {
-    if (fieldName === undefined || fieldName === '') {
-      return this.state.values || defaultValue;
-    }
+  getValue<K extends NestedKeyOf<T>>(fieldName?: K, defaultValue?: PathType<T, K>): PathType<T, K> | undefined {
     return get(this.state.values, fieldName, defaultValue);
   }
 
-  hasValidation(fieldName: string, validatorName: string, code: ValidationCode, message?: string): boolean {
+  hasValidation(fieldName: NestedKeyOf<T>, validatorName: string, code: ValidationCode, message?: string): boolean {
     const field = this.fields[fieldName];
     if (field) {
       const validation = get(field, `validations.${code}.${validatorName}`);
@@ -410,8 +413,8 @@ export default class FormService<T extends object = any> extends DefaultService<
   }
 
   @reducer
-  hide(fieldName: string, match = true): void {
-    this.setMetadata(fieldName, 'visible', !match);
+  hide(fieldOrDecoratorName: string, match = true): void {
+    this.setMetadata(fieldOrDecoratorName, 'visible', !match);
   }
 
   /**
@@ -451,7 +454,8 @@ export default class FormService<T extends object = any> extends DefaultService<
    *                    - onBlur
    */
   initField(name: NestedKeyOf<T>, validators: AnonymousObject<Validator> = {}, options: FieldOptions = {}): FieldProps {
-    if (!this.fields[name]) {
+    const field = this.fields[name];
+    if (field === undefined) {
       options.defaultValue = options.defaultValue === undefined ? '' : options.defaultValue;
       options.touchOn = options.touchOn || this.config.touchOn || TouchOn.Blur;
       this.addField(
@@ -475,13 +479,13 @@ export default class FormService<T extends object = any> extends DefaultService<
                 },
                 onFocus: (): void => {
                   const field = this.fields[name];
-                  if (field.touchOn === 'focus' && !field.touched) {
+                  if (field !== undefined && field.touchOn === 'focus' && !field.touched) {
                     this.touch(name);
                   }
                 },
                 onBlur: (): void => {
                   const field = this.fields[name];
-                  if (field.touchOn === 'blur' && !field.touched) {
+                  if (field !== undefined && field.touchOn === 'blur' && !field.touched) {
                     this.touch(name);
                   }
                 },
@@ -501,12 +505,14 @@ export default class FormService<T extends object = any> extends DefaultService<
         this.state.metadata[name],
       );
     }
-    return this.fields[name].context;
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.fields[name]!.context;
   }
 
   @reducer
   insert(fieldArrayName: NestedKeyOf<T>, index: number, initialValue = {}): void {
-    const currentArrayValue = get(this.state.values, fieldArrayName, []);
+    const currentArrayValue = (get(this.state.values, fieldArrayName) || []) as any[];
     if (currentArrayValue.length - 1 >= index) {
       const nextValues: AnonymousPathObject<T> = {};
       // need to modifiy all values / metadata / validations with an index superior or equal to the added one
@@ -520,7 +526,7 @@ export default class FormService<T extends object = any> extends DefaultService<
           if (i === currentArrayValue.length - 1) {
             const name = `${fieldArrayName}.${i + 1}.${fieldName}` as NestedKeyOf<T>;
             this.addField(
-              Object.assign({}, this.fields[`${fieldArrayName}.${i}.${fieldName}`], {
+              Object.assign({}, this.fields[`${fieldArrayName}.${i}.${fieldName}` as NestedKeyOf<T>], {
                 name,
                 context: {
                   name,
@@ -532,13 +538,13 @@ export default class FormService<T extends object = any> extends DefaultService<
                   },
                   onFocus: (): void => {
                     const field = this.fields[name];
-                    if (field.touchOn === 'focus' && !field.touched) {
+                    if (field !== undefined && field.touchOn === 'focus' && !field.touched) {
                       this.touch(name);
                     }
                   },
                   onBlur: (): void => {
                     const field = this.fields[name];
-                    if (field.touchOn === 'blur' && !field.touched) {
+                    if (field !== undefined && field.touchOn === 'blur' && !field.touched) {
                       this.touch(name);
                     }
                   },
@@ -546,13 +552,12 @@ export default class FormService<T extends object = any> extends DefaultService<
               }),
             );
           } else {
-            this.fields[`${fieldArrayName}.${i + 1}.${fieldName}`] = Object.assign(
-              this.fields[`${fieldArrayName}.${i}.${fieldName}`],
-              {
-                name: this.fields[`${fieldArrayName}.${i + 1}.${fieldName}`].name,
-                context: this.fields[`${fieldArrayName}.${i + 1}.${fieldName}`].context,
-              },
-            );
+            const nextField = this.fields[`${fieldArrayName}.${i}.${fieldName}` as NestedKeyOf<T>] as Field<T>;
+            const currentField = this.fields[`${fieldArrayName}.${i + 1}.${fieldName}` as NestedKeyOf<T>] as Field<T>;
+            this.fields[`${fieldArrayName}.${i + 1}.${fieldName}` as NestedKeyOf<T>] = Object.assign(nextField, {
+              name: currentField.name,
+              context: currentField.context,
+            }) as Field<T>;
           }
 
           delete this.triggered[`${fieldArrayName}.${i}.${fieldName}`];
@@ -560,7 +565,7 @@ export default class FormService<T extends object = any> extends DefaultService<
           if (i === index) {
             delete this.state.metadata[`${fieldArrayName}.${i}.${fieldName}`];
             delete this.state.validations[`${fieldArrayName}.${i}.${fieldName}`];
-            delete this.fields[`${fieldArrayName}.${i}.${fieldName}`];
+            delete this.fields[`${fieldArrayName}.${i}.${fieldName}` as NestedKeyOf<T>];
           }
           this.pendingDispatch.validationChange.add(`${fieldArrayName}.${i + 1}.${fieldName}`);
           this.pendingDispatch.metadataChange.add(`${fieldArrayName}.${i + 1}.${fieldName}`);
@@ -578,7 +583,7 @@ export default class FormService<T extends object = any> extends DefaultService<
     }
   }
 
-  isTouched(fieldName: string): boolean {
+  isTouched(fieldName: NestedKeyOf<T>): boolean {
     const field = this.fields[fieldName];
     if (field) {
       return field.touched;
@@ -699,7 +704,7 @@ export default class FormService<T extends object = any> extends DefaultService<
 
   @reducer
   remove(fieldArrayName: NestedKeyOf<T>, index: number): void {
-    const currentArrayValue = get(this.state.values, fieldArrayName, []);
+    const currentArrayValue = (get(this.state.values, fieldArrayName) || []) as any[];
     const last = currentArrayValue.length - 1;
     if (last >= index) {
       const nextValues: AnonymousPathObject<T> = {};
@@ -707,25 +712,24 @@ export default class FormService<T extends object = any> extends DefaultService<
       for (let i = index + 1; i < currentArrayValue.length; i++) {
         Object.keys(currentArrayValue[i]).forEach((fieldName) => {
           // nextValues[`${fieldArrayName}.${i - 1}.${fieldName}`] = currentArrayValue[i][fieldName];
+          const nextField = this.fields[`${fieldArrayName}.${i}.${fieldName}` as NestedKeyOf<T>];
+          const currentField = this.fields[`${fieldArrayName}.${i}.${fieldName}` as NestedKeyOf<T>] as Field<T>;
 
-          if (this.fields[`${fieldArrayName}.${i}.${fieldName}`]) {
+          if (nextField) {
             this.state.validations[`${fieldArrayName}.${i - 1}.${fieldName}`] =
               this.state.validations[`${fieldArrayName}.${i}.${fieldName}`];
             this.state.metadata[`${fieldArrayName}.${i - 1}.${fieldName}`] =
               this.state.metadata[`${fieldArrayName}.${i}.${fieldName}`];
-            this.fields[`${fieldArrayName}.${i - 1}.${fieldName}`] = Object.assign(
-              this.fields[`${fieldArrayName}.${i}.${fieldName}`],
-              {
-                name: this.fields[`${fieldArrayName}.${i - 1}.${fieldName}`].name,
-                context: this.fields[`${fieldArrayName}.${i - 1}.${fieldName}`].context,
-              },
-            );
+            this.fields[`${fieldArrayName}.${i - 1}.${fieldName}` as NestedKeyOf<T>] = Object.assign(nextField, {
+              name: currentField.name,
+              context: currentField.context,
+            });
             this.pendingDispatch.validationChange.add(`${fieldArrayName}.${i - 1}.${fieldName}`);
             this.pendingDispatch.metadataChange.add(`${fieldArrayName}.${i - 1}.${fieldName}`);
           } else {
             delete this.state.validations[`${fieldArrayName}.${i - 1}.${fieldName}`];
             delete this.state.metadata[`${fieldArrayName}.${i}.${fieldName}`];
-            delete this.fields[`${fieldArrayName}.${i - 1}.${fieldName}`];
+            delete this.fields[`${fieldArrayName}.${i - 1}.${fieldName}` as NestedKeyOf<T>];
           }
           delete this.triggered[`${fieldArrayName}.${i}.${fieldName}`];
         });
@@ -734,18 +738,18 @@ export default class FormService<T extends object = any> extends DefaultService<
       Object.keys(currentArrayValue[last]).forEach((fieldName) => {
         delete this.state.metadata[`${fieldArrayName}.${last}.${fieldName}`];
         delete this.state.validations[`${fieldArrayName}.${last}.${fieldName}`];
-        delete this.fields[`${fieldArrayName}.${last}.${fieldName}`];
+        delete this.fields[`${fieldArrayName}.${last}.${fieldName}` as NestedKeyOf<T>];
         delete this.triggered[`${fieldArrayName}.${last}.${fieldName}`];
       });
       this.pendingDispatch.validationChange.add('');
 
-      nextValues[fieldArrayName] = currentArrayValue.filter((_a: never, i: number): boolean => i !== index);
+      nextValues[fieldArrayName] = currentArrayValue.filter((_a, i): boolean => i !== index) as any;
       this.setValues(nextValues);
     }
   }
 
   @reducer
-  removeValidator(fieldName: string, validatorName: string): void {
+  removeValidator(fieldName: NestedKeyOf<T>, validatorName: string): void {
     // get current value
     const field = this.fields[fieldName];
     if (field) {
@@ -758,15 +762,15 @@ export default class FormService<T extends object = any> extends DefaultService<
     }
     const validations = this.validateAll({
       [fieldName]: this.getValue(fieldName),
-    });
-    this.compileValidations(Object.keys(validations));
+    } as AnonymousPathObject<T>);
+    this.compileValidations(Object.keys(validations) as NestedKeyOf<T>[]);
   }
 
   @reducer
   reset(): void {
     let props = Object.getOwnPropertyNames(this.fields);
     for (let i = 0; i < props.length; i++) {
-      delete this.fields[props[i]];
+      delete this.fields[props[i] as NestedKeyOf<T>];
     }
 
     props = Object.getOwnPropertyNames(this.decorators);
@@ -838,13 +842,13 @@ export default class FormService<T extends object = any> extends DefaultService<
   }
 
   @reducer
-  setError(fieldName: string, validatorName: string, message = '', match?: boolean): boolean {
+  setError(fieldName: NestedKeyOf<T>, validatorName: string, message = '', match?: boolean): boolean {
     return this.setOrClearValidation(ValidationCode.Error, fieldName, validatorName, message, match);
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @reducer
-  setInitialValues(values: T): void {
+  setInitialValues(values: Partial<T>): void {
     this.state.initialValues = values;
   }
 
@@ -855,40 +859,40 @@ export default class FormService<T extends object = any> extends DefaultService<
   }
 
   @reducer
-  setMetadata<K extends keyof FormMetadata>(fieldName: string, key: K, value: FormMetadata[K]): void {
-    this.state.metadata[fieldName] = this.state.metadata[fieldName] || {};
-    this.state.metadata[fieldName][key] = value;
+  setMetadata<K extends keyof FormMetadata>(fieldOrDecoratorName: string, key: K, value: FormMetadata[K]): void {
+    this.state.metadata[fieldOrDecoratorName] = this.state.metadata[fieldOrDecoratorName] || {};
+    this.state.metadata[fieldOrDecoratorName][key] = value;
 
-    if (key === 'visible') {
+    if (key === 'visible' && Object.keys(this.fields).includes(fieldOrDecoratorName)) {
       if (value === false) {
-        this.disableValidator(fieldName, 'required');
+        this.disableValidator(fieldOrDecoratorName as NestedKeyOf<T>, 'required');
       } else {
-        this.enableValidator(fieldName, 'required');
+        this.enableValidator(fieldOrDecoratorName as NestedKeyOf<T>, 'required');
       }
     }
 
-    this.pendingDispatch.metadataChange.add(fieldName);
+    this.pendingDispatch.metadataChange.add(fieldOrDecoratorName);
     this.pendingDispatch.metadataChange.add('');
   }
 
   @reducer
   setMetadatas(metadatas: AnonymousObject<FormMetadata>): void {
-    Object.keys(metadatas).forEach((fieldName) => {
-      Object.keys(metadatas[fieldName]).forEach((key: any) => {
-        this.setMetadata(fieldName, key, metadatas[fieldName][key as keyof FormMetadata]);
+    Object.keys(metadatas).forEach((fieldOrDecoratorName) => {
+      Object.keys(metadatas[fieldOrDecoratorName]).forEach((key: any) => {
+        this.setMetadata(fieldOrDecoratorName, key, metadatas[fieldOrDecoratorName][key as keyof FormMetadata]);
       });
     });
   }
 
   @reducer
-  setOK(fieldName: string, validatorName: string): boolean {
+  setOK(fieldName: NestedKeyOf<T>, validatorName: string): boolean {
     return this.setOrClearValidation(ValidationCode.Ok, fieldName, validatorName, '', true);
   }
 
   @reducer
   setOrClearValidation(
     code: ValidationCode,
-    fieldName: string,
+    fieldName: NestedKeyOf<T>,
     validatorName: string,
     message = '',
     match?: boolean,
@@ -913,7 +917,7 @@ export default class FormService<T extends object = any> extends DefaultService<
   }
 
   @reducer
-  setPendingValidation(fieldName: string, validatorName: string, pending = true): boolean {
+  setPendingValidation(fieldName: NestedKeyOf<T>, validatorName: string, pending = true): boolean {
     return this.setOrClearValidation(ValidationCode.Loading, fieldName, validatorName, '', pending);
   }
 
@@ -925,7 +929,13 @@ export default class FormService<T extends object = any> extends DefaultService<
   }
 
   @reducer
-  setValidation(fieldName: string, validatorName: string, code: ValidationCode, message = '', compile = true): void {
+  setValidation(
+    fieldName: NestedKeyOf<T>,
+    validatorName: string,
+    code: ValidationCode,
+    message = '',
+    compile = true,
+  ): void {
     if (this.fields[fieldName]) {
       set(this.fields[fieldName], `validations.${code}.${validatorName}`, message);
     }
@@ -948,27 +958,24 @@ export default class FormService<T extends object = any> extends DefaultService<
   setValues(values: AnonymousPathObject<T>): void {
     const validations = this.validateAll(values);
     Object.keys(values).forEach((key) => {
-      const field = this.fields[key];
+      const field = this.fields[key as NestedKeyOf<T>];
       if (field && field.touchOn === 'change' && !field.touched) {
         field.touched = true;
       }
-      set<any>(this.state.values, `${key}`, values[key as NestedKeyOf<T>]);
-      this._getSubWatchs(key).forEach((key) => this.pendingDispatch.valueChange.add(key));
+      set(this.state.values, key as NestedKeyOf<T>, values[key as NestedKeyOf<T>] as PathType<T, NestedKeyOf<T>>);
+      this._getSubWatchs(key as NestedKeyOf<T>).forEach((key) => this.pendingDispatch.valueChange.add(key));
     });
-    this.compileValidations(Object.keys(validations));
+    this.compileValidations(Object.keys(validations) as NestedKeyOf<T>[]);
   }
 
   @reducer
-  setWarning(fieldName: string, validatorName: string, message = '', match?: boolean): boolean {
+  setWarning(fieldName: NestedKeyOf<T>, validatorName: string, message = '', match?: boolean): boolean {
     return this.setOrClearValidation(ValidationCode.Warning, fieldName, validatorName, message, match);
   }
 
   @reducer
-  show(fieldName: string, match = true): void {
-    this.setMetadata(fieldName, 'visible', match);
-    if (match) {
-      this.enableValidator(fieldName, 'required');
-    }
+  show(fieldOrDecoratorName: string, match = true): void {
+    this.setMetadata(fieldOrDecoratorName, 'visible', match);
   }
 
   @saga(SagaEffect.Leading)
@@ -1008,9 +1015,10 @@ export default class FormService<T extends object = any> extends DefaultService<
   }
 
   @reducer
-  touch(fieldName: string): void {
-    if (this.fields[fieldName] && !this.fields[fieldName].touched) {
-      this.fields[fieldName].touched = true;
+  touch(fieldName: NestedKeyOf<T>): void {
+    const field = this.fields[fieldName];
+    if (field !== undefined && !field.touched) {
+      field.touched = true;
       this.compileValidations(fieldName, true);
     }
   }
@@ -1018,13 +1026,13 @@ export default class FormService<T extends object = any> extends DefaultService<
   @reducer
   touchAll(): void {
     Object.keys(this.fields).forEach((fieldName) => {
-      this.touch(fieldName);
+      this.touch(fieldName as NestedKeyOf<T>);
     });
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   validateSync(
-    fieldName: string,
+    fieldName: NestedKeyOf<T>,
     validatorName: string,
     validator: ValidatorSyncFunction,
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -1041,7 +1049,7 @@ export default class FormService<T extends object = any> extends DefaultService<
   @saga(SagaEffect.Latest)
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   *validateAsync(
-    fieldName: string,
+    fieldName: NestedKeyOf<T>,
     validatorName: string,
     validator: ValidatorAsyncFunction,
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -1057,44 +1065,46 @@ export default class FormService<T extends object = any> extends DefaultService<
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  validateAll(values: AnonymousObject<any>): AnonymousObject<FieldValidation> {
+  validateAll(values: AnonymousPathObject<T>): AnonymousKeyObject<T, FieldValidation> {
     // do all validations
     const tasks: AnonymousObject<Task[]> = {};
-    const validations: AnonymousObject<FieldValidation> = {};
-    const keys = Object.keys(values);
+    const validations: AnonymousKeyObject<T, FieldValidation> = {};
+    const keys = Object.keys(values) as NestedKeyOf<T>[];
 
     for (const key of keys) {
       // we need to find all sub fields (if any) and do the validations for these fields
       const fieldNames = this._getSubFieldNames(key);
       for (const fieldName of fieldNames) {
         const field = this.fields[fieldName];
-        const validators = field.validators;
-        tasks[fieldName] = [];
-        for (const validatorName in validators) {
-          const validator = validators[validatorName];
-          const disabled = typeof validator === 'object' && validator.disabled === true;
-          const async = typeof validator === 'object' && validator.async === true;
-          if (!disabled) {
-            if (async) {
-              this.setValidation(fieldName, validatorName, ValidationCode.Loading, '', false);
-              this.callSaga(
-                'validateAsync',
-                fieldName,
-                validatorName,
-                validator.validator as ValidatorAsyncFunction,
-                get(values[key], fieldName.slice(key.length + 1)),
-              );
-            } else {
-              const validatorSync: ValidatorSyncFunction =
-                typeof validator === 'object'
-                  ? (validator.validator as ValidatorSyncFunction)
-                  : (validator as ValidatorSyncFunction);
-              this.validateSync(
-                fieldName,
-                validatorName,
-                validatorSync,
-                get(values[key], fieldName.slice(key.length + 1)),
-              );
+        if (field !== undefined) {
+          const validators = field.validators;
+          tasks[fieldName] = [];
+          for (const validatorName in validators) {
+            const validator = validators[validatorName];
+            const disabled = typeof validator === 'object' && validator.disabled === true;
+            const async = typeof validator === 'object' && validator.async === true;
+            if (!disabled) {
+              if (async) {
+                this.setValidation(fieldName, validatorName, ValidationCode.Loading, '', false);
+                this.callSaga(
+                  'validateAsync',
+                  fieldName,
+                  validatorName,
+                  validator.validator as ValidatorAsyncFunction,
+                  get<any>(values[key], fieldName.slice(key.length + 1)),
+                );
+              } else {
+                const validatorSync: ValidatorSyncFunction =
+                  typeof validator === 'object'
+                    ? (validator.validator as ValidatorSyncFunction)
+                    : (validator as ValidatorSyncFunction);
+                this.validateSync(
+                  fieldName,
+                  validatorName,
+                  validatorSync,
+                  get<any>(values[key], fieldName.slice(key.length + 1)),
+                );
+              }
             }
           }
         }
@@ -1102,7 +1112,7 @@ export default class FormService<T extends object = any> extends DefaultService<
     }
 
     Object.keys(tasks).forEach((fieldName) => {
-      validations[fieldName] = this._getValidation(fieldName);
+      validations[fieldName as NestedKeyOf<T>] = this._getValidation(fieldName as NestedKeyOf<T>);
     });
 
     return validations;
