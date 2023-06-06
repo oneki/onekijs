@@ -72,7 +72,7 @@ type ObjectPathType<O extends object, S extends string> = {
       : never
     : Key extends S
     ? O[Key]
-    : string extends NestedKeyOf<O, 1>
+    : string extends NestedKeyOf<O>
     ? O extends AnonymousObject<infer E>
       ? E
       : never
