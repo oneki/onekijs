@@ -1,11 +1,10 @@
 import { CollectionProxy, useCollectionInitialState, useCollectionProxy } from 'onekijs-framework';
-import { UseListOptions } from '../../list/typings';
 import SelectService from '../SelectService';
-import { SelectItem, SelectItemAdapter, SelectState } from '../typings';
+import { SelectItem, SelectItemAdapter, SelectState, UseSelectOptions } from '../typings';
 
 const useSelectController = <T = any, I extends SelectItem<T> = SelectItem<T>>(
   dataSource: T[] | [T, string][] | string | undefined,
-  options: UseListOptions<T, I> = {},
+  options: UseSelectOptions<T, I> = {},
 ): CollectionProxy<T, I, SelectState<T, I>, SelectService<T, I, SelectState<T, I>>> => {
   let ds = dataSource;
   if (Array.isArray(dataSource) && Array.isArray(dataSource[0])) {

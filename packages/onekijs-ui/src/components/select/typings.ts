@@ -20,6 +20,7 @@ import {
   ListItemProps,
   ListNotFoundProps,
   ListState,
+  UseListOptions,
 } from '../list/typings';
 import { TreeController, TreeItem, TreeProps, TreeState } from '../tree/typings';
 
@@ -229,3 +230,5 @@ export type TreeSelectProps<
 
 export type TreeSelectState<T = any, I extends TreeSelectItem<T> = TreeSelectItem<T>> = SelectState<T, I> &
   TreeState<T, I>;
+
+export type UseSelectOptions<T, I extends SelectItem<T> = SelectItem<T>> = UseListOptions<T, I>;

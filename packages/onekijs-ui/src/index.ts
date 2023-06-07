@@ -160,16 +160,20 @@ export { useSelectService } from './components/select/hooks/useSelectService';
 export { default as useTreeSelectController } from './components/select/hooks/useTreeSelectController';
 export {
   ArraySelectProps,
+  ArrayTreeSelectProps,
   ControllerSelectProps,
+  ControllerTreeSelectProps,
   FormSelectProps,
   SelectItemAdapter as SelectAdapter,
   SelectBroker,
   SelectConfig,
   SelectController,
+  SelectGroup,
   SelectIconProps,
   SelectInputProps,
   SelectItem,
   SelectItemAdaptee,
+  SelectListComponentProps,
   SelectNotFoundProps,
   SelectOptionHandler,
   SelectOptionProps,
@@ -178,6 +182,11 @@ export {
   SelectState,
   SelectTokenProps,
   SelectTokensProps,
+  TreeSelectController,
+  TreeSelectItem,
+  TreeSelectProps,
+  TreeSelectState,
+  UseSelectOptions,
 } from './components/select/typings';
 export { findSelectItem, findSelectItemIndex, shouldCheckSelect } from './components/select/util';
 export { default as Tabs } from './components/tab';
@@ -343,6 +352,7 @@ export {
   WizardModalProps,
   WizardProps,
   WizardState,
+  FormStepProps,
 } from './components/wizard/typings';
 export * from './styles/alignment';
 export * from './styles/animation';
