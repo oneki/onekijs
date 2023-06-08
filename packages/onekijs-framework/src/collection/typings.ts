@@ -172,8 +172,8 @@ export interface CollectionOptions<T, I extends Item<T>> {
   adapter?: ItemAdapter<T>;
   autoload?: boolean;
   brokerable?: boolean;
-  comparator?: QuerySortComparator;
-  comparators?: AnonymousObject<QuerySortComparator>;
+  comparator?: QuerySortComparator<T>;
+  comparators?: AnonymousObject<QuerySortComparator<T>>;
   dataKey?: string;
   disabled?: T[];
   fetcher?: CollectionFetcher<T>;
@@ -213,8 +213,8 @@ export interface CollectionState<T, I extends Item<T>> extends FetchState {
   autoload?: boolean;
   brokerable?: boolean;
   brokered?: boolean;
-  comparator?: QuerySortComparator;
-  comparators?: AnonymousObject<QuerySortComparator>;
+  comparator?: QuerySortComparator<T>;
+  comparators?: AnonymousObject<QuerySortComparator<T>>;
   dataKey: string;
   dataSource?: T[] | string;
   disabled?: string[];
@@ -319,8 +319,8 @@ export interface Query {
 export type QueryEngine<T, I extends Item<T>> = (
   items: I[],
   query: LocalQuery,
-  comparator: QuerySortComparator,
-  comparators: AnonymousObject<QuerySortComparator>,
+  comparator: QuerySortComparator<T>,
+  comparators: AnonymousObject<QuerySortComparator<T>>,
   searcher?: QuerySearcher<T>,
 ) => I[];
 
@@ -388,7 +388,7 @@ export type QuerySortByMultiFields = {
   )[];
 };
 
-export type QuerySortComparator = <T>(a: T | null | undefined, b: T | null | undefined) => number;
+export type QuerySortComparator<T> = (a: T | null | undefined, b: T | null | undefined) => number;
 
 export type QuerySortDir = 'asc' | 'desc';
 

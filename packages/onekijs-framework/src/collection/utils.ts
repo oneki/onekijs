@@ -145,7 +145,7 @@ export const applySearch = <T = any, I extends Item<T> = Item<T>>(
 export const applySort = <T = any, I extends Item<T> = Item<T>>(
   items: I[],
   dir: QuerySortDir,
-  comparator: QuerySortComparator,
+  comparator: QuerySortComparator<T>,
 ): I[] => {
   if (dir) {
     const itemComparator = function (a: I, b: I): number {
@@ -161,7 +161,7 @@ export const applySort = <T = any, I extends Item<T> = Item<T>>(
 export const applySortBy = <T = any, I extends Item<T> = Item<T>>(
   items: I[],
   sortBy: QuerySortBy[],
-  comparators: AnonymousObject<QuerySortComparator>,
+  comparators: AnonymousObject<QuerySortComparator<T>>,
 ): I[] => {
   if (sortBy.length > 0) {
     const comparator = function () {
@@ -196,8 +196,8 @@ export const applySortBy = <T = any, I extends Item<T> = Item<T>>(
               result =
                 reverse *
                 comparator(
-                  get(a, `data.${fieldName}` as NestedKeyOf<I>),
-                  get(b, `data.${fieldName}` as NestedKeyOf<I>),
+                  get<any>(a, `data.${fieldName}` as NestedKeyOf<I>),
+                  get<any>(b, `data.${fieldName}` as NestedKeyOf<I>),
                 );
               if (result !== 0) break sort_loop;
             }
@@ -226,8 +226,8 @@ export const defaultComparator = (a: any, b: any) => {
 export const defaultQueryEngine = <T = any, I extends Item<T> = Item<T>>(
   items: I[],
   query: LocalQuery,
-  comparator: QuerySortComparator,
-  comparators: AnonymousObject<QuerySortComparator>,
+  comparator: QuerySortComparator<T>,
+  comparators: AnonymousObject<QuerySortComparator<T>>,
   searcher?: QuerySearcher<T>,
 ): I[] => {
   // apply filters to data

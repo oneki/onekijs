@@ -1092,8 +1092,8 @@ export default class CollectionService<
   _execute(
     items: I[],
     query: LocalQuery,
-    comparator: QuerySortComparator,
-    comparators: AnonymousObject<QuerySortComparator>,
+    comparator: QuerySortComparator<T>,
+    comparators: AnonymousObject<QuerySortComparator<T>>,
     searcher?: QuerySearcher<T>,
   ): I[] {
     return defaultQueryEngine(items, query, comparator, comparators, searcher);
