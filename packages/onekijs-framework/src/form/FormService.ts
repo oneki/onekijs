@@ -110,7 +110,7 @@ export default class FormService<T extends object = any> extends DefaultService<
   addField(field: Field<T>): void {
     if (!this.fields[field.context.name]) {
       this.fields[field.context.name] = field;
-      const currentIndex = get(this.fieldIndex, field.context.name);
+      const currentIndex = get<any>(this.fieldIndex, field.context.name);
       if (currentIndex === undefined) {
         set(this.fieldIndex, field.context.name as string, true);
       }
@@ -260,7 +260,7 @@ export default class FormService<T extends object = any> extends DefaultService<
    */
   field(name: NestedKeyOf<T>, validators: AnonymousObject<Validator> = {}, options: FieldOptions = {}): FieldProps {
     const field = this.initField(name, validators, options);
-    field.value = get(this.state.values, name, options.defaultValue === undefined ? '' : options.defaultValue);
+    field.value = get<any>(this.state.values, name, options.defaultValue === undefined ? '' : options.defaultValue);
     return field;
   }
 
@@ -304,12 +304,12 @@ export default class FormService<T extends object = any> extends DefaultService<
     if (key === undefined || key === '') {
       return this.state.context ?? defaultValue;
     }
-    return get(this.state.context, key, defaultValue);
+    return get<any>(this.state.context, key, defaultValue);
   }
 
   protected _getSubFieldNames(fieldName: NestedKeyOf<T>): NestedKeyOf<T>[] {
     let result: NestedKeyOf<T>[] = [];
-    const index = get(this.fieldIndex, fieldName);
+    const index = get<any>(this.fieldIndex, fieldName);
     if (index) {
       if (Array.isArray(index)) {
         for (const i in index) {
@@ -331,13 +331,13 @@ export default class FormService<T extends object = any> extends DefaultService<
     const nonIndexedWatch = getNonIndexedProp(watch);
     const result: (NestedKeyOf<T> | '')[] = [];
     // check if the index if something listens on the key "watch"
-    const index = watch === '' ? this.watchIndex[''] : get(this.watchIndex, watch);
+    const index = watch === '' ? this.watchIndex[''] : get<any>(this.watchIndex, watch);
     if (index) {
       // direct listener on "addresses" are also alerted
       result.push(watch);
     }
     if (nonIndexedWatch !== undefined) {
-      const nonIndex = get(this.watchIndex, nonIndexedWatch);
+      const nonIndex = get<any>(this.watchIndex, nonIndexedWatch);
       if (nonIndex) {
         result.push(watch);
       }
@@ -350,7 +350,7 @@ export default class FormService<T extends object = any> extends DefaultService<
     // we will also alert adresses.street but it would be done in form/index.tsx
     while (watch.includes('.')) {
       watch = watch.split('.').slice(0, -1).join('.') as NestedKeyOf<T>;
-      const index = watch === '' ? this.watchIndex[''] : get(this.watchIndex, watch);
+      const index = watch === '' ? this.watchIndex[''] : get<any>(this.watchIndex, watch);
       if (index) {
         result.push(watch);
       }
@@ -397,16 +397,19 @@ export default class FormService<T extends object = any> extends DefaultService<
   }
 
   getValue(fieldName?: undefined | '', defaultValue?: T): T;
-  getValue<K extends NestedKeyOf<T>>(fieldName: K, defaultValue: PathType<T, K>): PathType<T, K>;
-  getValue<K extends NestedKeyOf<T>>(fieldName?: K, defaultValue?: undefined): PathType<T, K> | undefined;
+  getValue<K extends NestedKeyOf<T>>(
+    fieldName: K,
+    defaultValue: Exclude<PathType<T, K>, undefined>,
+  ): Exclude<PathType<T, K>, undefined>;
+  getValue<K extends NestedKeyOf<T>>(fieldName: K, defaultValue?: PathType<T, K>): PathType<T, K> | undefined;
   getValue(fieldName: any, defaultValue: any): any {
-    return get(this.state.values, fieldName, defaultValue);
+    return get<any>(this.state.values, fieldName, defaultValue);
   }
 
   hasValidation(fieldName: NestedKeyOf<T>, validatorName: string, code: ValidationCode, message?: string): boolean {
     const field = this.fields[fieldName];
     if (field) {
-      const validation = get(field, `validations.${code}.${validatorName}`);
+      const validation = get<any>(field, `validations.${code}.${validatorName}`);
       if (!message) {
         return validation !== undefined;
       }
@@ -498,7 +501,7 @@ export default class FormService<T extends object = any> extends DefaultService<
           ),
         ),
       );
-      this.defaultValues[name] = get(this.state.values, name, options.defaultValue);
+      this.defaultValues[name] = get<any>(this.state.values, name, options.defaultValue);
       const disabled = this.config.reconfigure && !options.editable ? true : options.disabled;
       this.defaultMetadata[name] = Object.assign(
         {
@@ -515,7 +518,7 @@ export default class FormService<T extends object = any> extends DefaultService<
 
   @reducer
   insert(fieldArrayName: NestedKeyOf<T>, index: number, initialValue = {}): void {
-    const currentArrayValue = (get(this.state.values, fieldArrayName) || []) as any[];
+    const currentArrayValue = (get<any>(this.state.values, fieldArrayName) || []) as any[];
     if (currentArrayValue.length - 1 >= index) {
       const nextValues: AnonymousPathObject<T> = {};
       // need to modifiy all values / metadata / validations with an index superior or equal to the added one
@@ -648,7 +651,7 @@ export default class FormService<T extends object = any> extends DefaultService<
         this.listenerIndex[id][watch] = listenerContext;
         this.listeners[type][watch] = this.listeners[type][watch] || [];
         this.listeners[type][watch].push(listenerContext);
-        const current = watch === '' ? this.watchIndex[''] : get(this.watchIndex, watch, undefined);
+        const current = watch === '' ? this.watchIndex[''] : get<any>(this.watchIndex, watch, undefined);
         if (current === undefined) {
           if (watch === '') {
             this.watchIndex[''] = true;
@@ -707,7 +710,7 @@ export default class FormService<T extends object = any> extends DefaultService<
 
   @reducer
   remove(fieldArrayName: NestedKeyOf<T>, index: number): void {
-    const currentArrayValue = (get(this.state.values, fieldArrayName) || []) as any[];
+    const currentArrayValue = (get<any>(this.state.values, fieldArrayName) || []) as any[];
     const last = currentArrayValue.length - 1;
     if (last >= index) {
       const nextValues: AnonymousPathObject<T> = {};

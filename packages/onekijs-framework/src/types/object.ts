@@ -12,15 +12,19 @@ type Continue = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 export type NestedKeyOf<T, I extends number = 1> = T extends object
   ? {
       [Key in keyof T & (string | number)]: I extends Continue
-        ? T[Key] extends Array<infer E>
-          ? E extends object
+        ? T[Key] extends null | undefined
+          ? `${Key}`
+          : T[Key] extends Array<infer E> | null | undefined
+          ? E extends object | null | undefined
             ? `${Key}` | `${Key}.${number}` | `${Key}.${number}.${NestedKeyOf<E, Decrement<I>>}`
             : `${Key}` | `${Key}.${number}`
-          : T[Key] extends object
-          ? `${Key}` | `${Key}.${NestedKeyOf<T[Key], Decrement<I>>}`
+          : T[Key] extends object | null | undefined
+          ? `${Key}` | `${Key}.${NestedKeyOf<Exclude<T[Key], null | undefined>, Decrement<I>>}`
           : `${Key}`
-        : T[Key] extends object
-        ? `${Key}` | `${Key}.${any}`
+        : T[Key] extends null | undefined
+        ? `${Key}`
+        : T[Key] extends object | null | undefined
+        ? `${Key}` | `${Key}.${string}`
         : `${Key}`;
     }[keyof T & (string | number)]
   : string;
@@ -43,9 +47,9 @@ type ArrayPathType<A extends Array<any>, S extends string> = S extends `${infer 
     : A[K] extends object | null | undefined
     ? ObjectPathType<Exclude<A[K], null | undefined>, R> | null | undefined
     : never
-  : S extends `${infer K extends number}`
-  ? A[K]
-  : any;
+  : A extends Array<infer E>
+  ? E
+  : never;
 
 type ObjectPathType<O extends object, S extends string> = {
   [Key in keyof O]: S extends `${infer K}.${infer R}`
@@ -67,8 +71,10 @@ type ObjectPathType<O extends object, S extends string> = {
         : O[K] extends object | null | undefined
         ? ObjectPathType<Exclude<O[K], null | undefined>, R> | null | undefined
         : O[K]
-      : O extends AnonymousObject<infer E>
-      ? PathType<E, R>
+      : string extends NestedKeyOf<O>
+      ? O extends AnonymousObject<infer E>
+        ? PathType<E, R>
+        : never
       : never
     : Key extends S
     ? O[Key]
@@ -81,10 +87,20 @@ type ObjectPathType<O extends object, S extends string> = {
 
 export type PathType<T, S extends string> = T extends Array<any>
   ? ArrayPathType<T, S>
+  : T extends Array<infer E> | null
+  ? ArrayPathType<Array<E>, S> | null
+  : T extends Array<infer E> | undefined
+  ? ArrayPathType<Array<E>, S> | undefined
+  : T extends Array<infer E> | null | undefined
+  ? ArrayPathType<Array<E>, S> | null | undefined
   : T extends object
   ? ObjectPathType<T, S>
-  : T extends any
-  ? any
+  : T extends object | null
+  ? ObjectPathType<Exclude<T, null>, S>
+  : T extends object | undefined
+  ? ObjectPathType<Exclude<T, undefined>, S>
+  : T extends object | null | undefined
+  ? ObjectPathType<Exclude<T, null | undefined>, S>
   : never;
 
 export type AnonymousPathObject<T> = {

@@ -7,6 +7,6 @@ import DefaultLocalService from './LocalService';
 export default class LocalStateService<S extends State = AnyState> extends DefaultLocalService<S> {
   @reducer
   setState(key: string, value: unknown): void {
-    set(this.state, key, value);
+    set<any>(this.state, key, value);
   }
 }

@@ -393,7 +393,7 @@ export default class CollectionService<
   }
 
   getSortBy(): QuerySortBy[] | undefined {
-    return formatSortBy(get(this.state, 'sortBy') as string | QuerySortBy | QuerySortBy[]);
+    return formatSortBy(get<any>(this.state, 'sortBy') as string | QuerySortBy | QuerySortBy[]);
   }
 
   getSortByField(field: string): QuerySortByField | undefined {

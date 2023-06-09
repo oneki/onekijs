@@ -167,7 +167,7 @@ export default class DefaultService<S extends State = AnyState> implements Servi
       }
 
       if (obj === 'state') {
-        delay = get(this.state, delay.substring(sep + 1), defaultDelay);
+        delay = get<any>(this.state, delay.substring(sep + 1), defaultDelay);
       } else if ((this as any).context) {
         delay = get((this as any).context.settings, delay.substring(sep + 1), defaultDelay);
       }
