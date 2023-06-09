@@ -265,8 +265,8 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
   _execute(
     items: I[],
     query: LocalQuery,
-    comparator: QuerySortComparator,
-    comparators: AnonymousObject<QuerySortComparator>,
+    comparator: QuerySortComparator<T>,
+    comparators: AnonymousObject<QuerySortComparator<T>>,
     searcher?: QuerySearcher<T>,
   ): I[] {
     const result = defaultTreeQueryEngine(items, query, comparator, comparators, searcher);

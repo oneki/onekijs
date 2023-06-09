@@ -193,7 +193,7 @@ const ControlledSelectComponent = <
   const optionsRef = useRef<HTMLDivElement>(null);
 
   const update = useCallback(() => {
-    if (optionsRef.current && get(service, 'config.sameWidth')) {
+    if (optionsRef.current && get<any>(service, 'config.sameWidth')) {
       if (optionsRef.current.scrollWidth > optionsRef.current.clientWidth) {
         optionsRef.current.style.width = `${
           optionsRef.current.scrollWidth + optionsRef.current.offsetWidth - optionsRef.current.clientWidth

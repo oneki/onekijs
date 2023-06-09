@@ -15,8 +15,8 @@ import { TreeController, TreeItem } from './typings';
 export const defaultTreeQueryEngine = <T = any, I extends TreeItem<T> = TreeItem<T>>(
   items: I[],
   query: LocalQuery,
-  comparator: QuerySortComparator,
-  comparators: AnonymousObject<QuerySortComparator>,
+  comparator: QuerySortComparator<T>,
+  comparators: AnonymousObject<QuerySortComparator<T>>,
   searcher?: QuerySearcher<T>,
 ): I[] => {
   let result: I[] = [];
