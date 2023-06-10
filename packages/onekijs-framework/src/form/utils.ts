@@ -74,9 +74,9 @@ export const getNonIndexedProp = (prop: string): string | undefined => {
   return result;
 };
 
-export const extractWatchProps = (watch: string): [string, number, string] => {
+export const extractWatchProps = (watch: string): [number, string, string] => {
   const line = watch.split('.').slice(0, -1).join('.');
   const index = parseInt(watch.split('.')[1]);
   const prop = watch.split('.').slice(-1)[0];
-  return [line, index, prop];
+  return [index, prop, line];
 };

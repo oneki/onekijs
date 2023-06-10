@@ -6,14 +6,14 @@ import { FormValueListener } from './typings';
 export function useFormWatcher<T extends object = any, R = any, K extends NestedKeyOf<T> = NestedKeyOf<T>>(
   form: FormService<T>,
   watch: K,
-  listener: FormValueListener<PathType<T, K>>,
+  listener: FormValueListener<PathType<T, K>, K>,
 ): R;
 export function useFormWatcher<
   T extends object = any,
   R = any,
   K1 extends NestedKeyOf<T> = NestedKeyOf<T>,
   K2 extends NestedKeyOf<T> = NestedKeyOf<T>,
->(form: FormService<T>, watch: [K1, K2], listener: FormValueListener<[PathType<T, K1>, PathType<T, K2>]>): R;
+>(form: FormService<T>, watch: [K1, K2], listener: FormValueListener<[PathType<T, K1>, PathType<T, K2>], K1 | K2>): R;
 export function useFormWatcher<
   T extends object = any,
   R = any,
@@ -23,7 +23,7 @@ export function useFormWatcher<
 >(
   form: FormService<T>,
   watch: [K1, K2, K3],
-  listener: FormValueListener<[PathType<T, K1>, PathType<T, K2>, PathType<T, K3>]>,
+  listener: FormValueListener<[PathType<T, K1>, PathType<T, K2>, PathType<T, K3>], K1 | K2 | K3>,
 ): R;
 export function useFormWatcher<
   T extends object = any,
@@ -35,7 +35,7 @@ export function useFormWatcher<
 >(
   form: FormService<T>,
   watch: [K1, K2, K3, K4],
-  listener: FormValueListener<[PathType<T, K1>, PathType<T, K2>, PathType<T, K3>, PathType<T, K4>]>,
+  listener: FormValueListener<[PathType<T, K1>, PathType<T, K2>, PathType<T, K3>, PathType<T, K4>], K1 | K2 | K3 | K4>,
 ): R;
 export function useFormWatcher<
   T extends object = any,
@@ -48,7 +48,10 @@ export function useFormWatcher<
 >(
   form: FormService<T>,
   watch: [K1, K2, K3, K4, K5],
-  listener: FormValueListener<[PathType<T, K1>, PathType<T, K2>, PathType<T, K3>, PathType<T, K4>, PathType<T, K5>]>,
+  listener: FormValueListener<
+    [PathType<T, K1>, PathType<T, K2>, PathType<T, K3>, PathType<T, K4>, PathType<T, K5>],
+    K1 | K2 | K3 | K4 | K5
+  >,
 ): R;
 export function useFormWatcher<
   T extends object = any,
@@ -63,7 +66,8 @@ export function useFormWatcher<
   form: FormService<T>,
   watch: [K1, K2, K3, K4, K5, K6],
   listener: FormValueListener<
-    [PathType<T, K1>, PathType<T, K2>, PathType<T, K3>, PathType<T, K4>, PathType<T, K5>, PathType<T, K6>]
+    [PathType<T, K1>, PathType<T, K2>, PathType<T, K3>, PathType<T, K4>, PathType<T, K5>, PathType<T, K6>],
+    K1 | K2 | K3 | K4 | K5 | K6
   >,
 ): R;
 export function useFormWatcher<
@@ -88,7 +92,8 @@ export function useFormWatcher<
       PathType<T, K5>,
       PathType<T, K6>,
       PathType<T, K7>,
-    ]
+    ],
+    K1 | K2 | K3 | K4 | K5 | K6 | K7
   >,
 ): R;
 export function useFormWatcher<
@@ -115,7 +120,8 @@ export function useFormWatcher<
       PathType<T, K6>,
       PathType<T, K7>,
       PathType<T, K8>,
-    ]
+    ],
+    K1 | K2 | K3 | K4 | K5 | K6 | K7 | K8
   >,
 ): R;
 export function useFormWatcher<
@@ -144,7 +150,8 @@ export function useFormWatcher<
       PathType<T, K7>,
       PathType<T, K8>,
       PathType<T, K9>,
-    ]
+    ],
+    K1 | K2 | K3 | K4 | K5 | K6 | K7 | K8 | K9
   >,
 ): R;
 export function useFormWatcher<
@@ -175,7 +182,8 @@ export function useFormWatcher<
       PathType<T, K8>,
       PathType<T, K9>,
       PathType<T, K10>,
-    ]
+    ],
+    K1 | K2 | K3 | K4 | K5 | K6 | K7 | K8 | K9 | K10
   >,
 ): R;
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types

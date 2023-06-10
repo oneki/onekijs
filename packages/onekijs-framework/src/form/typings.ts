@@ -116,7 +116,7 @@ export type FormSubmitCallback = (values: AnonymousObject) => void;
 export interface FormState<T> extends State, FormOptions {
   validations: AnonymousObject<FieldValidation>;
   metadata: AnonymousObject<FormMetadata>;
-  values?: Partial<T>;
+  values?: T;
   initialValues?: Partial<T>;
   context: AnonymousObject;
   initialContext: AnonymousObject;
@@ -133,7 +133,7 @@ export type FormValidationListener = (
   watch: string,
 ) => any;
 
-export type FormValueListener<T = any> = (value: T, previousValue: T, watch: string) => any;
+export type FormValueListener<T = any, W = string> = (value: T, previousValue: T | undefined, watch: W) => any;
 
 export type FormWarningCallback = (fields: Field[], values?: AnonymousObject) => void;
 

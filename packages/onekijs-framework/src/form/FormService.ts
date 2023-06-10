@@ -104,7 +104,7 @@ export default class FormService<T extends object = any> extends DefaultService<
     if (arrayValue === undefined || arrayValue === null || !Array.isArray(arrayValue)) {
       arrayValue = [];
     }
-    this.setValue(fieldArrayName, arrayValue.concat([initialValue]));
+    this.setValue(fieldArrayName, arrayValue.concat([initialValue || {}]));
   }
 
   addField(field: Field<T>): void {
@@ -329,7 +329,7 @@ export default class FormService<T extends object = any> extends DefaultService<
 
   protected _getSubWatchs(watch: NestedKeyOf<T>): (NestedKeyOf<T> | '')[] {
     const nonIndexedWatch = getNonIndexedProp(watch);
-    const result: (NestedKeyOf<T> | '')[] = [];
+    let result: (NestedKeyOf<T> | '')[] = [];
     // check if the index if something listens on the key "watch"
     const index = watch === '' ? this.watchIndex[''] : get<any>(this.watchIndex, watch);
     if (index) {
@@ -344,7 +344,7 @@ export default class FormService<T extends object = any> extends DefaultService<
     }
 
     // if the value "addresses" changes, addresses.0.street should be alerted, .....
-    result.concat(this._getSubFieldNames(watch));
+    result = result.concat(this._getSubFieldNames(watch));
 
     // if addresses.0.street is changed, addresses should be alerted (becasue the object has been changed)
     // we will also alert adresses.street but it would be done in form/index.tsx
@@ -358,6 +358,7 @@ export default class FormService<T extends object = any> extends DefaultService<
     if (this.watchIndex['']) {
       result.push('');
     }
+
     return result;
   }
 
@@ -399,8 +400,8 @@ export default class FormService<T extends object = any> extends DefaultService<
   getValue(fieldName?: undefined | '', defaultValue?: T): T;
   getValue<K extends NestedKeyOf<T>>(
     fieldName: K,
-    defaultValue: Exclude<PathType<T, K>, undefined>,
-  ): Exclude<PathType<T, K>, undefined>;
+    defaultValue: Exclude<PathType<T, K>, undefined | null>,
+  ): Exclude<PathType<T, K>, undefined | null>;
   getValue<K extends NestedKeyOf<T>>(fieldName: K, defaultValue?: PathType<T, K>): PathType<T, K> | undefined;
   getValue(fieldName: any, defaultValue: any): any {
     return get<any>(this.state.values, fieldName, defaultValue);
@@ -812,7 +813,7 @@ export default class FormService<T extends object = any> extends DefaultService<
       this.state.initialValues === undefined ||
       (this.state.initialValues && typeof this.state.initialValues === 'object')
     ) {
-      this.state.values = this.state.initialValues;
+      this.state.values = this.state.initialValues as T;
     } else {
       this.state.values = undefined;
       this.state.fetching = true;
@@ -943,7 +944,7 @@ export default class FormService<T extends object = any> extends DefaultService<
     compile = true,
   ): void {
     if (this.fields[fieldName]) {
-      set(this.fields[fieldName], `validations.${code}.${validatorName}`, message);
+      set(this.fields[fieldName], `validations.${code}.${validatorName}` as any, message as any);
     }
     if (compile) {
       this.compileValidations(fieldName);

@@ -273,14 +273,14 @@ export function append<T>(content: T, property: string | number, value: any): T 
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function set<T, K extends NestedKeyOf<T> = NestedKeyOf<T>>(
-  content: Partial<T> | undefined,
+  content: T | undefined,
   property: K,
   value: PathType<T, K>,
   force = true,
-) {
+): T {
   if (property === '') {
     // TODO change that
-    return;
+    return content!;
   }
 
   const parts = `${property}`.split('.');
@@ -344,7 +344,7 @@ export function set<T, K extends NestedKeyOf<T> = NestedKeyOf<T>>(
       }
     }
   }
-  return content;
+  return content!;
 }
 
 export function update<T>(content: T, property: string | number, fn: { (arr: any[]): any[]; (arg0: any): any }): T {

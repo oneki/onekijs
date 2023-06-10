@@ -23,6 +23,10 @@ export type NestedKeyOf<T, I extends number = 1> = T extends object
           : `${Key}`
         : T[Key] extends null | undefined
         ? `${Key}`
+        : T[Key] extends Array<infer E> | null | undefined
+        ? E extends object | null | undefined
+          ? `${Key}` | `${Key}.${number}` | `${Key}.${number}.${string}`
+          : `${Key}` | `${Key}.${number}`
         : T[Key] extends object | null | undefined
         ? `${Key}` | `${Key}.${string}`
         : `${Key}`;
@@ -101,7 +105,7 @@ export type PathType<T, S extends string> = T extends Array<any>
   ? ObjectPathType<Exclude<T, undefined>, S>
   : T extends object | null | undefined
   ? ObjectPathType<Exclude<T, null | undefined>, S>
-  : never;
+  : any;
 
 export type AnonymousPathObject<T> = {
   [P in NestedKeyOf<T>]?: PathType<T, P>;

@@ -1,4 +1,5 @@
 export {
+  AnonymousKeyObject,
   AnonymousObject,
   AnonymousPathObject,
   AnyFunction,
@@ -439,6 +440,7 @@ export {
   useField,
   useFieldContainer,
   useForm,
+  useFormColumnWatcher,
   useFormController,
   useFormDecorator,
   useFormMetadata,
