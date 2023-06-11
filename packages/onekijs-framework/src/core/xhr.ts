@@ -63,7 +63,7 @@ export async function xhr(url: string, method: string, body?: unknown, options: 
   ];
   Object.keys(options).forEach((k) => {
     if (validOptions.includes(k)) {
-      set(fetchOptions, k as any, get(options, k as any));
+      set(fetchOptions, k as any, get<any>(options, k as any));
     }
   });
   return await fetch(url, fetchOptions);

@@ -18,6 +18,7 @@ export {
   AppStateProps,
   AppStore,
   AppSuccessCallback,
+  ArrayElement,
   AsyncBindService,
   AsyncBindState,
   AsyncBinder,

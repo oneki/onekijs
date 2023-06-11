@@ -133,7 +133,7 @@ export type FormValidationListener = (
   watch: string,
 ) => any;
 
-export type FormValueListener<T = any, W = string> = (value: T, previousValue: T | undefined, watch: W) => any;
+export type FormValueListener<T = any, W = string> = (value: T, previousValue: T, watch: W) => any;
 
 export type FormWarningCallback = (fields: Field[], values?: AnonymousObject) => void;
 

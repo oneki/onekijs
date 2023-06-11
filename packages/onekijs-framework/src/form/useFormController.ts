@@ -30,6 +30,7 @@ const useFormController = <T extends object = any>(
       submitting: false,
       initialValues,
     });
+
     if (initialValues === undefined || typeof initialValues === 'object') {
       initialState.values = (initialValues || {}) as T;
       initialState.fetching = false;

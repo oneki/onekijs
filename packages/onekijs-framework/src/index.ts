@@ -356,7 +356,15 @@ export { BasicError, ErrorCallback } from './types/error';
 export { FetchMethod, FetchOptions, FetchState, Fetcher, HttpMethod } from './types/fetch';
 export { FormLayout, ValidationStatus } from './types/form';
 export { I18n } from './types/i18n';
-export { AnonymousObject, AnonymousPathObject, Class, NestedKeyOf, PathType, AnonymousKeyObject } from './types/object';
+export {
+  AnonymousObject,
+  AnonymousPathObject,
+  ArrayElement,
+  Class,
+  NestedKeyOf,
+  PathType,
+  AnonymousKeyObject,
+} from './types/object';
 export {
   LinkComponentProps,
   LinkProps,

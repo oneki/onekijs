@@ -114,3 +114,5 @@ export type AnonymousPathObject<T> = {
 export type AnonymousKeyObject<T, V> = {
   [P in NestedKeyOf<T>]?: V;
 };
+
+export type ArrayElement<A> = A extends readonly (infer ElementType)[] ? ElementType : never;

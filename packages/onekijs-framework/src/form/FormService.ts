@@ -4,7 +4,14 @@ import DefaultService from '../core/Service';
 import { reducer, saga, service } from '../core/annotations';
 import { asyncGet } from '../core/xhr';
 import { ValidationStatus } from '../types/form';
-import { AnonymousKeyObject, AnonymousObject, AnonymousPathObject, NestedKeyOf, PathType } from '../types/object';
+import {
+  AnonymousKeyObject,
+  AnonymousObject,
+  AnonymousPathObject,
+  ArrayElement,
+  NestedKeyOf,
+  PathType,
+} from '../types/object';
 import { SagaEffect } from '../types/saga';
 import { del, get, isObject, set, simpleMergeDeep } from '../utils/object';
 import { generateUniqueId } from '../utils/string';
@@ -99,12 +106,12 @@ export default class FormService<T extends object = any> extends DefaultService<
   }
 
   @reducer
-  add<K extends NestedKeyOf<T>>(fieldArrayName: K, initialValue?: Partial<PathType<T, K>>): void {
+  add<K extends NestedKeyOf<T>>(fieldArrayName: K, initialValue?: Partial<ArrayElement<PathType<T, K>>>): void {
     let arrayValue = get<any>(this.state.values, fieldArrayName, []);
     if (arrayValue === undefined || arrayValue === null || !Array.isArray(arrayValue)) {
       arrayValue = [];
     }
-    this.setValue(fieldArrayName, arrayValue.concat([initialValue || {}]));
+    this.setValue(fieldArrayName, arrayValue.concat([initialValue]));
   }
 
   addField(field: Field<T>): void {
