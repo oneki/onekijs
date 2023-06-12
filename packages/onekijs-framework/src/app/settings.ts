@@ -68,6 +68,10 @@ export const defaultSettings = {
       ttl: 0,
       max: 1,
     },
+    warning: {
+      ttl: 0,
+      max: 5,
+    },
   },
   router: {
     type: 'browser',

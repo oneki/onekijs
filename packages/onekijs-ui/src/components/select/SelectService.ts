@@ -140,7 +140,7 @@ class SelectService<
           this.state.comparator || defaultComparator,
           this.state.comparators || {},
         );
-        isValid = !!result.find((i) => i.id === item.id);
+        isValid = !!result.find((i) => this._compareItem(i, item));
       } else {
         const oQuery = this.serializeQuery(query);
         const sQuery = Object.keys(oQuery)
@@ -156,7 +156,7 @@ class SelectService<
         const data: T[] = Array.isArray(result) ? result : result[this.state.dataKey];
         for (const itemData of data) {
           const adaptee = this.adapt(itemData);
-          if (adaptee.id === item.id) {
+          if (this._compareItem(adaptee, item)) {
             isValid = true;
             break;
           }
@@ -166,6 +166,13 @@ class SelectService<
       isValid = true;
     }
     return valid === isValid ? item : undefined;
+  }
+
+  _compareItem(a: I | undefined, b: I | undefined): boolean {
+    if (a === undefined || b === undefined) {
+      return a === b;
+    }
+    return a.id === b.id;
   }
 
   @reducer
