@@ -320,6 +320,7 @@ export { default as useFormDecorator } from './form/useFormDecorator';
 export { default as useFormMetadata } from './form/useFormMetadata';
 export { default as useFormStatus } from './form/useFormStatus';
 export { default as useFormWatcher } from './form/useFormWatcher';
+export { default as useFormInit } from './form/useFormInit';
 export { default as useFormColumnWatcher } from './form/useFormColumnWatcher';
 export { default as useSubmit } from './form/useSubmit';
 export { default as useValidation } from './form/useValidation';

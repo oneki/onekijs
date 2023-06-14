@@ -444,6 +444,7 @@ export {
   useFormColumnWatcher,
   useFormController,
   useFormDecorator,
+  useFormInit,
   useFormMetadata,
   useFormStatus,
   useFormWatcher,
