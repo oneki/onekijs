@@ -121,6 +121,9 @@ export const applyOperator = (
     case 'lte':
       return left <= (right || 0);
     case 'is':
+      if (right === null) {
+        return left === null || left === undefined;
+      }
       return left === right;
     case 'in':
       return toArray(right || []).includes(left);
