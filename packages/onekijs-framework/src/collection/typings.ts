@@ -353,7 +353,8 @@ export type QueryFilterCriteriaOperator =
   | 'lt'
   | 'gte'
   | 'lte'
-  | 'in';
+  | 'in'
+  | 'is';
 
 export type QueryFilterCriteriaValue = Primitive | null;
 

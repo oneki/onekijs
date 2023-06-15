@@ -120,6 +120,8 @@ export const applyOperator = (
       return left < (right || 0);
     case 'lte':
       return left <= (right || 0);
+    case 'is':
+      return left === right;
     case 'in':
       return toArray(right || []).includes(left);
     default:
