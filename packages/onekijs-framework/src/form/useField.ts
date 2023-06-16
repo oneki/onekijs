@@ -4,15 +4,18 @@ import { FieldOptions, FieldProps, Validator } from './typings';
 import useForm from './useForm';
 import useValue from './useValue';
 
+const defaultUndefinedComparator = (value: any) => value === undefined;
+
 const useField = <T extends object = any>(
   fieldName: NestedKeyOf<T>,
   validators: AnonymousObject<Validator> = {},
   options: FieldOptions = {},
+  isUndefined: (value: any) => boolean = defaultUndefinedComparator,
 ): FieldProps => {
   const form = useForm<T>();
   const field = form.initField(fieldName, validators, options);
   const value = useValue(fieldName);
-  field.value = value === undefined ? (options.defaultValue === undefined ? '' : options.defaultValue) : value;
+  field.value = isUndefined(value) ? (options.defaultValue === undefined ? '' : options.defaultValue) : value;
   const optionsRef = useRef<FieldOptions>(options);
   const nameRef = useRef<string>(fieldName);
 

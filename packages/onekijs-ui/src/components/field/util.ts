@@ -9,8 +9,10 @@ export const extractFieldLayoutProps = (
   name: string;
   fieldOptions: FieldOptions;
   fieldProps: AnonymousObject;
+  isUndefined: ((value: any) => boolean) | undefined;
 } => {
-  const [validators, nonValidatorProps] = extractValidators(props);
+  const { isUndefined, ...remainingProps } = props;
+  const [validators, nonValidatorProps] = extractValidators(remainingProps);
   const fieldLayoutProps: FieldLayoutProps = {};
   const fieldOptions: FieldOptions = {};
   const fieldProps: AnonymousObject = {};
@@ -32,7 +34,7 @@ export const extractFieldLayoutProps = (
     'lgLabelWidth',
     'xlLabelWidth',
   ];
-  const fieldOptionsKeys = ['defaultValue', 'touchedOn', 'disabled', 'visible', 'editable'];
+  const fieldOptionsKeys = ['defaultValue', 'touchedOn', 'disabled', 'visible', 'editable', 'protected', 'isUndefined'];
   Object.keys(nonValidatorProps).forEach((k) => {
     if (fieldLayoutKeys.includes(k)) {
       (fieldLayoutProps as any)[k] = props[k];
@@ -48,5 +50,6 @@ export const extractFieldLayoutProps = (
     fieldOptions,
     fieldLayoutProps,
     fieldProps,
+    isUndefined,
   };
 };

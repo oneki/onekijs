@@ -8,9 +8,12 @@ const FormCheckbox: FC<FormCheckboxProps> = React.memo((props) => {
   const [fieldLayoutProps, fieldComponentProps] = useFieldLayout<CheckboxProps>(
     Object.assign(
       {
-        defaultValue: props.defaultValue === undefined ? false : props.defaultValue,
+        defaultValue: props.defaultValue !== true ? false : true,
       },
       props,
+      {
+        isUndefined: (value: any) => value !== true && value !== false,
+      },
     ),
   );
   const Component = props.FieldComponent || Checkbox;

@@ -472,6 +472,8 @@ export default class FormService<T extends object = any> extends DefaultService<
     if (field === undefined) {
       options.defaultValue = options.defaultValue === undefined ? '' : options.defaultValue;
       options.touchOn = options.touchOn || this.config.touchOn || TouchOn.Blur;
+      const isUndefined = options.isUndefined || ((value: any) => value === undefined);
+      delete options.isUndefined;
       this.addField(
         Object.assign(
           {},
@@ -509,7 +511,8 @@ export default class FormService<T extends object = any> extends DefaultService<
           ),
         ),
       );
-      this.defaultValues[name] = get<any>(this.state.values, name, options.defaultValue);
+      const initialValue = get<any>(this.state.values, name);
+      this.defaultValues[name] = isUndefined(initialValue) ? options.defaultValue : initialValue;
       const disabled = this.config.reconfigure && !options.editable ? true : options.disabled;
       this.defaultMetadata[name] = Object.assign(
         {

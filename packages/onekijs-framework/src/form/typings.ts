@@ -45,6 +45,8 @@ export interface FieldProps<T extends object = any> {
 export type FieldOptions<T = any> = FormMetadata & {
   defaultValue?: T;
   touchOn?: TouchOnType;
+  protected?: boolean;
+  isUndefined?: (value: any) => boolean;
 };
 
 export type FormConfig = {
@@ -76,6 +78,7 @@ export type FormFieldProps<T = any> = FieldOptions<T> &
   ValidatorsType & {
     name: string;
     id?: string;
+    isUndefined?: (value: any) => boolean;
   };
 
 export type FormLabelWidth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;

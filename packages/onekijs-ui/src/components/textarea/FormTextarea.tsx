@@ -11,6 +11,9 @@ const FormTextarea: FC<FormTextareaProps> = React.memo((props) => {
         defaultValue: props.defaultValue === undefined ? '' : props.defaultValue,
       },
       props,
+      {
+        isUndefined: (value: any) => value === undefined || value === null,
+      },
     ),
   );
   const Component = props.FieldComponent || Textarea;
