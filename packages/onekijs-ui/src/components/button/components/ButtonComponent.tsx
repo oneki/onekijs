@@ -4,7 +4,7 @@ import LoadingIcon from '../../icon/LoadingIcon';
 import { ButtonProps } from '../typings';
 
 const ButtonComponent = React.forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  const { kind, pattern, className, loading, IconComponent, onClick, ...buttonProps } = props;
+  const { kind, pattern, className, loading, IconComponent, onClick, type = 'button', ...buttonProps } = props;
   let classNames = addClassname('o-button', className);
   if (loading) {
     classNames = addClassname('o-button-loading', classNames);
@@ -16,7 +16,7 @@ const ButtonComponent = React.forwardRef<HTMLButtonElement, ButtonProps>((props,
     <span className={classNames} onClick={onClick} ref={ref}>
       {loading && <LoadingIcon onClick={undefined} color="currentColor" />}
       {!loading && IconComponent && <IconComponent {...props} onClick={undefined} className="o-button-icon" />}
-      <button {...buttonProps} className="o-button-content" />
+      <button {...buttonProps} type={type} className="o-button-content" />
     </span>
   );
 });

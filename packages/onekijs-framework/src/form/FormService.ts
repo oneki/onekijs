@@ -13,7 +13,7 @@ import {
   PathType,
 } from '../types/object';
 import { SagaEffect } from '../types/saga';
-import { del, get, isObject, set, simpleMergeDeep } from '../utils/object';
+import { clone, del, get, isObject, set, simpleMergeDeep } from '../utils/object';
 import { generateUniqueId } from '../utils/string';
 import ContainerValidation from './ContainerValidation';
 import FieldValidation, { defaultValidation } from './FieldValidation';
@@ -334,6 +334,23 @@ export default class FormService<T extends object = any> extends DefaultService<
     return result;
   }
 
+  obfuscate(value: any, fieldName?: string): any {
+    value = clone(value); // do not touch the original
+
+    const obfuscate = (v: any, ns: string) => {
+      const field: Field | undefined = (this.fields as any)[ns];
+      if (field && field.protected) {
+        set(value, ns, '*************');
+      } else if (Array.isArray(v)) {
+        v.forEach((item, index) => obfuscate(item, `${ns}.${index}`));
+      } else if (typeof v === 'object') {
+        Object.keys(v).forEach((k) => obfuscate(value[k], `${ns ? `${ns}.` : ''}${k}`));
+      }
+    };
+    obfuscate(value, fieldName || '');
+    return value;
+  }
+
   protected _getSubWatchs(watch: NestedKeyOf<T>): (NestedKeyOf<T> | '')[] {
     const nonIndexedWatch = getNonIndexedProp(watch);
     let result: (NestedKeyOf<T> | '')[] = [];
@@ -473,7 +490,6 @@ export default class FormService<T extends object = any> extends DefaultService<
       options.defaultValue = options.defaultValue === undefined ? '' : options.defaultValue;
       options.touchOn = options.touchOn || this.config.touchOn || TouchOn.Blur;
       const isUndefined = options.isUndefined || ((value: any) => value === undefined);
-      delete options.isUndefined;
       this.addField(
         Object.assign(
           {},

@@ -9,10 +9,8 @@ export const extractFieldLayoutProps = (
   name: string;
   fieldOptions: FieldOptions;
   fieldProps: AnonymousObject;
-  isUndefined: ((value: any) => boolean) | undefined;
 } => {
-  const { isUndefined, ...remainingProps } = props;
-  const [validators, nonValidatorProps] = extractValidators(remainingProps);
+  const [validators, nonValidatorProps] = extractValidators(props);
   const fieldLayoutProps: FieldLayoutProps = {};
   const fieldOptions: FieldOptions = {};
   const fieldProps: AnonymousObject = {};
@@ -50,6 +48,5 @@ export const extractFieldLayoutProps = (
     fieldOptions,
     fieldLayoutProps,
     fieldProps,
-    isUndefined,
   };
 };

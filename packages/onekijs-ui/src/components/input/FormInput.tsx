@@ -13,6 +13,7 @@ const FormInput: FC<FormInputProps> = React.memo((props) => {
       props,
       {
         isUndefined: (value: any) => value === undefined || value === null,
+        protected: props.type === 'password',
       },
     ),
   );
