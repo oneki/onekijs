@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.16.0 (2023-06-23)
+
+### Features
+
+- useForm supports loading initialValues asynchronously ([6c5a67d](https://github.com/oneki/onekijs/commit/6c5a67d44664f6dc26cb09de74df1ecfd384458d))
+
 ## [0.15.8](https://github.com/oneki/onekijs/compare/v0.15.7...v0.15.8) (2023-05-02)
 
 **Note:** Version bump only for package cra-data

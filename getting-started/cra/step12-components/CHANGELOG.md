@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.16.0 (2023-06-23)
+
+### Bug Fixes
+
+- getting-started ([c6c19d6](https://github.com/oneki/onekijs/commit/c6c19d6fb6c53348a02a160f5eef747d0ee3b35f))
+
 ## [0.15.8](https://github.com/oneki/onekijs/compare/v0.15.7...v0.15.8) (2023-05-02)
 
 **Note:** Version bump only for package step12-components
