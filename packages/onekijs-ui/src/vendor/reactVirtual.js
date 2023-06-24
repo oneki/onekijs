@@ -221,7 +221,11 @@ export function useVirtual({
     measurements: [],
   });
 
-  const { outerSize, scrollOffset, scrollToFn: defaultScrollToFn } = useScroll({
+  const {
+    outerSize,
+    scrollOffset,
+    scrollToFn: defaultScrollToFn,
+  } = useScroll({
     windowRef,
     parentRef,
     horizontal,

@@ -16,7 +16,8 @@
   "exports": {
     ".": {
       "import": "./dist/index.module.js",
-      "require": "./dist/index.js"
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     }
   },
   "module": "dist/index.module.js",
@@ -35,7 +36,6 @@
     "react-icons": "^4.2.0",
     "react-popper": "^2.2.3",
     "react-popper-tooltip": "^4.2.0",
-    "react-virtual": "^2.10.0",
     "react-virtualized-auto-sizer": "^1.0.2",
     "react-window": "^1.8.5",
     "react-window-infinite-loader": "^1.0.5",

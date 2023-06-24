@@ -164,7 +164,7 @@ export {
   ControllerSelectProps,
   ControllerTreeSelectProps,
   FormSelectProps,
-  SelectItemAdapter as SelectAdapter,
+  SelectItemAdapter,
   SelectBroker,
   SelectConfig,
   SelectController,

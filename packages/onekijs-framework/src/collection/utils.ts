@@ -502,8 +502,6 @@ export const isSameSortBy = (s1?: QuerySortBy | QuerySortBy[], s2?: QuerySortBy 
     return true;
   };
 
-  if (s1 === undefined && s2 === undefined) return true;
-  if (s1 === undefined || s2 === undefined) return false;
   s1 = toArray(s1);
   s2 = toArray(s2);
   if (s1.length !== s2.length) return false;
@@ -520,6 +518,7 @@ export const isSameSortBy = (s1?: QuerySortBy | QuerySortBy[], s2?: QuerySortBy 
       return false;
     }
   }
+
   return true;
 };
 

@@ -26,7 +26,6 @@ const config = [
       'react-icons',
       'react-popper',
       'react-popper-tooltip',
-      'react-virtual',
       'react-virtualized-auto-sizer',
       'react-window',
       'react-window-infinite-loader',

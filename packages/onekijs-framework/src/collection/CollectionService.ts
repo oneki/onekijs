@@ -1339,7 +1339,7 @@ export default class CollectionService<
     const nextFilter = formatFilter(query.filter);
     if (force || nextFilter) this.state.filter = nextFilter;
     const nextSortBy = formatSortBy(query.sortBy);
-    if (force || nextSortBy) this.state.sortBy = nextSortBy;
+    if (force || query.sortBy !== undefined) this.state.sortBy = nextSortBy;
     if (force || query.sort) this.state.sort = query.sort;
     if (force || query.search) this.state.search = query.search;
     if (force || query.fields) this.state.fields = query.fields;
