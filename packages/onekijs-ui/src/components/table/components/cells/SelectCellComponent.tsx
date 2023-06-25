@@ -21,6 +21,8 @@ const SelectCellComponent = (
     const className =
       typeof options.className === 'function' ? options.className(item, column, rowIndex) : options.className;
 
+    const Component = options.Component ?? FormSelect;
+
     useEffect(() => {
       broker.addSubscriber(name, service);
       return () => {
@@ -29,7 +31,7 @@ const SelectCellComponent = (
     }, [name, service]);
 
     return (
-      <FormSelect
+      <Component
         size="small"
         layout="table"
         {...options}

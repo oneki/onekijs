@@ -18,7 +18,7 @@ import { CheckboxProps } from '../checkbox/typings';
 import { FieldLayoutProps } from '../field/typings';
 import { InputProps } from '../input/typings';
 import { ListItemProps, ListItems, ListNotFoundProps, ListState, UseListOptions } from '../list/typings';
-import { SelectBroker, SelectItem, SelectProps } from '../select/typings';
+import { FormSelectProps, SelectBroker, SelectItem, SelectProps } from '../select/typings';
 import { TextareaProps } from '../textarea/typings';
 
 export type ArrayTableProps<T = any, I extends TableItem<T> = TableItem<T>> = TableConfig<T, I> & {
@@ -343,6 +343,8 @@ export type SelectColumnOptions<
   Omit<FormFieldProps, 'name'> &
   UseCollectionOptions<S, SI> & {
     CellComponent?: SelectCell<T, S, TI, SI>;
+  } & {
+    Component?: React.FC<FormSelectProps<S, SI>>;
   };
 
 export type TableColumnOptions<T = any, I extends TableItem<T> = TableItem<T>> = Omit<TableColumnSpec<T, I>, 'id'>;
