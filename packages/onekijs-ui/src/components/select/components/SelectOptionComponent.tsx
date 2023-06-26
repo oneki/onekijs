@@ -1,5 +1,5 @@
 import { isItemLoading } from 'onekijs-framework';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import Checkbox from '../../checkbox';
 import LoadingItem from '../../list/components/LoadingItem';
 import { ListItemProps } from '../../list/typings';
@@ -54,6 +54,20 @@ const SelectOptionComponent = <T, I extends SelectItem<T> = SelectItem<T>>(props
     return classNames.join(' ');
   }, [item, clickable, hoverable]);
 
+  const fixClickRef = useRef({
+    mouseDown: '',
+    clicked: false,
+  });
+
+  const onItemClick = useCallback(
+    (item: I, index: number) => {
+      if (!fixClickRef.current.clicked) {
+        clickable && onClick && item && onClick(item, index);
+      }
+    },
+    [clickable, onClick],
+  );
+
   if (isItemLoading(item)) {
     return <OptionLoadingComponent />;
   }
@@ -65,15 +79,15 @@ const SelectOptionComponent = <T, I extends SelectItem<T> = SelectItem<T>>(props
       {displayGroup && <OptionGroupComponent {...props} />}
       <div
         className={classNames}
+        onMouseDown={() => onItemClick(item, index)}
         onMouseEnter={() => hoverable && onMouseEnter && item && onMouseEnter(item, index)}
         onMouseLeave={() => hoverable && onMouseLeave && item && onMouseLeave(item, index)}
-        onClick={() => clickable && onClick && item && onClick(item, index)}
       >
         {/* {multiple && <div className="o-select-option-icon">{meta?.selected? <>&#10003;</>:<></>}</div> } */}
         {service.config?.multiple && (
           <Checkbox
             value={item?.selected ? true : false}
-            onChange={() => clickable && onClick && item && onClick(item, index)}
+            onChange={() => onItemClick(item, index)}
             color="currentColor"
             className="o-select-option-multiple-checkbox"
           ></Checkbox>
