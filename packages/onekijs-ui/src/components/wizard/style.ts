@@ -123,6 +123,7 @@ export const wizardStyle: ComponentStyle<WizardProps> = ({ layout = 'vertical', 
     .o-wizard-content {
       ${flexGrow(1)}
       ${padding('lg')}
+      ${paddingBottom(0)}
       ${paddingRight('3xl')}
     }
 
