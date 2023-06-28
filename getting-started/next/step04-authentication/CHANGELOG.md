@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.16.1](https://github.com/oneki/onekijs/compare/v0.16.0...v0.16.1) (2023-06-28)
+
+**Note:** Version bump only for package next-step04-authentication
+
 # 0.16.0 (2023-06-23)
 
 - refactor!: merge onekijs/cra,onekijs/next and @oneki/xxx into onekijs (#20) ([7af6c32](https://github.com/oneki/onekijs/commit/7af6c322a52ccc9e28800baf699c34c050f05328)), closes [#20](https://github.com/oneki/onekijs/issues/20)
