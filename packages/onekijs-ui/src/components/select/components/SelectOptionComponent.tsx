@@ -1,5 +1,5 @@
 import { isItemLoading } from 'onekijs-framework';
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import Checkbox from '../../checkbox';
 import LoadingItem from '../../list/components/LoadingItem';
 import { ListItemProps } from '../../list/typings';
@@ -20,6 +20,8 @@ const SelectOptionComponent = <T, I extends SelectItem<T> = SelectItem<T>>(props
   const service = useSelectService<T, I>();
   const previousItem = service.items[index - 1];
   const displayGroup = getGroupText(item) !== getGroupText(previousItem);
+
+  const [, refresh] = useReducer((x) => x + 1, 0);
 
   const {
     OptionContentComponent = SelectOptionContent,
@@ -79,7 +81,7 @@ const SelectOptionComponent = <T, I extends SelectItem<T> = SelectItem<T>>(props
       {displayGroup && <OptionGroupComponent {...props} />}
       <div
         className={classNames}
-        onMouseDown={() => onItemClick(item, index)}
+        onClick={() => onItemClick(item, index)}
         onMouseEnter={() => hoverable && onMouseEnter && item && onMouseEnter(item, index)}
         onMouseLeave={() => hoverable && onMouseLeave && item && onMouseLeave(item, index)}
       >
@@ -92,7 +94,7 @@ const SelectOptionComponent = <T, I extends SelectItem<T> = SelectItem<T>>(props
             className="o-select-option-multiple-checkbox"
           ></Checkbox>
         )}
-        <OptionContentComponent {...props} />
+        <OptionContentComponent {...props} onClick={() => onItemClick(item, index)} />
       </div>
     </>
   );
