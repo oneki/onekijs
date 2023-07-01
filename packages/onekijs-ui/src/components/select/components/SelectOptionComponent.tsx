@@ -1,5 +1,5 @@
 import { isItemLoading } from 'onekijs-framework';
-import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import Checkbox from '../../checkbox';
 import LoadingItem from '../../list/components/LoadingItem';
 import { ListItemProps } from '../../list/typings';
@@ -20,8 +20,6 @@ const SelectOptionComponent = <T, I extends SelectItem<T> = SelectItem<T>>(props
   const service = useSelectService<T, I>();
   const previousItem = service.items[index - 1];
   const displayGroup = getGroupText(item) !== getGroupText(previousItem);
-
-  const [, refresh] = useReducer((x) => x + 1, 0);
 
   const {
     OptionContentComponent = SelectOptionContent,

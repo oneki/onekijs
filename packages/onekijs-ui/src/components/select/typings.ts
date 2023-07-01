@@ -23,6 +23,7 @@ import {
   UseListOptions,
 } from '../list/typings';
 import { TreeController, TreeItem, TreeProps, TreeState } from '../tree/typings';
+import SelectService from './SelectService';
 
 export type ArraySelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = SelectConfig<T, I> & {
   adapter?: SelectItemAdapter<T>;
@@ -146,7 +147,7 @@ export type SelectProps<
 };
 
 export type SelectBroker<
-  T,
+  T = any,
   I extends SelectItem<T> = SelectItem<T>,
   S extends SelectState<T, I> = SelectState<T, I>,
   C extends SelectController<T, I, S> = SelectController<T, I, S>,
@@ -232,3 +233,8 @@ export type TreeSelectState<T = any, I extends TreeSelectItem<T> = TreeSelectIte
   TreeState<T, I>;
 
 export type UseSelectOptions<T, I extends SelectItem<T> = SelectItem<T>> = UseListOptions<T, I>;
+
+export type UseSelectController<T = any, I extends SelectItem<T> = SelectItem<T>> = (
+  dataSource: T[] | [T, string][] | string | undefined,
+  options?: UseSelectOptions<T, I>,
+) => CollectionProxy<T, I, SelectState<T, I>, SelectService<T, I, SelectState<T, I>>>;

@@ -187,6 +187,7 @@ export {
   TreeSelectProps,
   TreeSelectState,
   UseSelectOptions,
+  UseSelectController,
 } from './components/select/typings';
 export { findSelectItem, findSelectItemIndex, shouldCheckSelect } from './components/select/util';
 export { default as Tabs } from './components/tab';
