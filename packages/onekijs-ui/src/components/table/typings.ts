@@ -20,6 +20,7 @@ import { InputProps } from '../input/typings';
 import { ListItemProps, ListItems, ListNotFoundProps, ListState, UseListOptions } from '../list/typings';
 import { FormSelectProps, SelectBroker, SelectItem, SelectProps } from '../select/typings';
 import { TextareaProps } from '../textarea/typings';
+import TableService from './TableService';
 
 export type ArrayTableProps<T = any, I extends TableItem<T> = TableItem<T>> = TableConfig<T, I> & {
   adapter?: TableItemAdapter<T>;
@@ -369,3 +370,14 @@ export type UseTableOptions<T = any, I extends TableItem<T> = TableItem<T>> = Us
   adapter?: TableItemAdapter<T>;
   selected?: T[];
 };
+
+export type UseTableController<T = any> = (
+  dataSource: T[] | string | undefined,
+  initialColumns: TableColumn<T, TableItem<T>>[] | undefined,
+  options: UseTableOptions<T, TableItem<T>>,
+) => CollectionProxy<
+  T,
+  TableItem<T>,
+  TableState<T, TableItem<T>>,
+  TableService<T, TableItem<T>, TableState<T, TableItem<T>>>
+>;

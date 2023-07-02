@@ -278,6 +278,7 @@ export {
   TextareaColumn,
   TextareaColumnOptions,
   UseTableOptions,
+  UseTableController,
 } from './components/table/typings';
 export { default as Tag } from './components/tag';
 export { default as TagComponent } from './components/tag/components/TagComponent';
