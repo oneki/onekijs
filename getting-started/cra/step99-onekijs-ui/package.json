@@ -1,13 +1,13 @@
 {
   "name": "step1-basic-app",
-  "version": "0.16.1",
+  "version": "0.16.2",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.1",
     "@testing-library/react": "^10.4.7",
     "@testing-library/user-event": "^12.1.0",
     "msw": "^0.21.3",
-    "onekijs": "^0.16.1",
+    "onekijs": "^0.16.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3"
