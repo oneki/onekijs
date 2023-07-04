@@ -315,13 +315,13 @@ export {
 export { default as useField } from './form/useField';
 export { default as useFieldContainer } from './form/useFieldContainer';
 export { FormContext, default as useForm } from './form/useForm';
+export { default as useFormColumnWatcher } from './form/useFormColumnWatcher';
 export { default as useFormController } from './form/useFormController';
 export { default as useFormDecorator } from './form/useFormDecorator';
+export { default as useFormInit } from './form/useFormInit';
 export { default as useFormMetadata } from './form/useFormMetadata';
 export { default as useFormStatus } from './form/useFormStatus';
 export { default as useFormWatcher } from './form/useFormWatcher';
-export { default as useFormInit } from './form/useFormInit';
-export { default as useFormColumnWatcher } from './form/useFormColumnWatcher';
 export { default as useSubmit } from './form/useSubmit';
 export { default as useValidation } from './form/useValidation';
 export { default as useValue } from './form/useValue';
@@ -358,13 +358,13 @@ export { FetchMethod, FetchOptions, FetchState, Fetcher, HttpMethod } from './ty
 export { FormLayout, ValidationStatus } from './types/form';
 export { I18n } from './types/i18n';
 export {
+  AnonymousKeyObject,
   AnonymousObject,
   AnonymousPathObject,
   ArrayElement,
   Class,
   NestedKeyOf,
   PathType,
-  AnonymousKeyObject,
 } from './types/object';
 export {
   LinkComponentProps,
