@@ -16,8 +16,8 @@ import React from 'react';
 import { createGlobalStyle } from 'styled-components';
 
 const getColor = (color: string, theme: Theme): string => {
-  const c = get(theme.colors, color, color);
-  return get(theme.palette.colors, c, c);
+  const c = get<any>(theme.colors, color, color);
+  return get<any>(theme.palette.colors, c, c);
 };
 
 const GlobalStyles = createGlobalStyle`
@@ -335,17 +335,21 @@ export const clarityTheme = (customTheme: Partial<Theme> = {}): Theme => {
   };
 
   Object.keys(ColorKeys).forEach((kind) => {
-    set(clarityTheme, `buttons.${kind}.fontWeight`, 'medium');
-    set(clarityTheme, `buttons.${kind}.hoverBgColor`, lighten(get(clarityTheme.colors, kind, ''), 100));
-    set(clarityTheme, `buttons.${kind}.hoverBorderColor`, lighten(get(clarityTheme.colors, kind, ''), 100));
-    set(clarityTheme, `buttons.${kind}.textTransform`, 'uppercase');
-    set(clarityTheme, `buttons.${kind}.letterSpacing`, '3xl');
-    set(clarityTheme, `buttons.${kind}.fontSize`, 'xs');
-    set(clarityTheme, `buttons.${kind}.lineHeight`, '2xl');
-    set(clarityTheme, `buttons.${kind}.borderRadius`, 'xs');
-    set(clarityTheme, `buttons.${kind}.paddingX`, 'md');
-    set(clarityTheme, `buttons.${kind}.hoverBgColorOutline`, lighten(get(clarityTheme.colors, kind, ''), 700));
-    set(
+    set<any>(clarityTheme, `buttons.${kind}.fontWeight`, 'medium');
+    set<any>(clarityTheme, `buttons.${kind}.hoverBgColor`, lighten(get<any>(clarityTheme.colors, kind, ''), 100));
+    set<any>(clarityTheme, `buttons.${kind}.hoverBorderColor`, lighten(get<any>(clarityTheme.colors, kind, ''), 100));
+    set<any>(clarityTheme, `buttons.${kind}.textTransform`, 'uppercase');
+    set<any>(clarityTheme, `buttons.${kind}.letterSpacing`, '3xl');
+    set<any>(clarityTheme, `buttons.${kind}.fontSize`, 'xs');
+    set<any>(clarityTheme, `buttons.${kind}.lineHeight`, '2xl');
+    set<any>(clarityTheme, `buttons.${kind}.borderRadius`, 'xs');
+    set<any>(clarityTheme, `buttons.${kind}.paddingX`, 'md');
+    set<any>(
+      clarityTheme,
+      `buttons.${kind}.hoverBgColorOutline`,
+      lighten(get<any>(clarityTheme.colors, kind, ''), 700),
+    );
+    set<any>(
       clarityTheme,
       `tooltip.${kind}.color`,
       kind.startsWith('light') || ['white'].includes(kind) ? 'darkest' : 'white',

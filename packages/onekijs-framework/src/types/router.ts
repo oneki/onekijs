@@ -54,6 +54,7 @@ export type LocationChangeCallback = (location: Location, context: { settings: A
 export interface RouterPushOptions {
   shallow?: boolean;
   locale?: string | false;
+  state?: AnonymousObject;
 }
 export type UnregisterCallback = () => void;
 // export type LocationChangeCallback = (location: Location, context: { settings: AppSettings; i18n: I18n }) => void;

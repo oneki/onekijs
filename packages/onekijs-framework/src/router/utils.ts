@@ -122,7 +122,7 @@ function serializeQuery(location: Location, options: AnonymousObject = {}): stri
   const query = location.query || {};
   let result = '';
   if (location.state) {
-    query[URL_STATE] = atob(JSON.stringify(location.state));
+    query[URL_STATE] = btoa(JSON.stringify(location.state));
   }
   if (query && Object.keys(query).length > 0 && options.query !== false) {
     result += `?${qs.stringify(location.query as AnonymousObject)}`;

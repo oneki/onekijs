@@ -109,6 +109,9 @@ export class ReactRouter extends BaseRouter {
 
   private goTo(urlOrLocation: string | Location, type: 'push' | 'replace', options?: RouterPushOptions): void {
     const nextLocation = toI18nLocation(urlOrLocation, this.settings, this.i18n, options?.locale);
+    if (options && options.state) {
+      nextLocation.state = options.state;
+    }
     // check if hostname is different.
     // If it's the case, use window.location and not react router
     if (nextLocation && this.location && nextLocation.baseurl !== this.location.baseurl) {
