@@ -109,6 +109,7 @@ const ControlledSelectComponent = <
   clickable = true,
   ListComponent = DefaultSelectListComponent,
   autoCompleteSearch = true,
+  maxDisplayTokens,
 }: ControllerSelectProps<T, I, S, C>) => {
   if (nullable === undefined) {
     nullable = !required;
@@ -152,6 +153,7 @@ const ControlledSelectComponent = <
       sameWidth,
       overscan,
       autoCompleteSearch,
+      maxDisplayTokens,
     };
   } else {
     service.config = {
@@ -188,6 +190,7 @@ const ControlledSelectComponent = <
       sameWidth,
       overscan,
       autoCompleteSearch,
+      maxDisplayTokens,
     };
   }
 
@@ -613,6 +616,7 @@ const ControlledSelectComponent = <
           ref={triggerRef}
           disabled={disabled}
           autoCompleteSearch={autoCompleteSearch}
+          maxDisplayTokens={maxDisplayTokens}
         />
         <Dropdown
           attachToBody={attachDropdownToBody}

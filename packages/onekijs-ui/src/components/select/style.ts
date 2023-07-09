@@ -24,6 +24,7 @@ import {
   marginY,
   padding,
   paddingLeft,
+  paddingRight,
   paddingTop,
   paddingX,
   paddingY,
@@ -227,7 +228,8 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable = true, sea
       ${flexGrow(1)}
       ${flexWrap('wrap')}
       ${alignItems('center')}
-      ${paddingX('sm')}
+      ${paddingLeft('sm')}
+      ${paddingRight(searchable ? 'sm' : 0)}
       ${maxWidth('calc(100% - 32px)')}
     }
 
@@ -272,6 +274,13 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable = true, sea
       ${flexGrow(1)}
       ${paddingLeft('sm')}
     }
+
+    .o-select-token-disabled {
+      ${paddingRight('sm')}
+      ${backgroundColor('dark')}
+      ${color('lightest')}
+    }
+
     .o-select-token-remove {
       ${cursor('pointer')}
       ${color('white', { hover: 'danger' })}

@@ -98,6 +98,7 @@ export interface SelectInputProps<T = any, I extends SelectItem<T> = SelectItem<
   clickable: boolean;
   minChars: number;
   autoCompleteSearch: boolean;
+  maxDisplayTokens?: number;
 }
 
 export type SelectGroup =
@@ -191,6 +192,7 @@ export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omi
   sameWidth?: boolean;
   ListComponent?: React.FC<SelectListComponentProps<T, I>>;
   autoCompleteSearch?: boolean;
+  maxDisplayTokens?: number;
 };
 
 export type SelectListComponentProps<T = any, I extends SelectItem<T> = SelectItem<T>> = CollectionListProps<T, I> & {
@@ -206,6 +208,7 @@ export type SelectState<T = any, I extends SelectItem<T> = SelectItem<T>> = List
 export interface SelectTokensProps<T = any, I extends SelectItem<T> = SelectItem<T>> {
   tokens?: I[];
   onRemove: SelectOptionHandler<T, I>;
+  maxDisplayTokens?: number;
 }
 
 export interface SelectTokenProps<T = any, I extends SelectItem<T> = SelectItem<T>> {

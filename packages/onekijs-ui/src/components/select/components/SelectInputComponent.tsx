@@ -27,6 +27,7 @@ const SelectInputComponent = <T, I extends SelectItem<T> = SelectItem<T>>(
     searchable,
     minChars,
     disabled,
+    maxDisplayTokens,
   }: SelectInputProps<T, I>,
   ref: React.ForwardedRef<HTMLDivElement>,
 ) => {
@@ -200,32 +201,35 @@ const SelectInputComponent = <T, I extends SelectItem<T> = SelectItem<T>>(
   return (
     <div className={className} style={style} ref={ref}>
       <div className="o-select-input-data">
-        {multiple && <SelectTokensComponent tokens={tokens} onRemove={onRemove} />}
-        <div className="o-select-input-wrapper">
-          <span ref={autoSizeRef} className="o-select-input-auto-sizer" />
-          <input
-            ref={inputRef}
-            placeholder={placeholder}
-            className="o-select-input"
-            onFocus={onFocus}
-            onBlur={onBlur}
-            onChange={handleChange}
-            onKeyDown={handleKeyDown}
-            onKeyUp={handleKeyUp}
-            value={proxyValue}
-            onClick={onClick}
-            autoCapitalize="none"
-            autoComplete="off"
-            autoCorrect="off"
-            spellCheck="false"
-            disabled={disabled}
-          />
-          {!searchable && (
-            <span className="o-select-input o-select-input-text" onClick={onClick}>
-              {proxyValue || ''}
-            </span>
-          )}
-        </div>
+        {multiple && <SelectTokensComponent tokens={tokens} onRemove={onRemove} maxDisplayTokens={maxDisplayTokens} />}
+        {(!multiple || (multiple && searchable)) && (
+          <div className="o-select-input-wrapper">
+            <span ref={autoSizeRef} className="o-select-input-auto-sizer" />
+            <input
+              ref={inputRef}
+              placeholder={placeholder}
+              className="o-select-input"
+              onFocus={onFocus}
+              onBlur={onBlur}
+              onChange={handleChange}
+              onKeyDown={handleKeyDown}
+              onKeyUp={handleKeyUp}
+              value={proxyValue}
+              onClick={onClick}
+              autoCapitalize="none"
+              autoComplete="off"
+              autoCorrect="off"
+              spellCheck="false"
+              disabled={disabled}
+            />
+
+            {!searchable && !multiple && (
+              <span className="o-select-input o-select-input-text" onClick={onClick}>
+                {proxyValue || ''}
+              </span>
+            )}
+          </div>
+        )}
       </div>
       {!multiple && nullable && value && !disabled && (
         <div className="o-select-remover" onClick={onNullify}>

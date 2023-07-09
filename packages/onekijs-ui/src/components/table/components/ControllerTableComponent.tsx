@@ -4,10 +4,10 @@ import { TableConfigContext } from '../hooks/useTableConfig';
 import { TableServiceContext } from '../hooks/useTableService';
 import { TableStateContext } from '../hooks/useTableState';
 import { ControllerTableProps, TableConfig } from '../typings';
-import ExpandedCellComponent from './cells/ExpandedCellComponent';
 import TableBodyComponent from './TableBodyComponent';
 import TableFooterComponent from './TableFooterComponent';
 import TableHeaderComponent from './TableHeaderComponent';
+import ExpandedCellComponent from './cells/ExpandedCellComponent';
 
 const ControllerTableComponent: React.FC<ControllerTableProps> = ({
   autoRefresh,

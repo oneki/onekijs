@@ -6,6 +6,7 @@ import SelectTokenComponent from './SelectTokenComponent';
 const SelectTokensComponent = <T, I extends SelectItem<T> = SelectItem<T>>({
   tokens,
   onRemove,
+  maxDisplayTokens,
 }: SelectTokensProps<T, I>) => {
   const widthRef = useRef<number>();
 
@@ -26,24 +27,34 @@ const SelectTokensComponent = <T, I extends SelectItem<T> = SelectItem<T>>({
   };
 
   if (tokens !== undefined) {
-    return (
-      <TransitionGroup component={null}>
-        {tokens.map((token, index) => (
-          <CSSTransition
-            timeout={150}
-            classNames="o-select-token-animation"
-            mountOnEnter={true}
-            appear={true}
-            unmountOnExit={true}
-            key={`o-select-token-${token.id}`}
-            onEntering={onEntering}
-            onExiting={onExiting}
-          >
-            <SelectTokenComponent token={token} onRemove={onRemove} index={index} />
-          </CSSTransition>
-        ))}
-      </TransitionGroup>
-    );
+    if (!maxDisplayTokens || tokens.length <= maxDisplayTokens) {
+      return (
+        <TransitionGroup component={null}>
+          {tokens.map((token, index) => (
+            <CSSTransition
+              timeout={150}
+              classNames="o-select-token-animation"
+              mountOnEnter={true}
+              appear={true}
+              unmountOnExit={true}
+              key={`o-select-token-${token.id}`}
+              onEntering={onEntering}
+              onExiting={onExiting}
+            >
+              <SelectTokenComponent token={token} onRemove={onRemove} index={index} />
+            </CSSTransition>
+          ))}
+        </TransitionGroup>
+      );
+    } else {
+      return (
+        <div className="o-select-token o-select-token-disabled">
+          <div className="o-select-token-text" key="o-select-token-text">
+            {tokens.length} selected
+          </div>
+        </div>
+      );
+    }
   }
   return null;
 };

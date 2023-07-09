@@ -31,7 +31,7 @@ const addFilter = (
   }
 };
 
-const operators: TableFilterOperator[] = [{ text: 'equals', operator: 'eq', not: false }];
+const operators: TableFilterOperator[] = [{ text: 'any of', operator: 'in', not: false }];
 
 const TableSelectFilterComponent: React.FC<TableHeaderCellProps & { dataSource: [unknown, string][] | string[] }> = ({
   column,
@@ -73,6 +73,7 @@ const TableSelectFilterComponent: React.FC<TableHeaderCellProps & { dataSource: 
         onChange={onValueChange}
         size="xsmall"
         attachDropdownToBody={true}
+        maxDisplayTokens={1}
       />
     </div>
   );
