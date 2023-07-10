@@ -14,8 +14,9 @@ const SelectTokenComponent = <T, I extends SelectItem<T> = SelectItem<T>>({
       <div
         className="o-select-token-remove"
         key="o-select-token-remove"
-        onClick={() => {
+        onClick={(e) => {
           onRemove(token, index);
+          e.stopPropagation();
         }}
       >
         &#10006;

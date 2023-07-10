@@ -61,7 +61,9 @@ class SelectService<
       yield this._setValidDefaultValue(
         this.config === undefined || this.config.nullable || !this.state.items
           ? null
-          : this.config.defaultValue === undefined || this.state.defaultValue === null
+          : this.config.defaultValue === undefined ||
+            this.config.defaultValue === null ||
+            this.state.defaultValue === null
           ? this.state.items[0]?.data || null
           : null,
       );
