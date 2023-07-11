@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import styled, { css, keyframes } from 'styled-components';
 import { stroke } from '../../styles/svg';
+import { ComponentStyle } from '../../styles/typings';
 import { addClassname } from '../../utils/style';
 import { IconProps } from './typings';
 
@@ -40,8 +41,12 @@ const iconCircleKeyFrame = keyframes`
   }
 `;
 
-export default styled(IconComponent)`
-  ${({ width: cssWidth = '16px', height: cssHeight = '16px', color: cssColor = 'primary' }) => css`
+const iconStyle: ComponentStyle<IconProps> = ({
+  width: cssWidth = '16px',
+  height: cssHeight = '16px',
+  color: cssColor = 'primary',
+}) => {
+  return css`
     height: ${cssHeight};
     width: ${cssWidth};
     display: inline-flex;
@@ -60,5 +65,9 @@ export default styled(IconComponent)`
       stroke-width: 10px;
       transform-origin: 50% 50%;
     }
-  `}
+  `;
+};
+
+export default styled(IconComponent)`
+  ${iconStyle}
 `;
