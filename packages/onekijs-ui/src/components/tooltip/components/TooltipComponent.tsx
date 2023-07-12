@@ -1,5 +1,5 @@
 import { FCC } from 'onekijs-framework';
-import React, { useEffect, useId, useRef, useState } from 'react';
+import React, { useEffect, useId, useState } from 'react';
 import { usePopperTooltip } from 'react-popper-tooltip';
 import { addClassname } from '../../../utils/style';
 import { TooltipProps } from '../typings';
