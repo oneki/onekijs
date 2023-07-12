@@ -805,18 +805,25 @@ export default class CollectionService<
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   *_fetchOnce() {
     if (typeof this.state.dataSource === 'string' && this.state.fetchOnce && this.status !== LoadingStatus.NotReady) {
-      yield this.setStatus(LoadingStatus.Loading);
       try {
-        const result: CollectionFetcherResult<T> = yield this._executeFetch(
-          Object.assign({}, this._initialQuery, { limit: undefined, offset: undefined }),
-          this.state.fetchOptions,
-          false,
-        );
-        yield this.setStatus(LoadingStatus.Loaded);
-        if (Array.isArray(result)) {
-          yield this.setData(result);
-        } else {
-          yield this.setData(result[this.state.dataKey]);
+        let result: CollectionFetcherResult<T> = [];
+        if (this.status !== LoadingStatus.Loaded) {
+          yield this.setStatus(LoadingStatus.Loading);
+          result = yield this._executeFetch(
+            Object.assign({}, this._initialQuery, { limit: undefined, offset: undefined }),
+            this.state.fetchOptions,
+            false,
+          );
+        }
+
+        // check if the select was not converted to a local datasource during the fetch
+        if (this.status !== LoadingStatus.Loaded) {
+          yield this.setStatus(LoadingStatus.Loaded);
+          if (Array.isArray(result)) {
+            yield this.setData(result);
+          } else {
+            yield this.setData(result[this.state.dataKey]);
+          }
         }
       } catch (e) {
         if (process.env.NODE_ENV === 'development') {
