@@ -745,7 +745,7 @@ export default class FormService<T extends object = any> extends DefaultService<
       for (let i = index + 1; i < currentArrayValue.length; i++) {
         Object.keys(currentArrayValue[i]).forEach((fieldName) => {
           // nextValues[`${fieldArrayName}.${i - 1}.${fieldName}`] = currentArrayValue[i][fieldName];
-          const nextField = this.fields[`${fieldArrayName}.${i}.${fieldName}` as NestedKeyOf<T>];
+          const nextField: Field<T> | undefined = this.fields[`${fieldArrayName}.${i}.${fieldName}` as NestedKeyOf<T>];
           const currentField = this.fields[`${fieldArrayName}.${i}.${fieldName}` as NestedKeyOf<T>] as Field<T>;
 
           if (nextField) {

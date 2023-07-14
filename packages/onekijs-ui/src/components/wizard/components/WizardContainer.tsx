@@ -36,7 +36,7 @@ const WizardContainer: FCC<Omit<WizardProps, 'Component'>> = ({
 
   const activate = useCallback(
     (step: StepState) => {
-      if (!step || step.disabled) return;
+      if (!step || step.disabled || (!step.touched && !step.touching)) return;
       if (!step.active) {
         service.activate(step.uid);
       }

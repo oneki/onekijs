@@ -57,4 +57,4 @@ export type TabsState<M extends TabState = TabState> = {
   active?: string;
 };
 
-export type UseTabsController = (props: { animate?: number }) => TabsService;
+export type UseTabsController = (options?: { animate?: number }) => TabsService;

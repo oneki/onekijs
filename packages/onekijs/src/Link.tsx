@@ -1,6 +1,6 @@
 import { LinkProps, toI18nLocation, toRelativeUrl, toUrl, useI18n, useLocation, useSettings } from 'onekijs-framework';
 import React, { ReactNode } from 'react';
-import { Link as ReactRouterLink, NavLink } from 'react-router-dom';
+import { NavLink, Link as ReactRouterLink } from 'react-router-dom';
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
   (
@@ -16,6 +16,7 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
       isActive,
       activeClassName,
       activeStyle,
+      state,
       ...anchorProps
     },
     ref,
@@ -24,6 +25,9 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
     const settings = useSettings();
     const i18n = useI18n();
     const nextLocation = toI18nLocation(href, settings, i18n, locale);
+    if (state) {
+      nextLocation.state = state;
+    }
     if (nextLocation.baseurl !== location.baseurl) {
       return (
         <a {...anchorProps} href={toUrl(nextLocation)}>

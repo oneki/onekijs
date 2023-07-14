@@ -286,7 +286,7 @@ export function set<T, K extends NestedKeyOf<T> = NestedKeyOf<T>>(
   const parts = `${property}`.split('.');
   if (content === undefined && force) {
     if (!isNaN(Number(parts[0]))) {
-      content = [] as T;
+      content = [] as unknown as T;
     } else {
       content = {} as T;
     }
@@ -295,7 +295,7 @@ export function set<T, K extends NestedKeyOf<T> = NestedKeyOf<T>>(
   if (force) {
     if (!isNaN(Number(parts[0]))) {
       if (!Array.isArray(content)) {
-        content = [] as T;
+        content = [] as unknown as T;
       }
     } else {
       if (typeof content !== 'object' || content === null) {

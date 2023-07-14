@@ -202,6 +202,10 @@ export {
   TabsState,
   UseTabsController,
 } from './components/tab/typings';
+export { default as useTabsController } from './components/tab/hooks/useTabsController';
+export { default as useTab } from './components/tab/hooks/useTab';
+export { default as useTabsService } from './components/tab/hooks/useTabsService';
+export { useTabsState } from './components/tab/hooks/useTabsState';
 export { default as Table } from './components/table';
 export { default as FormTable } from './components/table/FormTable';
 export { default as checkboxColumn } from './components/table/columns/checkboxColumn';
