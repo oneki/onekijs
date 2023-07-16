@@ -43,7 +43,6 @@
   "devDependencies": {
     "@types/react-transition-group": "^4.4.0",
     "concurrently": "^7.3.0",
-    "microbundle": "^0.15.0",
     "rimraf": "^3.0.2",
     "rollup": "^2.77.3"
   },
