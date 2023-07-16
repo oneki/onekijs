@@ -45,7 +45,7 @@ const AppRouter: FCC = ({ children }) => {
  * @group Application
  * @category Components
  */
-export const App: FCC<AppProps> = React.memo(({ LoadingComponent = DefaultLoadingComponent, children, ...props }) => {
+const FCCApp: FCC<AppProps> = ({ LoadingComponent = DefaultLoadingComponent, children, ...props }) => {
   const router = useLazyRef<ReactRouter>(() => {
     return new ReactRouter();
   });
@@ -56,6 +56,7 @@ export const App: FCC<AppProps> = React.memo(({ LoadingComponent = DefaultLoadin
       </AppRouter>
     </AppState>
   );
-});
+};
 
+export const App = React.memo(FCCApp);
 App.displayName = 'App';

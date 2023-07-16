@@ -183,6 +183,7 @@ export default class DefaultService<S extends State = AnyState> implements Servi
       } catch (error) {
         if (action.reject) {
           action.reject(error);
+          return;
         } else {
           throw error;
         }

@@ -1,7 +1,7 @@
-import { ErrorBoundaryComponentProps } from 'onekijs';
-import React from 'react';
+import { ErrorBoundaryComponentProps, FCC } from 'onekijs';
+import React, { ComponentType, FC } from 'react';
 
-const ErrorBoundary: React.FC<ErrorBoundaryComponentProps> = ({ error, errorInfo }) => {
+const ErrorBoundary: ComponentType<ErrorBoundaryComponentProps> = ({ error, errorInfo }) => {
   return (
     <div className="error-boundary-container">
       <div>

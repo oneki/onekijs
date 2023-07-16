@@ -18,9 +18,9 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
 
-    /* Decorators 
+    /* Decorators */
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true */
+    "emitDecoratorMetadata": true
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
