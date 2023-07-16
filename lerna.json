@@ -1,6 +1,6 @@
 {
   "version": "0.16.2",
-  "npmClient": "yarn",
+  "npmClient": "npm",
   "command": {
     "publish": {
       "ignoreChanges": ["ignored-file", "*.md"],
@@ -13,7 +13,6 @@
     }
   },
   "packages": ["packages/*", "examples/*", "getting-started/*"],
-  "useWorkspaces": true,
   "$schema": "node_modules/lerna/schemas/lerna-schema.json",
   "useNx": false
 }
