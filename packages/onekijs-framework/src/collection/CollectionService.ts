@@ -664,6 +664,7 @@ export default class CollectionService<
     this.state.url = url;
     this.state.items = undefined;
     this.state.local = this.state.fetchOnce || false;
+    this.state.status = LoadingStatus.NotInitialized;
     if (query === undefined) {
       query = this.getQuery();
     } else {
@@ -671,6 +672,7 @@ export default class CollectionService<
     }
     const nextQuery = clone(query);
     this._clearOffset(nextQuery);
+
     if (this.state.fetchOnce) {
       this.callSaga('_fetchOnce');
     } else {
