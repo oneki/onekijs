@@ -112,6 +112,7 @@ export type TableConfig<T = any, I extends TableItem<T> = TableItem<T>> = {
   filterable?: boolean;
   fit?: boolean;
   fixHeader?: boolean;
+  follow?: number;
   footer?: boolean;
   footerClassName?: string;
   FooterComponent?: React.FC<TableFooterProps<T, I>>;

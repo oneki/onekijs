@@ -22,23 +22,21 @@ const fomStyle: ComponentStyle<{}> = () => {
 const Page: React.FC<{ className?: string }> = ({ className }) => {
   const form1 = useFormController();
 
-  useFormWatcher<string>(form1, 'addresses.0.street', (value: string) => {
+  useFormWatcher(form1, 'addresses.0.street', (value: string) => {
   });
 
-  useFormWatcher<string>(form1, 'addresses.street', (value: string, _previousValue: string | undefined, watch) => {
+  useFormWatcher(form1, 'addresses.street', (value: string, _previousValue: string | undefined, watch) => {
   });
 
   const formController2 = useFormController({ firstname: 'toto' });
 
-  const streetColumn = useInputColumn({
-    id: 'street',
+  const streetColumn = useInputColumn('street', {
     title: 'Street',
     required: true,
     placeholder: 'Street',
   });
 
-  const stateColumn = useSelectColumn({
-    id: 'state',
+  const stateColumn = useSelectColumn('state', {
     dataSource: [
       { id: 1, text: 'Alabama' },
       { id: 2, text: 'California' },
@@ -49,14 +47,13 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
     required: true,
   });
 
-  const privateColumn = useCheckboxColumn({
-    id: 'private',
+  const privateColumn = useCheckboxColumn('private', {
     title: 'Private address',
     defaultValue: true,
     required: true,
   });
 
-  useFormWatcher<string>(form1, 'firstname', (value: string) => {
+  useFormWatcher(form1, 'firstname', (value: string) => {
     if (value === 'toto') {
       stateColumn.broker.addFilterCriteria('text', 'eq', 'California', false, 'toto');
       form1.disable('dataManagement');

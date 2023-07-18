@@ -62,7 +62,19 @@ export const ButtonPage = () => {
       <div style={{ marginBottom: '10px' }}>
         {colors.map((c: ColorPropertyTheme) => (
           <>
-            <DropdownButton kind={c} listElement={<div><div>a</div><div>b</div></div>} onDrop={() => {}} onCollapse={() => {}}>Dropdown</DropdownButton>{' '}
+            <DropdownButton
+              kind={c}
+              listElement={
+                <div>
+                  <div>a</div>
+                  <div>b</div>
+                </div>
+              }
+              onDrop={() => {}}
+              onCollapse={() => {}}
+            >
+              Dropdown
+            </DropdownButton>{' '}
           </>
         ))}
       </div>

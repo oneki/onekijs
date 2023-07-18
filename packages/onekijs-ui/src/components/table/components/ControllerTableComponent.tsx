@@ -19,6 +19,7 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
   filterable,
   fit,
   fixHeader = true,
+  follow,
   grow,
   FooterComponent = TableFooterComponent,
   footerClassName,
@@ -63,6 +64,7 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
       filterable,
       fit,
       fixHeader,
+      follow,
       footer,
       footerClassName,
       FooterComponent,
@@ -99,6 +101,7 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
     filterable,
     fit,
     fixHeader,
+    follow,
     footer,
     footerClassName,
     FooterComponent,
@@ -147,14 +150,6 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
       }
     }
   }, [service, ExpandedComponent]);
-
-  useEffect(() => {
-    if (autoRefresh) {
-      service.startAutoRefresh(autoRefresh);
-    } else {
-      service.stopAutoRefresh();
-    }
-  }, [service, autoRefresh]);
 
   return (
     <TableServiceContext.Provider value={controller.asService()}>

@@ -58,14 +58,12 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
     users: u,
   });
 
-  const streetColumn = useInputColumn({
-    id: 'street',
+  const streetColumn = useInputColumn('street', {
     title: 'Street',
     required: true,
   });
 
-  const stateColumn = useSelectColumn({
-    id: 'state',
+  const stateColumn = useSelectColumn('state', {
     dataSource: [
       { id: 1, text: 'Alabama' },
       { id: 2, text: 'California' },

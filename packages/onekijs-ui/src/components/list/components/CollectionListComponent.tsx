@@ -9,8 +9,10 @@ import ListItemComponent, { ListItemContent } from './ListItemComponent';
 import LoadingItem from './LoadingItem';
 
 const CollectionListComponent = <T = any, I extends ListItem<T> = ListItem<T>>({
+  autoRefresh,
   className,
   controller,
+  follow,
   height,
   ItemComponent = ListItemComponent,
   ItemLoadingComponent = LoadingItem,
@@ -31,10 +33,11 @@ const CollectionListComponent = <T = any, I extends ListItem<T> = ListItem<T>>({
   paddingStart,
   virtual,
   style,
+  tail,
 }: CollectionListProps<T, I>) => {
   const ref = useRef<HTMLDivElement>(null);
 
-  const { items, isVirtual, totalSize, virtualItems, scrollToIndex } = useListView({
+  const { items, isVirtual, totalSize, virtualItems, scrollToIndex, scrollToOffset } = useListView({
     controller,
     height,
     itemHeight,
@@ -50,7 +53,9 @@ const CollectionListComponent = <T = any, I extends ListItem<T> = ListItem<T>>({
     <ListServiceContext.Provider value={controller.asService()}>
       <ListStateContext.Provider value={controller.state}>
         <ListBodyComponent
+          autoRefresh={autoRefresh}
           className={addClassname('o-list', className)}
+          follow={follow}
           height={height}
           ItemLoadingComponent={ItemLoadingComponent}
           ItemComponent={ItemComponent}
@@ -67,10 +72,12 @@ const CollectionListComponent = <T = any, I extends ListItem<T> = ListItem<T>>({
           onItemUnselect={onItemUnselect}
           multiSelect={multiSelect}
           scrollToIndex={scrollToIndex}
+          scrollToOffset={scrollToOffset}
           service={controller.asService()}
           state={controller.state}
           style={style}
           totalSize={totalSize}
+          tail={tail}
           virtualItems={isVirtual ? virtualItems : undefined}
         />
       </ListStateContext.Provider>

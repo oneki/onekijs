@@ -1,7 +1,5 @@
-import { AnonymousObject, CollectionService, reducer, saga, SagaEffect, service } from 'onekijs-framework';
+import { AnonymousObject, CollectionService, reducer, service } from 'onekijs-framework';
 import React from 'react';
-import { Task } from 'redux-saga';
-import { delay, fork } from 'redux-saga/effects';
 import { TableColumn, TableColumnWidth, TableConfig, TableController, TableItem, TableState } from './typings';
 
 export const parseColumnWidth = (width: string | number = 'auto'): TableColumnWidth => {
@@ -53,9 +51,6 @@ class TableService<T = any, I extends TableItem<T> = TableItem<T>, S extends Tab
   // config coming from the component
   public config: TableConfig<T, I> | undefined;
 
-  // autoRefresh task that can be cancelled
-  protected pullTask?: Task;
-
   adapt(data: T | null | undefined): I {
     const item = super.adapt(data);
     item.selected = this.state.selected && this.state.selected.includes(item.uid);
@@ -73,28 +68,6 @@ class TableService<T = any, I extends TableItem<T> = TableItem<T>, S extends Tab
         this.state.columns.splice(position, 0, column);
       }
       this.resetWidth();
-    }
-  }
-
-  @saga(SagaEffect.Leading)
-  *startAutoRefresh(interval: number) {
-    this.stopAutoRefresh();
-    this.pullTask = yield fork([this, this._autoRefresh], interval);
-  }
-
-  @saga(SagaEffect.Leading)
-  protected *_autoRefresh(interval: number) {
-    while (true) {
-      yield delay(interval * 1000);
-      yield this.refresh(undefined, undefined, true);
-    }
-  }
-
-  @saga(SagaEffect.Leading)
-  *stopAutoRefresh() {
-    if (this.pullTask) {
-      yield this.pullTask.cancel();
-      this.pullTask = undefined;
     }
   }
 

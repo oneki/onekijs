@@ -1,8 +1,7 @@
-import { Item, LoadingStatus } from 'onekijs-framework';
+import { Item, LoadingStatus, isItemFetching } from 'onekijs-framework';
 import { RefObject, useCallback, useEffect, useReducer } from 'react';
 import { useVirtual } from '../../../vendor/reactVirtual';
 import { CollectionListProps, ListCollection, VirtualItem } from '../typings';
-import { canFetchMore } from '../utils';
 
 const defaultItemHeight = 37;
 const defaultPreload = 50;
@@ -69,7 +68,7 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
   const state = controller.state;
 
   const { totalSize, virtualItems, scrollToIndex, scrollToOffset } = useVirtual({
-    size: state.items?.length || 0,
+    size: state.total ? state.total : state.items?.length || 0,
     estimateSize: estimatedItemHeight,
     parentRef: ref,
     overscan: overscan,
@@ -83,12 +82,86 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
       if (isVirtual) {
         if (controller.status === LoadingStatus.NotInitialized) {
           controller.load(preload, undefined, true);
-        } else if (canFetchMore(controller)) {
+        } else {
           const lastVirtualItem = virtualItems[virtualItems.length - 1];
           const lastVirtualItemIndex = lastVirtualItem ? lastVirtualItem.index : 0;
-          if (lastVirtualItemIndex >= (state.items?.length || 0) - preload / 2) {
-            controller.load(increment, ((state.items || []) as any[]).length, true);
+
+          if (state.items) {
+            const isVirtualItemFetching = lastVirtualItem ? isItemFetching(state.items[lastVirtualItemIndex]) : false;
+            if (isVirtualItemFetching) return;
+
+            // Check the increment windows around the lastVirtualItem and check what we need to load
+            // it can be backward or forward or both
+
+            // start with backward
+            let from: number | undefined;
+            let to: number | undefined;
+
+            const first = Math.max(0, lastVirtualItemIndex - increment);
+
+            if (lastVirtualItemIndex > 0) {
+              let slice = state.items.slice(Math.max(0, lastVirtualItemIndex - increment), lastVirtualItemIndex);
+              if (slice.length < lastVirtualItemIndex - first) {
+                const arr = new Array(lastVirtualItemIndex - first);
+                arr.splice(arr.length - slice.length, slice.length, ...slice);
+                slice = arr;
+              }
+
+              let notLoadedPreviousIndex: number | undefined = undefined;
+
+              for (let i = slice.length - 1; i >= 0; i--) {
+                if (slice[i] === undefined) {
+                  notLoadedPreviousIndex = i;
+                  break;
+                }
+              }
+              if (notLoadedPreviousIndex !== undefined) {
+                from = Math.max(0, lastVirtualItemIndex - slice.length + notLoadedPreviousIndex - increment);
+                to = from + increment;
+              }
+            }
+
+            // check forward
+            const end =
+              state.total !== undefined
+                ? Math.min(state.total, lastVirtualItemIndex + increment + 1)
+                : lastVirtualItemIndex + increment + 1;
+
+            if (end > lastVirtualItemIndex) {
+              let notLoadedNextIndex: number | undefined = undefined;
+              let slice = state.items.slice(lastVirtualItemIndex, end);
+              if (slice.length < end - lastVirtualItemIndex) {
+                const arr = new Array(end - lastVirtualItemIndex);
+                arr.splice(0, slice.length, ...slice);
+                slice = arr;
+              }
+              for (let i = 0; i < slice.length; i++) {
+                if (slice[i] === undefined) {
+                  notLoadedNextIndex = i;
+                  break;
+                }
+              }
+              if (notLoadedNextIndex !== undefined) {
+                const offset = state.total
+                  ? Math.min(state.total, lastVirtualItemIndex + notLoadedNextIndex)
+                  : lastVirtualItemIndex + notLoadedNextIndex;
+
+                if (from === undefined) {
+                  from = offset;
+                }
+                to = offset + increment;
+              }
+
+              if (from !== undefined && to !== undefined && to > from) {
+                controller.load(to - from, from, true);
+              }
+            }
+          } else {
+            controller.load(Math.max(preload, increment), undefined, true);
           }
+          // if (lastVirtualItemIndex >= (state.items?.length || 0) - preload / 2) {
+          //   controller.load(increment, ((state.items || []) as any[]).length, true);
+          // }
         }
       } else if (controller.status === LoadingStatus.NotInitialized) {
         controller.load(undefined, undefined, true);

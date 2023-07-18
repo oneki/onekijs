@@ -23,6 +23,8 @@ export type ListBodyProps<
   C extends ListCollection<T, I, S> = ListCollection<T, I, S>,
 > = Pick<
   CollectionListProps<T, I>,
+  | 'autoRefresh'
+  | 'follow'
   | 'onItemSelect'
   | 'onItemUnselect'
   | 'onItemActivate'
@@ -35,6 +37,7 @@ export type ListBodyProps<
   | 'LoadingComponent'
   | 'height'
   | 'keyboardNavigable'
+  | 'tail'
 > & {
   bodyRef?: React.RefObject<HTMLDivElement>;
   className?: string;
@@ -49,6 +52,7 @@ export type ListBodyProps<
   style?: React.CSSProperties;
   totalSize?: number;
   scrollToIndex?: (index: number, options?: { align: 'start' | 'center' | 'end' | 'auto' }) => void;
+  scrollToOffset?: (index: number, options?: { align: 'start' | 'center' | 'end' | 'auto' }) => void;
   virtualItems?: VirtualItem[];
   VirtualListComponent?: FC<VirtualListProps<T, I>>;
 };
@@ -100,7 +104,9 @@ export interface ListItemProps<T = any, I extends ListItem<T> = ListItem<T>> {
 export type ListItems<T = any, I extends ListItem<T> = ListItem<T>> = T[] | ListCollection<T, I>;
 
 export type ListConfig<T = any, I extends ListItem<T> = ListItem<T>> = {
+  autoRefresh?: number;
   className?: string;
+  follow?: number;
   height?: string | number;
   increment?: number;
   ItemLoadingComponent?: FC;
@@ -122,6 +128,7 @@ export type ListConfig<T = any, I extends ListItem<T> = ListItem<T>> = {
   overscan?: number;
   preload?: number;
   style?: React.CSSProperties;
+  tail?: boolean;
   virtual?: boolean;
 };
 

@@ -17,6 +17,8 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
   const service = useTableService();
   const state = useTableState();
   const {
+    autoRefresh,
+    follow,
     height,
     increment,
     onRowClick,
@@ -80,7 +82,9 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
 
   return (
     <ListBodyComponent
+      autoRefresh={autoRefresh}
       className={addClassname('o-table-body', className)}
+      follow={follow}
       height={height}
       ItemComponent={ItemComponentRef.current}
       items={items}

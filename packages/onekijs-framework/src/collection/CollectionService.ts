@@ -78,6 +78,8 @@ export default class CollectionService<
   _currentQuery?: string;
   _initialQuery?: Query;
   _refreshing?: boolean;
+  protected refreshTask?: Task;
+  protected followTask?: Task;
   scrollToIndex?: (index: number, options?: { align: 'start' | 'center' | 'end' | 'auto' }) => void;
   scrollToOffset?: (offsetInPixels: number, options?: { align: 'start' | 'center' | 'end' | 'auto' }) => void;
 
@@ -695,6 +697,37 @@ export default class CollectionService<
     this.refresh(query);
   }
 
+  @saga(SagaEffect.Leading)
+  *startAutoRefresh(interval: number) {
+    this.stopAutoRefresh();
+    this.refreshTask = yield fork([this, this._autoRefresh], interval);
+  }
+
+  @saga(SagaEffect.Leading)
+  *startFollow(interval: number) {
+    if (this.state.fetchOptions?.delayLoading) {
+      this.state.fetchOptions.delayLoading = 0;
+    }
+    this.stopFollow();
+    this.followTask = yield fork([this, this._follow], interval);
+  }
+
+  @saga(SagaEffect.Leading)
+  *stopAutoRefresh() {
+    if (this.refreshTask) {
+      yield this.refreshTask.cancel();
+      this.refreshTask = undefined;
+    }
+  }
+
+  @saga(SagaEffect.Leading)
+  *stopFollow() {
+    if (this.followTask) {
+      yield this.followTask.cancel();
+      this.followTask = undefined;
+    }
+  }
+
   _adapt(data: T | null | undefined, context?: AnonymousObject): I {
     const adaptee =
       this.state.adapter === undefined || data === undefined || data === null ? {} : this.state.adapter(data);
@@ -740,6 +773,14 @@ export default class CollectionService<
       currentSortBy.push(sortBy);
     }
     query.sortBy = currentSortBy;
+  }
+
+  @saga(SagaEffect.Leading)
+  protected *_autoRefresh(interval: number) {
+    while (true) {
+      yield delay(interval);
+      yield this.refresh(undefined, undefined, true);
+    }
   }
 
   _clearFields(query: Query): void {
@@ -861,6 +902,18 @@ export default class CollectionService<
     }
   }
 
+  @saga(SagaEffect.Leading)
+  protected *_follow(interval: number) {
+    while (true) {
+      yield delay(interval);
+      if (this.state.total) {
+        const query = this.getQuery();
+        query.offset = this.state.total;
+        yield this.refresh(query);
+      }
+    }
+  }
+
   *_executeFetch(query: Query, options: S['fetchOptions'] = {}, resetData: boolean) {
     if (!this.url) {
       return [];
@@ -956,7 +1009,13 @@ export default class CollectionService<
     }
 
     // check if current query is still equals to the query used for fetching
-    let same = isSameQuery(query, currentQuery);
+    const q1 = Object.assign({}, query);
+    const q2 = Object.assign({}, currentQuery);
+    delete q1.limit;
+    delete q1.offset;
+    delete q2.limit;
+    delete q2.offset;
+    let same = isSameQuery(q1, q2);
 
     this.state.error = undefined;
     this.state.total = undefined;
@@ -1024,16 +1083,20 @@ export default class CollectionService<
 
     same = same && query.limit === currentQuery.limit && query.offset === currentQuery.offset;
 
-    if (same && resetData) {
-      this.state.status = hasMore ? LoadingStatus.PartialLoaded : LoadingStatus.Loaded;
+    if (same && resetData && hasMore) {
+      this.state.status = LoadingStatus.PartialLoaded;
     } else {
+      const values = Object.values(this._uidIndex);
       // need to calculate the status as we cannot be sure that there is not another running request
-      if (Object.values(this._uidIndex).find((item) => item.loadingStatus === LoadingStatus.Loading)) {
+      if (values.find((item) => item.loadingStatus === LoadingStatus.Loading)) {
         this.state.status = LoadingStatus.PartialLoading;
-      } else if (Object.values(this._uidIndex).find((item) => item.loadingStatus === LoadingStatus.Fetching)) {
+      } else if (values.find((item) => item.loadingStatus === LoadingStatus.Fetching)) {
         this.state.status = LoadingStatus.PartialFetching;
+      } else if (hasMore || Object.values(this.state.items || []).length !== (this.state.items || []).length) {
+        this.state.status = LoadingStatus.PartialLoaded;
       } else {
-        this.state.status = hasMore ? LoadingStatus.PartialLoaded : LoadingStatus.Loaded;
+        const undef = Object.values(this._uidIndex).find((item) => item === undefined);
+        this.state.status = undef ? LoadingStatus.PartialLoaded : LoadingStatus.Loaded;
       }
     }
   }

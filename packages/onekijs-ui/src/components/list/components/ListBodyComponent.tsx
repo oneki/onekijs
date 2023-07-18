@@ -24,8 +24,10 @@ const findItemIndex = (items?: (Item<unknown> | undefined)[], uid?: string): num
 };
 
 const ListBodyComponent = <T = any, I extends ListItem<T> = ListItem<T>>({
+  autoRefresh,
   bodyRef,
   className,
+  follow,
   height,
   items,
   ItemComponent = ListItemComponent,
@@ -46,6 +48,7 @@ const ListBodyComponent = <T = any, I extends ListItem<T> = ListItem<T>>({
   service,
   state,
   style,
+  tail,
   totalSize,
   virtualItems,
   VirtualListComponent = DefaultVirtualListComponent,
@@ -54,6 +57,10 @@ const ListBodyComponent = <T = any, I extends ListItem<T> = ListItem<T>>({
   const scrollAlignRef = useRef<'center' | 'auto'>('center');
   const lastActiveItemUid = useRef<string>();
   const virtualRef = useRef<HTMLDivElement>(null!);
+  const tailRef = useRef({
+    lastScrollTop: 0,
+    applyTail: true,
+  });
 
   const onItemClick = useCallback(
     (item: any, index: number) => {
@@ -157,8 +164,48 @@ const ListBodyComponent = <T = any, I extends ListItem<T> = ListItem<T>>({
     [keyboardNavigable, onItemActivate, onItemDeactivate, onItemClick, service, state.active, state.items],
   );
 
+  const wheelRef = useRef(false);
+
+  useEventListener('wheel', () => {
+    wheelRef.current = true;
+  });
+
+  const mouseRef = useRef(false);
+
+  useEventListener('mousedown', () => {
+    mouseRef.current = true;
+  });
+
+  useEventListener('mouseup', () => {
+    mouseRef.current = false;
+  });
+
   useEffect(() => {
-    if (scrollToIndex) {
+    const atBottom = () => {
+      if (bodyRef && bodyRef.current) {
+        const sh = bodyRef.current.scrollHeight;
+        const st = bodyRef.current.scrollTop;
+        const oh = bodyRef.current.offsetHeight;
+        if (oh === 0 || st === sh - oh) return true;
+      }
+      return false;
+    };
+
+    if (tail && scrollToIndex && totalSize && bodyRef && bodyRef.current) {
+      const lastScrollTop = tailRef.current.lastScrollTop;
+      tailRef.current.lastScrollTop = bodyRef.current.scrollTop;
+      if (
+        tailRef.current.applyTail === true &&
+        lastScrollTop > bodyRef.current.scrollTop &&
+        (mouseRef.current || wheelRef.current)
+      ) {
+        tailRef.current.applyTail = false;
+      } else if (tailRef.current.applyTail === true || atBottom()) {
+        tailRef.current.applyTail = true;
+        scrollToIndex(state.total ? state.total - 1 : state.items ? state.items.length - 1 : 0);
+      }
+      wheelRef.current = false;
+    } else if (scrollToIndex) {
       const activeUid = state.active === undefined ? undefined : state.active[0];
       if (activeUid !== lastActiveItemUid.current) {
         lastActiveItemUid.current = activeUid;
@@ -170,6 +217,28 @@ const ListBodyComponent = <T = any, I extends ListItem<T> = ListItem<T>>({
       }
     }
   });
+
+  useEffect(() => {
+    if (autoRefresh) {
+      service.startAutoRefresh(autoRefresh);
+    } else {
+      service.stopAutoRefresh();
+    }
+    return () => {
+      service.stopAutoRefresh();
+    };
+  }, [service, autoRefresh]);
+
+  useEffect(() => {
+    if (follow) {
+      service.startFollow(follow);
+    } else {
+      service.stopFollow();
+    }
+    return () => {
+      service.stopFollow();
+    };
+  }, [service, follow]);
 
   useEventListener('keydown', onKeyDown, false);
 
