@@ -7,6 +7,8 @@ export class TabsService<
   M extends TabState = TabState,
   S extends TabsState<M> = TabsState<M>,
 > extends DefaultService<S> {
+  protected pendingActivate: string | undefined;
+
   @reducer
   activate(uid: string): void {
     const currentMember = this.state.members[this.getCurrentActiveIndex()];
@@ -22,6 +24,11 @@ export class TabsService<
       member.touched = false;
       this.state.active = uid;
       this.touching(this.state.active);
+      if (this.pendingActivate === uid) {
+        this.pendingActivate = undefined;
+      }
+    } else {
+      this.pendingActivate = uid;
     }
   }
 
@@ -63,7 +70,7 @@ export class TabsService<
       const firstTab = this.state.members.length === 0;
       this.state.membersIndex[state.uid] = this.state.members.length;
       this.state.members.push(state);
-      if (!state.disabled && state.visible && (state.active || firstTab)) {
+      if (!state.disabled && state.visible && (state.active || firstTab || this.pendingActivate === state.uid)) {
         this.activate(state.uid);
       }
     }
