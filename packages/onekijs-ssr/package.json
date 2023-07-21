@@ -32,7 +32,6 @@
     "onekijs-framework": "^0.16.2"
   },
   "devDependencies": {
-    "microbundle": "^0.13.3",
     "rimraf": "^3.0.2",
     "rollup": "^2.77.3"
   },
