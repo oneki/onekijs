@@ -1,8 +1,8 @@
-import { ColorProperty } from 'csstype';
+import { Property } from 'csstype';
 import { ColorPropertyTheme } from '../../styles/typings';
 
 export type IconProps = React.InputHTMLAttributes<HTMLDivElement> & {
-  color?: ColorPropertyTheme | ColorProperty;
+  color?: ColorPropertyTheme | Property.Color;
 };
 
 export type TogglerIconProps = IconProps & {

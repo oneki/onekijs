@@ -1,4 +1,4 @@
-import { PaddingProperty } from 'csstype';
+import { Property } from 'csstype';
 import { css } from 'styled-components';
 import { alignItems } from '../../styles/alignment';
 import { backgroundColor } from '../../styles/background';
@@ -26,7 +26,7 @@ export const tagStyle: ComponentStyle<TagProps> = ({
   let lHeight = 'md';
   let pX = 'md';
   let radius = 'sm';
-  const pt: SpacingPropertyTheme | PaddingProperty<TLength> = '2xs';
+  const pt: SpacingPropertyTheme | Property.Padding<TLength> = '2xs';
   if (size === 'small') {
     fSize = 'xs';
     lHeight = 'xs';

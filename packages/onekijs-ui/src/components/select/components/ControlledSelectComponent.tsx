@@ -103,6 +103,7 @@ const ControlledSelectComponent = <
   animationMs = 200,
   disabled,
   defaultValue,
+  defaultValueLoading,
   required = false,
   sameWidth = true,
   overscan,
@@ -150,6 +151,7 @@ const ControlledSelectComponent = <
       animationMs,
       disabled,
       defaultValue,
+      defaultValueLoading,
       sameWidth,
       overscan,
       autoCompleteSearch,
@@ -187,6 +189,7 @@ const ControlledSelectComponent = <
       animationMs,
       disabled,
       defaultValue,
+      defaultValueLoading,
       sameWidth,
       overscan,
       autoCompleteSearch,
@@ -583,7 +586,6 @@ const ControlledSelectComponent = <
 
   useEventListener('keydown', onKeyDownCapture, true);
   useEventListener('keydown', onKeyDown, false);
-
   return (
     <SelectServiceContext.Provider value={service}>
       <div
@@ -627,6 +629,7 @@ const ControlledSelectComponent = <
           onCollapseDone={onClosed}
           placement="bottom-start"
           widthModifier={dropdownWidthModifier}
+          width={service.state.width ? `${service.state.width}px` : undefined}
           className={className}
           zIndex={attachDropdownToBody ? 2000 : undefined}
         >

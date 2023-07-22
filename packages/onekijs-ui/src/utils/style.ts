@@ -1,10 +1,10 @@
 /* eslint-disable prettier/prettier */
 import { AnonymousObject, lcfirst, toKebabCase } from 'onekijs-framework';
 import { CSSProperties } from 'react';
-import { css, FlattenInterpolation, ThemeProps } from 'styled-components';
-import { CssProperty, Formatter, Theme } from '../styles/typings';
+import { css, DefaultTheme } from 'styled-components';
+import { BreakpointKeys, CssProperty, Formatter } from '../styles/typings';
 
-const formatValue = <T>(value: T, theme: Theme, formatter?: Formatter<T>): string => {
+const formatValue = <T>(value: T, theme: DefaultTheme, formatter?: Formatter<T>): string => {
   if (formatter) {
     return formatter(value, theme);
   }
@@ -92,7 +92,7 @@ export const toCss = <T>(
   formatter: Formatter<T> | undefined,
   value: T,
   variants: AnonymousObject,
-): FlattenInterpolation<ThemeProps<any>> => {
+): ReturnType<typeof css> => {
   let result = css`
   ${property === null ? '' : property + ': '}${(props) => formatValue(value, props.theme, formatter)};
 `;
@@ -118,7 +118,7 @@ export const toCss = <T>(
   Object.keys(responsives).forEach((media) => {
     if (media !== 'all' && Object.keys(responsives[media]).length > 0) {
       result = result.concat(css`
-        ${(props) => `@media (min-width: ${props.theme.breakpoints[media]}) {`}
+        ${(props) => `@media (min-width: ${props.theme.breakpoints[media as BreakpointKeys]}) {`}
       `);
     }
     Object.keys(responsives[media]).forEach((pseudo) => {
@@ -153,12 +153,12 @@ export const toCss = <T>(
 };
 
 export const cssProperty = <T>(property: string | null, formatter?: Formatter<T>): CssProperty<T> => {
-  return (value: T, variants: AnonymousObject = {}): FlattenInterpolation<ThemeProps<any>> => {
+  return (value: T, variants: AnonymousObject = {}): ReturnType<typeof css> => {
     return toCss(property, formatter, value, variants);
   };
 };
 
-export const preflight = (): FlattenInterpolation<ThemeProps<any>> => {
+export const preflight = (): ReturnType<typeof css> => {
   return css`
     *,
     ::after,

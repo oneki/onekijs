@@ -1,25 +1,25 @@
-import { AlignItemsProperty, HeightProperty, MarginProperty, WidthProperty } from 'csstype';
+import { Property } from 'csstype';
 import { TLength } from '../../styles/typings';
 
 export type RowProps = Omit<React.InputHTMLAttributes<HTMLDivElement>, 'width'> & {
-  alignItems?: AlignItemsProperty;
-  gap?: WidthProperty<TLength>;
-  gapX?: WidthProperty<TLength>;
-  gapY?: HeightProperty<TLength>;
-  width?: WidthProperty<TLength>;
-  xs?: WidthProperty<TLength>;
-  sm?: WidthProperty<TLength>;
-  md?: WidthProperty<TLength>;
-  lg?: WidthProperty<TLength>;
-  xl?: WidthProperty<TLength>;
+  alignItems?: Property.AlignItems;
+  gap?: Property.Width<TLength>;
+  gapX?: Property.Width<TLength>;
+  gapY?: Property.Height<TLength>;
+  width?: Property.Width<TLength>;
+  xs?: Property.Width<TLength>;
+  sm?: Property.Width<TLength>;
+  md?: Property.Width<TLength>;
+  lg?: Property.Width<TLength>;
+  xl?: Property.Width<TLength>;
   reverse?: boolean;
-  marginLeft?: MarginProperty<TLength>;
-  marginRight?: MarginProperty<TLength>;
-  marginX?: MarginProperty<TLength>;
-  marginTop?: MarginProperty<TLength>;
-  marginBottom?: MarginProperty<TLength>;
-  marginY?: MarginProperty<TLength>;
-  margin?: MarginProperty<TLength>;
+  marginLeft?: Property.Margin<TLength>;
+  marginRight?: Property.Margin<TLength>;
+  marginX?: Property.Margin<TLength>;
+  marginTop?: Property.Margin<TLength>;
+  marginBottom?: Property.Margin<TLength>;
+  marginY?: Property.Margin<TLength>;
+  margin?: Property.Margin<TLength>;
 };
 
 export type ColProps = Omit<React.InputHTMLAttributes<HTMLDivElement>, 'size'> & {

@@ -34,17 +34,17 @@
     "@popperjs/core": "^2.4.4",
     "@reach/observe-rect": "^1.2.0",
     "onekijs-framework": "^0.16.2",
-    "react-icons": "^4.2.0",
-    "react-popper": "^2.2.3",
-    "react-popper-tooltip": "^4.2.0",
+    "react-popper": "^2.3.0",
+    "react-popper-tooltip": "^4.4.2",
     "react-virtualized-auto-sizer": "^1.0.2",
     "react-window": "^1.8.5",
     "react-window-infinite-loader": "^1.0.5",
-    "styled-components": "^5.3.5"
+    "styled-components": "^5.3.10"
   },
   "devDependencies": {
     "@types/react-virtualized-auto-sizer": "^1.0.0",
     "@types/react-window": "^1.8.2",
+    "@types/styled-components": "^5.1.26",
     "rollup": "^2.77.3"
   },
   "peerDependencies": {

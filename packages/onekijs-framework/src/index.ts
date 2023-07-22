@@ -439,6 +439,7 @@ export {
   toPayload,
   update,
   useShallowEqual,
+  LOADING,
 } from './utils/object';
 export { absoluteUrl, isAbsoluteUrl, urlBuilder } from './utils/router';
 export { indexedLocales, isLocaleDomain, isLocalePath, isLocaleSimple } from './utils/settings';

@@ -17,6 +17,7 @@ export type DropdownProps = {
   animationTimeout?: number;
   placement?: Placement;
   widthModifier?: DropdownWidthModifier;
+  width?: string;
   zIndex?: number;
 };
 

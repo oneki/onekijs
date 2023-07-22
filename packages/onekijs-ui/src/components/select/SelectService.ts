@@ -31,11 +31,16 @@ class SelectService<
     return this.state.defaultValue ?? this.config?.defaultValue;
   }
 
+  get defaultValueLoading() {
+    return this.state.defaultValueLoading ?? this.config?.defaultValueLoading;
+  }
+
   @saga(SagaEffect.Serial)
   *check() {
-    if (this.state.local && this.status !== LoadingStatus.Loaded) {
+    if (this.defaultValueLoading || (this.state.local && this.status !== LoadingStatus.Loaded)) {
       return; // this validation will be done when the data will be loaded (can be delayed due to a fetchOnce)
     }
+
     let invalidItems: I[] = [];
     const defaultItems: I[] = this.defaultValue ? toArray(this.defaultValue).map((v) => this._adapt(v)) : [];
 
@@ -53,7 +58,10 @@ class SelectService<
       (i) => i.data,
     ) as T[];
 
-    if (Array.isArray(this.defaultValue)) {
+    const multiple = this.config && this.config.multiple ? this.config.multiple : false;
+
+
+    if (multiple) {
       yield this._setValidDefaultValue(validDefaultValue);
     } else if (validDefaultValue.length > 0) {
       yield this._setValidDefaultValue(validDefaultValue[0]);
@@ -68,6 +76,7 @@ class SelectService<
           : null,
       );
     }
+
 
     if (this.state.selected !== undefined) {
       const item = this.getItem(this.state.selected[0]);
@@ -86,13 +95,25 @@ class SelectService<
   @saga(SagaEffect.Latest)
   *setDefaultValue(value: T | T[] | null | undefined) {
     yield this._setDefaultValue(value);
-    yield this.check(); // validate the default value
+    yield this.check(); // validate the default valu    console.log(value, this.state.validDefaultValue, this.config?.value);
     if (
       value !== undefined &&
       this.state.validDefaultValue &&
       (!this.config?.value || (Array.isArray(this.config.value) && this.config.value.length === 0))
     ) {
       yield this.setValue(value);
+    }
+  }
+
+  @reducer
+  setDefaultValueLoading(loading: boolean): void {
+    this.state.defaultValueLoading = loading;
+  }
+
+  @reducer
+  setItemWidth(_item: I, value: number) {
+    if (this.config?.dropdownWidthModifier === 'min' && (this.state.width === undefined || (value + 30) > this.state.width)) {
+      this.state.width = value + 30;
     }
   }
 
@@ -179,6 +200,7 @@ class SelectService<
 
   @reducer
   _setDefaultValue(value: T | T[] | null | undefined) {
+    this.state.defaultValueLoading = false;
     this.state.defaultValue = value;
   }
 

@@ -533,12 +533,13 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
   return simpleMergeDeep(customTheme, theme);
 };
 
-export const BaseTheme: FCC<ThemeProps> = ({ theme = baseTheme(), children }) => {
-  const GlobalStyles = theme.GlobalStyles;
+export const BaseTheme: FCC<ThemeProps> = ({ theme, children }) => {
+  const t = baseTheme(theme);
+  const GlobalStyles = t.GlobalStyles;
   return (
     <>
-      {GlobalStyles && <GlobalStyles theme={theme} />}
-      <ThemeProvider theme={theme}>{children}</ThemeProvider>
+      {GlobalStyles && <GlobalStyles theme={t} />}
+      <ThemeProvider theme={t}>{children}</ThemeProvider>
     </>
   );
 };

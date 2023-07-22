@@ -1,43 +1,15 @@
-import {
-  AppearanceProperty,
-  BackgroundColorProperty,
-  BorderBottomStyleProperty,
-  BorderColorProperty,
-  BorderRadiusProperty,
-  BorderStyleProperty,
-  BorderWidthProperty,
-  BoxShadowProperty,
-  ColorProperty,
-  CursorProperty,
-  FontSizeProperty,
-  FontWeightProperty,
-  Globals,
-  HeightProperty,
-  LetterSpacingProperty,
-  LineHeightProperty,
-  MarginProperty,
-  OpacityProperty,
-  OutlineProperty,
-  PaddingProperty,
-  TextDecorationProperty,
-  TextOverflowProperty,
-  TextTransformProperty,
-  WhiteSpaceProperty,
-  WidthProperty,
-  ZIndexProperty,
-} from 'csstype';
+import { Globals, Property } from 'csstype';
 import { AnonymousObject } from 'onekijs-framework';
 import {
-  FlattenInterpolation,
-  GlobalStyleComponent,
-  ThemedStyledProps,
-  ThemeProps as SytledThemeProps,
+  DefaultTheme,
+  createGlobalStyle,
+  css,
 } from 'styled-components';
 
 export type TshirtSize = 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge';
 
-export type CssProperty<T> = (value: T, variants?: AnonymousObject) => FlattenInterpolation<SytledThemeProps<any>>;
-export type Formatter<T> = (value: T, theme: Theme) => string;
+export type CssProperty<T> = (value: T, variants?: AnonymousObject) => ReturnType<typeof css> | ReturnType<typeof css>[];
+export type Formatter<T> = (value: T, theme: DefaultTheme) => string;
 export type Media = 'all' | 'sm' | 'md' | 'lg' | 'xl';
 export enum ColorKeys {
   white = 'white',
@@ -237,7 +209,7 @@ export enum SizeKeys {
 }
 
 export type Theme = {
-  GlobalStyles: GlobalStyleComponent<any, any>;
+  GlobalStyles: ReturnType<typeof createGlobalStyle>;
   breakpoints: {
     [k in BreakpointKeys]: string;
   };
@@ -278,334 +250,334 @@ export type Theme = {
 
   buttons: {
     [k in ColorKeys]: {
-      bgColor: ColorPropertyTheme | BackgroundColorProperty;
-      bgColorFlat: ColorPropertyTheme | BackgroundColorProperty;
-      bgColorOutline: ColorPropertyTheme | BackgroundColorProperty;
-      borderColor: ColorPropertyTheme | BorderColorProperty;
-      borderColorFlat: ColorPropertyTheme | BackgroundColorProperty;
-      borderColorOutline: ColorPropertyTheme | BackgroundColorProperty;
+      bgColor: ColorPropertyTheme | Property.BackgroundColor;
+      bgColorFlat: ColorPropertyTheme | Property.BackgroundColor;
+      bgColorOutline: ColorPropertyTheme | Property.BackgroundColor;
+      borderColor: ColorPropertyTheme | Property.BorderColor;
+      borderColorFlat: ColorPropertyTheme | Property.BackgroundColor;
+      borderColorOutline: ColorPropertyTheme | Property.BackgroundColor;
       borderRadius: RadiusPropertyTheme | string;
-      borderStyle: BorderStyleProperty;
-      borderWidth: BorderWidthProperty<TLength>;
-      color: ColorPropertyTheme | ColorProperty;
-      colorFlat: ColorPropertyTheme | BackgroundColorProperty;
-      colorOutline: ColorPropertyTheme | BackgroundColorProperty;
-      cursor: CursorProperty;
-      cursorDisabled: CursorProperty;
-      fontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
-      fontWeight: FontWeightPropertyTheme | FontWeightProperty;
-      hoverBgColor: ColorPropertyTheme | BackgroundColorProperty;
-      hoverBgColorFlat: ColorPropertyTheme | BackgroundColorProperty;
-      hoverBgColorOutline: ColorPropertyTheme | BackgroundColorProperty;
-      hoverBorderColor: ColorPropertyTheme | BackgroundColorProperty;
-      hoverBorderColorFlat: ColorPropertyTheme | BackgroundColorProperty;
-      hoverBorderColorOutline: ColorPropertyTheme | BackgroundColorProperty;
-      hoverColor: ColorPropertyTheme | ColorProperty;
-      hoverColorFlat: ColorPropertyTheme | BackgroundColorProperty;
-      hoverColorOutline: ColorPropertyTheme | BackgroundColorProperty;
-      letterSpacing: LetterSpacingPropertyTheme | LetterSpacingProperty<TLength>;
-      lineHeight: LineHeightPropertyTheme | LineHeightProperty<TLength>;
-      opacity: OpacityProperty;
-      opacityDisabled: OpacityProperty;
-      paddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
-      paddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
-      textOverflow: TextOverflowProperty;
-      textTransform: TextTransformProperty;
-      whiteSpace: WhiteSpaceProperty;
+      borderStyle: Property.BorderStyle;
+      borderWidth: Property.BorderWidth<TLength>;
+      color: ColorPropertyTheme | Property.Color;
+      colorFlat: ColorPropertyTheme | Property.BackgroundColor;
+      colorOutline: ColorPropertyTheme | Property.BackgroundColor;
+      cursor: Property.Cursor;
+      cursorDisabled: Property.Cursor;
+      fontSize: FontSizePropertyTheme | Property.FontSize<TLength>;
+      fontWeight: FontWeightPropertyTheme | Property.FontWeight;
+      hoverBgColor: ColorPropertyTheme | Property.BackgroundColor;
+      hoverBgColorFlat: ColorPropertyTheme | Property.BackgroundColor;
+      hoverBgColorOutline: ColorPropertyTheme | Property.BackgroundColor;
+      hoverBorderColor: ColorPropertyTheme | Property.BackgroundColor;
+      hoverBorderColorFlat: ColorPropertyTheme | Property.BackgroundColor;
+      hoverBorderColorOutline: ColorPropertyTheme | Property.BackgroundColor;
+      hoverColor: ColorPropertyTheme | Property.Color;
+      hoverColorFlat: ColorPropertyTheme | Property.BackgroundColor;
+      hoverColorOutline: ColorPropertyTheme | Property.BackgroundColor;
+      letterSpacing: LetterSpacingPropertyTheme | Property.LetterSpacing<TLength>;
+      lineHeight: LineHeightPropertyTheme | Property.LineHeight<TLength>;
+      opacity: Property.Opacity;
+      opacityDisabled: Property.Opacity;
+      paddingY: SpacingPropertyTheme | Property.Padding<TLength>;
+      paddingX: SpacingPropertyTheme | Property.Padding<TLength>;
+      textOverflow: Property.TextOverflow;
+      textTransform: Property.TextTransform;
+      whiteSpace: Property.WhiteSpace;
     };
   };
 
   fieldLayout: {
-    marginY: MarginProperty<TLength> | SpacingPropertyTheme;
-    helperMarginLeft: MarginProperty<TLength> | SpacingPropertyTheme;
-    helperMarginRight: MarginProperty<TLength> | SpacingPropertyTheme;
-    helperColor: ColorProperty | ColorPropertyTheme;
-    descriptionFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
-    descriptionColor: ColorProperty | ColorPropertyTheme;
+    marginY: Property.Margin<TLength> | SpacingPropertyTheme;
+    helperMarginLeft: Property.Margin<TLength> | SpacingPropertyTheme;
+    helperMarginRight: Property.Margin<TLength> | SpacingPropertyTheme;
+    helperColor: Property.Color | ColorPropertyTheme;
+    descriptionFontSize: FontSizePropertyTheme | Property.FontSize<TLength>;
+    descriptionColor: Property.Color | ColorPropertyTheme;
   };
 
   table: {
-    bgColor: ColorPropertyTheme | BackgroundColorProperty;
-    shadow: ShadowPropertyTheme | BoxShadowProperty;
-    thPaddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
-    thPaddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
-    thBorderBottomWidth: number | BorderWidthProperty<TLength>;
-    thBorderBottomColor: ColorPropertyTheme | BorderColorProperty;
-    thBgColor: ColorPropertyTheme | BackgroundColorProperty;
-    thFontWeigth: FontWeightPropertyTheme | FontWeightProperty;
-    thFontColor: ColorPropertyTheme | ColorProperty;
-    thFontCase: TextTransformProperty;
-    thFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
-    thLetterSpacing: LetterSpacingPropertyTheme | LetterSpacingProperty<TLength>;
-    thFilterInputBgColor: ColorPropertyTheme | BackgroundColorProperty;
-    thFilterInputFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
-    thFilterInputPaddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
-    thFilterInputPaddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
-    tdFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
-    tdFontColor: ColorPropertyTheme | ColorProperty;
-    tdPaddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
-    tdPaddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
-    tdBorderBottomColor: ColorPropertyTheme | BorderColorProperty;
-    tdBorderBottomWidth: number | BorderWidthProperty<TLength>;
-    tdBorderBottomStyle: BorderBottomStyleProperty;
-    tdStripBgColor: ColorPropertyTheme | BackgroundColorProperty;
-    tdHoverBgColor: ColorPropertyTheme | BackgroundColorProperty;
-    tdHoverFontColor: ColorPropertyTheme | ColorProperty;
-    tdExpandedBgColor: ColorPropertyTheme | BackgroundColorProperty;
-    loadingRowBgColor: ColorPropertyTheme | BackgroundColorProperty;
-    loadingRowMinHeight: SizePropertyTheme | HeightProperty<TLength>;
+    bgColor: ColorPropertyTheme | Property.BackgroundColor;
+    shadow: ShadowPropertyTheme | Property.BoxShadow;
+    thPaddingX: SpacingPropertyTheme | Property.Padding<TLength>;
+    thPaddingY: SpacingPropertyTheme | Property.Padding<TLength>;
+    thBorderBottomWidth: number | Property.BorderWidth<TLength>;
+    thBorderBottomColor: ColorPropertyTheme | Property.BorderColor;
+    thBgColor: ColorPropertyTheme | Property.BackgroundColor;
+    thFontWeigth: FontWeightPropertyTheme | Property.FontWeight;
+    thFontColor: ColorPropertyTheme | Property.Color;
+    thFontCase: Property.TextTransform;
+    thFontSize: FontSizePropertyTheme | Property.FontSize<TLength>;
+    thLetterSpacing: LetterSpacingPropertyTheme | Property.LetterSpacing<TLength>;
+    thFilterInputBgColor: ColorPropertyTheme | Property.BackgroundColor;
+    thFilterInputFontSize: FontSizePropertyTheme | Property.FontSize<TLength>;
+    thFilterInputPaddingX: SpacingPropertyTheme | Property.Padding<TLength>;
+    thFilterInputPaddingY: SpacingPropertyTheme | Property.Padding<TLength>;
+    tdFontSize: FontSizePropertyTheme | Property.FontSize<TLength>;
+    tdFontColor: ColorPropertyTheme | Property.Color;
+    tdPaddingX: SpacingPropertyTheme | Property.Padding<TLength>;
+    tdPaddingY: SpacingPropertyTheme | Property.Padding<TLength>;
+    tdBorderBottomColor: ColorPropertyTheme | Property.BorderColor;
+    tdBorderBottomWidth: number | Property.BorderWidth<TLength>;
+    tdBorderBottomStyle: Property.BorderBottomStyle;
+    tdStripBgColor: ColorPropertyTheme | Property.BackgroundColor;
+    tdHoverBgColor: ColorPropertyTheme | Property.BackgroundColor;
+    tdHoverFontColor: ColorPropertyTheme | Property.Color;
+    tdExpandedBgColor: ColorPropertyTheme | Property.BackgroundColor;
+    loadingRowBgColor: ColorPropertyTheme | Property.BackgroundColor;
+    loadingRowMinHeight: SizePropertyTheme | Property.Height<TLength>;
   };
 
   input: {
-    bgColor: ColorPropertyTheme | BackgroundColorProperty;
-    width: SizePropertyTheme | WidthProperty<TLength>;
-    borderWidth: number | BorderWidthProperty<TLength>;
-    borderColor: ColorPropertyTheme | BorderColorProperty;
+    bgColor: ColorPropertyTheme | Property.BackgroundColor;
+    width: SizePropertyTheme | Property.Width<TLength>;
+    borderWidth: number | Property.BorderWidth<TLength>;
+    borderColor: ColorPropertyTheme | Property.BorderColor;
     borderRadius: RadiusPropertyTheme | string;
-    borderStyle: BorderBottomStyleProperty;
-    borderFocusColor: ColorPropertyTheme | BorderColorProperty;
-    borderFocusWidth: number | BorderWidthProperty<TLength>;
-    paddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
-    paddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
-    xsPaddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
-    xsPaddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
-    xsFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
-    smPaddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
-    smPaddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
-    smFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
-    mdPaddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
-    mdPaddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
-    mdFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
-    lgPaddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
-    lgPaddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
-    lgFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
-    xlPaddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
-    xlPaddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
-    xlFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
-    appearance: AppearanceProperty;
-    outline: OutlineProperty<TLength>;
-    fontColor: ColorPropertyTheme | ColorProperty;
-    placeholderColor: ColorPropertyTheme | ColorProperty;
+    borderStyle: Property.BorderBottomStyle;
+    borderFocusColor: ColorPropertyTheme | Property.BorderColor;
+    borderFocusWidth: number | Property.BorderWidth<TLength>;
+    paddingX: SpacingPropertyTheme | Property.Padding<TLength>;
+    paddingY: SpacingPropertyTheme | Property.Padding<TLength>;
+    xsPaddingX: SpacingPropertyTheme | Property.Padding<TLength>;
+    xsPaddingY: SpacingPropertyTheme | Property.Padding<TLength>;
+    xsFontSize: FontSizePropertyTheme | Property.FontSize<TLength>;
+    smPaddingX: SpacingPropertyTheme | Property.Padding<TLength>;
+    smPaddingY: SpacingPropertyTheme | Property.Padding<TLength>;
+    smFontSize: FontSizePropertyTheme | Property.FontSize<TLength>;
+    mdPaddingX: SpacingPropertyTheme | Property.Padding<TLength>;
+    mdPaddingY: SpacingPropertyTheme | Property.Padding<TLength>;
+    mdFontSize: FontSizePropertyTheme | Property.FontSize<TLength>;
+    lgPaddingX: SpacingPropertyTheme | Property.Padding<TLength>;
+    lgPaddingY: SpacingPropertyTheme | Property.Padding<TLength>;
+    lgFontSize: FontSizePropertyTheme | Property.FontSize<TLength>;
+    xlPaddingX: SpacingPropertyTheme | Property.Padding<TLength>;
+    xlPaddingY: SpacingPropertyTheme | Property.Padding<TLength>;
+    xlFontSize: FontSizePropertyTheme | Property.FontSize<TLength>;
+    appearance: Property.Appearance;
+    outline: Property.Outline<TLength>;
+    fontColor: ColorPropertyTheme | Property.Color;
+    placeholderColor: ColorPropertyTheme | Property.Color;
   };
 
   textarea: {
-    bgColor: ColorPropertyTheme | BackgroundColorProperty;
-    width: SizePropertyTheme | WidthProperty<TLength>;
-    borderWidth: number | BorderWidthProperty<TLength>;
-    borderColor: ColorPropertyTheme | BorderColorProperty;
+    bgColor: ColorPropertyTheme | Property.BackgroundColor;
+    width: SizePropertyTheme | Property.Width<TLength>;
+    borderWidth: number | Property.BorderWidth<TLength>;
+    borderColor: ColorPropertyTheme | Property.BorderColor;
     borderRadius: RadiusPropertyTheme | string;
-    borderStyle: BorderBottomStyleProperty;
-    borderFocusColor: ColorPropertyTheme | BorderColorProperty;
-    borderFocusWidth: number | BorderWidthProperty<TLength>;
-    paddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
-    paddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
-    xsPaddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
-    xsPaddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
-    xsFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
-    smPaddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
-    smPaddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
-    smFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
-    mdPaddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
-    mdPaddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
-    mdFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
-    lgPaddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
-    lgPaddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
-    lgFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
-    xlPaddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
-    xlPaddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
-    xlFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
-    appearance: AppearanceProperty;
-    outline: OutlineProperty<TLength>;
-    fontColor: ColorPropertyTheme | ColorProperty;
-    placeholderColor: ColorPropertyTheme | ColorProperty;
+    borderStyle: Property.BorderBottomStyle;
+    borderFocusColor: ColorPropertyTheme | Property.BorderColor;
+    borderFocusWidth: number | Property.BorderWidth<TLength>;
+    paddingX: SpacingPropertyTheme | Property.Padding<TLength>;
+    paddingY: SpacingPropertyTheme | Property.Padding<TLength>;
+    xsPaddingX: SpacingPropertyTheme | Property.Padding<TLength>;
+    xsPaddingY: SpacingPropertyTheme | Property.Padding<TLength>;
+    xsFontSize: FontSizePropertyTheme | Property.FontSize<TLength>;
+    smPaddingX: SpacingPropertyTheme | Property.Padding<TLength>;
+    smPaddingY: SpacingPropertyTheme | Property.Padding<TLength>;
+    smFontSize: FontSizePropertyTheme | Property.FontSize<TLength>;
+    mdPaddingX: SpacingPropertyTheme | Property.Padding<TLength>;
+    mdPaddingY: SpacingPropertyTheme | Property.Padding<TLength>;
+    mdFontSize: FontSizePropertyTheme | Property.FontSize<TLength>;
+    lgPaddingX: SpacingPropertyTheme | Property.Padding<TLength>;
+    lgPaddingY: SpacingPropertyTheme | Property.Padding<TLength>;
+    lgFontSize: FontSizePropertyTheme | Property.FontSize<TLength>;
+    xlPaddingX: SpacingPropertyTheme | Property.Padding<TLength>;
+    xlPaddingY: SpacingPropertyTheme | Property.Padding<TLength>;
+    xlFontSize: FontSizePropertyTheme | Property.FontSize<TLength>;
+    appearance: Property.Appearance;
+    outline: Property.Outline<TLength>;
+    fontColor: ColorPropertyTheme | Property.Color;
+    placeholderColor: ColorPropertyTheme | Property.Color;
   };
 
   checkbox: {
-    bgColor: ColorPropertyTheme | BackgroundColorProperty;
-    color: ColorPropertyTheme | BackgroundColorProperty;
+    bgColor: ColorPropertyTheme | Property.BackgroundColor;
+    color: ColorPropertyTheme | Property.BackgroundColor;
   };
 
   label: {
-    fontWeight: FontWeightPropertyTheme | FontWeightProperty;
-    fontCase: TextTransformProperty;
-    fontColor: ColorPropertyTheme | ColorProperty;
-    fontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
-    letterSpacing: LetterSpacingPropertyTheme | LetterSpacingProperty<TLength>;
-    requiredColor: ColorPropertyTheme | ColorProperty;
-    requiredWeight: FontWeightPropertyTheme | FontWeightProperty;
-    requiredMarginLeft: SpacingPropertyTheme | MarginProperty<TLength>;
-    helperIconColor: ColorPropertyTheme | ColorProperty;
-    helperMarginLeft: SpacingPropertyTheme | MarginProperty<TLength>;
+    fontWeight: FontWeightPropertyTheme | Property.FontWeight;
+    fontCase: Property.TextTransform;
+    fontColor: ColorPropertyTheme | Property.Color;
+    fontSize: FontSizePropertyTheme | Property.FontSize<TLength>;
+    letterSpacing: LetterSpacingPropertyTheme | Property.LetterSpacing<TLength>;
+    requiredColor: ColorPropertyTheme | Property.Color;
+    requiredWeight: FontWeightPropertyTheme | Property.FontWeight;
+    requiredMarginLeft: SpacingPropertyTheme | Property.Margin<TLength>;
+    helperIconColor: ColorPropertyTheme | Property.Color;
+    helperMarginLeft: SpacingPropertyTheme | Property.Margin<TLength>;
   };
 
   link: {
-    fontWeight: FontWeightPropertyTheme | FontWeightProperty;
-    fontColor: ColorPropertyTheme | ColorProperty;
-    textDecoration: TextDecorationProperty<TLength>;
-    fontWeightHover: FontWeightPropertyTheme | FontWeightProperty;
-    fontColorHover: ColorPropertyTheme | ColorProperty;
-    textDecorationHover: TextDecorationProperty<TLength>;
+    fontWeight: FontWeightPropertyTheme | Property.FontWeight;
+    fontColor: ColorPropertyTheme | Property.Color;
+    textDecoration: Property.TextDecoration<TLength>;
+    fontWeightHover: FontWeightPropertyTheme | Property.FontWeight;
+    fontColorHover: ColorPropertyTheme | Property.Color;
+    textDecorationHover: Property.TextDecoration<TLength>;
   };
 
   tooltip: {
     [k in ColorKeys]: {
-      bgColor: ColorPropertyTheme | BackgroundColorProperty;
-      color: ColorPropertyTheme | ColorProperty;
-      linkColor: ColorPropertyTheme | ColorProperty;
-      borderColor: ColorPropertyTheme | BackgroundColorProperty;
-      borderRadius: BorderRadiusProperty<TLength> | RadiusPropertyTheme;
-      borderStyle: BorderStyleProperty;
-      borderWidth: BorderWidthProperty<TLength>;
-      boxShadow: ShadowPropertyTheme | BoxShadowProperty;
-      padding: SpacingPropertyTheme | PaddingProperty<TLength>;
-      fontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
+      bgColor: ColorPropertyTheme | Property.BackgroundColor;
+      color: ColorPropertyTheme | Property.Color;
+      linkColor: ColorPropertyTheme | Property.Color;
+      borderColor: ColorPropertyTheme | Property.BackgroundColor;
+      borderRadius: Property.BorderRadius<TLength> | RadiusPropertyTheme;
+      borderStyle: Property.BorderStyle;
+      borderWidth: Property.BorderWidth<TLength>;
+      boxShadow: ShadowPropertyTheme | Property.BoxShadow;
+      padding: SpacingPropertyTheme | Property.Padding<TLength>;
+      fontSize: FontSizePropertyTheme | Property.FontSize<TLength>;
     };
   };
 
   accordion: {
-    fontWeight: FontWeightPropertyTheme | FontWeightProperty;
-    fontColor: ColorPropertyTheme | ColorProperty;
-    activeFontColor: ColorPropertyTheme | ColorProperty;
-    hoverFontColor: ColorPropertyTheme | ColorProperty;
-    fontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
-    togglerIconWidth: WidthProperty<TLength> | IconSizePropertyTheme;
-    togglerIconHeight: WidthProperty<TLength> | IconSizePropertyTheme;
-    bgColor: ColorPropertyTheme | BackgroundColorProperty;
-    activeBgColor: ColorPropertyTheme | BackgroundColorProperty;
-    hoverBgColor: ColorPropertyTheme | BackgroundColorProperty;
-    borderColor: ColorPropertyTheme | BorderColorProperty;
-    borderRadius: BorderRadiusProperty<TLength> | RadiusPropertyTheme;
-    borderStyle: BorderStyleProperty;
-    borderWidth: BorderWidthProperty<TLength>;
-    paddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
-    paddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
+    fontWeight: FontWeightPropertyTheme | Property.FontWeight;
+    fontColor: ColorPropertyTheme | Property.Color;
+    activeFontColor: ColorPropertyTheme | Property.Color;
+    hoverFontColor: ColorPropertyTheme | Property.Color;
+    fontSize: FontSizePropertyTheme | Property.FontSize<TLength>;
+    togglerIconWidth: Property.Width<TLength> | IconSizePropertyTheme;
+    togglerIconHeight: Property.Width<TLength> | IconSizePropertyTheme;
+    bgColor: ColorPropertyTheme | Property.BackgroundColor;
+    activeBgColor: ColorPropertyTheme | Property.BackgroundColor;
+    hoverBgColor: ColorPropertyTheme | Property.BackgroundColor;
+    borderColor: ColorPropertyTheme | Property.BorderColor;
+    borderRadius: Property.BorderRadius<TLength> | RadiusPropertyTheme;
+    borderStyle: Property.BorderStyle;
+    borderWidth: Property.BorderWidth<TLength>;
+    paddingX: SpacingPropertyTheme | Property.Padding<TLength>;
+    paddingY: SpacingPropertyTheme | Property.Padding<TLength>;
   };
 
   tab: {
-    activeBgColor: ColorPropertyTheme | BackgroundColorProperty;
-    activeBorderColor: ColorPropertyTheme | BorderColorProperty;
-    activeBorderStyle: BorderStyleProperty;
-    activeBorderWidth: BorderWidthProperty<TLength>;
-    activeFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
-    activeFontColor: ColorPropertyTheme | ColorProperty;
-    activeFontWeight: FontWeightPropertyTheme | FontWeightProperty;
-    bgColor: ColorPropertyTheme | BackgroundColorProperty;
-    borderColor: ColorPropertyTheme | BorderColorProperty;
-    borderRadius: BorderRadiusProperty<TLength> | RadiusPropertyTheme;
-    borderStyle: BorderStyleProperty;
-    borderWidth: BorderWidthProperty<TLength>;
-    cursor: CursorProperty;
-    fontColor: ColorPropertyTheme | ColorProperty;
-    fontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
-    fontWeight: FontWeightPropertyTheme | FontWeightProperty;
-    hoverBgColor: ColorPropertyTheme | BackgroundColorProperty;
-    hoverBorderColor: ColorPropertyTheme | BorderColorProperty;
-    hoverBorderStyle: BorderStyleProperty;
-    hoverBorderWidth: BorderWidthProperty<TLength>;
-    hoverFontColor: ColorPropertyTheme | ColorProperty;
-    marginBefore: SpacingPropertyTheme | MarginProperty<TLength>;
-    marginAfter: SpacingPropertyTheme | MarginProperty<TLength>;
-    paddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
-    paddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
+    activeBgColor: ColorPropertyTheme | Property.BackgroundColor;
+    activeBorderColor: ColorPropertyTheme | Property.BorderColor;
+    activeBorderStyle: Property.BorderStyle;
+    activeBorderWidth: Property.BorderWidth<TLength>;
+    activeFontSize: FontSizePropertyTheme | Property.FontSize<TLength>;
+    activeFontColor: ColorPropertyTheme | Property.Color;
+    activeFontWeight: FontWeightPropertyTheme | Property.FontWeight;
+    bgColor: ColorPropertyTheme | Property.BackgroundColor;
+    borderColor: ColorPropertyTheme | Property.BorderColor;
+    borderRadius: Property.BorderRadius<TLength> | RadiusPropertyTheme;
+    borderStyle: Property.BorderStyle;
+    borderWidth: Property.BorderWidth<TLength>;
+    cursor: Property.Cursor;
+    fontColor: ColorPropertyTheme | Property.Color;
+    fontSize: FontSizePropertyTheme | Property.FontSize<TLength>;
+    fontWeight: FontWeightPropertyTheme | Property.FontWeight;
+    hoverBgColor: ColorPropertyTheme | Property.BackgroundColor;
+    hoverBorderColor: ColorPropertyTheme | Property.BorderColor;
+    hoverBorderStyle: Property.BorderStyle;
+    hoverBorderWidth: Property.BorderWidth<TLength>;
+    hoverFontColor: ColorPropertyTheme | Property.Color;
+    marginBefore: SpacingPropertyTheme | Property.Margin<TLength>;
+    marginAfter: SpacingPropertyTheme | Property.Margin<TLength>;
+    paddingX: SpacingPropertyTheme | Property.Padding<TLength>;
+    paddingY: SpacingPropertyTheme | Property.Padding<TLength>;
   };
 
   wizard: {
-    activeBgColor: ColorPropertyTheme | BackgroundColorProperty;
-    activeBorderColor: ColorPropertyTheme | BorderColorProperty;
-    activeFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
-    activeFontColor: ColorPropertyTheme | ColorProperty;
-    activeFontWeight: FontWeightPropertyTheme | FontWeightProperty;
-    bgColor: ColorPropertyTheme | BackgroundColorProperty;
-    borderColor: ColorPropertyTheme | BorderColorProperty;
-    borderRadius: BorderRadiusProperty<TLength> | RadiusPropertyTheme;
-    borderStyle: BorderStyleProperty;
-    borderWidth: BorderWidthProperty<TLength>;
-    cursor: CursorProperty;
-    disabledBgColor: ColorPropertyTheme | BackgroundColorProperty;
-    disabledBorderColor: ColorPropertyTheme | BorderColorProperty;
-    disabledFontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
-    disabledFontColor: ColorPropertyTheme | ColorProperty;
-    disabledFontWeight: FontWeightPropertyTheme | FontWeightProperty;
-    errorBgColor: ColorPropertyTheme | BackgroundColorProperty;
-    errorBorderColor: ColorPropertyTheme | BorderColorProperty;
-    errorFontColor: ColorPropertyTheme | ColorProperty;
-    fontColor: ColorPropertyTheme | ColorProperty;
-    fontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
-    fontWeight: FontWeightPropertyTheme | FontWeightProperty;
-    hoverBgColor: ColorPropertyTheme | BackgroundColorProperty;
-    hoverBorderColor: ColorPropertyTheme | BorderColorProperty;
-    hoverBorderStyle: BorderStyleProperty;
-    hoverBorderWidth: BorderWidthProperty<TLength>;
-    hoverFontColor: ColorPropertyTheme | ColorProperty;
-    marginBefore: SpacingPropertyTheme | MarginProperty<TLength>;
-    marginAfter: SpacingPropertyTheme | MarginProperty<TLength>;
-    modalStepsBgColor: ColorPropertyTheme | BackgroundColorProperty;
-    modalStepsBorderColor: ColorPropertyTheme | BorderColorProperty;
-    modalStepsBorderStyle: BorderStyleProperty;
-    modalStepsBorderWidth: BorderWidthProperty<TLength>;
-    paddingRight: SpacingPropertyTheme | PaddingProperty<TLength>;
-    paddingLeft: SpacingPropertyTheme | PaddingProperty<TLength>;
-    paddingTop: SpacingPropertyTheme | PaddingProperty<TLength>;
-    paddingBottom: SpacingPropertyTheme | PaddingProperty<TLength>;
-    stepsBgColor: ColorPropertyTheme | BackgroundColorProperty;
-    stepsBorderColor: ColorPropertyTheme | BorderColorProperty;
-    stepsBorderStyle: BorderStyleProperty;
-    stepsBorderWidth: BorderWidthProperty<TLength>;
-    stepsPaddingTop: SpacingPropertyTheme | PaddingProperty<TLength>;
-    stepsPaddingBottom: SpacingPropertyTheme | PaddingProperty<TLength>;
-    stepsPaddingLeft: SpacingPropertyTheme | PaddingProperty<TLength>;
-    stepsPaddingRight: SpacingPropertyTheme | PaddingProperty<TLength>;
-    successBgColor: ColorPropertyTheme | BackgroundColorProperty;
-    successBorderColor: ColorPropertyTheme | BorderColorProperty;
-    successFontColor: ColorPropertyTheme | ColorProperty;
-    warningBgColor: ColorPropertyTheme | BackgroundColorProperty;
-    warningBorderColor: ColorPropertyTheme | BorderColorProperty;
-    warningFontColor: ColorPropertyTheme | ColorProperty;
+    activeBgColor: ColorPropertyTheme | Property.BackgroundColor;
+    activeBorderColor: ColorPropertyTheme | Property.BorderColor;
+    activeFontSize: FontSizePropertyTheme | Property.FontSize<TLength>;
+    activeFontColor: ColorPropertyTheme | Property.Color;
+    activeFontWeight: FontWeightPropertyTheme | Property.FontWeight;
+    bgColor: ColorPropertyTheme | Property.BackgroundColor;
+    borderColor: ColorPropertyTheme | Property.BorderColor;
+    borderRadius: Property.BorderRadius<TLength> | RadiusPropertyTheme;
+    borderStyle: Property.BorderStyle;
+    borderWidth: Property.BorderWidth<TLength>;
+    cursor: Property.Cursor;
+    disabledBgColor: ColorPropertyTheme | Property.BackgroundColor;
+    disabledBorderColor: ColorPropertyTheme | Property.BorderColor;
+    disabledFontSize: FontSizePropertyTheme | Property.FontSize<TLength>;
+    disabledFontColor: ColorPropertyTheme | Property.Color;
+    disabledFontWeight: FontWeightPropertyTheme | Property.FontWeight;
+    errorBgColor: ColorPropertyTheme | Property.BackgroundColor;
+    errorBorderColor: ColorPropertyTheme | Property.BorderColor;
+    errorFontColor: ColorPropertyTheme | Property.Color;
+    fontColor: ColorPropertyTheme | Property.Color;
+    fontSize: FontSizePropertyTheme | Property.FontSize<TLength>;
+    fontWeight: FontWeightPropertyTheme | Property.FontWeight;
+    hoverBgColor: ColorPropertyTheme | Property.BackgroundColor;
+    hoverBorderColor: ColorPropertyTheme | Property.BorderColor;
+    hoverBorderStyle: Property.BorderStyle;
+    hoverBorderWidth: Property.BorderWidth<TLength>;
+    hoverFontColor: ColorPropertyTheme | Property.Color;
+    marginBefore: SpacingPropertyTheme | Property.Margin<TLength>;
+    marginAfter: SpacingPropertyTheme | Property.Margin<TLength>;
+    modalStepsBgColor: ColorPropertyTheme | Property.BackgroundColor;
+    modalStepsBorderColor: ColorPropertyTheme | Property.BorderColor;
+    modalStepsBorderStyle: Property.BorderStyle;
+    modalStepsBorderWidth: Property.BorderWidth<TLength>;
+    paddingRight: SpacingPropertyTheme | Property.Padding<TLength>;
+    paddingLeft: SpacingPropertyTheme | Property.Padding<TLength>;
+    paddingTop: SpacingPropertyTheme | Property.Padding<TLength>;
+    paddingBottom: SpacingPropertyTheme | Property.Padding<TLength>;
+    stepsBgColor: ColorPropertyTheme | Property.BackgroundColor;
+    stepsBorderColor: ColorPropertyTheme | Property.BorderColor;
+    stepsBorderStyle: Property.BorderStyle;
+    stepsBorderWidth: Property.BorderWidth<TLength>;
+    stepsPaddingTop: SpacingPropertyTheme | Property.Padding<TLength>;
+    stepsPaddingBottom: SpacingPropertyTheme | Property.Padding<TLength>;
+    stepsPaddingLeft: SpacingPropertyTheme | Property.Padding<TLength>;
+    stepsPaddingRight: SpacingPropertyTheme | Property.Padding<TLength>;
+    successBgColor: ColorPropertyTheme | Property.BackgroundColor;
+    successBorderColor: ColorPropertyTheme | Property.BorderColor;
+    successFontColor: ColorPropertyTheme | Property.Color;
+    warningBgColor: ColorPropertyTheme | Property.BackgroundColor;
+    warningBorderColor: ColorPropertyTheme | Property.BorderColor;
+    warningFontColor: ColorPropertyTheme | Property.Color;
   };
 
   card: {
-    borderColor: ColorPropertyTheme | BorderColorProperty;
-    borderRadius: BorderRadiusProperty<TLength> | RadiusPropertyTheme;
-    borderStyle: BorderStyleProperty;
-    borderWidth: BorderWidthProperty<TLength>;
-    shadow: ShadowPropertyTheme | BoxShadowProperty;
-    bgColor: ColorPropertyTheme | BackgroundColorProperty;
-    fontColor: ColorPropertyTheme | ColorProperty;
-    fontSize: FontSizePropertyTheme | FontSizeProperty<TLength>;
-    fontWeight: FontWeightPropertyTheme | FontWeightProperty;
+    borderColor: ColorPropertyTheme | Property.BorderColor;
+    borderRadius: Property.BorderRadius<TLength> | RadiusPropertyTheme;
+    borderStyle: Property.BorderStyle;
+    borderWidth: Property.BorderWidth<TLength>;
+    shadow: ShadowPropertyTheme | Property.BoxShadow;
+    bgColor: ColorPropertyTheme | Property.BackgroundColor;
+    fontColor: ColorPropertyTheme | Property.Color;
+    fontSize: FontSizePropertyTheme | Property.FontSize<TLength>;
+    fontWeight: FontWeightPropertyTheme | Property.FontWeight;
     fontCase: 'uppercase';
-    paddingX: SpacingPropertyTheme | PaddingProperty<TLength>;
-    paddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
-    letterSpacing: LetterSpacingPropertyTheme | LetterSpacingProperty<TLength>;
-    iconColor: ColorPropertyTheme | ColorProperty;
-    iconWidth: SizePropertyTheme | WidthProperty<TLength>;
-    iconHeight: SizePropertyTheme | HeightProperty<TLength>;
-    marginTop: SpacingPropertyTheme | MarginProperty<TLength>;
-    titleBorderBottomWidth: BorderWidthProperty<TLength>;
+    paddingX: SpacingPropertyTheme | Property.Padding<TLength>;
+    paddingY: SpacingPropertyTheme | Property.Padding<TLength>;
+    letterSpacing: LetterSpacingPropertyTheme | Property.LetterSpacing<TLength>;
+    iconColor: ColorPropertyTheme | Property.Color;
+    iconWidth: SizePropertyTheme | Property.Width<TLength>;
+    iconHeight: SizePropertyTheme | Property.Height<TLength>;
+    marginTop: SpacingPropertyTheme | Property.Margin<TLength>;
+    titleBorderBottomWidth: Property.BorderWidth<TLength>;
   };
 
   properties: {
-    fontWeight: FontWeightPropertyTheme | FontWeightProperty;
-    paddingY: SpacingPropertyTheme | PaddingProperty<TLength>;
+    fontWeight: FontWeightPropertyTheme | Property.FontWeight;
+    paddingY: SpacingPropertyTheme | Property.Padding<TLength>;
   };
 
   dashboard: {
     [k in DashboardKeys]: {
-      bgColor: ColorPropertyTheme | BackgroundColorProperty;
+      bgColor: ColorPropertyTheme | Property.BackgroundColor;
     };
   };
 
   modal: {
-    bgColor: ColorPropertyTheme | BackgroundColorProperty;
-    maskColor: ColorPropertyTheme | BackgroundColorProperty;
-    maskOpacity: OpacityProperty;
-    zIndex: ZIndexProperty;
-    xsmallSize: SizePropertyTheme | HeightProperty<TLength>;
-    smallSize: SizePropertyTheme | HeightProperty<TLength>;
-    mediumSize: SizePropertyTheme | HeightProperty<TLength>;
-    largeSize: SizePropertyTheme | HeightProperty<TLength>;
-    xlargeSize: SizePropertyTheme | HeightProperty<TLength>;
-    boxShadow: ShadowPropertyTheme | BoxShadowProperty;
+    bgColor: ColorPropertyTheme | Property.BackgroundColor;
+    maskColor: ColorPropertyTheme | Property.BackgroundColor;
+    maskOpacity: Property.Opacity;
+    zIndex: Property.ZIndex;
+    xsmallSize: SizePropertyTheme | Property.Height<TLength>;
+    smallSize: SizePropertyTheme | Property.Height<TLength>;
+    mediumSize: SizePropertyTheme | Property.Height<TLength>;
+    largeSize: SizePropertyTheme | Property.Height<TLength>;
+    xlargeSize: SizePropertyTheme | Property.Height<TLength>;
+    boxShadow: ShadowPropertyTheme | Property.BoxShadow;
     borderRadius: RadiusPropertyTheme | string;
   };
 };
@@ -674,9 +646,13 @@ export type LetterSpacingPropertyTheme = keyof typeof FontSpacingKeys;
 export type RadiusPropertyTheme = keyof typeof RadiusKeys;
 export type ShadowPropertyTheme = keyof typeof ShadowKeys;
 
-export type ComponentStyle<P, T extends Theme = Theme> = (
-  propsWithTheme: ThemedStyledProps<P, T>,
-) => FlattenInterpolation<SytledThemeProps<T>>;
+export type PropsWithTheme<P, T extends Theme = Theme> = P & {
+  theme: T
+}
+
+export type ComponentStyle<P extends object, T extends Theme = Theme> = (
+  propsWithTheme: PropsWithTheme<P, T>,
+) => ReturnType<typeof css>;
 
 export type StylableProps = {
   className?: string;

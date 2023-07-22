@@ -1,8 +1,8 @@
 import React from 'react';
-import { IoMdHelpCircleOutline } from 'react-icons/io';
 import { addClassname } from '../../../utils/style';
 import Tooltip from '../../tooltip';
 import { FieldHelpProps } from '../typings';
+import HelpIcon from '../../icon/HelpIcon';
 
 const FieldHelpComponent: React.FC<FieldHelpProps> = React.memo(
   ({ className, content, visible = true, size = 'medium' }) => {
@@ -10,7 +10,7 @@ const FieldHelpComponent: React.FC<FieldHelpProps> = React.memo(
     return (
       <div className={classNames}>
         <Tooltip content={content} placement="top">
-          <IoMdHelpCircleOutline style={{ visibility: visible ? 'visible' : 'hidden' }} />
+          <HelpIcon style={{ visibility: visible ? 'visible' : 'hidden' }} />
         </Tooltip>
       </div>
     );

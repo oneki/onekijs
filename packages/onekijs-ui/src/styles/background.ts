@@ -1,35 +1,27 @@
 import {
-  BackgroundAttachmentProperty,
-  BackgroundColorProperty,
-  BackgroundPositionProperty,
-  BackgroundRepeatProperty,
-  BackgroundSizeProperty,
-  OpacityProperty,
-  BackgroundClipProperty,
-  BackgroundImageProperty,
-  BackgroundOriginProperty,
+  Property
 } from 'csstype';
 import { colorFormatter } from '../utils/formatter';
 import { cssProperty } from '../utils/style';
 import { ColorPropertyTheme, TLength } from './typings';
 
-export const backgroundColor = cssProperty<ColorPropertyTheme | BackgroundColorProperty>(
+export const backgroundColor = cssProperty<ColorPropertyTheme | Property.BackgroundColor>(
   null,
   colorFormatter('background-color', 'background-opacity'),
 );
 
-export const backgroundAttachment = cssProperty<BackgroundAttachmentProperty>('background-attachment');
+export const backgroundAttachment = cssProperty<Property.BackgroundAttachment>('background-attachment');
 
-export const backgroundClip = cssProperty<BackgroundClipProperty>('background-clip');
+export const backgroundClip = cssProperty<Property.BackgroundClip>('background-clip');
 
-export const backgroundImage = cssProperty<BackgroundImageProperty>('background-image');
+export const backgroundImage = cssProperty<Property.BackgroundImage>('background-image');
 
-export const backgroundOpacity = cssProperty<OpacityProperty>('--background-opacity');
+export const backgroundOpacity = cssProperty<Property.Opacity>('--background-opacity');
 
-export const backgroundOrigin = cssProperty<BackgroundOriginProperty>('background-origin');
+export const backgroundOrigin = cssProperty<Property.BackgroundOrigin>('background-origin');
 
-export const backgroundPosition = cssProperty<BackgroundPositionProperty<TLength>>('background-position');
+export const backgroundPosition = cssProperty<Property.BackgroundPosition<TLength>>('background-position');
 
-export const backgroundRepeat = cssProperty<BackgroundRepeatProperty>('background-repeat');
+export const backgroundRepeat = cssProperty<Property.BackgroundRepeat>('background-repeat');
 
-export const backgroundSize = cssProperty<BackgroundSizeProperty<TLength>>('background-size');
+export const backgroundSize = cssProperty<Property.BackgroundSize<TLength>>('background-size');

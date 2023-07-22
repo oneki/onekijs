@@ -1,5 +1,5 @@
 import { isItemLoading } from 'onekijs-framework';
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import Checkbox from '../../checkbox';
 import LoadingItem from '../../list/components/LoadingItem';
 import { ListItemProps } from '../../list/typings';
@@ -68,6 +68,14 @@ const SelectOptionComponent = <T, I extends SelectItem<T> = SelectItem<T>>(props
     [clickable, onClick],
   );
 
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (ref.current) {
+      service.setItemWidth(item, ref.current.clientWidth);
+    }
+  })
+
   if (isItemLoading(item)) {
     return <OptionLoadingComponent />;
   }
@@ -83,16 +91,18 @@ const SelectOptionComponent = <T, I extends SelectItem<T> = SelectItem<T>>(props
         onMouseEnter={() => hoverable && onMouseEnter && item && onMouseEnter(item, index)}
         onMouseLeave={() => hoverable && onMouseLeave && item && onMouseLeave(item, index)}
       >
-        {/* {multiple && <div className="o-select-option-icon">{meta?.selected? <>&#10003;</>:<></>}</div> } */}
-        {service.config?.multiple && (
-          <Checkbox
-            value={item?.selected ? true : false}
-            onChange={() => onItemClick(item, index)}
-            color="currentColor"
-            className="o-select-option-multiple-checkbox"
-          ></Checkbox>
-        )}
-        <OptionContentComponent {...props} onClick={() => onItemClick(item, index)} />
+        <div ref={ref}>
+          {/* {multiple && <div className="o-select-option-icon">{meta?.selected? <>&#10003;</>:<></>}</div> } */}
+          {service.config?.multiple && (
+            <Checkbox
+              value={item?.selected ? true : false}
+              onChange={() => onItemClick(item, index)}
+              color="currentColor"
+              className="o-select-option-multiple-checkbox"
+            ></Checkbox>
+          )}
+          <OptionContentComponent {...props} onClick={() => onItemClick(item, index)} />
+        </div>
       </div>
     </>
   );

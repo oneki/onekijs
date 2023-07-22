@@ -1,17 +1,17 @@
-import { BackgroundColorProperty, ColorProperty, MarginProperty } from 'csstype';
+import { Property } from 'csstype';
 import { ReactNode } from 'react';
 import { ColorPropertyTheme, SpacingPropertyTheme, TLength } from '../../styles/typings';
 
 export type TagProps = {
   kind?: ColorPropertyTheme;
-  bgColor?: ColorPropertyTheme | BackgroundColorProperty;
-  fontColor?: ColorPropertyTheme | ColorProperty;
+  bgColor?: ColorPropertyTheme | Property.BackgroundColor;
+  fontColor?: ColorPropertyTheme | Property.Color;
   size?: 'small' | 'medium' | 'large';
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;
   className?: string;
-  marginLeft?: SpacingPropertyTheme | MarginProperty<TLength>;
-  marginRight?: SpacingPropertyTheme | MarginProperty<TLength>;
-  marginTop?: SpacingPropertyTheme | MarginProperty<TLength>;
-  marginBottom?: SpacingPropertyTheme | MarginProperty<TLength>;
+  marginLeft?: SpacingPropertyTheme | Property.Margin<TLength>;
+  marginRight?: SpacingPropertyTheme | Property.Margin<TLength>;
+  marginTop?: SpacingPropertyTheme | Property.Margin<TLength>;
+  marginBottom?: SpacingPropertyTheme | Property.Margin<TLength>;
   icon?: ReactNode;
 };

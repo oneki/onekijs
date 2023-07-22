@@ -1,4 +1,4 @@
-import { HeightProperty } from 'csstype';
+import { Property } from 'csstype';
 import { get } from 'onekijs-framework';
 import { css } from 'styled-components';
 import { alignItems, justifyContent } from '../../styles/alignment';
@@ -21,8 +21,8 @@ export const modalStyle: ComponentStyle<ModalProps> = ({ width: w, height: h, si
   w = w ?? size;
   h = h ?? size;
 
-  const themeWidth: SizePropertyTheme | HeightProperty<TLength> = get<any>(t, `${w}Size`) ?? w;
-  const themeHeight: SizePropertyTheme | HeightProperty<TLength> = get<any>(t, `${h}Size`) ?? h;
+  const themeWidth: SizePropertyTheme | Property.Height<TLength> = get<any>(t, `${w}Size`) ?? w;
+  const themeHeight: SizePropertyTheme | Property.Height<TLength> = get<any>(t, `${h}Size`) ?? h;
   const themeFontColor = theme.palette.colors[theme.colors.primary];
 
   return css`
@@ -117,7 +117,7 @@ export const modalStyle: ComponentStyle<ModalProps> = ({ width: w, height: h, si
       ${height('100%')}
       scrollbar-width: thin;
       scrollbar-color: ${(props) => props.theme.palette.colors[props.theme.colors.primary]}
-        ${(props) => props.theme.colors[props.theme.colors.lighter]};
+        ${(props) => props.theme.palette.colors[props.theme.colors.lighter]};
       &::-webkit-scrollbar {
         width: 12px;
       }

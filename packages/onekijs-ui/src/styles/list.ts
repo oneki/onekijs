@@ -1,12 +1,12 @@
-import { ListStyleImageProperty, ListStylePositionProperty, ListStyleProperty, ListStyleTypeProperty } from 'csstype';
+import { Property } from 'csstype';
 import { cssProperty } from '../utils/style';
 
-export const listStyle = cssProperty<ListStyleProperty>('list-style');
+export const listStyle = cssProperty<Property.ListStyle>('list-style');
 
-export const listStyleImage = cssProperty<ListStyleImageProperty>('list-style-image');
+export const listStyleImage = cssProperty<Property.ListStyleImage>('list-style-image');
 
 // inside; outside
-export const listStylePosition = cssProperty<ListStylePositionProperty>('list-style-position');
+export const listStylePosition = cssProperty<Property.ListStylePosition>('list-style-position');
 
 // disc; circle; square; decimal; georgian; cjk-ideographic; kannada; any string
-export const listStyleType = cssProperty<ListStyleTypeProperty>('list-style-type');
+export const listStyleType = cssProperty<Property.ListStyleType>('list-style-type');

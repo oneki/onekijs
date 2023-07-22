@@ -1,20 +1,12 @@
-import {
-  AnimationDirectionProperty,
-  AnimationFillModeProperty,
-  AnimationIterationCountProperty,
-  AnimationNameProperty,
-  AnimationProperty,
-  AnimationTimingFunctionProperty,
-  GlobalsString,
-} from 'csstype';
+import { Property } from 'csstype';
 import { cssProperty } from '../utils/style';
 
-export const animation = cssProperty<AnimationProperty>('animation');
-export const animationDelay = cssProperty<GlobalsString>('animation-delay');
-export const animationDirection = cssProperty<AnimationDirectionProperty>('animation-direction');
-export const animationDuration = cssProperty<GlobalsString>('animation-duration');
-export const animationFillMode = cssProperty<AnimationFillModeProperty>('animation-fill-mode');
-export const animationIterationCount = cssProperty<AnimationIterationCountProperty>('animation-iteration-count');
-export const animationName = cssProperty<AnimationNameProperty>('animation-name');
-export const animationPlayState = cssProperty<AnimationPlayState>('animation-play-state');
-export const animationTimingFunction = cssProperty<AnimationTimingFunctionProperty>('animation-timing-function');
+export const animation = cssProperty<Property.Animation>('animation');
+export const animationDelay = cssProperty<Property.AnimationDelay>('animation-delay');
+export const animationDirection = cssProperty<Property.AnimationDirection>('animation-direction');
+export const animationDuration = cssProperty<Property.AnimationDuration>('animation-duration');
+export const animationFillMode = cssProperty<Property.AnimationFillMode>('animation-fill-mode');
+export const animationIterationCount = cssProperty<Property.AnimationIterationCount>('animation-iteration-count');
+export const animationName = cssProperty<Property.AnimationName>('animation-name');
+export const animationPlayState = cssProperty<Property.AnimationPlayState>('animation-play-state');
+export const animationTimingFunction = cssProperty<Property.AnimationTimingFunction>('animation-timing-function');

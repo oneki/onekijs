@@ -1,23 +1,16 @@
-import {
-  BorderCollapseProperty,
-  BorderSpacingProperty,
-  CaptionSideProperty,
-  EmptyCellsProperty,
-  TableLayoutProperty,
-  VerticalAlignProperty,
-} from 'csstype';
+import { Property } from 'csstype';
 import { pxFormatter } from '../utils/formatter';
 import { cssProperty } from '../utils/style';
 import { TLength } from './typings';
 
-export const borderCollapse = cssProperty<BorderCollapseProperty>('border-collapse');
+export const borderCollapse = cssProperty<Property.BorderCollapse>('border-collapse');
 
-export const borderSpacing = cssProperty<BorderSpacingProperty<TLength>>('border-spacing', pxFormatter);
+export const borderSpacing = cssProperty<Property.BorderSpacing<TLength>>('border-spacing', pxFormatter);
 
-export const captionSide = cssProperty<CaptionSideProperty>('caption-side');
+export const captionSide = cssProperty<Property.CaptionSide>('caption-side');
 
-export const emptyCells = cssProperty<EmptyCellsProperty>('empty-cells');
+export const emptyCells = cssProperty<Property.EmptyCells>('empty-cells');
 
-export const tableLayout = cssProperty<TableLayoutProperty>('table-layout');
+export const tableLayout = cssProperty<Property.TableLayout>('table-layout');
 
-export const verticalAlign = cssProperty<VerticalAlignProperty<TLength>>('vertical-align');
+export const verticalAlign = cssProperty<Property.VerticalAlign<TLength>>('vertical-align');

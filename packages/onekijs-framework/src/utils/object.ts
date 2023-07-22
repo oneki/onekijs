@@ -2,6 +2,8 @@ import { useRef } from 'react';
 import { AnonymousObject, NestedKeyOf, PathType } from '../types/object';
 import { isSameArray } from './array';
 
+export const LOADING = Symbol();
+
 export function applyMixins(derivedCtor: any, constructors: any[]) {
   constructors.forEach((baseCtor) => {
     Object.getOwnPropertyNames(baseCtor.prototype).forEach((name) => {

@@ -1,28 +1,31 @@
-import { DisplayProperty, ZoomProperty } from 'csstype';
-import { css, FlattenInterpolation, ThemeProps } from 'styled-components';
+import { Property } from 'csstype';
+import { css } from 'styled-components';
 import { cssProperty } from '../utils/style';
-import { CssProperty, Formatter } from './typings';
+import { BreakpointKeys, CssProperty, Formatter } from './typings';
 
 // row; row-reverse; column; column-reverse
 export const container: CssProperty<never> = () => {
-  let result: FlattenInterpolation<ThemeProps<any>> = css`width: 100%'`;
-  ['sm', 'md', 'lg', 'xl'].forEach((media) => {
-    result = result.concat(css`
-      ${(props) => `@media (min-width: ${props.theme.breakpoints[media]}) {
-        max-width: ${props.theme.breakpoints[media]};
-      }`}
-    `);
-  });
+  let result = css`
+    width: 100%';
+    ${(props) => (
+      (['sm', 'md', 'lg', 'xl'] as BreakpointKeys[]).map((media) => {
+        return `@media (min-width: ${props.theme.breakpoints[media]}) {
+          max-width: ${props.theme.breakpoints[media]};
+        }`
+      }).join(';')
+    )}
+  `;
+  ;
   return result;
 };
 
 // none; block; flow-root; inline-block; inline; flex; inline-flex; grid;
 // inline-grid; table; table-caption; table-cell; table-column;
 // table-column-group; table-footer-group; table-header-group; table-row;
-export const display = cssProperty<DisplayProperty>('display');
+export const display = cssProperty<Property.Display>('display');
 
 // boolean
 const visibleFormatter: Formatter<boolean> = (value) => (value ? 'visible' : 'hidden');
 export const visibility = cssProperty<boolean>('visibility', visibleFormatter);
 
-export const zoom = cssProperty<ZoomProperty>('zoom');
+export const zoom = cssProperty<Property.Zoom>('zoom');

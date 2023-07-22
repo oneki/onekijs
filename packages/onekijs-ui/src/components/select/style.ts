@@ -15,7 +15,7 @@ import {
 import { display, visibility } from '../../styles/display';
 import { flexDirection, flexGrow, flexWrap } from '../../styles/flex';
 import { appearance, cursor, outline, userSelect } from '../../styles/interactivity';
-import { overflowY } from '../../styles/overflow';
+import { overflow, overflowY } from '../../styles/overflow';
 import { bottom, left, position, right, top, zIndex } from '../../styles/position';
 import { height, maxWidth, minHeight, minWidth, width } from '../../styles/size';
 import {
@@ -35,9 +35,9 @@ import { ComponentStyle } from '../../styles/typings';
 import { color, fontFamily, fontSize, fontWeight, whiteSpace } from '../../styles/typography';
 import { lighten } from '../../utils/color';
 import { preflight } from '../../utils/style';
-import { SelectProps } from './typings';
+import { SelectProps, TreeSelectProps } from './typings';
 
-const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable = true, searchable = true }) => {
+const selectStyle: ComponentStyle<SelectProps | TreeSelectProps> = ({ theme, clickable = true, searchable = true }) => {
   return css`
     ${preflight()}
     ${flexGrow(1)}
@@ -206,6 +206,8 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable = true, sea
 
     .o-select-input-text {
       ${userSelect('none')}
+      ${whiteSpace('nowrap')}
+      ${overflow('hidden')}
     }
 
     &.o-select-close {
@@ -357,7 +359,7 @@ const selectStyle: ComponentStyle<SelectProps> = ({ theme, clickable = true, sea
     .o-select-options {
       scrollbar-width: thin;
       scrollbar-color: ${(props) => props.theme.palette.colors[props.theme.colors.primary]}
-        ${(props) => props.theme.colors[props.theme.colors.lighter]};
+        ${(props) => props.theme.palette.colors[props.theme.colors.lighter]};
       &::-webkit-scrollbar {
         width: 12px;
       }

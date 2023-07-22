@@ -64,7 +64,7 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true 
       ${fontSize(t.tdFontSize)}
       scrollbar-width: thin;
       scrollbar-color: ${(props) => props.theme.palette.colors[props.theme.colors.light]}
-        ${(props) => props.theme.colors[props.theme.colors.lighter]};
+        ${(props) => props.theme.palette.colors[props.theme.colors.lighter]};
       &::-webkit-scrollbar {
         width: 12px;
       }

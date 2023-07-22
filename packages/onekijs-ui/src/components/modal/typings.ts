@@ -1,4 +1,4 @@
-import { HeightProperty, WidthProperty } from 'csstype';
+import { Property } from 'csstype';
 import { ReactNode } from 'react';
 import { SizePropertyTheme, TLength, TshirtSize } from '../../styles/typings';
 
@@ -6,8 +6,8 @@ export type ModalProps = {
   attachToBody?: boolean;
   className?: string;
   size?: TshirtSize;
-  width?: TshirtSize | SizePropertyTheme | WidthProperty<TLength>;
-  height?: TshirtSize | SizePropertyTheme | HeightProperty<TLength>;
+  width?: TshirtSize | SizePropertyTheme | Property.Width<TLength>;
+  height?: TshirtSize | SizePropertyTheme | Property.Height<TLength>;
   animationDuration?: number;
   open?: boolean;
   closeIcon?: boolean;

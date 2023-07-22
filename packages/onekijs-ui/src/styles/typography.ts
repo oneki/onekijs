@@ -1,51 +1,4 @@
-import {
-  ColorProperty,
-  FontFamilyProperty,
-  FontFeatureSettingsProperty,
-  FontKerningProperty,
-  FontLanguageOverrideProperty,
-  FontOpticalSizingProperty,
-  FontProperty,
-  FontSizeAdjustProperty,
-  FontSizeProperty,
-  FontStretchProperty,
-  FontStyleProperty,
-  FontSynthesisProperty,
-  FontVariantAlternatesProperty,
-  FontVariantCapsProperty,
-  FontVariantEastAsianProperty,
-  FontVariantLigaturesProperty,
-  FontVariantNumericProperty,
-  FontVariantPositionProperty,
-  FontVariantProperty,
-  FontVariationSettingsProperty,
-  FontWeightProperty,
-  GlobalsString,
-  HyphensProperty,
-  LetterSpacingProperty,
-  LineHeightProperty,
-  LineHeightStepProperty,
-  OpacityProperty,
-  OverflowWrapProperty,
-  TextAlignProperty,
-  TextDecorationColorProperty,
-  TextDecorationLineProperty,
-  TextDecorationProperty,
-  TextDecorationStyleProperty,
-  TextDecorationThicknessProperty,
-  TextEmphasisColorProperty,
-  TextEmphasisProperty,
-  TextEmphasisStyleProperty,
-  TextIndentProperty,
-  TextJustifyProperty,
-  TextOverflowProperty,
-  TextShadowProperty,
-  TextTransformProperty,
-  TextUnderlinePositionProperty,
-  WhiteSpaceProperty,
-  WordBreakProperty,
-  WordSpacingProperty,
-} from 'csstype';
+import { Property } from 'csstype';
 import { colorFormatter, themeFormatter } from '../utils/formatter';
 import { cssProperty } from '../utils/style';
 import {
@@ -59,119 +12,119 @@ import {
   TLength,
 } from './typings';
 
-export const color = cssProperty<ColorPropertyTheme | ColorProperty>(null, colorFormatter('color', 'text-opacity'));
+export const color = cssProperty<ColorPropertyTheme | Property.Color>(null, colorFormatter('color', 'text-opacity'));
 
-export const font = cssProperty<FontProperty>('font');
+export const font = cssProperty<Property.Font>('font');
 
-export const fontFamily = cssProperty<FontFamilyPropertyTheme | FontFamilyProperty>(
+export const fontFamily = cssProperty<FontFamilyPropertyTheme | Property.FontFamily>(
   'font-family',
   themeFormatter('font.families'),
 );
 
-export const fontFeatureSettings = cssProperty<FontFeatureSettingsProperty>('font-feature-settings');
+export const fontFeatureSettings = cssProperty<Property.FontFeatureSettings>('font-feature-settings');
 
-export const fontKerning = cssProperty<FontKerningProperty>('font-kerning');
+export const fontKerning = cssProperty<Property.FontKerning>('font-kerning');
 
-export const fontLanguageOverride = cssProperty<FontLanguageOverrideProperty>('font-language-override');
+export const fontLanguageOverride = cssProperty<Property.FontLanguageOverride>('font-language-override');
 
-export const fontOpticalSizing = cssProperty<FontOpticalSizingProperty>('font-optical-sizing');
+export const fontOpticalSizing = cssProperty<Property.FontOpticalSizing>('font-optical-sizing');
 
-export const fontSize = cssProperty<FontSizePropertyTheme | FontSizeProperty<TLength>>(
+export const fontSize = cssProperty<FontSizePropertyTheme | Property.FontSize<TLength>>(
   'font-size',
   themeFormatter('font.sizes'),
 );
 
-export const fontSizeAdjust = cssProperty<FontSizeAdjustProperty>('font-size-adjust');
+export const fontSizeAdjust = cssProperty<Property.FontSizeAdjust>('font-size-adjust');
 
-export const fontStretch = cssProperty<FontStretchProperty>('font-stetch');
+export const fontStretch = cssProperty<Property.FontStretch>('font-stetch');
 
 // normal; italic; oblique; oblique XXdeg;
-export const fontStyle = cssProperty<FontStyleProperty>('font-style');
+export const fontStyle = cssProperty<Property.FontStyle>('font-style');
 
-export const fontSynthesis = cssProperty<FontSynthesisProperty>('font-synthesis');
+export const fontSynthesis = cssProperty<Property.FontSynthesis>('font-synthesis');
 
-export const fontVariant = cssProperty<FontVariantProperty>('font-variant');
+export const fontVariant = cssProperty<Property.FontVariant>('font-variant');
 
-export const fontVariantAlternates = cssProperty<FontVariantAlternatesProperty>('font-variant-alternates');
+export const fontVariantAlternates = cssProperty<Property.FontVariantAlternates>('font-variant-alternates');
 
-export const fontVariantCaps = cssProperty<FontVariantCapsProperty>('font-variant-caps');
+export const fontVariantCaps = cssProperty<Property.FontVariantCaps>('font-variant-caps');
 
-export const fontVariantEastAsian = cssProperty<FontVariantEastAsianProperty>('font-variant-east-asian');
+export const fontVariantEastAsian = cssProperty<Property.FontVariantEastAsian>('font-variant-east-asian');
 
-export const fontVariantLigatures = cssProperty<FontVariantLigaturesProperty>('font-variant-ligatures');
+export const fontVariantLigatures = cssProperty<Property.FontVariantLigatures>('font-variant-ligatures');
 
-export const fontVariantNumeric = cssProperty<FontVariantNumericProperty>('font-variant-numeric');
+export const fontVariantNumeric = cssProperty<Property.FontVariantNumeric>('font-variant-numeric');
 
-export const fontVariantPosition = cssProperty<FontVariantPositionProperty>('font-variant-position');
+export const fontVariantPosition = cssProperty<Property.FontVariantPosition>('font-variant-position');
 
-export const fontVariationSettings = cssProperty<FontVariationSettingsProperty>('font-variation-settings');
+export const fontVariationSettings = cssProperty<Property.FontVariationSettings>('font-variation-settings');
 
-export const fontWeight = cssProperty<FontWeightPropertyTheme | FontWeightProperty>(
+export const fontWeight = cssProperty<FontWeightPropertyTheme | Property.FontWeight>(
   'font-weight',
   themeFormatter('font.weights'),
 );
 
-export const hyphens = cssProperty<HyphensProperty>('hyphens');
+export const hyphens = cssProperty<Property.Hyphens>('hyphens');
 
-export const letterSpacing = cssProperty<LetterSpacingPropertyTheme | LetterSpacingProperty<TLength>>(
+export const letterSpacing = cssProperty<LetterSpacingPropertyTheme | Property.LetterSpacing<TLength>>(
   'letter-spacing',
   themeFormatter('font.spacings'),
 );
 
-export const lineHeight = cssProperty<LineHeightPropertyTheme | LineHeightProperty<TLength>>(
+export const lineHeight = cssProperty<LineHeightPropertyTheme | Property.LineHeight<TLength>>(
   'line-height',
   themeFormatter('font.lineHeights'),
 );
 
-export const lineHeightStep = cssProperty<LineHeightStepProperty<TLength>>('line-height-step');
+export const lineHeightStep = cssProperty<Property.LineHeightStep<TLength>>('line-height-step');
 
-export const overflowWrap = cssProperty<OverflowWrapProperty>('overflow-wrap');
+export const overflowWrap = cssProperty<Property.OverflowWrap>('overflow-wrap');
 
 // left; center; right; justify
-export const textAlign = cssProperty<TextAlignProperty>('text-align');
+export const textAlign = cssProperty<Property.TextAlign>('text-align');
 
-export const textDecoration = cssProperty<TextDecorationProperty<TLength>>('text-decoration');
+export const textDecoration = cssProperty<Property.TextDecoration<TLength>>('text-decoration');
 
-export const textDecorationColor = cssProperty<TextDecorationColorProperty>(
+export const textDecorationColor = cssProperty<Property.TextDecorationColor>(
   null,
   colorFormatter('text-decoration-color'),
 );
 
-export const textDecorationLine = cssProperty<TextDecorationLineProperty>('text-decoration-line');
-export const textDecorationStyle = cssProperty<TextDecorationStyleProperty>('text-decoration-style');
-export const textDecorationThickness = cssProperty<TextDecorationThicknessProperty<TLength>>(
+export const textDecorationLine = cssProperty<Property.TextDecorationLine>('text-decoration-line');
+export const textDecorationStyle = cssProperty<Property.TextDecorationStyle>('text-decoration-style');
+export const textDecorationThickness = cssProperty<Property.TextDecorationThickness<TLength>>(
   'text-decoration-thickness',
 );
 
-export const textEmphasis = cssProperty<TextEmphasisProperty>('text-emphasis');
+export const textEmphasis = cssProperty<Property.TextEmphasis>('text-emphasis');
 
-export const textEmphasisColor = cssProperty<TextEmphasisColorProperty>(null, colorFormatter('text-emphasis'));
+export const textEmphasisColor = cssProperty<Property.TextEmphasisColor>(null, colorFormatter('text-emphasis'));
 
-export const textEmphasisPosition = cssProperty<GlobalsString>('text-emphasis-position');
+export const textEmphasisPosition = cssProperty<Property.TextEmphasisPosition>('text-emphasis-position');
 
-export const textEmphasisStyle = cssProperty<TextEmphasisStyleProperty>('text-emphasis-style');
+export const textEmphasisStyle = cssProperty<Property.TextEmphasisStyle>('text-emphasis-style');
 
-export const textIdent = cssProperty<TextIndentProperty<TLength>>('text-ident');
+export const textIdent = cssProperty<Property.TextIndent<TLength>>('text-ident');
 
-export const textJustify = cssProperty<TextJustifyProperty>('text-justify');
+export const textJustify = cssProperty<Property.TextJustify>('text-justify');
 
 // float between 0 and 1
-export const textOpacity = cssProperty<OpacityProperty>('--text-opacity');
+export const textOpacity = cssProperty<Property.Opacity>('--text-opacity');
 
-export const textOverflow = cssProperty<TextOverflowProperty>('text-overflow');
+export const textOverflow = cssProperty<Property.TextOverflow>('text-overflow');
 
-export const textTransform = cssProperty<TextTransformProperty>('text-transform');
+export const textTransform = cssProperty<Property.TextTransform>('text-transform');
 
-export const textShadow = cssProperty<TextShadowProperty>('text-shadow');
+export const textShadow = cssProperty<Property.TextShadow>('text-shadow');
 
-export const textUnderlineOffset = cssProperty<TextUnderlinePositionProperty>('text-underline-offset');
+export const textUnderlineOffset = cssProperty<Property.TextUnderlinePosition>('text-underline-offset');
 
-export const textUnderlinePosition = cssProperty<TextUnderlinePositionProperty>('text-underline-position');
+export const textUnderlinePosition = cssProperty<Property.TextUnderlinePosition>('text-underline-position');
 
-export const whiteSpace = cssProperty<WhiteSpaceProperty>('white-space');
+export const whiteSpace = cssProperty<Property.WhiteSpace>('white-space');
 
 // normal; words; all; truncate
-const wordBreakFormatter: Formatter<WordBreakProperty | 'normal' | 'words' | 'all' | 'truncate'> = (value) => {
+const wordBreakFormatter: Formatter<Property.WordBreak | 'normal' | 'words' | 'all' | 'truncate'> = (value) => {
   if (value === 'normal') {
     return 'word-break: normal;overflow-wrap: normal';
   }
@@ -186,9 +139,9 @@ const wordBreakFormatter: Formatter<WordBreakProperty | 'normal' | 'words' | 'al
   }
   return `word-break: ${value}`;
 };
-export const wordBreak = cssProperty<WordBreakProperty | 'normal' | 'words' | 'all' | 'truncate'>(
+export const wordBreak = cssProperty<Property.WordBreak | 'normal' | 'words' | 'all' | 'truncate'>(
   null,
   wordBreakFormatter,
 );
 
-export const wordSpacing = cssProperty<WordSpacingProperty<TLength>>('word-spacing');
+export const wordSpacing = cssProperty<Property.WordSpacing<TLength>>('word-spacing');

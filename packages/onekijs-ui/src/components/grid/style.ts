@@ -1,4 +1,4 @@
-import { WidthProperty } from 'csstype';
+import { Property } from 'csstype';
 import { AnonymousObject } from 'onekijs-framework';
 import { css } from 'styled-components';
 import { alignItems } from '../../styles/alignment';
@@ -7,10 +7,10 @@ import { flexDirection, flexWrap } from '../../styles/flex';
 import { boxSizing } from '../../styles/interactivity';
 import { width } from '../../styles/size';
 import { marginBottom, marginLeft, marginRight, marginTop, marginX, marginY } from '../../styles/spacing';
-import { ComponentStyle, Theme, TLength } from '../../styles/typings';
+import { ComponentStyle, TLength, Theme } from '../../styles/typings';
 import { ColProps, RowProps } from './typings';
 
-const getColWidths = (gap: WidthProperty<TLength>, theme: Theme) => {
+const getColWidths = (gap: Property.Width, theme: Theme) => {
   const getContent = (size: number, variant?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'): string => {
     const content = `{ flex: 0 0 calc((100% / 12) * ${size}  - ${gap}); max-width: calc((100% / 12) * ${size}  - ${gap}); }`;
     if (variant) {

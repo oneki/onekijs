@@ -1,9 +1,10 @@
 import React, { FC } from 'react';
-import styled, { css } from 'styled-components';
+
 import { color } from '../../styles/typography';
 import { alignItems } from '../../styles/alignment';
 import { display } from '../../styles/display';
 import { IconProps } from './typings';
+import styled, { css } from 'styled-components';
 
 const IconComponent: FC<IconProps> = ({ className, onClick }) => {
   return (

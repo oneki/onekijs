@@ -1,84 +1,60 @@
-import {
-  ColumnCountProperty,
-  ColumnFillProperty,
-  ColumnRuleColorProperty,
-  ColumnRuleProperty,
-  ColumnRuleStyleProperty,
-  ColumnRuleWidthProperty,
-  ColumnSpanProperty,
-  ColumnsProperty,
-  ColumnWidthProperty,
-  GridAutoColumnsProperty,
-  GridAutoFlowProperty,
-  GridAutoRowsProperty,
-  GridColumnEndProperty,
-  GridColumnProperty,
-  GridColumnStartProperty,
-  GridProperty,
-  GridRowEndProperty,
-  GridRowProperty,
-  GridRowStartProperty,
-  GridTemplateAreasProperty,
-  GridTemplateColumnsProperty,
-  GridTemplateProperty,
-  GridTemplateRowsProperty,
-} from 'csstype';
+import { Property } from 'csstype';
 import { colorFormatter, pxFormatter } from '../utils/formatter';
 import { cssProperty } from '../utils/style';
 import { columnGap, gap, rowGap } from './alignment';
 import { ColorPropertyTheme, TLength } from './typings';
 
-export const columnCount = cssProperty<ColumnCountProperty>('column-count');
+export const columnCount = cssProperty<Property.ColumnCount>('column-count');
 
-export const columnFill = cssProperty<ColumnFillProperty>('column-fill');
+export const columnFill = cssProperty<Property.ColumnFill>('column-fill');
 
-export const columnRule = cssProperty<ColumnRuleProperty<TLength>>('column-rule');
+export const columnRule = cssProperty<Property.ColumnRule<TLength>>('column-rule');
 
-export const columnRuleColor = cssProperty<ColorPropertyTheme | ColumnRuleColorProperty>(
+export const columnRuleColor = cssProperty<ColorPropertyTheme | Property.ColumnRuleColor>(
   null,
   colorFormatter('column-rule-color'),
 );
 
-export const columnRuleStyle = cssProperty<ColumnRuleStyleProperty>('column-rule-style');
+export const columnRuleStyle = cssProperty<Property.ColumnRuleStyle>('column-rule-style');
 
-export const columnRuleWidth = cssProperty<ColumnRuleWidthProperty<TLength>>('column-rule-width', pxFormatter);
+export const columnRuleWidth = cssProperty<Property.ColumnRuleWidth<TLength>>('column-rule-width', pxFormatter);
 
-export const columnSpan = cssProperty<ColumnSpanProperty>('column-span');
+export const columnSpan = cssProperty<Property.ColumnSpan>('column-span');
 
-export const columnWidth = cssProperty<ColumnWidthProperty<TLength>>('column-width', pxFormatter);
+export const columnWidth = cssProperty<Property.ColumnWidth<TLength>>('column-width', pxFormatter);
 
-export const columns = cssProperty<ColumnsProperty<TLength>>('columns');
+export const columns = cssProperty<Property.Columns<TLength>>('columns');
 
-export const grid = cssProperty<GridProperty>('grid');
+export const grid = cssProperty<Property.Grid>('grid');
 
-export const gridAutoColumns = cssProperty<GridAutoColumnsProperty<TLength>>('grid-auto-columns');
+export const gridAutoColumns = cssProperty<Property.GridAutoColumns<TLength>>('grid-auto-columns');
 
-export const gridAutoFlow = cssProperty<GridAutoFlowProperty>('grid-auto-flow');
+export const gridAutoFlow = cssProperty<Property.GridAutoFlow>('grid-auto-flow');
 
-export const gridAutoRows = cssProperty<GridAutoRowsProperty<TLength>>('grid-auto-rows');
+export const gridAutoRows = cssProperty<Property.GridAutoRows<TLength>>('grid-auto-rows');
 
-export const gridColumn = cssProperty<GridColumnProperty>('grid-column');
+export const gridColumn = cssProperty<Property.GridColumn>('grid-column');
 
-export const gridColumnEnd = cssProperty<GridColumnEndProperty>('grid-column-start');
+export const gridColumnEnd = cssProperty<Property.GridColumnEnd>('grid-column-start');
 
 export const gridColumnGap = columnGap;
 
-export const gridColumnStart = cssProperty<GridColumnStartProperty>('grid-column-start');
+export const gridColumnStart = cssProperty<Property.GridColumnStart>('grid-column-start');
 
 export const gridGap = gap;
 
-export const gridRow = cssProperty<GridRowProperty>('grid-row');
+export const gridRow = cssProperty<Property.GridRow>('grid-row');
 
-export const gridRowEnd = cssProperty<GridRowEndProperty>('grid-row-end');
+export const gridRowEnd = cssProperty<Property.GridRowEnd>('grid-row-end');
 
 export const gridRowGap = rowGap;
 
-export const gridRowStart = cssProperty<GridRowStartProperty>('grid-row-start');
+export const gridRowStart = cssProperty<Property.GridRowStart>('grid-row-start');
 
-export const gridTemplate = cssProperty<GridTemplateProperty>('grid-template');
+export const gridTemplate = cssProperty<Property.GridTemplate>('grid-template');
 
-export const gridTemplateAreas = cssProperty<GridTemplateAreasProperty>('grid-template-areas');
+export const gridTemplateAreas = cssProperty<Property.GridTemplateAreas>('grid-template-areas');
 
-export const gridTemplateColumns = cssProperty<GridTemplateColumnsProperty<TLength>>('grid-template-columns');
+export const gridTemplateColumns = cssProperty<Property.GridTemplateColumns<TLength>>('grid-template-columns');
 
-export const gridTemplateRows = cssProperty<GridTemplateRowsProperty<TLength>>('grid-template-rows');
+export const gridTemplateRows = cssProperty<Property.GridTemplateRows<TLength>>('grid-template-rows');

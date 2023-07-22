@@ -1,4 +1,4 @@
-import { HeightProperty, StrokeWidthProperty, WidthProperty } from 'csstype';
+import { Property } from 'csstype';
 import { SizePropertyTheme, TLength } from '../../styles/typings';
 import { TimerService } from './TimerService';
 
@@ -12,9 +12,9 @@ export type TimerProps = Partial<TimerOptions> & {
   className?: string;
   controller?: TimerService;
   format?: (ttlMs: number, timeMs: number) => string | number;
-  height?: SizePropertyTheme | HeightProperty<TLength>;
-  thickness?: StrokeWidthProperty<TLength>;
-  width?: SizePropertyTheme | WidthProperty<TLength>;
+  height?: SizePropertyTheme | Property.Height<TLength>;
+  thickness?: Property.StrokeWidth<TLength>;
+  width?: SizePropertyTheme | Property.Width<TLength>;
 };
 
 export type TimerState = {

@@ -12,7 +12,7 @@ const resizerStyle: ComponentStyle<ResizerProps> = () => {
     overflow: auto;
     scrollbar-width: thin;
     scrollbar-color: ${(props) => props.theme.palette.colors[props.theme.colors.light]}
-      ${(props) => props.theme.colors[props.theme.colors.lighter]};
+      ${(props) => props.theme.palette.colors[props.theme.colors.lighter]};
     &::-webkit-scrollbar {
       width: 12px;
     }

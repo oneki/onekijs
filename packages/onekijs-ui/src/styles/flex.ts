@@ -1,4 +1,4 @@
-import { FlexBasisProperty, FlexDirectionProperty, FlexProperty, FlexWrapProperty, Globals } from 'csstype';
+import { Property, Globals } from 'csstype';
 import { enumFormatter } from '../utils/formatter';
 import { cssProperty } from '../utils/style';
 import { TLength } from './typings';
@@ -10,14 +10,14 @@ const flexValues = {
   auto: '1 1 auto',
   none: 'none',
 };
-const flexFormatter = enumFormatter<FlexProperty<TLength>>(flexValues);
-export const flex = cssProperty<FlexProperty<TLength>>('flex', flexFormatter);
+const flexFormatter = enumFormatter<Property.Flex<TLength>>(flexValues);
+export const flex = cssProperty<Property.Flex<TLength>>('flex', flexFormatter);
 
 // row; row-reverse; column; column-reverse
-export const flexBasis = cssProperty<FlexBasisProperty<TLength>>('flex-basic');
+export const flexBasis = cssProperty<Property.FlexBasis<TLength>>('flex-basic');
 
 // row; row-reverse; column; column-reverse
-export const flexDirection = cssProperty<FlexDirectionProperty>('flex-direction');
+export const flexDirection = cssProperty<Property.FlexDirection>('flex-direction');
 
 // true; false
 export const flexGrow = cssProperty<number>('flex-grow');
@@ -26,7 +26,7 @@ export const flexGrow = cssProperty<number>('flex-grow');
 export const flexShrink = cssProperty<number>('flex-shrink');
 
 // nowrap; wrap; wrap-reverse;
-export const flexWrap = cssProperty<FlexWrapProperty>('flex-wrap');
+export const flexWrap = cssProperty<Property.FlexWrap>('flex-wrap');
 
 // first; last; none; 1; 2; 3; 4; 5; 6; 7; 8; 9; 10; 11; 12
 const orderValues = {

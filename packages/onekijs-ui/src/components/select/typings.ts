@@ -70,6 +70,8 @@ export type SelectController<
   check: () => void;
   defaultValue: T | T[] | null | undefined;
   setDefaultValue: (defaultValue: T | T[] | null | undefined) => void;
+  setDefaultValueLoading: (loading: boolean) => void;
+  setItemWidth: (item: I, width: number) => void;
 };
 
 export interface SelectIconProps {
@@ -188,6 +190,7 @@ export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omi
   animationMs?: number;
   disabled?: boolean;
   defaultValue?: T | T[] | null;
+  defaultValueLoading?: boolean;
   required?: boolean;
   sameWidth?: boolean;
   ListComponent?: React.FC<SelectListComponentProps<T, I>>;
@@ -203,6 +206,8 @@ export type SelectState<T = any, I extends SelectItem<T> = SelectItem<T>> = List
   invalidItems?: I[];
   validDefaultValue?: T | T[] | null;
   defaultValue?: T | T[] | null;
+  defaultValueLoading?: boolean;
+  width?: number;
 };
 
 export interface SelectTokensProps<T = any, I extends SelectItem<T> = SelectItem<T>> {

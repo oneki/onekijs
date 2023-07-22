@@ -1,15 +1,5 @@
 import {
-  HeightProperty,
-  MaxHeightProperty,
-  MaxWidthProperty,
-  MinHeightProperty,
-  MinWidthProperty,
-  OverscrollBehaviorBlockProperty,
-  OverscrollBehaviorInlineProperty,
-  OverscrollBehaviorProperty,
-  OverscrollBehaviorXProperty,
-  OverscrollBehaviorYProperty,
-  WidthProperty,
+  Property,
 } from 'csstype';
 import { cssProperty } from '../utils/style';
 import { Formatter, SizePropertyTheme, Theme, TLength } from './typings';
@@ -44,25 +34,25 @@ const heightFormatter: Formatter<SizePropertyTheme> = (value, theme) => {
 };
 
 // spacing or fraction or auto or full or screen
-export const width = cssProperty<SizePropertyTheme | WidthProperty<TLength>>('width', widthFormatter);
+export const width = cssProperty<SizePropertyTheme | Property.Width<TLength>>('width', widthFormatter);
 
 // spacing or fraction or auto or full or screen
-export const minWidth = cssProperty<SizePropertyTheme | MaxWidthProperty<TLength>>('min-width', widthFormatter);
+export const minWidth = cssProperty<SizePropertyTheme | Property.MaxWidth<TLength>>('min-width', widthFormatter);
 
-export const maxWidth = cssProperty<SizePropertyTheme | MinWidthProperty<TLength>>('max-width', widthFormatter);
+export const maxWidth = cssProperty<SizePropertyTheme | Property.MinWidth<TLength>>('max-width', widthFormatter);
 
-export const height = cssProperty<SizePropertyTheme | HeightProperty<TLength>>('height', heightFormatter);
+export const height = cssProperty<SizePropertyTheme | Property.Height<TLength>>('height', heightFormatter);
 
-export const minHeight = cssProperty<SizePropertyTheme | MinHeightProperty<TLength>>('min-height', heightFormatter);
+export const minHeight = cssProperty<SizePropertyTheme | Property.MinHeight<TLength>>('min-height', heightFormatter);
 
-export const maxHeight = cssProperty<SizePropertyTheme | MaxHeightProperty<TLength>>('max-height', heightFormatter);
+export const maxHeight = cssProperty<SizePropertyTheme | Property.MaxHeight<TLength>>('max-height', heightFormatter);
 
-export const overscrollBehavior = cssProperty<OverscrollBehaviorProperty>('overscroll-behavior');
+export const overscrollBehavior = cssProperty<Property.OverscrollBehavior>('overscroll-behavior');
 
-export const overscrollBehaviorBlock = cssProperty<OverscrollBehaviorBlockProperty>('overscroll-behavior-block');
+export const overscrollBehaviorBlock = cssProperty<Property.OverscrollBehaviorBlock>('overscroll-behavior-block');
 
-export const overscrollBehaviorInline = cssProperty<OverscrollBehaviorInlineProperty>('overscroll-behavior-inline');
+export const overscrollBehaviorInline = cssProperty<Property.OverscrollBehaviorInline>('overscroll-behavior-inline');
 
-export const overscrollBehaviorX = cssProperty<OverscrollBehaviorXProperty>('overscroll-behavior-x');
+export const overscrollBehaviorX = cssProperty<Property.OverscrollBehaviorX>('overscroll-behavior-x');
 
-export const overscrollBehaviorY = cssProperty<OverscrollBehaviorYProperty>('overscroll-behavior-y');
+export const overscrollBehaviorY = cssProperty<Property.OverscrollBehaviorY>('overscroll-behavior-y');

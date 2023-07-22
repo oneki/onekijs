@@ -23,7 +23,7 @@ const ModalComponent: FCC<ModalProps> = ({
 }) => {
   const id = useId();
   const theme = useContext(ThemeContext);
-  const maskOpacity = theme.modal.maskOpacity;
+  const maskOpacity = theme?.modal.maskOpacity ?? '0.85';
   const ref = useRef<HTMLDivElement | null>(null);
 
   const onEntering = (node: HTMLElement): void => {
@@ -35,7 +35,7 @@ const ModalComponent: FCC<ModalProps> = ({
       ref.current.style.transition = `transform ${animationDuration}ms ease-out`;
     }
     setTimeout(() => {
-      node.style.opacity = maskOpacity;
+      node.style.opacity = maskOpacity.toString();
       if (ref.current) {
         ref.current.style.transform = 'translateY(0px)';
       }
@@ -43,7 +43,7 @@ const ModalComponent: FCC<ModalProps> = ({
   };
 
   const onExiting = (node: HTMLElement): void => {
-    node.style.opacity = maskOpacity;
+    node.style.opacity = maskOpacity.toString();
     node.style.transition = `opacity ${animationDuration}ms ease-out`;
     if (ref.current) {
       ref.current.style.transform = 'translateY(0px)';

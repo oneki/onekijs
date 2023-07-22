@@ -1,35 +1,27 @@
-import {
-  ClearProperty,
-  FloatProperty,
-  LeftProperty,
-  PositionProperty,
-  RightProperty,
-  TopProperty,
-  ZIndexProperty,
-} from 'csstype';
+import { Property } from 'csstype';
 import { cssProperty } from '../utils/style';
 import { TLength } from './typings';
 
 // left; right; both; none;
-export const clear = cssProperty<ClearProperty>('clear');
+export const clear = cssProperty<Property.Clear>('clear');
 
 // right; left; none;
-export const float = cssProperty<FloatProperty>('float');
+export const float = cssProperty<Property.Float>('float');
 
 // integer
-export const left = cssProperty<LeftProperty<TLength>>('left');
+export const left = cssProperty<Property.Left<TLength>>('left');
 
 // static; fixed; absolute; relative; sticky;
-export const position = cssProperty<PositionProperty>('position');
+export const position = cssProperty<Property.Position>('position');
 
 // integer
-export const right = cssProperty<RightProperty<TLength>>('right');
+export const right = cssProperty<Property.Right<TLength>>('right');
 
 // integer
-export const top = cssProperty<TopProperty<TLength>>('top');
+export const top = cssProperty<Property.Top<TLength>>('top');
 
 // integer
-export const bottom = cssProperty<TopProperty<TLength>>('bottom');
+export const bottom = cssProperty<Property.Top<TLength>>('bottom');
 
 // auto or integer
-export const zIndex = cssProperty<ZIndexProperty>('z-index');
+export const zIndex = cssProperty<Property.ZIndex>('z-index');

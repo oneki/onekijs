@@ -1,10 +1,10 @@
 import { cssProperty } from '../utils/style';
-import { FillProperty, StrokeProperty, StrokeWidthProperty } from 'csstype';
+import { Property } from 'csstype';
 import { ColorPropertyTheme, TLength } from './typings';
 import { colorFormatter } from '../utils/formatter';
 
-export const fill = cssProperty<FillProperty>(null, colorFormatter('fill'));
+export const fill = cssProperty<Property.Fill>(null, colorFormatter('fill'));
 
-export const stroke = cssProperty<ColorPropertyTheme | StrokeProperty>(null, colorFormatter('stroke'));
+export const stroke = cssProperty<ColorPropertyTheme | Property.Stroke>(null, colorFormatter('stroke'));
 
-export const strokeWidth = cssProperty<StrokeWidthProperty<TLength>>('stroke-width');
+export const strokeWidth = cssProperty<Property.StrokeWidth<TLength>>('stroke-width');

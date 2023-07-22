@@ -15,7 +15,7 @@ import ListComponent from './components/ListComponent';
 const DropdownList = styled(List)`
   scrollbar-width: thin;
   scrollbar-color: ${(props) => props.theme.palette.colors[props.theme.colors.primary]}
-    ${(props) => props.theme.colors[props.theme.colors.lighter]};
+    ${(props) => props.theme.palette.colors[props.theme.colors.lighter]};
   &::-webkit-scrollbar {
     width: 12px;
   }

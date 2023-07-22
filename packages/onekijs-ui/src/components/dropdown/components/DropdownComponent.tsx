@@ -24,6 +24,7 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
   onDropping,
   onCollapsing,
   placement = 'auto',
+  width,
   widthModifier = 'same',
   zIndex = 1,
 }) => {
@@ -178,7 +179,7 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
 
   const element = (
     <div
-      style={styles.popper}
+      style={Object.assign({width}, styles.popper)}
       {...attributes.popper}
       ref={setPopperElement}
       key="dropdown-container"

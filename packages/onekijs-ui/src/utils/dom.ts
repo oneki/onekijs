@@ -1,4 +1,4 @@
-import { CursorProperty } from 'csstype';
+import { Property } from 'csstype';
 
 export const clearSelection = (): void => {
   const getSelection = window.getSelection;
@@ -8,7 +8,7 @@ export const clearSelection = (): void => {
   }
 };
 
-export const forceCursor = (cursor?: CursorProperty): void => {
+export const forceCursor = (cursor?: Property.Cursor): void => {
   document.body.style.cursor = cursor ? `${cursor}` : '';
 };
 
