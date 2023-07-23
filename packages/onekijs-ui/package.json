@@ -1,11 +1,12 @@
 {
   "name": "onekijs-ui",
   "private": false,
-  "version": "0.16.2",
+  "version": "0.17.0",
   "description": "Opiniated React framework built on top of Next.js",
   "source": "src/index.ts",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
+  "type": "module",
   "files": [
     "dist",
     "src"
@@ -33,7 +34,7 @@
     "@clr/city": "^1.1.0",
     "@popperjs/core": "^2.4.4",
     "@reach/observe-rect": "^1.2.0",
-    "onekijs-framework": "^0.16.2",
+    "onekijs-framework": "^0.17.0",
     "react-popper": "^2.3.0",
     "react-popper-tooltip": "^4.4.2",
     "react-virtualized-auto-sizer": "^1.0.2",
@@ -45,7 +46,7 @@
     "@types/react-virtualized-auto-sizer": "^1.0.0",
     "@types/react-window": "^1.8.2",
     "@types/styled-components": "^5.1.26",
-    "rollup": "^2.77.3"
+    "rollup": "^3.26.3"
   },
   "peerDependencies": {
     "react": ">=18",

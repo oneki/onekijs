@@ -1,10 +1,9 @@
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
-import terser from '@rollup/plugin-terser';
 import css from 'rollup-plugin-import-css';
 
-import packageJson from './package.json';
+import packageJson from './package.json' assert { type: 'json' };
 
 const config = [
   {

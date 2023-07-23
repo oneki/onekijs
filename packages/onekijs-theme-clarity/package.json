@@ -1,11 +1,12 @@
 {
   "name": "onekijs-theme-clarity",
   "private": false,
-  "version": "0.16.2",
+  "version": "0.17.0",
   "description": "Opiniated React framework built on top of Next.js",
   "source": "src/index.ts",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
+  "type": "module",
   "files": [
     "dist",
     "src"
@@ -39,12 +40,12 @@
   "license": "MIT",
   "dependencies": {
     "@clr/city": "^1.1.0",
-    "onekijs-ui": "^0.16.2"
+    "onekijs-ui": "^0.17.0"
   },
   "devDependencies": {
     "@types/react-virtualized-auto-sizer": "^1.0.0",
     "@types/react-window": "^1.8.2",
-    "rollup": "^2.77.3"
+    "rollup": "^3.26.3"
   },
   "peerDependencies": {
     "react": ">=18",

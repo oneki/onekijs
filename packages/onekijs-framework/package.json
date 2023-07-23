@@ -1,11 +1,12 @@
 {
   "name": "onekijs-framework",
   "author": "Oneki",
-  "version": "0.16.2",
+  "version": "0.17.0",
   "description": "Opiniated React framework built on top of Redux and React Router",
   "source": "src/index.ts",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
+  "type": "module",
   "engines": {
     "node": ">=10"
   },
@@ -44,7 +45,7 @@
     "@types/react-transition-group": "^4.4.0",
     "concurrently": "^8.2.0",
     "rimraf": "^5.0.1",
-    "rollup": "^2.77.3"
+    "rollup": "^3.26.3"
   },
   "peerDependencies": {
     "react": ">=18",
