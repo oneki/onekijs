@@ -1,4 +1,4 @@
-import produce from 'immer';
+import { produce } from 'immer';
 import { apply, take } from 'redux-saga/effects';
 import { AnyFunction } from '../types/core';
 import {

@@ -1,4 +1,4 @@
-import produce from 'immer';
+import { produce } from 'immer';
 import { MutableRefObject } from 'react';
 import { AppSettings } from '../types/app';
 import { I18n } from '../types/i18n';

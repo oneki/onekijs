@@ -388,8 +388,24 @@ function is(x: any, y: any) {
  * when any key has values which are not strictly equal between the arguments.
  * Returns true when the values of all keys are strictly equal.
  */
-export function shallowEqual(objA: AnonymousObject | null, objB: AnonymousObject | null): boolean {
+export function shallowEqual(objA: any, objB: any): boolean {
   if (is(objA, objB)) {
+    return true;
+  }
+
+  if (typeof objA !== typeof objB) {
+    return false;
+  }
+
+  if (Array.isArray(objA)) {
+    if (!Array.isArray(objB) || objA.length !== objB.length) {
+      return false;
+    }
+    for (const i in objA) {
+      if (!shallowEqual(objA[i], objB[i])) {
+        return false;
+      }
+    }
     return true;
   }
 

@@ -1,4 +1,4 @@
-import produce from 'immer';
+import { produce } from 'immer';
 import { AnyAction, applyMiddleware, createStore, Middleware, Store } from 'redux';
 import createSagaMiddleware, { SagaMiddleware } from 'redux-saga';
 import DefaultBasicError from '../core/BasicError';

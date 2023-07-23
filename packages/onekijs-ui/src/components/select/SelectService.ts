@@ -95,7 +95,7 @@ class SelectService<
   @saga(SagaEffect.Latest)
   *setDefaultValue(value: T | T[] | null | undefined) {
     yield this._setDefaultValue(value);
-    yield this.check(); // validate the default valu    console.log(value, this.state.validDefaultValue, this.config?.value);
+    yield this.check(); // validate the default value
     if (
       value !== undefined &&
       this.state.validDefaultValue &&

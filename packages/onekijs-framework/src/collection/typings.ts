@@ -32,7 +32,7 @@ export type Collection<
   getParams(): AnonymousObject | undefined;
   getSearch(): Primitive | undefined;
   getSort(): QuerySortDir | undefined;
-  getSortBy(): QuerySortBy[] | undefined;
+  getSortBy(): QuerySortBy[];
   getSortByField(field: string): QuerySortByField | undefined;
   getSortById(id: string): QuerySortBy | undefined;
   readonly hasMore: boolean;

@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Class } from '../types/object';
 import CollectionService from './CollectionService';
 import { Collection, CollectionProxy, CollectionState, Item, LoadingStatus } from './typings';
@@ -35,14 +35,17 @@ const useCollectionProxy = <
 ): CollectionProxy<T, I, S, C> => {
   const [, service] = useCollectionService<T, I, S, C>(ctor, initialState);
 
+  const dsRef = useRef(dataSource);
+  const ds = (isCollection(dataSource)) ? dataSource : dsRef.current;
+
   const collectionProxy = useMemo(() => {
-    if (isCollection(dataSource)) {
-      return dataSource as CollectionProxy<T, I, S, C>;
+    if (isCollection(ds)) {
+      return ds as CollectionProxy<T, I, S, C>;
     }
     const proxy = new Proxy(service, collectionProxyHandler);
     return proxy as CollectionProxy<T, I, S, C>;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataSource, service.state]);
+  }, [ds, service.state]);
 
   useEffect(() => {
     if (

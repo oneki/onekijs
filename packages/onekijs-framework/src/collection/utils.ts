@@ -248,7 +248,7 @@ export const defaultQueryEngine = <T = any, I extends Item<T> = Item<T>>(
 
   // apply sort
   if (query.sortBy) {
-    result = applySortBy(result, formatSortBy(query.sortBy) || [], comparators);
+    result = applySortBy(result, query.sortBy || [], comparators);
   } else if (query.sort) {
     result = applySort(result, query.sort || 'asc', comparator);
   }
@@ -832,21 +832,39 @@ export const formatFilter = (
   }
 };
 
-export const formatSortBy = (sortBy?: string | QuerySortBy | QuerySortBy[]): QuerySortBy[] => {
+export const formatSortBy = (sortBy: string | QuerySortBy | QuerySortBy[] | undefined, currentSortBy?: string | QuerySortBy | QuerySortBy[]): QuerySortBy[] => {
+  let merge = true;
+  if (currentSortBy === undefined) {
+    currentSortBy = sortBy;
+    merge = false;
+  } else if (shallowEqual(currentSortBy, sortBy)) {
+    merge = false;
+  }
+
+  if (currentSortBy === undefined) {
+    currentSortBy = [];
+  } else if (typeof currentSortBy === 'string') {
+    currentSortBy = [{field: currentSortBy}];
+  } else if (!Array.isArray(currentSortBy)) {
+    currentSortBy = [currentSortBy]
+  }
+
+  if (!merge) {
+    return currentSortBy;
+  }
+
   if (Array.isArray(sortBy)) {
-    return sortBy;
+    currentSortBy.splice(0, currentSortBy.length, ...sortBy);
+  } else if (!sortBy) {
+    currentSortBy.splice(0, currentSortBy.length);
+  } else if (typeof sortBy === 'string') {
+    currentSortBy.splice(0, currentSortBy.length, {
+      field: sortBy,
+    });
+  } else {
+    currentSortBy.splice(0, currentSortBy.length, sortBy);
   }
-  if (!sortBy) {
-    return [];
-  }
-  if (typeof sortBy === 'string') {
-    return [
-      {
-        field: sortBy,
-      },
-    ];
-  }
-  return [sortBy];
+  return currentSortBy;
 };
 
 export const getDefaultCollectionStatus = (

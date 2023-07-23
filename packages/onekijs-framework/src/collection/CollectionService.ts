@@ -394,8 +394,16 @@ export default class CollectionService<
     return this.state.sort;
   }
 
-  getSortBy(): QuerySortBy[] | undefined {
-    return formatSortBy(get<any>(this.state, 'sortBy') as string | QuerySortBy | QuerySortBy[]);
+  getSortBy(): QuerySortBy[] {
+    let currentSortBy = get<any>(this.state, 'sortBy');
+    if (currentSortBy === undefined) {
+      currentSortBy = [];
+    } else if (typeof currentSortBy === 'string') {
+      currentSortBy = [{field: currentSortBy}];
+    } else if (!Array.isArray(currentSortBy)) {
+      currentSortBy = [currentSortBy]
+    }
+    return currentSortBy;
   }
 
   getSortByField(field: string): QuerySortByField | undefined {
@@ -768,7 +776,7 @@ export default class CollectionService<
 
   _addSortBy(query: Query, sortBy: QuerySortBy, prepend = true): void {
     this._removeSortBy(query, sortBy);
-    const currentSortBy = formatSortBy(get(query, 'sortBy')).slice(0);
+    const currentSortBy = (formatSortBy(get(query, 'sortBy'), get<any>(this.state, 'sortBy')) || []).slice(0);
     if (prepend) {
       currentSortBy.unshift(sortBy);
     } else {
@@ -1289,14 +1297,14 @@ export default class CollectionService<
   }
 
   _removeSortBy(query: Query, sort: QuerySortBy): void {
-    const sortBy = formatSortBy(get(query, 'sortBy'));
+    const sortBy = formatSortBy(get(query, 'sortBy'), get<any>(this.state, 'sortBy'));
     if (sortBy) {
       query.sortBy = sortBy.filter((s) => !isSameSortBy(sort, s));
     }
   }
 
   _removeSortById(query: Query, id: string): void {
-    const sortBy = formatSortBy(get(query, 'sortBy'));
+    const sortBy = formatSortBy(get(query, 'sortBy'), get<any>(this.state, 'sortBy'));
     if (sortBy) {
       query.sortBy = sortBy.filter((sort) => sort.id !== id);
     }
@@ -1410,7 +1418,7 @@ export default class CollectionService<
   _setQuery(query: Query, force = true): void {
     const nextFilter = formatFilter(query.filter);
     if (force || nextFilter) this.state.filter = nextFilter;
-    const nextSortBy = formatSortBy(query.sortBy);
+    const nextSortBy = formatSortBy(query.sortBy, get<any>(this.state, 'sortBy'));
     if (force || query.sortBy !== undefined) this.state.sortBy = nextSortBy;
     if (force || query.sort) this.state.sort = query.sort;
     if (force || query.search) this.state.search = query.search;
@@ -1442,6 +1450,6 @@ export default class CollectionService<
   }
 
   _setSortBy(query: Query, sortBy: string | QuerySortBy | QuerySortBy[]): void {
-    query.sortBy = formatSortBy(sortBy);
+    query.sortBy = formatSortBy(sortBy, get<any>(this.state, 'sortBy'));
   }
 }
