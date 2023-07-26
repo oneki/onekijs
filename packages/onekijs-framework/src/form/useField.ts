@@ -24,10 +24,10 @@ const useField = <T extends object = any>(
       field.onChange(field.value);
       const disabled = form.config.reconfigure && !optionsRef.current.editable ? true : optionsRef.current.disabled;
       if (disabled) {
-        form.setMetadata(nameRef.current, 'disabled', disabled);
+        form.setMetadata(nameRef.current, 'disabled', disabled, false);
       }
       if (optionsRef.current.visible === false) {
-        form.setMetadata(nameRef.current, 'visible', optionsRef.current.visible);
+        form.setMetadata(nameRef.current, 'visible', optionsRef.current.visible, false);
       }
     }
   }, [field, form]);

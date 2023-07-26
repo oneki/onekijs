@@ -442,9 +442,11 @@ export default class CollectionService<
 
   @reducer
   load(limit?: number, offset?: number, replace = false): void {
-    const resetData = this.state.items ? false : true;
-    this._setLoading({ limit, offset, resetData });
-    this.refresh(undefined, !replace);
+    if (!this.state.local) {
+      const resetData = this.state.items ? false : true;
+      this._setLoading({ limit, offset, resetData });
+      this.refresh(undefined, !replace);
+    }
   }
 
   @reducer
@@ -657,7 +659,8 @@ export default class CollectionService<
 
   @reducer
   setSelected<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[] {
-    return this._setByMeta('selected', by, target);
+    const result = this._setByMeta('selected', by, target);
+    return result;
   }
 
   @reducer
@@ -709,16 +712,14 @@ export default class CollectionService<
 
   @saga(SagaEffect.Leading)
   *startAutoRefresh(interval: number) {
-    this.stopAutoRefresh();
+    yield this.stopAutoRefresh();
     this.refreshTask = yield fork([this, this._autoRefresh], interval);
   }
 
   @saga(SagaEffect.Leading)
   *startFollow(interval: number) {
-    if (this.state.fetchOptions?.delayLoading) {
-      this.state.fetchOptions.delayLoading = 0;
-    }
-    this.stopFollow();
+    yield this._disableDelayLoading();
+    yield this.stopFollow();
     this.followTask = yield fork([this, this._follow], interval);
   }
 
@@ -850,6 +851,13 @@ export default class CollectionService<
       resetLimit: false,
       resetData,
     });
+  }
+
+  @reducer
+  _disableDelayLoading(): void {
+    if (this.state.fetchOptions?.delayLoading) {
+      this.state.fetchOptions.delayLoading = 0;
+    }
   }
 
   @saga(SagaEffect.Latest)
@@ -1230,27 +1238,27 @@ export default class CollectionService<
     this._refreshing = false;
     if (this.state.local) {
       this._setQuery(nextQuery);
-      if (location.relativeurl && this._cache[location.relativeurl]) {
-        this._setItems(this._cache[location.relativeurl]);
-      } else {
-        const queryEngine = this.state.queryEngine || this._execute.bind(this);
-        this._setItems(
-          queryEngine(
-            this._db || [],
-            nextQuery,
-            this.state.comparator || defaultComparator,
-            this.state.comparators || {},
-            this.state.searcher,
-          ),
-        );
-        if (location.relativeurl) {
-          const keys = Object.keys(this._cache);
-          if (keys.length > 100) {
-            delete this._cache[keys[0]];
-          }
-          this._cache[location.relativeurl] = this.state.items;
+      //if (location.relativeurl && this._cache[location.relativeurl]) {
+      //  this._setItems(this._cache[location.relativeurl]);
+      //} else {
+      const queryEngine = this.state.queryEngine || this._execute.bind(this);
+      this._setItems(
+        queryEngine(
+          this._db || [],
+          nextQuery,
+          this.state.comparator || defaultComparator,
+          this.state.comparators || {},
+          this.state.searcher,
+        ),
+      );
+      if (location.relativeurl) {
+        const keys = Object.keys(this._cache);
+        if (keys.length > 100) {
+          delete this._cache[keys[0]];
         }
+        this._cache[location.relativeurl] = this.state.items;
       }
+      //}
     } else {
       const resetData = this.state.items ? shouldResetData(this.getQuery(), nextQuery) : false;
       if (resetData) {
@@ -1310,6 +1318,7 @@ export default class CollectionService<
     }
   }
 
+  @reducer
   _setByMeta<B extends keyof CollectionBy<T, I>>(
     field: 'active' | 'disabled' | 'highlighted' | 'selected',
     by: B,

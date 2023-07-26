@@ -139,6 +139,7 @@ export type TableConfig<T = any, I extends TableItem<T> = TableItem<T>> = {
   RowComponent?: React.FC<TableBodyRowProps<T, I>>;
   sortable?: boolean;
   stripRows?: boolean;
+  tail?: boolean;
 };
 
 export type TableController<

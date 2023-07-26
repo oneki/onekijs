@@ -36,7 +36,7 @@ const useCollectionProxy = <
   const [, service] = useCollectionService<T, I, S, C>(ctor, initialState);
 
   const dsRef = useRef(dataSource);
-  const ds = (isCollection(dataSource)) ? dataSource : dsRef.current;
+  const ds = isCollection(dataSource) ? dataSource : dsRef.current;
 
   const collectionProxy = useMemo(() => {
     if (isCollection(ds)) {

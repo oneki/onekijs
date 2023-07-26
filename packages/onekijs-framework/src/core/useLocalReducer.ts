@@ -19,6 +19,7 @@ const useLocalReducer = <S extends State, T extends Service<S>>(service: T, init
         try {
           const state = service.state;
           const nextState = service[combinedReducers](state, a);
+
           // only dispatch to the actual reducer if the state has changed
           // this forces a refresh
           // we do this because it's possible that useReducer trigger a refresh even if the state has not changed

@@ -2,6 +2,7 @@ import { produce } from 'immer';
 import { apply, take } from 'redux-saga/effects';
 import { AnyFunction } from '../types/core';
 import {
+  Service,
   combinedReducers,
   create,
   dispatch,
@@ -10,7 +11,6 @@ import {
   run,
   sagas,
   sagasFromReducers,
-  Service,
   stop,
   types,
 } from '../types/service';

@@ -46,6 +46,7 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
   RowComponent,
   sortable,
   stripRows,
+  tail,
 }) => {
   const classNames = addClassname('o-table', className);
   const { columns, items } = controller.state;
@@ -91,6 +92,7 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
       RowComponent,
       sortable,
       stripRows,
+      tail
     };
   }, [
     autoRefresh,
@@ -128,6 +130,7 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
     RowComponent,
     sortable,
     stripRows,
+    tail,
   ]);
 
   service.config = config;

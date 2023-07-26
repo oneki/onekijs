@@ -32,6 +32,7 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
     rowClassName,
     LoadingComponent = TableLoadingComponent,
     NotFoundComponent = TableNotFoundComponent,
+    tail,
   } = useTableConfig();
 
   const itemHeight = useCallback(() => {
@@ -96,6 +97,7 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
       service={service}
       state={state}
       totalSize={totalSize}
+      tail={tail}
       virtualItems={isVirtual ? virtualItems : undefined}
     />
   );

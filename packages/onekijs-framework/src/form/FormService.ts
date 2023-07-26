@@ -746,7 +746,7 @@ export default class FormService<T extends object = any> extends DefaultService<
         Object.keys(currentArrayValue[i]).forEach((fieldName) => {
           // nextValues[`${fieldArrayName}.${i - 1}.${fieldName}`] = currentArrayValue[i][fieldName];
           const nextField: Field<T> | undefined = this.fields[`${fieldArrayName}.${i}.${fieldName}` as NestedKeyOf<T>];
-          const currentField = this.fields[`${fieldArrayName}.${i}.${fieldName}` as NestedKeyOf<T>] as Field<T>;
+          const currentField = this.fields[`${fieldArrayName}.${i-1}.${fieldName}` as NestedKeyOf<T>] as Field<T>;
 
           if (nextField) {
             this.state.validations[`${fieldArrayName}.${i - 1}.${fieldName}`] =
@@ -892,20 +892,22 @@ export default class FormService<T extends object = any> extends DefaultService<
   }
 
   @reducer
-  setMetadata<K extends keyof FormMetadata>(fieldOrDecoratorName: string, key: K, value: FormMetadata[K]): void {
+  setMetadata<K extends keyof FormMetadata>(fieldOrDecoratorName: string, key: K, value: FormMetadata[K], force=true): void {
     this.state.metadata[fieldOrDecoratorName] = this.state.metadata[fieldOrDecoratorName] || {};
-    this.state.metadata[fieldOrDecoratorName][key] = value;
+    if (this.state.metadata[fieldOrDecoratorName][key] === undefined || force) {
+      this.state.metadata[fieldOrDecoratorName][key] = value;
 
-    if (key === 'visible' && Object.keys(this.fields).includes(fieldOrDecoratorName)) {
-      if (value === false) {
-        this.disableValidator(fieldOrDecoratorName as NestedKeyOf<T>, 'required');
-      } else {
-        this.enableValidator(fieldOrDecoratorName as NestedKeyOf<T>, 'required');
+      if (key === 'visible' && Object.keys(this.fields).includes(fieldOrDecoratorName)) {
+        if (value === false) {
+          this.disableValidator(fieldOrDecoratorName as NestedKeyOf<T>, 'required');
+        } else {
+          this.enableValidator(fieldOrDecoratorName as NestedKeyOf<T>, 'required');
+        }
       }
-    }
 
-    this.pendingDispatch.metadataChange.add(fieldOrDecoratorName);
-    this.pendingDispatch.metadataChange.add('');
+      this.pendingDispatch.metadataChange.add(fieldOrDecoratorName);
+      this.pendingDispatch.metadataChange.add('');
+    }
   }
 
   @reducer
