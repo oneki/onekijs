@@ -182,27 +182,25 @@ const ListBodyComponent = <T = any, I extends ListItem<T> = ListItem<T>>({
 
   useEffect(() => {
     const atBottom = () => {
-      if (bodyRef && bodyRef.current) {
-        const sh = bodyRef.current.scrollHeight;
-        const st = bodyRef.current.scrollTop;
-        const oh = bodyRef.current.offsetHeight;
+      const ref = parentRef ? parentRef : bodyRef;
+      if (ref && ref.current) {
+        const sh = ref.current.scrollHeight;
+        const st = ref.current.scrollTop;
+        const oh = ref.current.offsetHeight;
         if (oh === 0 || st === sh - oh) return true;
       }
       return false;
     };
 
     if (tail && scrollToIndex && totalSize && bodyRef && bodyRef.current) {
-      const lastScrollTop = tailRef.current.lastScrollTop;
       tailRef.current.lastScrollTop = bodyRef.current.scrollTop;
-      if (
-        tailRef.current.applyTail === true &&
-        lastScrollTop > bodyRef.current.scrollTop &&
-        (mouseRef.current || wheelRef.current)
-      ) {
+      if (mouseRef.current || wheelRef.current) {
         tailRef.current.applyTail = false;
       } else if (tailRef.current.applyTail === true || atBottom()) {
         tailRef.current.applyTail = true;
-        scrollToIndex(state.total ? state.total - 1 : state.items ? state.items.length - 1 : 0);
+        scrollToIndex(state.total ? state.total - 1 : state.items ? state.items.length - 1 : 0, {
+          align: 'start',
+        });
       }
       wheelRef.current = false;
     } else if (scrollToIndex) {

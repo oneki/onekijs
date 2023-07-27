@@ -38,7 +38,7 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
   const itemHeight = useCallback(() => {
     return 20;
   }, []);
-  const { items, isVirtual, totalSize, virtualItems, measure } = useListView({
+  const { items, isVirtual, totalSize, virtualItems, measure, scrollToIndex } = useListView({
     controller: service,
     height: height,
     ref: parentRef || tableRef,
@@ -99,6 +99,7 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
       totalSize={totalSize}
       tail={tail}
       virtualItems={isVirtual ? virtualItems : undefined}
+      scrollToIndex={scrollToIndex}
     />
   );
 };

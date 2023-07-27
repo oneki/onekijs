@@ -475,7 +475,7 @@ export default class CollectionService<
   }
 
   @reducer
-  refresh(query?: Query, push = true, noCache = false): void {
+  refresh(query?: Query, push = true, noCache = false, noLoading = false): void {
     if (isCollectionReady(this)) {
       const path = this.state.router.location.pathname;
       query = query ?? this.getQuery();
@@ -483,6 +483,12 @@ export default class CollectionService<
         this._setParam(query, 'noCache', true);
       } else {
         this._clearParam(query, 'noCache');
+      }
+
+      if (noLoading) {
+        this._setParam(query, 'noLoading', true);
+      } else {
+        this._clearParam(query, 'noLoading');
       }
       const method = push ? 'push' : 'replace';
       this._refreshing = true;
@@ -790,7 +796,7 @@ export default class CollectionService<
   protected *_autoRefresh(interval: number) {
     while (true) {
       yield delay(interval);
-      yield this.refresh(undefined, undefined, true);
+      yield this.refresh(undefined, false, true, true);
     }
   }
 
@@ -927,7 +933,7 @@ export default class CollectionService<
       if (this.state.total) {
         const query = this.getQuery();
         query.offset = this.state.total;
-        yield this.refresh(query);
+        yield this.refresh(query, false, true, true);
       }
     }
   }
@@ -939,6 +945,7 @@ export default class CollectionService<
     let loadingTask: Task | null = null;
     try {
       const noCache = get(query, 'params.noCache', false);
+      const noLoading = get(query, 'params.noLoading', false);
       const oQuery = this.serializeQuery(query);
       const sQuery = Object.keys(oQuery)
         .map((k) => `${k}=${oQuery[k]}`)
@@ -947,7 +954,7 @@ export default class CollectionService<
       if (this._cache[sQuery] && !noCache) {
         result = this._cache[sQuery];
       } else {
-        if (options.delayLoading) {
+        if (options.delayLoading && !noLoading) {
           loadingTask = yield fork(
             [this, this._delayLoading],
             options.delayLoading,
