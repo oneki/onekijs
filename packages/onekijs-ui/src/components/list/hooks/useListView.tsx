@@ -100,7 +100,7 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
             const first = Math.max(0, lastVirtualItemIndex - increment);
 
             if (lastVirtualItemIndex > 0) {
-              let slice = state.items.slice(Math.max(0, lastVirtualItemIndex - increment), lastVirtualItemIndex);
+              let slice = state.items.slice(first, lastVirtualItemIndex);
               if (slice.length < lastVirtualItemIndex - first) {
                 const arr = new Array(lastVirtualItemIndex - first);
                 arr.splice(arr.length - slice.length, slice.length, ...slice);
@@ -141,7 +141,9 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
                   break;
                 }
               }
+
               if (notLoadedNextIndex !== undefined) {
+                console.log('notLoadedNextIndex', notLoadedNextIndex, slice, state.items);
                 const offset = state.total
                   ? Math.min(state.total, lastVirtualItemIndex + notLoadedNextIndex)
                   : lastVirtualItemIndex + notLoadedNextIndex;
@@ -153,6 +155,10 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
               }
 
               if (from !== undefined && to !== undefined && to > from) {
+                from = Math.max(0, from);
+                if (state.total !== undefined) {
+                  to = Math.min(state.total, to);
+                }
                 controller.load(to - from, from, true);
               }
             }
