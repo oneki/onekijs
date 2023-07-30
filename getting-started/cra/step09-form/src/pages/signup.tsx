@@ -66,7 +66,7 @@ const SignupPage: React.FC = () => {
             <T>Password</T>
             <span className="error">{form.getValidation('password').message}</span>
           </label>
-          <Input name="password" type="password" required={true} requiredMessage={t('Password is mandatory')} />
+          <Input name="password" type="password" defaultValue="demo" required={true} requiredMessage={t('Password is mandatory')} />
         </div>
         <SubmitButton>
           <T>Submit</T>

@@ -14,11 +14,11 @@ const LoginPage: React.FC = () => {
         <p>Use any username / password (no check performed)</p>
         <div>
           <label>Username</label>
-          <Input name="username" type="text" />
+         <Input name="username" type="text" defaultValue="demo"/>
         </div>
         <div>
           <label>Password</label>
-          <Input name="password" type="password" />
+          <Input name="password" type="password" defaultValue="demo" />
         </div>
         <SubmitButton type="submit">
           {!submitting && 'Submit'}
