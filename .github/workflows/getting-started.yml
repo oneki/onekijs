@@ -23,7 +23,7 @@ jobs:
       
       - run: npm install
       - run: npm i -g concurrently
-      - run: npm i -g surge
+      - run: npm run build
       - run: |
           concurrently "cd getting-started/cra/step01-react-app && npm run deploy" \
           "cd getting-started/cra/step02-navigation && npm run deploy" \
