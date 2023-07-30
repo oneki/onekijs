@@ -32,7 +32,7 @@ const getUserHandler = rest.get<GetUserResponse>('/users/:username', (req, res, 
   );
 });
 
-const userHandlers = (): RequestHandler<any, any, any, any, any>[] => {
+const userHandlers = (): RequestHandler[] => {
   return [userInfoHandler, getUserHandler];
 };
 
