@@ -91,7 +91,7 @@ const SelectOptionComponent = <T, I extends SelectItem<T> = SelectItem<T>>(props
         onMouseEnter={() => hoverable && onMouseEnter && item && onMouseEnter(item, index)}
         onMouseLeave={() => hoverable && onMouseLeave && item && onMouseLeave(item, index)}
       >
-        <div ref={ref}>
+        <div style={{display: 'flex'}} ref={ref}>
           {/* {multiple && <div className="o-select-option-icon">{meta?.selected? <>&#10003;</>:<></>}</div> } */}
           {service.config?.multiple && (
             <Checkbox

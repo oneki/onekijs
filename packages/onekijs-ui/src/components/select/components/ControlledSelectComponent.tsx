@@ -218,16 +218,24 @@ const ControlledSelectComponent = <
 
   const proxyItem = useMemo(() => {
     const search = controller.getSearch();
-    if (showActiveRef.current && controller.state.active && controller.state.active.length > 0) {
-      return controller.getItem(controller.state.active[0]);
+    const active = controller.state.active;
+    const selected = controller.state.selected;
+    if (showActiveRef.current && active && active.length > 0) {
+      if (multiple && selected && selected.find((i) => i === active[0])) {
+        return undefined;
+      }
+      return controller.getItem(active[0]);
     } else if (focus && search) {
       const item = autoCompleteSearch ? findSelectItem(controller, search.toString()) : controller.items[0];
       if (item === undefined && !isCollectionFetching(controller)) {
         return get<any>(controller, 'items.0');
       }
       return item;
-    } else if (controller.state.active && controller.state.active.length > 0) {
-      return controller.getItem(controller.state.active[0]);
+    } else if (active && active.length > 0) {
+      if (multiple && selected && selected.find((i) => i === active[0])) {
+        return undefined;
+      }
+      return controller.getItem(active[0]);
     }
     if (!multiple) {
       return controller.adapt(value as T | null | undefined);

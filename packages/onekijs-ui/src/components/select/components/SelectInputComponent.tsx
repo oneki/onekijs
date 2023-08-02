@@ -50,6 +50,7 @@ const SelectInputComponent = <T, I extends SelectItem<T> = SelectItem<T>>(
     loading ||
     !showSelectedRef.current ||
     !value.toString().toLowerCase().startsWith(partialValue.toLowerCase());
+
   const proxyValue = showPartialValue
     ? focus || loading || fetching
       ? value !== undefined &&
