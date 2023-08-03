@@ -442,7 +442,6 @@ export default class CollectionService<
 
   @reducer
   load(limit?: number, offset?: number, replace = false): void {
-    console.log('load', 'limit', limit, 'offset', offset);
     if (!this.state.local) {
       const resetData = this.state.items ? false : true;
       this._setLoading({ limit, offset, resetData });
@@ -1079,7 +1078,6 @@ export default class CollectionService<
         items.splice(offset, limit, ...itemResult.slice(0, limit));
 
         this._setItems(items);
-        console.log('_setItems', items.length,  Object.assign([], items));
         if (data.length < limit) {
           this.state.total = this.state.items?.length;
         }

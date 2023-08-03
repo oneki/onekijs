@@ -143,7 +143,6 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
               }
 
               if (notLoadedNextIndex !== undefined) {
-                console.log('notLoadedNextIndex', notLoadedNextIndex, slice, state.items);
                 const offset = state.total
                   ? Math.min(state.total, lastVirtualItemIndex + notLoadedNextIndex)
                   : lastVirtualItemIndex + notLoadedNextIndex;

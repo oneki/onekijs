@@ -1000,6 +1000,7 @@ export default class FormService<T extends object = any> extends DefaultService<
       set(this.state.values, key as NestedKeyOf<T>, values[key as NestedKeyOf<T>] as PathType<T, NestedKeyOf<T>>);
       this._getSubWatchs(key as NestedKeyOf<T>).forEach((key) => this.pendingDispatch.valueChange.add(key));
     });
+
     this.compileValidations(Object.keys(validations) as NestedKeyOf<T>[]);
   }
 

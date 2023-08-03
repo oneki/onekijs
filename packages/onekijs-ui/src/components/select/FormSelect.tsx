@@ -5,6 +5,7 @@ import useFieldLayout from '../field/hooks/useFieldLayout';
 import { FormSelectProps, SelectItem, SelectProps } from './typings';
 
 const FormSelect = <T extends any = any, I extends SelectItem<T> = SelectItem<T>>(props: FormSelectProps<T, I>) => {
+
   const defaultValue = props.defaultValue === undefined ? (props.multiple ? [] : null) : props.defaultValue;
   const [fieldLayoutProps, fieldComponentProps] = useFieldLayout<SelectProps<T, I>>(
     Object.assign({}, props, {
