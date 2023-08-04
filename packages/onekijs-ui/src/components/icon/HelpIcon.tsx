@@ -4,10 +4,11 @@ import { color } from '../../styles/typography';
 import { alignItems } from '../../styles/alignment';
 import { display } from '../../styles/display';
 import { IconProps } from './typings';
+import { addClassname } from '../../utils/style';
 
 const IconComponent: FC<IconProps> = ({ className, onClick, style }) => {
   return (
-    <div className={className} onClick={onClick} style={style}>
+    <div className={addClassname('o-icon-help', className)} onClick={onClick} style={style}>
       <svg
         className="o-icon-help-svg"
         viewBox="0 0 512 512"

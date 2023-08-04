@@ -1,11 +1,12 @@
 import { FCC } from 'onekijs-framework';
 import React, { useEffect, useId, useState } from 'react';
+import ReactDOM from 'react-dom';
 import { usePopperTooltip } from 'react-popper-tooltip';
 import { addClassname } from '../../../utils/style';
 import { TooltipProps } from '../typings';
 
 const TooltipComponent: FCC<TooltipProps> = (props) => {
-  const { content, className, popperOptions, children, delayHide = 300, ...tooltipConfig } = props;
+  const { content, className, popperOptions, children, delayHide = 300, attachToBody, ...tooltipConfig } = props;
   const [show, setShow] = useState<boolean>(true);
   const tooltipOptions = Object.assign(
     {
@@ -44,17 +45,29 @@ const TooltipComponent: FCC<TooltipProps> = (props) => {
     };
   }, [uid]);
 
-  return (
-    <div className={classNames} ref={setTriggerRef}>
-      {children}
-      {show && visible && content && (
-        <div ref={setTooltipRef} style={containerStyle as React.CSSProperties} {...containerProps}>
-          <div style={arrowStyle as React.CSSProperties} {...arrowProps} />
-          {content}
-        </div>
-      )}
+  const element =  (
+    <div ref={setTooltipRef} style={containerStyle as React.CSSProperties} {...containerProps}>
+      <div style={arrowStyle as React.CSSProperties} {...arrowProps} />
+        {content}
     </div>
-  );
+  )
+
+
+  if (attachToBody) {
+    return (
+      <div ref={setTriggerRef}>
+        {children}
+        {show && visible && content && ReactDOM.createPortal(<div className={classNames} style={{position: 'absolute', width: '100%'}}>{element}</div>, document.body)}
+      </div>
+    )
+  } else {
+    return (
+      <div className={classNames} ref={setTriggerRef}>
+        {children}
+        {show && visible && content && element}
+      </div>
+    );
+  }
 };
 
 export default TooltipComponent;

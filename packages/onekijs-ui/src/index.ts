@@ -88,6 +88,7 @@ export { default as Row } from './components/grid/Row';
 export { colStyle, rowStyle } from './components/grid/style';
 export { ColProps, GridSize, RowProps } from './components/grid/typings';
 export { default as CloseAllIcon } from './components/icon/CloseAllIcon';
+export { default as HelpIcon } from './components/icon/HelpIcon';
 export { default as CrossIcon } from './components/icon/CrossIcon';
 export { default as ErrorIcon } from './components/icon/ErrorIcon';
 export { default as FileIcon } from './components/icon/FileIcon';

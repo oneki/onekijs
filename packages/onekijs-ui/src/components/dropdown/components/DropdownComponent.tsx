@@ -205,7 +205,7 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
   );
 
   if (attachToBody) {
-    return <> {ReactDOM.createPortal(element, document.body)}</>;
+    return <>{ReactDOM.createPortal(element, document.body)}</>;
   } else {
     return <>{element}</>;
   }

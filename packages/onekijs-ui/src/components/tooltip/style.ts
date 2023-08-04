@@ -125,7 +125,7 @@ const tooltipStyle: ComponentStyle<TooltipProps> = ({ kind = 'secondary', theme 
         }
       }
     }
-    .o-tooltip-arrow {
+    &.o-tooltip-arrow, .o-tooltip-arrow {
       ${height('1rem')}
       ${width('1rem')}
       ${position('absolute')}

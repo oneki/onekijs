@@ -8,4 +8,5 @@ export interface TooltipProps extends Config {
   popperOptions?: PopperOptions;
   kind?: ColorPropertyTheme;
   delayHide?: number;
+  attachToBody?: boolean;
 }

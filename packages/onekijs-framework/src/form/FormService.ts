@@ -737,43 +737,61 @@ export default class FormService<T extends object = any> extends DefaultService<
 
   @reducer
   remove(fieldArrayName: NestedKeyOf<T>, index: number): void {
+    const move = (oldIndex: string, newIndex: string) => {
+      const nextField: Field<T> | undefined = this.fields[oldIndex as NestedKeyOf<T>];
+      const currentField = this.fields[newIndex as NestedKeyOf<T>] as Field<T>;
+
+      if (nextField) {
+        this.state.validations[newIndex] =
+          this.state.validations[oldIndex];
+        this.state.metadata[newIndex] =
+          this.state.metadata[oldIndex];
+        this.fields[newIndex as NestedKeyOf<T>] = Object.assign(nextField, {
+          name: currentField.name,
+          context: currentField.context,
+        });
+        this.pendingDispatch.validationChange.add(newIndex);
+        this.pendingDispatch.metadataChange.add(newIndex);
+      } else {
+        delete this.state.validations[newIndex];
+        delete this.state.metadata[newIndex];
+        delete this.fields[newIndex as NestedKeyOf<T>];
+      }
+      delete this.triggered[oldIndex];
+    }
+
+    const rm = (oldIndex: string) => {
+      delete this.state.metadata[oldIndex];
+      delete this.state.validations[oldIndex];
+      delete this.fields[oldIndex as NestedKeyOf<T>];
+      delete this.triggered[oldIndex];
+    }
+
     const currentArrayValue = (get<any>(this.state.values, fieldArrayName) || []) as any[];
     const last = currentArrayValue.length - 1;
     if (last >= index) {
       const nextValues: AnonymousPathObject<T> = {};
       // need to modifiy all values / metadata / validations with an index superior to the removed one
       for (let i = index + 1; i < currentArrayValue.length; i++) {
-        Object.keys(currentArrayValue[i]).forEach((fieldName) => {
-          // nextValues[`${fieldArrayName}.${i - 1}.${fieldName}`] = currentArrayValue[i][fieldName];
-          const nextField: Field<T> | undefined = this.fields[`${fieldArrayName}.${i}.${fieldName}` as NestedKeyOf<T>];
-          const currentField = this.fields[`${fieldArrayName}.${i-1}.${fieldName}` as NestedKeyOf<T>] as Field<T>;
+        if (currentArrayValue[i] === null || currentArrayValue[i] === undefined || !(typeof currentArrayValue[i] === 'object')) {
+          // singlecolumntable
+          move(`${fieldArrayName}.${i}`, `${fieldArrayName}.${i-1}`);
+        } else {
+          Object.keys(currentArrayValue[i]).forEach((fieldName) => {
+            move(`${fieldArrayName}.${i}.${fieldName}`, `${fieldArrayName}.${i-1}.${fieldName}`);
+          });
+        }
 
-          if (nextField) {
-            this.state.validations[`${fieldArrayName}.${i - 1}.${fieldName}`] =
-              this.state.validations[`${fieldArrayName}.${i}.${fieldName}`];
-            this.state.metadata[`${fieldArrayName}.${i - 1}.${fieldName}`] =
-              this.state.metadata[`${fieldArrayName}.${i}.${fieldName}`];
-            this.fields[`${fieldArrayName}.${i - 1}.${fieldName}` as NestedKeyOf<T>] = Object.assign(nextField, {
-              name: currentField.name,
-              context: currentField.context,
-            });
-            this.pendingDispatch.validationChange.add(`${fieldArrayName}.${i - 1}.${fieldName}`);
-            this.pendingDispatch.metadataChange.add(`${fieldArrayName}.${i - 1}.${fieldName}`);
-          } else {
-            delete this.state.validations[`${fieldArrayName}.${i - 1}.${fieldName}`];
-            delete this.state.metadata[`${fieldArrayName}.${i}.${fieldName}`];
-            delete this.fields[`${fieldArrayName}.${i - 1}.${fieldName}` as NestedKeyOf<T>];
-          }
-          delete this.triggered[`${fieldArrayName}.${i}.${fieldName}`];
-        });
       }
       del(this.fieldIndex, `${fieldArrayName}.${last}`);
-      Object.keys(currentArrayValue[last]).forEach((fieldName) => {
-        delete this.state.metadata[`${fieldArrayName}.${last}.${fieldName}`];
-        delete this.state.validations[`${fieldArrayName}.${last}.${fieldName}`];
-        delete this.fields[`${fieldArrayName}.${last}.${fieldName}` as NestedKeyOf<T>];
-        delete this.triggered[`${fieldArrayName}.${last}.${fieldName}`];
-      });
+      if (currentArrayValue[last] === null || currentArrayValue[last] === undefined || !(typeof currentArrayValue[last] === 'object')) {
+        rm(`${fieldArrayName}.${last}`)
+      } else {
+        Object.keys(currentArrayValue[last]).forEach((fieldName) => {
+          rm(`${fieldArrayName}.${last}.${fieldName}`)
+        });
+      }
+
       this.pendingDispatch.validationChange.add('');
 
       nextValues[fieldArrayName] = currentArrayValue.filter((_a, i): boolean => i !== index) as any;
