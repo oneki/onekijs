@@ -1,0 +1,1 @@
+Basic application with custom store and global services

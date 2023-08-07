@@ -1,5 +1,6 @@
 import { ParameterReflection, ReflectionKind } from 'typedoc';
 import {
+  ArrayType,
   DeclarationReflection,
   IntersectionType,
   IntrinsicType,
@@ -302,6 +303,11 @@ export class ElementParser {
     });
   }
 
+  protected handleArray(element: ArrayType, context: Context) {
+    this.handleType(element.elementType, context);
+    this.appendTypeToProp('[]', context);
+  }  
+
   protected handleIntrinsic(element: IntrinsicType, context: Context) {
     this.appendTypeToProp(element.name, context);
   }
@@ -390,6 +396,8 @@ export class ElementParser {
       this.handleIntrinsic(type, context);
     } else if (type.type === 'literal') {
       this.handleLiteral(type, context);
+    } else if (type.type === 'array') {
+      this.handleArray(type, context);
     }
   }
 

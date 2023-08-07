@@ -12,6 +12,7 @@
   "scripts": {
     "dev": "nodemon",
     "start": "ts-node src/index.ts",
+    "build-test": "typedoc --json ./dist/test.json src/test.ts && ts-node src/index.ts ./dist/test.json ./dist/framework-api /framework-api",
     "build": "echo done"
   },
   "author": "Oneki",

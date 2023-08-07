@@ -129,6 +129,10 @@ export type ComponentOptions = {
   alias?: string;
 };
 
+export type Class<T> = {
+  new (...args: any[]): T;
+};
+
 export type ComponentProps = {
   /**
    * The name of the user
@@ -147,13 +151,13 @@ export type ComponentProps = {
    * this is the example block code
    * ```
    */
-  name: string | number;
+  name: Class<ComponentOptions>[];
   /**
    * The last name of the user
    *
    * @defaultValue Doe
    */
-  lastname?: string;
+  lastname?: string[];
   /**
    * The type of the user
    */
@@ -194,7 +198,7 @@ export type ComponentProps = {
  * @group Form
  * @category Components
  */
-export const MyComponent: FCC<ComponentProps> = ({ name }) => {
+export const MyComponent2: FCC<ComponentProps> = ({ name }) => {
   return null;
 };
 
