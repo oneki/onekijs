@@ -505,7 +505,12 @@ export default class FormService<T extends object = any> extends DefaultService<
                 name,
                 onChange: (value: any): void => {
                   if (value && value.nativeEvent && value.nativeEvent instanceof Event) {
-                    value = value.target.value;
+                    if (!isNaN(value.target.valueAsNumber)) {
+                      value = value.target.valueAsNumber;
+                    } else {
+                      value = value.target.value;
+                    }
+
                   }
                   this.setValue(name, value);
                 },
