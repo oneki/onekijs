@@ -16,9 +16,9 @@
     "lint": "lerna exec --parallel --scope onekijs -- eslint 'src/**/*.{js,ts,tsx}' --fix"
   },
   "workspaces": [
-    "packages/**",
-    "examples/*",
-    "getting-started/**"
+    "./packages/*",
+    "./examples/*",
+    "./getting-started/*"
   ],
   "devDependencies": {
     "@babel/cli": "^7.22.9",

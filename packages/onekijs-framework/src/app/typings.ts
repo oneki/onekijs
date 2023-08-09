@@ -17,6 +17,7 @@ export interface AppProps {
    * **[More info here](/framework/configuration/introduction)**
    *
    * @defaultValue {}
+   * @remarks #important#
    */
   settings?: AppSettings | Promise<AppSettings>;
   /**

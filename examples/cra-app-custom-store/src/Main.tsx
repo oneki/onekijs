@@ -1,10 +1,13 @@
 import { useGlobalProp } from 'onekijs';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { useLoadingService } from './LoadingService';
 
 export const Main: FC = () => {
   const loadingService = useLoadingService();
-  const loading = useGlobalProp('loading');
+
+  // 'loading' is a prop stored in the global state (redux)
+  // This prop is updated by the global service 'LoadingService'
+  const loading = useGlobalProp('loading'); 
   return (
     <div>
       <button onClick={() => loadingService.load()} disabled={loading}>

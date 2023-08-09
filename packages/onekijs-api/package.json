@@ -12,7 +12,8 @@
   "scripts": {
     "dev": "nodemon",
     "start": "ts-node src/index.ts",
-    "build-test": "typedoc --json ./dist/test.json src/test.ts && ts-node src/index.ts ./dist/test.json ./dist/framework-api /framework-api",
+    "build-json": "typedoc --json ./dist/test.json src/test.ts",
+    "build-md": "ts-node src/index.ts ./dist/test2.json ./dist/framework-api /framework-api",
     "build": "echo done"
   },
   "author": "Oneki",
@@ -22,6 +23,6 @@
     "@types/node": "^18.7.1",
     "nodemon": "^2.0.19",
     "ts-node": "^10.9.1",
-    "typedoc": "^0.23.10"
+    "typedoc": "^0.24.8"
   }
 }
