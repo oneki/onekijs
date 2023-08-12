@@ -12,13 +12,13 @@ const LoginPage: FC = () => {
   // router.saveOrigin() stores in the router the page that triggered a redirect to this page and will use it to redirect the user
   // to the correct page once the user is authenticated (example: /auth/secure)
   router.saveOrigin(true);
-  
+
   const basePath = location.pathname;
   return (
     <div>
       <ul>
         <li><Link href={`${basePath}/form`}>Login with username / password (Standard form based authentication)</Link></li>
-        <li><Link href={`${basePath}/google`}>Login with Google (Open ID Connect authentication)</Link></li>
+        <li><Link href={`${basePath}/google`} target="_top">Login with Google (Open ID Connect authentication)</Link></li>
         <li><Link href={`${basePath}/external`}>External login (Authentication performed externally)</Link></li>
       </ul>
     </div>
