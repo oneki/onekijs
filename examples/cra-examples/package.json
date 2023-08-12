@@ -9,12 +9,14 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^14.4.3",
+    "msw": "^1.2.2",
     "onekijs": "^0.18.0",
     "onekijs-ui": "^0.18.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@iodigital/vite-plugin-msw": "1.0.0",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
     "@typescript-eslint/eslint-plugin": "^5.61.0",
@@ -27,10 +29,12 @@
     "vite": "^4.4.0"
   },
   "scripts": {
-    "start": "vite",
-    "build": "tsc && vite build",
+    "start": "vite --debug",
+    "dev": "vite",
+    "build": "tsc && vite build && cp dist/index.html dist/200.html",
+    "deploy": "npm run build && surge --project ./dist --domain oneki-examples.surge.sh",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite build && vite preview"
   },
   "browserslist": {
     "production": [
@@ -43,5 +47,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "msw": {
+    "workerDirectory": "public"
   }
 }

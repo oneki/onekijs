@@ -4,7 +4,8 @@ import { ClarityTheme } from 'onekijs-theme-clarity';
 
 const sections: Record<string, string> = {
   "Home": "/",
-  "Settings": "/settings"
+  "Settings": "/settings",
+  "Auth": "/auth",
 }
 
 const AppLayout: FC = () => {
@@ -25,10 +26,10 @@ const AppLayout: FC = () => {
           }}
         >
           {Object.keys(sections).map((k, i) => (
-            <>
+            <span key={k}>
               {i > 0 && <span> | </span>}
               <Link href={sections[k]}>{k}</Link>
-            </>
+            </span>
           ))}
         </div>
         <div style={{ paddingLeft: '100px', paddingRight: '100px' }}>

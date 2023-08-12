@@ -44,6 +44,7 @@
     "@babel/preset-env": "^7.22.9",
     "@babel/preset-react": "^7.22.5",
     "@clr/city": "^1.1.0",
+    "@iodigital/vite-plugin-msw": "1.0.0",
     "@peculiar/webcrypto": "^1.4.3",
     "@popperjs/core": "^2.4.4",
     "@reach/observe-rect": "^1.2.0",

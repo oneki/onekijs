@@ -1,0 +1,29 @@
+name: getting-started
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'examples/cra-examples/**'
+
+jobs:
+  Build:
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - run: npm install
+      - run: npm run build
+      - run: cd examples/cra-examples && npm run deploy
+        env:
+          SURGE_LOGIN: ${{ secrets.SURGE_LOGIN }}
+          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
