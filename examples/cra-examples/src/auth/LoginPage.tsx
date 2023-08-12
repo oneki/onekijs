@@ -18,7 +18,7 @@ const LoginPage: FC = () => {
     <div>
       <ul>
         <li><Link href={`${basePath}/form`}>Login with username / password (Standard form based authentication)</Link></li>
-        <li><Link href={`${basePath}/google`} target="_blank">Login with Google 🡕</Link></li>
+        <li><Link href={`${basePath}/google`} target="_blank">Login with Google 🡕 (Open ID Connect)</Link></li>
         <li><Link href={`${basePath}/external`}>External login (Authentication performed externally)</Link></li>
       </ul>
     </div>
