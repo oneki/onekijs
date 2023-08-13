@@ -16,7 +16,7 @@ const settings: Settings = {
   },
   routes: {
     login: '/auth/login',
-    loginCallback: '/authlogin/callback',
+    loginCallback: '/auth/login/callback',
     logout: '/auth/logout',
     logoutCallback: '/auth/logout/callback',
     home: '/',
@@ -35,7 +35,7 @@ const settings: Settings = {
       authorizeEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth', // a redirect is done to this relative URL, a absolute URL or a function returning a URL ((idp, context) => 'https://example.com/oauth2/authorize?.....'). If it's a relative URL, it's prefixed by the server.baseUrl. Example: https://auth.oneki.net/oauth2/authorize
       tokenEndpoint: 'https://onekijs-example-backend.vercel.app/api/oauth2/google/token',
       userinfoEndpoint: 'https://onekijs-example-backend.vercel.app/api/oauth2/google/userinfo', // can be token://<token_prop> or an URL or a function (idp, context) => { return {email: 'foo@example.com', roles: ['ADMIN']}}) returning the securityContext (can be a Promise). If not set, defaults to token://id_token if response_type contains id_token or token://access_token if repsonse_type contains only token
-      logoutEndpoint: 'https://onekijs-example-backend.vercel.app/api/oauth2/google/logout', // a redirect is done to this relative URL, a absolute URL or a function returning a URL ((idp, context) => 'https://example.com/oauth2/logout?.....'). If it's a relative URL, it's prefixed by the server.baseUrl . Example: https://auth.oneki.net/logout
+      externalLogoutEndpoint: 'https://onekijs-example-backend.vercel.app/api/oauth2/google/logout', // a redirect is done to this relative URL, a absolute URL or a function returning a URL ((idp, context) => 'https://example.com/oauth2/logout?.....'). If it's a relative URL, it's prefixed by the server.baseUrl . Example: https://auth.oneki.net/logout
       scope: 'openid email profile',
       persist: 'localStorage', // by default, the access token is only stored in memory
     },
