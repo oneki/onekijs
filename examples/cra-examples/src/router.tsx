@@ -2,6 +2,7 @@ import { Route, Routes } from 'onekijs';
 import AppLayout from './@layout/AppLayout';
 import SettingsRouter from './settings/router';
 import AuthRouter from './auth/router';
+import StateManagementRouter from './state-management/router';
 
 const RootRouter = (): JSX.Element => {
   return (
@@ -9,6 +10,7 @@ const RootRouter = (): JSX.Element => {
       <Route element={<AppLayout />}>
         <Route path="/settings/*" element={<SettingsRouter />} />
         <Route path="/auth/*" element={<AuthRouter />} />
+        <Route path="/state-management/*" element={<StateManagementRouter />} />
         <Route index element={<div>Home</div>} />
       </Route>
     </Routes>

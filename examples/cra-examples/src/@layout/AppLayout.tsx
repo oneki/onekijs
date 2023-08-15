@@ -5,7 +5,8 @@ import { ClarityTheme } from 'onekijs-theme-clarity';
 const sections: Record<string, string> = {
   "Home": "/",
   "Settings": "/settings",
-  "Auth": "/auth",
+  "State management": "/state-management",
+  "Security": "/auth",
 }
 
 const AppLayout: FC = () => {
