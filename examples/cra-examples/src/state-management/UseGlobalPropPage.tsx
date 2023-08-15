@@ -7,7 +7,7 @@ const UseGlobalPropPage: FC = () => {
 
   return (
     <>
-      {!foo && <div>The global state doesn't contain the key 'foo'. You can set it <Link href="use-global-state">via this page</Link>.</div>}
+      {!foo && <div>The global state doesn't contain the key 'foo'. You can set it <Link href="/state-management/use-global-state">via this page</Link>.</div>}
       {foo && <div>Value in global state: {foo}</div>}
     </>
   );
