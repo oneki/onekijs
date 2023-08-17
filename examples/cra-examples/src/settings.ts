@@ -31,7 +31,7 @@ const settings: Settings = {
     },
     external: {
       type: "external",
-      externalLoginEndpoint: "https://examples.oneki.net/auth/external-login",
+      externalLoginEndpoint: "https://examples.oneki.net/backend/external-login",
       userinfoEndpoint: "https://examples.oneki.net/api/auth/userinfo", 
     },
     google: {
