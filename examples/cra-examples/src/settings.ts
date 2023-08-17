@@ -27,7 +27,12 @@ const settings: Settings = {
       loginEndpoint: 'https://onekijs-example-backend.vercel.app/api/auth/login',
       logoutEndpoint: 'https://onekijs-example-backend.vercel.app/api/auth/logout',
       userinfoEndpoint: 'https://onekijs-example-backend.vercel.app/api/auth/userinfo',
-      callback: 'securityContext',
+      callback: 'securityContext', // the body of the response is the profile of the user
+    },
+    external: {
+      type: "external",
+      externalLoginEndpoint: "https://onekijs-example-backend.vercel.app/auth/external-login",
+      userinfoEndpoint: "https://onekijs-example-backend.vercel.app/api/auth/userinfo", 
     },
     google: {
       type: 'oidc_server',

@@ -1,16 +1,17 @@
 import { Route, Routes } from 'onekijs';
-import FormLoginPage from './FormLoginPage';
-import LoginCallbackPage from './google/LoginCallbackPage';
-import GoogleLoginPage from './GoogleLoginPage';
 import GoogleRouter from './google/router';
+import ExternalLoginRouter from './external-login/router';
+import FormLoginRouter from './form/router';
+import LoginPage from './IndexPage';
 
 
 const LoginRouter = (): JSX.Element => {
   return (
     <Routes>
-      <Route path="form" element={<FormLoginPage />} />
+      <Route path="external-login/*" element={<ExternalLoginRouter />} />
+      <Route path="form/*" element={<FormLoginRouter />} />
       <Route path="google/*" element={<GoogleRouter />} />
-      <Route path="google" element={<GoogleLoginPage />} />
+      <Route index element={<LoginPage />} />
     </Routes>
   );
 };
