@@ -853,6 +853,10 @@ export const formatSortBy = (sortBy: string | QuerySortBy | QuerySortBy[] | unde
     return currentSortBy;
   }
 
+  if (Object.isFrozen(currentSortBy)) {
+    currentSortBy = Object.assign([], currentSortBy);
+  }
+
   if (Array.isArray(sortBy)) {
     currentSortBy.splice(0, currentSortBy.length, ...sortBy);
   } else if (!sortBy) {

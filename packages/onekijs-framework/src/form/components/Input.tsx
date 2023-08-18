@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import useField from '../useField';
 import { InputProps } from '../typings';
 import { extractValidators } from '../utils';
@@ -25,6 +25,20 @@ const Input: FCC<InputProps> = React.memo((props) => {
     inputClassName = mergeString(' ', className, 'o-input-error');
   }
 
+  const ref = useRef<HTMLInputElement>(null);
+  const selectorRef = useRef<number | null | undefined>()
+  const onValueChange: React.InputHTMLAttributes<HTMLInputElement>['onChange'] = (e) => {
+    selectorRef.current = e.target.selectionStart;
+    onChange && onChange(e);
+  }
+
+  useEffect(() => {
+    if (selectorRef.current !== undefined && selectorRef.current !== null && ref.current) {
+      ref.current.setSelectionRange(selectorRef.current, selectorRef.current);
+      selectorRef.current = undefined;
+    }
+  }, [value]);
+
   // eslint-disable-next-line react/prop-types
   if (props.type === 'checkbox') {
     return (
@@ -43,11 +57,12 @@ const Input: FCC<InputProps> = React.memo((props) => {
   return (
     <input
       {...inputProps}
+      ref={ref}
       name={name}
       className={inputClassName}
       onFocus={onFocus}
       onBlur={onBlur}
-      onChange={onChange}
+      onChange={onValueChange}
       value={value}
     />
   );
