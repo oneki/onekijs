@@ -27,6 +27,7 @@ import {
   QuerySortComparator,
   QuerySortDir,
 } from './typings';
+import { generateUniqueId } from '../utils/string';
 
 let filterUid = 0;
 export const rootFilterId = Symbol();
@@ -197,15 +198,17 @@ export const applySortBy = <T = any, I extends Item<T> = Item<T>>(
                   ? defaultComparator
                   : comparators[field.comparator] || defaultComparator;
               const reverse = s.dir === 'desc' ? -1 : 1;
-
               result =
                 reverse *
                 comparator(
-                  get<any>(a, `data.${fieldName}` as NestedKeyOf<I>),
-                  get<any>(b, `data.${fieldName}` as NestedKeyOf<I>),
+                  get<any>(a, `data.${fieldName}`),
+                  get<any>(b, `data.${fieldName}`),
                 );
-              if (result !== 0) break sort_loop;
+              if (result !== 0) {
+                break;
+              }
             }
+            if (result !== 0) break sort_loop;
           }
         }
         return result;
@@ -593,6 +596,7 @@ export const parseSortBy = (sortBy: string): QuerySortBy[] => {
     const dir = order.toLowerCase() === 'desc' ? 'desc' : 'asc';
     if (id === undefined || id === '') {
       sorts.push({
+        id: undefined,
         fields: [
           {
             name: field,
@@ -602,7 +606,7 @@ export const parseSortBy = (sortBy: string): QuerySortBy[] => {
         dir,
       });
     } else {
-      const current = sorts.find((t: any) => t.id === id);
+      const current = sorts.find((s: any) => s.id === id);
       if (current) {
         current.fields.push({
           name: field,
@@ -621,19 +625,21 @@ export const parseSortBy = (sortBy: string): QuerySortBy[] => {
         });
       }
     }
-    for (const sort of sorts) {
-      if (sort.fields.length === 1) {
-        result.push({
-          id: sort.id,
-          field: sort.fields[0].name,
-          dir: sort.dir,
-          comparator: sort.fields[0].comparator,
-        } as QuerySortByField);
-      } else {
-        result.push(sort as QuerySortByMultiFields);
-      }
-    }
   });
+
+  for (const sort of sorts) {
+    if (sort.fields.length === 1) {
+      result.push({
+        id: sort.id,
+        field: sort.fields[0].name,
+        dir: sort.dir,
+        comparator: sort.fields[0].comparator,
+      } as QuerySortByField);
+    } else {
+      result.push(sort as QuerySortByMultiFields);
+    }
+  }
+
   return result;
 };
 
@@ -832,43 +838,76 @@ export const formatFilter = (
   }
 };
 
-export const formatSortBy = (sortBy: string | QuerySortBy | QuerySortBy[] | undefined, currentSortBy?: string | QuerySortBy | QuerySortBy[]): QuerySortBy[] => {
-  let merge = true;
-  if (currentSortBy === undefined) {
-    currentSortBy = sortBy;
-    merge = false;
-  } else if (shallowEqual(currentSortBy, sortBy)) {
-    merge = false;
-  }
-
-  if (currentSortBy === undefined) {
-    currentSortBy = [];
-  } else if (typeof currentSortBy === 'string') {
-    currentSortBy = [{field: currentSortBy}];
-  } else if (!Array.isArray(currentSortBy)) {
-    currentSortBy = [currentSortBy]
-  }
-
-  if (!merge) {
-    return currentSortBy;
-  }
-
-  if (Object.isFrozen(currentSortBy)) {
-    currentSortBy = Object.assign([], currentSortBy);
-  }
-
+export const toQuerySortBy = (sortBy: QuerySortBy | QuerySortBy[] | string | undefined): QuerySortBy[] => {
   if (Array.isArray(sortBy)) {
-    currentSortBy.splice(0, currentSortBy.length, ...sortBy);
-  } else if (!sortBy) {
-    currentSortBy.splice(0, currentSortBy.length);
-  } else if (typeof sortBy === 'string') {
-    currentSortBy.splice(0, currentSortBy.length, {
-      field: sortBy,
-    });
-  } else {
-    currentSortBy.splice(0, currentSortBy.length, sortBy);
+    return sortBy.map((s) => toQuerySortBy(s)[0]);
   }
-  return currentSortBy;
+  if (sortBy === undefined) {
+    return [];
+  }
+  if (typeof sortBy === 'string') {
+    return [{
+      id: undefined,
+      dir: 'asc',
+      comparator: undefined,
+      field: sortBy,
+    }]
+  }
+  if (isQuerySortByMultiFields(sortBy)) {
+    if (sortBy.fields.length === 1) {
+      return [{
+        id: sortBy.id,
+        dir: sortBy.dir || 'asc',
+        comparator: (typeof sortBy.fields[0] === 'string') ? undefined: sortBy.fields[0].comparator,
+        field: (typeof sortBy.fields[0] === 'string') ? sortBy.fields[0] : sortBy.fields[0].name,
+      }]
+    } else {
+      return [{
+        id: sortBy.id || generateUniqueId(),
+        fields: sortBy.fields.map((f) => typeof f === 'string' ? ({name: f, comparator: undefined}) : f),
+        dir: sortBy.dir || 'asc',
+      }]
+    }
+  } else {
+    return [{
+      id: sortBy.id,
+      dir: sortBy.dir || 'asc',
+      comparator: sortBy.comparator,
+      field: sortBy.field
+    }]
+  }
+}
+
+
+export const formatSortBy = (sortBy: string | QuerySortBy | QuerySortBy[] | undefined, currentSortBy?: QuerySortBy[]): QuerySortBy[] => {
+  if (sortBy === undefined) {
+    return currentSortBy || [];
+  }
+  sortBy = toQuerySortBy(sortBy);
+  if (currentSortBy === undefined) {
+    return sortBy;
+  } else if (isSameSortBy(sortBy, currentSortBy)) {
+    return currentSortBy;  // keep the reference
+  } else {
+    return sortBy;
+  }
+
+  // if (Object.isFrozen(currentSortBy)) {
+  //   currentSortBy = Object.assign([], currentSortBy);
+  // }
+
+  // if (Array.isArray(sortBy)) {
+  //   currentSortBy.splice(0, currentSortBy.length, ...sortBy);
+  // } else if (!sortBy) {
+  //   currentSortBy.splice(0, currentSortBy.length);
+  // } else if (typeof sortBy === 'string') {
+  //   currentSortBy.splice(0, currentSortBy.length, {
+  //     field: sortBy,
+  //   });
+  // } else {
+  //   currentSortBy.splice(0, currentSortBy.length, sortBy);
+  // }
+  // return currentSortBy;
 };
 
 export const getDefaultCollectionStatus = (

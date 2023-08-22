@@ -55,6 +55,7 @@ import {
   parseQuery,
   rootFilterId,
   shouldResetData,
+  toQuerySortBy,
   urlSerializer,
   visitFilter,
 } from './utils';
@@ -88,6 +89,10 @@ export default class CollectionService<
     if (this.state.filter) {
       this.state.filter = formatFilter(this.state.filter);
     }
+    if (this.state.sortBy) {
+      this.state.sortBy = toQuerySortBy(this.state.sortBy);
+    }
+
     if (!this.state.router) {
       this.state.router = new LocalRouter();
     }
@@ -1433,9 +1438,13 @@ export default class CollectionService<
   @reducer
   _setQuery(query: Query, force = true): void {
     const nextFilter = formatFilter(query.filter);
-    if (force || nextFilter) this.state.filter = nextFilter;
+    if (force || nextFilter) {
+      this.state.filter = nextFilter;
+    }
     const nextSortBy = formatSortBy(query.sortBy, get<any>(this.state, 'sortBy'));
-    if (force || query.sortBy !== undefined) this.state.sortBy = nextSortBy;
+    if (force || query.sortBy !== undefined) {
+      this.state.sortBy = nextSortBy;
+    }
     if (force || query.sort) this.state.sort = query.sort;
     if (force || query.search) this.state.search = query.search;
     if (force || query.fields) this.state.fields = query.fields;
