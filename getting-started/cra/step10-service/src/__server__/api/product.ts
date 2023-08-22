@@ -26,7 +26,7 @@ const productAvailabilityHandler = rest.get<AvailabilityResponse>(
   },
 );
 
-const productHandlers = (): RequestHandler<any, any, any, any, any>[] => {
+const productHandlers = (): RequestHandler[] => {
   return [productAvailabilityHandler];
 };
 

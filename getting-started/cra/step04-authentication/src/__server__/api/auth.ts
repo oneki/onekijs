@@ -20,7 +20,7 @@ const loginHandler = rest.post<LoginRequest, LoginResponse>('/auth/login', (req,
   );
 });
 
-const logoutHandler = rest.get<void>('/auth/logout', (req, res, ctx) => {
+const logoutHandler = rest.get('/auth/logout', (req, res, ctx) => {
   sessionStorage.removeItem(SESSION_STORAGE_USERNAME_KEY); // Specific code to work on CodeSandbox
   return res(
     ctx.cookie('username', 'deleted', {
@@ -29,7 +29,7 @@ const logoutHandler = rest.get<void>('/auth/logout', (req, res, ctx) => {
   );
 });
 
-const authHandlers = (): RequestHandler<any, any, any, any, any>[] => {
+const authHandlers = (): RequestHandler[] => {
   return [loginHandler, logoutHandler];
 };
 

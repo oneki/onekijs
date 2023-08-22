@@ -19,6 +19,19 @@ const AppRouter: FCC = ({ children }) => {
   );
 };
 
+const FCCApp: FCC<AppProps> = ({ LoadingComponent = DefaultLoadingComponent, children, ...props }) => {
+  const router = useLazyRef<ReactRouter>(() => {
+    return new ReactRouter();
+  });
+  return (
+    <AppState {...props} router={router.current}>
+      <AppRouter>
+        <Suspense fallback={<LoadingComponent />}>{children}</Suspense>
+      </AppRouter>
+    </AppState>
+  );
+};
+
 /**
  * `<App/>` is the main component that bootstraps the **_Oneki.js framework_** on top of **_Create React App_**
  *
@@ -45,18 +58,5 @@ const AppRouter: FCC = ({ children }) => {
  * @group Application
  * @category Components
  */
-const FCCApp: FCC<AppProps> = ({ LoadingComponent = DefaultLoadingComponent, children, ...props }) => {
-  const router = useLazyRef<ReactRouter>(() => {
-    return new ReactRouter();
-  });
-  return (
-    <AppState {...props} router={router.current}>
-      <AppRouter>
-        <Suspense fallback={<LoadingComponent />}>{children}</Suspense>
-      </AppRouter>
-    </AppState>
-  );
-};
-
 export const App = React.memo(FCCApp);
 App.displayName = 'App';

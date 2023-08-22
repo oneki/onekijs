@@ -1,4 +1,4 @@
-import { RequestHandler, rest } from 'msw';
+import { PathParams, RequestHandler, rest } from 'msw';
 import { SESSION_STORAGE_CART_KEY } from '../constants';
 import { CartType, CartResponse } from './dto/cart';
 import { AddProductRequest, AddProductResponse } from './dto/product';
@@ -10,12 +10,12 @@ const getCartHandler = rest.get<CartResponse>('/cart', (req, res, ctx) => {
   return res(ctx.json(loadCart()));
 });
 
-const deleteCartHandler = rest.delete<void>('/cart', (req, res, ctx) => {
+const deleteCartHandler = rest.delete('/cart', (req, res, ctx) => {
   sessionStorage.removeItem(SESSION_STORAGE_CART_KEY);
   return res();
 });
 
-const addProductHandler = rest.post<AddProductRequest, AddProductResponse>('/cart/products', (req, res, ctx) => {
+const addProductHandler = rest.post<AddProductRequest, PathParams, AddProductResponse>('/cart/products', (req, res, ctx) => {
   const cart = loadCart();
   cart.products.push(req.body);
   sessionStorage.setItem(SESSION_STORAGE_CART_KEY, JSON.stringify(cart));
@@ -45,7 +45,7 @@ const loadCart = (): CartType => {
   return cart;
 };
 
-const cartHandlers = (): RequestHandler<any, any, any, any, any>[] => {
+const cartHandlers = (): RequestHandler[] => {
   return [getCartHandler, deleteCartHandler, addProductHandler, addProductNotAvailableHandler];
 };
 

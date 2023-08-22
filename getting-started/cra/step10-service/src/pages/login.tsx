@@ -25,6 +25,7 @@ const LoginPage: React.FC = () => {
           <Input
             name="username"
             type="text"
+            defaultValue="demo"
             required={true}
             requiredMessage={t('Username is mandatory')}
             regex="^[a-zA-Z0-9.]{1,20}$"
@@ -36,7 +37,7 @@ const LoginPage: React.FC = () => {
             <T>Password</T>
             <span className="error">{form.getValidation('password').message}</span>
           </label>
-          <Input name="password" type="password" required={true} requiredMessage={t('Password is mandatory')} />
+          <Input name="password" type="password" defaultValue="demo" required={true} requiredMessage={t('Password is mandatory')} />
         </div>
         <SubmitButton>
           <T>Submit</T>

@@ -228,6 +228,16 @@ button:disabled {
   background-color: #c2dd93;
 }
 
+.snackbar.info {
+  background-color: #bfd1f2;
+}
+.snackbar.info span {
+  color: #10538a;
+}  
+.snackbar.info .close:hover {
+  background-color: #93bcdd;
+} 
+
 .error-boundary-container {
   display: flex;
   justify-content: center;

@@ -18,13 +18,13 @@ const LoginPage: React.FC = () => {
           <label>
             <T>Username</T>
           </label>
-          <Input name="username" type="text" />
+         <Input name="username" type="text" defaultValue="demo"/>
         </div>
         <div>
           <label>
             <T>Password</T>
           </label>
-          <Input name="password" type="password" />
+          <Input name="password" type="password" defaultValue="demo" />
         </div>
         <SubmitButton type="submit">
           {!submitting && t('Submit')}

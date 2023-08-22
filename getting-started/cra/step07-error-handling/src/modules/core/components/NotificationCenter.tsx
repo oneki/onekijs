@@ -1,12 +1,9 @@
-import { Notification, useNotifications } from 'onekijs';
+import { useNotifications } from 'onekijs';
 import React from 'react';
-import { NOTIF_TOPIC_ERROR, NOTIF_TOPIC_SUCCESS } from '../libs/constants';
 
 const NotificationCenter: React.FC = () => {
-  const errors = useNotifications(NOTIF_TOPIC_ERROR);
-  const successes = useNotifications(NOTIF_TOPIC_SUCCESS);
-  const notifications = mergeNotifications(errors, successes);
-
+  const notifications = useNotifications();
+  console.log(notifications);
   return (
     <>
       {notifications.map((notification, index) => (
@@ -23,11 +20,6 @@ const NotificationCenter: React.FC = () => {
       ))}
     </>
   );
-};
-
-// Merge all notifications and order them by timestamp
-const mergeNotifications = (a: Notification[], b: Notification[]): Notification[] => {
-  return a.concat(b).sort((a, b) => a.timestamp - b.timestamp);
 };
 
 export default NotificationCenter;

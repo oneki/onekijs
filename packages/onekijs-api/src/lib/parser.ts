@@ -1,10 +1,12 @@
 import { ParameterReflection, ReflectionKind } from 'typedoc';
 import {
+  ArrayType,
   DeclarationReflection,
   IntersectionType,
   IntrinsicType,
   LiteralType,
   ReferenceType,
+  ReflectionSymbolId,
   ReflectionType,
   SignatureReflection,
   SomeType,
@@ -43,7 +45,7 @@ export class ElementParser {
     if (indexedParsedElement) return indexedParsedElement;
 
     // Let's proccess this item
-    const parsedElement = new ParsedElement(subject.name, subject.kindString || subject.kind);
+    const parsedElement = new ParsedElement(subject.name, subject.kind);
     parsedElement.groups = indexedElement.groups;
     parsedElement.categories = indexedElement.categories;
     this.indexer.parsedElements[subject.id] = parsedElement;
@@ -75,7 +77,6 @@ export class ElementParser {
     if (see !== undefined && see !== '') {
       const aliasElement = this.indexer.elementsByName[see];
       if (!aliasElement || !aliasElement.element) return false;
-      console.log('aliasElement', parsedElement.name);
       const aliasParsedElement = this.getIndexedParsedElement(aliasElement.element.id);
       handleComment(parsedElement, comment, false);
       if (aliasParsedElement) {
@@ -101,11 +102,16 @@ export class ElementParser {
 
   protected buildLink(element: ReferenceType, context: Context) {
     if (context.doNotBuildLink === true) return element.name;
-    const id = element.id;
-    if (!id || !this.indexer.elements[id]) return element.name;
-    const parsedElement = this.getIndexedParsedElement(id);
-    if (!parsedElement) return element.name;
-    return `[${element.name}](${getDocusaurusPath(parsedElement)})`;
+    const id = element.target;
+    if (typeof(id) == 'number') {
+      if (!id || !this.indexer.elements[id]) return element.name;
+      const parsedElement = this.getIndexedParsedElement(id);
+      if (!parsedElement) return element.name;
+      return `[${element.name}](${getDocusaurusPath(parsedElement)})`;
+    } else {
+      return element.name;
+    }
+    
   }
 
   protected handleCallSignature(element: SignatureReflection, context: Context) {
@@ -114,7 +120,7 @@ export class ElementParser {
       parameters.forEach((parameter) => {
         if (parameter.name.startsWith('[') && parameter.name.endsWith(']')) return;
         if (parameter.name.startsWith('_')) return;
-        const prop = this.asProp(parameter);
+        const prop = this.asProp(parameter as ParameterReflection);
         context.element.props.push(prop);
         const type = parameter.type;
         if (type) {
@@ -166,7 +172,7 @@ export class ElementParser {
     if (parameters) {
       result += parameters
         .map((parameter) => {
-          const prop = this.asProp(parameter);
+          const prop = this.asProp(parameter as ParameterReflection);
           const type = parameter.type;
           if (type) {
             this.handleType(type, {
@@ -267,7 +273,7 @@ export class ElementParser {
       }
       if (child.signatures) {
         const innerContext: Context = {
-          element: new ParsedElement(child.name, child.kindString || child.kind),
+          element: new ParsedElement(child.name, child.kind),
           specialType: 'element',
         };
         this.handleDeclarationReflectionSignatures(child.signatures, innerContext);
@@ -301,6 +307,11 @@ export class ElementParser {
       this.handleType(type, context);
     });
   }
+
+  protected handleArray(element: ArrayType, context: Context) {
+    this.handleType(element.elementType, context);
+    this.appendTypeToProp('[]', context);
+  }  
 
   protected handleIntrinsic(element: IntrinsicType, context: Context) {
     this.appendTypeToProp(element.name, context);
@@ -366,8 +377,8 @@ export class ElementParser {
 
   protected handleType(type: SomeType, context: Context) {
     if (type.type === 'reference') {
-      if (type.id) {
-        const parsedElement = this.getIndexedParsedElement(type.id);
+      if (type.target && typeof(type.target) == 'number') {
+        const parsedElement = this.getIndexedParsedElement(type.target);
         if (parsedElement) {
           if (context.specialType === 'element' || context.specialType === 'component') {
             context.element.props = parsedElement.props;
@@ -390,6 +401,8 @@ export class ElementParser {
       this.handleIntrinsic(type, context);
     } else if (type.type === 'literal') {
       this.handleLiteral(type, context);
+    } else if (type.type === 'array') {
+      this.handleArray(type, context);
     }
   }
 
@@ -414,7 +427,7 @@ export class ElementParser {
     const prop: Props = {
       name: parameter.name,
       flags: parameter.flags,
-      kind: parameter.kindString || parameter.kind,
+      kind: parameter.kind,
       type: '',
       description: '',
       defaultValue: parameter.defaultValue,

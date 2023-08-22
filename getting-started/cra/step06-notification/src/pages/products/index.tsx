@@ -1,6 +1,6 @@
 import { useNotificationService } from 'onekijs';
 import React from 'react';
-import { NOTIF_TOPIC_ERROR, NOTIF_TOPIC_SUCCESS } from '../../modules/core/libs/constants';
+import { NOTIF_TOPIC_INFO, NOTIF_TOPIC_SUCCESS } from '../../modules/core/libs/constants';
 import Product from '../../modules/products/components/Product';
 import { ProductType } from '../../__server__/api/dto/product';
 
@@ -26,7 +26,7 @@ const ProductsPage: React.FC = () => {
           }
           onNotify={() =>
             notificationService.send({
-              topic: NOTIF_TOPIC_ERROR,
+              topic: NOTIF_TOPIC_INFO,
               payload: {
                 message: 'You will be notified when the product goes on sale',
               },

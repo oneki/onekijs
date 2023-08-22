@@ -11,7 +11,10 @@
   },
   "scripts": {
     "dev": "nodemon",
-    "start": "ts-node src/index.ts"
+    "start": "ts-node src/index.ts",
+    "build-json": "typedoc --json ./dist/test.json src/test.ts",
+    "build-md": "ts-node src/index.ts ./dist/test2.json ./dist/framework-api /framework-api",
+    "build": "echo done"
   },
   "author": "Oneki",
   "license": "MIT",
@@ -20,6 +23,6 @@
     "@types/node": "^18.7.1",
     "nodemon": "^2.0.19",
     "ts-node": "^10.9.1",
-    "typedoc": "^0.23.10"
+    "typedoc": "^0.24.8"
   }
 }

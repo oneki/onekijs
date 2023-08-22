@@ -30,7 +30,10 @@ export class MarkdownBuilder {
 id: ${this.element.name}
 title: ${this.element.name}
 sidebar_label: ${this.element.name}
----`;
+---
+
+import Details from "@theme/Details"
+`;
     return this;
   }
 
@@ -145,10 +148,7 @@ sidebar_label: ${this.element.name}
 
   private section1() {
     const label = this.sectionLabel(1);
-    this.markdown += `\n\n### ${label}\n\n`;
-    if (this.element.type !== 'Class') {
-      this.markdown += `<font size="2"><i>(Mandatory ${label.toLocaleLowerCase()} are in bold)</i></font>\n\n`;
-    }
+    const typeLabel = this.typeLabel(1);
 
     let props = this.sortProps(this.element.props);
     props = props.filter((prop) => {
@@ -159,14 +159,45 @@ sidebar_label: ${this.element.name}
       return true;
     });
 
+    this.markdown += `\n\n### ${label}\n\n`;
+
+    const mostUsedProps = props.filter((prop) => {
+      if (prop.flags.isOptional !== true ||  prop.remarks === 'important') return true;
+      return false;
+    })
+    if (mostUsedProps.length > 0) {
+      if (this.element.type !== 'Class') {
+        this.markdown += `<font size="2"><i>(Mandatory ${label.toLocaleLowerCase()} are in bold)</i></font>\n\n`;
+      }
+      this.printProps(mostUsedProps, label, typeLabel);
+      this.markdown += `\n\n`;
+    } else {
+      this.markdown += `This element is often used without passing props\n\n`;
+    }
+
+    const advancedProps = props.filter((prop) => {
+      if (prop.flags.isOptional === true &&  prop.remarks !== 'important') return true;
+      return false;
+    })
+
+    if (advancedProps.length > 0) {
+      this.markdown += `<Details summary={<summary><b>Additional properties for advanced use cases</b></summary>}><div>\n\n`;
+      this.printProps(advancedProps, label, typeLabel);
+      this.markdown += `\n\n</div></Details>`
+    }
+
+    return this;
+  }
+
+  private printProps(props: Props[], label: string, typeLabel: string) {
     const depth = this.depth(props);
-    this.markdown += `| ${label} ${this.buildHeaderDepth(depth, '|   ')}| ${this.typeLabel(1)} | Description |\n`;
+    this.markdown += `| ${label} ${this.buildHeaderDepth(depth, '|   ')}| ${typeLabel} | Description |\n`;
     this.markdown += `| --------- ${this.buildHeaderDepth(depth, '| -- ')}| ---- | ----------- |\n`;
     props.forEach((prop) => {
       this.markdown += this.buildProp(prop, depth);
     });
-    return this;
-  }
+
+  }  
 
   private section2() {
     const label = this.sectionLabel(2);

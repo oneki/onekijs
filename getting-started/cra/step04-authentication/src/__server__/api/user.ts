@@ -17,7 +17,7 @@ const userInfoHandler = rest.get<UserInfoResponse>('/userinfo', (req, res, ctx) 
   );
 });
 
-const userHandlers = (): RequestHandler<any, any, any, any, any>[] => {
+const userHandlers = (): RequestHandler[] => {
   return [userInfoHandler];
 };
 

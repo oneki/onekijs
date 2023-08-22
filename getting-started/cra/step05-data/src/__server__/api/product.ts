@@ -37,7 +37,7 @@ const getProductHandler = rest.get<ProductType>('/products/:productId', (req, re
   return res(ctx.json(products[+productId]));
 });
 
-const productHandlers = (): RequestHandler<any, any, any, any, any>[] => {
+const productHandlers = (): RequestHandler[] => {
   return [getProductsHandler, getProductHandler];
 };
 

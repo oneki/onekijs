@@ -21,6 +21,7 @@ export const handleComment = (element: Description, comment?: Comment, useHtml =
 export const remarks = (remark: string) => {
   if (remark.trim() === '#styled#') return texts.styled;
   if (remark.trim() === '#notStyled#') return texts.notStyled;
+  if (remark.trim() === '#important#') return "important";
   return remark;
 };
 

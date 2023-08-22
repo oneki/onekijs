@@ -1,0 +1,41 @@
+name: getting-started
+
+on:
+  push:
+    branches:
+      - master
+      - refactoring/getting-started
+    paths:
+      - 'getting-started/cra/**'
+
+jobs:
+  Build:
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - run: npm install
+      - run: npm i -g concurrently
+      - run: npm run build
+      - run: |
+          concurrently "cd getting-started/cra/step01-react-app && npm run deploy" \
+          "cd getting-started/cra/step02-navigation && npm run deploy" \
+          "cd getting-started/cra/step03-global-state && npm run deploy" \
+          "cd getting-started/cra/step04-authentication && npm run deploy" \
+          "cd getting-started/cra/step05-data && npm run deploy" \
+          "cd getting-started/cra/step06-notification && npm run deploy" \
+          "cd getting-started/cra/step07-error-handling && npm run deploy" \
+          "cd getting-started/cra/step08-i18n && npm run deploy" \
+          "cd getting-started/cra/step09-form && npm run deploy" \
+          "cd getting-started/cra/step10-service && npm run deploy"
+        env:
+          SURGE_LOGIN: ${{ secrets.SURGE_LOGIN }}
+          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}

@@ -14,9 +14,10 @@ export interface AppProps {
   /**
    * Settings is a object usually defined in the file `src/settings.ts`
    * Data defined in settings.ts is available throughout the application and contains configuration data.
-   * **[More info here](/framework/configuration/introduction)**
+   * **[More info here](/framework/configuration/001_introduction.md)**
    *
    * @defaultValue {}
+   * @remarks #important#
    */
   settings?: AppSettings | Promise<AppSettings>;
   /**
@@ -34,7 +35,7 @@ export interface AppProps {
   initialState?: AnyState | Promise<AnyState>;
   /**
    * A list of services that will be available globally in the application.
-   * **[More info here](/framework/service/introduction)**
+   * **[More info here](/framework/service/001_introduction.md)**
    */
   services?: Class<DefaultService>[];
   /**
@@ -51,13 +52,13 @@ export interface AppProps {
   initialLocale?: string;
   /**
    * An object containing the translations
-   * **[More info here](/framework/i18n/introduction)**
+   * **[More info here](/framework/i18n/001_introduction.md)**
    *
    * @defaultValue `undefined`
    */
   translations?: AnonymousObject<AnonymousObject<string>>;
   /**
-   * **[More info here](/framework/i18n/introduction)**
+   * **[More info here](/framework/i18n/001_introduction.md)**
    *
    * @defaultValue `undefined`
    */
