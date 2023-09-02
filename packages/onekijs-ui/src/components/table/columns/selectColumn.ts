@@ -18,12 +18,10 @@ const selectColumn = <
   if (Array.isArray(opts.dataSource) && Array.isArray(opts.dataSource[0])) {
     dataSource = (opts.dataSource as [S, string][]).map((entry) => entry[0]);
     const adapter: SelectItemAdapter<S> = (data: S) => {
-      const item = opts.adapter ? opts.adapter(data) : {};
-      if (!item.text) {
-        const entry = (opts.dataSource as [S, string][]).find((entry) => entry[0] === data);
-        item.text = entry ? entry[1] : '';
+      const entry = (opts.dataSource as [S, string][]).find((entry) => entry[0] === data);
+      return {
+        text: entry ? entry[1] : ''
       }
-      return item;
     };
     opts.adapter = adapter;
   }

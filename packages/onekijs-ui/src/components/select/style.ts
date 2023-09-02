@@ -412,6 +412,7 @@ const selectStyle: ComponentStyle<SelectProps | TreeSelectProps> = ({ theme, cli
 
         .o-select-option-data {
           ${flexGrow(1)}
+          ${whiteSpace('nowrap')}
         }
 
         .o-select-option-multiple-checkbox {
