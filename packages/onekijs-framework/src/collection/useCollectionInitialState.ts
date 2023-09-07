@@ -56,6 +56,8 @@ const useCollectionInitialState = <T = any, I extends Item<T> = Item<T>>(
       local: Array.isArray(dataOrUrl) || options.fetchOnce,
       method: options.method,
       mutateUrl: options.mutateUrl,
+      onQueryError: options.onQueryError,
+      onQuerySuccess: options.onQuerySuccess,
       offset: options.initialOffset,
       params: options.initialParams,
       queryEngine: options.queryEngine,

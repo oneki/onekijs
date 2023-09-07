@@ -920,11 +920,17 @@ export default class FormService<T extends object = any> extends DefaultService<
     if (this.state.metadata[fieldOrDecoratorName][key] === undefined || force) {
       this.state.metadata[fieldOrDecoratorName][key] = value;
 
-      if (key === 'visible' && Object.keys(this.fields).includes(fieldOrDecoratorName)) {
-        if (value === false) {
-          this.disableValidator(fieldOrDecoratorName as NestedKeyOf<T>, 'required');
+      if ((key === 'visible' || key === 'disabled') && Object.keys(this.fields).includes(fieldOrDecoratorName)) {
+        const fieldName = fieldOrDecoratorName as NestedKeyOf<T>;
+        if ((key === 'visible' && value === false) || (key === 'disabled' && value === true)) {
+          this.clearError(fieldName, 'required');
+          this.disableValidator(fieldName, 'required');
         } else {
-          this.enableValidator(fieldOrDecoratorName as NestedKeyOf<T>, 'required');
+          this.enableValidator(fieldName, 'required');
+          const validations = this.validateAll({
+            [fieldName]: this.getValue(fieldName),
+          } as AnonymousPathObject<T>);
+          this.compileValidations(Object.keys(validations) as NestedKeyOf<T>[]);
         }
       }
 

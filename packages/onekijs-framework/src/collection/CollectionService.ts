@@ -1060,11 +1060,15 @@ export default class CollectionService<
         status: LoadingStatus.Loaded,
       });
       // update metadata
-      const itemResult: I[] = data.map((itemData) => {
+      let itemResult: I[] = data.map((itemData) => {
         const item = this.adapt(itemData);
         item.loadingStatus = LoadingStatus.Loaded;
         return Object.assign({}, item);
       });
+
+      if (this.state.onQuerySuccess) {
+        itemResult = this.state.onQuerySuccess(itemResult);
+      }
 
       let items = resetData ? [] : this.state.items;
 
@@ -1196,7 +1200,19 @@ export default class CollectionService<
     comparators: AnonymousObject<QuerySortComparator<T>>,
     searcher?: QuerySearcher<T>,
   ): I[] {
-    return defaultQueryEngine(items, query, comparator, comparators, searcher);
+    try {
+      let result = defaultQueryEngine(items, query, comparator, comparators, searcher);
+      if (this.state.onQuerySuccess) {
+        result = this.state.onQuerySuccess(result);
+      }
+      return result;
+    } catch(e) {
+      if (this.state.onQueryError) {
+        this.state.onQueryError(DefaultBasicError.of(e));
+      }
+      throw e;
+    }
+
   }
 
   _getId(data: T): string | number | undefined {

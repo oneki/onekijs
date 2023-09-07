@@ -331,6 +331,10 @@ export default class DefaultCollectionBroker<
     return subscriberId && this.subscriberUrl[subscriberId] ? this.subscriberUrl[subscriberId] : this.url;
   }
 
+  refresh(query?: Query, subscriberId?: string): void {
+    this._getSubscribers(subscriberId).forEach((s) => s.refresh(query));
+  }
+
   removeFilter(id: QueryFilterId, subscriberId?: string): void {
     if (subscriberId === undefined) {
       Object.keys(this.subscriberFilters).forEach((subscriberId) => {

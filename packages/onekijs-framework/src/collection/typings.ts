@@ -1,4 +1,5 @@
 import { Primitive } from '../types/core';
+import { ErrorCallback } from '../types/error';
 import { Fetcher, FetchOptions, FetchState, HttpMethod } from '../types/fetch';
 import { AnonymousObject } from '../types/object';
 import { Router } from '../types/router';
@@ -144,6 +145,7 @@ export type CollectionBroker<
   filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | null, subscriberId?: string): void;
   removeFilter(filterId: QueryFilterId, subscriberId?: string): void;
   removeSortBy(id: string, subscriberId?: string): void;
+  refresh(query?: Query, subscriberId?: string): void;
   search(search: Primitive, subscriberId?: string): void;
   setData(data: T[], query?: Query, subscriberId?: string): void;
   setFields(fields: string[], subscriberId?: string): void;
@@ -194,6 +196,8 @@ export interface CollectionOptions<T, I extends Item<T>> {
   initialSortBy?: string | QuerySortBy | QuerySortBy[];
   method?: HttpMethod;
   mutateUrl?: boolean;
+  onQueryError?: ErrorCallback;
+  onQuerySuccess?: (result: I[]) => I[];
   queryEngine?: QueryEngine<T, I>;
   searcher?: QuerySearcher<T>;
   selected?: T[];
@@ -234,6 +238,8 @@ export interface CollectionState<T, I extends Item<T>> extends FetchState {
   mutateUrl?: boolean;
   local: boolean;
   limit?: number;
+  onQueryError?: ErrorCallback;
+  onQuerySuccess?: (result: I[]) => I[];
   offset?: number;
   params?: AnonymousObject;
   queryEngine?: QueryEngine<T, I>;
