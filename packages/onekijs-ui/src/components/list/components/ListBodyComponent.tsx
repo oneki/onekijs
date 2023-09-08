@@ -149,6 +149,7 @@ const ListBodyComponent = <T = any, I extends ListItem<T> = ListItem<T>>({
               nextItem = get<any>(state.items, activeIndex.toString());
               onItemClick(nextItem, activeIndex);
             }
+            e.preventDefault();
             break;
 
           case 'Escape':
