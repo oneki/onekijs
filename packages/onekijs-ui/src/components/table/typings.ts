@@ -57,6 +57,7 @@ export type FormTableProps<
     onChange?: (value: T[]) => void;
     status?: ValidationStatus;
     size?: TshirtSize;
+    showAddButton?: boolean;
   };
 
 export type FormTableContext<T = any> = {

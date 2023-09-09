@@ -64,6 +64,7 @@ const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.
     required,
     minLength,
     maxLength,
+    showAddButton = true,
     ...props
   }) => {
     const form = useForm();
@@ -161,7 +162,7 @@ const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.
           controller={controller}
           className={addClassname('o-form-table', className)}
           FooterComponent={tableService.dataSource ? undefined : FooterComponent}
-          footer={tableService.dataSource ? false : true}
+          footer={tableService.dataSource || !showAddButton ? false : true}
           NotFoundComponent={null}
           {...props}
         />
