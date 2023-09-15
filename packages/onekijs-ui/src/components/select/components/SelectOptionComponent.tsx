@@ -84,12 +84,13 @@ const SelectOptionComponent = <T, I extends SelectItem<T> = SelectItem<T>>(props
 
   return (
     <>
-      {displayGroup && <OptionGroupComponent {...props} />}
+      {displayGroup && <OptionGroupComponent {...props} key="group" />}
       <div
         className={classNames}
         onClick={() => onItemClick(item, index)}
         onMouseEnter={() => hoverable && onMouseEnter && item && onMouseEnter(item, index)}
         onMouseLeave={() => hoverable && onMouseLeave && item && onMouseLeave(item, index)}
+        key="content"
       >
         <div style={{display: 'flex'}} ref={ref}>
           {/* {multiple && <div className="o-select-option-icon">{meta?.selected? <>&#10003;</>:<></>}</div> } */}
@@ -99,9 +100,10 @@ const SelectOptionComponent = <T, I extends SelectItem<T> = SelectItem<T>>(props
               onChange={() => onItemClick(item, index)}
               color="currentColor"
               className="o-select-option-multiple-checkbox"
+              key="checkbox"
             ></Checkbox>
           )}
-          <OptionContentComponent {...props} onClick={() => onItemClick(item, index)} />
+          <OptionContentComponent {...props} onClick={() => onItemClick(item, index)} key="option_content" />
         </div>
       </div>
     </>
