@@ -11,7 +11,7 @@ import AccordionContainer from './AccordionContainer';
  *
  * @example
  * ```tsx
- * <AccordionComponent multiActive="true" />
+ * <AccordionComponent multiExpand="true" />
  * ```
  *
  * @group Accordion
@@ -20,7 +20,7 @@ import AccordionContainer from './AccordionContainer';
  */
 const AccordionComponent: FCC<AccordionProps> = ({ Component = AccordionContainer, ...props }) => {
   const [state, service] = useService(AccordionService, {
-    multiActive: props.multiActive,
+    multiExpand: props.multiExpand,
     panels: {},
     animate: props.animate ?? 150,
     mode: props.mode ?? 'push',

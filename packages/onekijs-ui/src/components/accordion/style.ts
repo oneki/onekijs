@@ -45,11 +45,11 @@ export const accordionStyle: ComponentStyle<AccordionProps> = ({ border = false,
 
     .o-accordion-panel-active {
       .o-accordion-panel-title {
-        ${backgroundColor(t.activeBgColor, { hover: t.hoverBgColor })}
+        ${backgroundColor(t.activeBgColor, { hover: t.activeBgColor })}
         ${color(t.activeFontColor, { hover: t.activeFontColor })}
       }
       .o-accordion-content {
-        ${backgroundColor(t.activeBgColor, { hover: t.activeBgColor })}
+
       }
     }
 

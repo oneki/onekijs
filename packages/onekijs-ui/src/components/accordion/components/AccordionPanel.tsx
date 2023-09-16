@@ -10,14 +10,17 @@ import AccordionPanelTitle from './AccordionPanelTitle';
 const AccordionPanel: FCC<AccordionPanelProps<any>> = ({
   title,
   initialActive,
+  initialExpand,
   children,
   Component = AccordionPanelTitle,
   link,
 }) => {
-  const panel = useAccordionPanel(initialActive);
+  initialExpand = initialExpand ?? initialActive;
+  const panel = useAccordionPanel(initialActive, initialExpand);
   const service = useAccordionService();
   const { animate } = useAccordionState();
   const router = useTryRouter();
+
 
   const toggle = () => {
     if (!panel) return;
@@ -60,7 +63,7 @@ const AccordionPanel: FCC<AccordionPanelProps<any>> = ({
     <div className={`o-accordion-panel${panel.active ? ' o-accordion-panel-active' : ''}`}>
       <Component title={title} active={panel.active} onClick={toggle} link={link} />
       <CSSTransition
-        in={panel.active}
+        in={panel.expanded}
         classNames="o-accordion-animate"
         timeout={animate}
         mountOnEnter={false}
@@ -70,7 +73,7 @@ const AccordionPanel: FCC<AccordionPanelProps<any>> = ({
         onEntering={onEntering}
         onEntered={onEntered}
       >
-        <div>{!link && <div className="o-accordion-content">{children}</div>}</div>
+        <div>{<div className="o-accordion-content">{children}</div>}</div>
       </CSSTransition>
     </div>
   );

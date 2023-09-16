@@ -8,8 +8,10 @@ import TableBodyComponent from './TableBodyComponent';
 import TableFooterComponent from './TableFooterComponent';
 import TableHeaderComponent from './TableHeaderComponent';
 import ExpandedCellComponent from './cells/ExpandedCellComponent';
+import TableActionComponent from './TableActionComponent';
 
 const ControllerTableComponent: React.FC<ControllerTableProps> = ({
+  ActionComponent = TableActionComponent,
   autoRefresh,
   controller,
   className,
@@ -42,8 +44,10 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
   paddingStart,
   parentRef,
   preload,
+  refreshButtonKind = 'primary',
   rowClassName,
   RowComponent,
+  showRefreshButton,
   sortable,
   stripRows,
   tail,
@@ -57,6 +61,7 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
 
   const config: TableConfig = useMemo(() => {
     return {
+      ActionComponent,
       autoRefresh,
       bodyClassName,
       BodyComponent,
@@ -88,13 +93,16 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
       paddingStart,
       parentRef,
       preload,
+      refreshButtonKind,
       rowClassName,
       RowComponent,
+      showRefreshButton,
       sortable,
       stripRows,
       tail
     };
   }, [
+    ActionComponent,
     autoRefresh,
     bodyClassName,
     BodyComponent,
@@ -126,8 +134,10 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
     paddingStart,
     parentRef,
     preload,
+    refreshButtonKind,
     rowClassName,
     RowComponent,
+    showRefreshButton,
     sortable,
     stripRows,
     tail,
@@ -158,23 +168,27 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
     <TableServiceContext.Provider value={controller.asService()}>
       <TableStateContext.Provider value={controller.state}>
         <TableConfigContext.Provider value={config}>
-          <div
-            className={classNames}
-            ref={tableRef}
-            style={{
-              maxHeight: height,
-              overflow: 'auto',
-            }}
-          >
-            {header && <HeaderComponent columns={columns} className={headerClassName} />}
-            <BodyComponent
-              items={items || []}
-              columns={columns}
-              tableRef={tableRef}
-              contentRef={contentRef}
-              className={bodyClassName}
-            />
-            {footer && <FooterComponent columns={columns} className={footerClassName} />}
+          <div className={className}>
+            <ActionComponent />
+            <div
+              className={classNames}
+              ref={tableRef}
+              style={{
+                maxHeight: height,
+                overflow: 'auto',
+              }}
+            >
+
+              {header && <HeaderComponent columns={columns} className={headerClassName} />}
+              <BodyComponent
+                items={items || []}
+                columns={columns}
+                tableRef={tableRef}
+                contentRef={contentRef}
+                className={bodyClassName}
+              />
+              {footer && <FooterComponent columns={columns} className={footerClassName} />}
+            </div>
           </div>
         </TableConfigContext.Provider>
       </TableStateContext.Provider>

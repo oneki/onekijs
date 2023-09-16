@@ -10,7 +10,7 @@ import { accordionStyle } from './style';
  *
  * @example
  * ```tsx
- * <Accordion multiActive="false" />
+ * <Accordion multiExpand="false" />
  * ```
  *
  * @see AccordionComponent

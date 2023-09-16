@@ -8,6 +8,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   pattern?: 'solid' | 'outline' | 'flat';
   IconComponent?: React.FC<ButtonProps>;
   loading?: boolean;
+  size?: 'small' | 'medium' | 'large';
 }
 
 export interface SubmitButtonProps extends ButtonProps {

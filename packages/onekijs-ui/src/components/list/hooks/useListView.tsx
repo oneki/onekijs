@@ -81,6 +81,7 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
     if (controller.status !== LoadingStatus.NotReady) {
       if (isVirtual) {
         if (controller.status === LoadingStatus.NotInitialized) {
+          scrollToOffset(0);
           controller.load(preload, undefined, true);
         } else {
           const lastVirtualItem = virtualItems[virtualItems.length - 1];

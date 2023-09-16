@@ -41,6 +41,7 @@ export type Collection<
   load(limit?: number, offset?: number, replace?: boolean): void;
   onSubscribe(initialData: T[] | undefined, initialUrl: string | undefined, initialQuery: Query): void;
   query(query: Query): void;
+  reload(): void;
   refresh(query?: Query): void;
   removeActive<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
   removeDisabled<B extends keyof CollectionBy<T, I>>(

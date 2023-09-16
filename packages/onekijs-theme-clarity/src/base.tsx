@@ -323,7 +323,8 @@ export const clarityTheme = (customTheme: Partial<Theme> = {}): Theme => {
     },
 
     accordion: {
-      activeBgColor: 'lightest',
+      hoverBgColor: 'lightest',
+      activeBgColor: 'inherit',
       activeFontColor: 'primary',
     },
 
@@ -334,16 +335,30 @@ export const clarityTheme = (customTheme: Partial<Theme> = {}): Theme => {
     GlobalStyles,
   };
 
+  clarityTheme.accordion.activeBgColor = lighten(get<any>(clarityTheme.colors, 'primary', ''), 500);
+
+
+
   Object.keys(ColorKeys).forEach((kind) => {
     set<any>(clarityTheme, `buttons.${kind}.fontWeight`, 'medium');
     set<any>(clarityTheme, `buttons.${kind}.hoverBgColor`, lighten(get<any>(clarityTheme.colors, kind, ''), 100));
     set<any>(clarityTheme, `buttons.${kind}.hoverBorderColor`, lighten(get<any>(clarityTheme.colors, kind, ''), 100));
     set<any>(clarityTheme, `buttons.${kind}.textTransform`, 'uppercase');
-    set<any>(clarityTheme, `buttons.${kind}.letterSpacing`, '3xl');
-    set<any>(clarityTheme, `buttons.${kind}.fontSize`, 'xs');
-    set<any>(clarityTheme, `buttons.${kind}.lineHeight`, '2xl');
-    set<any>(clarityTheme, `buttons.${kind}.borderRadius`, 'xs');
-    set<any>(clarityTheme, `buttons.${kind}.paddingX`, 'md');
+    set<any>(clarityTheme, `buttons.${kind}.letterSpacingSmall`, '3xl');
+    set<any>(clarityTheme, `buttons.${kind}.letterSpacingMedium`, '3xl');
+    set<any>(clarityTheme, `buttons.${kind}.letterSpacingLarge`, '3xl');
+    set<any>(clarityTheme, `buttons.${kind}.fontSizeSmall`, '2xs');
+    set<any>(clarityTheme, `buttons.${kind}.fontSizeMedium`, 'xs');
+    set<any>(clarityTheme, `buttons.${kind}.fontSizeLarge`, 'sm');
+    set<any>(clarityTheme, `buttons.${kind}.lineHeightSmall`, 'lg');
+    set<any>(clarityTheme, `buttons.${kind}.lineHeightMedium`, '2xl');
+    set<any>(clarityTheme, `buttons.${kind}.lineHeightLarge`, '4xl');
+    set<any>(clarityTheme, `buttons.${kind}.borderRadiusSmall`, 'xs');
+    set<any>(clarityTheme, `buttons.${kind}.borderRadiusMedium`, 'xs');
+    set<any>(clarityTheme, `buttons.${kind}.borderRadiusLarge`, 'xs');
+    set<any>(clarityTheme, `buttons.${kind}.paddingXSmall`, 'sm');
+    set<any>(clarityTheme, `buttons.${kind}.paddingXMedium`, 'md');
+    set<any>(clarityTheme, `buttons.${kind}.paddingXLarge`, 'lg');
     set<any>(
       clarityTheme,
       `buttons.${kind}.hoverBgColorOutline`,

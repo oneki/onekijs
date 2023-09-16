@@ -447,6 +447,8 @@ export default class CollectionService<
 
   @reducer
   load(limit?: number, offset?: number, replace = false): void {
+    limit = limit ?? this.getLimit();
+    offset = offset ?? this.getOffset();
     if (!this.state.local) {
       const resetData = this.state.items ? false : true;
       this._setLoading({ limit, offset, resetData });
@@ -480,7 +482,22 @@ export default class CollectionService<
   }
 
   @reducer
-  refresh(query?: Query, push = true, noCache = false, noLoading = false): void {
+  reload(): void {
+    const query = Object.assign(this.getQuery(), {
+      limit: this._initialQuery?.limit,
+      offset: 0,
+    });
+    this.state.items = undefined;
+    this.state.status = LoadingStatus.NotInitialized;
+    //this._setLoading({ limit: query.limit, offset: query.offset, resetData: true });
+    //this.refresh(query, false, true, false);
+  }
+
+  @reducer
+  refresh(query?: Query, push?: boolean, noCache?: boolean, noLoading?: boolean): void {
+    push = push ?? (query ? true : false);
+    noCache = noCache ?? (query ? false : true);
+    noLoading = noLoading ?? false;
     if (isCollectionReady(this)) {
       const path = this.state.router.location.pathname;
       query = query ?? this.getQuery();

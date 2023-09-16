@@ -4,12 +4,24 @@ import { AccordionState } from './typings';
 @service
 export class AccordionService extends DefaultService<AccordionState> {
   @reducer
-  initPanel(uid: string, initialActive = false): void {
+  initPanel(uid: string, initialActive = false, initialExpand = false): void {
     if (this.state.panels[uid] === undefined) {
       this.state.panels[uid] = {
         uid,
         active: initialActive,
+        expanded: initialExpand,
       };
+    }
+  }
+
+  @reducer
+  activate(uid: string): void {
+    const panel = this.state.panels[uid];
+    if (panel) {
+      Object.keys(this.state.panels).forEach((uid) => {
+        this.state.panels[uid].active = false;
+      });
+      panel.active = true;
     }
   }
 
@@ -18,6 +30,7 @@ export class AccordionService extends DefaultService<AccordionState> {
     const panel = this.state.panels[uid];
     if (panel) {
       panel.active = false;
+      panel.expanded = false;
     }
   }
 
@@ -25,11 +38,13 @@ export class AccordionService extends DefaultService<AccordionState> {
   expand(uid: string): void {
     const panel = this.state.panels[uid];
     if (panel) {
-      if (!this.state.multiActive) {
-        Object.keys(this.state.panels).forEach((uid) => {
-          this.state.panels[uid].active = false;
-        });
-      }
+      Object.keys(this.state.panels).forEach((uid) => {
+        this.state.panels[uid].active = false;
+        if (!this.state.multiExpand) {
+          this.state.panels[uid].expanded = false;
+        }
+      });
+      panel.expanded = true;
       panel.active = true;
     }
   }

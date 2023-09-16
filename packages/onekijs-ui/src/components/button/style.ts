@@ -28,10 +28,12 @@ const getColor = (key: string, pattern: 'solid' | 'outline' | 'flat'): string =>
 const buttonStyle: ComponentStyle<ButtonProps> = ({
   kind = 'primary',
   pattern = 'solid',
+  size = 'medium',
   disabled,
   IconComponent,
   theme,
 }) => {
+  const uSize = ucfirst(size);
   const t = theme.buttons[kind];
   const bgColor = get<any>(t, getColor('bgColor', pattern)) as string;
   const hoverBgColor = get<any>(t, getColor('hoverBgColor', pattern)) as string;
@@ -39,6 +41,13 @@ const buttonStyle: ComponentStyle<ButtonProps> = ({
   const hoverFontColor = get<any>(t, getColor('hoverColor', pattern)) as string;
   const bColor = get<any>(t, getColor('borderColor', pattern)) as string;
   const hoverBorderColor = get<any>(t, getColor('hoverBorderColor', pattern)) as string;
+  const tPaddingX = get<any>(t, `paddingX${uSize}`) as string;
+  const tPaddingY = get<any>(t, `paddingY${uSize}`) as string;
+  const tBorderRadius = get<any>(t, `borderRadius${uSize}`) as string;
+  const tBorderWidth = get<any>(t, `borderWidth${uSize}`) as string;
+  const tLineHeight = get<any>(t, `lineHeight${uSize}`) as string;
+  const tFontSize = get<any>(t, `fontSize${uSize}`) as string;
+  const tLetterSpacing = get<any>(t, `letterSpacing${uSize}`) as string;
 
   return css`
     ${display('inline-flex')}
@@ -49,11 +58,11 @@ const buttonStyle: ComponentStyle<ButtonProps> = ({
     ${color(fontColor, {
       hover: disabled ? fontColor : hoverFontColor,
     })}
-    ${paddingX(t.paddingX)}
-    ${paddingY(t.paddingY)}
-    ${borderRadius(t.borderRadius)}
+    ${paddingX(tPaddingX)}
+    ${paddingY(tPaddingY)}
+    ${borderRadius(tBorderRadius)}
     ${borderStyle(t.borderStyle)}
-    ${borderWidth(t.borderWidth)}
+    ${borderWidth(tBorderWidth)}
     ${borderColor(bColor, {
       hover: disabled ? bColor : hoverBorderColor,
     })}
@@ -66,9 +75,9 @@ const buttonStyle: ComponentStyle<ButtonProps> = ({
       ${whiteSpace(t.whiteSpace)}
       ${textOverflow(t.textOverflow)}
       ${textTransform(t.textTransform)}
-      ${letterSpacing(t.letterSpacing)}
-      ${lineHeight(t.lineHeight)}
-      ${fontSize(t.fontSize)}
+      ${letterSpacing(tLetterSpacing)}
+      ${lineHeight(tLineHeight)}
+      ${fontSize(tFontSize)}
       ${opacity(disabled ? 0.6 : 1)}
       ${marginLeft(IconComponent ? 'xs' : 'none')}
       ${outline('none')}

@@ -11,13 +11,14 @@ import {
   boxShadow,
 } from '../../styles/border';
 import { display, visibility } from '../../styles/display';
-import { flexDirection } from '../../styles/flex';
+import { flexDirection, flexGrow } from '../../styles/flex';
 import { boxSizing, cursor, outline, userSelect } from '../../styles/interactivity';
 import { overflow, overflowX, overflowY } from '../../styles/overflow';
 import { height, minWidth, width } from '../../styles/size';
 import {
   marginBottom,
   marginLeft,
+  marginRight,
   marginTop,
   padding,
   paddingBottom,
@@ -78,6 +79,18 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true 
       ${() => (fit ? 'flex-grow: 1;' : '')}
     }
 
+    .o-table-actions {
+      ${display('flex')}
+    }
+
+    .o-table-action {
+      ${flexGrow(1)}
+    }
+
+    .o-table-refresh {
+      ${marginBottom('sm')}
+      ${marginRight('xl')}
+    }
 
     .o-table-not-found {
       ${display('flex')}
@@ -99,6 +112,7 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true 
       ${borderBottomStyle(t.tdBorderBottomStyle)}
     }
     .o-table-body-row-expanded {
+      ${fontSize('default')}
       .o-table-body-row {
         ${backgroundColor(t.tdExpandedBgColor)}
       }

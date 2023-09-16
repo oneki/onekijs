@@ -21,6 +21,7 @@ import { ListItemProps, ListItems, ListNotFoundProps, ListState, UseListOptions 
 import { FormSelectProps, SelectBroker, SelectItem, SelectProps } from '../select/typings';
 import { TextareaProps } from '../textarea/typings';
 import TableService from './TableService';
+import { ButtonProps } from '../button/typings';
 
 export type ArrayTableProps<T = any, I extends TableItem<T> = TableItem<T>> = TableConfig<T, I> & {
   adapter?: TableItemAdapter<T>;
@@ -105,6 +106,7 @@ export type TableBodyRowProps<T = any, I extends TableItem<T> = TableItem<T>> = 
 };
 
 export type TableConfig<T = any, I extends TableItem<T> = TableItem<T>> = {
+  ActionComponent?: React.FC;
   autoRefresh?: number;
   bodyClassName?: string;
   BodyComponent?: React.FC<TableBodyProps<T, I>>;
@@ -138,6 +140,8 @@ export type TableConfig<T = any, I extends TableItem<T> = TableItem<T>> = {
   preload?: number;
   rowClassName?: string | ((item: I | undefined, rowIndex: number, columns: TableColumn<T, I>[]) => string);
   RowComponent?: React.FC<TableBodyRowProps<T, I>>;
+  refreshButtonKind?: ButtonProps['kind'];
+  showRefreshButton?: boolean;
   sortable?: boolean;
   stripRows?: boolean;
   tail?: boolean;
