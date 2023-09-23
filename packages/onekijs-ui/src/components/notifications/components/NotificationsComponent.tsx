@@ -1,4 +1,4 @@
-import { useNotifications } from 'onekijs-framework';
+import { useNotificationService, useNotifications } from 'onekijs-framework';
 import React, { useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
@@ -17,6 +17,7 @@ const NotificationsComponent: React.FC<NotificationsProps> = ({
 }) => {
   const classNames = addClassname('o-notifications', className);
   const translateX = position === 'top-right' || position === 'bottom-right' ? '250px' : '-250px';
+  const notificationService = useNotificationService();
   let notifications = useNotifications(topics);
   if (max) {
     notifications = notifications.slice(0, max);
@@ -87,6 +88,11 @@ const NotificationsComponent: React.FC<NotificationsProps> = ({
 
   const element = (
     <div className={classNames}>
+      {notifications.length > 1 && (
+        <div className="o-notification-close-all">
+          <span className="o-notification-close-all-content" onClick={() => notificationService.clearAll()}>Close all</span>
+        </div>
+      )}
       <TransitionGroup component={null}>
         {notifications.map((notification, index) => (
           <CSSTransition

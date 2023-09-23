@@ -7,10 +7,10 @@ import { opacity } from '../../styles/effects';
 import { cursor } from '../../styles/interactivity';
 import { bottom, left, position, right, top, zIndex } from '../../styles/position';
 import { maxWidth, minHeight, minWidth } from '../../styles/size';
-import { marginBottom, marginRight, padding } from '../../styles/spacing';
+import { marginBottom, marginRight, padding, paddingBottom, paddingRight } from '../../styles/spacing';
 import { transform } from '../../styles/transform';
 import { ComponentStyle } from '../../styles/typings';
-import { color } from '../../styles/typography';
+import { color, fontSize, fontWeight, textAlign } from '../../styles/typography';
 import { NotificationsProps } from './typings';
 
 export const notifcationsStyle: ComponentStyle<NotificationsProps> = ({ position: pos = 'bottom-right' }) => {
@@ -30,6 +30,17 @@ export const notifcationsStyle: ComponentStyle<NotificationsProps> = ({ position
       ${transform(translate)}
       ${opacity(0)}
       ${display('flex')}
+    }
+    .o-notification-close-all {
+      ${textAlign('right')}
+      ${paddingRight('sm')}
+      ${paddingBottom('sm')}
+    }
+    .o-notification-close-all-content{
+      ${fontSize('lg')}
+      ${cursor('pointer')}
+      ${color('primary')}
+      ${fontWeight('medium')}
     }
     .o-notification {
       ${minWidth('450px')}

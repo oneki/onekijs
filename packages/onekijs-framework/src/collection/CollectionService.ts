@@ -489,8 +489,8 @@ export default class CollectionService<
     });
     this.state.items = undefined;
     this.state.status = LoadingStatus.NotInitialized;
-    //this._setLoading({ limit: query.limit, offset: query.offset, resetData: true });
-    //this.refresh(query, false, true, false);
+    this._setLoading({ limit: query.limit, offset: query.offset, resetData: true });
+    this.refresh(query, false, true, false);
   }
 
   @reducer

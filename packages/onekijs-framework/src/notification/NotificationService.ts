@@ -35,6 +35,11 @@ export default class NotificationService extends DefaultGlobalService {
     set(this.state, `notifications.${topic}`, []);
   }
 
+  @reducer
+  clearAll(): void {
+    this.state.notifications = {};
+  }
+
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types

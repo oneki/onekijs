@@ -8,7 +8,7 @@ import DefaultService from './Service';
 import { asyncHttp } from './xhr';
 
 export default class FetchService<S extends FetchState = FetchState> extends DefaultService<S> {
-  pullTask?: Task;
+  pollTask?: Task;
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   *delayLoading(delay_ms?: number) {
@@ -78,25 +78,26 @@ export default class FetchService<S extends FetchState = FetchState> extends Def
   }
 
   @saga(SagaEffect.Every)
-  *pollFetch(url: string, fixedRateInMs: number, options?: FetchOptions<any>): any {
+  *pollFetch<R = any>(url: string, fixedRateInMs: number | ((result: R | undefined) => number), options?: FetchOptions<any>): any {
     yield this.fetch(url, HttpMethod.Get, undefined, options);
-    if (fixedRateInMs > 0) {
-      yield delay(fixedRateInMs);
+    const interval = typeof fixedRateInMs === 'function' ? fixedRateInMs(this.state.result) : fixedRateInMs;
+    if (interval > 0) {
+      yield delay(interval);
       yield this.pollFetch(url, fixedRateInMs, options);
     }
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
-  *poll(url: string, fixedRateInMs: number, options?: FetchOptions<any>): any {
-    const task: Task = yield spawn([this, this.pollFetch], url, fixedRateInMs, options);
-    return task;
+  *poll<R = any>(url: string, fixedRateInMs: number | ((result: R | undefined) => number), options?: FetchOptions<any>): any {
+    this.pollTask = yield spawn([this, this.pollFetch<R>], url, fixedRateInMs, options);
+    return this.pollTask;
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
-  *cancelPull() {
-    yield this.pullTask?.cancel();
+  *cancelPoll() {
+    yield this.pollTask?.cancel();
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
