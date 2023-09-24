@@ -1,14 +1,14 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useId, useMemo, useRef } from 'react';
 import { addClassname } from '../../../utils/style';
 import { TableConfigContext } from '../hooks/useTableConfig';
 import { TableServiceContext } from '../hooks/useTableService';
 import { TableStateContext } from '../hooks/useTableState';
 import { ControllerTableProps, TableConfig } from '../typings';
+import TableActionComponent from './TableActionComponent';
 import TableBodyComponent from './TableBodyComponent';
 import TableFooterComponent from './TableFooterComponent';
 import TableHeaderComponent from './TableHeaderComponent';
 import ExpandedCellComponent from './cells/ExpandedCellComponent';
-import TableActionComponent from './TableActionComponent';
 
 const ControllerTableComponent: React.FC<ControllerTableProps> = ({
   ActionComponent = TableActionComponent,
@@ -29,6 +29,7 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
   headerClassName,
   HeaderComponent = TableHeaderComponent,
   increment,
+  itemHeight,
   LoadingComponent,
   LoadingRowComponent,
   NotFoundComponent,
@@ -81,6 +82,7 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
       height,
       highlightRow,
       increment,
+      itemHeight,
       LoadingComponent,
       LoadingRowComponent,
       NotFoundComponent,
@@ -99,7 +101,7 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
       showRefreshButton,
       sortable,
       stripRows,
-      tail
+      tail,
     };
   }, [
     ActionComponent,
@@ -122,6 +124,7 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
     height,
     highlightRow,
     increment,
+    itemHeight,
     LoadingComponent,
     LoadingRowComponent,
     NotFoundComponent,
@@ -164,6 +167,8 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
     }
   }, [service, ExpandedComponent]);
 
+  const id = useId();
+
   return (
     <TableServiceContext.Provider value={controller.asService()}>
       <TableStateContext.Provider value={controller.state}>
@@ -171,6 +176,7 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
           <div className={className}>
             <ActionComponent />
             <div
+              id={id}
               className={classNames}
               ref={tableRef}
               style={{
@@ -178,7 +184,6 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
                 overflow: 'auto',
               }}
             >
-
               {header && <HeaderComponent columns={columns} className={headerClassName} />}
               <BodyComponent
                 items={items || []}

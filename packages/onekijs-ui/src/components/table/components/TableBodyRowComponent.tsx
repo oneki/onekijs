@@ -9,19 +9,20 @@ import TableLoadingRowComponent from './TableLoadingRowComponent';
 
 const timeout = 500;
 
-const TableBodyRowComponent: FC<TableBodyRowProps> = ({
-  item,
-  index,
-  columns,
-  CellComponent = TableBodyCellComponent,
-  className,
-  onExpand,
-  onExpanding,
-  onExpanded,
-  onCollapse,
-  onCollapsing,
-  onCollapsed,
-}) => {
+const TableBodyRowComponent: FC<TableBodyRowProps> = (props) => {
+  const {
+    item,
+    index,
+    columns,
+    CellComponent = TableBodyCellComponent,
+    className,
+    onExpand,
+    onExpanding,
+    onExpanded,
+    onCollapse,
+    onCollapsing,
+    onCollapsed,
+  } = props;
   const [hover, setHover] = useState(false);
   const {
     highlightRow,
@@ -69,7 +70,7 @@ const TableBodyRowComponent: FC<TableBodyRowProps> = ({
     return (
       <div className={rowContainerClassName}>
         <div className="o-table-body-row">
-          <LoadingRowComponent />
+          <LoadingRowComponent {...props} />
         </div>
       </div>
     );

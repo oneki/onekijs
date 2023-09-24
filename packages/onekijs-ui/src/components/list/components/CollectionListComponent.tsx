@@ -8,7 +8,7 @@ import ListBodyComponent from './ListBodyComponent';
 import ListItemComponent, { ListItemContent } from './ListItemComponent';
 import LoadingItem from './LoadingItem';
 
-const CollectionListComponent = <T = any, I extends ListItem<T> = ListItem<T>>({
+const CollectionListComponent = <T extends any = any, I extends ListItem<T> = ListItem<T>>({
   autoRefresh,
   className,
   controller,

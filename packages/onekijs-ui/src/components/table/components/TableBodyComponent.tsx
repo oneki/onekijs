@@ -12,6 +12,7 @@ import { TableBodyProps } from '../typings';
 import TableBodyRowComponent from './TableBodyRowComponent';
 import TableLoadingComponent from './TableLoadingComponent';
 import TableNotFoundComponent from './TableNotFoundComponent';
+import TableLoadingRowComponent from './TableLoadingRowComponent';
 
 const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, contentRef }) => {
   const service = useTableService();
@@ -20,6 +21,7 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
     autoRefresh,
     follow,
     height,
+    itemHeight,
     increment,
     onRowClick,
     onRowEnter,
@@ -32,18 +34,23 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
     rowClassName,
     LoadingComponent = TableLoadingComponent,
     NotFoundComponent = TableNotFoundComponent,
+    LoadingRowComponent = TableLoadingRowComponent,
     tail,
   } = useTableConfig();
 
-  const itemHeight = useCallback(() => {
-    return 20;
+  const itemHeightFunction = useCallback((index: number) => {
+    if (typeof itemHeight === 'function') {
+      return itemHeight(index);
+    }
+    return itemHeight || 37;
   }, []);
+
   const { items, isVirtual, totalSize, virtualItems, measure, scrollToIndex } = useListView({
     controller: service,
     height: height,
     ref: parentRef || tableRef,
     overscan: 10,
-    itemHeight,
+    itemHeight: itemHeightFunction,
     paddingEnd,
     paddingStart,
     preload,
@@ -55,7 +62,7 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
       const columns = useTableColumns();
       const className =
         typeof rowClassName === 'function' ? rowClassName(props.item, props.index, columns) : rowClassName;
-      return (
+        return (
         <RowComponent
           {...props}
           columns={columns}
@@ -88,6 +95,7 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
       follow={follow}
       height={height}
       ItemComponent={ItemComponentRef.current}
+      ItemLoadingComponent={LoadingRowComponent}
       items={items}
       onItemSelect={onRowClick}
       onItemHighlight={onRowEnter}

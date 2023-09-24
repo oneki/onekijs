@@ -4,7 +4,7 @@ import { ListItem, VirtualItemWrapperProps, VirtualListProps } from '../typings'
 import ListItemComponent, { ListItemContent } from './ListItemComponent';
 import LoadingItem from './LoadingItem';
 
-const VirtualItemWrapper = <T = any, I extends ListItem<T> = ListItem<T>>({
+const VirtualItemWrapper = <T extends any = any, I extends ListItem<T> = ListItem<T>>({
   virtualItem,
   listItem,
   ItemComponent = ListItemComponent,
@@ -83,7 +83,7 @@ const VirtualItemWrapper = <T = any, I extends ListItem<T> = ListItem<T>>({
   );
 };
 
-const VirtualListComponent = <T = any, I extends ListItem<T> = ListItem<T>>({
+const VirtualListComponent = <T extends any = any, I extends ListItem<T> = ListItem<T>>({
   items,
   ItemComponent = ListItemComponent,
   ItemLoadingComponent = LoadingItem,

@@ -126,6 +126,7 @@ export type TableConfig<T = any, I extends TableItem<T> = TableItem<T>> = {
   height?: string | number;
   highlightRow?: boolean;
   increment?: number;
+  itemHeight?: number | ((index: number) => number);
   LoadingComponent?: React.FC;
   LoadingRowComponent?: React.FC;
   NotFoundComponent?: React.FC<TableNotFoundProps> | null;

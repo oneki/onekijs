@@ -79,6 +79,8 @@ export default class CollectionService<
   _currentQuery?: string;
   _initialQuery?: Query;
   _refreshing?: boolean;
+  _noCache?: boolean;
+  _noLoading?: boolean;
   protected refreshTask?: Task;
   protected followTask?: Task;
   scrollToIndex?: (index: number, options?: { align: 'start' | 'center' | 'end' | 'auto' }) => void;
@@ -496,8 +498,8 @@ export default class CollectionService<
   @reducer
   refresh(query?: Query, push?: boolean, noCache?: boolean, noLoading?: boolean): void {
     push = push ?? (query ? true : false);
-    noCache = noCache ?? (query ? false : true);
-    noLoading = noLoading ?? false;
+    noCache = noCache ?? this._noCache ?? (query ? false : true);
+    noLoading = noLoading ?? this._noLoading ?? false;
     if (isCollectionReady(this)) {
       const path = this.state.router.location.pathname;
       query = query ?? this.getQuery();
@@ -514,6 +516,7 @@ export default class CollectionService<
       }
       const method = push ? 'push' : 'replace';
       this._refreshing = true;
+
       this.state.router[method](urlBuilder(path, {}, urlSerializer(query)));
     }
   }
@@ -748,6 +751,8 @@ export default class CollectionService<
   *startFollow(interval: number) {
     yield this._disableDelayLoading();
     yield this.stopFollow();
+    this._noCache = true;
+    this._noLoading = true;
     this.followTask = yield fork([this, this._follow], interval);
   }
 
@@ -762,6 +767,8 @@ export default class CollectionService<
   @saga(SagaEffect.Leading)
   *stopFollow() {
     if (this.followTask) {
+      this._noCache = undefined;
+      this._noLoading = undefined;
       yield this.followTask.cancel();
       this.followTask = undefined;
     }
@@ -1067,7 +1074,7 @@ export default class CollectionService<
     this.state.error = undefined;
     this.state.total = undefined;
 
-    if (same) {
+    if (same || !same) {
       // we have marked old items as loading. We need to mark them as loaded (even if they are no more in the list)
       this._setLoading({
         resetLimit: false,

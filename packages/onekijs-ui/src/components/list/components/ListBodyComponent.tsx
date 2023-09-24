@@ -23,7 +23,7 @@ const findItemIndex = (items?: (Item<unknown> | undefined)[], uid?: string): num
   });
 };
 
-const ListBodyComponent = <T = any, I extends ListItem<T> = ListItem<T>>({
+const ListBodyComponent = <T extends any = any, I extends ListItem<T> = ListItem<T>>({
   autoRefresh,
   bodyRef,
   className,
@@ -182,8 +182,9 @@ const ListBodyComponent = <T = any, I extends ListItem<T> = ListItem<T>>({
   });
 
   useEffect(() => {
+    const ref = parentRef ? parentRef : bodyRef;
+    //console.log('parentRef', parentRef, 'ref', ref)
     const atBottom = () => {
-      const ref = parentRef ? parentRef : bodyRef;
       if (ref && ref.current) {
         const sh = ref.current.scrollHeight;
         const st = ref.current.scrollTop;
@@ -193,9 +194,21 @@ const ListBodyComponent = <T = any, I extends ListItem<T> = ListItem<T>>({
       return false;
     };
 
-    if (tail && scrollToIndex && totalSize && bodyRef && bodyRef.current) {
-      tailRef.current.lastScrollTop = bodyRef.current.scrollTop;
-      if (mouseRef.current || wheelRef.current) {
+    if (tail && scrollToIndex && totalSize && ref && ref.current) {
+      // console.log(
+      //   'scrollTop',
+      //   ref.current.scrollTop,
+      //   'mouseRef',
+      //   mouseRef.current,
+      //   'wheelRef',
+      //   wheelRef.current,
+      //   'applyTail',
+      //   tailRef.current.applyTail,
+      //   'atBottom',
+      //   atBottom(),
+      // );
+      tailRef.current.lastScrollTop = ref.current.scrollTop;
+      if (!atBottom() && (mouseRef.current || wheelRef.current)) {
         tailRef.current.applyTail = false;
       } else if (tailRef.current.applyTail === true || atBottom()) {
         tailRef.current.applyTail = true;

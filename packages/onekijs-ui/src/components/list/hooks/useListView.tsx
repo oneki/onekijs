@@ -48,6 +48,7 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
       if (typeof itemHeight === 'function') {
         return itemHeight(index) || defaultItemHeight;
       }
+      console.log('itemHeight', itemHeight);
       return itemHeight;
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
