@@ -117,11 +117,14 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
                   break;
                 }
               }
+              console.log('lastVirtualItemIndex', lastVirtualItemIndex, 'notLoadedPreviousIndex', notLoadedPreviousIndex, controller.state.url);
               if (notLoadedPreviousIndex !== undefined) {
                 from = Math.max(0, lastVirtualItemIndex - slice.length + notLoadedPreviousIndex - increment);
                 to = from + increment;
               }
             }
+
+
 
             // check forward
             const end =
