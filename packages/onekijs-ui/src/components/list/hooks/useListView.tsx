@@ -48,7 +48,6 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
       if (typeof itemHeight === 'function') {
         return itemHeight(index) || defaultItemHeight;
       }
-      console.log('itemHeight', itemHeight);
       return itemHeight;
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -102,7 +101,7 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
             const first = Math.max(0, lastVirtualItemIndex - increment);
 
             if (lastVirtualItemIndex > 0) {
-              let slice = state.items.slice(first, lastVirtualItemIndex);
+              let slice = state.items.slice(first, lastVirtualItemIndex).filter(() => true);
               if (slice.length < lastVirtualItemIndex - first) {
                 const arr = new Array(lastVirtualItemIndex - first);
                 arr.splice(arr.length - slice.length, slice.length, ...slice);
@@ -117,7 +116,6 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
                   break;
                 }
               }
-              console.log('lastVirtualItemIndex', lastVirtualItemIndex, 'notLoadedPreviousIndex', notLoadedPreviousIndex, controller.state.url);
               if (notLoadedPreviousIndex !== undefined) {
                 from = Math.max(0, lastVirtualItemIndex - slice.length + notLoadedPreviousIndex - increment);
                 to = from + increment;

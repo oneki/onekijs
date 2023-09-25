@@ -1070,11 +1070,10 @@ export default class CollectionService<
     delete q2.limit;
     delete q2.offset;
     let same = isSameQuery(q1, q2);
-
     this.state.error = undefined;
     this.state.total = undefined;
 
-    if (same || !same) {
+    if (same) {
       // we have marked old items as loading. We need to mark them as loaded (even if they are no more in the list)
       this._setLoading({
         resetLimit: false,

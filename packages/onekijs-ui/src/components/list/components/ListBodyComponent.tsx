@@ -274,7 +274,6 @@ const ListBodyComponent = <T extends any = any, I extends ListItem<T> = ListItem
         );
       }
     }
-    console.log('render list body component');
     return (
       <div
         ref={bodyRef}
@@ -337,7 +336,6 @@ const ListBodyComponent = <T extends any = any, I extends ListItem<T> = ListItem
         style,
       );
     }
-    console.log('render list body component');
     return (
       <div ref={bodyRef} className={className} style={style}>
         <ListComponent
