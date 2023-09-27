@@ -314,6 +314,7 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true 
 
 
     &.o-form-table {
+      ${flexGrow(1)}
       ${boxShadow('none')}
       ${paddingRight('none')}
       .o-table-body-row:hover {
