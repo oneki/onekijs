@@ -1,7 +1,7 @@
-import { Validator } from '../typings';
+import { LengthValidator } from '../typings';
 
-const max = (max: number, message?: string): Validator => {
-  return (value: any) => {
+const max = (max: number, message?: string): LengthValidator => {
+  const validator = (value: any) => {
     if (!isNaN(value)) {
       if (!message) {
         message = `Invalid value. Must be lesser than or equal to ${max}`;
@@ -35,6 +35,10 @@ const max = (max: number, message?: string): Validator => {
       valid: true,
       message: undefined,
     };
+  };
+  return {
+    validator,
+    length: max,
   };
 };
 

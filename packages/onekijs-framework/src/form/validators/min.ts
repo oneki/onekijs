@@ -1,7 +1,7 @@
-import { Validator } from '../typings';
+import { LengthValidator } from '../typings';
 
-const min = (min: number, message?: string): Validator => {
-  return (value: any) => {
+const min = (min: number, message?: string): LengthValidator => {
+  const validator = (value: any) => {
     if (!isNaN(value)) {
       if (!message) {
         message = `Invalid value. Must be greater than or equal to ${min}`;
@@ -35,6 +35,10 @@ const min = (min: number, message?: string): Validator => {
       valid: true,
       message: undefined,
     };
+  };
+  return {
+    validator,
+    length: min,
   };
 };
 

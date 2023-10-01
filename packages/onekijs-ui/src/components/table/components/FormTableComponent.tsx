@@ -71,11 +71,11 @@ const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.
     const field = form.fields[name];
     if (field) {
       const validators = field.validators;
-      const minlengthValidator = validators.minLength as LengthValidator | undefined;
+      const minlengthValidator = (validators.minLength || validators.min) as LengthValidator | undefined;
       if (minlengthValidator) {
         minLength = minlengthValidator.length;
       }
-      const maxlengthValidator = validators.maxLength as LengthValidator | undefined;
+      const maxlengthValidator = (validators.maxLength || validators.max) as LengthValidator | undefined;
       if (maxlengthValidator) {
         maxLength = maxlengthValidator.length;
       }
@@ -162,7 +162,7 @@ const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.
           controller={controller}
           className={addClassname('o-form-table', className)}
           FooterComponent={tableService.dataSource ? undefined : FooterComponent}
-          footer={tableService.dataSource || !showAddButton ? false : true}
+          footer={tableService.dataSource || !showAddButton || props.disabled ? false : true}
           NotFoundComponent={null}
           {...props}
         />
