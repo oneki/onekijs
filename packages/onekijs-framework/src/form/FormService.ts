@@ -32,6 +32,8 @@ import {
   FormSubmitListener,
   FormValidationListener,
   FormValueListener,
+  PlaceholderField,
+  PlaceholderValidator,
   TouchOn,
   ValidationCode,
   ValidationResult,
@@ -73,7 +75,7 @@ export default class FormService<T extends object = any> extends DefaultService<
   };
 
   // use when a rule change a field that was not yet initialized
-  protected placeholderFields: AnonymousObject<Partial<Field>>;
+  protected placeholderFields: AnonymousObject<PlaceholderField<T>>;
 
   public config: FormConfig = {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -200,9 +202,21 @@ export default class FormService<T extends object = any> extends DefaultService<
 
   @reducer
   disableValidator(fieldName: NestedKeyOf<T>, validatorName: string) {
-    const field = this.fields[fieldName];
-    if (field) {
-      let validator: Validator | undefined = field.validators[validatorName];
+    let field = this.fields[fieldName] as PlaceholderField<T>;
+    if (!field) {
+      if (!this.placeholderFields[fieldName]) {
+        this.placeholderFields[fieldName] = {};
+      }
+      field = this.placeholderFields[fieldName];
+      if (!field.validators) {
+        field.validators = {};
+      }
+      if (!field.validators[validatorName]) {
+        field.validators[validatorName] = {};
+      }
+    }
+    if (field && field.validators) {
+      let validator: PlaceholderValidator | undefined = field.validators[validatorName];
       if (validator && typeof validator !== 'object') {
         field.validators[validatorName] = {
           validator: field.validators[validatorName] as ValidatorFunction,
@@ -224,9 +238,21 @@ export default class FormService<T extends object = any> extends DefaultService<
 
   @reducer
   enableValidator(fieldName: NestedKeyOf<T>, validatorName: string): void {
-    const field = this.fields[fieldName];
-    if (field) {
-      let validator: Validator | undefined = field.validators[validatorName];
+    let field = this.fields[fieldName] as PlaceholderField<T>;
+    if (!field) {
+      if (!this.placeholderFields[fieldName]) {
+        this.placeholderFields[fieldName] = {};
+      }
+      field = this.placeholderFields[fieldName];
+      if (!field.validators) {
+        field.validators = {};
+      }
+      if (!field.validators[validatorName]) {
+        field.validators[validatorName] = {};
+      }
+    }
+    if (field && field.validators) {
+      let validator: PlaceholderValidator | undefined = field.validators[validatorName];
       if (validator && typeof validator !== 'object') {
         field.validators[validatorName] = {
           validator: field.validators[validatorName] as ValidatorFunction,
@@ -234,7 +260,7 @@ export default class FormService<T extends object = any> extends DefaultService<
         };
       }
       validator = field.validators[validatorName] as ValidatorObject | undefined;
-      if (validator && validator.disabled) {
+      if (validator && validator.disabled && this.fields[fieldName]) {
         validator.disabled = false;
         this.validateSync(
           fieldName,
@@ -490,6 +516,37 @@ export default class FormService<T extends object = any> extends DefaultService<
       options.defaultValue = options.defaultValue === undefined ? '' : options.defaultValue;
       options.touchOn = options.touchOn || this.config.touchOn || TouchOn.Blur;
       const isUndefined = options.isUndefined || ((value: any) => value === undefined);
+
+      // it's possible that validators has been disabled / enabled / added / removed before the insertion of the field in the form
+      console.log(this.placeholderFields);
+      if (this.placeholderFields[name]) {
+        Object.keys(this.placeholderFields[name].validators || {}).forEach((validatorName) => {
+          console.log('a validator already exists for field', name, this.placeholderFields[name].validators)
+          const placeholderValidator = (this.placeholderFields[name].validators || {})[validatorName];
+          const validator = validators[validatorName];
+          if (validator) {
+            if (typeof placeholderValidator === 'object') {
+              if (typeof validator !== 'object') {
+                validators[validatorName] = {
+                  validator,
+                  disabled: placeholderValidator?.disabled
+                }
+              } else {
+                validator.disabled = placeholderValidator?.disabled
+              }
+            }
+          } else if (typeof placeholderValidator === 'object') {
+            if (placeholderValidator.validator !== undefined) {
+              validators[validatorName] = placeholderValidator as Validator;
+            }
+
+          } else {
+            validators[validatorName] = placeholderValidator;
+          }
+        })
+        delete this.placeholderFields[name].validators
+      }
+
       this.addField(
         Object.assign(
           {},
@@ -920,17 +977,22 @@ export default class FormService<T extends object = any> extends DefaultService<
     if (this.state.metadata[fieldOrDecoratorName][key] === undefined || force) {
       this.state.metadata[fieldOrDecoratorName][key] = value;
 
-      if ((key === 'visible' || key === 'disabled') && Object.keys(this.fields).includes(fieldOrDecoratorName)) {
+      // it's possible that the field is not yet registered
+      // we will still try to enable / disable the validator via the placeholderfield
+      const exists = Object.keys(this.fields).includes(fieldOrDecoratorName);
+      if ((key === 'visible' || key === 'disabled')) {
         const fieldName = fieldOrDecoratorName as NestedKeyOf<T>;
         if ((key === 'visible' && value === false) || (key === 'disabled' && value === true)) {
           this.clearError(fieldName, 'required');
           this.disableValidator(fieldName, 'required');
         } else {
           this.enableValidator(fieldName, 'required');
-          const validations = this.validateAll({
-            [fieldName]: this.getValue(fieldName),
-          } as AnonymousPathObject<T>);
-          this.compileValidations(Object.keys(validations) as NestedKeyOf<T>[]);
+          if (exists) {
+            const validations = this.validateAll({
+              [fieldName]: this.getValue(fieldName),
+            } as AnonymousPathObject<T>);
+            this.compileValidations(Object.keys(validations) as NestedKeyOf<T>[]);
+          }
         }
       }
 

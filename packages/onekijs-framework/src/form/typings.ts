@@ -149,6 +149,17 @@ export type LengthValidator = ValidatorObject & {
   length: number;
 };
 
+export type PlaceholderField<T extends object = any> = Partial<Omit<Field<T>, 'validators'> & { validators?: AnonymousObject<PlaceholderValidator>}>
+export type PlaceholderValidator = ValidatorFunction | Partial<ValidatorObject>;
+
+export type Ruler = (...args: any[]) => void;
+
+export type SelectProps = React.InputHTMLAttributes<HTMLInputElement> & ValidatorsType;
+
+export type SubmitButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & { showErrors?: boolean };
+
+export type TextareaProps = React.InputHTMLAttributes<HTMLInputElement> & ValidatorsType;
+
 export enum TouchOn {
   Blur = 'blur',
   Load = 'load',
@@ -158,14 +169,6 @@ export enum TouchOn {
 }
 
 export type TouchOnType = 'blur' | 'load' | 'focus' | 'change' | 'submit';
-
-export type Ruler = (...args: any[]) => void;
-
-export type SelectProps = React.InputHTMLAttributes<HTMLInputElement> & ValidatorsType;
-
-export type SubmitButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & { showErrors?: boolean };
-
-export type TextareaProps = React.InputHTMLAttributes<HTMLInputElement> & ValidatorsType;
 
 export interface UseForm {
   add: (fieldArrayName: string, initialValue?: any) => void;
