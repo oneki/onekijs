@@ -518,10 +518,8 @@ export default class FormService<T extends object = any> extends DefaultService<
       const isUndefined = options.isUndefined || ((value: any) => value === undefined);
 
       // it's possible that validators has been disabled / enabled / added / removed before the insertion of the field in the form
-      console.log(this.placeholderFields);
       if (this.placeholderFields[name]) {
         Object.keys(this.placeholderFields[name].validators || {}).forEach((validatorName) => {
-          console.log('a validator already exists for field', name, this.placeholderFields[name].validators)
           const placeholderValidator = (this.placeholderFields[name].validators || {})[validatorName];
           const validator = validators[validatorName];
           if (validator) {

@@ -753,8 +753,7 @@ export const serializeSubFilter = (filter: QueryFilter): string => {
 
 export const serializeValue = (value: QueryFilterCriteriaValue | QueryFilterCriteriaValue[]): string => {
   if (Array.isArray(value)) {
-    //return `[${value.map((v) => serializePrimitiveValue(v)).join(',')}]`;
-    return serializePrimitiveValue(value.map((v) => `${v}`.replaceAll(',', '\\,')).join(','));
+    return serializePrimitiveValue(value.map((v) => `${v}`.replace(/,/g, '\\,')).join(','));
   }
   return serializePrimitiveValue(value);
 };

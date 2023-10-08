@@ -6,7 +6,7 @@ export type CardProps = {
   className?: string;
   collapsable?: boolean;
   animate?: number;
-  title: string;
+  title: string | ReactNode;
   TitleComponent?: FC<CardTitleProps>;
   icon?: ReactNode;
   open?: boolean;
@@ -14,7 +14,7 @@ export type CardProps = {
 };
 
 export type CardTitleProps = {
-  title: string;
+  title: string | ReactNode;
   icon?: ReactNode;
   onToggle: () => void;
   open: boolean;

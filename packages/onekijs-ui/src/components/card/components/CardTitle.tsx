@@ -6,7 +6,7 @@ const CardTitle: React.FC<CardTitleProps> = ({ collapsable = true, open, title, 
   return (
     <div className="o-card-title-container" onClick={onToggle}>
       {collapsable && <TogglerIcon open={open} />}
-      <span className="o-card-title">{title}</span>
+      <div className="o-card-title">{title}</div>
     </div>
   );
 };

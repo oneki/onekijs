@@ -19,6 +19,7 @@ import { transitionDuration, transitionProperty, transitionTimingFunction } from
 import { ComponentStyle } from '../../styles/typings';
 import { color, fontSize, fontWeight, letterSpacing, textTransform } from '../../styles/typography';
 import { CardProps } from './typings';
+import { flexGrow } from '../../styles/flex';
 
 export const cardStyle: ComponentStyle<CardProps> = ({
   theme,
@@ -56,6 +57,7 @@ export const cardStyle: ComponentStyle<CardProps> = ({
       ${paddingY(t.paddingY)}
       ${letterSpacing(t.letterSpacing)}
       .o-card-title {
+        ${flexGrow(1)}
         ${marginLeft('sm')}
       }
       ${userSelect('none')}

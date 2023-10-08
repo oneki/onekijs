@@ -227,6 +227,7 @@ export { default as TableFilterOperatorComponent } from './components/table/comp
 export { default as TableInputFilterComponent } from './components/table/components/filters/TableInputFilterComponent';
 export { default as TableNumberFilterComponent } from './components/table/components/filters/TableNumberFilterComponent';
 export { default as TableTextFilterComponent } from './components/table/components/filters/TableTextFilterComponent';
+export { default as TableBodyRowComponent } from './components/table/components/TableBodyRowComponent';
 export { default as useCheckboxColumn } from './components/table/hooks/useCheckboxColumn';
 export { default as useColumns } from './components/table/hooks/useColumns';
 export { default as useEnumColumn } from './components/table/hooks/useEnumColumn';
@@ -236,6 +237,7 @@ export { default as useLinkColumn } from './components/table/hooks/useLinkColumn
 export { default as useNumberColumn } from './components/table/hooks/useNumberColumn';
 export { default as useSelectColumn } from './components/table/hooks/useSelectColumn';
 export { default as useTableController } from './components/table/hooks/useTableController';
+export { default as useTableService } from './components/table/hooks/useTableService';
 export { default as useTextColumn } from './components/table/hooks/useTextColumn';
 export { default as useTextareaColumn } from './components/table/hooks/useTextareaColumn';
 export {
