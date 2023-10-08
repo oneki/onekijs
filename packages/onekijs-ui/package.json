@@ -2,7 +2,7 @@
   "name": "onekijs-ui",
   "private": false,
   "version": "0.19.1",
-  "description": "Opiniated React framework built on top of Next.js",
+  "description": "Advanced React Web Components",
   "source": "src/index.ts",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
