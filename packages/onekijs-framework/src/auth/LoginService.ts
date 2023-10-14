@@ -95,6 +95,10 @@ export default class LoginService extends DefaultLocalService<LoginState> {
 
       // build the IDP configuration from the settings and some default values
       const idp = getIdp(settings, idpName);
+      const identity = idp.identity ?? 'default';
+
+      // clear last login info
+      yield this.authService.clear(undefined, undefined, identity, idp.name);
 
       // will contain the result of the submit
       let response: unknown;
@@ -178,12 +182,14 @@ export default class LoginService extends DefaultLocalService<LoginState> {
    *    - settings: the full settings object passed to the application
    */
   @saga(SagaEffect.Latest)
-  *externalLogin(idpName?: string, onError?: ErrorCallback): Generator<string | void | Promise<string>, void, unknown> {
+  *externalLogin(idpName?: string, onError?: ErrorCallback) {
     const { router, settings } = this.context;
     try {
       // build the IDP configuration from the settings and some default values
       const idp = getIdp(settings, idpName);
       const identity = idp.identity ?? 'default';
+
+      yield this.authService.clear(undefined, undefined, identity, idp.name);
 
       // get the loginCallback route the settings
       const redirectUri = absoluteUrl(idp.loginCallbackRoute || `${router.pathname}/callback`);
@@ -209,7 +215,7 @@ export default class LoginService extends DefaultLocalService<LoginState> {
         if (idp.nonce || (idp.responseType && idp.responseType.includes('id_token'))) {
           const nonce = generateNonce();
           getIdpStorage(idp).setItem(`onekijs.${identity}.nonce`, nonce);
-          const hash = yield sha256(nonce);
+          const hash: string = yield sha256(nonce);
           params.nonce = hash;
         } else {
           getIdpStorage(idp).removeItem(`onekijs.${identity}.nonce`);
@@ -218,7 +224,7 @@ export default class LoginService extends DefaultLocalService<LoginState> {
           const state = generateState();
           getIdpStorage(idp).setItem(`onekijs.${identity}.state`, state);
 
-          const hash = yield sha256(state);
+          const hash: string = yield sha256(state);
           params.state = hash;
         } else {
           getIdpStorage(idp).removeItem(`onekijs.${identity}.state`);
@@ -227,7 +233,7 @@ export default class LoginService extends DefaultLocalService<LoginState> {
         if (idp.responseType === 'code' && idp.pkce) {
           const verifier = generateCodeVerifier();
           getIdpStorage(idp).setItem(`onekijs.${identity}.verifier`, verifier);
-          const challenge = yield generateCodeChallenge(verifier);
+          const challenge: string = yield generateCodeChallenge(verifier);
           params.code_challenge = challenge;
           params.code_challenge_method = idp.codeChallengeMethod;
         } else {
@@ -237,7 +243,7 @@ export default class LoginService extends DefaultLocalService<LoginState> {
         if (typeof idp.authorizeEndpoint === 'function') {
           // if the user specifies a function as authorizeEndpoint, we delegate to
           // this function the task of building the URL of the external login page
-          const url = yield idp.authorizeEndpoint(params, idp, this.context);
+          const url: string = yield idp.authorizeEndpoint(params, idp, this.context);
           window.location.href = `${absoluteUrl(url as string, get(settings, 'server.baseUrl'))}`;
         } else if (idp.authorizeEndpoint) {
           // build the URL based on the spec
@@ -257,7 +263,7 @@ export default class LoginService extends DefaultLocalService<LoginState> {
       } else if (typeof idp.externalLoginEndpoint === 'function') {
         // if the user specifies a function as externalLoginEndpoint, we delegate to
         // this function the task of building the URL of the external login page
-        const url = yield idp.externalLoginEndpoint(idp, this.context);
+        const url: string = yield idp.externalLoginEndpoint(idp, this.context);
         window.location.href = `${absoluteUrl(url as string, get(settings, 'server.baseUrl'))}`;
       } else if (idp.externalLoginEndpoint) {
         // we don't actually have a spec to follow. Just use the externalLoginEndpoint

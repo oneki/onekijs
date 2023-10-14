@@ -32,8 +32,8 @@ export default class AuthService extends DefaultGlobalService {
    * @param {string|object} token : the token to save
    */
   @reducer
-  setToken(token: string | AnonymousObject | null, identity = 'default'): void {
-    const idpName = getIdpName(this.state, identity);
+  setToken(token: string | AnonymousObject | null, identity = 'default', idpName?: string): void {
+    idpName = idpName ?? getIdpName(this.state, identity);
     const idp = getIdp(this.context.settings, idpName);
     const persist: string | null = get(idp, 'persist', null);
     let toCookie: string | null = null;
@@ -166,11 +166,11 @@ export default class AuthService extends DefaultGlobalService {
    */
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Latest)
-  *clear(onError?: ErrorCallback, onSuccess?: SuccessCallback, identity = 'default') {
+  *clear(onError?: ErrorCallback, onSuccess?: SuccessCallback, identity = 'default', idpName?: string) {
     try {
+      idpName = idpName ?? getIdpName(this.state, identity);
       yield this.setSecurityContext(undefined, identity);
-      yield this.setToken(null, identity);
-      const idpName = getIdpName(this.state, identity);
+      yield this.setToken(null, identity, idpName);
       const idp = getIdp(this.context.settings, idpName);
       if (idp) {
         yield this.clearIdp(idp);
@@ -203,7 +203,7 @@ export default class AuthService extends DefaultGlobalService {
   *fetchSecurityContext(onError?: ErrorCallback, onSuccess?: SuccessCallback, identity = 'default') {
     const { store, settings } = this.context;
     try {
-      const idpName = getIdpName(store.getState(), identity);
+      const idpName = getIdpName(this.state, identity);
       if (!idpName || idpName === 'null') {
         // not idp name in the stage or the persistence storage => not yet authenticated
         throw new HTTPError(401);
@@ -221,13 +221,12 @@ export default class AuthService extends DefaultGlobalService {
 
       let securityContext: AnonymousObject | null = null;
       // we fetch the token from the redux store
-      let token = get(store.getState(), `auth.${identity}.token`);
-
+      let token = get(this.state, `auth.${identity}.token`);
       // or from the persistence storage
       if (!token) {
         // try to load it from the localStorage
         yield this.loadToken(undefined, undefined, identity);
-        token = get(store.getState(), `auth.${identity}.token`);
+        token = get(this.state, `auth.${identity}.token`);
       }
       if (typeof userinfoEndpoint === 'function') {
         // delegate the security context fetching to the user-passed function
@@ -247,7 +246,7 @@ export default class AuthService extends DefaultGlobalService {
         // get the security context
         securityContext = yield asyncGet(absoluteUrl(userinfoEndpoint, get(settings, 'server.baseUrl')), {
           // we add a bearer auth if a token was saved in the redux store
-          auth: get(store.getState(), `auth.${identity}`),
+          auth: get(this.state, `auth.${identity}`),
         });
       }
 
@@ -286,9 +285,9 @@ export default class AuthService extends DefaultGlobalService {
   *loadToken(onError?: ErrorCallback, onSuccess?: SuccessCallback, identity = 'default') {
     const { store, settings } = this.context;
     try {
-      let result: string | AnonymousObject | null = get(store.getState(), `auth.${identity}.token`, null);
+      let result: string | AnonymousObject | null = get(this.state, `auth.${identity}.token`, null);
       if (isNull(result)) {
-        const idpName = getIdpName(store.getState(), identity);
+        const idpName = getIdpName(this.state, identity);
         if (!idpName || idpName === 'null') {
           // not authenticated
           return null;
@@ -386,7 +385,7 @@ export default class AuthService extends DefaultGlobalService {
         }
 
         // check that the token has not been revoked or changed
-        const actualToken = get(store.getState(), `auth.${identity}.token`);
+        const actualToken = get(this.state, `auth.${identity}.token`);
         if (token !== actualToken) {
           // another method has refresh / change the token (during the nap of this saga)
           // just return the actual one
@@ -501,7 +500,7 @@ export default class AuthService extends DefaultGlobalService {
         }
       }
       yield this.setIdp(idp);
-      yield this.setToken(token, identity);
+      yield this.setToken(token, identity, idp.name);
 
       if (!(token instanceof String) && (token as AnonymousObject).refresh_token) {
         yield spawn([this, this.refreshToken], token as AnonymousObject, idp, false, onError);
