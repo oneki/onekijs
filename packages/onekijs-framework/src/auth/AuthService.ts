@@ -201,7 +201,7 @@ export default class AuthService extends DefaultGlobalService {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Leading)
   *fetchSecurityContext(onError?: ErrorCallback, onSuccess?: SuccessCallback, identity = 'default') {
-    const { store, settings } = this.context;
+    const { settings } = this.context;
     try {
       const idpName = getIdpName(this.state, identity);
       if (!idpName || idpName === 'null') {
@@ -283,7 +283,7 @@ export default class AuthService extends DefaultGlobalService {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Latest)
   *loadToken(onError?: ErrorCallback, onSuccess?: SuccessCallback, identity = 'default') {
-    const { store, settings } = this.context;
+    const { settings } = this.context;
     try {
       let result: string | AnonymousObject | null = get(this.state, `auth.${identity}.token`, null);
       if (isNull(result)) {
@@ -364,7 +364,6 @@ export default class AuthService extends DefaultGlobalService {
    */
   @saga(SagaEffect.Every)
   *refreshToken(token: AnonymousObject, idp: Idp, force = false, onError?: ErrorCallback): AnonymousObject | undefined {
-    const { store } = this.context;
     const identity = idp.identity ?? 'default';
     try {
       if (!force && !token.hasOwnProperty('expires_at')) {
