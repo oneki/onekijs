@@ -1,8 +1,8 @@
 {
   "name": "onekijs-framework",
   "author": "Oneki",
-  "version": "0.19.1",
-  "description": "Opiniated React framework built on top of Redux and React Router",
+  "version": "0.19.2",
+  "description": "Opiniated React framework built on top of Redux and React Router v6",
   "source": "src/index.ts",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
