@@ -1,19 +1,38 @@
+import { FormDisplayerProps, FormFieldValueDisplayerProps, useForm } from 'onekijs-framework';
 import React, { FC } from 'react';
 import Input from '.';
+import { titlelize } from '../../utils/misc';
+import FieldDisplayer from '../field/FieldDisplayer';
 import FieldLayout from '../field/FieldLayout';
 import useFieldLayout from '../field/hooks/useFieldLayout';
 import { FormInputProps, InputProps } from './typings';
+import Password from '../password/Password';
+
+const FormInputValueDisplayer: React.FC<FormFieldValueDisplayerProps> = ({ value }) => {
+  return <span className="o-field-displayer-value o-input-displayer-value">{value ?? ''}</span>
+};
 
 const FormInput: FC<FormInputProps> = React.memo((props) => {
   const [fieldLayoutProps, fieldComponentProps] = useFieldLayout<InputProps>(
     Object.assign(
       {
-        defaultValue: props.defaultValue === undefined ? '' : props.defaultValue,
+        isUndefined: (value: any) => value === undefined || value === null,
+        protected: props.type === 'password',
+        Displayer: (displayerProps: FormDisplayerProps) => {
+          const form = useForm();
+          let value = form.getValue(displayerProps.name) ?? '';
+          if (props.type === 'password' && value !== '') {
+            value = <Password value={value} />
+          }
+          const ValueDisplayer = props.ValueDisplayer ?? FormInputValueDisplayer;
+          return (
+            <FieldDisplayer label={props.label ?? titlelize(displayerProps.name)} help={props.help} value={<ValueDisplayer value={value} />} />
+          );
+        },
       },
       props,
       {
-        isUndefined: (value: any) => value === undefined || value === null,
-        protected: props.type === 'password',
+        defaultValue: props.defaultValue === undefined ? '' : props.defaultValue,
       },
     ),
   );

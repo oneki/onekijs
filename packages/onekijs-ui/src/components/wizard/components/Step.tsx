@@ -1,9 +1,8 @@
-import { FCC, FormContext, useFieldContainer } from 'onekijs-framework';
+import { FCC } from 'onekijs-framework';
 import React, { useEffect } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { addClassname } from '../../../utils/style';
 import useStep from '../hooks/useStep';
-import useWizardService from '../hooks/useWizardService';
 import { useWizardState } from '../hooks/useWizardState';
 import { StepProps } from '../typings';
 
@@ -19,9 +18,9 @@ const Step: FCC<StepProps> = ({
   optional = false,
   showTitle = true,
   className,
+  onTouch,
 }) => {
   const { animate, forwardOnly } = useWizardState();
-  const service = useWizardService();
 
   const step = useStep({
     title,
@@ -37,16 +36,7 @@ const Step: FCC<StepProps> = ({
     uid: uid === undefined ? title : uid,
   });
 
-  const fieldContainer = useFieldContainer({
-    onValidationChange: (touchedValidation, allValidation) => {
-      if (step) {
-        service.onValidationChange(step.uid, touchedValidation, allValidation);
-      }
-    },
-  });
-
   const touched = step?.touched;
-  const touchAllFields = fieldContainer.touchAllFields;
 
   const onEnter = (node: HTMLElement) => {
     node.style.opacity = '0';
@@ -60,24 +50,22 @@ const Step: FCC<StepProps> = ({
   };
 
   useEffect(() => {
-    if (touched) {
-      touchAllFields();
+    if (touched && onTouch) {
+      onTouch();
     }
-  }, [touched, touchAllFields]);
+  }, [touched, onTouch]);
 
   if (!step || !step.active) {
     return null;
   }
 
   return (
-    <FormContext.Provider value={fieldContainer.context}>
-      <CSSTransition in={true} timeout={animate} appear={true} onEnter={onEnter} onEntering={onEntering}>
-        <div className={addClassname('o-step-content', className)}>
-          {showTitle && <div className="o-step-content-title">{title}</div>}
-          {children}
-        </div>
-      </CSSTransition>
-    </FormContext.Provider>
+    <CSSTransition in={true} timeout={animate} appear={true} onEnter={onEnter} onEntering={onEntering}>
+      <div className={addClassname('o-step-content', className)}>
+        {showTitle && <div className="o-step-content-title">{title}</div>}
+        {children}
+      </div>
+    </CSSTransition>
   );
 };
 

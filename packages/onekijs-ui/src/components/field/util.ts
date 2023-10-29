@@ -32,14 +32,16 @@ export const extractFieldLayoutProps = (
     'lgLabelWidth',
     'xlLabelWidth',
   ];
-  const fieldOptionsKeys = ['defaultValue', 'touchedOn', 'disabled', 'visible', 'editable', 'protected', 'isUndefined'];
+  const fieldOptionsKeys = ['defaultValue', 'touchedOn', 'disabled', 'visible', 'editable', 'protected', 'isUndefined', 'Displayer', 'containers', 'ValueDisplayer'];
   Object.keys(nonValidatorProps).forEach((k) => {
+    if (!fieldLayoutKeys.includes(k) && !fieldOptionsKeys.includes(k)) {
+      fieldProps[k] = props[k];
+    }
     if (fieldLayoutKeys.includes(k)) {
       (fieldLayoutProps as any)[k] = props[k];
-    } else if (fieldOptionsKeys.includes(k)) {
+    }
+    if (fieldOptionsKeys.includes(k)) {
       (fieldOptions as any)[k] = props[k];
-    } else if (k !== 'name') {
-      fieldProps[k] = props[k];
     }
   });
   return {

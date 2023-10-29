@@ -1,6 +1,7 @@
 import { FormFieldProps, ValidationStatus } from 'onekijs-framework';
 import { TshirtSize } from '../../styles/typings';
-import { FieldLayoutProps } from '../field/typings';
+import { FieldDisplayerProps, FieldLayoutProps } from '../field/typings';
+import React from 'react';
 
 export type InputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> & {
   PrefixComponent?: React.FC<InputProps>;
@@ -14,4 +15,5 @@ export type FormInputProps = InputProps &
   FieldLayoutProps & {
     defaultValue?: string;
     FieldComponent?: React.FC<InputProps>;
+    FieldDisplayer?: React.FC<FieldDisplayerProps>;
   };

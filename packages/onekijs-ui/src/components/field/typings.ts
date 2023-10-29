@@ -7,7 +7,7 @@ import {
   ValidationStatus,
 } from 'onekijs-framework';
 import React, { ReactNode } from 'react';
-import { TshirtSize } from '../../styles/typings';
+import { StylableProps, TshirtSize } from '../../styles/typings';
 import { GridSize } from '../grid/typings';
 import { LabelProps } from '../label/typings';
 
@@ -20,6 +20,12 @@ export type FieldComponentProps<T extends AnonymousObject> = T & {
   status?: ValidationStatus;
   size?: T['size'];
 };
+
+export type FieldDisplayerProps = StylableProps & {
+  label: ReactNode;
+  value: ReactNode;
+  help?: ReactNode;
+}
 
 export type FieldDescriptionProps = {
   className?: string;

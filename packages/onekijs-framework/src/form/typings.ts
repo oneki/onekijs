@@ -32,6 +32,10 @@ export interface FieldContainer {
   touchedValidation: ContainerValidation;
   allValidation: ContainerValidation;
   touchAllFields: () => void;
+  hide: () => void;
+  show: () => void;
+  enable: () => void;
+  disable: () => void;
 }
 
 export interface FieldProps<T extends object = any> {
@@ -39,7 +43,7 @@ export interface FieldProps<T extends object = any> {
   onChange: (value: any) => void;
   onFocus: () => void;
   onBlur: () => void;
-  value?: T;
+  value?: any;
 }
 
 export type FieldOptions<T = any> = FormMetadata & {
@@ -47,7 +51,14 @@ export type FieldOptions<T = any> = FormMetadata & {
   touchOn?: TouchOnType;
   protected?: boolean;
   isUndefined?: (value: any) => boolean;
+  Displayer?: React.FC<FormFieldDisplayerProps>;
+  ValueDisplayer?: React.FC<FormFieldValueDisplayerProps>
+  containers?: string[];
 };
+
+export type FormFieldValueDisplayerProps = {
+  value: any
+}
 
 export type FormConfig = {
   touchOn?: TouchOnType;
@@ -68,9 +79,23 @@ export type FormConfig = {
 
 export type FormDecorator = {
   name: string;
+  Displayer?: React.FC<FormFieldDisplayerProps>;
 };
 
-export type FormDecoratorOptions = FormMetadata;
+export type FormDecoratorOptions = FormMetadata & {
+  Displayer?: React.FC<FormFieldDisplayerProps>;
+};
+
+export type FormDisplayerField = {
+  name: string;
+  Displayer: React.FC<FormFieldDisplayerProps>;
+  children: AnonymousObject<FormDisplayerField>;
+}
+
+export type FormFieldDisplayerProps = FormDisplayerField & {
+  depth: number;
+  index: number;
+}
 
 export type FormErrorCallback = (fields: Field[], values?: AnonymousObject) => void;
 

@@ -16,6 +16,7 @@ import { SagaEffect } from '../types/saga';
 import { clone, del, get, isObject, set, simpleMergeDeep } from '../utils/object';
 import { generateUniqueId } from '../utils/string';
 import ContainerValidation from './ContainerValidation';
+import DefaultDisplayer from './DefaultDisplayer';
 import FieldValidation, { defaultValidation } from './FieldValidation';
 import {
   Field,
@@ -24,6 +25,7 @@ import {
   FormConfig,
   FormDecorator,
   FormDecoratorOptions,
+  FormDisplayerField,
   FormListenerProps,
   FormListenerType,
   FormMetadata,
@@ -139,6 +141,44 @@ export default class FormService<T extends object = any> extends DefaultService<
       [fieldName]: this.getValue(fieldName),
     } as AnonymousPathObject<T>);
     this.compileValidations(Object.keys(validations) as NestedKeyOf<T>[]);
+  }
+
+  getDisplayerTree(): AnonymousObject<FormDisplayerField> {
+    const treeObject: AnonymousObject<FormDisplayerField> = {};
+    console.log("keys", Object.keys(this.fields || {}));
+    for (const fieldName of Object.keys(this.fields || {})) {
+      const field = this.fields[fieldName as NestedKeyOf<T>] as Field;
+      let obj = treeObject;
+      let hidden = false;
+      console.log("fieldName", fieldName, get(field, 'containers', []))
+      for (const container of get(field, 'containers', [])) {
+        const decorator = this.decorators[container];
+        console.log(container, this.state.metadata[container]);
+        const metadata = this.state.metadata[container];
+        if (!(metadata?.visible ?? true)) {
+          hidden = true;
+          break;
+        } else {
+          if (obj[container] === undefined) {
+            obj[container] = {
+              name: decorator.name,
+              Displayer: decorator.Displayer ?? DefaultDisplayer,
+              children: {},
+            };
+          }
+          obj = obj[container].children as AnonymousObject<FormDisplayerField>;
+        }
+      };
+      const metadata = this.state.metadata[fieldName];
+      if (!hidden && (metadata?.visible ?? true)) {
+        obj[fieldName] = Object.assign({
+          name: fieldName,
+          Displayer: field.Displayer ?? DefaultDisplayer,
+          children: {},
+        });
+      }
+    }
+    return treeObject;
   }
 
   @reducer
@@ -485,6 +525,7 @@ export default class FormService<T extends object = any> extends DefaultService<
     if (!this.decorators[name]) {
       this.decorators[name] = {
         name,
+        Displayer: options.Displayer,
       };
       this.defaultMetadata[name] = this.state.metadata[name] || {
         disabled: options.disabled,
@@ -527,22 +568,21 @@ export default class FormService<T extends object = any> extends DefaultService<
               if (typeof validator !== 'object') {
                 validators[validatorName] = {
                   validator,
-                  disabled: placeholderValidator?.disabled
-                }
+                  disabled: placeholderValidator?.disabled,
+                };
               } else {
-                validator.disabled = placeholderValidator?.disabled
+                validator.disabled = placeholderValidator?.disabled;
               }
             }
           } else if (typeof placeholderValidator === 'object') {
             if (placeholderValidator.validator !== undefined) {
               validators[validatorName] = placeholderValidator as Validator;
             }
-
           } else {
             validators[validatorName] = placeholderValidator;
           }
-        })
-        delete this.placeholderFields[name].validators
+        });
+        delete this.placeholderFields[name].validators;
       }
 
       this.addField(
@@ -565,7 +605,6 @@ export default class FormService<T extends object = any> extends DefaultService<
                     } else {
                       value = value.target.value;
                     }
-
                   }
                   this.setValue(name, value);
                 },
@@ -802,10 +841,8 @@ export default class FormService<T extends object = any> extends DefaultService<
       const currentField = this.fields[newIndex as NestedKeyOf<T>] as Field<T>;
 
       if (nextField) {
-        this.state.validations[newIndex] =
-          this.state.validations[oldIndex];
-        this.state.metadata[newIndex] =
-          this.state.metadata[oldIndex];
+        this.state.validations[newIndex] = this.state.validations[oldIndex];
+        this.state.metadata[newIndex] = this.state.metadata[oldIndex];
         this.fields[newIndex as NestedKeyOf<T>] = Object.assign(nextField, {
           name: currentField.name,
           context: currentField.context,
@@ -818,14 +855,14 @@ export default class FormService<T extends object = any> extends DefaultService<
         delete this.fields[newIndex as NestedKeyOf<T>];
       }
       delete this.triggered[oldIndex];
-    }
+    };
 
     const rm = (oldIndex: string) => {
       delete this.state.metadata[oldIndex];
       delete this.state.validations[oldIndex];
       delete this.fields[oldIndex as NestedKeyOf<T>];
       delete this.triggered[oldIndex];
-    }
+    };
 
     const currentArrayValue = (get<any>(this.state.values, fieldArrayName) || []) as any[];
     const last = currentArrayValue.length - 1;
@@ -833,22 +870,29 @@ export default class FormService<T extends object = any> extends DefaultService<
       const nextValues: AnonymousPathObject<T> = {};
       // need to modifiy all values / metadata / validations with an index superior to the removed one
       for (let i = index + 1; i < currentArrayValue.length; i++) {
-        if (currentArrayValue[i] === null || currentArrayValue[i] === undefined || !(typeof currentArrayValue[i] === 'object')) {
+        if (
+          currentArrayValue[i] === null ||
+          currentArrayValue[i] === undefined ||
+          !(typeof currentArrayValue[i] === 'object')
+        ) {
           // singlecolumntable
-          move(`${fieldArrayName}.${i}`, `${fieldArrayName}.${i-1}`);
+          move(`${fieldArrayName}.${i}`, `${fieldArrayName}.${i - 1}`);
         } else {
           Object.keys(currentArrayValue[i]).forEach((fieldName) => {
-            move(`${fieldArrayName}.${i}.${fieldName}`, `${fieldArrayName}.${i-1}.${fieldName}`);
+            move(`${fieldArrayName}.${i}.${fieldName}`, `${fieldArrayName}.${i - 1}.${fieldName}`);
           });
         }
-
       }
       del(this.fieldIndex, `${fieldArrayName}.${last}`);
-      if (currentArrayValue[last] === null || currentArrayValue[last] === undefined || !(typeof currentArrayValue[last] === 'object')) {
-        rm(`${fieldArrayName}.${last}`)
+      if (
+        currentArrayValue[last] === null ||
+        currentArrayValue[last] === undefined ||
+        !(typeof currentArrayValue[last] === 'object')
+      ) {
+        rm(`${fieldArrayName}.${last}`);
       } else {
         Object.keys(currentArrayValue[last]).forEach((fieldName) => {
-          rm(`${fieldArrayName}.${last}.${fieldName}`)
+          rm(`${fieldArrayName}.${last}.${fieldName}`);
         });
       }
 
@@ -970,7 +1014,12 @@ export default class FormService<T extends object = any> extends DefaultService<
   }
 
   @reducer
-  setMetadata<K extends keyof FormMetadata>(fieldOrDecoratorName: string, key: K, value: FormMetadata[K], force=true): void {
+  setMetadata<K extends keyof FormMetadata>(
+    fieldOrDecoratorName: string,
+    key: K,
+    value: FormMetadata[K],
+    force = true,
+  ): void {
     this.state.metadata[fieldOrDecoratorName] = this.state.metadata[fieldOrDecoratorName] || {};
     if (this.state.metadata[fieldOrDecoratorName][key] === undefined || force) {
       this.state.metadata[fieldOrDecoratorName][key] = value;
@@ -978,7 +1027,7 @@ export default class FormService<T extends object = any> extends DefaultService<
       // it's possible that the field is not yet registered
       // we will still try to enable / disable the validator via the placeholderfield
       const exists = Object.keys(this.fields).includes(fieldOrDecoratorName);
-      if ((key === 'visible' || key === 'disabled')) {
+      if (key === 'visible' || key === 'disabled') {
         const fieldName = fieldOrDecoratorName as NestedKeyOf<T>;
         if ((key === 'visible' && value === false) || (key === 'disabled' && value === true)) {
           this.clearError(fieldName, 'required');

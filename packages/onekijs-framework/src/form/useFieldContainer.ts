@@ -20,9 +20,11 @@ import {
 import useForm from './useForm';
 
 const useFieldContainer = ({
+  container,
   onValueChange,
   onValidationChange,
 }: {
+  container?: string;
   onValueChange?: (value: any) => void;
   onValidationChange?: (touchedValidation: ContainerValidation, allValidation: ContainerValidation) => void;
 }): FieldContainer => {
@@ -49,6 +51,11 @@ const useFieldContainer = ({
             validators: AnonymousObject<Validator> = {},
             options: FieldOptions = {},
           ): FieldProps => {
+            if (container) {
+              const containers = options.containers || [];
+              containers.unshift(container);
+              options.containers = containers;
+            }
             const field = form.initField(name, validators, options);
             field.value = form.getValue(name, '');
             if (!fieldsRef.current.includes(name)) {
@@ -173,12 +180,32 @@ const useFieldContainer = ({
     fieldsRef.current.forEach((field) => form.touch(field));
   }, [form]);
 
+  const hide = useCallback(() => {
+    fieldsRef.current.forEach((field) => form.disableValidator(field, 'required'));
+  }, [form]);
+
+  const show = useCallback(() => {
+    fieldsRef.current.forEach((field) => form.enableValidator(field, 'required'));
+  }, [form]);
+
+  const disable = useCallback(() => {
+    fieldsRef.current.forEach((field) => form.disableValidator(field, 'required'));
+  }, [form]);
+
+  const enable = useCallback(() => {
+    fieldsRef.current.forEach((field) => form.enableValidator(field, 'required'));
+  }, [form]);
+
   return {
     context: containerContextRef.current,
     value: valueRef.current,
     touchedValidation: touchedValidationRef.current,
     allValidation: allValidationRef.current,
     touchAllFields,
+    enable,
+    disable,
+    hide,
+    show,
   };
 };
 

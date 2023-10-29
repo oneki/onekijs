@@ -279,8 +279,11 @@ export {
   FormConfig,
   FormDecorator,
   FormDecoratorOptions,
+  FormDisplayerField,
+  FormFieldDisplayerProps as FormDisplayerProps,
   FormErrorCallback,
   FormFieldProps,
+  FormFieldValueDisplayerProps,
   FormLabelWidth,
   FormListenerProps,
   FormListenerType,
@@ -296,6 +299,8 @@ export {
   FormWarningCallback,
   InputProps,
   LengthValidator,
+  PlaceholderField,
+  PlaceholderValidator,
   Ruler,
   SelectProps,
   SubmitButtonProps,
@@ -412,6 +417,7 @@ export { extractTag, parseJsx, stringifyJsx } from './utils/jsx';
 export { layout, withLayout } from './utils/layout';
 export { sleep } from './utils/misc';
 export {
+  LOADING,
   append,
   applyMixins,
   clone,
@@ -439,7 +445,6 @@ export {
   toPayload,
   update,
   useShallowEqual,
-  LOADING,
 } from './utils/object';
 export { absoluteUrl, isAbsoluteUrl, urlBuilder } from './utils/router';
 export { indexedLocales, isLocaleDomain, isLocalePath, isLocaleSimple } from './utils/settings';
