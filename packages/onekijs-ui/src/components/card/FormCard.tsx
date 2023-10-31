@@ -3,19 +3,13 @@ import React, { useEffect } from 'react';
 import Card from '.';
 import { FormCardProps } from './typings';
 import { titlelize } from '../../utils/misc';
+import FormCardDisplayer from './FormCardDisplayer';
+
 
 const FormCard: FCC<FormCardProps> = ({ name, disabled, visible, ...cardProps }) => {
   const decorator = useFormDecorator(name, {
     Displayer: (displayerProps: FormDisplayerProps) => {
-      return (
-        <>
-          <div className="o-displayer-step">{typeof cardProps.title === 'string' ? cardProps.title : titlelize(name)}</div>
-          {Object.values(displayerProps.children ?? {}).map((field, index) => {
-            const Displayer = field.Displayer;
-            return <Displayer {...field} depth={displayerProps.depth + 1} index={index} />;
-          })}
-        </>
-      );
+      return <FormCardDisplayer {...displayerProps} name={typeof cardProps.title === 'string' ? cardProps.title : titlelize(name)} />
     },
    });
   const form = useForm();

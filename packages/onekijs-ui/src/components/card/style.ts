@@ -1,3 +1,4 @@
+import { FormDisplayerProps } from 'onekijs-framework';
 import { css } from 'styled-components';
 import { alignItems } from '../../styles/alignment';
 import { backgroundColor } from '../../styles/background';
@@ -12,14 +13,14 @@ import {
   boxShadow,
 } from '../../styles/border';
 import { display } from '../../styles/display';
+import { flexGrow } from '../../styles/flex';
 import { cursor, userSelect } from '../../styles/interactivity';
 import { overflow } from '../../styles/overflow';
-import { marginLeft, paddingX, paddingY } from '../../styles/spacing';
+import { marginLeft, marginTop, paddingBottom, paddingX, paddingY } from '../../styles/spacing';
 import { transitionDuration, transitionProperty, transitionTimingFunction } from '../../styles/transition';
 import { ComponentStyle } from '../../styles/typings';
 import { color, fontSize, fontWeight, letterSpacing, textTransform } from '../../styles/typography';
 import { CardProps } from './typings';
-import { flexGrow } from '../../styles/flex';
 
 export const cardStyle: ComponentStyle<CardProps> = ({
   theme,
@@ -65,6 +66,20 @@ export const cardStyle: ComponentStyle<CardProps> = ({
     .o-card-content {
       ${paddingX(t.paddingX)}
       ${paddingY(t.paddingY)}
+    }
+  `;
+};
+
+export const formCardDisplayerStyle: ComponentStyle<FormDisplayerProps> = () => {
+  return css`
+    .o-displayer-card-title {
+      ${borderBottomColor('primary')}
+      ${borderBottomWidth('1px')}
+      ${borderBottomStyle('solid')}
+      ${paddingBottom('sm')}
+      ${marginTop('xl')}
+      ${fontWeight('bold')}
+      ${color('primary')}
     }
   `;
 };

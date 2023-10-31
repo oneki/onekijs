@@ -1,4 +1,5 @@
 import { AnonymousObject, extractValidators, FieldOptions, Validator } from 'onekijs-framework';
+import defaultFieldDisplayer from './hoc/defaultFIeldDisplayer';
 import { FieldLayoutProps } from './typings';
 // extract validators from props
 export const extractFieldLayoutProps = (
@@ -32,7 +33,19 @@ export const extractFieldLayoutProps = (
     'lgLabelWidth',
     'xlLabelWidth',
   ];
-  const fieldOptionsKeys = ['defaultValue', 'touchedOn', 'disabled', 'visible', 'editable', 'protected', 'isUndefined', 'Displayer', 'containers', 'ValueDisplayer'];
+  const fieldOptionsKeys = [
+    'defaultValue',
+    'touchedOn',
+    'disabled',
+    'visible',
+    'editable',
+    'protected',
+    'isUndefined',
+    'Displayer',
+    'containers',
+    'ValueDisplayer',
+    'label',
+  ];
   Object.keys(nonValidatorProps).forEach((k) => {
     if (!fieldLayoutKeys.includes(k) && !fieldOptionsKeys.includes(k)) {
       fieldProps[k] = props[k];
@@ -44,6 +57,7 @@ export const extractFieldLayoutProps = (
       (fieldOptions as any)[k] = props[k];
     }
   });
+  fieldOptions.Displayer = fieldOptions.Displayer ?? defaultFieldDisplayer(props);
   return {
     name: props.name,
     validators,

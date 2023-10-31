@@ -1,6 +1,7 @@
 import DefaultSelectBroker from '../../select/SelectBroker';
 import { SelectItem, SelectItemAdapter } from '../../select/typings';
 import SelectCellComponent from '../components/cells/SelectCellComponent';
+import DefaultCellDisplayer from '../displayers/DefaultCellDisplayer';
 import { SelectCell, SelectColumn, SelectColumnOptions, TableItem } from '../typings';
 
 const selectColumn = <
@@ -34,6 +35,7 @@ const selectColumn = <
     {
       filterable: false,
       sortable: false,
+      Displayer: DefaultCellDisplayer,
     },
     opts,
     {

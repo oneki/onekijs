@@ -145,15 +145,12 @@ export default class FormService<T extends object = any> extends DefaultService<
 
   getDisplayerTree(): AnonymousObject<FormDisplayerField> {
     const treeObject: AnonymousObject<FormDisplayerField> = {};
-    console.log("keys", Object.keys(this.fields || {}));
     for (const fieldName of Object.keys(this.fields || {})) {
       const field = this.fields[fieldName as NestedKeyOf<T>] as Field;
       let obj = treeObject;
       let hidden = false;
-      console.log("fieldName", fieldName, get(field, 'containers', []))
       for (const container of get(field, 'containers', [])) {
-        const decorator = this.decorators[container];
-        console.log(container, this.state.metadata[container]);
+        const decorator = this.decorators[container] ?? get<any>(this.fields, container);
         const metadata = this.state.metadata[container];
         if (!(metadata?.visible ?? true)) {
           hidden = true;
@@ -161,7 +158,7 @@ export default class FormService<T extends object = any> extends DefaultService<
         } else {
           if (obj[container] === undefined) {
             obj[container] = {
-              name: decorator.name,
+              name: container,
               Displayer: decorator.Displayer ?? DefaultDisplayer,
               children: {},
             };

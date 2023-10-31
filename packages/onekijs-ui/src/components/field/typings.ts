@@ -2,6 +2,7 @@ import {
   AnonymousObject,
   ContainerValidation,
   FieldValidation,
+  FormDisplayerProps,
   FormFieldProps,
   FormLayout,
   ValidationStatus,
@@ -25,7 +26,10 @@ export type FieldDisplayerProps = StylableProps & {
   label: ReactNode;
   value: ReactNode;
   help?: ReactNode;
-}
+  first: boolean;
+  last: boolean;
+  format: FormDisplayerProps['format'];
+};
 
 export type FieldDescriptionProps = {
   className?: string;

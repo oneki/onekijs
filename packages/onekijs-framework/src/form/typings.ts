@@ -47,18 +47,19 @@ export interface FieldProps<T extends object = any> {
 }
 
 export type FieldOptions<T = any> = FormMetadata & {
+  label?: string;
   defaultValue?: T;
   touchOn?: TouchOnType;
   protected?: boolean;
   isUndefined?: (value: any) => boolean;
   Displayer?: React.FC<FormFieldDisplayerProps>;
-  ValueDisplayer?: React.FC<FormFieldValueDisplayerProps>
+  ValueDisplayer?: React.FC<FormFieldValueDisplayerProps<T>>;
   containers?: string[];
 };
 
-export type FormFieldValueDisplayerProps = {
-  value: any
-}
+export type FormFieldValueDisplayerProps<T = any> = {
+  value: T;
+};
 
 export type FormConfig = {
   touchOn?: TouchOnType;
@@ -84,18 +85,23 @@ export type FormDecorator = {
 
 export type FormDecoratorOptions = FormMetadata & {
   Displayer?: React.FC<FormFieldDisplayerProps>;
+  label?: string;
 };
 
 export type FormDisplayerField = {
   name: string;
+  label?: string;
   Displayer: React.FC<FormFieldDisplayerProps>;
   children: AnonymousObject<FormDisplayerField>;
-}
+};
 
 export type FormFieldDisplayerProps = FormDisplayerField & {
-  depth: number;
   index: number;
-}
+  first: boolean;
+  last: boolean;
+  classname?: string;
+  format: 'form_summary' | 'form_summary_table' | 'csv';
+};
 
 export type FormErrorCallback = (fields: Field[], values?: AnonymousObject) => void;
 
@@ -174,7 +180,9 @@ export type LengthValidator = ValidatorObject & {
   length: number;
 };
 
-export type PlaceholderField<T extends object = any> = Partial<Omit<Field<T>, 'validators'> & { validators?: AnonymousObject<PlaceholderValidator>}>
+export type PlaceholderField<T extends object = any> = Partial<
+  Omit<Field<T>, 'validators'> & { validators?: AnonymousObject<PlaceholderValidator> }
+>;
 export type PlaceholderValidator = ValidatorFunction | Partial<ValidatorObject>;
 
 export type Ruler = (...args: any[]) => void;

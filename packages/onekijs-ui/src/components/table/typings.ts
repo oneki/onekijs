@@ -1,7 +1,10 @@
 import {
+  AnonymousObject,
   Collection,
   CollectionBy,
   CollectionProxy,
+  FormDisplayerField,
+  FormDisplayerProps,
   FormFieldProps,
   Item,
   ItemAdaptee,
@@ -14,6 +17,7 @@ import {
 } from 'onekijs-framework';
 import React, { FC, ReactNode } from 'react';
 import { StylableProps, TshirtSize } from '../../styles/typings';
+import { ButtonProps } from '../button/typings';
 import { CheckboxProps } from '../checkbox/typings';
 import { FieldLayoutProps } from '../field/typings';
 import { InputProps } from '../input/typings';
@@ -21,7 +25,6 @@ import { ListItemProps, ListItems, ListNotFoundProps, ListState, UseListOptions 
 import { FormSelectProps, SelectBroker, SelectItem, SelectProps } from '../select/typings';
 import { TextareaProps } from '../textarea/typings';
 import TableService from './TableService';
-import { ButtonProps } from '../button/typings';
 
 export type ArrayTableProps<T = any, I extends TableItem<T> = TableItem<T>> = TableConfig<T, I> & {
   adapter?: TableItemAdapter<T>;
@@ -38,6 +41,12 @@ export type ControllerTableProps<
   C extends TableController<T, I, S> = TableController<T, I, S>,
 > = TableConfig<T, I> & {
   controller: CollectionProxy<T, I, S, C>;
+};
+
+export type FormCellDisplayerProps = {
+  Displayer: React.FC<FormDisplayerProps>;
+  name: string;
+  label?: string;
 };
 
 export type FormTableProps<
@@ -68,6 +77,25 @@ export type FormTableContext<T = any> = {
   required?: boolean;
   maxLength?: number;
   minLength?: number;
+};
+
+export type FormTableItemDisplayerProps<T = any> = {
+  value: T;
+  columns: TableColumn<T>[];
+  first: boolean;
+  last: boolean;
+  className?: string;
+  format: FormDisplayerProps['format'];
+  name: string;
+  index: number;
+};
+
+export type FormTableValueDisplayerProps<T = any> = {
+  columns: TableColumn<T>[];
+  value: T[];
+  format: FormDisplayerProps['format'];
+  name: string;
+  className?: string;
 };
 
 export type TableBodyCellProps<T = any, I extends TableItem<T> = TableItem<T>> = {
@@ -177,9 +205,23 @@ export type TableColumn<T, I extends TableItem<T> = TableItem<T>> = TableColumnS
   computedWidth?: TableColumnComputedWidth;
 };
 
+export type TableCellDisplayerProps<T, I extends TableItem<T> = TableItem<T>> = {
+  column: TableColumn<T, I>;
+  rowIndex: number;
+  colIndex: number;
+  firstCol: boolean;
+  lastCol: boolean;
+  firstRow: boolean;
+  lastRow: boolean;
+  rowName: string;
+  value: T;
+  format: FormDisplayerProps['format'];
+};
+
 export type TableColumnSpec<T, I extends TableItem<T> = TableItem<T>> = {
   className?: string | ((item: I, column: TableColumn<T, I>, rowIndex: number) => string);
   CellComponent?: Cell<T, I>;
+  Displayer?: React.FC<TableCellDisplayerProps<T>>;
   footerClassName?: string | ((column: TableColumn<T, I>) => string);
   FooterComponent?: React.FC<TableFooterCellProps<T, I>>;
   filterable?: boolean;

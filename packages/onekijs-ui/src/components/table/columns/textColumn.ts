@@ -1,5 +1,6 @@
 import DefaultCellComponent from '../components/cells/DefaultCellComponent';
 import TableTextFilterComponent from '../components/filters/TableTextFilterComponent';
+import DefaultCellDisplayer from '../displayers/DefaultCellDisplayer';
 import { TableColumn, TableColumnOptions, TableItem } from '../typings';
 
 const textColumn = <T = any, I extends TableItem<T> = TableItem<T>>(
@@ -12,6 +13,7 @@ const textColumn = <T = any, I extends TableItem<T> = TableItem<T>>(
       filterable: true,
       FilterComponent: TableTextFilterComponent,
       sortable: true,
+      Displayer: DefaultCellDisplayer,
     },
     options,
     {

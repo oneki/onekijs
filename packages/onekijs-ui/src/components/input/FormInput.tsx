@@ -5,11 +5,11 @@ import { titlelize } from '../../utils/misc';
 import FieldDisplayer from '../field/FieldDisplayer';
 import FieldLayout from '../field/FieldLayout';
 import useFieldLayout from '../field/hooks/useFieldLayout';
-import { FormInputProps, InputProps } from './typings';
 import Password from '../password/Password';
+import { FormInputProps, InputProps } from './typings';
 
 const FormInputValueDisplayer: React.FC<FormFieldValueDisplayerProps> = ({ value }) => {
-  return <span className="o-field-displayer-value o-input-displayer-value">{value ?? ''}</span>
+  return <span className="o-input-displayer-value">{value ?? ''}</span>;
 };
 
 const FormInput: FC<FormInputProps> = React.memo((props) => {
@@ -22,11 +22,18 @@ const FormInput: FC<FormInputProps> = React.memo((props) => {
           const form = useForm();
           let value = form.getValue(displayerProps.name) ?? '';
           if (props.type === 'password' && value !== '') {
-            value = <Password value={value} />
+            value = <Password value={value} />;
           }
           const ValueDisplayer = props.ValueDisplayer ?? FormInputValueDisplayer;
           return (
-            <FieldDisplayer label={props.label ?? titlelize(displayerProps.name)} help={props.help} value={<ValueDisplayer value={value} />} />
+            <FieldDisplayer
+              label={displayerProps.label ?? titlelize(displayerProps.name)}
+              help={props.help}
+              first={displayerProps.first}
+              last={displayerProps.last}
+              value={<ValueDisplayer value={value} />}
+              format={displayerProps.format}
+            />
           );
         },
       },

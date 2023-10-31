@@ -1,5 +1,6 @@
 import DefaultCellComponent from '../components/cells/DefaultCellComponent';
 import TableNumberFilterComponent from '../components/filters/TableNumberFilterComponent';
+import DefaultCellDisplayer from '../displayers/DefaultCellDisplayer';
 import { TableColumn, TableColumnOptions, TableItem } from '../typings';
 
 const numberColumn = <T = any, I extends TableItem<T> = TableItem<T>>(
@@ -12,6 +13,7 @@ const numberColumn = <T = any, I extends TableItem<T> = TableItem<T>>(
       filterable: true,
       FilterComponent: TableNumberFilterComponent,
       sortable: true,
+      Displayer: DefaultCellDisplayer,
     },
     options,
     {

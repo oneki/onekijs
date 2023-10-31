@@ -1,7 +1,8 @@
 import InputCellComponent from '../components/cells/InputCellComponent';
+import DefaultCellDisplayer from '../displayers/DefaultCellDisplayer';
 import { InputColumn, InputColumnOptions, TableItem } from '../typings';
 
-const inputColumn = <T = any, I extends TableItem<T> = TableItem<T>>(
+const inputColumn = <T extends any = any, I extends TableItem<T> = TableItem<T>>(
   id: string,
   options: InputColumnOptions<T, I>,
 ): InputColumn<T, I> => {
@@ -10,6 +11,7 @@ const inputColumn = <T = any, I extends TableItem<T> = TableItem<T>>(
     {
       filterable: false,
       sortable: false,
+      Displayer: DefaultCellDisplayer,
     },
     options,
     {
