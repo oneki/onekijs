@@ -72,7 +72,7 @@ export const fieldDescriptionStyle: ComponentStyle<FieldDescriptionProps> = ({ t
   `;
 };
 
-export const fieldDisplayerStyle: ComponentStyle<FieldDisplayerProps> = ({ theme, last, format }) => {
+export const fieldDisplayerStyle: ComponentStyle<FieldDisplayerProps> = ({ theme, last }) => {
   const t = theme.label;
   return css`
     ${display('flex')}
@@ -106,7 +106,6 @@ export const fieldDisplayerStyle: ComponentStyle<FieldDisplayerProps> = ({ theme
 
     .o-field-displayer-form-summary-table-label {
       ${display('flex')}
-      ${alignItems('center')}
       ${fontWeight(t.fontWeight)}
       ${paddingRight('xs')}
     }

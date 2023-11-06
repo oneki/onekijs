@@ -11,7 +11,7 @@ const FormSelectValueDisplayer: React.FC<FormFieldValueDisplayerProps> = ({ valu
   if (Array.isArray(value)) {
     return (
       <>
-      {value.map((v, index) => <span key={`item-${index}`} className="o-select-displayer-value">{v ?? ''}</span>)}
+      {value.map((v, index) => <div key={`item-${index}`} className="o-select-displayer-value">{v ?? ''}</div>)}
       </>
     )
   }
@@ -29,14 +29,29 @@ const FormSelect = <T extends any = any, I extends SelectItem<T> = SelectItem<T>
         Displayer: (displayerProps: FormDisplayerProps) => {
           const form = useForm();
           let value = form.getValue(displayerProps.name) ?? '';
+          const adapter = props.adapter;
           if (value === undefined || value === null) {
             value = '';
           } else if (service) {
-            const adaptee = service.adapt(value);
-            value = adaptee.text ?? `${value}`;
-          } else if (props.adapter) {
-            const adaptee = props.adapter(value);
-            value = adaptee.text ?? `${value}`;
+            if (Array.isArray(value)) {
+              value = value.map((v) => {
+                const adaptee = service.adapt(v);
+                return adaptee.text ?? `${value}`;
+              })
+            } else {
+              const adaptee = service.adapt(value);
+              value = adaptee.text ?? `${value}`;
+            }
+          } else if (adapter) {
+            if (Array.isArray(value)) {
+              value = value.map((v) => {
+                const adaptee = adapter(v);
+                return  adaptee.text ?? `${value}`;
+              })
+            } else {
+              const adaptee = adapter(value);
+              value = adaptee.text ?? `${value}`;
+            }
           }
           const ValueDisplayer = props.ValueDisplayer ?? FormSelectValueDisplayer;
           return (

@@ -4,7 +4,7 @@ import Col from '../../grid/Col';
 import Row from '../../grid/Row';
 import { FieldDisplayerProps } from '../typings';
 
-const FieldDisplayerComponent: React.FC<FieldDisplayerProps> = ({ className, label, value, help, format }) => {
+const FieldDisplayerComponent: React.FC<FieldDisplayerProps> = ({ className, label, value, format }) => {
   if (format === 'form_summary') {
     return (
       <Row marginBottom="md" className={addClassname('o-field-displayer-form-summary', className)}>

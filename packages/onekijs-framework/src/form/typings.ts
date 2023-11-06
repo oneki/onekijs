@@ -99,7 +99,7 @@ export type FormFieldDisplayerProps = FormDisplayerField & {
   index: number;
   first: boolean;
   last: boolean;
-  classname?: string;
+  className?: string;
   format: 'form_summary' | 'form_summary_table' | 'csv';
 };
 
