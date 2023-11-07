@@ -20,9 +20,12 @@ const FormCheckboxValueDisplayer: React.FC<FormFieldValueDisplayerProps> = ({ va
 const FormCheckbox: FC<FormCheckboxProps> = React.memo((props) => {
   const [fieldLayoutProps, fieldComponentProps] = useFieldLayout<CheckboxProps>(
     Object.assign(
+      {},
+      props,
       {
+        isUndefined: (value: any) => value !== true && value !== false,
         defaultValue: props.defaultValue !== true ? false : true,
-        Displayer: (displayerProps: FormDisplayerProps) => {
+        Displayer: props.Displayer === undefined ? ((displayerProps: FormDisplayerProps) => {
           const form = useForm();
           let value = form.getValue(displayerProps.name) ?? false;
           const ValueDisplayer = props.ValueDisplayer ?? FormCheckboxValueDisplayer;
@@ -36,11 +39,7 @@ const FormCheckbox: FC<FormCheckboxProps> = React.memo((props) => {
               format={displayerProps.format}
             />
           );
-        },
-      },
-      props,
-      {
-        isUndefined: (value: any) => value !== true && value !== false,
+        }): props.Displayer,
       },
     ),
   );

@@ -28,7 +28,7 @@ export {
   GlobalSelectorFunction,
   LogLevel,
   SetGlobalStateFunction,
-  UseLogger,
+  UseLogger
 } from './app/typings';
 export { default as useAppContext } from './app/useAppContext';
 export { default as useAppService } from './app/useAppService';
@@ -71,7 +71,7 @@ export {
   LogoutOptions,
   LogoutState,
   SecurePageProps,
-  SecureRouteProps,
+  SecureRouteProps
 } from './auth/typings';
 export { default as useAuth } from './auth/useAuth';
 export { default as useAuthService } from './auth/useAuthService';
@@ -99,7 +99,7 @@ export {
   oidcServer,
   parseHashToken,
   parseJwt,
-  validateToken,
+  validateToken
 } from './auth/utils';
 export { default as DefaultCollectionBroker } from './collection/CollectionBroker';
 export { default as CollectionService } from './collection/CollectionService';
@@ -138,7 +138,7 @@ export {
   QuerySortByMultiFields,
   QuerySortComparator,
   QuerySortDir,
-  UseCollectionOptions,
+  UseCollectionOptions
 } from './collection/typings';
 export { default as useCollection } from './collection/useCollection';
 export { default as useCollectionInitialState } from './collection/useCollectionInitialState';
@@ -198,7 +198,7 @@ export {
   serializeValue,
   shouldResetData,
   urlSerializer,
-  visitFilter,
+  visitFilter
 } from './collection/utils';
 export { default as DefaultBasicError } from './core/BasicError';
 export { default as FetchService } from './core/FetchService';
@@ -215,7 +215,7 @@ export {
   saga,
   serial,
   service,
-  throttle,
+  throttle
 } from './core/annotations';
 export { DefaultAppContext } from './core/context';
 export { eventLocks, default as useEventListener } from './core/useEventListener';
@@ -243,7 +243,7 @@ export {
   asyncPut,
   encodeFormData,
   formatAsyncResponse,
-  xhr,
+  xhr
 } from './core/xhr';
 export { AppExtraFetchOptions, AppFetchOptions, UseGetOptions } from './fetch/typings';
 export { default as useDelete } from './fetch/useDelete';
@@ -315,7 +315,7 @@ export {
   ValidatorFunction,
   ValidatorObject,
   ValidatorSyncFunction,
-  ValidatorsType,
+  ValidatorsType
 } from './form/typings';
 export { default as useField } from './form/useField';
 export { default as useFieldContainer } from './form/useFieldContainer';
@@ -369,7 +369,7 @@ export {
   ArrayElement,
   Class,
   NestedKeyOf,
-  PathType,
+  PathType
 } from './types/object';
 export {
   LinkComponentProps,
@@ -380,7 +380,7 @@ export {
   Router,
   RouterContext,
   RouterPushOptions,
-  UnregisterCallback,
+  UnregisterCallback
 } from './types/router';
 export { Saga, SagaEffect } from './types/saga';
 export {
@@ -398,7 +398,7 @@ export {
   sagas,
   serviceClass,
   stop,
-  types,
+  types
 } from './types/service';
 export { AnyState, State } from './types/state';
 export {
@@ -407,7 +407,7 @@ export {
   defaultLocaleSymbol,
   indexedLocalesSymbol,
   localeNoPathSymbol,
-  localesModeSymbol,
+  localesModeSymbol
 } from './types/symbol';
 export { first, isSameArray, last } from './utils/array';
 export { isBrowser, isMobile } from './utils/browser';
@@ -434,8 +434,7 @@ export {
   isNull,
   isNullOrEmpty,
   isObject,
-  isSetter,
-  omit,
+  isSetter, mergeDefault, omit,
   or,
   pick,
   set,
@@ -444,7 +443,7 @@ export {
   toArray,
   toPayload,
   update,
-  useShallowEqual,
+  useShallowEqual
 } from './utils/object';
 export { absoluteUrl, isAbsoluteUrl, urlBuilder } from './utils/router';
 export { indexedLocales, isLocaleDomain, isLocalePath, isLocaleSimple } from './utils/settings';
@@ -456,7 +455,7 @@ export {
   onStorageChange,
   removeCookie,
   removeItem,
-  setItem,
+  setItem
 } from './utils/storage';
 export {
   generateRandomString,
@@ -470,7 +469,7 @@ export {
   trimEnd,
   trimStart,
   ucfirst,
-  wrap,
+  wrap
 } from './utils/string';
 export {
   ensureType,
@@ -481,7 +480,7 @@ export {
   isFunctionOrPromise,
   isInteger,
   isPromise,
-  isTrue,
+  isTrue
 } from './utils/type';
 
 // declare module 'react' {

@@ -14,34 +14,33 @@ const FormInputValueDisplayer: React.FC<FormFieldValueDisplayerProps> = ({ value
 
 const FormInput: FC<FormInputProps> = React.memo((props) => {
   const [fieldLayoutProps, fieldComponentProps] = useFieldLayout<InputProps>(
-    Object.assign(
-      {
-        isUndefined: (value: any) => value === undefined || value === null,
-        protected: props.type === 'password',
-        Displayer: (displayerProps: FormDisplayerProps) => {
-          const form = useForm();
-          let value = form.getValue(displayerProps.name) ?? '';
-          if (props.type === 'password' && value !== '') {
-            value = <Password value={value} />;
-          }
-          const ValueDisplayer = props.ValueDisplayer ?? FormInputValueDisplayer;
-          return (
-            <FieldDisplayer
-              label={displayerProps.label ?? titlelize(displayerProps.name)}
-              help={props.help}
-              first={displayerProps.first}
-              last={displayerProps.last}
-              value={<ValueDisplayer value={value} />}
-              format={displayerProps.format}
-            />
-          );
-        },
-      },
-      props,
-      {
-        defaultValue: props.defaultValue === undefined ? '' : props.defaultValue,
-      },
-    ),
+    Object.assign({}, props, {
+      defaultValue: props.defaultValue === undefined ? '' : props.defaultValue,
+      isUndefined:
+        props.isUndefined === undefined ? (value: any) => value === undefined || value === null : props.isUndefined,
+      protected: props.protected === undefined ? props.type === 'password' : props.protected,
+      Displayer:
+        props.Displayer === undefined
+          ? (displayerProps: FormDisplayerProps) => {
+              const form = useForm();
+              let value = form.getValue(displayerProps.name) ?? '';
+              if (props.type === 'password' && value !== '') {
+                value = <Password value={value} />;
+              }
+              const ValueDisplayer = props.ValueDisplayer ?? FormInputValueDisplayer;
+              return (
+                <FieldDisplayer
+                  label={displayerProps.label ?? titlelize(displayerProps.name)}
+                  help={props.help}
+                  first={displayerProps.first}
+                  last={displayerProps.last}
+                  value={<ValueDisplayer value={value} />}
+                  format={displayerProps.format}
+                />
+              );
+            }
+          : props.Displayer,
+    }),
   );
   const Component = props.FieldComponent || Input;
 

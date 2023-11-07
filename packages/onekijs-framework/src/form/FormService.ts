@@ -635,6 +635,11 @@ export default class FormService<T extends object = any> extends DefaultService<
       );
     }
 
+    // some options are not dynamically managed by the FormService. We erase the value
+    ['Displayer', 'ValueDisplayer', 'label', 'protected', 'containers'].forEach((f: any) => {
+      set(this.fields[name], f, get(options, f));
+    })
+
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.fields[name]!.context;
   }

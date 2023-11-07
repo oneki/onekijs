@@ -25,8 +25,11 @@ const FormSelect = <T extends any = any, I extends SelectItem<T> = SelectItem<T>
   const defaultValue = props.defaultValue === undefined ? (props.multiple ? [] : null) : props.defaultValue;
   const [fieldLayoutProps, fieldComponentProps] = useFieldLayout<SelectProps<T, I>>(
     Object.assign(
+      {},
+      props,
       {
-        Displayer: (displayerProps: FormDisplayerProps) => {
+        defaultValue,
+        Displayer: props.Displayer ?? ((displayerProps: FormDisplayerProps) => {
           const form = useForm();
           let value = form.getValue(displayerProps.name) ?? '';
           const adapter = props.adapter;
@@ -64,11 +67,7 @@ const FormSelect = <T extends any = any, I extends SelectItem<T> = SelectItem<T>
               format={displayerProps.format}
             />
           );
-        },
-      },
-      props,
-      {
-        defaultValue,
+        }),
       },
     ),
   );

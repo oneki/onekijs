@@ -68,6 +68,14 @@ export function simpleMergeDeep(target: any, source: any): any {
   return target;
 }
 
+export function mergeDefault(obj: any, defaults: any): any {
+  if (isObject(obj) && isObject(defaults)) {
+    Object.keys(defaults).forEach((key) => {
+      obj[key] = obj[key] === undefined ? defaults[key] : obj[key];
+    });
+  }
+}
+
 // https://stackoverflow.com/questions/4459928/how-to-deep-clone-in-javascript
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function clone(item: any): any {
