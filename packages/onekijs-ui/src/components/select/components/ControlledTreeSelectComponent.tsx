@@ -24,7 +24,7 @@ export const useTreeSelectPropsContext = <
   return useContext(TreeSelectPropsContext);
 };
 
-const TreeSelectListComponent = <T = any, I extends TreeSelectItem<T> = TreeSelectItem<T>>(
+const TreeSelectListComponent = <T extends any = any, I extends TreeSelectItem<T> = TreeSelectItem<T>>(
   props: SelectListComponentProps<T, I>,
 ) => {
   const treeProps = useTreeSelectPropsContext<T, I>();
