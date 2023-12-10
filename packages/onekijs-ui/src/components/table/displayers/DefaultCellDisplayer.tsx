@@ -8,9 +8,6 @@ const DefaultFormCellDisplayer: React.FC<TableCellDisplayerProps<any>> = (props)
     if (props.column) {
       const name = props.column.id ? `${props.rowName}.${props.column.id}` : `${props.rowName}`;
       const field = form.fields[name];
-      if (props.column.id === 'value') {
-        console.log(field);
-      }
       if (field && field.Displayer) {
         const Component = field.Displayer
         return <Component name={name} label={props.column.id ? props.column.title : ''} Displayer={field.Displayer} children={{}} index={0} first={true} last={true} format={props.format} />

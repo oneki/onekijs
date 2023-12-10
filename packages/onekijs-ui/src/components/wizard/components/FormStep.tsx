@@ -12,7 +12,7 @@ import useWizardService from '../hooks/useWizardService';
 import { FormStepProps } from '../typings';
 import Step from './Step';
 
-const FormStep: FCC<FormStepProps> = ({ name, disabled, visible, ...stepProps }) => {
+const FormStep: FCC<FormStepProps> = ({ name, disabled = false, visible = true, ...stepProps }) => {
   const decorator = useFormDecorator(name, {
     Displayer: (displayerProps: FormDisplayerProps) => {
       const total = Object.values(displayerProps.children ?? {}).length

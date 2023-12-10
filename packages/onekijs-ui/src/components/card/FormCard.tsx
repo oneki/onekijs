@@ -6,7 +6,7 @@ import { titlelize } from '../../utils/misc';
 import FormCardDisplayer from './FormCardDisplayer';
 
 
-const FormCard: FCC<FormCardProps> = ({ name, disabled, visible, ...cardProps }) => {
+const FormCard: FCC<FormCardProps> = ({ name, ...cardProps }) => {
   const decorator = useFormDecorator(name, {
     Displayer: (displayerProps: FormDisplayerProps) => {
       return <FormCardDisplayer {...displayerProps} name={typeof cardProps.title === 'string' ? cardProps.title : titlelize(name)} />
@@ -21,8 +21,10 @@ const FormCard: FCC<FormCardProps> = ({ name, disabled, visible, ...cardProps })
   const { hide, show, disable, enable } = fieldContainer;
 
   useEffect(() => {
-    if (!metadata.visible) {
-      if (metadata.disabled) {
+    const visible = metadata.visible ?? true;
+    const disabled = metadata.disabled ?? false;
+    if (!visible) {
+      if (disabled) {
         disable();
       } else {
         enable();
@@ -30,7 +32,7 @@ const FormCard: FCC<FormCardProps> = ({ name, disabled, visible, ...cardProps })
       hide();
     } else {
       show();
-      if (metadata.disabled) {
+      if (disabled) {
         disable();
       } else {
         enable();

@@ -35,7 +35,7 @@ export const extractFieldLayoutProps = (
   ];
   const fieldOptionsKeys = [
     'defaultValue',
-    'touchedOn',
+    'touchOn',
     'disabled',
     'visible',
     'editable',

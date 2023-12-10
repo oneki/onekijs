@@ -838,6 +838,23 @@ export default class FormService<T extends object = any> extends DefaultService<
 
   @reducer
   remove(fieldArrayName: NestedKeyOf<T>, index: number): void {
+    const replace = (currentField: any, nextField: any, ignore: string[]) => {
+
+      Object.keys(currentField).forEach((key) => {
+        if (!ignore.includes(key)) {
+          delete currentField[key];
+        }
+
+      });
+
+      Object.keys(nextField).forEach((key) => {
+        if (!ignore.includes(key)) {
+          currentField[key] = nextField[key];
+        }
+      });
+
+    }
+
     const move = (oldIndex: string, newIndex: string) => {
       const nextField: Field<T> | undefined = this.fields[oldIndex as NestedKeyOf<T>];
       const currentField = this.fields[newIndex as NestedKeyOf<T>] as Field<T>;
@@ -845,10 +862,9 @@ export default class FormService<T extends object = any> extends DefaultService<
       if (nextField) {
         this.state.validations[newIndex] = this.state.validations[oldIndex];
         this.state.metadata[newIndex] = this.state.metadata[oldIndex];
-        this.fields[newIndex as NestedKeyOf<T>] = Object.assign(nextField, {
-          name: currentField.name,
-          context: currentField.context,
-        });
+        replace(currentField, nextField, ['name', 'context']);
+        this.fields[newIndex as NestedKeyOf<T>] = currentField;
+
         this.pendingDispatch.validationChange.add(newIndex);
         this.pendingDispatch.metadataChange.add(newIndex);
       } else {

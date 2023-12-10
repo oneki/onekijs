@@ -30,7 +30,7 @@ const useField = <T extends object = any>(
         form.setMetadata(nameRef.current, 'visible', optionsRef.current.visible, false);
       }
     }
-  }, [field, form]);
+  }, [form]);
 
   return field;
 };
