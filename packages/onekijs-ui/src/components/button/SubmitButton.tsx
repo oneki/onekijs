@@ -1,4 +1,4 @@
-import { AnonymousObject, FCC, useSubmit, ValidationCode } from 'onekijs-framework';
+import { AnonymousObject, FCC, FORM_GLOBAL_VALIDATION_KEY, useSubmit, ValidationCode } from 'onekijs-framework';
 import React from 'react';
 import Button from '.';
 import Tooltip from '../tooltip';
@@ -8,10 +8,10 @@ const TooltipContent: React.FC<{ code: ValidationCode; fields: AnonymousObject<s
   if (code <= ValidationCode.Error) {
     return (
       <>
-        <div>Some fields are in {code === ValidationCode.Error ? 'in error' : 'loading'}</div>
+        <div>Some fields are {code === ValidationCode.Error ? 'in error' : 'loading'}</div>
         {Object.keys(fields).map((fieldName, index) => (
           <div key={`error-${index}`}>
-            <b>{fieldName}</b>: {fields[fieldName]}
+            {fieldName !== FORM_GLOBAL_VALIDATION_KEY ? <><b>fieldName</b>:</>  : ''}{fields[fieldName]}
           </div>
         ))}
       </>
@@ -24,6 +24,8 @@ const SubmitButton: FCC<SubmitButtonProps> = React.memo((opts) => {
   const { submitting, code, fields } = useSubmit();
   const { showErrors, type = 'submit', ...props } = opts;
   let disabled = props.disabled || false;
+  let loading = false;
+  let kind = props.kind || 'primary';
 
   let errors = [];
   if (code <= ValidationCode.Error) {
@@ -31,22 +33,27 @@ const SubmitButton: FCC<SubmitButtonProps> = React.memo((opts) => {
     if (showErrors) {
       errors = Object.keys(fields);
     }
+    kind = 'danger';
+  }
+  if (code === ValidationCode.Loading) {
+    loading = true;
+    kind = 'dark';
   }
 
   // eslint-disable-next-line react/prop-types
 
-  if (submitting) {
+  if (submitting || loading) {
     disabled = true;
   }
 
   return (
     <Tooltip
-      content={errors.length > 0 ? <TooltipContent code={code} fields={fields} /> : undefined}
+      content={errors.length > 0 && !loading ? <TooltipContent code={code} fields={fields} /> : undefined}
       placement="top"
-      kind="danger"
+      kind={kind}
       delayHide={0}
     >
-      <Button {...props} disabled={disabled} type={type} loading={submitting}>
+      <Button {...props} kind={kind} disabled={disabled} type={type} loading={submitting || loading}>
         {props.children ? props.children : 'Submit'}
       </Button>
     </Tooltip>

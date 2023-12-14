@@ -47,6 +47,8 @@ import {
 } from './typings';
 import { getNonIndexedProp } from './utils';
 
+export const FORM_GLOBAL_VALIDATION_KEY = '__$FORM$GLOBAL_VALIDATION_KEY__';
+
 @service
 export default class FormService<T extends object = any> extends DefaultService<FormState<T>> {
   // keep the previous values (once the changes have been triggered, this field contains the current values)
@@ -71,6 +73,10 @@ export default class FormService<T extends object = any> extends DefaultService<
 
   protected fieldIndex: AnonymousObject;
   protected watchIndex: AnonymousObject;
+
+  // global validations, not related to a field
+  // can be used to set the form in error related to an external event (not enough permissions, ...)
+  protected validations: AnonymousObject<string>[] = [];
 
   protected listenerIndex: {
     [id: string]: AnonymousObject<FormListenerProps>;
@@ -185,12 +191,17 @@ export default class FormService<T extends object = any> extends DefaultService<
 
   @reducer
   clearValidation(
-    fieldName: NestedKeyOf<T>,
+    fieldName: NestedKeyOf<T> | undefined,
     validatorName: string | undefined,
     code: ValidationCode,
     compile = true,
   ): void {
-    del(this.fields[fieldName], validatorName ? `validations.${code}.${validatorName}` : `validations.${code}`);
+    if (fieldName === undefined) {
+      del(this.validations, validatorName ? `${code}.${validatorName}` : code);
+    } else {
+      del(this.fields[fieldName], validatorName ? `validations.${code}.${validatorName}` : `validations.${code}`);
+    }
+
     if (compile) {
       this.compileValidations(fieldName);
     }
@@ -202,21 +213,32 @@ export default class FormService<T extends object = any> extends DefaultService<
   }
 
   @reducer
-  compileValidations(fieldNames: NestedKeyOf<T>[] | NestedKeyOf<T>, force = false): void {
-    if (!Array.isArray(fieldNames)) {
-      fieldNames = [fieldNames];
-    }
-    fieldNames.forEach((fieldName) => {
-      if (this.fields[fieldName]) {
-        const previousValidation = this.state.validations[fieldName];
-        const nextValidation = this._getValidation(fieldName);
-        if (force || !nextValidation.equals(previousValidation)) {
-          this.state.validations[fieldName] = nextValidation;
-          this.pendingDispatch.validationChange.add(fieldName);
-          this.pendingDispatch.validationChange.add('');
-        }
+  compileValidations(fieldNames: undefined | NestedKeyOf<T>[] | NestedKeyOf<T>, force = false): void {
+    if (fieldNames === undefined) {
+      const previousValidation = this.state.validations[FORM_GLOBAL_VALIDATION_KEY];
+      const nextValidation = this._getValidation(undefined);
+      if (force || !nextValidation.equals(previousValidation)) {
+        this.state.validations[FORM_GLOBAL_VALIDATION_KEY] = nextValidation;
+        this.pendingDispatch.validationChange.add('');
       }
-    });
+    } else {
+      if (!Array.isArray(fieldNames)) {
+        fieldNames = [fieldNames];
+      }
+      fieldNames.forEach((fieldName) => {
+        if (this.fields[fieldName]) {
+          const previousValidation = this.state.validations[fieldName];
+          const nextValidation = this._getValidation(fieldName);
+          if (force || !nextValidation.equals(previousValidation)) {
+            this.state.validations[fieldName] = nextValidation;
+            this.pendingDispatch.validationChange.add(fieldName);
+            this.pendingDispatch.validationChange.add('');
+          }
+        }
+      });
+    }
+
+
   }
 
   decorator(name: string, options: FormDecoratorOptions = {}): FormDecorator {
@@ -339,6 +361,7 @@ export default class FormService<T extends object = any> extends DefaultService<
     fields: AnonymousKeyObject<T, Field>,
     prefix = '',
     touchedOnly = true,
+    includeGlobal = false,
   ): ContainerValidation {
     // compile the validations to get the status
 
@@ -346,7 +369,7 @@ export default class FormService<T extends object = any> extends DefaultService<
     const result = new ContainerValidation('', ValidationStatus.None, ValidationCode.None, {});
 
     const keys = Object.keys(validations) as NestedKeyOf<T>[];
-    for (const fieldName of keys.filter((k: string) => k.startsWith(prefix))) {
+    for (const fieldName of keys.filter((k: string) => k.startsWith(prefix) && k !== FORM_GLOBAL_VALIDATION_KEY)) {
       const field = fields[fieldName as NestedKeyOf<T>];
       if (field !== undefined && (!touchedOnly || field.touched)) {
         const validation = validations[fieldName];
@@ -361,6 +384,21 @@ export default class FormService<T extends object = any> extends DefaultService<
           if (validation.message) {
             messages.push(`<${fieldName}>: ${validation.message}`);
           }
+        }
+      }
+    }
+    if (includeGlobal) {
+      const validation = validations[FORM_GLOBAL_VALIDATION_KEY];
+      if (validation && validation.code <= result.code && validation.code < ValidationCode.None) {
+        if (validation.code < result.code) {
+          result.status = validation.status;
+          result.code = validation.code;
+          result.fields = {};
+          messages = [];
+        }
+        result.fields[FORM_GLOBAL_VALIDATION_KEY] = validation.message;
+        if (validation.message) {
+          messages.push(`${validation.message}`);
         }
       }
     }
@@ -464,19 +502,25 @@ export default class FormService<T extends object = any> extends DefaultService<
     };
 
     if (fieldName === undefined || fieldName === '') {
-      return this.getContainerFieldValidation(this.state.validations, this.fields, '', touchedOnly);
+      return this.getContainerFieldValidation(this.state.validations, this.fields, '', touchedOnly, true);
     } else {
       return getFieldValidation(fieldName);
     }
   };
 
-  protected _getValidation(fieldName: NestedKeyOf<T>): FieldValidation {
-    const field = this.fields[fieldName];
-    if (field !== undefined) {
-      for (const code in field.validations) {
+  protected _getValidation(fieldName: NestedKeyOf<T> | undefined): FieldValidation {
+    let validations: AnonymousObject<string>[] | undefined;
+    if (fieldName === undefined) {
+      validations = this.validations;
+    } else if (this.fields[fieldName] !== undefined) {
+      validations = this.fields[fieldName]?.validations;
+    }
+
+    if (validations !== undefined) {
+      for (const code in validations) {
         const iCode = parseInt(code);
-        for (const id in field.validations[iCode]) {
-          return new FieldValidation(field.validations[iCode][id], this.serializeValidationCode(iCode), iCode);
+        for (const id in validations[iCode]) {
+          return new FieldValidation(validations[iCode][id], this.serializeValidationCode(iCode), iCode);
         }
       }
       return defaultValidation;
@@ -494,14 +538,22 @@ export default class FormService<T extends object = any> extends DefaultService<
     return get<any>(this.state.values, fieldName, defaultValue);
   }
 
-  hasValidation(fieldName: NestedKeyOf<T>, validatorName: string, code: ValidationCode, message?: string): boolean {
-    const field = this.fields[fieldName];
-    if (field) {
-      const validation = get<any>(field, `validations.${code}.${validatorName}`);
+  hasValidation(fieldName: NestedKeyOf<T> | undefined, validatorName: string, code: ValidationCode, message?: string): boolean {
+    if (fieldName === undefined) {
+      const validation = get<any>(this.validations, `${code}.${validatorName}`);
       if (!message) {
         return validation !== undefined;
       }
       return validation === message;
+    } else {
+      const field = this.fields[fieldName];
+      if (field) {
+        const validation = get<any>(field, `validations.${code}.${validatorName}`);
+        if (!message) {
+          return validation !== undefined;
+        }
+        return validation === message;
+      }
     }
     return false;
   }
@@ -1015,7 +1067,7 @@ export default class FormService<T extends object = any> extends DefaultService<
   }
 
   @reducer
-  setError(fieldName: NestedKeyOf<T>, validatorName: string, message = '', match?: boolean): boolean {
+  setError(fieldName: NestedKeyOf<T> | undefined, validatorName: string, message = '', match?: boolean): boolean {
     return this.setOrClearValidation(ValidationCode.Error, fieldName, validatorName, message, match);
   }
 
@@ -1076,20 +1128,20 @@ export default class FormService<T extends object = any> extends DefaultService<
   }
 
   @reducer
-  setOK(fieldName: NestedKeyOf<T>, validatorName: string): boolean {
+  setOK(fieldName: NestedKeyOf<T> | undefined, validatorName: string): boolean {
     return this.setOrClearValidation(ValidationCode.Ok, fieldName, validatorName, '', true);
   }
 
   @reducer
   setOrClearValidation(
     code: ValidationCode,
-    fieldName: NestedKeyOf<T>,
+    fieldName: NestedKeyOf<T> | undefined,
     validatorName: string,
     message = '',
     match?: boolean,
   ): boolean {
     let changed = false;
-    if (this.fields[fieldName]) {
+    if (fieldName === undefined || this.fields[fieldName]) {
       if (this.hasValidation(fieldName, validatorName, ValidationCode.Loading)) {
         this.clearValidation(fieldName, validatorName, ValidationCode.Loading);
         changed = true;
@@ -1108,7 +1160,7 @@ export default class FormService<T extends object = any> extends DefaultService<
   }
 
   @reducer
-  setPendingValidation(fieldName: NestedKeyOf<T>, validatorName: string, pending = true): boolean {
+  setPendingValidation(fieldName: NestedKeyOf<T> | undefined, validatorName: string, pending = true): boolean {
     return this.setOrClearValidation(ValidationCode.Loading, fieldName, validatorName, '', pending);
   }
 
@@ -1121,13 +1173,15 @@ export default class FormService<T extends object = any> extends DefaultService<
 
   @reducer
   setValidation(
-    fieldName: NestedKeyOf<T>,
+    fieldName: NestedKeyOf<T> | undefined,
     validatorName: string,
     code: ValidationCode,
     message = '',
     compile = true,
   ): void {
-    if (this.fields[fieldName]) {
+    if (fieldName === undefined) {
+      set(this.validations, `${code}.${validatorName}` as any, message as any);
+    } else if (this.fields[fieldName]) {
       set(this.fields[fieldName], `validations.${code}.${validatorName}` as any, message as any);
     }
     if (compile) {
@@ -1161,7 +1215,7 @@ export default class FormService<T extends object = any> extends DefaultService<
   }
 
   @reducer
-  setWarning(fieldName: NestedKeyOf<T>, validatorName: string, message = '', match?: boolean): boolean {
+  setWarning(fieldName: NestedKeyOf<T> | undefined, validatorName: string, message = '', match?: boolean): boolean {
     return this.setOrClearValidation(ValidationCode.Warning, fieldName, validatorName, message, match);
   }
 

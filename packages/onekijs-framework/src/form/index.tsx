@@ -89,12 +89,14 @@ const Form: FCC<FormProps> = (props) => {
                     controller.fields,
                     watch,
                     false,
+                    watch === ''
                   );
                   next = controller.getContainerFieldValidation(
                     controller.state.validations || {},
                     controller.fields,
                     watch,
                     false,
+                    watch === ''
                   );
                   if (prev.status !== next.status || prev.message !== next.message) {
                     changed = true;

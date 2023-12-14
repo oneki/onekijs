@@ -29,7 +29,7 @@ const useValidation = (name = '', touchedOnly = true): FieldValidation | Contain
 
   const [validation, setValidation] = useState(() => {
     if (isNullOrEmpty(argsRef.current.name)) {
-      return form.getContainerFieldValidation(form.state.validations, form.fields, '', argsRef.current.touchedOnly);
+      return form.getContainerFieldValidation(form.state.validations, form.fields, '', argsRef.current.touchedOnly, true);
     } else {
       return getFieldValidation(argsRef.current.name, argsRef.current.touchedOnly);
     }
@@ -39,7 +39,7 @@ const useValidation = (name = '', touchedOnly = true): FieldValidation | Contain
     const { name, touchedOnly } = argsRef.current;
     const listener: FormValidationListener = (validation) => {
       if (isNullOrEmpty(name)) {
-        setValidation(form.getContainerFieldValidation(form.state.validations, form.fields, '', touchedOnly));
+        setValidation(form.getContainerFieldValidation(form.state.validations, form.fields, '', touchedOnly, true));
       } else {
         if (!touchedOnly || form.fields[name]?.touched) {
           setValidation(validation);

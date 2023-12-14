@@ -263,7 +263,7 @@ export { default as Form } from './form';
 export { default as AsyncBindService } from './form/AsyncBindService';
 export { default as ContainerValidation } from './form/ContainerValidation';
 export { default as FieldValidation, defaultValidation } from './form/FieldValidation';
-export { default as FormService } from './form/FormService';
+export { default as FormService, FORM_GLOBAL_VALIDATION_KEY } from './form/FormService';
 export { default as Input } from './form/components/Input';
 export { default as Select } from './form/components/Select';
 export { default as SubmitButton } from './form/components/SubmitButton';
