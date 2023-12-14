@@ -6,7 +6,7 @@ import {
   useFormDecorator,
   useFormMetadata,
 } from 'onekijs-framework';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import AccordionPanel from '../../accordion/components/AccordionPanel';
 import useWizardService from '../hooks/useWizardService';
 import { FormStepProps } from '../typings';
@@ -38,6 +38,8 @@ const FormStep: FCC<FormStepProps> = ({ name, disabled = false, visible = true, 
 
   const { touchAllFields, hide, show, disable, enable } = fieldContainer;
 
+  const initializedRef = useRef(false);
+
   useEffect(() => {
     const visible = metadata.visible ?? true;
     const disabled = metadata.disabled ?? false;
@@ -47,40 +49,50 @@ const FormStep: FCC<FormStepProps> = ({ name, disabled = false, visible = true, 
         disable();
       } else {
         service.enable(name);
-        enable();
+        if (initializedRef.current === true) {
+          // we only use the enable method if this is a change and not a initialization
+          enable();
+        }
       }
       service.hide(name);
       hide();
     } else {
       service.show(name);
-      show();
+      if (initializedRef.current === true) {
+        // we only use the show method if this is a change and not a initialization
+        show();
+      }
       if (disabled) {
         service.disable(name);
         disable();
       } else {
         service.enable(name);
-        enable();
+        if (initializedRef.current === true) {
+          // we only use the enable method if this is a change and not a initialization
+          enable();
+        }
       }
     }
+    initializedRef.current = true;
   }, [name, metadata.visible, metadata.disabled]);
 
-  useEffect(() => {
-    if (!visible) {
-      if (disabled) {
-        disable();
-      } else {
-        enable();
-      }
-      hide();
-    } else {
-      show();
-      if (disabled) {
-        disable();
-      } else {
-        enable();
-      }
-    }
-  }, [visible, disabled, hide, show, disable, enable]);
+  // useEffect(() => {
+  //   if (!visible) {
+  //     if (disabled) {
+  //       disable();
+  //     } else {
+  //       enable();
+  //     }
+  //     hide();
+  //   } else {
+  //     show();
+  //     if (disabled) {
+  //       disable();
+  //     } else {
+  //       enable();
+  //     }
+  //   }
+  // }, [visible, disabled, hide, show, disable, enable]);
 
   return (
     <FormContext.Provider value={fieldContainer.context}>

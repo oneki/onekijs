@@ -435,6 +435,19 @@ export default class FormService<T extends object = any> extends DefaultService<
     return result;
   }
 
+  getMetadata<K extends keyof FormMetadata>(
+    fieldOrDecoratorName: string,
+    key: K,
+  ): FormMetadata[K] | undefined {
+    return get(this.state.metadata, `${fieldOrDecoratorName}.${key}`);
+  }
+
+  getMetadatas(
+    fieldOrDecoratorName: string,
+  ): FormMetadata | undefined {
+    return get(this.state.metadata, fieldOrDecoratorName);
+  }
+
   obfuscate(value: any, fieldName?: string): any {
     value = clone(value); // do not touch the original
 

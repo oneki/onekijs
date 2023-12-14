@@ -2,7 +2,7 @@ import { useCallback, useEffect, useReducer, useRef } from 'react';
 import useLazyRef from '../core/useLazyRef';
 import { ValidationStatus } from '../types/form';
 import { AnonymousObject } from '../types/object';
-import { clone, diffArrays, get, set } from '../utils/object';
+import { clone, del, diffArrays, get, set } from '../utils/object';
 import { generateUniqueId } from '../utils/string';
 import ContainerValidation from './ContainerValidation';
 import FieldValidation from './FieldValidation';
@@ -42,6 +42,10 @@ const useFieldContainer = ({
   const form = useForm();
   const [, forceRender] = useReducer((s) => s + 1, 0);
 
+  // when a field container is hidden, all inner field are also hidden
+  // when the field container is shown again, we need to know which field were already hidden before the step were hidden
+  const fieldMetadataRef = useRef<AnonymousObject<AnonymousObject<boolean>>>({});
+
   const containerContextRef = useLazyRef<FormService>(() => {
     const handler = {
       get: function (target: FormService, prop: string | number | symbol, receiver?: FormService): any {
@@ -74,6 +78,11 @@ const useFieldContainer = ({
               Object.keys(fieldValidationsRef.current).forEach((key) => {
                 if (key.startsWith(`${fieldArrayName}.${currentArrayValue.length - 1}`)) {
                   delete fieldValidationsRef.current[key];
+                }
+              });
+              Object.keys(fieldMetadataRef.current).forEach((key) => {
+                if (key.startsWith(`${fieldArrayName}.${currentArrayValue.length - 1}`)) {
+                  delete fieldMetadataRef.current[key];
                 }
               });
             }
@@ -181,19 +190,43 @@ const useFieldContainer = ({
   }, [form]);
 
   const hide = useCallback(() => {
-    fieldsRef.current.forEach((field) => form.disableValidator(field, 'required'));
+    fieldsRef.current.forEach((field) => {
+      const visible = form.getMetadata(field, 'visible');
+      if (visible !== undefined) {
+        fieldMetadataRef.current[field] = fieldMetadataRef.current[field] || {};
+        fieldMetadataRef.current[field]['visible'] = visible;
+      }
+      form.disableValidator(field, 'required')
+    });
   }, [form]);
 
   const show = useCallback(() => {
-    fieldsRef.current.forEach((field) => form.enableValidator(field, 'required'));
+    fieldsRef.current.forEach((field) => {
+      if (get(fieldMetadataRef.current, `${field}.visible`) !== false) {
+        form.enableValidator(field, 'required')
+      }
+      del(fieldMetadataRef.current, `${field}.visible`);
+    });
   }, [form]);
 
   const disable = useCallback(() => {
-    fieldsRef.current.forEach((field) => form.disableValidator(field, 'required'));
+    fieldsRef.current.forEach((field) => {
+      const disabled = form.getMetadata(field, 'disabled');
+      if (disabled !== undefined) {
+        fieldMetadataRef.current[field] = fieldMetadataRef.current[field] || {};
+        fieldMetadataRef.current[field]['disabled'] = disabled;
+      }
+      form.disableValidator(field, 'required');
+    });
   }, [form]);
 
   const enable = useCallback(() => {
-    fieldsRef.current.forEach((field) => form.enableValidator(field, 'required'));
+    fieldsRef.current.forEach((field) => {
+      if (get(fieldMetadataRef.current, `${field}.disabled`) !== true) {
+        form.enableValidator(field, 'required')
+      }
+      del(fieldMetadataRef.current, `${field}.disabled`);
+    });
   }, [form]);
 
   return {

@@ -1,5 +1,5 @@
 import { FCC, FormContext, FormDisplayerProps, useFieldContainer, useForm, useFormDecorator, useFormMetadata } from 'onekijs-framework';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Card from '.';
 import { FormCardProps } from './typings';
 import { titlelize } from '../../utils/misc';
@@ -20,6 +20,8 @@ const FormCard: FCC<FormCardProps> = ({ name, ...cardProps }) => {
   });
   const { hide, show, disable, enable } = fieldContainer;
 
+  const initializedRef = useRef(false);
+
   useEffect(() => {
     const visible = metadata.visible ?? true;
     const disabled = metadata.disabled ?? false;
@@ -27,18 +29,29 @@ const FormCard: FCC<FormCardProps> = ({ name, ...cardProps }) => {
       if (disabled) {
         disable();
       } else {
-        enable();
+        if (initializedRef.current === true) {
+          // we only use the enable method if this is a change and not a initialization
+          enable();
+        }
       }
       hide();
     } else {
-      show();
+      if (initializedRef.current === true) {
+        // we only use the show method if this is a change and not a initialization
+        show();
+      }
       if (disabled) {
         disable();
       } else {
-        enable();
+        if (initializedRef.current === true) {
+          // we only use the enable method if this is a change and not a initialization
+          enable();
+        }
       }
     }
+    initializedRef.current = true;
   }, [metadata.visible, metadata.disabled, hide, show, disable, enable]);
+
 
   if (metadata.visible === false) {
     return null;
