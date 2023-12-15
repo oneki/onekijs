@@ -1,5 +1,5 @@
-import { FormDisplayerProps, useForm } from '..';
 import React from 'react';
+import { FormDisplayerProps, useForm } from '..';
 
 const DefaultDisplayer: React.FC<FormDisplayerProps> = ({ name, label, format }) => {
   const form = useForm();

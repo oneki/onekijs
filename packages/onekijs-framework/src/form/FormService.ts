@@ -16,7 +16,6 @@ import { SagaEffect } from '../types/saga';
 import { clone, del, get, isObject, set, simpleMergeDeep } from '../utils/object';
 import { generateUniqueId } from '../utils/string';
 import ContainerValidation from './ContainerValidation';
-import DefaultDisplayer from './DefaultDisplayer';
 import FieldValidation, { defaultValidation } from './FieldValidation';
 import {
   Field,
@@ -165,7 +164,7 @@ export default class FormService<T extends object = any> extends DefaultService<
           if (obj[container] === undefined) {
             obj[container] = {
               name: container,
-              Displayer: decorator.Displayer ?? DefaultDisplayer,
+              Displayer: decorator.Displayer,
               children: {},
             };
           }
@@ -176,7 +175,7 @@ export default class FormService<T extends object = any> extends DefaultService<
       if (!hidden && (metadata?.visible ?? true)) {
         obj[fieldName] = Object.assign({
           name: fieldName,
-          Displayer: field.Displayer ?? DefaultDisplayer,
+          Displayer: field.Displayer,
           children: {},
         });
       }

@@ -317,6 +317,7 @@ export {
   ValidatorSyncFunction,
   ValidatorsType
 } from './form/typings';
+export { default as DefaultDisplayer } from './form/DefaultDisplayer';
 export { default as useField } from './form/useField';
 export { default as useFieldContainer } from './form/useFieldContainer';
 export { FormContext, default as useForm } from './form/useForm';

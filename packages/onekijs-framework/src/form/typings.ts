@@ -91,7 +91,7 @@ export type FormDecoratorOptions = FormMetadata & {
 export type FormDisplayerField = {
   name: string;
   label?: string;
-  Displayer: React.FC<FormFieldDisplayerProps>;
+  Displayer?: React.FC<FormFieldDisplayerProps>;
   children: AnonymousObject<FormDisplayerField>;
 };
 
