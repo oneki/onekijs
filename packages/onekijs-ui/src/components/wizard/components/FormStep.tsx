@@ -1,4 +1,5 @@
 import {
+  DefaultDisplayer,
   FCC,
   FormContext,
   FormDisplayerProps,
@@ -19,7 +20,7 @@ const FormStep: FCC<FormStepProps> = ({ name, disabled = false, visible = true, 
       return (
         <AccordionPanel title={stepProps.title} initialActive={displayerProps.index === 0} initialExpand={displayerProps.index === 0}>
           {Object.values(displayerProps.children ?? {}).map((field, index) => {
-            const Displayer = field.Displayer;
+            const Displayer = field.Displayer ?? DefaultDisplayer;
             return <Displayer {...field} index={index} key={`field-${index}`} first={index === 0} last={index === total-1} format={displayerProps.format} />;
           })}
         </AccordionPanel>
