@@ -1,7 +1,8 @@
 import React from 'react';
-import { FormDisplayerProps, useForm } from '..';
+import useForm from './useForm';
+import { FormFieldDisplayerProps } from './typings';
 
-const DefaultDisplayer: React.FC<FormDisplayerProps> = ({ name, label, format }) => {
+const DefaultDisplayer: React.FC<FormFieldDisplayerProps> = ({ name, label, format }) => {
   const form = useForm();
   const value = form.getValue(name, '');
   if (format === 'form_summary' || format === 'form_summary_table') {
