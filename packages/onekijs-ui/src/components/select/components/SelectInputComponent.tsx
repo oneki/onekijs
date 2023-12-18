@@ -218,7 +218,7 @@ const SelectInputComponent = <T, I extends SelectItem<T> = SelectItem<T>>(
             value={searchable ? proxyValue : ''}
             onClick={onClick}
             autoCapitalize="none"
-            autoComplete="off"
+            autoComplete="one-time-code"
             autoCorrect="off"
             spellCheck="false"
             disabled={disabled}

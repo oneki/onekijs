@@ -723,39 +723,44 @@ export default class FormService<T extends object = any> extends DefaultService<
 
           if (i === currentArrayValue.length - 1) {
             const name = `${fieldArrayName}.${i + 1}.${fieldName}` as NestedKeyOf<T>;
-            this.addField(
-              Object.assign({}, this.fields[`${fieldArrayName}.${i}.${fieldName}` as NestedKeyOf<T>], {
-                name,
-                context: {
+            if (this.fields[`${fieldArrayName}.${i}.${fieldName}` as NestedKeyOf<T>]) {
+              this.addField(
+                Object.assign({}, this.fields[`${fieldArrayName}.${i}.${fieldName}` as NestedKeyOf<T>], {
                   name,
-                  onChange: (value: any): void => {
-                    if (value && value.nativeEvent && value.nativeEvent instanceof Event) {
-                      value = value.target.value;
-                    }
-                    this.setValue(name, value);
+                  context: {
+                    name,
+                    onChange: (value: any): void => {
+                      if (value && value.nativeEvent && value.nativeEvent instanceof Event) {
+                        value = value.target.value;
+                      }
+                      this.setValue(name, value);
+                    },
+                    onFocus: (): void => {
+                      const field = this.fields[name];
+                      if (field !== undefined && field.touchOn === 'focus' && !field.touched) {
+                        this.touch(name);
+                      }
+                    },
+                    onBlur: (): void => {
+                      const field = this.fields[name];
+                      if (field !== undefined && field.touchOn === 'blur' && !field.touched) {
+                        this.touch(name);
+                      }
+                    },
                   },
-                  onFocus: (): void => {
-                    const field = this.fields[name];
-                    if (field !== undefined && field.touchOn === 'focus' && !field.touched) {
-                      this.touch(name);
-                    }
-                  },
-                  onBlur: (): void => {
-                    const field = this.fields[name];
-                    if (field !== undefined && field.touchOn === 'blur' && !field.touched) {
-                      this.touch(name);
-                    }
-                  },
-                },
-              }),
-            );
+                }),
+              );
+            }
+
           } else {
             const nextField = this.fields[`${fieldArrayName}.${i}.${fieldName}` as NestedKeyOf<T>] as Field<T>;
             const currentField = this.fields[`${fieldArrayName}.${i + 1}.${fieldName}` as NestedKeyOf<T>] as Field<T>;
-            this.fields[`${fieldArrayName}.${i + 1}.${fieldName}` as NestedKeyOf<T>] = Object.assign(nextField, {
-              name: currentField.name,
-              context: currentField.context,
-            }) as Field<T>;
+            if (currentField) {
+              this.fields[`${fieldArrayName}.${i + 1}.${fieldName}` as NestedKeyOf<T>] = Object.assign(nextField, {
+                name: currentField.name,
+                context: currentField.context,
+              }) as Field<T>;
+            }
           }
 
           delete this.triggered[`${fieldArrayName}.${i}.${fieldName}`];
