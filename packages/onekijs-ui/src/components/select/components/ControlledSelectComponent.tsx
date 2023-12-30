@@ -33,7 +33,7 @@ import SelectInputComponent from './SelectInputComponent';
 import SelectNotFoundComponent from './SelectNotFoundComponent';
 import SelectOptionComponent, { SelectOptionContent } from './SelectOptionComponent';
 
-const DefaultSelectListComponent = <T = any, I extends SelectItem<T> = SelectItem<T>>(
+const DefaultSelectListComponent = <T extends any = any, I extends SelectItem<T> = SelectItem<T>>(
   props: SelectListComponentProps<T, I>,
 ) => {
   const {
@@ -111,6 +111,7 @@ const ControlledSelectComponent = <
   ListComponent = DefaultSelectListComponent,
   autoCompleteSearch = true,
   maxDisplayTokens,
+  validateValue = true,
 }: ControllerSelectProps<T, I, S, C>) => {
   if (nullable === undefined) {
     nullable = !required;
@@ -156,6 +157,7 @@ const ControlledSelectComponent = <
       overscan,
       autoCompleteSearch,
       maxDisplayTokens,
+      validateValue,
     };
   } else {
     service.config = {
@@ -194,6 +196,7 @@ const ControlledSelectComponent = <
       overscan,
       autoCompleteSearch,
       maxDisplayTokens,
+      validateValue,
     };
   }
 
@@ -378,33 +381,35 @@ const ControlledSelectComponent = <
   // Manage the result of a check after a change of the value from the outside
   // if the selected item is invalid, do a onChange to remove the value
   useEffect(() => {
-    const search = service.getSearch();
-    const invalidItems = service.state.invalidItems || [];
-    if (!search && invalidItems.length > 0) {
-      if (multiple) {
-        const validTokens: SelectItem[] = [];
-        tokens.forEach((t) => {
-          const invalidToken = invalidItems.find((i) => t.uid === i.uid);
-          if (!invalidToken) {
-            validTokens.push(t);
+    if (validateValue) {
+      const search = service.getSearch();
+      const invalidItems = service.state.invalidItems || [];
+      if (!search && invalidItems.length > 0) {
+        if (multiple) {
+          const validTokens: SelectItem[] = [];
+          tokens.forEach((t) => {
+            const invalidToken = invalidItems.find((i) => t.uid === i.uid);
+            if (!invalidToken) {
+              validTokens.push(t);
+            }
+          });
+          if (validTokens.length !== tokens.length && onChange) {
+            let validData = validTokens.map((t) => t.data);
+            if (validData.length === 0 && Array.isArray(service.state.validDefaultValue)) {
+              validData = service.state.validDefaultValue;
+            }
+            onChange(validData);
           }
-        });
-        if (validTokens.length !== tokens.length && onChange) {
-          let validData = validTokens.map((t) => t.data);
-          if (validData.length === 0 && Array.isArray(service.state.validDefaultValue)) {
-            validData = service.state.validDefaultValue;
+        } else {
+          const currentItem = service.adapt(value as T | null | undefined);
+          if (invalidItems.find((i) => i.id === currentItem.id)) {
+            // set the defaultValue if it's a valid value otherwise set null
+            onChange && onChange(service.state.validDefaultValue || null);
           }
-          onChange(validData);
         }
-      } else {
-        const currentItem = service.adapt(value as T | null | undefined);
-        if (invalidItems.find((i) => i.id === currentItem.id)) {
-          // set the defaultValue if it's a valid value otherwise set null
-          onChange && onChange(service.state.validDefaultValue || null);
-        }
+      } else if (!search && !nullable && !value && service.state.validDefaultValue) {
+        onChange && onChange(service.state.validDefaultValue);
       }
-    } else if (!search && !nullable && !value && service.state.validDefaultValue) {
-      onChange && onChange(service.state.validDefaultValue);
     }
   }, [
     service,
@@ -415,6 +420,7 @@ const ControlledSelectComponent = <
     service.state.invalidItems,
     service.state.validDefaultValue,
     nullable,
+    validateValue,
   ]);
 
   const onInputChange = (nextValue: string | null) => {

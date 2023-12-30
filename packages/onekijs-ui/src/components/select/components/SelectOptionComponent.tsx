@@ -101,6 +101,7 @@ const SelectOptionComponent = <T, I extends SelectItem<T> = SelectItem<T>>(props
               color="currentColor"
               className="o-select-option-multiple-checkbox"
               key="checkbox"
+              disabled={item?.disabled}
             ></Checkbox>
           )}
           <OptionContentComponent {...props} onClick={() => onItemClick(item, index)} key="option_content" />

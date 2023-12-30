@@ -81,6 +81,7 @@ export default class CollectionService<
   _refreshing?: boolean;
   _noCache?: boolean;
   _noLoading?: boolean;
+  _resetData = false;
   protected refreshTask?: Task;
   protected followTask?: Task;
   scrollToIndex?: (index: number, options?: { align: 'start' | 'center' | 'end' | 'auto' }) => void;
@@ -147,8 +148,8 @@ export default class CollectionService<
 
   @reducer
   addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId: QueryFilterId = rootFilterId): void {
-    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
+    const query = this.getQuery();
     this._addFilter(query, filterOrCriteria, parentFilterId);
     this.refresh(query);
   }
@@ -189,8 +190,8 @@ export default class CollectionService<
 
   @reducer
   addSortBy(sortBy: QuerySortBy, prepend?: boolean): void {
-    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
+    const query = this.getQuery();
     this._addSortBy(query, sortBy, prepend);
     this.refresh(query);
   }
@@ -201,24 +202,24 @@ export default class CollectionService<
 
   @reducer
   clearFields(): void {
-    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
+    const query = this.getQuery();
     this._clearFields(query);
     this.refresh(query);
   }
 
   @reducer
   clearFilter(): void {
-    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
+    const query = this.getQuery();
     this._clearFilter(query);
     this.refresh(query);
   }
 
   @reducer
   clearLimit(): void {
-    const query = this.getQuery();
     this._setLoading({ offset: this.state.offset, resetData: false });
+    const query = this.getQuery();
     this._clearLimit(query);
     this.refresh(query);
   }
@@ -233,48 +234,48 @@ export default class CollectionService<
 
   @reducer
   clearParam(key: string): void {
-    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
+    const query = this.getQuery();
     this._clearParam(query, key);
     this.refresh(query);
   }
 
   @reducer
   clearParams(): void {
-    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
+    const query = this.getQuery();
     this._clearParams(query);
     this.refresh(query);
   }
 
   @reducer
   clearSearch(): void {
-    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
+    const query = this.getQuery();
     this._clearSearch(query);
     this.refresh(query);
   }
 
   @reducer
   clearSort(): void {
-    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
+    const query = this.getQuery();
     this._clearSort(query);
     this.refresh(query);
   }
 
   @reducer
   clearSortBy(): void {
-    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
+    const query = this.getQuery();
     this._clearSortBy(query);
     this.refresh(query);
   }
 
   @reducer
   filter(filter: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[]): void {
-    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
+    const query = this.getQuery();
     this._setFilter(query, filter);
     this.refresh(query);
   }
@@ -500,9 +501,13 @@ export default class CollectionService<
     push = push ?? (query ? true : false);
     noCache = noCache ?? this._noCache ?? (query ? false : true);
     noLoading = noLoading ?? this._noLoading ?? false;
+    if (query) {
+      this._setQuery(query);
+    } else {
+      query = this.getQuery();
+    }
     if (isCollectionReady(this)) {
       const path = this.state.router.location.pathname;
-      query = query ?? this.getQuery();
       if (noCache) {
         this._setParam(query, 'noCache', true);
       } else {
@@ -539,8 +544,8 @@ export default class CollectionService<
 
   @reducer
   removeFilter(filterId: QueryFilterId): void {
-    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
+    const query = this.getQuery();
     this._removeFilter(query, filterId);
     this.refresh(query);
   }
@@ -563,8 +568,8 @@ export default class CollectionService<
 
   @reducer
   removeSortBy(id: string): void {
-    const query = this.getQuery();
     this._setLoading({ limit: this.state.limit, offset: 0 });
+    const query = this.getQuery();
     this._removeSortById(query, id);
     this.refresh(query);
   }
@@ -578,8 +583,8 @@ export default class CollectionService<
 
   @reducer
   search(search: Primitive): void {
-    const query = Object.assign({}, this.getQuery());
     this._setLoading({ limit: this.state.limit, offset: 0 });
+    const query = Object.assign({}, this.getQuery());
     this._setSearch(query, search);
     this.refresh(query);
   }
@@ -619,8 +624,8 @@ export default class CollectionService<
 
   @reducer
   setFields(fields: string[]): void {
-    const query = Object.assign({}, this.getQuery());
     this._setLoading({ limit: this.state.limit, offset: 0 });
+    const query = Object.assign({}, this.getQuery());
     this._setFields(query, fields);
     this.refresh(query);
   }
@@ -674,16 +679,16 @@ export default class CollectionService<
   @reducer
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   setParam(key: string, value: any): void {
-    const query = Object.assign({}, this.getQuery());
     this._setLoading({ limit: this.state.limit, offset: 0 });
+    const query = Object.assign({}, this.getQuery());
     this._setParam(query, key, value);
     this.refresh(query);
   }
 
   @reducer
   setParams(params: AnonymousObject): void {
-    const query = Object.assign({}, this.getQuery());
     this._setLoading({ limit: this.state.limit, offset: 0 });
+    const query = Object.assign({}, this.getQuery());
     this._setParams(query, params);
     this.refresh(query);
   }
@@ -727,16 +732,16 @@ export default class CollectionService<
 
   @reducer
   sort(dir: QuerySortDir): void {
-    const query = Object.assign({}, this.getQuery());
     this._setLoading({ limit: this.state.limit, offset: 0 });
+    const query = Object.assign({}, this.getQuery());
     this._setSort(query, dir);
     this.refresh(query);
   }
 
   @reducer
   sortBy(sortBy: string | QuerySortBy | QuerySortBy[]): void {
-    const query = Object.assign({}, this.getQuery());
     this._setLoading({ limit: this.state.limit, offset: 0 });
+    const query = Object.assign({}, this.getQuery());
     this._setSortBy(query, sortBy);
     this.refresh(query);
   }
@@ -1311,7 +1316,7 @@ export default class CollectionService<
       }
       //}
     } else {
-      const resetData = this.state.items ? shouldResetData(this.getQuery(), nextQuery) : false;
+      const resetData = this.state.items ? this._resetData || shouldResetData(this.getQuery(), nextQuery) : false;
       if (resetData) {
         this._clearOffset(nextQuery);
       }
@@ -1426,6 +1431,7 @@ export default class CollectionService<
             this.state.fetchOptions?.delayLoading !== undefined && this.state.fetchOptions?.delayLoading > 0
               ? LoadingStatus.Fetching
               : LoadingStatus.Loading;
+          this._resetData = resetData;
         }
 
         const setItemStatus = (item: I | undefined, status: LoadingItemStatus): I => {

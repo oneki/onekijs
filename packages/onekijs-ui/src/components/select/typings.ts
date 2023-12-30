@@ -196,6 +196,7 @@ export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omi
   ListComponent?: React.FC<SelectListComponentProps<T, I>>;
   autoCompleteSearch?: boolean;
   maxDisplayTokens?: number;
+  validateValue?: boolean;
 };
 
 export type SelectListComponentProps<T = any, I extends SelectItem<T> = SelectItem<T>> = CollectionListProps<T, I> & {
