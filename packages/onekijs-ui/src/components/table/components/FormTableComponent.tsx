@@ -69,6 +69,7 @@ const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.
   }) => {
     const form = useForm();
     const field = form.fields[name];
+
     if (field) {
       const validators = field.validators;
       const minlengthValidator = (validators.minLength || validators.min) as LengthValidator | undefined;

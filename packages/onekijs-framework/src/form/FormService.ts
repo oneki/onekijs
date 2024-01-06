@@ -906,7 +906,7 @@ export default class FormService<T extends object = any> extends DefaultService<
   }
 
   @reducer
-  remove(fieldArrayName: NestedKeyOf<T>, index: number): void {
+  remove(fieldArrayName: NestedKeyOf<T>, index: number, changeValue = true): void {
     const replace = (currentField: any, nextField: any, ignore: string[]) => {
 
       Object.keys(currentField).forEach((key) => {
@@ -986,7 +986,9 @@ export default class FormService<T extends object = any> extends DefaultService<
       this.pendingDispatch.validationChange.add('');
 
       nextValues[fieldArrayName] = currentArrayValue.filter((_a, i): boolean => i !== index) as any;
-      this.setValues(nextValues);
+      if (changeValue) {
+        this.setValues(nextValues);
+      }
     }
   }
 
@@ -1224,7 +1226,17 @@ export default class FormService<T extends object = any> extends DefaultService<
       if (field && field.touchOn === 'change' && !field.touched) {
         field.touched = true;
       }
-      set(this.state.values, key as NestedKeyOf<T>, values[key as NestedKeyOf<T>] as PathType<T, NestedKeyOf<T>>);
+
+      const currentValue = get(this.state.values, key as NestedKeyOf<T>);
+      const nextValue = values[key as NestedKeyOf<T>] as PathType<T, NestedKeyOf<T>>;
+
+      if (Array.isArray(currentValue) && Array.isArray(nextValue) && currentValue.length > nextValue.length) {
+        for (let i = nextValue.length; i < currentValue.length; i++) {
+          this.remove(key as NestedKeyOf<T>, i, false);
+        }
+      }
+
+      set(this.state.values, key as NestedKeyOf<T>, nextValue);
       this._getSubWatchs(key as NestedKeyOf<T>).forEach((key) => this.pendingDispatch.valueChange.add(key));
     });
 
