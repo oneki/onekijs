@@ -964,11 +964,9 @@ export default class CollectionService<
   protected *_follow(interval: number) {
     while (true) {
       yield delay(interval);
-      if (this.state.total) {
-        const query = this.getQuery();
-        query.offset = this.state.total;
-        yield this.refresh(query, false, true, true);
-      }
+      const query = this.getQuery();
+      query.offset = this.state.total || 0;
+      yield this.refresh(query, false, true, true);
     }
   }
 

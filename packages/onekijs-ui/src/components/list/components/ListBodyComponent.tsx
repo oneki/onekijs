@@ -183,7 +183,6 @@ const ListBodyComponent = <T extends any = any, I extends ListItem<T> = ListItem
 
   useEffect(() => {
     const ref = parentRef ? parentRef : bodyRef;
-    //console.log('parentRef', parentRef, 'ref', ref)
     const atBottom = () => {
       if (ref && ref.current) {
         const sh = ref.current.scrollHeight;
@@ -195,18 +194,6 @@ const ListBodyComponent = <T extends any = any, I extends ListItem<T> = ListItem
     };
 
     if (tail && scrollToIndex && totalSize && ref && ref.current) {
-      // console.log(
-      //   'scrollTop',
-      //   ref.current.scrollTop,
-      //   'mouseRef',
-      //   mouseRef.current,
-      //   'wheelRef',
-      //   wheelRef.current,
-      //   'applyTail',
-      //   tailRef.current.applyTail,
-      //   'atBottom',
-      //   atBottom(),
-      // );
       tailRef.current.lastScrollTop = ref.current.scrollTop;
       if (!atBottom() && (mouseRef.current || wheelRef.current)) {
         tailRef.current.applyTail = false;

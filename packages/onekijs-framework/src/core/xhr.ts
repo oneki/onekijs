@@ -66,7 +66,8 @@ export async function xhr(url: string, method: string, body?: unknown, options: 
       set(fetchOptions, k as any, get<any>(options, k as any));
     }
   });
-  return await fetch(url, fetchOptions);
+  const result = await fetch(url, fetchOptions);
+  return result;
 }
 
 export async function formatAsyncResponse(response: Response): Promise<any> {
