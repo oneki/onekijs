@@ -8,6 +8,7 @@ const PropertiesComponent: FC<PropertiesProps> = ({
   className,
   properties,
   PropertyComponent = Property,
+  ErrorBoundaryComponent,
   order = false,
   size,
   sm,
@@ -34,7 +35,7 @@ const PropertiesComponent: FC<PropertiesProps> = ({
     <DefaultPropertiesContext.Provider value={context}>
       <div className={classNames}>
         {keys.map((key) => (
-          <PropertyComponent key={key} name={key} value={properties[key]} />
+          <PropertyComponent key={key} name={key} value={properties[key]} ErrorBoundaryComponent={ErrorBoundaryComponent} />
         ))}
       </div>
     </DefaultPropertiesContext.Provider>

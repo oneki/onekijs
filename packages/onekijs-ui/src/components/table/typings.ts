@@ -13,7 +13,7 @@ import {
   UseCollectionOptions,
   ValidationStatus,
 } from 'onekijs-framework';
-import React, { FC, ReactNode } from 'react';
+import React, { ComponentType, FC, PropsWithChildren, ReactNode } from 'react';
 import { StylableProps, TshirtSize } from '../../styles/typings';
 import { ButtonProps } from '../button/typings';
 import { CheckboxProps } from '../checkbox/typings';
@@ -220,6 +220,7 @@ export type TableColumnSpec<T, I extends TableItem<T> = TableItem<T>> = {
   className?: string | ((item: I, column: TableColumn<T, I>, rowIndex: number) => string);
   CellComponent?: Cell<T, I>;
   Displayer?: React.FC<TableCellDisplayerProps<T>>;
+  ErrorBoundaryComponent?: ComponentType<PropsWithChildren<TableBodyCellProps<T, I>>>;
   footerClassName?: string | ((column: TableColumn<T, I>) => string);
   FooterComponent?: React.FC<TableFooterCellProps<T, I>>;
   filterable?: boolean;

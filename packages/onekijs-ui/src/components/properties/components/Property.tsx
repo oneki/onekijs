@@ -6,7 +6,8 @@ import { GridSize } from '../../grid/typings';
 import usePropertiesContext from '../hooks/usePropertiesContext';
 import { PropertyProps } from '../typings';
 
-const Property: FC<PropertyProps> = React.memo(({ name, value }) => {
+const Property: FC<PropertyProps> = React.memo((props) => {
+  const { name, value, ErrorBoundaryComponent } = props;
   const context = usePropertiesContext();
   const nameSize = context.size ?? 3;
   const valueSize = (nameSize === 12 ? 12 : 12 - nameSize) as GridSize;
@@ -29,7 +30,8 @@ const Property: FC<PropertyProps> = React.memo(({ name, value }) => {
         xl={variantValueSize.xl}
         className="o-property-value"
       >
-        {value}
+        {ErrorBoundaryComponent && <ErrorBoundaryComponent {...props}>{value}</ErrorBoundaryComponent>}
+        {!ErrorBoundaryComponent && <>{value}</>}
       </Col>
     </Row>
   );

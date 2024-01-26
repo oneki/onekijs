@@ -17,6 +17,7 @@ const TableBodyCellComponent: FC<Omit<TableBodyCellProps, 'data'>> = React.memo(
   const ref = useRef<HTMLDivElement>(null);
   const initializedRef = useRef<boolean>(false);
   const Component = column.CellComponent || DefaultCellComponent;
+  const ErrorBoundaryComponent = column.ErrorBoundaryComponent;
 
   useEffect(() => {
     if (!initializedRef.current && ref.current !== null) {
@@ -26,9 +27,10 @@ const TableBodyCellComponent: FC<Omit<TableBodyCellProps, 'data'>> = React.memo(
 
   return (
     <div ref={ref} className={addClassname('o-table-body-cell', className)} style={getCellWidth(column, fit, grow)}>
-      {props.item && <Component {...props} data={props.item.data} />}
+      {props.item && ErrorBoundaryComponent && <ErrorBoundaryComponent {...props} data={props.item?.data}><Component {...props} data={props.item.data} /></ErrorBoundaryComponent>}
+      {props.item && !ErrorBoundaryComponent && <Component {...props} data={props.item.data} />}
     </div>
-  );
+  )
 });
 
 TableBodyCellComponent.displayName = 'TableCell';

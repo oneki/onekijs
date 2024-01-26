@@ -1,10 +1,11 @@
 import { AnonymousObject } from 'onekijs-framework';
-import React, { ReactNode } from 'react';
+import React, { ComponentType, PropsWithChildren, ReactNode } from 'react';
 import { GridSize } from '../grid/typings';
 
 export type PropertiesProps = {
   properties: PropertiesList;
   PropertyComponent?: React.FC<PropertyProps>;
+  ErrorBoundaryComponent?: ComponentType<PropsWithChildren<PropertyProps>>;
   order?: boolean;
   className?: string;
   size?: GridSize;
@@ -17,6 +18,7 @@ export type PropertiesProps = {
 export type PropertyProps = {
   value: ReactNode;
   name: string;
+  ErrorBoundaryComponent?: ComponentType<PropsWithChildren<PropertyProps>>;
 };
 
 export type PropertiesContext = {
