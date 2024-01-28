@@ -58,8 +58,8 @@ const TableFilterOperatorComponent: React.FC<TableFilterOperatorProps> = ({
     adapter,
   });
   const service = controller.asService();
-  const containeRef = useRef<HTMLDivElement>(null);
-  const listRef = useRef<HTMLDivElement>(null);
+  const containeRef = useRef<HTMLDivElement | null>(null);
+  const listRef = useRef<HTMLDivElement | null>(null);
 
   useClickOutside([containeRef, listRef], () => setShowOperators(false));
 

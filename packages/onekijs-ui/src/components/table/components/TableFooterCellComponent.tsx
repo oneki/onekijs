@@ -8,7 +8,7 @@ import { getCellWidth } from '../util';
 const TableFooterCellComponent: FC<TableFooterCellProps> = React.memo(({ column }) => {
   const service = useTableService();
   const { fit, grow } = useTableConfig();
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement | null>(null);
   const initializedRef = useRef<boolean>(false);
 
   const className =

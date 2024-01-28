@@ -35,7 +35,7 @@ const CollectionListComponent = <T extends any = any, I extends ListItem<T> = Li
   style,
   tail,
 }: CollectionListProps<T, I>) => {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement | null>(null);
 
   const { items, isVirtual, totalSize, virtualItems, scrollToIndex, scrollToOffset } = useListView({
     controller,

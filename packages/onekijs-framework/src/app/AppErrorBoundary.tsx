@@ -60,6 +60,7 @@ const AppErrorBoundary: FCC<AppErrorBoundaryProps> = (props) => {
 
   useEffect(() => {
     const unhandledRejectionEventListener = (e: WindowEventMap['unhandledrejection']) => {
+      console.error(e);
       notificationService.error(e.reason);
     };
 

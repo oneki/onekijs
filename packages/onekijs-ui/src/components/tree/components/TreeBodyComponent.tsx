@@ -6,12 +6,12 @@ import useTreeService from '../hooks/useTreeService';
 import { ControllerTreeProps, TreeItem } from '../typings';
 import TreeListComponent from './TreeListComponent';
 
-const TreeBodyComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
+const TreeBodyComponent = <T extends any = any, I extends TreeItem<T> = TreeItem<T>>({
   className,
   controller,
 }: ControllerTreeProps<T, I>) => {
   const service = useTreeService();
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement | null>(null);
   const config = useTreeConfig();
   return (
     <ListBodyComponent

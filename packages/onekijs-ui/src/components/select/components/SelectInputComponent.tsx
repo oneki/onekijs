@@ -31,8 +31,8 @@ const SelectInputComponent = <T, I extends SelectItem<T> = SelectItem<T>>(
   }: SelectInputProps<T, I>,
   ref: React.ForwardedRef<HTMLDivElement>,
 ) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const autoSizeRef = useRef<HTMLSpanElement>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const autoSizeRef = useRef<HTMLSpanElement | null>(null);
   // partialValue is the part of the selected item entered by the user
   const partialValueRef = useRef<string | undefined>(undefined);
   // replace the input value by the selected item

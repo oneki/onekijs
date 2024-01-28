@@ -56,7 +56,7 @@ const ListBodyComponent = <T extends any = any, I extends ListItem<T> = ListItem
 }: ListBodyProps<T, I>) => {
   const scrollAlignRef = useRef<'center' | 'auto'>('center');
   const lastActiveItemUid = useRef<string>();
-  const virtualRef = useRef<HTMLDivElement>(null!);
+  const virtualRef = useRef<HTMLDivElement | null>(null);
   const tailRef = useRef({
     lastScrollTop: 0,
     applyTail: true,

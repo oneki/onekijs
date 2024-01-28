@@ -68,7 +68,7 @@ const getHeight = (size: DashboardSize, props: DashboardVerticalPanelComponentPr
 };
 
 const Component: React.FC<DashboardVerticalPanelComponentProps> = (props) => {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement | null>(null);
   const service = useDashboardService();
   const stepRef = useRef<'initializing' | 'initialized' | undefined>();
   const style: CSSProperties = {};
@@ -77,12 +77,16 @@ const Component: React.FC<DashboardVerticalPanelComponentProps> = (props) => {
   }
 
   useEffect(() => {
+    service.setRef(props.area, ref);
     if (stepRef.current === undefined) {
       stepRef.current = 'initializing';
-      service.initVerticalPanel(props.area, props, ref);
+      service.initVerticalPanel(props.area, props);
     } else if (stepRef.current === 'initializing' && ref.current) {
       stepRef.current = 'initialized';
       ref.current.style.transition = '';
+    }
+    return () => {
+      service.destroyPanel(props.area);
     }
   });
 

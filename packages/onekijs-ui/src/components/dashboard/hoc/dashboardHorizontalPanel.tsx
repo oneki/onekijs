@@ -65,7 +65,7 @@ const getWidth = (size: DashboardSize, props: DashboardHorizontalPanelComponentP
 };
 
 const Component: React.FC<DashboardHorizontalPanelComponentProps> = (props) => {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement | null>(null);
   const service = useDashboardService();
   const stepRef = useRef<'initializing' | 'initialized' | undefined>();
   const style: CSSProperties = {};
@@ -74,12 +74,16 @@ const Component: React.FC<DashboardHorizontalPanelComponentProps> = (props) => {
   }
 
   useEffect(() => {
+    service.setRef(props.area, ref);
     if (stepRef.current === undefined) {
       stepRef.current = 'initializing';
-      service.initHorizontalPanel(props.area, props, ref);
+      service.initHorizontalPanel(props.area, props);
     } else if (stepRef.current === 'initializing' && ref.current) {
       stepRef.current = 'initialized';
       ref.current.style.transition = '';
+    }
+    return () => {
+      service.destroyPanel(props.area);
     }
   });
 

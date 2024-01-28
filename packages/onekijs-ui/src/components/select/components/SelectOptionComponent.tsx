@@ -68,7 +68,7 @@ const SelectOptionComponent = <T, I extends SelectItem<T> = SelectItem<T>>(props
     [clickable, onClick],
   );
 
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (ref.current) {

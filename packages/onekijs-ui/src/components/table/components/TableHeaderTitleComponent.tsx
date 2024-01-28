@@ -34,7 +34,7 @@ const TableHeaderTitleComponent: FC<TableHeaderCellProps> = React.memo((props) =
   const { column, sortable } = props;
   const service = useTableService();
   const { fit, grow } = useTableConfig();
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement | null>(null);
   const initializedRef = useRef<boolean>(false);
 
   const className =

@@ -10,7 +10,7 @@ import { DashboardBodyComponentProps, DashboardBodyPanelProps, DashboardSize } f
 import { getDashboardPanelLength, getFloatingKey, getWorkspacePanelLength } from '../utils/dashboardLength';
 
 const DashboardBodyComponent: FCC<DashboardBodyComponentProps> = (props) => {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement | null>(null);
   const service = useDashboardService();
   const stepRef = useRef<'initializing' | 'initialized' | undefined>();
   const style: CSSProperties = {};
@@ -19,12 +19,16 @@ const DashboardBodyComponent: FCC<DashboardBodyComponentProps> = (props) => {
   }
 
   useEffect(() => {
+    service.setRef('body', ref);
     if (stepRef.current === undefined) {
       stepRef.current = 'initializing';
-      service.initBodyPanel(props, ref);
+      service.initBodyPanel(props);
     } else if (stepRef.current === 'initializing' && ref.current) {
       stepRef.current = 'initialized';
       ref.current.style.transition = '';
+    }
+    return () => {
+      service.destroyPanel('body');
     }
   });
 

@@ -39,10 +39,13 @@ export const getDashboardTemplate = (dashboardContainerProps: DashboardContainer
 };
 
 const DashboardContainerComponent: FCC<DashboardContainerProps> = (props) => {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     props.onInit(ref);
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      props.onDestroy();
+    }
   }, []);
 
   return (

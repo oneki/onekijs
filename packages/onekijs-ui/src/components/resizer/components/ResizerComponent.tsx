@@ -5,7 +5,7 @@ import ResizerHorizontalSplitter from './ResizerHorizontalSplitter';
 import ResizerVerticalSplitter from './ResizerVerticalSplitter';
 
 const ResizerComponent: FCC<ResizerProps> = ({ className, children, handles = [], onResize, gap = 0 }) => {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement | null>(null);
   return (
     <div className={className} ref={ref}>
       {children}

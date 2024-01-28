@@ -32,7 +32,7 @@ type TreeListItemProps<T = any, I extends TreeItem<T> = TreeItem<T>> = {
   defer?: () => void;
 };
 
-const TreeListItemComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
+const TreeListItemComponent = <T extends any = any, I extends TreeItem<T> = TreeItem<T>>({
   index,
   item,
   itemClassName,
@@ -45,9 +45,9 @@ const TreeListItemComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
   const service = useTreeService();
   const { animate } = useTreeConfig<T, I>();
 
-  const childrenAnimateRef = useRef<HTMLDivElement>(null);
-  const childrenRef = useRef<HTMLDivElement>(null);
-  const itemRef = useRef<HTMLDivElement>(null);
+  const childrenAnimateRef = useRef<HTMLDivElement | null>(null);
+  const childrenRef = useRef<HTMLDivElement | null>(null);
+  const itemRef = useRef<HTMLDivElement | null>(null);
 
   const expand: TreeItemHandler<any, TreeItem<any>> = (item, index) => {
     if (animate) {

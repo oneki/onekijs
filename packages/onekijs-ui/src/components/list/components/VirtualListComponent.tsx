@@ -15,7 +15,7 @@ const VirtualItemWrapper = <T extends any = any, I extends ListItem<T> = ListIte
   onItemMouseLeave,
 }: VirtualItemWrapperProps<T, I>) => {
   const { index, measureRef, start } = virtualItem;
-  const ref = useRef<HTMLDivElement>(null!);
+  const ref = useRef<HTMLDivElement | null>(null);
   const previousHeightRef = useRef<number | undefined>();
 
   const measure = useCallback(

@@ -7,13 +7,13 @@ import useTreeService from '../hooks/useTreeService';
 import { ControllerTreeProps, TreeItem } from '../typings';
 import VirtualTreeListComponent from './VirtualTreeListComponent';
 
-const VirtualTreeBodyComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
+const VirtualTreeBodyComponent = <T extends any = any, I extends TreeItem<T> = TreeItem<T>>({
   className,
   controller,
   height,
 }: ControllerTreeProps<T, I>) => {
   const service = useTreeService();
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement | null>(null);
   const config = useTreeConfig();
   const { items, totalSize, virtualItems, scrollToIndex } = useListView({
     controller,

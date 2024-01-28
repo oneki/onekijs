@@ -9,7 +9,7 @@ const TableHeaderFilterComponent: FC<TableHeaderCellProps> = React.memo((props) 
   const { column, filterable } = props;
   const service = useTableService();
   const { fit, grow } = useTableConfig();
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement | null>(null);
   const initializedRef = useRef<boolean>(false);
   const Component = column.FilterComponent || TableTextFilterComponent;
 

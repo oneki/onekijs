@@ -31,7 +31,7 @@ const DropdownButtonComponent: FC<DropDownButtonProps> = ({
   ...buttonProps
 }) => {
   const classNames = addClassname('o-button-dropdown', className);
-  const ref = useRef<HTMLSpanElement>(null);
+  const ref = useRef<HTMLSpanElement | null>(null);
 
   const [Dropdown, triggerRef] = useDropdown();
 

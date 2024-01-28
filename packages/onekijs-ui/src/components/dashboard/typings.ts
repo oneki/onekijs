@@ -14,7 +14,6 @@ export type DashboardBodyComponentProps = {
 
 export type DashboardBodyPanel = {
   className?: string;
-  ref: React.RefObject<HTMLDivElement>;
 };
 
 export type DashboardBodyPanelProps = {
@@ -22,7 +21,7 @@ export type DashboardBodyPanelProps = {
 };
 
 export type DashboardContainer = {
-  ref: React.RefObject<HTMLDivElement>;
+
 };
 
 export type DashboardContainerProps = {
@@ -33,7 +32,8 @@ export type DashboardContainerProps = {
   left?: DashboardVerticalPanel;
   right?: DashboardVerticalPanel;
   body?: DashboardBodyPanel;
-  onInit: (ref: React.RefObject<HTMLDivElement>) => void;
+  onInit: (ref: React.MutableRefObject<HTMLDivElement | null>) => void;
+  onDestroy: () => void;
 };
 
 export type DashboardHorizontalArea = 'header' | 'footer';
@@ -68,9 +68,7 @@ export type DashboardOverlayProps = React.InputHTMLAttributes<HTMLDivElement> & 
   show: boolean;
 };
 
-export type DashboardSidePanel = Omit<Required<DashboardSidePanelProps>, 'collapse' | 'floating'> & {
-  ref: React.RefObject<HTMLDivElement>;
-};
+export type DashboardSidePanel = Omit<Required<DashboardSidePanelProps>, 'collapse' | 'floating'>;
 
 export type DashboardSidePanelProps = {
   className?: string;

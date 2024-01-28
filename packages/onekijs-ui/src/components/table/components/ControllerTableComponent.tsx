@@ -56,8 +56,8 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
   const classNames = addClassname('o-table', className);
   const { columns, items } = controller.state;
 
-  const contentRef = useRef<HTMLDivElement>(null);
-  const tableRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
+  const tableRef = useRef<HTMLDivElement | null>(null);
   const service = controller.asService();
 
   const config: TableConfig = useMemo(() => {

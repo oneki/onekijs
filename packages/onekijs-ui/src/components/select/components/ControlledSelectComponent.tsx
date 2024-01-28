@@ -205,7 +205,7 @@ const ControlledSelectComponent = <
   const loading = isCollectionLoading(controller);
   const fetching = isCollectionFetching(controller);
 
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   const previousSearchRef = useRef<Primitive>();
 
@@ -245,7 +245,7 @@ const ControlledSelectComponent = <
     }
   }, [focus, controller, value, multiple, autoCompleteSearch]);
 
-  const optionsRef = useRef<HTMLDivElement>(null);
+  const optionsRef = useRef<HTMLDivElement | null>(null);
 
   const update = useCallback(() => {
     if (optionsRef.current && get<any>(service, 'config.sameWidth')) {

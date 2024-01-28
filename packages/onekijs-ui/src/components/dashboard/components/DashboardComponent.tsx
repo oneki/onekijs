@@ -14,22 +14,23 @@ const DashboardComponent: FCC<DashboardProps & { service: DashboardService }> = 
   service,
 }) => {
   return (
-    <DashboardServiceContext.Provider value={service}>
-      <DashboardStateContext.Provider value={service.state}>
-        <ContainerComponent
-          areas={service.state.areas}
-          header={service.state.header}
-          footer={service.state.footer}
-          left={service.state.left}
-          right={service.state.right}
-          body={service.state.body}
-          onInit={(ref) => service.initContainer(ref)}
-        >
-          <OverlayComponent show={service.showOverlay()} onClick={() => service.collapseFloating()} />
-          {children}
-        </ContainerComponent>
-      </DashboardStateContext.Provider>
-    </DashboardServiceContext.Provider>
+      <DashboardServiceContext.Provider value={service}>
+        <DashboardStateContext.Provider value={service.state}>
+          <ContainerComponent
+            areas={service.state.areas}
+            header={service.state.header}
+            footer={service.state.footer}
+            left={service.state.left}
+            right={service.state.right}
+            body={service.state.body}
+            onInit={() => undefined}
+            onDestroy={() => service.destroyPanel('container')}
+          >
+            <OverlayComponent show={service.showOverlay()} onClick={() => service.collapseFloating()} />
+            {children}
+          </ContainerComponent>
+        </DashboardStateContext.Provider>
+      </DashboardServiceContext.Provider>
   );
 };
 

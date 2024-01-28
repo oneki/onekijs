@@ -9,7 +9,7 @@ import {
   service,
   set,
 } from 'onekijs-framework';
-import React from 'react';
+import React, { MutableRefObject } from 'react';
 import { clearSelection, forceCursor, getTranslateXY } from '../../utils/dom';
 import { ResizeStep } from '../resizer/typings';
 import {
@@ -36,6 +36,8 @@ export class DashboardService extends DefaultService<DashboardState> {
     ['none', 'none', 'none'],
   ];
 
+  public refs: AnonymousObject<MutableRefObject<HTMLDivElement | null> | null | undefined> = {}
+
   @reducer
   collapse(area: DashboardArea | 'all', collapse = true): void {
     if (area === 'all') {
@@ -58,6 +60,11 @@ export class DashboardService extends DefaultService<DashboardState> {
   }
 
   @reducer
+  destroyPanel(area: 'left' | 'right' | 'header' | 'footer' | 'body' | 'container'): void {
+    this.refs[area] = null;
+  }
+
+  @reducer
   float(area: DashboardArea | 'all', float = true): void {
     if (area === 'all') {
       ['left', 'right', 'header', 'footer'].forEach((area) => {
@@ -76,19 +83,23 @@ export class DashboardService extends DefaultService<DashboardState> {
     return this.state[area];
   }
 
+  getRef(area: 'left' | 'right' | 'header' | 'footer' | 'body' | 'container'): React.MutableRefObject<HTMLDivElement | null> | null | undefined {
+    return this.refs[area];
+  }
+
   getVerticalPanel(area: 'left' | 'right'): DashboardVerticalPanel | undefined {
     return this.state[area];
   }
 
   @reducer
-  initBodyPanel(_props: DashboardBodyPanelProps, ref: React.RefObject<HTMLDivElement>): void {
+  initBodyPanel(_props: DashboardBodyPanelProps): void {
     this.areas[1][1] = 'body';
-    this.state.body = { ref };
+    this.state.body = { };
     this._compileAreas();
   }
 
   @reducer
-  initContainer(ref: React.RefObject<HTMLDivElement>): void {
+  initContainer(ref: React.MutableRefObject<HTMLDivElement | null>): void {
     this.state.container = { ref };
   }
 
@@ -96,7 +107,6 @@ export class DashboardService extends DefaultService<DashboardState> {
   initHorizontalPanel(
     area: 'footer' | 'header',
     props: DashboardHorizontalPanelProps,
-    ref: React.RefObject<HTMLDivElement>,
   ): void {
     const dashboardPanel: DashboardHorizontalPanel = {
       area,
@@ -111,7 +121,6 @@ export class DashboardService extends DefaultService<DashboardState> {
       minHeight: props.minHeight ?? 0,
       height: props.height ?? '70px',
       maxHeight: props.maxHeight ?? 0,
-      ref,
       resizable: props.resizable || false,
       resizerGap: props.resizerGap || 0,
     };
@@ -123,7 +132,6 @@ export class DashboardService extends DefaultService<DashboardState> {
   initVerticalPanel(
     area: 'left' | 'right',
     props: DashboardVerticalPanelProps,
-    ref: React.RefObject<HTMLDivElement>,
   ): void {
     const dashboardPanel: DashboardVerticalPanel = {
       area,
@@ -138,7 +146,6 @@ export class DashboardService extends DefaultService<DashboardState> {
       minWidth: props.minWidth ?? 0,
       maxWidth: props.maxWidth ?? 0,
       width: props.width ?? '200px',
-      ref,
       resizable: props.resizable || false,
       resizerGap: props.resizerGap || 0,
     };
@@ -149,6 +156,7 @@ export class DashboardService extends DefaultService<DashboardState> {
   @reducer
   resizeHeight(area: DashboardHorizontalArea, nextHeight: number, step: ResizeStep): void {
     const panel = this.state[area];
+    const panelRef = this.refs[area];
     if (panel) {
       const maxHeight = parseInt(`${panel.maxHeight}`);
       const minHeight = parseInt(`${panel.minHeight}`);
@@ -161,21 +169,21 @@ export class DashboardService extends DefaultService<DashboardState> {
     const header = this.state.header;
     const footer = this.state.footer;
     const elements: AnonymousObject<HTMLDivElement | undefined> = {};
-    elements['panel'] = panel !== undefined && panel.ref.current !== null ? panel.ref.current : undefined;
-    elements['body'] = body !== undefined && body.ref.current !== null ? body.ref.current : undefined;
+    elements['panel'] = panel !== undefined && panelRef && panelRef.current !== null ? panelRef.current : undefined;
+    elements['body'] = body !== undefined && this.refs.body && this.refs.body.current !== null ? this.refs.body.current : undefined;
     // only touch the left panel if it's at the footer of the header panel or at the header of the footer panel
     elements['left'] =
-      isAreaInColumn('first', area, this.state.areas) && left !== undefined && left.ref.current !== null
-        ? left.ref.current
+      isAreaInColumn('first', area, this.state.areas) && left !== undefined && this.refs.left && this.refs.left.current !== null
+        ? this.refs.left.current
         : undefined;
     // only touch the right panel if it's at the footer of the header panel or at the header of the footer panel
     elements['right'] =
-      isAreaInColumn('last', area, this.state.areas) && right !== undefined && right.ref.current !== null
-        ? right.ref.current
+      isAreaInColumn('last', area, this.state.areas) && right !== undefined && this.refs.right && this.refs.right.current !== null
+        ? this.refs.right.current
         : undefined;
 
-    elements['header'] = header !== undefined && header.ref.current !== null ? header.ref.current : undefined;
-    elements['footer'] = footer !== undefined && footer.ref.current !== null ? footer.ref.current : undefined;
+    elements['header'] = header !== undefined && this.refs.header && this.refs.header.current !== null ? this.refs.header.current : undefined;
+    elements['footer'] = footer !== undefined && this.refs.footer && this.refs.footer.current !== null ? this.refs.footer.current : undefined;
 
     switch (step) {
       case 'start':
@@ -241,6 +249,7 @@ export class DashboardService extends DefaultService<DashboardState> {
   @reducer
   resizeWidth(area: DashboardVerticalArea, nextWidth: number, step: ResizeStep): void {
     const panel = this.state[area];
+    const panelRef = this.refs[area];
     if (panel) {
       const maxWidth = parseInt(`${panel.maxWidth}`);
       const minWidth = parseInt(`${panel.minWidth}`);
@@ -253,21 +262,21 @@ export class DashboardService extends DefaultService<DashboardState> {
     const left = this.state.left;
     const right = this.state.right;
     const elements: AnonymousObject<HTMLDivElement | undefined> = {};
-    elements['panel'] = panel !== undefined && panel.ref.current !== null ? panel.ref.current : undefined;
-    elements['body'] = body !== undefined && body.ref.current !== null ? body.ref.current : undefined;
+    elements['panel'] = panel !== undefined && panelRef && panelRef.current !== null ? panelRef.current : undefined;
+    elements['body'] = body !== undefined && this.refs.body && this.refs.body.current !== null ? this.refs.body.current : undefined;
     // only touch the header panel if it's at the right of the left panel or at the left of the right panel
     elements['header'] =
-      isAreaInRow('first', area, this.state.areas) && header !== undefined && header.ref.current !== null
-        ? header.ref.current
+      isAreaInRow('first', area, this.state.areas) && header !== undefined && this.refs.header && this.refs.header.current !== null
+        ? this.refs.header.current
         : undefined;
     // only touch the footer panel if it's at the right of the left panel or at the left of the right panel
     elements['footer'] =
-      isAreaInRow('last', area, this.state.areas) && footer !== undefined && footer.ref.current !== null
-        ? footer.ref.current
+      isAreaInRow('last', area, this.state.areas) && footer !== undefined && this.refs.footer && this.refs.footer.current !== null
+        ? this.refs.footer.current
         : undefined;
 
-    elements['left'] = left !== undefined && left.ref.current !== null ? left.ref.current : undefined;
-    elements['right'] = right !== undefined && right.ref.current !== null ? right.ref.current : undefined;
+    elements['left'] = left !== undefined && this.refs.left && this.refs.left.current !== null ? this.refs.left.current : undefined;
+    elements['right'] = right !== undefined && this.refs.right && this.refs.right.current !== null ? this.refs.right.current : undefined;
 
     switch (step) {
       case 'start':
@@ -328,6 +337,10 @@ export class DashboardService extends DefaultService<DashboardState> {
         }
         break;
     }
+  }
+
+  setRef(area: 'left' | 'right' | 'header' | 'footer' | 'body' | 'container', ref: React.MutableRefObject<HTMLDivElement | null> | null | undefined): void  {
+    this.refs[area] = ref;
   }
 
   showOverlay(): boolean {
@@ -401,10 +414,10 @@ export class DashboardService extends DefaultService<DashboardState> {
   }
 
   _getSize(): DashboardSize {
-    if (!this.state.container || !this.state.container.ref.current) {
+    if (!this.state.container || !this.refs.container?.current) {
       return isMobile() ? 'small' : 'large';
     }
-    const dashboardWidth = this.state.container.ref.current.offsetWidth;
+    const dashboardWidth = this.refs.container.current.offsetWidth;
     if (dashboardWidth < 768) return 'small';
     if (dashboardWidth < 992) return 'medium';
     return 'large';
