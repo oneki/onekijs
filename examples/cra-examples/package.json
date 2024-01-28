@@ -1,6 +1,6 @@
 {
   "name": "cra-examples",
-  "version": "0.19.10",
+  "version": "0.19.11",
   "private": true,
   "type": "module",
   "dependencies": {
@@ -10,8 +10,8 @@
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^14.4.3",
     "msw": "^1.2.2",
-    "onekijs": "^0.19.10",
-    "onekijs-ui": "^0.19.10",
+    "onekijs": "^0.19.11",
+    "onekijs-ui": "^0.19.11",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
