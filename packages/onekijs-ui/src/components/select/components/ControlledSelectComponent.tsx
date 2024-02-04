@@ -661,6 +661,8 @@ const ControlledSelectComponent = <
             multiSelect={multiple}
             onItemActivate={onActivate}
             optionsRef={optionsRef}
+            preload={preload}
+            increment={increment}
           />
         </Dropdown>
       </div>
