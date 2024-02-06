@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.19.12](https://github.com/oneki/onekijs/compare/v0.19.7...v0.19.12) (2024-02-06)
+
+**Note:** Version bump only for package root
+
+
+
+
+
 ## [0.19.11](https://github.com/oneki/onekijs/compare/v0.19.10...v0.19.11) (2024-01-28)
 
 **Note:** Version bump only for package root
