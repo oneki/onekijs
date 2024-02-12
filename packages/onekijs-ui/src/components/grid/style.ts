@@ -15,9 +15,9 @@ const getColWidths = (gap: Property.Width, theme: Theme) => {
     const content = `{ flex: 0 0 calc((100% / 12) * ${size}  - ${gap}); max-width: calc((100% / 12) * ${size}  - ${gap}); }`;
     if (variant) {
       const breakpoint = theme.breakpoints[variant];
-      return `@media (min-width: ${breakpoint}) { .o-col-${variant}-${size} ${content} }`;
+      return `@media (min-width: ${breakpoint}) { & > .o-col-${variant}-${size} ${content} }`;
     } else {
-      return `.o-col-${size} ${content}`;
+      return `& > .o-col-${size} ${content}`;
     }
   };
   const colWidths: string[] = [];

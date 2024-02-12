@@ -10,9 +10,17 @@ import SuccessIcon from '../icon/SuccessIcon';
 import { CheckboxProps, FormCheckboxProps } from './typings';
 
 const FormCheckboxValueDisplayer: React.FC<FormFieldValueDisplayerProps> = ({ value }) => {
+  if (value) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', marginTop: value ? '2px' : '4px' }}>
+        <SuccessIcon />
+        <span style={{marginLeft: '5px'}}>Yes</span>
+      </div>
+    )
+  }
   return (
     <div style={{ display: 'flex', alignItems: 'center', marginTop: value ? '2px' : '4px' }}>
-      {value ? <SuccessIcon /> : <RemoveIcon color="red" width="14px" height="14px" />}
+      <RemoveIcon color="red" width="14px" height="14px" /><span style={{marginLeft: '5px'}}>No</span>
     </div>
   );
 };
