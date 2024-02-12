@@ -710,7 +710,7 @@ export default class CollectionService<
     this.state.dataSource = url;
     this.state.url = url;
     this.state.items = undefined;
-    this.state.local = this.state.fetchOnce || false;
+    this.state.local = this.state.fetchOnce === true;
     this.state.status = LoadingStatus.NotInitialized;
     if (query === undefined) {
       query = this.getQuery();
@@ -903,7 +903,7 @@ export default class CollectionService<
   @saga(SagaEffect.Latest)
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   *_fetchOnce() {
-    if (typeof this.state.dataSource === 'string' && this.state.fetchOnce && this.status !== LoadingStatus.NotReady) {
+    if (typeof this.state.dataSource === 'string' && this.state.fetchOnce !== false && this.status !== LoadingStatus.NotReady) {
       try {
         let result: CollectionFetcherResult<T> = [];
         if (this.status !== LoadingStatus.Loaded) {

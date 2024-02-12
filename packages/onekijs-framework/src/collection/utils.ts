@@ -913,7 +913,7 @@ export const getDefaultCollectionStatus = (
   dataOrUrl: any[] | string | undefined,
   brokerable?: boolean,
   brokered?: boolean,
-  fetchOnce?: boolean,
+  fetchOnce?: boolean | 'auto',
 ): CollectionStatus => {
   if (dataOrUrl === undefined || (brokerable && !brokered)) return LoadingStatus.NotReady;
   if (Array.isArray(dataOrUrl)) return LoadingStatus.Loaded;

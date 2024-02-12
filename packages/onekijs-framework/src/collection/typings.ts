@@ -184,7 +184,7 @@ export interface CollectionOptions<T, I extends Item<T>> {
   dataKey?: string;
   disabled?: T[];
   fetcher?: CollectionFetcher<T>;
-  fetchOnce?: boolean;
+  fetchOnce?: boolean | 'auto';
   hasMoreKey?: string;
   highlighted?: T[];
   initialFields?: string[];
@@ -227,7 +227,7 @@ export interface CollectionState<T, I extends Item<T>> extends FetchState {
   dataKey: string;
   dataSource?: T[] | string;
   disabled?: string[];
-  fetchOnce?: boolean;
+  fetchOnce?: boolean | 'auto';
   fetchOptions?: FetchOptions<CollectionFetcherResult<T>>;
   fields?: string[];
   filter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[];
