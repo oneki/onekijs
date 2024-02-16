@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { addClassname } from '../../../utils/style';
 import { TextareaProps } from '../typings';
 
@@ -9,6 +9,8 @@ const TextareaComponent: FC<TextareaProps> = (props) => {
     status,
     onFocus: forwardFocus,
     onBlur: forwardBlur,
+    onChange: forwardChange,
+    value,
     ...textareaProps
   } = props;
 
@@ -31,9 +33,23 @@ const TextareaComponent: FC<TextareaProps> = (props) => {
     forwardBlur && forwardBlur(e);
   };
 
+  const ref = useRef<HTMLTextAreaElement>(null);
+  const selectorRef = useRef<number | null | undefined>()
+  const onChange: React.InputHTMLAttributes<HTMLTextAreaElement>['onChange'] = (e) => {
+    selectorRef.current = e.target.selectionStart;
+    forwardChange && forwardChange(e);
+  }
+
+  useEffect(() => {
+    if (selectorRef.current !== undefined && selectorRef.current !== null && ref.current) {
+      ref.current.setSelectionRange(selectorRef.current, selectorRef.current);
+      selectorRef.current = undefined;
+    }
+  }, [value]);
+
   return (
     <div className={classNames}>
-      <textarea className="o-textarea-field" {...textareaProps} onFocus={onFocus} onBlur={onBlur} />
+      <textarea className="o-textarea-field" {...textareaProps} ref={ref} onFocus={onFocus} onBlur={onBlur} onChange={value === undefined ? undefined : onChange} value={value} />
     </div>
   );
 };
