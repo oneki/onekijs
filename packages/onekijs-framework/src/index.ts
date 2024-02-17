@@ -21,8 +21,8 @@ export {
   AppResultCallback,
   AppStateProps,
   AppSuccessCallback,
-  CONTEXT_ID,
-  AppProps as CoreAppProps,
+  CONTEXT_ID, CacheEntry,
+  CacheOptions, AppProps as CoreAppProps,
   ErrorBoundaryComponentProps,
   GlobalModifierFunction,
   GlobalSelectorFunction,
@@ -262,8 +262,9 @@ export { default as useSecurePut } from './fetch/useSecurePut';
 export { default as Form } from './form';
 export { default as AsyncBindService } from './form/AsyncBindService';
 export { default as ContainerValidation } from './form/ContainerValidation';
+export { default as DefaultDisplayer } from './form/DefaultDisplayer';
 export { default as FieldValidation, defaultValidation } from './form/FieldValidation';
-export { default as FormService, FORM_GLOBAL_VALIDATION_KEY } from './form/FormService';
+export { FORM_GLOBAL_VALIDATION_KEY, default as FormService } from './form/FormService';
 export { default as Input } from './form/components/Input';
 export { default as Select } from './form/components/Select';
 export { default as SubmitButton } from './form/components/SubmitButton';
@@ -317,7 +318,6 @@ export {
   ValidatorSyncFunction,
   ValidatorsType
 } from './form/typings';
-export { default as DefaultDisplayer } from './form/DefaultDisplayer';
 export { default as useField } from './form/useField';
 export { default as useFieldContainer } from './form/useFieldContainer';
 export { FormContext, default as useForm } from './form/useForm';
