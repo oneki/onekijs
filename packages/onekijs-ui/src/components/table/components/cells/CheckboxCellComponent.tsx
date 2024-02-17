@@ -6,7 +6,7 @@ import { TableBodyCellProps, CheckboxColumnOptions } from '../../typings';
 
 const CheckboxCellComponent = (options: CheckboxColumnOptions<any, any>): React.FC<TableBodyCellProps<any, any>> => {
   const CheckboxCellComponent: React.FC<TableBodyCellProps<any, any>> = ({ item, column, rowIndex }) => {
-    const { tableName } = useFormTableContext();
+    const { tableName, editable } = useFormTableContext();
 
     const { size, ...checkboxOptions } = options;
 
@@ -21,6 +21,7 @@ const CheckboxCellComponent = (options: CheckboxColumnOptions<any, any>): React.
         {...checkboxOptions}
         name={name}
         className={addClassname('o-table-checkbox', className)}
+        editable={editable ?? options.editable}
       />
     );
   };

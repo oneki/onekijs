@@ -6,7 +6,7 @@ import { TableBodyCellProps, TextareaColumnOptions } from '../../typings';
 
 const TextareaCellComponent = (options: TextareaColumnOptions<any, any>): React.FC<TableBodyCellProps<any, any>> => {
   const TextareaCellComponent: React.FC<TableBodyCellProps<any, any>> = ({ item, column, rowIndex }) => {
-    const { tableName } = useFormTableContext();
+    const { tableName, editable } = useFormTableContext();
 
     // if the id is empty, it's a single table column and the value is the row itself
     const name = column.id ? `${tableName}.${rowIndex}.${column.id}` : `${tableName}.${rowIndex}`;
@@ -20,6 +20,7 @@ const TextareaCellComponent = (options: TextareaColumnOptions<any, any>): React.
         {...options}
         name={name}
         className={addClassname('o-table-textarea', className)}
+        editable={editable ?? options.editable}
       />
     );
   };

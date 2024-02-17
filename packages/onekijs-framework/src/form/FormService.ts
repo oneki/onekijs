@@ -255,6 +255,10 @@ export default class FormService<T extends object = any> extends DefaultService<
 
   @reducer
   disable(fieldOrDecoratorName: string, match = true): void {
+    // ignore if the field is not editable
+    if (this.isField(fieldOrDecoratorName) && this.isReadOnlyField(fieldOrDecoratorName)) {
+      return
+    }
     this.setMetadata(fieldOrDecoratorName, 'disabled', match);
   }
 
@@ -291,6 +295,10 @@ export default class FormService<T extends object = any> extends DefaultService<
 
   @reducer
   enable(fieldOrDecoratorName: string, match = true): void {
+    // ignore if the field is not editable
+    if (this.isField(fieldOrDecoratorName) && this.isReadOnlyField(fieldOrDecoratorName)) {
+      return;
+    }
     this.setMetadata(fieldOrDecoratorName, 'disabled', !match);
   }
 
@@ -353,6 +361,15 @@ export default class FormService<T extends object = any> extends DefaultService<
     const field = this.initField(name, validators, options);
     field.value = get<any>(this.state.values, name, options.defaultValue === undefined ? '' : options.defaultValue);
     return field;
+  }
+
+  isField(fieldOrDecoratorName: string): fieldOrDecoratorName is NestedKeyOf<T> {
+    return Object.keys(this.fields).includes(fieldOrDecoratorName);
+  }
+
+  isReadOnlyField(fieldName: NestedKeyOf<T>) {
+    const metadata = this.state.metadata[fieldName] || {};
+    return metadata.readOnly || (this.config.reconfigure && !metadata.editable)
   }
 
   getContainerFieldValidation(
@@ -689,11 +706,16 @@ export default class FormService<T extends object = any> extends DefaultService<
       );
       const initialValue = get<any>(this.state.values, name);
       this.defaultValues[name] = isUndefined(initialValue) ? options.defaultValue : initialValue;
-      const disabled = this.config.reconfigure && !options.editable ? true : options.disabled;
+
+      // we force disable to true if the field is not editable and this is a reconfiguration
+      const disabled = (this.config.reconfigure && !options.editable || options.readOnly) ? true : options.disabled;
+
       this.defaultMetadata[name] = Object.assign(
         {
           disabled,
           visible: options.visible,
+          editable: options.editable,
+          readOnly: options.readOnly,
         },
         this.state.metadata[name],
       );

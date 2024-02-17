@@ -127,6 +127,7 @@ export type FormMetadata = {
   visible?: boolean;
   disabled?: boolean;
   editable?: boolean;
+  readOnly?: boolean;
 };
 
 export type FormMetadataListener = (

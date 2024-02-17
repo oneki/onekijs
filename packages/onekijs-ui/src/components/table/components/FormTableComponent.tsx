@@ -36,11 +36,11 @@ const SelectRowComponent: React.FC<TableBodyCellProps> = ({ item }) => {
 
 const FooterComponent: React.FC<TableFooterProps> = () => {
   const form = useForm();
-  const { tableName, addLabel, maxLength } = useFormTableContext();
+  const { tableName, addLabel, maxLength, onAdd } = useFormTableContext();
   const isSingleColumnTable = useTableColumns().find((c) => c.id === '');
   const addRow: React.MouseEventHandler<HTMLDivElement> = (e) => {
-    form.add(tableName, isSingleColumnTable ? undefined : {});
     e.preventDefault();
+    onAdd(isSingleColumnTable ? undefined : {});
   };
   const currentSize = (form.getValue(tableName) || []).length;
   if (maxLength !== undefined && currentSize >= maxLength) return null;
@@ -104,7 +104,13 @@ const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.
           onChange && onChange(currentValues.filter((v: any) => getId(v) !== getId(value)));
         }
       };
-      return { tableName: name, onSelect, addLabel, required, minLength, maxLength };
+
+      const onAdd = (initialValue: Partial<unknown> | undefined) => {
+        formTableContext.current.editable = true;
+        form.add(name, initialValue);
+      };
+
+      return { tableName: name, onSelect, onAdd, addLabel, required, minLength, maxLength };
     });
 
     // listen on value change from the form

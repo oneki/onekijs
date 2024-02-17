@@ -6,7 +6,7 @@ import { TableBodyCellProps, InputColumnOptions } from '../../typings';
 
 const InputCellComponent = (options: InputColumnOptions<any, any>): React.FC<TableBodyCellProps<any, any>> => {
   const InputCellComponent: React.FC<TableBodyCellProps<any, any>> = ({ item, column, rowIndex }) => {
-    const { tableName } = useFormTableContext();
+    const { tableName, editable } = useFormTableContext();
 
     const className =
       typeof options.className === 'function' ? options.className(item, column, rowIndex) : options.className;
@@ -21,6 +21,7 @@ const InputCellComponent = (options: InputColumnOptions<any, any>): React.FC<Tab
         {...options}
         name={name}
         className={addClassname('o-table-input', className)}
+        editable={editable ?? options.editable}
       />
     );
   };

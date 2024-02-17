@@ -11,7 +11,7 @@ const SelectCellComponent = (
   broker: SelectBroker<any, SelectItem<any>>,
 ): React.FC<TableBodyCellProps> => {
   const SelectCellComponent: React.FC<TableBodyCellProps> = ({ item, column, rowIndex }) => {
-    const { tableName } = useFormTableContext();
+    const { tableName, editable } = useFormTableContext();
     const controller = useSelectController(options.dataSource, options);
     const service = controller.asService();
 
@@ -38,6 +38,7 @@ const SelectCellComponent = (
         name={name}
         className={addClassname('o-table-select', className)}
         controller={controller}
+        editable={editable ?? options.editable}
       />
     );
   };

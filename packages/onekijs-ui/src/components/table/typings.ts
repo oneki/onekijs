@@ -71,10 +71,12 @@ export type FormTableProps<
 export type FormTableContext<T = any> = {
   tableName: string;
   onSelect: (item: TableItem<T>, selected: boolean) => void;
+  onAdd: (initialValue: Partial<T> | undefined) => void;
   addLabel: string;
   required?: boolean;
   maxLength?: number;
   minLength?: number;
+  editable?: boolean;   // if we add a element afterwards, it must be editable (if not, mark it as read only)
 };
 
 export type FormTableItemDisplayerProps<T = any> = {

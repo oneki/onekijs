@@ -29,6 +29,8 @@ const useField = <T extends object = any>(
       if (optionsRef.current.visible === false) {
         form.setMetadata(nameRef.current, 'visible', optionsRef.current.visible, false);
       }
+      form.setMetadata(nameRef.current, 'readOnly', optionsRef.current.readOnly);
+      form.setMetadata(nameRef.current, 'editable', optionsRef.current.editable);
     }
   }, [form]);
 
