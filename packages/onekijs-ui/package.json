@@ -1,7 +1,7 @@
 {
   "name": "onekijs-ui",
   "private": false,
-  "version": "0.19.14",
+  "version": "0.19.15",
   "description": "Advanced React Web Components",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -34,7 +34,7 @@
     "@clr/city": "^1.1.0",
     "@popperjs/core": "^2.4.4",
     "@reach/observe-rect": "^1.2.0",
-    "onekijs-framework": "^0.19.14",
+    "onekijs-framework": "^0.19.15",
     "react-popper": "^2.3.0",
     "react-popper-tooltip": "^4.4.2",
     "react-virtualized-auto-sizer": "^1.0.2",
