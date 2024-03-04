@@ -93,7 +93,7 @@ export default class NextRouter extends BaseRouter {
   }
 
   // saveOrigin(force = true) {
-  //   const currentValue = localStorage.getItem('onekijs.from');
+  //   const currentValue = sesssionStorage.getItem('onekijs.from');
   //   if (!force && currentValue) return;
 
   //   let from = get(this.settings, 'routes.home', '/');
@@ -103,8 +103,8 @@ export default class NextRouter extends BaseRouter {
   //     from = previous.relativeurl;
   //     fromRoute = previous.route || from;
   //   }
-  //   localStorage.setItem('onekijs.from', from);
-  //   localStorage.setItem('onekijs.from_route', fromRoute);
+  //   sesssionStorage.setItem('onekijs.from', from);
+  //   sesssionStorage.setItem('onekijs.from_route', fromRoute);
   // }
 
   sync(nextRouter: NextRouterType): void {

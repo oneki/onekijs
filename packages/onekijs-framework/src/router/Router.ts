@@ -57,7 +57,7 @@ export default abstract class BaseRouter implements Router {
   abstract back(delta?: number): void;
 
   deleteOrigin(): void {
-    localStorage.removeItem('onekijs.from');
+    sessionStorage.removeItem('onekijs.from');
   }
 
   abstract forward(delta?: number): void;
@@ -68,7 +68,7 @@ export default abstract class BaseRouter implements Router {
   ): JSX.Element;
 
   getOrigin(): { from: string } {
-    const from = localStorage.getItem('onekijs.from') || get(this.settings, 'routes.home', '/');
+    const from = sessionStorage.getItem('onekijs.from') || get(this.settings, 'routes.home', '/');
     return { from };
   }
 
@@ -106,7 +106,7 @@ export default abstract class BaseRouter implements Router {
   abstract replace(urlOrLocation: string | Location, options?: RouterPushOptions): void;
 
   saveOrigin(force = true): void {
-    const currentValue = localStorage.getItem('onekijs.from');
+    const currentValue = sessionStorage.getItem('onekijs.from');
     if (!force && currentValue) return;
 
     let from = get(this.settings, 'routes.home', '/');
@@ -119,7 +119,7 @@ export default abstract class BaseRouter implements Router {
       from = previous.relativeurl;
     }
 
-    localStorage.setItem('onekijs.from', from);
+    sessionStorage.setItem('onekijs.from', from);
   }
 
   _pushLocation(location: Location, replace = false): void {
