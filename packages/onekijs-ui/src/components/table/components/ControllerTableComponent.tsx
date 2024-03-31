@@ -4,14 +4,14 @@ import { TableConfigContext } from '../hooks/useTableConfig';
 import { TableServiceContext } from '../hooks/useTableService';
 import { TableStateContext } from '../hooks/useTableState';
 import { ControllerTableProps, TableConfig } from '../typings';
-import TableActionComponent from './TableActionComponent';
 import TableBodyComponent from './TableBodyComponent';
 import TableFooterComponent from './TableFooterComponent';
 import TableHeaderComponent from './TableHeaderComponent';
 import ExpandedCellComponent from './cells/ExpandedCellComponent';
+import TableToolbarBottomComponent from './TableToolbarBottomComponent';
+import TableToolbarTopComponent from './TableToolbarTopComponent';
 
 const ControllerTableComponent: React.FC<ControllerTableProps> = ({
-  ActionComponent = TableActionComponent,
   autoRefresh,
   controller,
   className,
@@ -45,13 +45,19 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
   paddingStart,
   parentRef,
   preload,
-  refreshButtonKind = 'primary',
   rowClassName,
   RowComponent,
-  showRefreshButton,
   sortable,
   stripRows,
   tail,
+  ToolbarBottomComponent = TableToolbarBottomComponent,
+  ToolbarTopComponent = TableToolbarTopComponent,
+  ToolbarBottomCenterComponent,
+  ToolbarBottomLeftComponent,
+  ToolbarBottomRightComponent,
+  ToolbarTopCenterComponent,
+  ToolbarTopLeftComponent,
+  ToolbarTopRightComponent,
 }) => {
   const classNames = addClassname('o-table', className);
   const { columns, items } = controller.state;
@@ -62,7 +68,6 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
 
   const config: TableConfig = useMemo(() => {
     return {
-      ActionComponent,
       autoRefresh,
       bodyClassName,
       BodyComponent,
@@ -95,16 +100,21 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
       paddingStart,
       parentRef,
       preload,
-      refreshButtonKind,
       rowClassName,
       RowComponent,
-      showRefreshButton,
       sortable,
       stripRows,
       tail,
+      ToolbarBottomComponent,
+      ToolbarTopComponent,
+      ToolbarBottomCenterComponent,
+      ToolbarBottomLeftComponent,
+      ToolbarBottomRightComponent,
+      ToolbarTopCenterComponent,
+      ToolbarTopLeftComponent,
+      ToolbarTopRightComponent,
     };
   }, [
-    ActionComponent,
     autoRefresh,
     bodyClassName,
     BodyComponent,
@@ -137,13 +147,19 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
     paddingStart,
     parentRef,
     preload,
-    refreshButtonKind,
     rowClassName,
     RowComponent,
-    showRefreshButton,
     sortable,
     stripRows,
     tail,
+    ToolbarBottomComponent,
+    ToolbarTopComponent,
+    ToolbarBottomCenterComponent,
+    ToolbarBottomLeftComponent,
+    ToolbarBottomRightComponent,
+    ToolbarTopCenterComponent,
+    ToolbarTopLeftComponent,
+    ToolbarTopRightComponent,
   ]);
 
   service.config = config;
@@ -174,7 +190,7 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
       <TableStateContext.Provider value={controller.state}>
         <TableConfigContext.Provider value={config}>
           <div className={className}>
-            <ActionComponent />
+            <ToolbarTopComponent />
             <div
               id={id}
               className={classNames}
@@ -195,6 +211,7 @@ const ControllerTableComponent: React.FC<ControllerTableProps> = ({
               {footer && <FooterComponent columns={columns} className={footerClassName} />}
             </div>
           </div>
+          <ToolbarBottomComponent />
         </TableConfigContext.Provider>
       </TableStateContext.Provider>
     </TableServiceContext.Provider>

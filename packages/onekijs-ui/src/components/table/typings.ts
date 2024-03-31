@@ -15,7 +15,6 @@ import {
 } from 'onekijs-framework';
 import React, { ComponentType, FC, PropsWithChildren, ReactNode } from 'react';
 import { StylableProps, TshirtSize } from '../../styles/typings';
-import { ButtonProps } from '../button/typings';
 import { CheckboxProps } from '../checkbox/typings';
 import { FieldLayoutProps } from '../field/typings';
 import { InputProps } from '../input/typings';
@@ -134,7 +133,6 @@ export type TableBodyRowProps<T = any, I extends TableItem<T> = TableItem<T>> = 
 };
 
 export type TableConfig<T = any, I extends TableItem<T> = TableItem<T>> = {
-  ActionComponent?: React.FC;
   autoRefresh?: number;
   bodyClassName?: string;
   BodyComponent?: React.FC<TableBodyProps<T, I>>;
@@ -169,11 +167,17 @@ export type TableConfig<T = any, I extends TableItem<T> = TableItem<T>> = {
   preload?: number;
   rowClassName?: string | ((item: I | undefined, rowIndex: number, columns: TableColumn<T, I>[]) => string);
   RowComponent?: React.FC<TableBodyRowProps<T, I>>;
-  refreshButtonKind?: ButtonProps['kind'];
-  showRefreshButton?: boolean;
   sortable?: boolean;
   stripRows?: boolean;
   tail?: boolean;
+  ToolbarBottomComponent?: React.FC;
+  ToolbarTopComponent?: React.FC;
+  ToolbarBottomCenterComponent?: React.FC;
+  ToolbarBottomLeftComponent?: React.FC;
+  ToolbarBottomRightComponent?: React.FC;
+  ToolbarTopCenterComponent?: React.FC;
+  ToolbarTopLeftComponent?: React.FC;
+  ToolbarTopRightComponent?: React.FC;
 };
 
 export type TableController<

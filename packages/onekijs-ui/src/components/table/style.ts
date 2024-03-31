@@ -83,12 +83,23 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true 
       ${display('flex')}
     }
 
-    .o-table-action {
+    .o-table-actions-top {
+    }
+
+    .o-table-action-top-left {
       ${flexGrow(1)}
     }
 
-    .o-table-refresh {
-      ${marginBottom('sm')}
+    .o-table-action-top-center {
+      ${flexGrow(1)}
+      ${display('flex')}
+      ${justifyContent('center')}
+    }
+
+    .o-table-action-top-right {
+      ${flexGrow(1)}
+      ${display('flex')}
+      ${justifyContent('flex-end')}
       ${marginRight('xl')}
     }
 
