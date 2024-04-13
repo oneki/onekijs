@@ -40,6 +40,7 @@ export default class Container implements ServiceFactory {
     }
     const types = Reflect.getMetadata('design:paramtypes', ctor) || [];
     const args = types.map((type: any) => {
+      
       if (!type[ID]) {
         throw new DefaultBasicError(`Cannot find a valid class for service ${type}`);
       }

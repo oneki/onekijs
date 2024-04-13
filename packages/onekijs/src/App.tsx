@@ -3,16 +3,16 @@ import React, { FC, Suspense } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { ReactRouter } from './router/ReactRouter';
 import { useRouterSync } from './router/useRouterSync';
-import { AppProps } from './typings';
+import { AppProps, AppRouterProps } from './typings';
 
 const AppRouterSync: FC = () => {
   useRouterSync();
   return null;
 };
 
-const AppRouter: FCC = ({ children }) => {
+const AppRouter: FCC<AppRouterProps> = ({ basename, children }) => {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <AppRouterSync />
       {children}
     </BrowserRouter>
@@ -25,7 +25,7 @@ const FCCApp: FCC<AppProps> = ({ LoadingComponent = DefaultLoadingComponent, chi
   });
   return (
     <AppState {...props} router={router.current}>
-      <AppRouter>
+      <AppRouter basename={props.basename}>
         <Suspense fallback={<LoadingComponent />}>{children}</Suspense>
       </AppRouter>
     </AppState>
