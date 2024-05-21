@@ -265,7 +265,7 @@ export {
   FormTableContext,
   FormTableItemDisplayerProps,
   FormTableProps,
-  FormTableValueDisplayerProps,
+  TableValueDisplayerProps,
   InputColumn,
   InputColumnOptions,
   LinkColumnOptions,

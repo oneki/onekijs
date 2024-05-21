@@ -1,12 +1,12 @@
 import React from 'react';
-import { FormTableValueDisplayerProps } from '../typings';
+import { TableValueDisplayerProps } from '../typings';
 import FormTableItemDisplayer from './FormTableItemDisplayer';
 import styled from 'styled-components';
 import { addClassname } from '../../../utils/style';
 import { borderBottomColor, borderBottomStyle, borderBottomWidth } from '../../../styles/border';
 import { paddingBottom, paddingTop, paddingY } from '../../../styles/spacing';
 
-const FormTableValueDisplayer: React.FC<FormTableValueDisplayerProps> = ({ name, columns, value, format, className }) => {
+const FormTableValueDisplayer: React.FC<TableValueDisplayerProps> = ({ name, columns, value, format, className }) => {
   if (!Array.isArray(value)) return null;
   return (
     <div className={addClassname('o-form-table-displayer-value', className)}>

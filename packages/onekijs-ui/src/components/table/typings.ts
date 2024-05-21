@@ -65,6 +65,7 @@ export type FormTableProps<
     status?: ValidationStatus;
     size?: TshirtSize;
     showAddButton?: boolean;
+    ValueDisplayer?: React.FC<TableValueDisplayerProps<T>>;
   };
 
 export type FormTableContext<T = any> = {
@@ -89,7 +90,7 @@ export type FormTableItemDisplayerProps<T = any> = {
   index: number;
 };
 
-export type FormTableValueDisplayerProps<T = any> = {
+export type TableValueDisplayerProps<T = any> = {
   columns: TableColumn<T>[];
   value: T[];
   format: FormDisplayerProps['format'];

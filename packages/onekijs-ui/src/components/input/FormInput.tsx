@@ -1,4 +1,4 @@
-import { FormDisplayerProps, FormFieldValueDisplayerProps, useForm } from 'onekijs-framework';
+import { FormDisplayerProps, FormFieldValueDisplayerProps, isNull, useForm } from 'onekijs-framework';
 import React, { FC } from 'react';
 import Input from '.';
 import { titlelize } from '../../utils/misc';
@@ -46,7 +46,7 @@ const FormInput: FC<FormInputProps> = React.memo((props) => {
 
   return (
     <FieldLayout {...fieldLayoutProps} required={props.required}>
-      <Component {...fieldComponentProps} value={!fieldComponentProps.value ? '' : fieldComponentProps.value} />
+      <Component {...fieldComponentProps} value={isNull(fieldComponentProps.value) ? '' : fieldComponentProps.value} />
     </FieldLayout>
   );
 });
