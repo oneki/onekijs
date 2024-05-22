@@ -133,6 +133,8 @@ export type TableBodyRowProps<T = any, I extends TableItem<T> = TableItem<T>> = 
   onCollapsed?: (item: I | undefined, index: number) => void;
 };
 
+export type TableSerializerFormat = 'csv' | 'json'
+
 export type TableConfig<T = any, I extends TableItem<T> = TableItem<T>> = {
   autoRefresh?: number;
   bodyClassName?: string;
@@ -168,6 +170,7 @@ export type TableConfig<T = any, I extends TableItem<T> = TableItem<T>> = {
   preload?: number;
   rowClassName?: string | ((item: I | undefined, rowIndex: number, columns: TableColumn<T, I>[]) => string);
   RowComponent?: React.FC<TableBodyRowProps<T, I>>;
+  serializer?: (data: T[], format: TableSerializerFormat) => string;
   sortable?: boolean;
   stripRows?: boolean;
   tail?: boolean;
@@ -200,6 +203,7 @@ export type TableController<
     by: B,
     target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
   ): I[];
+  serialize: (data: T[], format: TableSerializerFormat) => string;
   setSelected<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
   startAutoRefresh: (interval: number) => void;
   stopAutoRefresh: () => void;
@@ -223,6 +227,8 @@ export type TableCellDisplayerProps<T, I extends TableItem<T> = TableItem<T>> = 
   format: FormDisplayerProps['format'];
 };
 
+export type TableCellSerializer<T, I extends TableItem<T> = TableItem<T>> = (data: T, column: TableColumn<T, I>, format: TableSerializerFormat) => string | number | boolean | null;
+
 export type TableColumnSpec<T, I extends TableItem<T> = TableItem<T>> = {
   className?: string | ((item: I, column: TableColumn<T, I>, rowIndex: number) => string);
   CellComponent?: Cell<T, I>;
@@ -233,15 +239,16 @@ export type TableColumnSpec<T, I extends TableItem<T> = TableItem<T>> = {
   filterable?: boolean;
   FilterComponent?: React.FC<TableHeaderCellProps<T, I>>;
   headerClassName?: string | ((column: TableColumn<T, I>) => string);
+  help?: ReactNode;
   id: string;
   maxWidth?: string;
   minWidth?: string;
+  serializer?: TableCellSerializer<T, I>;
   sortable?: boolean;
   title?: string;
   TitleComponent?: React.FC<TableHeaderCellProps<T, I>>;
   weight?: number;
   width?: string;
-  help?: ReactNode;
 };
 
 export type TableColumnWidth = {

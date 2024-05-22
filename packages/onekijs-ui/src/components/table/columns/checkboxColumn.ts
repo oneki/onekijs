@@ -1,5 +1,6 @@
 import CheckboxCellComponent from '../components/cells/CheckboxCellComponent';
 import DefaultCellDisplayer from '../displayers/DefaultCellDisplayer';
+import defaultCellSerializer from '../seralizers/defaultCellSerializer';
 import { CheckboxColumn, CheckboxColumnOptions, TableItem } from '../typings';
 
 const checkboxColumn = <T = any, I extends TableItem<T> = TableItem<T>>(
@@ -13,6 +14,7 @@ const checkboxColumn = <T = any, I extends TableItem<T> = TableItem<T>>(
       sortable: false,
       className: 'o-checkbox-cell',
       Displayer: DefaultCellDisplayer,
+      serializer: defaultCellSerializer,
     },
     options,
     {

@@ -1,5 +1,6 @@
 import InputCellComponent from '../components/cells/InputCellComponent';
 import DefaultCellDisplayer from '../displayers/DefaultCellDisplayer';
+import defaultCellSerializer from '../seralizers/defaultCellSerializer';
 import { InputColumn, InputColumnOptions, TableItem } from '../typings';
 
 const inputColumn = <T extends any = any, I extends TableItem<T> = TableItem<T>>(
@@ -12,6 +13,7 @@ const inputColumn = <T extends any = any, I extends TableItem<T> = TableItem<T>>
       filterable: false,
       sortable: false,
       Displayer: DefaultCellDisplayer,
+      serializer: defaultCellSerializer,
     },
     options,
     {

@@ -1,8 +1,10 @@
+import { get } from 'onekijs-framework';
 import DefaultSelectBroker from '../../select/SelectBroker';
 import { SelectItem, SelectItemAdapter } from '../../select/typings';
 import SelectCellComponent from '../components/cells/SelectCellComponent';
 import DefaultCellDisplayer from '../displayers/DefaultCellDisplayer';
-import { SelectCell, SelectColumn, SelectColumnOptions, TableItem } from '../typings';
+import { SelectCell, SelectColumn, SelectColumnOptions, TableCellSerializer, TableItem } from '../typings';
+import defaultCellSerializer from '../seralizers/defaultCellSerializer';
 
 const selectColumn = <
   T = any,
@@ -27,6 +29,25 @@ const selectColumn = <
     opts.adapter = adapter;
   }
 
+  const serializer: TableCellSerializer<T, TI> = (data: any, column, format) => {
+    const value = get(data, column.id, null);
+    if (Array.isArray(opts.dataSource)) {
+      const entry = opts.dataSource.find((item) => {
+        if (Array.isArray(item)) {
+          if (item[0] === value) {
+            return true;
+          }
+        }
+        return false;
+      })
+      if (entry && Array.isArray(entry)) {
+        return entry[1];
+      }
+    }
+
+    return defaultCellSerializer(data, column, format);
+  }
+
   const broker = new DefaultSelectBroker(dataSource, opts);
 
   const Component: SelectCell<T, S, TI, SI> = opts.CellComponent || (SelectCellComponent as any);
@@ -36,6 +57,7 @@ const selectColumn = <
       filterable: false,
       sortable: false,
       Displayer: DefaultCellDisplayer,
+      serializer,
     },
     opts,
     {

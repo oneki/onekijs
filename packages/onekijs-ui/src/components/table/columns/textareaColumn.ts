@@ -1,5 +1,6 @@
 import TextareaCellComponent from '../components/cells/TextareaCellComponent';
 import DefaultCellDisplayer from '../displayers/DefaultCellDisplayer';
+import defaultCellSerializer from '../seralizers/defaultCellSerializer';
 import { TableItem, TextareaColumn, TextareaColumnOptions } from '../typings';
 
 const textareaColumn = <T = any, I extends TableItem<T> = TableItem<T>>(
@@ -13,6 +14,7 @@ const textareaColumn = <T = any, I extends TableItem<T> = TableItem<T>>(
       filterable: false,
       sortable: false,
       Displayer: DefaultCellDisplayer,
+      serializer: defaultCellSerializer,
     },
     options,
     {
