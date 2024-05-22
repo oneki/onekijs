@@ -24,6 +24,7 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
   onDropping,
   onCollapsing,
   placement = 'auto',
+  fallbackPlacements,
   width,
   widthModifier = 'same',
   zIndex = 1,
@@ -47,7 +48,8 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
       },
       {
         name: 'flip',
-        enabled: placement === 'auto',
+        enabled: placement === 'auto' || (fallbackPlacements !== undefined && fallbackPlacements.length > 0),
+        options: fallbackPlacements && fallbackPlacements.length > 0 ? { fallbackPlacements } : undefined,
       },
       {
         name: 'eventListeners',

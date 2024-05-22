@@ -16,6 +16,7 @@ export type DropdownProps = {
   onCollapsing?: (node: HTMLElement) => void;
   animationTimeout?: number;
   placement?: Placement;
+  fallbackPlacements?: Placement[];
   widthModifier?: DropdownWidthModifier;
   width?: string;
   zIndex?: number;
