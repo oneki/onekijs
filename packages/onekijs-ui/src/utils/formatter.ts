@@ -39,6 +39,26 @@ export const enumFormatter = <T>(values: AnonymousObject): Formatter<T> => {
   };
 };
 
+
+
+export const escapeCsvValue = (value: any, separator = ','): string => {
+  const escape = (value: any): string => {
+    if (Array.isArray(value)) {
+      return value.map((v) => escape(v)).join(',');
+    }
+    if (value === null || value === undefined) return '';
+    return `${value}`;
+  }
+
+  const result = escape(value);
+  if (result.startsWith('"') && result.endsWith('"')) return result;  // the string is already escaped
+  // escape only if the string contains the separator
+  if (result.includes(separator)) {
+    return `"${result.replace(/"/g, '""')}"`
+  }
+  return result;
+}
+
 export const pxFormatter: Formatter<string | number> = (value) => {
   if (typeof value === 'string') {
     return value;

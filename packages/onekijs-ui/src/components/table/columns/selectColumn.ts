@@ -32,7 +32,7 @@ const selectColumn = <
   const serializer: TableCellSerializer<T, TI> = (data: any, column, format) => {
     const value = get(data, column.id, null);
     if (Array.isArray(opts.dataSource)) {
-      const entry = opts.dataSource.find((item) => {
+      const entry = (opts.dataSource as [S, string][]).find((item) => {
         if (Array.isArray(item)) {
           if (item[0] === value) {
             return true;

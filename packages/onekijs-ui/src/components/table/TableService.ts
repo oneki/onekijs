@@ -1,4 +1,4 @@
-import { AnonymousObject, CollectionService, reducer, service } from 'onekijs-framework';
+import { AnonymousObject, CollectionService, get, reducer, service } from 'onekijs-framework';
 import React from 'react';
 import {
   TableColumn,
@@ -9,6 +9,7 @@ import {
   TableSerializerFormat,
   TableState,
 } from './typings';
+import { escapeCsvValue } from '../../utils/formatter';
 
 export const parseColumnWidth = (width: string | number = 'auto'): TableColumnWidth => {
   const regex = /^\s*(auto|(?:(?:([0-9]+)|(?:([0-9]+)\s*(px|%)))\s*(grow|force)?)|(grow))\s*$/;
@@ -116,22 +117,18 @@ class TableService<T = any, I extends TableItem<T> = TableItem<T>, S extends Tab
 
     switch(format) {
       case 'csv':
+        let result = 'sep=,'
+        const header = serializableColumns.map((c) => escapeCsvValue(get(c, 'title', get(c, 'id')))).join(',')
+        result = `${result}\n${header}`
         const csvRows = data.map((row) => {
           const columns = serializableColumns
             .map((c) => c.serializer!(row, c, format))
             .map((s) => {
-              if (s === null) return '';
-              const result = `${s}`;
-              if (result.startsWith('"') && result.endsWith('"')) return result;  // the string is already escaped
-              // escape only if the string contains a comma
-              if (result.includes(',')) {
-                return `"${result.replace(/"/g, '""')}"`
-              }
-              return result;
+              return escapeCsvValue(s, ',');
             });
           return columns.join(',');
         });
-        return csvRows.join('\n');
+        return `${result}\n${csvRows.join('\n')}`;
       case 'json':
         const rows = data.map((row) => {
           return serializableColumns.reduce((accumulator, c) => {

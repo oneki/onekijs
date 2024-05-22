@@ -304,6 +304,8 @@ export {
   TextareaColumnOptions,
   UseTableController,
   UseTableOptions,
+  TableCellSerializer,
+  TableSerializerFormat
 } from './components/table/typings';
 export { default as Tag } from './components/tag';
 export { default as TagComponent } from './components/tag/components/TagComponent';
@@ -326,6 +328,7 @@ export { default as ArrayTreeComponent } from './components/tree/components/Arra
 export { default as ControllerTreeComponent } from './components/tree/components/ControllerTreeComponent';
 export { default as TreeBodyComponent } from './components/tree/components/TreeBodyComponent';
 export { default as TreeComponent } from './components/tree/components/TreeComponent';
+export { default as defaultCellSerializer } from './components/table/seralizers/defaultCellSerializer';
 export {
   default as TreeItemComponent,
   TreeItemContent,

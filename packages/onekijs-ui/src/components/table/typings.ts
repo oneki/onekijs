@@ -227,7 +227,7 @@ export type TableCellDisplayerProps<T, I extends TableItem<T> = TableItem<T>> = 
   format: FormDisplayerProps['format'];
 };
 
-export type TableCellSerializer<T, I extends TableItem<T> = TableItem<T>> = (data: T, column: TableColumn<T, I>, format: TableSerializerFormat) => string | number | boolean | null;
+export type TableCellSerializer<T, I extends TableItem<T> = TableItem<T>> = (data: T, column: TableColumn<T, I>, format: TableSerializerFormat) => any;
 
 export type TableColumnSpec<T, I extends TableItem<T> = TableItem<T>> = {
   className?: string | ((item: I, column: TableColumn<T, I>, rowIndex: number) => string);

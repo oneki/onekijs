@@ -13,7 +13,7 @@ const enumColumn = <T extends any = any, I extends TableItem<T> = TableItem<T>>(
 ): TableColumn<T, I> => {
   const serializer: TableCellSerializer<T, I> = (data: any, column, format) => {
     const value = get(data, column.id, null);
-    const entry = options.filterDataSource.find((item) => {
+    const entry = (options.filterDataSource as any[]).find((item: any) => {
       if (Array.isArray(item)) {
         if (item[0] === value) {
           return true;
