@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.19.20](https://github.com/oneki/onekijs/compare/v0.19.12...v0.19.20) (2024-05-22)
+
+**Note:** Version bump only for package onekijs-theme-clarity
+
+
+
+
+
 ## [0.19.19](https://github.com/oneki/onekijs/compare/v0.19.18...v0.19.19) (2024-05-21)
 
 **Note:** Version bump only for package onekijs-theme-clarity
