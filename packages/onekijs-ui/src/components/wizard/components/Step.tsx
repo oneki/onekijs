@@ -5,6 +5,7 @@ import { addClassname } from '../../../utils/style';
 import useStep from '../hooks/useStep';
 import { useWizardState } from '../hooks/useWizardState';
 import { StepProps } from '../typings';
+import Alert from '../../alert';
 
 const Step: FCC<StepProps> = ({
   title,
@@ -19,6 +20,7 @@ const Step: FCC<StepProps> = ({
   showTitle = true,
   className,
   onTouch,
+  help,
 }) => {
   const { animate, forwardOnly } = useWizardState();
 
@@ -63,6 +65,7 @@ const Step: FCC<StepProps> = ({
     <CSSTransition in={true} timeout={animate} appear={true} onEnter={onEnter} onEntering={onEntering}>
       <div className={addClassname('o-step-content', className)}>
         {showTitle && <div className="o-step-content-title">{title}</div>}
+        {help && <Alert kind="info" marginBottom='lg'>{help}</Alert>}
         {children}
       </div>
     </CSSTransition>

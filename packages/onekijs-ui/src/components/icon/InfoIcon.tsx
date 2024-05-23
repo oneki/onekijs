@@ -4,11 +4,13 @@ import { alignItems } from '../../styles/alignment';
 import { display } from '../../styles/display';
 import { color } from '../../styles/typography';
 import { IconProps } from './typings';
+import { marginLeft, marginRight } from '../../styles/spacing';
+import { fill } from '../../styles/svg';
 
 const InfoIconComponent: FC<IconProps> = (props) => {
   return (
     <div {...props}>
-      <svg className="o-icon-success-svg" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+      <svg className="o-icon-info-svg" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
         <path
           fillRule="evenodd"
           clipRule="evenodd"
@@ -20,15 +22,17 @@ const InfoIconComponent: FC<IconProps> = (props) => {
 };
 
 export default styled(InfoIconComponent)`
-  ${({ width = '16px', height = '16px', color: cssColor = 'info' }) => css`
+  ${({ width = '16px', height = '16px', color: cssColor = 'info', marginLeft: ml = '0', marginRight: mr = '0' }) => css`
     width: ${width};
     height: ${height};
+    ${marginLeft(ml)}
+    ${marginRight(mr)}
     ${display('flex')};
     ${alignItems('center')};
     ${color(cssColor)}
     .o-icon-info-svg {
       display: inline-block;
-      fill: currentColor;
+      ${fill('currentColor')}
     }
   `}
 `;

@@ -4,6 +4,7 @@ import { alignItems } from '../../styles/alignment';
 import { display } from '../../styles/display';
 import { addClassname } from '../../utils/style';
 import { IconProps } from './typings';
+import { marginLeft, marginRight } from '../../styles/spacing';
 
 const IconComponent: FC<IconProps> = (props) => {
   const className = addClassname('o-icon-file', props.className);
@@ -23,9 +24,11 @@ const IconComponent: FC<IconProps> = (props) => {
 };
 
 export default styled(IconComponent)`
-  ${({ width = '16px', height = '16px', color: cssColor = 'currentColor' }) => css`
+  ${({ width = '16px', height = '16px', color: cssColor = 'currentColor', marginLeft: ml = '0', marginRight: mr = '0' }) => css`
     width: ${width};
     height: ${height};
+    ${marginLeft(ml)}
+    ${marginRight(mr)}
     ${display('flex')};
     ${alignItems('center')};
     .o-icon-file-svg {

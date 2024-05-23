@@ -4,6 +4,7 @@ import { alignItems } from '../../styles/alignment';
 import { display } from '../../styles/display';
 import { color } from '../../styles/typography';
 import { IconProps } from './typings';
+import { marginLeft, marginRight } from '../../styles/spacing';
 
 const CloseIconComponent: FC<IconProps> = (props) => {
   return (
@@ -20,9 +21,11 @@ const CloseIconComponent: FC<IconProps> = (props) => {
 };
 
 export default styled(CloseIconComponent)`
-  ${({ width = '16px', height = '16px', color: cssColor = 'inherit' }) => css`
+  ${({ width = '16px', height = '16px', color: cssColor = 'inherit', marginLeft: ml = '0', marginRight: mr = '0' }) => css`
     width: ${width};
     height: ${height};
+    ${marginLeft(ml)}
+    ${marginRight(mr)}
     ${display('flex')};
     ${alignItems('center')};
     ${color(cssColor)}

@@ -4,6 +4,7 @@ import { alignItems } from '../../styles/alignment';
 import { display } from '../../styles/display';
 import { color } from '../../styles/typography';
 import { IconProps } from './typings';
+import { marginLeft, marginRight } from '../../styles/spacing';
 
 const ErrorIconComponent: FC<IconProps> = (props) => {
   return (
@@ -20,9 +21,11 @@ const ErrorIconComponent: FC<IconProps> = (props) => {
 };
 
 export default styled(ErrorIconComponent)`
-  ${({ width = '16px', height = '16px', color: cssColor = 'danger' }) => css`
+  ${({ width = '16px', height = '16px', color: cssColor = 'danger', marginLeft: ml = '0', marginRight: mr = '0' }) => css`
     width: ${width};
     height: ${height};
+    ${marginLeft(ml)}
+    ${marginRight(mr)}
     ${display('flex')};
     ${alignItems('center')};
     ${color(cssColor)}

@@ -4,6 +4,7 @@ import { alignItems } from '../../styles/alignment';
 import { display } from '../../styles/display';
 import { color } from '../../styles/typography';
 import { IconProps } from './typings';
+import { marginLeft, marginRight } from '../../styles/spacing';
 
 const SuccessIconComponent: FC<IconProps> = (props) => {
   return (
@@ -23,12 +24,14 @@ const SuccessIconComponent: FC<IconProps> = (props) => {
 };
 
 export default styled(SuccessIconComponent)`
-  ${({ width = '16px', height = '16px', color: cssColor = 'success' }) => css`
+  ${({ width = '16px', height = '16px', color: cssColor = 'success', marginLeft: ml = '0', marginRight: mr = '0' }) => css`
     width: ${width};
     height: ${height};
     ${display('flex')};
     ${alignItems('center')};
     ${color(cssColor)}
+    ${marginLeft(ml)}
+    ${marginRight(mr)}
     .o-icon-success-svg {
       display: inline-block;
       fill: currentColor;

@@ -7,6 +7,7 @@ import { color } from '../../styles/typography';
 import { addClassname } from '../../utils/style';
 import LoadingIcon from './LoadingIcon';
 import { TogglerIconProps } from './typings';
+import { marginLeft, marginRight } from '../../styles/spacing';
 
 const toDegree = (position: 'n' | 's' | 'w' | 'e'): string => {
   switch (position) {
@@ -29,6 +30,7 @@ const IconComponent: FC<TogglerIconProps> = ({
   model = 'arrow',
   closeArrowPosition = 'e',
   openArrowPosition = 's',
+
 }) => {
   const iconClassName = addClassname('o-toggler-icon-container', className);
   if (!loading) {
@@ -65,9 +67,11 @@ const IconComponent: FC<TogglerIconProps> = ({
 };
 
 const TogglerIcon = styled(IconComponent)`
-  ${({ width = '24px', height = '24px', color: cssColor = 'inherit', visible = true }) => css`
+  ${({ width = '24px', height = '24px', color: cssColor = 'inherit', visible = true,  marginLeft: ml = '0', marginRight: mr = '0' }) => css`
     width: ${width};
     height: ${height};
+    ${marginLeft(ml)}
+    ${marginRight(mr)}
     ${display('inline-flex')};
     ${alignItems('center')};
     ${color(cssColor)}

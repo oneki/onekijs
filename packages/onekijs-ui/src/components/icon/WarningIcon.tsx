@@ -4,6 +4,7 @@ import { alignItems } from '../../styles/alignment';
 import { display } from '../../styles/display';
 import { color } from '../../styles/typography';
 import { IconProps } from './typings';
+import { marginLeft, marginRight } from '../../styles/spacing';
 
 const WarningIconComponent: FC<IconProps> = (props) => {
   return (
@@ -20,12 +21,14 @@ const WarningIconComponent: FC<IconProps> = (props) => {
 };
 
 export default styled(WarningIconComponent)`
-  ${({ width = '16px', height = '16px', color: cssColor = 'warning' }) => css`
+  ${({ width = '16px', height = '16px', color: cssColor = 'warning', marginLeft: ml = '0', marginRight: mr = '0' }) => css`
     width: ${width};
     height: ${height};
     ${display('flex')};
     ${alignItems('center')};
     ${color(cssColor)}
+    ${marginLeft(ml)}
+    ${marginRight(mr)}
     .o-icon-warning-svg {
       display: inline-block;
       fill: currentColor;

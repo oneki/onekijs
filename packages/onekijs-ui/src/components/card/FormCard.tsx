@@ -4,9 +4,10 @@ import Card from '.';
 import { FormCardProps } from './typings';
 import { titlelize } from '../../utils/misc';
 import FormCardDisplayer from './FormCardDisplayer';
+import Alert from '../alert';
 
 
-const FormCard: FCC<FormCardProps> = ({ name, ...cardProps }) => {
+const FormCard: FCC<FormCardProps> = ({ name, help, children, ...cardProps }) => {
   const decorator = useFormDecorator(name, {
     Displayer: (displayerProps: FormDisplayerProps) => {
       return <FormCardDisplayer {...displayerProps} name={typeof cardProps.title === 'string' ? cardProps.title : titlelize(name)} />
@@ -63,7 +64,12 @@ const FormCard: FCC<FormCardProps> = ({ name, ...cardProps }) => {
         {...cardProps}
         open={!metadata.disabled}
         onToggle={() => (metadata.disabled ? form.enable(decorator.name) : form.disable(decorator.name))}
-      />
+      >
+        <>
+          {help && <Alert kind="info" size="small" marginBottom="2xl">{help}</Alert>}
+          {children}
+        </>
+      </Card>
     </FormContext.Provider>
   );
 };

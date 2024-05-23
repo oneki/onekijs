@@ -32,7 +32,7 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
           onClose={() => setOpen(false)}
           size="large"
         >
-          <Step title="Services" key="test">
+          <Step title="Services" key="test" help="this is an help message">
           Lastname : <Input name="lastname" required={true} />
             <p>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et

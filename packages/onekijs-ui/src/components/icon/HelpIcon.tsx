@@ -5,6 +5,7 @@ import { alignItems } from '../../styles/alignment';
 import { display } from '../../styles/display';
 import { IconProps } from './typings';
 import { addClassname } from '../../utils/style';
+import { marginLeft, marginRight } from '../../styles/spacing';
 
 const IconComponent: FC<IconProps> = ({ className, onClick, style }) => {
   return (
@@ -21,9 +22,11 @@ const IconComponent: FC<IconProps> = ({ className, onClick, style }) => {
 };
 
 export default styled(IconComponent)`
-  ${({ width = '24px', height = '24px', color: cssColor = 'inherit' }) => css`
+  ${({ width = '24px', height = '24px', color: cssColor = 'inherit', marginLeft: ml = '0', marginRight: mr = '0' }) => css`
     width: ${width};
     height: ${height};
+    ${marginLeft(ml)}
+    ${marginRight(mr)}
     ${display('flex')};
     ${alignItems('center')};
     ${color(cssColor)}

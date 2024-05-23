@@ -1,9 +1,10 @@
 //#region -- system import
 import React, { FC } from 'react';
 import styled from 'styled-components';
+import { IconProps } from './typings';
 //#endregion
 
-const IconComponent: FC<React.InputHTMLAttributes<HTMLDivElement>> = ({ className }) => {
+const IconComponent: FC<IconProps> = ({ className }) => {
   return (
     <div className={className}>
       <svg className="o-icon-close-svg" viewBox="0 0 100 100">
@@ -16,6 +17,8 @@ const IconComponent: FC<React.InputHTMLAttributes<HTMLDivElement>> = ({ classNam
 const CrossIcon = styled(IconComponent)`
   width: ${(props) => props.width || '32px'};
   height: ${(props) => props.height || '32px'};
+  margin-top: ${(props) => props.marginRight || '0px'};
+  margin-left: ${(props) => props.marginLeft || '0px'};
   .o-icon-close-svg {
     display: inline-block;
     stroke-width: 0;

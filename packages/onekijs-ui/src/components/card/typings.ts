@@ -25,4 +25,5 @@ export type CardTitleProps = {
 export type FormCardProps = CardProps &
   FormDecoratorOptions & {
     name: string;
+    help?: ReactNode;
   };

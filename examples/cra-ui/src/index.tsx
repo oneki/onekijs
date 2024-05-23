@@ -24,6 +24,7 @@ import { TimerPage } from './pages/timer';
 import { TreePage } from './pages/tree';
 import { WizardPage } from './pages/wizard';
 import UiServicePage from './pages/service';
+import { AlertPage } from './pages/alert';
 
 const container = document.getElementById('root');
 const root = createRoot(container!); // createRoot(container!) if you use TypeScript
@@ -52,7 +53,7 @@ root.render(
           <Link href="/grid">Grid</Link> | <Link href="/properties">Properties</Link> |{' '}
           <Link href="/checkbox">Checkbox</Link> | <Link href="/tag">Tag</Link> | <Link href="/modal">Modal</Link> |{' '}
           <Link href="/wizard">Wizard</Link> | <Link href="/form">Form</Link> |{' '}
-          <Link href="/actionmenu">Action Menu</Link> | <Link href="/notifications">Notifications</Link> | <Link href="/timer">Timer</Link> | <Link href="/service">Service</Link>
+          <Link href="/actionmenu">Action Menu</Link> | <Link href="/notifications">Notifications</Link> | <Link href="/timer">Timer</Link> | <Link href="/service">Service</Link> | <Link href="/alert">Alert</Link>
         </div>
         <div style={{ paddingLeft: '100px', paddingRight: '100px' }}>
           <Routes>
@@ -78,6 +79,7 @@ root.render(
             <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/timer" element={<TimerPage />} />
             <Route path="/service" element={<UiServicePage />} />
+            <Route path="/alert" element={<AlertPage />} />
           </Routes>
         </div>
       </div>

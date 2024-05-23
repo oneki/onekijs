@@ -4,6 +4,7 @@ import { stroke } from '../../styles/svg';
 import { ComponentStyle } from '../../styles/typings';
 import { addClassname } from '../../utils/style';
 import { IconProps } from './typings';
+import { marginLeft, marginRight } from '../../styles/spacing';
 
 const IconComponent: FC<IconProps> = ({ className }) => {
   return (
@@ -45,10 +46,14 @@ const iconStyle: ComponentStyle<IconProps> = ({
   width: cssWidth = '16px',
   height: cssHeight = '16px',
   color: cssColor = 'primary',
+  marginLeft: ml = '0',
+  marginRight: mr = '0',
 }) => {
   return css`
     height: ${cssHeight};
     width: ${cssWidth};
+    ${marginLeft(ml)}
+    ${marginRight(mr)}
     display: inline-flex;
     align-items: center;
 

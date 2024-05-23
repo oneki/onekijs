@@ -252,6 +252,11 @@ export { default as useTableService } from './components/table/hooks/useTableSer
 export { default as useTextColumn } from './components/table/hooks/useTextColumn';
 export { default as useTextareaColumn } from './components/table/hooks/useTextareaColumn';
 
+export { default as AlertComponent } from './components/alert/components/AlertComponent';
+export { default as Alert } from './components/alert';
+export { default as alertStyle } from './components/alert/style';
+export { AlertProps } from './components/alert/typings';
+
 export { default as FormCardDisplayer } from './components/card/FormCardDisplayer';
 export { filterListStyle, tableStyle } from './components/table/style';
 export {

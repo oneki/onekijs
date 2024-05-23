@@ -4,6 +4,7 @@ import { alignItems } from '../../styles/alignment';
 import { display } from '../../styles/display';
 import { color } from '../../styles/typography';
 import { IconProps } from './typings';
+import { marginLeft, marginRight } from '../../styles/spacing';
 
 // <!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) -->
 const IconComponent: FC<IconProps> = ({ className, onClick }) => {
@@ -17,9 +18,11 @@ const IconComponent: FC<IconProps> = ({ className, onClick }) => {
 };
 
 export default styled(IconComponent)`
-  ${({ width, height, color: cssColor = 'inherit' }) => css`
+  ${({ width, height, color: cssColor = 'inherit', marginLeft: ml = '0', marginRight: mr = '0' }) => css`
     width: ${width};
     height: ${height};
+    ${marginLeft(ml)}
+    ${marginRight(mr)}
     ${display('flex')};
     ${alignItems('center')};
     ${color(cssColor)}

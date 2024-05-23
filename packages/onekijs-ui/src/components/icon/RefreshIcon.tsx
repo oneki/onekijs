@@ -4,6 +4,7 @@ import { alignItems } from '../../styles/alignment';
 import { display } from '../../styles/display';
 import { color } from '../../styles/typography';
 import { IconProps } from './typings';
+import { marginLeft, marginRight } from '../../styles/spacing';
 
 const RefreshIconComponent: FC<IconProps> = (props) => {
   return (
@@ -28,9 +29,11 @@ const RefreshIconComponent: FC<IconProps> = (props) => {
 };
 
 export default styled(RefreshIconComponent)`
-  ${({ width = '16px', height = '16px', color: cssColor = 'inherit' }) => css`
+  ${({ width = '16px', height = '16px', color: cssColor = 'inherit', marginLeft: ml = '0', marginRight: mr = '0' }) => css`
     width: ${width};
     height: ${height};
+    ${marginLeft(ml)}
+    ${marginRight(mr)}
     ${display('flex')};
     ${alignItems('center')};
     ${color(cssColor)}

@@ -40,19 +40,19 @@ export const extractValidators = (props: AnonymousObject): [AnonymousObject<Vali
   if (regexValidator) {
     validators.regex = regex(regexValidator, regexMessage);
   }
-  if (emailValidator && !isFalse(requiredValidator)) {
+  if (emailValidator && !isFalse(emailValidator)) {
     validators.email = email(emailMessage);
   }
-  if (minValidator) {
+  if (minValidator !== undefined) {
     validators.min = min(minValidator, minMessage);
   }
-  if (maxValidator) {
+  if (maxValidator !== undefined) {
     validators.max = max(maxValidator, maxMessage);
   }
-  if (minLengthValidator) {
+  if (minLengthValidator !== undefined) {
     validators.minLength = minLength(minLengthValidator, minLengthMessage);
   }
-  if (maxLengthValidator) {
+  if (maxLengthValidator !== undefined) {
     validators.maxLength = maxLength(maxLengthValidator, maxLengthMessage);
   }
   if (integerValidator && !isFalse(integerValidator)) {
