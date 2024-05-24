@@ -181,7 +181,12 @@ export const tableStyle: ComponentStyle<TableProps<any>> = ({ theme, fit = true 
       .o-table-header-title-container {
         ${borderBottomWidth(0)}
         ${paddingBottom(0)}
+        .o-helper-icon {
+          ${marginLeft('xs')}
+          ${marginTop('-2px')}
+        }
       }
+
     }
 
     .o-table-header-row-title, .o-table-header-row-filter {

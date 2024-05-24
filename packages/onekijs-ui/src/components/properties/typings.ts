@@ -18,6 +18,7 @@ export type PropertiesProps = {
 export type PropertyProps = {
   value: ReactNode;
   name: string;
+  help?: ReactNode;
   ErrorBoundaryComponent?: ComponentType<PropsWithChildren<PropertyProps>>;
 };
 
@@ -29,4 +30,4 @@ export type PropertiesContext = {
   xl?: GridSize;
 };
 
-export type PropertiesList = AnonymousObject<ReactNode>;
+export type PropertiesList = AnonymousObject<ReactNode | Partial<PropertyProps>>;

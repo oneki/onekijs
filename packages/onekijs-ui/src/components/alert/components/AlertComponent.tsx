@@ -46,7 +46,7 @@ const AlertComponent: FCC<AlertProps> = ({
     IconComponent = getDefautltIconComponent(kind);
   }
   return (
-    <div className={addClassname(`g-alert g-alert-${kind}`, className)}>
+    <div className={addClassname(`o-alert o-alert-${kind}`, className)}>
       {icon && <IconComponent width={getIconSize(size)} height={getIconSize(size)} marginRight='20px' marginLeft='20px' />}
       <div>{children}</div>
     </div>

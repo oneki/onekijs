@@ -3,6 +3,8 @@ import React, { FC } from 'react';
 import Col from '../../grid/Col';
 import Row from '../../grid/Row';
 import { GridSize } from '../../grid/typings';
+import HelpIcon from '../../icon/HelpIcon';
+import Tooltip from '../../tooltip';
 import usePropertiesContext from '../hooks/usePropertiesContext';
 import { PropertyProps } from '../typings';
 
@@ -19,8 +21,13 @@ const Property: FC<PropertyProps> = React.memo((props) => {
   });
   return (
     <Row className="o-property" gapX="10px" gapY="0px">
-      <Col size={nameSize} sm={context.sm} md={context.md} lg={context.lg} xl={context.xl} className="o-property-name">
-        {name}
+      <Col size={nameSize} sm={context.sm} md={context.md} lg={context.lg} xl={context.xl} className="o-property-key">
+      <span className="o-property-name">{name}</span>
+        {props.help && (
+          <Tooltip content={props.help} placement="top">
+            <HelpIcon />
+          </Tooltip>
+        )}
       </Col>
       <Col
         size={valueSize}

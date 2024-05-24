@@ -1,8 +1,16 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, ReactNode, useMemo } from 'react';
 import { addClassname } from '../../../utils/style';
 import { DefaultPropertiesContext } from '../hooks/usePropertiesContext';
-import { PropertiesContext, PropertiesProps } from '../typings';
+import { PropertiesContext, PropertiesProps, PropertyProps } from '../typings';
 import Property from './Property';
+
+const isReactNode = (value: ReactNode | Partial<PropertyProps>): value is ReactNode => {
+  if (value === null || value === undefined) return true;
+  if (Object.keys(value).includes('value')) {
+    return false;
+  }
+  return true;
+}
 
 const PropertiesComponent: FC<PropertiesProps> = ({
   className,
@@ -34,9 +42,13 @@ const PropertiesComponent: FC<PropertiesProps> = ({
   return (
     <DefaultPropertiesContext.Provider value={context}>
       <div className={classNames}>
-        {keys.map((key) => (
-          <PropertyComponent key={key} name={key} value={properties[key]} ErrorBoundaryComponent={ErrorBoundaryComponent} />
-        ))}
+        {keys.map((key) => {
+          const property = properties[key];
+          const value = isReactNode(property) ? property : property.value;
+          const help = isReactNode(property) ? undefined : property.help;
+          const name = isReactNode(property) ? key : property.name ?? key;
+          return <PropertyComponent key={key} name={name} value={value} help={help} ErrorBoundaryComponent={ErrorBoundaryComponent} />
+        })}
       </div>
     </DefaultPropertiesContext.Provider>
   );
