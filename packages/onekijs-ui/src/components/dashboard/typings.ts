@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { StylableProps } from '../../styles/typings';
 
 export type DashboardArea = DashboardHorizontalArea | DashboardVerticalArea | 'body' | 'none';
@@ -68,7 +68,9 @@ export type DashboardOverlayProps = React.InputHTMLAttributes<HTMLDivElement> & 
   show: boolean;
 };
 
-export type DashboardSidePanel = Omit<Required<DashboardSidePanelProps>, 'collapse' | 'floating'>;
+export type DashboardSidePanel = Omit<Required<DashboardSidePanelProps>, 'collapse' | 'floating'> & {
+  content?: ReactNode;
+};
 
 export type DashboardSidePanelProps = {
   className?: string;

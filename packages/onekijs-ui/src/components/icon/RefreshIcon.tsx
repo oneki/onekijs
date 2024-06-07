@@ -5,10 +5,11 @@ import { display } from '../../styles/display';
 import { color } from '../../styles/typography';
 import { IconProps } from './typings';
 import { marginLeft, marginRight } from '../../styles/spacing';
+import { getIconDivProps } from './util';
 
 const RefreshIconComponent: FC<IconProps> = (props) => {
   return (
-    <div {...props}>
+    <div {...getIconDivProps(props)}>
       <svg
         className="o-icon-refresh-svg"
         stroke="currentColor"

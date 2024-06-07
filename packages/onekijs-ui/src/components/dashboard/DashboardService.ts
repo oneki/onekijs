@@ -9,7 +9,7 @@ import {
   service,
   set,
 } from 'onekijs-framework';
-import React, { MutableRefObject } from 'react';
+import React, { MutableRefObject, ReactNode } from 'react';
 import { clearSelection, forceCursor, getTranslateXY } from '../../utils/dom';
 import { ResizeStep } from '../resizer/typings';
 import {
@@ -37,6 +37,11 @@ export class DashboardService extends DefaultService<DashboardState> {
   ];
 
   public refs: AnonymousObject<MutableRefObject<HTMLDivElement | null> | null | undefined> = {}
+
+  @reducer
+  clearContent(area: DashboardHorizontalArea | DashboardVerticalArea): void {
+    set<any>(this.state, `${area}.content`, undefined);
+  }
 
   @reducer
   collapse(area: DashboardArea | 'all', collapse = true): void {
@@ -337,6 +342,11 @@ export class DashboardService extends DefaultService<DashboardState> {
         }
         break;
     }
+  }
+
+  @reducer
+  setContent(area: DashboardHorizontalArea | DashboardVerticalArea, content: ReactNode): void {
+    set<any>(this.state, `${area}.content`, content);
   }
 
   setRef(area: 'left' | 'right' | 'header' | 'footer' | 'body' | 'container', ref: React.MutableRefObject<HTMLDivElement | null> | null | undefined): void  {

@@ -5,10 +5,11 @@ import { display } from '../../styles/display';
 import { color } from '../../styles/typography';
 import { IconProps } from './typings';
 import { marginLeft, marginRight } from '../../styles/spacing';
+import { getIconDivProps } from './util';
 
 const DebugIconComponent: FC<IconProps> = (props) => {
   return (
-    <div {...props}>
+    <div {...getIconDivProps(props)}>
       <svg className="o-icon-debug-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
         <path d="M3.463 12.86l-.005-.07.005.07zm7.264.69l-3.034-3.049 1.014-1.014 3.209 3.225 3.163-3.163 1.014 1.014-3.034 3.034 3.034 3.05-1.014 1.014-3.209-3.225L8.707 17.6l-1.014-1.014 3.034-3.034z" />
         <path

@@ -141,10 +141,10 @@ const dashboardHorizontalPanel = (area: DashboardHorizontalArea): FCC<DashboardH
       <StyledComponent {...state} {...props} area={area} panel={panel}>
         {props.resizable && (
           <Resizer onResize={onResize} handles={[area === 'header' ? 's' : 'n']} gap={panel?.resizerGap}>
-            {props.children}
+            {panel?.content ? <>{panel.content}</> : props.children}
           </Resizer>
         )}
-        {!props.resizable && props.children}
+        {!props.resizable && (panel?.content ? <>{panel.content}</> : props.children)}
       </StyledComponent>
     );
   };

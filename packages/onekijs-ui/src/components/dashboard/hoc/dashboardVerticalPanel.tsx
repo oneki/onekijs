@@ -144,10 +144,10 @@ const dashboardVerticalPanel = (area: DashboardVerticalArea): FCC<DashboardVerti
       <StyledComponent {...state} {...props} area={area} panel={panel}>
         {props.resizable && (
           <Resizer onResize={onResize} handles={[area === 'left' ? 'e' : 'w']}>
-            {props.children}
+            {panel?.content ? <>{panel.content}</> : props.children}
           </Resizer>
         )}
-        {!props.resizable && props.children}
+        {!props.resizable && (panel?.content ? <>{panel.content}</> : props.children)}
       </StyledComponent>
     );
   };

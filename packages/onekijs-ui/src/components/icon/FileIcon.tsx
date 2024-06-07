@@ -5,11 +5,12 @@ import { display } from '../../styles/display';
 import { addClassname } from '../../utils/style';
 import { IconProps } from './typings';
 import { marginLeft, marginRight } from '../../styles/spacing';
+import { getIconDivProps } from './util';
 
 const IconComponent: FC<IconProps> = (props) => {
   const className = addClassname('o-icon-file', props.className);
   return (
-    <div {...props} className={className}>
+    <div {...getIconDivProps(props)} className={className}>
       <svg
         className="o-icon-file-svg"
         xmlns="http://www.w3.org/2000/svg"

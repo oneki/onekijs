@@ -5,10 +5,11 @@ import { display } from '../../styles/display';
 import { color } from '../../styles/typography';
 import { IconProps } from './typings';
 import { marginLeft, marginRight } from '../../styles/spacing';
+import { getIconDivProps } from './util';
 
 const CloseIconComponent: FC<IconProps> = (props) => {
   return (
-    <div {...props}>
+    <div {...getIconDivProps(props)}>
       <svg className="o-icon-close-svg" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
         <path
           fillRule="evenodd"
