@@ -15,6 +15,7 @@ export const propertiesStyle: ComponentStyle<PropertiesProps> = ({ theme }) => {
     .o-property {
       ${paddingY(t.paddingY)}
       ${flexWrap('wrap')}
+      ${alignItems('flex-start')}
     }
     .o-property-name {
       ${fontWeight(t.fontWeight)}
