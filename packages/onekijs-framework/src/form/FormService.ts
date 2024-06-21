@@ -1289,24 +1289,34 @@ export default class FormService<T extends object = any> extends DefaultService<
         this.onValidationChange(generateUniqueId(), () => this.submit(), '', true);
         break;
       case ValidationCode.Error:
-        if (typeof this.config.onError === 'function') {
-          yield this.config.onError(fields, this.state.values);
+        try {
+          if (typeof this.config.onError === 'function') {
+            yield this.config.onError(fields, this.state.values);
+          }
         }
-        yield this.setSubmitting(false);
+        finally {
+          yield this.setSubmitting(false);
+        }
         break;
       case ValidationCode.Warning:
-        if (typeof this.config.onWarning === 'function') {
-          yield this.config.onWarning(fields, this.state.values);
-        } else if (this.state.values) {
-          yield this.config.onSubmit(this.state.values);
+        try {
+          if (typeof this.config.onWarning === 'function') {
+            yield this.config.onWarning(fields, this.state.values);
+          } else if (this.state.values) {
+            yield this.config.onSubmit(this.state.values);
+          }
+        } finally {
+          yield this.setSubmitting(false);
         }
-        yield this.setSubmitting(false);
         break;
       default:
-        if (this.state.values) {
-          yield this.config.onSubmit(this.state.values);
+        try {
+          if (this.state.values) {
+            yield this.config.onSubmit(this.state.values);
+          }
+        } finally {
+          yield this.setSubmitting(false);
         }
-        yield this.setSubmitting(false);
         break;
     }
   }
