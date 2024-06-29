@@ -12,6 +12,23 @@ const FormInputValueDisplayer: React.FC<FormFieldValueDisplayerProps> = ({ value
   return <span className="o-input-displayer-value">{value ?? ''}</span>;
 };
 
+/**
+ * `<FormInput/>` is a Input component designed to be managed by a Form.
+ * It must therefore be a nested component of a Form
+ *
+ * This component displays standard HTML input (and therefore supports all the HTML properties of an input component), but some properties are handled entirely by a form controller.
+ *   * value
+ *   * onChange
+ *   * onFocus
+ *   * onBlur
+ *   * validations
+ *   * visibility
+ *   * disabled
+ * The value is synchronized in both directions (it can be modified manually by the user or by the controller).
+ *
+ * @group FormInput
+ * @category Components
+ */
 const FormInput: FC<FormInputProps> = React.memo((props) => {
   const [fieldLayoutProps, fieldComponentProps] = useFieldLayout<InputProps>(
     Object.assign({}, props, {

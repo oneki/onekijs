@@ -21,7 +21,7 @@ const min = (min: number, message?: string): LengthValidator => {
       }
 
       if (!message) {
-        message = `Invalid value. Must contain at last ${min} element${min > 1 ? 's' : ''}`;
+        message = `Invalid value. Must contain at least ${min} element${min > 1 ? 's' : ''}`;
       }
 
       return {

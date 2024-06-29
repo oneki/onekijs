@@ -7,6 +7,7 @@ const sections: Record<string, string> = {
   "Settings": "/settings",
   "State management": "/state-management",
   "Security": "/auth",
+  "UI": "/ui"
 }
 
 const AppLayout: FC = () => {
@@ -33,7 +34,7 @@ const AppLayout: FC = () => {
             </span>
           ))}
         </div>
-        <div style={{ paddingLeft: '100px', paddingRight: '100px' }}>
+        <div style={{ paddingLeft: '20px', paddingRight: '10px' }}>
           <Outlet />
         </div>
       </div>
