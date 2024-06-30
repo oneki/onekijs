@@ -47,11 +47,13 @@ export const commentPartsToString = (comment: CommentDisplayPart[], useHtml = tr
       }
     } else if (summary.kind === 'code' && useHtml) {
       text = text.replace('```ts\n', '<pre>');
+      text = text.replace('```tsx\n', '<pre>');
       text = text.replace('```\n', '<pre>');
       text = text.replace('\n```', '</pre>');
       text = text.replace('`', '<code>');
       text = text.replace('`', '</code>');
       text = text.replace(/\n/g, '<br/>');
+      text = text.replace(/\|/g, '\\|');
     }
     return `${description}${text}`;
   }, '');

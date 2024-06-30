@@ -26,7 +26,7 @@ const FormInputValueDisplayer: React.FC<FormFieldValueDisplayerProps> = ({ value
  *   * disabled
  * The value is synchronized in both directions (it can be modified manually by the user or by the controller).
  *
- * @group FormInput
+ * @group Form
  * @category Components
  */
 const FormInput: FC<FormInputProps> = React.memo((props) => {

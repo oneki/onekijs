@@ -38,6 +38,9 @@ export class ElementParser {
 
   parse(id: number): ParsedElement | undefined {
     const indexedElement = this.indexer.elements[id];
+    if (id === 9760) {
+      console.log(indexedElement);
+    }
     if (!indexedElement) return;
     const subject = indexedElement.element;
     // Check if we have not already processed this item
@@ -111,7 +114,7 @@ export class ElementParser {
     } else {
       return element.name;
     }
-    
+
   }
 
   protected handleCallSignature(element: SignatureReflection, context: Context) {
@@ -311,7 +314,7 @@ export class ElementParser {
   protected handleArray(element: ArrayType, context: Context) {
     this.handleType(element.elementType, context);
     this.appendTypeToProp('[]', context);
-  }  
+  }
 
   protected handleIntrinsic(element: IntrinsicType, context: Context) {
     this.appendTypeToProp(element.name, context);
@@ -381,7 +384,7 @@ export class ElementParser {
         const parsedElement = this.getIndexedParsedElement(type.target);
         if (parsedElement) {
           if (context.specialType === 'element' || context.specialType === 'component') {
-            context.element.props = parsedElement.props;
+            context.element.props = (context.element.props || []).concat(parsedElement.props);
             return;
           }
           if (context.currentProp && context.currentProp.toDocument) {

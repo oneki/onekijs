@@ -13,6 +13,19 @@
         "${workspaceRoot}/packages/onekijs-api/dist",
         "/api"
       ]
+    },
+    {
+      "name": "Debug api:all",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceRoot}/packages/onekijs-api",
+      "runtimeArgs": ["-r", "ts-node/register"],
+      "args": [
+        "${workspaceRoot}/packages/onekijs-api/src/index.ts",
+        "${workspaceRoot}/../oneki.github.io/.typedoc/oneki.json",
+        "${workspaceRoot}/../oneki.github.io/docs/all-api",
+        "/all-api"
+      ]
     }
   ]
 }

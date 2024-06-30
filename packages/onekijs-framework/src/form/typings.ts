@@ -401,7 +401,7 @@ export type ValidatorsType = {
    *
    * @example
    * ```tsx
-   * <FormInput regex={/^[a-z0-9]{1,12}$/}
+   * <FormInput regex="^[a-z0-9]{1,12}$" />
    * ```
    * @remarks #important#
    */
@@ -425,8 +425,8 @@ export type ValidatorsType = {
    */
   emailMessage?: string;
   /**
-   * If it"s a single-value field, validate that the value contains at least x characters.
-   * If it"s a multi-value field, validate that at least x items have been selected.
+   * If it's a single-value field, validate that the value contains at least x characters.
+   * If it's a multi-value field, validate that at least x items have been selected.
    *
    * @remarks #important#
    */
@@ -445,8 +445,8 @@ export type ValidatorsType = {
    */
   minLengthMessage?: string;
   /**
-   * If it"s a single-value field, validate that the value contains at most x characters.
-   * If it"s a multi-value field, validate that at most x items have been selected.
+   * If it's a single-value field, validate that the value contains at most x characters.
+   * If it's a multi-value field, validate that at most x items have been selected.
    *
    * @remarks #important#
    */
@@ -465,8 +465,8 @@ export type ValidatorsType = {
    */
   maxLengthMessage?: string;
   /**
-   * If it"s a single-value field, validate that the value is greater than or equals to x.
-   * If it"s a multi-value field, validate that at least x items have been selected (minLength and min are equivalent in this case).
+   * If it's a single-value field, validate that the value is greater than or equals to x.
+   * If it's a multi-value field, validate that at least x items have been selected (minLength and min are equivalent in this case).
    *
    * @remarks #important#
    */
@@ -485,8 +485,8 @@ export type ValidatorsType = {
    */
   minMessage?: string;
   /**
-   * If it"s a single-value field, validate that the value is lesser than or equals to x.
-   * If it"s a multi-value field, validate that at most x items have been selected (maxLength and max are equivalent in this case).
+   * If it's a single-value field, validate that the value is lesser than or equals to x.
+   * If it's a multi-value field, validate that at most x items have been selected (maxLength and max are equivalent in this case).
    *
    * @remarks #important#
    */
@@ -540,7 +540,7 @@ export type ValidatorsType = {
    *     async: true
    *     validator: async (value) => {
    *        // do a request to the server
-   *        const isUnique = await asyncGet(`/check/${value});
+   *        const isUnique = await asyncGet(`/check/${value}`);
    *        return {
    *          valid: isUnique,
    *          message: isUnique ? undefined : 'Invalid value, must be unique'

@@ -1,0 +1,32 @@
+{
+  "include": ["packages/onekijs-framework/src", "packages/onekijs/src", "packages/onekijs-ui/src"],
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "module": "ESNext",
+    "lib": ["dom", "esnext"],
+    "importHelpers": true,
+    "declaration": true,
+    "sourceMap": true,
+    "rootDir": "./packages",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true,
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "paths": {
+      "*": ["packages/onekijs-framework/src/*", "packages/onekijs-framework/node_modules/*", "packages/onekijs/src/*", "packages/onekijs/node_modules/*", "packages/onekijs-ui/src/*", "packages/onekijs-ui/node_modules/*"]
+    },
+    "jsx": "react",
+    "esModuleInterop": true,
+    "allowJs": true,
+    "target": "ESNext",
+    "downlevelIteration": true,
+    "outDir": "./dist/",
+    "incremental": true,
+    "tsBuildInfoFile": "./.buildcache/tsconfig.tsbuildinfo",
+  }
+}

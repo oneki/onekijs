@@ -20,7 +20,25 @@ export class Indexer {
     this.elementsByName = {};
   }
 
-  buildIndexes(api: DeclarationReflection) {
+  populateTopApis(element: DeclarationReflection, apis: DeclarationReflection[]) {
+    if (element.groups) {
+      apis.push(element);
+    } else if (element.children) {
+      element.children.forEach((child) => {
+        this.populateTopApis(child, apis);
+      })
+    }
+  }
+
+  buildIndexes(mergedApis: DeclarationReflection) {
+    const apis: DeclarationReflection[] = [];
+    this.populateTopApis(mergedApis, apis);
+    apis.forEach((api) => {
+      this.buildApiIndexes(api);
+    })
+  }
+
+  buildApiIndexes(api: DeclarationReflection) {
     const children = api.children;
     const groups = api.groups;
     if (children) {
