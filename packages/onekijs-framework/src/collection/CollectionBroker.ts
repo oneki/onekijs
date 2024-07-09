@@ -444,17 +444,22 @@ export default class DefaultCollectionBroker<
         if (this.subscriberParams[subscriberId] === undefined) {
           this.subscriberParams[subscriberId] = this.params || {};
         }
-        (this.subscriberParams[subscriberId] as any)[key] = value;
+        (this.subscriberParams[subscriberId] as any) = Object.assign({}, this.subscriberParams[subscriberId], {
+          [key]: value
+        });
       });
       if (this.params === undefined) {
         this.params = {};
       }
       this.params[key] = value;
     } else {
+
       if (this.subscriberParams[subscriberId] === undefined) {
         this.subscriberParams[subscriberId] = this.params || {};
       }
-      (this.subscriberParams[subscriberId] as any)[key] = value;
+      (this.subscriberParams[subscriberId] as any) = Object.assign({}, this.subscriberParams[subscriberId], {
+        [key]: value
+      });
     }
     this._getSubscribers(subscriberId).forEach((s) => s.setParam(key, value));
   }
