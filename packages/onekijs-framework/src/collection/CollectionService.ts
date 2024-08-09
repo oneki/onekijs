@@ -89,6 +89,8 @@ export default class CollectionService<
 
   init(): void {
     this._initialState = this.state;
+    this.state.status = this.state.autoload ? LoadingStatus.NotInitialized : LoadingStatus.NotReady;
+
     if (this.state.filter) {
       this.state.filter = formatFilter(this.state.filter);
     }
@@ -108,7 +110,7 @@ export default class CollectionService<
 
     if (this.state.local === undefined) {
       this.state.local =
-        this.state.dataSource === undefined || Array.isArray(this.state.dataSource) || this.state.fetchOnce === true;
+        this.state.dataSource === undefined || Array.isArray(this.state.dataSource);
     }
 
     if (this.state.local && this.state.dataSource !== undefined) {
@@ -448,6 +450,23 @@ export default class CollectionService<
     return this._isFiltered(this.getQuery());
   }
 
+  /**
+   * When the collection is a remote collection and the autoload feature was not activated,
+   * an external controller can decide when the collection become active by calling the initialLoad
+   */
+  @reducer
+  initialLoad(): void {
+    if (!this.state.local && (this.state.status === LoadingStatus.NotReady || this.state.status === LoadingStatus.NotInitialized)) {
+      this.state.status = LoadingStatus.NotInitialized;
+      if (this.state.fetchOnce) {
+        this.state.local = true;
+        this.callSaga('_fetchOnce');
+      } else {
+        this.load();
+      }
+    }
+  }
+
   @reducer
   load(limit?: number, offset?: number, replace = false): void {
     limit = limit ?? this.getLimit();
@@ -710,23 +729,27 @@ export default class CollectionService<
     this.state.dataSource = url;
     this.state.url = url;
     this.state.items = undefined;
-    this.state.local = this.state.fetchOnce || false;
-    this.state.status = LoadingStatus.NotInitialized;
+    this.state.local = false;
+
     if (query === undefined) {
       query = this.getQuery();
     } else {
       this._setQuery(query);
     }
-    const nextQuery = clone(query);
-    this._clearOffset(nextQuery);
 
-    if (this.state.fetchOnce) {
-      this.callSaga('_fetchOnce');
-    } else {
-      this[dispatch]({
-        type: this[types]._fetch.actionType,
-        payload: toPayload([nextQuery, true]),
-      });
+    if (this.state.status !== LoadingStatus.NotReady) {
+      this.state.status = LoadingStatus.NotInitialized;
+      if (this.state.fetchOnce) {
+        this.state.local = true;
+        this.callSaga('_fetchOnce');
+      } else {
+        const nextQuery = clone(query);
+        this._clearOffset(nextQuery);
+        this[dispatch]({
+          type: this[types]._fetch.actionType,
+          payload: toPayload([nextQuery, true]),
+        });
+      }
     }
   }
 

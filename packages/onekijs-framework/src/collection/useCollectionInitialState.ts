@@ -41,7 +41,7 @@ const useCollectionInitialState = <T = any, I extends Item<T> = Item<T>>(
 
     return {
       adapter: options.adapter,
-      autoload: options.autoload,
+      autoload: options.autoload ?? true,
       comparator: options.comparator,
       comparators: options.comparators,
       dataKey: options.dataKey || 'data',
@@ -53,7 +53,7 @@ const useCollectionInitialState = <T = any, I extends Item<T> = Item<T>>(
       hasDataSource: dataSource !== undefined,
       hasMoreKey: options.hasMoreKey || 'has_more',
       limit: options.initialLimit,
-      local: Array.isArray(dataOrUrl) || options.fetchOnce,
+      local: Array.isArray(dataOrUrl) || dataOrUrl === undefined,
       method: options.method,
       mutateUrl: options.mutateUrl,
       onQueryError: options.onQueryError,

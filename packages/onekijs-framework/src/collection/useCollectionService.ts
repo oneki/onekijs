@@ -16,16 +16,16 @@ const useCollectionService = <
 ): [S, C] => {
   const [state, service] = useService<S, C>(ctor, initialState);
 
-  useEffect(() => {
-    if (initialState.fetchOnce) {
-      service._fetchOnce();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   if (initialState.fetchOnce) {
+  //     service._fetchOnce();
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   useEffect(() => {
     if (!isCollection(initialState.dataSource) && initialState.autoload && !initialState.local) {
-      service.load(initialState.limit, initialState.offset);
+      service.initialLoad();
     }
     return () => {
       service.destroy();
