@@ -1168,6 +1168,8 @@ export default class CollectionService<
 
     if (same && resetData && hasMore) {
       this.state.status = LoadingStatus.PartialLoaded;
+    } else if (same && resetData) {
+      this.state.status = LoadingStatus.Loaded;
     } else {
       const values = Object.values(this._uidIndex);
       // need to calculate the status as we cannot be sure that there is not another running request
