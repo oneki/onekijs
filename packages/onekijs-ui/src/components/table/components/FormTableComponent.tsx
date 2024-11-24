@@ -1,4 +1,4 @@
-import { FormValueListener, LengthValidator, useForm, useLazyRef } from 'onekijs-framework';
+import { FormValueListener, LengthValidator, useForm, useFormMetadata, useLazyRef } from 'onekijs-framework';
 import React, { useEffect, useId, useState } from 'react';
 import { addClassname } from '../../../utils/style';
 import Checkbox from '../../checkbox';
@@ -11,17 +11,19 @@ import ControllerTableComponent from './ControllerTableComponent';
 
 const DeleteRowComponent: React.FC<TableBodyCellProps> = ({ rowIndex }) => {
   const form = useForm();
-  const { tableName, minLength = 0, required } = useFormTableContext();
+  const { tableName } = useFormTableContext();
   const removeRow = () => {
-    if (rowIndex >= min) {
-      form.remove(tableName, rowIndex);
-    }
+    form.remove(tableName, rowIndex);
   };
 
-  const min = Math.max(minLength, required ? 1 : 0);
+  const metadata = useFormMetadata(tableName);
+  let disabled = false;
+  if (metadata.readOnly || (metadata.editable === false && form.config.reconfigure)) {
+    disabled = true;
+  }
 
   return (
-    <div className={`o-form-table-remove${rowIndex < min ? ' o-form-table-remove-disabled' : ''}`} onClick={removeRow}>
+    <div className={`o-form-table-remove${disabled ? ' o-form-table-remove-disabled' : ''}`} onClick={removeRow}>
       <RemoveIcon width="14px" height="14px" />
     </div>
   );

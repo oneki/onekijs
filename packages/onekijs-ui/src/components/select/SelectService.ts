@@ -37,6 +37,7 @@ class SelectService<
 
   @saga(SagaEffect.Serial)
   *check() {
+    if (!this.config?.validateValue) return;
     if (this.defaultValueLoading || (this.state.local && this.status !== LoadingStatus.Loaded)) {
       return; // this validation will be done when the data will be loaded (can be delayed due to a fetchOnce)
     }

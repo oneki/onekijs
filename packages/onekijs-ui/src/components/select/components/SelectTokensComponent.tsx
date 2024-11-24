@@ -15,13 +15,16 @@ const SelectTokensComponent = <T, I extends SelectItem<T> = SelectItem<T>>({
 
   const onEntering = (node: HTMLElement) => {
     const width = node.getBoundingClientRect().width;
-    node.style.width = '0px';
-    node.style.opacity = '0';
-    node.style.transition = 'all 150ms';
-    setTimeout(() => {
-      node.style.width = `${width}px`;
-      node.style.opacity = '1';
-    }, 0);
+    if (width) {
+      node.style.width = '0px';
+      node.style.opacity = '0';
+      node.style.transition = 'all 150ms';
+      setTimeout(() => {
+        node.style.width = `${width}px`;
+        node.style.opacity = '1';
+      }, 0);
+    }
+
   };
 
   if (tokens !== undefined) {

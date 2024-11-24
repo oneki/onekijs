@@ -26,7 +26,7 @@ import TableService from './TableService';
 export type ArrayTableProps<T = any, I extends TableItem<T> = TableItem<T>> = TableConfig<T, I> & {
   adapter?: TableItemAdapter<T>;
   columns?: TableColumn<T, I>[];
-  dataSource?: string | T[];
+  dataSource?: string | T[] | (() => T[] | Promise<T[]>);
   fetchOnce?: boolean;
   selected?: T[];
 };
@@ -331,7 +331,7 @@ export type TableProps<
   adapter?: TableItemAdapter<T>;
   controller?: CollectionProxy<T, I, S, C>;
   columns?: TableColumn<T, I>[];
-  dataSource?: string | T[];
+  dataSource?: string | T[] | (() => T[] | Promise<T[]>);
   fetchOnce?: boolean;
   selected?: T[];
 };

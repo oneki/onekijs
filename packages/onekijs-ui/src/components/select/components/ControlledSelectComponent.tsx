@@ -6,6 +6,7 @@ import {
   isCollectionFetching,
   isCollectionLoading,
   last,
+  LoadingStatus,
   Primitive,
   useEventListener,
   useIsomorphicLayoutEffect,
@@ -330,6 +331,9 @@ const ControlledSelectComponent = <
 
   const onFocus = useCallback(() => {
     if (!focus) {
+      if (controller.state.status === LoadingStatus.NotReady) {
+        controller.initialLoad();
+      }
       setFocus(true);
       if (openOnFocus && !open) {
         setOpen(true);
@@ -338,7 +342,7 @@ const ControlledSelectComponent = <
         forwardFocus();
       }
     }
-  }, [focus, forwardFocus, openOnFocus, open]);
+  }, [controller, focus, forwardFocus, openOnFocus, open]);
 
   useClickOutside(containerRef, onBlur);
 

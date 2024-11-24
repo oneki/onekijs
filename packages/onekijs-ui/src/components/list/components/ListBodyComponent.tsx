@@ -244,7 +244,7 @@ const ListBodyComponent = <T extends any = any, I extends ListItem<T> = ListItem
   const overflow = parentRef && parentRef !== bodyRef ? 'visible' : 'auto';
   if (virtualItems !== undefined) {
     if (virtualItems.length === 0) {
-      if (isCollectionInitializing(service) || service.status === LoadingStatus.Fetching) {
+      if (/*isCollectionInitializing(service) || */service.status === LoadingStatus.Fetching) {
         return null;
       }
       if (service.status === LoadingStatus.Loading) {
