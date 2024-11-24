@@ -7,7 +7,7 @@ import useSecurityContext from './useSecurityContext';
 export const secure = (
   Component: ElementType,
   validator?: (securityContext: any) => boolean,
-  options: { ErrorComponent?: ElementType; identity?: string } = {},
+  options: { ErrorComponent?: ElementType; identity?: string; LoadingComponent?: React.FC } = {},
 ): FCC<ComponentPropsWithoutRef<typeof Component>> => {
   const identity = options.identity ?? 'default';
   const SecureComponent: FCC<ComponentPropsWithoutRef<typeof Component>> = memo((props) => {
@@ -15,6 +15,7 @@ export const secure = (
     const auth = useGlobalProp(`auth.${identity}`);
     // const [error, setError] = useState(null);
     const ErrorComponent = options.ErrorComponent || DefaultAuthErrorComponent;
+    const LoadingComponent = options.LoadingComponent;
     const error = {
       code: 401,
     };
@@ -47,7 +48,7 @@ export const secure = (
         return <ErrorComponent error={error} />;
       }
     } else if (loading) {
-      return <div>Loading...</div>;
+      return LoadingComponent ? <LoadingComponent /> : <div>Loading...</div>;
     }
     return null;
   });
