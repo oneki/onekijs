@@ -66,7 +66,7 @@ const TableHeaderComponent: React.FC<TableHeaderProps> = ({ columns, className }
                 sort={sort}
                 sortable={isSortable}
                 colIndex={colIndex}
-                key={`header-cell-filter-${colIndex}`}
+                key={`header-cell-filter-${column.id}`}
               />
             );
           })}
