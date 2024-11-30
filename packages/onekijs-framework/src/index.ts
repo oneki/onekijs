@@ -70,6 +70,7 @@ export {
   LoginState,
   LogoutOptions,
   LogoutState,
+  Mfa,
   SecurePageProps,
   SecureRouteProps
 } from './auth/typings';

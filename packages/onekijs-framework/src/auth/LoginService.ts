@@ -13,7 +13,7 @@ import { sha256 } from '../utils/crypt';
 import { get } from '../utils/object';
 import { absoluteUrl } from '../utils/router';
 import AuthService from './AuthService';
-import { LoginState } from './typings';
+import { LoginState, Mfa } from './typings';
 import {
   generateCodeChallenge,
   generateCodeVerifier,
@@ -50,6 +50,17 @@ export default class LoginService extends DefaultLocalService<LoginState> {
   }
 
   /**
+   * Inform the user if there is a loading task
+   *
+   * @param {boolean} loading
+   */
+
+  @reducer
+  setMfa(mfa: Mfa): void {
+    this.state.mfa = mfa;
+  }
+
+  /**
    * Inform the user if there is an error
    *
    * @param {object} error
@@ -72,104 +83,6 @@ export default class LoginService extends DefaultLocalService<LoginState> {
     this.state.error = undefined;
   }
 
-  /**
-   * Submit the login form
-   *
-   * @param action:
-   *    - username: the value from the username field
-   *    - password: the value from the password field
-   *    - rememberMe: the value from the rememberMe checkbox
-   *    - idpName: name of the IDP (as found in the settings)
-   *    - onError: callback for catching possible errors
-   * @param context:
-   *    - router: an OnekiJS router
-   *    - settings: the full settings object passed to the application
-   */
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  @saga(SagaEffect.Latest)
-  *formLogin(data: AnonymousObject, idpName?: string, onError?: ErrorCallback, onSuccess?: SuccessCallback) {
-    const { settings } = this.context;
-    try {
-      // forward to reducer to set the loading flag to true
-      yield this.setLoading(true);
-
-      // build the IDP configuration from the settings and some default values
-      const idp = getIdp(settings, idpName);
-      const identity = idp.identity ?? 'default';
-
-      // clear last login info
-      yield this.authService.clear(undefined, undefined, identity, idp.name);
-
-      // will contain the result of the submit
-      let response: unknown;
-
-      if (typeof idp.loginEndpoint === 'function') {
-        // if the user specifies a function as loginEndpoint, we delegate to
-        // this function the task of submitting the form
-        response = yield idp.loginEndpoint(data, idp, this.context);
-      } else {
-        // create the submit request
-        const method = idp.loginMethod || 'POST';
-        const usernameKey = idp.usernameKey || 'username';
-        const passwordKey = idp.passwordKey || 'password';
-        const rememberMeKey = idp.rememberMeKey || 'rememberMe';
-        const contentType = idp.loginContentType || 'application/json';
-        let url = idp.loginEndpoint;
-        if (!url) {
-          throw new DefaultBasicError(`Invalid loginEndpoint for IDP ${idp.name}`);
-        }
-        let body;
-
-        if (method === 'GET') {
-          url += `?${usernameKey}=${data.username}&${passwordKey}=${data.password}&${rememberMeKey}=${data.rememberMe}`;
-        } else {
-          body = {
-            [usernameKey]: data.username,
-            [passwordKey]: data.password,
-            [rememberMeKey]: data.rememberMe,
-          };
-        }
-
-        response = yield asyncHttp(absoluteUrl(url, get(settings, 'server.baseUrl')), method, body, {
-          headers: {
-            'Content-Type': contentType,
-          },
-        });
-      }
-
-      // try to parse the token and the security context from the response
-      let token = null,
-        securityContext = null;
-      if (typeof idp.callback === 'function') {
-        // when the user specifies a function as the callback, we delegate to this
-        // function the task of parsing the token and the security context from
-        // the response
-        [token, securityContext] = yield idp.callback(response, idp, this.context);
-      } else if (idp.callback === 'token') {
-        // when the callback is set to "token", the response is the token
-        token = response;
-      } else if (idp.callback === 'securityContext') {
-        // when the callback is set to "securityContext", the response is the
-        // security context
-        securityContext = response;
-      }
-      yield this.successLogin(token, securityContext, idpName, onError, onSuccess);
-    } catch (e) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Form login error', e);
-      }
-      yield this.onError(e as BasicError);
-      if (onError) {
-        // the caller is not an async or generator function and manages error
-        // via a callback
-        yield onError(e as BasicError);
-      } else {
-        // the caller is an async or generator function and manages error
-        // via a try/catch
-        throw e;
-      }
-    }
-  }
   /**
    * Redirect the user to an external login page
    *
@@ -441,6 +354,218 @@ export default class LoginService extends DefaultLocalService<LoginState> {
       }
     }
   }
+
+/**
+   * Submit the login form
+   *
+   * @param data:
+   *    - username: the value from the username field
+   *    - password: the value from the password field
+   *    - rememberMe: the value from the rememberMe checkbox
+   * @param idpName: name of the IDP (as found in the settings)
+   * @param onError: a callback called if there is any error
+   * @param onSuccess: a callback called after a successful response
+   */
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  @saga(SagaEffect.Latest)
+  *formLogin(data: AnonymousObject, idpName?: string, onError?: ErrorCallback, onSuccess?: SuccessCallback) {
+    const { settings } = this.context;
+    try {
+      // forward to reducer to set the loading flag to true
+      yield this.setLoading(true);
+
+      // build the IDP configuration from the settings and some default values
+      const idp = getIdp(settings, idpName);
+      const identity = idp.identity ?? 'default';
+
+      // clear last login info
+      yield this.authService.clear(undefined, undefined, identity, idp.name);
+
+      // will contain the result of the submit
+      let response: unknown;
+
+      if (typeof idp.loginEndpoint === 'function') {
+        // if the user specifies a function as loginEndpoint, we delegate to
+        // this function the task of submitting the form
+        response = yield idp.loginEndpoint(data, idp, this.context);
+      } else {
+        // create the submit request
+        const method = idp.loginMethod || 'POST';
+        const usernameKey = idp.usernameKey || 'username';
+        const passwordKey = idp.passwordKey || 'password';
+        const rememberMeKey = idp.rememberMeKey || 'rememberMe';
+        const contentType = idp.loginContentType || 'application/json';
+        let url = idp.loginEndpoint;
+        if (!url) {
+          throw new DefaultBasicError(`Invalid loginEndpoint for IDP ${idp.name}`);
+        }
+        let body;
+
+        if (method === 'GET') {
+          url += `?${usernameKey}=${data.username}&${passwordKey}=${data.password}&${rememberMeKey}=${data.rememberMe}`;
+        } else {
+          body = {
+            [usernameKey]: data.username,
+            [passwordKey]: data.password,
+            [rememberMeKey]: data.rememberMe,
+          };
+        }
+
+        response = yield asyncHttp(absoluteUrl(url, get(settings, 'server.baseUrl')), method, body, {
+          headers: {
+            'Content-Type': contentType,
+          },
+        });
+      }
+
+      // We first check if an additional step is required to ask the user a TOTP
+      let mfa: Mfa = { required: false };
+      if (typeof idp.mfa === 'function') {
+        yield idp.mfa(response, idp, this.context);
+      } else if (idp.mfa) {
+        mfa = idp.mfa;
+      } else {
+        mfa = {
+          required: get(response, 'mfa_required', false),
+          token: get(response, 'mfa_token'),
+          totpSecret: get(response, 'totp_secret'),
+          user: data.username,
+        }
+      }
+
+      if (mfa.required) {
+        if (!mfa.user) {
+          mfa.user = data.username;
+        }
+        // we have to add an additional step (ask the TOTP to the user)
+        // if totp_secret is set, it means that the user haven't yet configured his MFA
+        yield this.setMfa(mfa);
+      } else {
+        yield this.formLoginResponse(response, idpName, onError, onSuccess);
+      }
+
+    } catch (e) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Form login error', e);
+      }
+      yield this.onError(e as BasicError);
+      if (onError) {
+        // the caller is not an async or generator function and manages error
+        // via a callback
+        yield onError(e as BasicError);
+      } else {
+        // the caller is an async or generator function and manages error
+        // via a try/catch
+        throw e;
+      }
+    }
+  }
+
+/**
+   * Submit the login form
+   *
+   * @param response: response from the server
+   * @param idpName: name of the IDP (as found in the settings)
+   * @param onError: a callback called if there is any error
+   * @param onSuccess: a callback called after a successful response
+   */
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  @saga(SagaEffect.Latest)
+  *formLoginResponse(response: any, idpName?: string, onError?: ErrorCallback, onSuccess?: SuccessCallback) {
+    const { settings } = this.context;
+
+    // forward to reducer to set the loading flag to true
+    yield this.setLoading(true);
+
+    // build the IDP configuration from the settings and some default values
+    const idp = getIdp(settings, idpName);
+
+    // it's the final step (either after an MFA call or directly after a username/password call)
+    // try to parse the token and the security context from the response
+    let token = null,
+      securityContext = null;
+    if (typeof idp.callback === 'function') {
+      // when the user specifies a function as the callback, we delegate to this
+      // function the task of parsing the token and the security context from
+      // the response
+      [token, securityContext] = yield idp.callback(response, idp, this.context);
+    } else if (idp.callback === 'token') {
+      // when the callback is set to "token", the response is the token
+      token = response;
+    } else if (idp.callback === 'securityContext') {
+      // when the callback is set to "securityContext", the response is the
+      // security context
+      securityContext = response;
+    }
+    yield this.successLogin(token, securityContext, idpName, onError, onSuccess);
+
+  }
+
+/**
+   * Verify a MFA TOTP
+   *
+   * @param data:
+   *    - totp: the value of the TOTP
+   * @param idpName: name of the IDP (as found in the settings)
+   * @param onError: a callback called if there is any error
+   * @param onSuccess: a callback called after a successful response
+   */
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  @saga(SagaEffect.Latest)
+  *verifyTotp(data: AnonymousObject, idpName?: string, onError?: ErrorCallback, onSuccess?: SuccessCallback) {
+    const { settings } = this.context;
+    try {
+      // forward to reducer to set the loading flag to true
+      yield this.setLoading(true);
+
+      // build the IDP configuration from the settings and some default values
+      const idp = getIdp(settings, idpName);
+
+      // will contain the result of the submit
+      let response: unknown;
+
+      if (typeof idp.totpEndpoint === 'function') {
+        // if the user specifies a function as loginEndpoint, we delegate to
+        // this function the task of submitting the form
+        response = yield idp.totpEndpoint(data, idp, this.context);
+      } else {
+        // create the submit request
+        let url = idp.totpEndpoint;
+        if (!url) {
+          throw new DefaultBasicError(`Invalid totpEndpoint for IDP ${idp.name}`);
+        }
+
+        const body = {
+          token: data.token ?? get(this.state.mfa, 'token'),
+          totp: data.totp,
+        };
+
+        response = yield asyncHttp(absoluteUrl(url, get(settings, 'server.baseUrl')), 'POST', body, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+      }
+
+      yield this.formLoginResponse(response, idpName, onError, onSuccess);
+
+    } catch (e) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Form login error', e);
+      }
+      yield this.onError(e as BasicError);
+      if (onError) {
+        // the caller is not an async or generator function and manages error
+        // via a callback
+        yield onError(e as BasicError);
+      } else {
+        // the caller is an async or generator function and manages error
+        // via a try/catch
+        throw e;
+      }
+    }
+  }
+
   /**
    * Save the token and the security context
    *

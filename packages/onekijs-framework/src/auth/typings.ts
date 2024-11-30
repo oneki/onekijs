@@ -54,6 +54,13 @@ export enum IdpMethod {
   Post = 'POST',
 }
 
+export interface Mfa {
+  required: boolean;
+  token?: string;
+  totpSecret?: string;
+  user?: string;
+}
+
 export interface IdpSettings extends AnonymousObject {
   authorizeEndpoint?: string | ((params: AnonymousObject, idp: Idp, context: AppContext) => string | Promise<string>);
   callback?: 'token' | 'securityContext' | ((response: any, idp: Idp, context: AppContext) => [any?, AnonymousObject?]);
@@ -79,6 +86,7 @@ export interface IdpSettings extends AnonymousObject {
   logoutCallbackRoute?: string;
   logoutEndpoint?: string | ((idp: Idp, context: AppContext) => string);
   logoutRoute?: string;
+  mfa?: Mfa | ((response: any, Idp: Idp, context: AppContext) => Mfa);
   name?: string;
   nonce?: boolean;
   oauth2?: boolean;
@@ -94,8 +102,9 @@ export interface IdpSettings extends AnonymousObject {
   responseType?: IdpResponseType;
   scope?: string;
   state?: boolean;
-  type?: 'oidc_browser' | 'oidc_server' | 'form' | 'external' | 'oauth2_browser' | 'oauth2_server';
   tokenEndpoint?: string | ((grant_type: string, idp: Idp, context: AppContext) => string);
+  totpEndpoint?: string | ((data: AnonymousObject, idp: Idp, context: AppContext) => unknown);
+  type?: 'oidc_browser' | 'oidc_server' | 'form' | 'external' | 'oauth2_browser' | 'oauth2_server';
   userinfoEndpoint?: string | ((idp: Idp, context: AppContext) => string);
   validate?: boolean;
 }
@@ -138,6 +147,7 @@ export interface LogoutOptions {
 export interface LoginState extends State {
   loading?: boolean;
   error?: BasicError;
+  mfa?: Mfa;
 }
 
 export interface LogoutState {

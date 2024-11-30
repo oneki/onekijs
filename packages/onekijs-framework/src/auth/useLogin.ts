@@ -6,7 +6,7 @@ import useNotificationService from '../notification/useNotificationService';
 import { AnyFunction } from '../types/core';
 import { AnonymousObject } from '../types/object';
 import LoginService from './LoginService';
-import { LoginOptions, LoginState } from './typings';
+import { Mfa, LoginOptions, LoginState } from './typings';
 
 /**
  * The **useLogin** hooks instanciates a login service
@@ -39,10 +39,14 @@ const useLogin = (
    */
   boolean,
   /**
-   * A function to submit the credentials to the server.
+   * A function to submit the credentials or the MFA (depending on the step) to the server.
    * Mainly used for Form based authentication
    */
   AnyFunction,
+  /**
+   * A MFA object indicating if an additional step is required to ask a TOTP to the user
+   */
+  Mfa | undefined,
 ] => {
   // create the local login service
   const [state, service] = useLocalService(LoginService, {
@@ -74,6 +78,16 @@ const useLogin = (
     [service, idpName, onError, onSuccess],
   );
 
+  // build the submit method to verify the MFA code
+  const verifyTotp = useCallback(
+    (data?: AnonymousObject) => {
+      return service.verifyTotp(Object.assign({}, data), idpName, onError, onSuccess);
+    },
+    [service, idpName, onError, onSuccess],
+  );
+
+  const isMfaStep = state.mfa?.required ? true : false;
+
   useEffect(() => {
     if (callback) {
       // call the external login callback saga
@@ -84,7 +98,7 @@ const useLogin = (
     }
   }, [service, idpName, onError, onSuccess, callback]);
 
-  return [state.error, state.loading || false, submit];
+  return [state.error, state.loading || false, isMfaStep ? submit : verifyTotp, state.mfa];
 };
 
 // alias
