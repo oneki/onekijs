@@ -428,10 +428,12 @@ export default class LoginService extends DefaultLocalService<LoginState> {
         mfa = {
           required: get(response, 'mfa_required', false),
           token: get(response, 'mfa_token'),
+          token_type: get(response, 'token_type'),
           totpSecret: get(response, 'totp_secret'),
           user: data.username,
         }
       }
+
 
       if (mfa.required) {
         if (!mfa.user) {
@@ -459,6 +461,7 @@ export default class LoginService extends DefaultLocalService<LoginState> {
         throw e;
       }
     }
+    yield this.setLoading(false);
   }
 
 /**
@@ -515,9 +518,6 @@ export default class LoginService extends DefaultLocalService<LoginState> {
   *verifyTotp(data: AnonymousObject, idpName?: string, onError?: ErrorCallback, onSuccess?: SuccessCallback) {
     const { settings } = this.context;
     try {
-      // forward to reducer to set the loading flag to true
-      yield this.setLoading(true);
-
       // build the IDP configuration from the settings and some default values
       const idp = getIdp(settings, idpName);
 
@@ -536,13 +536,15 @@ export default class LoginService extends DefaultLocalService<LoginState> {
         }
 
         const body = {
-          token: data.token ?? get(this.state.mfa, 'token'),
           totp: data.totp,
         };
 
+        const token_type = get(this.state.mfa, 'token_type');
+
         response = yield asyncHttp(absoluteUrl(url, get(settings, 'server.baseUrl')), 'POST', body, {
           headers: {
-            'Content-Type': 'application/json',
+            'content-type': 'application/json',
+            'authorization': `${(token_type) ? `${token_type} ` : '' }${data.token ?? get(this.state.mfa, 'token')}`,
           },
         });
       }

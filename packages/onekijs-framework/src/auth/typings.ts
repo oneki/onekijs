@@ -57,6 +57,7 @@ export enum IdpMethod {
 export interface Mfa {
   required: boolean;
   token?: string;
+  token_type?: string;
   totpSecret?: string;
   user?: string;
 }

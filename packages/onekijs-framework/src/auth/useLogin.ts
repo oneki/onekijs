@@ -98,7 +98,7 @@ const useLogin = (
     }
   }, [service, idpName, onError, onSuccess, callback]);
 
-  return [state.error, state.loading || false, isMfaStep ? submit : verifyTotp, state.mfa];
+  return [state.error, state.loading || false, isMfaStep ? verifyTotp : submit, state.mfa];
 };
 
 // alias
