@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.20.0 (2024-12-07)
+
+**Note:** Version bump only for package cra-examples
+
+
+
+
+
 ## [0.19.30](https://github.com/oneki/onekijs/compare/v0.19.29...v0.19.30) (2024-11-27)
 
 **Note:** Version bump only for package cra-examples
