@@ -165,9 +165,12 @@ export default class DefaultCollectionBroker<
   addSubscriber(subscriberId: string, subscriber: C): void {
     if (!this.subscribers[subscriberId]) {
       this.subscribers[subscriberId] = subscriber;
-      const initialData = this.getData(subscriberId);
       const initialUrl = this.getUrl(subscriberId);
       const initialQuery = this.getInitialQuery(subscriberId);
+      let initialData = undefined;
+      if (!initialUrl) {
+        initialData = this.getData(subscriberId);
+      }
       subscriber.onSubscribe(initialData, initialUrl, initialQuery);
     }
   }
@@ -489,7 +492,7 @@ export default class DefaultCollectionBroker<
     if (query) {
       this._setQuery(query);
     }
-
+    console.log(this._getSubscribers(subscriberId));
     this._getSubscribers(subscriberId).forEach((s) => s.setUrl(url, query));
   }
 
