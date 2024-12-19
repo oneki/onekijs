@@ -7,11 +7,13 @@ import FormCardDisplayer from './FormCardDisplayer';
 import Alert from '../alert';
 
 
-const FormCard: FCC<FormCardProps> = ({ name, help, children, ...cardProps }) => {
+const FormCard: FCC<FormCardProps> = ({ name, help, children, visible, disabled, ...cardProps }) => {
   const decorator = useFormDecorator(name, {
     Displayer: (displayerProps: FormDisplayerProps) => {
       return <FormCardDisplayer {...displayerProps} name={typeof cardProps.title === 'string' ? cardProps.title : titlelize(name)} />
     },
+    visible,
+    disabled,
    });
   const form = useForm();
   const metadata = useFormMetadata(decorator.name);
