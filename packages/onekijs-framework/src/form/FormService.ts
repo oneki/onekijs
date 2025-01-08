@@ -1253,7 +1253,7 @@ export default class FormService<T extends object = any> extends DefaultService<
       const nextValue = values[key as NestedKeyOf<T>] as PathType<T, NestedKeyOf<T>>;
 
       if (Array.isArray(currentValue) && Array.isArray(nextValue) && currentValue.length > nextValue.length) {
-        for (let i = nextValue.length; i < currentValue.length; i++) {
+        for (let i = currentValue.length-1; i >= nextValue.length; i--) {
           this.remove(key as NestedKeyOf<T>, i, false);
         }
       }

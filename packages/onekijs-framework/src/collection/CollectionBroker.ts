@@ -492,7 +492,6 @@ export default class DefaultCollectionBroker<
     if (query) {
       this._setQuery(query);
     }
-    console.log(this._getSubscribers(subscriberId));
     this._getSubscribers(subscriberId).forEach((s) => s.setUrl(url, query));
   }
 
