@@ -1257,7 +1257,6 @@ export default class FormService<T extends object = any> extends DefaultService<
           this.remove(key as NestedKeyOf<T>, i, false);
         }
       }
-
       set(this.state.values, key as NestedKeyOf<T>, nextValue);
       this._getSubWatchs(key as NestedKeyOf<T>).forEach((key) => this.pendingDispatch.valueChange.add(key));
     });

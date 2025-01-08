@@ -156,7 +156,9 @@ class SelectService<
     let isValid = false;
     if (!this.state.items || !this.state.items.find((i) => i?.uid === item.uid)) {
       query = Object.assign({}, query, { search: item.text });
-      if (this.state.local) {
+      const local = this.state.fetchOnce ? this.status === LoadingStatus.Loaded : this.state.local;
+
+      if (local) {
         const queryEngine = this.state.queryEngine || this._execute.bind(this);
         const result: I[] = yield queryEngine(
           this._db || [],
@@ -189,6 +191,7 @@ class SelectService<
     } else {
       isValid = true;
     }
+
     return valid === isValid ? item : undefined;
   }
 
