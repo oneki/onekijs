@@ -37,6 +37,7 @@ export { default as DashboardOverlay, dashboardOverlayStyle } from './components
 export { default as DashboardRight } from './components/dashboard/components/DashboardRight';
 export { default as DashboardToggler } from './components/dashboard/components/DashboardToggler';
 export { default as useDashboard } from './components/dashboard/hooks/useDashboard';
+export { default as useDashboardController } from './components/dashboard/hooks/useDashboardController';
 export { default as RefreshIcon } from './components/icon/RefreshIcon';
 export {
   useDashboardHorizontalPanel,

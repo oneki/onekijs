@@ -1,5 +1,7 @@
 import React, { ReactNode } from 'react';
 import { StylableProps } from '../../styles/typings';
+import { DashboardService } from './DashboardService';
+
 
 export type DashboardArea = DashboardHorizontalArea | DashboardVerticalArea | 'body' | 'none';
 
@@ -57,11 +59,14 @@ type DashboardHorizontalProps = {
   minHeight?: string | 0;
 };
 
-export type DashboardHorizontalPanelProps = DashboardSidePanelProps & DashboardHorizontalProps;
+export type DashboardHorizontalPanelProps = DashboardSidePanelProps & DashboardHorizontalProps & {
+  area?: DashboardHorizontalArea;
+};
 
 export type DashboardProps = StylableProps & {
   ContainerComponent?: React.FC<DashboardContainerProps>;
   OverlayComponent?: React.FC<DashboardOverlayProps>;
+  controller?: DashboardService;
 };
 
 export type DashboardOverlayProps = React.InputHTMLAttributes<HTMLDivElement> & {
@@ -123,4 +128,6 @@ type DashboardVerticalProps = {
   width?: string | 0;
 };
 
-export type DashboardVerticalPanelProps = DashboardSidePanelProps & DashboardVerticalProps;
+export type DashboardVerticalPanelProps = DashboardSidePanelProps & DashboardVerticalProps & {
+  area?: DashboardVerticalArea;
+};
