@@ -16,6 +16,8 @@ export const getDashboardPanelLength = (
 ): string | 0 => {
   if (!panel || (panel[getFloatingKey(size)] && panel[getCollapseKey(size)])) return 0;
 
+
+
   const panelCollapseLength =
     type === 'width'
       ? (panel as DashboardVerticalPanel)?.collapseWidth
