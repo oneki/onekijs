@@ -25,7 +25,9 @@ const getTranslateY = (size: DashboardSize, props: DashboardVerticalPanelCompone
     translate = getWorkspacePanelLength('height', size, props.header);
   }
 
-  return translate;
+  //return translate;
+  console.log(props.area, "translateX", translate);
+  return 0;
 };
 
 const getTranslateX = (size: DashboardSize, props: DashboardVerticalPanelComponentProps): string | 0 => {
@@ -41,30 +43,34 @@ const getTranslateX = (size: DashboardSize, props: DashboardVerticalPanelCompone
     }
   }
 
-  return translate;
+  // return translate;
+  console.log(props.area, "translateY", translate);
+  return 0;
 };
 
 const getHeight = (size: DashboardSize, props: DashboardVerticalPanelComponentProps): string | 0 => {
-  let height = '100vh';
-  if (props.panel) {
-    // if the panel is not in the first row, we need to remove the size of the header panel
-    if (!isAreaInRow('first', props.panel.area, props.areas)) {
-      const headerHeight = getWorkspacePanelLength('height', size, props.header);
-      if (headerHeight !== 0) {
-        height = `${height} - ${headerHeight}`;
-      }
-    }
+  // let height = '100vh';
+  // console.log(props.panel);
+  // if (props.panel) {
+  //   // if the panel is not in the first row, we need to remove the size of the header panel
+  //   if (!isAreaInRow('first', props.panel.area, props.areas)) {
+  //     const headerHeight = getWorkspacePanelLength('height', size, props.header);
+  //     if (headerHeight !== 0) {
+  //       height = `${height} - ${headerHeight}`;
+  //     }
+  //   }
 
-    // if the panel is not in the last row, we need to remove the size of the right panel
-    if (!isAreaInRow('last', props.panel.area, props.areas)) {
-      const footerHeight = getWorkspacePanelLength('height', size, props.footer);
-      if (footerHeight !== 0) {
-        height = `${height} - ${footerHeight}`;
-      }
-    }
-  }
+  //   // if the panel is not in the last row, we need to remove the size of the right panel
+  //   if (!isAreaInRow('last', props.panel.area, props.areas)) {
+  //     const footerHeight = getWorkspacePanelLength('height', size, props.footer);
+  //     if (footerHeight !== 0) {
+  //       height = `${height} - ${footerHeight}`;
+  //     }
+  //   }
+  // }
 
-  return height === '100vh' ? height : `calc(${height})`;
+  // return height === '100vh' ? height : `calc(${height})`;
+  return 'auto';
 };
 
 const Component: React.FC<DashboardVerticalPanelComponentProps> = (props) => {
@@ -105,11 +111,10 @@ const style: ComponentStyle<DashboardVerticalPanelComponentProps> = (props) => {
   const t = props.theme.dashboard[props.area];
   return css`
     ${backgroundColor(t.bgColor)}
-    grid-area: ${props.area};
     width: ${getDashboardPanelLength('width', 'small', props.panel)};
     height: ${getHeight('small', props)};
     transform: translate(${getTranslateX('small', props)}, ${getTranslateY('small', props)});
-    transition: transform 0.3s, width 0.3s, height 0.3s;
+    transition: transform 0.3s;
     ${props.panel && props.panel[getFloatingKey('small')] ? 'z-index: 1001;' : 'auto;'}
     @media only screen and (min-width: 768px) {
       width: ${getDashboardPanelLength('width', 'medium', props.panel)};
@@ -139,6 +144,8 @@ const dashboardVerticalPanel = (area: DashboardVerticalArea): FCC<DashboardVerti
     const onResize = (step: ResizeStep, nextWidth: number) => {
       service.resizeWidth(area, nextWidth, step);
     };
+
+
 
     return (
       <StyledComponent {...state} {...props} area={area} panel={panel}>

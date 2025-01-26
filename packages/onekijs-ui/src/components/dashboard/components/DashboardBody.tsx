@@ -83,22 +83,22 @@ export const getBodyLength = (
 // };
 
 const getTranslateX = (size: DashboardSize, props: DashboardBodyComponentProps): string | 0 => {
-  const panel = props.left;
-  if (panel) {
-    return panel[getFloatingKey(size)]
-      ? getDashboardPanelLength('width', size, panel) // actual size of the panel
-      : getWorkspacePanelLength('width', size, panel); // size of the panel on the workspace (if floating, the workspace panel size is 0)
-  }
+  // const panel = props.left;
+  // if (panel) {
+  //   return panel[getFloatingKey(size)]
+  //     ? getDashboardPanelLength('width', size, panel) // actual size of the panel
+  //     : getWorkspacePanelLength('width', size, panel); // size of the panel on the workspace (if floating, the workspace panel size is 0)
+  // }
   return 0;
 };
 
 const getTranslateY = (size: DashboardSize, props: DashboardBodyComponentProps): string | 0 => {
-  const panel = props.header;
-  if (panel) {
-    return panel[getFloatingKey(size)]
-      ? getDashboardPanelLength('height', size, panel) // actual size of the panel
-      : getWorkspacePanelLength('height', size, panel); // size of the panel on the workspace (if floating, the workspace panel size is 0)
-  }
+  // const panel = props.header;
+  // if (panel) {
+  //   return panel[getFloatingKey(size)]
+  //     ? getDashboardPanelLength('height', size, panel) // actual size of the panel
+  //     : getWorkspacePanelLength('height', size, panel); // size of the panel on the workspace (if floating, the workspace panel size is 0)
+  // }
   return 0;
 };
 
@@ -106,21 +106,14 @@ const style: ComponentStyle<DashboardBodyComponentProps> = (props) => {
   const t = props.theme.dashboard.body;
   return css`
     ${backgroundColor(t.bgColor)}
-    grid-area: body;
-    width: ${() => getBodyLength('width', 'small', props)};
-    height: ${() => getBodyLength('height', 'small', props)};
     overflow-x: auto;
     overflow-y: scroll;
     transition: ${() => (props.panel ? 'transform 0.3s, width 0.3s, height 0.3s' : 'none')};
     transform: translate(${() => getTranslateX('small', props)}, ${() => getTranslateY('small', props)});
     @media only screen and (min-width: 768px) {
-      width: ${() => getBodyLength('width', 'medium', props)};
-      height: ${() => getBodyLength('height', 'medium', props)};
       transform: translate(${() => getTranslateX('medium', props)}, ${() => getTranslateY('medium', props)});
     }
     @media only screen and (min-width: 992px) {
-      width: ${() => getBodyLength('width', 'large', props)};
-      height: ${() => getBodyLength('height', 'large', props)};
       transform: translate(${() => getTranslateX('large', props)}, ${() => getTranslateY('large', props)});
     }
   `;

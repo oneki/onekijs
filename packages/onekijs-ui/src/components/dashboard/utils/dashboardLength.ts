@@ -24,9 +24,11 @@ export const getDashboardPanelLength = (
   const panelLength =
     type === 'width' ? (panel as DashboardVerticalPanel)?.width : (panel as DashboardHorizontalPanel)?.height;
 
-  if (!panel[getFloatingKey(size)] && (size === 'small' || isTrue(panel[getCollapseKey(size)]))) {
-    return parseFloat(`${panelCollapseLength}`) < parseFloat(`${panelLength}`) ? panelCollapseLength : panelLength;
-  }
+  console.log("panel", panel, panelCollapseLength, panelLength);
+
+  // if (!panel[getFloatingKey(size)] && (size === 'small' || isTrue(panel[getCollapseKey(size)]))) {
+  //   return parseFloat(`${panelCollapseLength}`) < parseFloat(`${panelLength}`) ? panelCollapseLength : panelLength;
+  // }
   return panelLength;
 };
 

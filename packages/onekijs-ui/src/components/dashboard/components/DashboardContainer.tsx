@@ -110,6 +110,7 @@ class Matrix {
       width: this._count(type, 'line', line, col),
       height: this._count(type, 'col', line, col),
       component: this._getComponent(type),
+      element: this.elements[type],
     };
   }
 
@@ -158,13 +159,13 @@ class Matrix {
 
 const DashboardContainerComponent: FCC<DashboardContainerProps> = (props) => {
   const ref = useRef<HTMLDivElement | null>(null);
-  // useEffect(() => {
-  //   props.onInit(ref);
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  //   return () => {
-  //     props.onDestroy();
-  //   };
-  // }, []);
+  useEffect(() => {
+    props.onInit(ref);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      props.onDestroy();
+    };
+  }, []);
 
   const matrix = new Matrix();
   Children.toArray(props.children).forEach((child) => {
@@ -212,26 +213,52 @@ const HeaderArea: React.FC<DashboardPanelProps> = ({ matrix, line, col }) => {
 
   if (area.width === 1) {
     const area11 = matrix.getArea(1, 1);
-    return (
-      <div className="o-dashboard-vertical-layer" key="hvl">
-        <div className="o-dashboard-header" key="header">
-          Header
+    const area02 = matrix.getArea(0, 2);
+    const area20 = matrix.getArea(2, 0);
+    const area22 = matrix.getArea(2, 2);
+    const area21 = matrix.getArea(2, 1);
+
+    if (area22.type != 'right' && area20.type != 'footer') {
+      return (
+        <div className="o-dashboard-vertical-layer" key="hvl">
+          <div className="o-dashboard-horizontal-layer" key="hhl">
+            <div className="o-dashboard-vertical-layer" key="hvl2">
+              {area.element}
+              <area11.component matrix={matrix} line={1} col={1} key="area11" />
+            </div>
+            <area02.component matrix={matrix} line={0} col={2} key="area02" />
+          </div>
+          <area21.component matrix={matrix} line={2} col={1} key="area21" />
         </div>
-        <area11.component matrix={matrix} line={1} col={1} key="area11" />
-      </div>
-    );
+      );
+    } else if (area22.type != 'right') {
+      return (
+        <div className="o-dashboard-horizontal-layer" key="hhl">
+          <div className="o-dashboard-vertical-layer" key="hvl">
+            {area.element}
+            <area11.component matrix={matrix} line={1} col={1} key="area11" />
+          </div>
+          <area02.component matrix={matrix} line={0} col={2} key="area02" />
+        </div>
+      );
+    } else {
+      return (
+        <div className="o-dashboard-vertical-layer" key="hvl">
+          {area.element}
+          <area11.component matrix={matrix} line={1} col={1} key="area11" />
+        </div>
+      );
+    }
   } else if (area.width === 2) {
     if (line === 0 && col === 0) {
       const area22 = matrix.getArea(2, 2);
       const area10 = matrix.getArea(1, 0);
-      const area02 = matrix.getArea(2, 2);
+      const area02 = matrix.getArea(0, 2);
       if (area22.type === 'right') {
         return (
           <div className="o-dashboard-horizontal-layer" key="hhl">
             <div className="o-dashboard-vertical-layer" key="hvl">
-              <div className="o-dashboard-header" key="header">
-                Header
-              </div>
+              {area.element}
               <area10.component matrix={matrix} line={1} col={0} key="area10" />
             </div>
             <area02.component matrix={matrix} line={0} col={2} key="area02" />
@@ -243,9 +270,7 @@ const HeaderArea: React.FC<DashboardPanelProps> = ({ matrix, line, col }) => {
           <div className="o-dashboard-vertical-layer" key="hvl">
             <div className="o-dashboard-horizontal-layer" key="hhl">
               <div className="o-dashboard-vertical-layer" key="hvl2">
-                <div className="o-dashboard-header" key="header">
-                  Header
-                </div>
+                {area.element}
                 <area10.component matrix={matrix} line={1} col={0} key="area10" />
               </div>
               <area02.component matrix={matrix} line={0} col={2} key="area02" />
@@ -258,9 +283,7 @@ const HeaderArea: React.FC<DashboardPanelProps> = ({ matrix, line, col }) => {
       const area11 = matrix.getArea(1, 1);
       return (
         <div className="o-dashboard-vertical-layer" key="hvl">
-          <div className="o-dashboard-header" key="header">
-            Header
-          </div>
+          {area.element}
           <area11.component matrix={matrix} line={1} col={1} key="area11" />
         </div>
       );
@@ -271,9 +294,7 @@ const HeaderArea: React.FC<DashboardPanelProps> = ({ matrix, line, col }) => {
     const area22 = matrix.getArea(2, 2);
     return (
       <div className="o-dashboard-vertical-layer" key="hvl">
-        <div className="o-dashboard-header" key="header">
-          Header
-        </div>
+        {area.element}
         <area10.component matrix={matrix} line={1} col={0} key="area10" />
         {area20.type === 'footer' && area22.type === 'footer' && (
           <area20.component matrix={matrix} line={2} col={0} key="area20" />
@@ -289,14 +310,45 @@ const LeftArea: React.FC<DashboardPanelProps> = ({ matrix, line, col }) => {
 
   if (area.height === 1) {
     const area11 = matrix.getArea(1, 1);
-    return (
-      <div className="o-dashboard-horizontal-layer" key="lhl">
-        <div className="o-dashboard-left" key="left">
-          Left
+    const area12 = matrix.getArea(1, 2);
+    const area22 = matrix.getArea(2, 2);
+    const area20 = matrix.getArea(2, 0);
+    const area02 = matrix.getArea(0, 2);
+
+    if (area22.type != 'footer' && area02.type != 'right') {
+      return (
+        <div className="o-dashboard-horizontal-layer" key="lhl">
+          <div className="o-dashboard-vertical-layer" key="lvl">
+            <div className="o-dashboard-horizontal-layer" key="lhl2">
+              {area.element}
+              <area11.component matrix={matrix} line={1} col={1} key="area11" />
+            </div>
+            <area20.component matrix={matrix} line={2} col={0} key="area20" />
+          </div>
+          <area12.component matrix={matrix} line={1} col={2} key="area12" />
         </div>
-        <area11.component matrix={matrix} line={1} col={1} key="area11" />
-      </div>
-    );
+      );
+    } else if (area22.type != 'footer') {
+      return (
+        <div className="o-dashboard-vertical-layer" key="lvl">
+          <div className="o-dashboard-horizontal-layer" key="lhl">
+            {area.element}
+            <area11.component matrix={matrix} line={1} col={1} key="area11" />
+          </div>
+          <area20.component matrix={matrix} line={2} col={0} key="area20" />
+        </div>
+      );
+    } else {
+      return (
+        <div className="o-dashboard-horizontal-layer" key="lhl">
+          {area.element}
+          <area11.component matrix={matrix} line={1} col={1} key="area11" />
+        </div>
+      );
+    }
+
+
+
   } else if (area.height === 2) {
     if (line === 0 && col === 0) {
       const area22 = matrix.getArea(2, 2);
@@ -306,9 +358,7 @@ const LeftArea: React.FC<DashboardPanelProps> = ({ matrix, line, col }) => {
         return (
           <div className="o-dashboard-vertical-layer" key="lvl">
             <div className="o-dashboard-horizontal-layer" key="lhl">
-              <div className="o-dashboard-left" key="left">
-                Left
-              </div>
+              {area.element}
               <area01.component matrix={matrix} line={0} col={1} key="area01" />
             </div>
             <area20.component matrix={matrix} line={2} col={0} key="area20" />
@@ -320,9 +370,7 @@ const LeftArea: React.FC<DashboardPanelProps> = ({ matrix, line, col }) => {
           <div className="o-dashboard-horizontal-layer" key="lhl">
             <div className="o-dashboard-vertical-layer" key="lvl">
               <div className="o-dashboard-horizontal-layer" key="lhl2">
-                <div className="o-dashboard-left" key="left">
-                  Left
-                </div>
+                {area.element}
                 <area01.component matrix={matrix} line={0} col={1} key="area01" />
               </div>
               <area20.component matrix={matrix} line={2} col={0} key="area20" />
@@ -335,9 +383,7 @@ const LeftArea: React.FC<DashboardPanelProps> = ({ matrix, line, col }) => {
       const area11 = matrix.getArea(1, 1);
       return (
         <div className="o-dashboard-horizontal-layer" key="lhl">
-          <div className="o-dashboard-left" key="left">
-            Left
-          </div>
+          {area.element}
           <area11.component matrix={matrix} line={1} col={1} key="area11" />
         </div>
       );
@@ -349,9 +395,7 @@ const LeftArea: React.FC<DashboardPanelProps> = ({ matrix, line, col }) => {
 
     return (
       <div className="o-dashboard-horizontal-layer" key="lhl">
-        <div className="o-dashboard-left" key="left">
-          Left
-        </div>
+        {area.element}
         <area01.component matrix={matrix} line={0} col={1} key="area01" />
         {area02.type === 'right' && area22.type === 'right' && (
           <area02.component matrix={matrix} line={0} col={2} key="area02" />
@@ -362,72 +406,46 @@ const LeftArea: React.FC<DashboardPanelProps> = ({ matrix, line, col }) => {
   return null;
 };
 
-const RightArea: React.FC<DashboardPanelProps> = () => {
-  return (
-    <div className="o-dashboard-right" key="right">
-      Right
-    </div>
-  );
+const RightArea: React.FC<DashboardPanelProps> = ({ matrix, line, col }) => {
+  const area = matrix.getArea(line, col);
+  return area.element;
 };
 
-const FooterArea: React.FC<DashboardPanelProps> = () => {
-  return (
-    <div className="o-dashboard-footer" key="footer">
-      Footer
-    </div>
-  );
+const FooterArea: React.FC<DashboardPanelProps> = ({ matrix, line, col } ) => {
+  const area = matrix.getArea(line, col);
+  return area.element;
 };
 
 const BodyArea: React.FC<DashboardPanelProps> = ({ matrix, line, col }) => {
   const area = matrix.getArea(line, col);
-  console.log("body", area, line, col);
+
   if (area.width === 3) {
     if (area.height === 3) {
-      return (
-        <div className="o-dashboard-body" key="body">
-          Body
-        </div>
-      );
+      return area.element;
     } else if (area.height === 2) {
       if (line === 1) {
-        return (
-          <div className="o-dashboard-body" key="body">
-            Body
-          </div>
-        );
+        return area.element;
       } else if (line === 0) {
         const area20 = matrix.getArea(2, 0);
         return (
           <div className="o-dashboard-vertical-layer" key="bvl">
-            <div className="o-dashboard-body" key="body">
-              Body
-            </div>
+            {area.element}
             <area20.component matrix={matrix} line={2} col={0} key="area20" />
           </div>
         );
       }
     } else if (area.height === 1) {
-      return (
-        <div className="o-dashboard-body" key="body">
-          Body
-        </div>
-      );
+      return area.element;
     }
   } else if (area.width === 2) {
     if (area.height === 3) {
       if (col === 1) {
-        return (
-          <div className="o-dashboard-body" key="body">
-            Body
-          </div>
-        );
+        return area.element;
       } else if (col === 0) {
         const area02 = matrix.getArea(0, 2);
         return (
           <div className="o-dashboard-horizontal-layer" key="bhl">
-            <div className="o-dashboard-body" key="body">
-              Body
-            </div>
+            {area.element}
             <area02.component matrix={matrix} line={0} col={2} key="area02" />
           </div>
         );
@@ -441,9 +459,7 @@ const BodyArea: React.FC<DashboardPanelProps> = ({ matrix, line, col }) => {
           return (
             <div className="o-dashboard-horizontal-layer" key="bhl">
               <div className="o-dashboard-vertical-layer" key="bvl">
-                <div className="o-dashboard-body" key="body">
-                  Body
-                </div>
+                {area.element}
                 <area20.component matrix={matrix} line={2} col={0} key="area20" />
               </div>
               <area02.component matrix={matrix} line={0} col={2} key="area02" />
@@ -453,9 +469,7 @@ const BodyArea: React.FC<DashboardPanelProps> = ({ matrix, line, col }) => {
           return (
             <div className="o-dashboard-vertical-layer" key="bvl">
               <div className="o-dashboard-horizontal-layer" key="bhl">
-                <div className="o-dashboard-body" key="body">
-                  Body
-                </div>
+                {area.element}
                 <area02.component matrix={matrix} line={0} col={2} key="area02" />
               </div>
               <area20.component matrix={matrix} line={2} col={0} key="area20" />
@@ -466,9 +480,7 @@ const BodyArea: React.FC<DashboardPanelProps> = ({ matrix, line, col }) => {
         const area21 = matrix.getArea(2, 1);
         return (
           <div className="o-dashboard-vertical-layer" key="bvl">
-            <div className="o-dashboard-body" key="body">
-              Body
-            </div>
+            {area.element}
             <area21.component matrix={matrix} line={2} col={1} key="area21" />
           </div>
         );
@@ -479,35 +491,23 @@ const BodyArea: React.FC<DashboardPanelProps> = ({ matrix, line, col }) => {
         if (area02.type !== 'right') {
           return (
             <div className="o-dashboard-horizontal-layer" key="bhl">
-              <div className="o-dashboard-body" key="body">
-                Body
-              </div>
+              {area.element}
               <area12.component matrix={matrix} line={1} col={2} key="area12" />
             </div>
           );
         } else {
-          return (
-            <div className="o-dashboard-body" key="body">
-              Body
-            </div>
-          );
+          return area.element;
         }
 
       } else if (line === 1 && col === 1) {
-        return (
-          <div className="o-dashboard-body" key="body">
-            Body
-          </div>
-        );
+        return area.element;
       }
     } else if (area.height === 1) {
       if (line === 1 && col === 0) {
         const area12 = matrix.getArea(1, 2);
         return (
           <div className="o-dashboard-horizontal-layer" key="bhl">
-            <div className="o-dashboard-body" key="body">
-              Body
-            </div>
+            {area.element}
             <area12.component matrix={matrix} line={1} col={2} key="area12" />
           </div>
         );
@@ -517,28 +517,18 @@ const BodyArea: React.FC<DashboardPanelProps> = ({ matrix, line, col }) => {
         if (area20.type === 'left') {
           return (
             <div className="o-dashboard-vertical-layer" key="bvl">
-              <div className="o-dashboard-body" key="body">
-                Body
-              </div>
+              {area.element}
               <area21.component matrix={matrix} line={2} col={1} key="area21" />
             </div>
           );
         } else {
-          return (
-            <div className="o-dashboard-body" key="body">
-              Body
-            </div>
-          );
+          area.element;
         }
       }
     }
   } else if (area.width === 1) {
     if (area.height === 3) {
-      return (
-        <div className="o-dashboard-body" key="body">
-          Body
-        </div>
-      );
+      return area.element;
     } else if (area.height === 2) {
       if (line === 0 && col === 1) {
         const area02 = matrix.getArea(0, 2);
@@ -549,18 +539,12 @@ const BodyArea: React.FC<DashboardPanelProps> = ({ matrix, line, col }) => {
           if (area20.type === 'left') {
             return (
               <div className="o-dashboard-vertical-layer" key="bvl">
-                <div className="o-dashboard-body" key="body">
-                  Body
-                </div>
+                {area.element}
                 <area21.component matrix={matrix} line={2} col={1} key="area21" />
               </div>
             );
           } else {
-            return (
-              <div className="o-dashboard-body" key="body">
-                Body
-              </div>
-            );
+            return area.element;
           }
 
         } else {
@@ -568,20 +552,16 @@ const BodyArea: React.FC<DashboardPanelProps> = ({ matrix, line, col }) => {
             return (
               <div className="o-dashboard-vertical-layer" key="bvl">
                 <div className="o-dashboard-horizontal-layer" key="bhl">
-                  <div className="o-dashboard-body" key="body">
-                    Body
-                  </div>
+                  {area.element}
                   <area02.component matrix={matrix} line={0} col={2} key="area02" />
                 </div>
-                <area21.component matrix={matrix} line={2} col={12} key="area21" />
+                <area21.component matrix={matrix} line={2} col={1} key="area21" />
               </div>
             );
           } else {
             return (
               <div className="o-dashboard-horizontal-layer" key="bhl">
-                <div className="o-dashboard-body" key="body">
-                  Body
-                </div>
+                {area.element}
                 <area02.component matrix={matrix} line={0} col={2} key="area02" />
               </div>
             );
@@ -590,11 +570,7 @@ const BodyArea: React.FC<DashboardPanelProps> = ({ matrix, line, col }) => {
         }
 
       } else if (line === 1 && col === 1) {
-        return (
-          <div className="o-dashboard-body" key="body">
-            Body
-          </div>
-        );
+        return area.element;
       }
     } else if (area.height === 1) {
       const area02 = matrix.getArea(0, 2);
@@ -602,45 +578,42 @@ const BodyArea: React.FC<DashboardPanelProps> = ({ matrix, line, col }) => {
       const area22 = matrix.getArea(2, 2);
       const area21 = matrix.getArea(2, 1);
       const area12 = matrix.getArea(1, 2);
-      if (area22.type === 'right' && area20.type === 'left') {
+      if (area02.type !== 'right' && area22.type === 'right' && area20.type === 'left') {
         return (
           <div className="o-dashboard-horizontal-layer" key="bhl">
             <div className="o-dashboard-vertical-layer" key="bvl">
-              <div className="o-dashboard-body" key="body">
-                Body
-              </div>
+              {area.element}
               <area21.component matrix={matrix} line={2} col={1} key="area21" />
             </div>
             <area12.component matrix={matrix} line={1} col={2} key="area12" />
           </div>
         );
-      } else if (area22.type === 'footer' && area20.type === 'left') {
+      } else if (area02.type !== 'right' && area22.type === 'footer' && area20.type === 'left') {
         return (
           <div className="o-dashboard-vertical-layer" key="bvl">
             <div className="o-dashboard-horizontal-layer" key="bhl">
-              <div className="o-dashboard-body" key="body">
-                Body
-              </div>
+              {area.element}
               <area21.component matrix={matrix} line={2} col={1} key="area21" />
             </div>
             <area12.component matrix={matrix} line={1} col={2} key="area12" />
           </div>
         );
-      } else if (area02.type != 'right') {
+      } else if (area02.type != 'right' && area22.type != 'right') {
         return (
           <div className="o-dashboard-horizontal-layer" key="bhl">
-            <div className="o-dashboard-body" key="body">
-              Body
-            </div>
+            {area.element}
             <area12.component matrix={matrix} line={1} col={2} key="area012" />
           </div>
         );
-      } else {
+      } else if (area20.type != 'footer' && area22.type != 'footer') {
         return (
-          <div className="o-dashboard-body" key="body">
-            Body
+          <div className="o-dashboard-vertical-layer" key="bhvl">
+            {area.element}
+            <area21.component matrix={matrix} line={2} col={1} key="area012" />
           </div>
         );
+      } else {
+        return area.element;
       }
     }
   }

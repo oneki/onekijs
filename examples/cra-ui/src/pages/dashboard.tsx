@@ -23,7 +23,6 @@ const Header = styled.div`
   ${color('white')}
   ${display('flex')}
   ${alignItems('center')}
-  ${height('full')}
   ${paddingLeft('sm')}
 `;
 
@@ -34,9 +33,37 @@ export const DashboardPageComponent: React.FC<StylableProps> = ({ className }) =
     <div className={className}>
       <Dashboard controller={controller}>
 
+      <DashboardHeader
+          resizable
+          collapseSmall={true}
+          collapseMedium={true}
+          collapseLarge={false}
+          floatingSmall={false}
+        >
+          <Header>
+            <MenuIcon color="white" width="16px" height="16px" onClick={() => controller.toggle('left')} />
+            <span>Header</span>
+          </Header>
+
+        </DashboardHeader>
+
+        <DashboardRight resizable collapse={true} floating={false}>
+          Right
+        </DashboardRight>
+
+      <DashboardFooter resizable collapse={true} floating={false}>
+          Footer
+        </DashboardFooter>
 
 
 
+
+
+
+
+      <DashboardLeft resizable>
+          <div style={{backgroundColor: 'darkblue', height: '100%'}}>Left</div>
+        </DashboardLeft>
 
 
 
@@ -49,32 +76,16 @@ export const DashboardPageComponent: React.FC<StylableProps> = ({ className }) =
         <button onClick={expandRight}>Expand right</button> */}
         </DashboardBody>
 
-        <DashboardRight collapse={true} floating={false}>
-          Right
-        </DashboardRight>
-
-        <DashboardHeader
-          resizable
-          collapseSmall={true}
-          collapseMedium={true}
-          collapseLarge={false}
-          floatingSmall={false}
-        >
-          <Header>
-            <MenuIcon color="white" width="16px" height="16px" onClick={() => controller.toggle('left')} />
-          </Header>
-        </DashboardHeader>
 
 
 
 
-        <DashboardLeft>
-          <div style={{ height: '5000px' }}>Left</div>
-        </DashboardLeft>
 
-        <DashboardFooter collapse={true} floating={true} resizable>
-          Footer
-        </DashboardFooter>
+
+
+
+
+
 
       </Dashboard>
     </div>

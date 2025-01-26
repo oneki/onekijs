@@ -24,7 +24,9 @@ const getTranslateX = (size: DashboardSize, props: DashboardHorizontalPanelCompo
     translate = getWorkspacePanelLength('width', size, props.left);
   }
 
-  return translate;
+  // return translate;
+  console.log(props.area, "translateX", translate);
+  return 0;
 };
 
 const getTranslateY = (size: DashboardSize, props: DashboardHorizontalPanelComponentProps): string | 0 => {
@@ -38,30 +40,32 @@ const getTranslateY = (size: DashboardSize, props: DashboardHorizontalPanelCompo
       translate = `-${height}`;
     }
   }
-
-  return translate;
+  console.log(props.area, "translateY", translate);
+  // return translate;
+  return 0;
 };
 
 const getWidth = (size: DashboardSize, props: DashboardHorizontalPanelComponentProps): string | 0 => {
-  let width = '100%';
+  // let width = '100%';
 
-  // if the panel is not in the first column, we need to remove the size of the left panel
-  if (props.panel && !isAreaInColumn('first', props.area, props.areas)) {
-    const leftWidth = getWorkspacePanelLength('width', size, props.left);
-    if (leftWidth !== 0) {
-      width = `${width} - ${leftWidth}`;
-    }
-  }
+  // // if the panel is not in the first column, we need to remove the size of the left panel
+  // if (props.panel && !isAreaInColumn('first', props.area, props.areas)) {
+  //   const leftWidth = getWorkspacePanelLength('width', size, props.left);
+  //   if (leftWidth !== 0) {
+  //     width = `${width} - ${leftWidth}`;
+  //   }
+  // }
 
-  // if the panel is not in the last column, we need to remove the size of the right panel
-  if (props.panel && !isAreaInColumn('last', props.area, props.areas)) {
-    const rightWidth = getWorkspacePanelLength('width', size, props.right);
-    if (rightWidth !== 0) {
-      width = `${width} - ${rightWidth}`;
-    }
-  }
+  // // if the panel is not in the last column, we need to remove the size of the right panel
+  // if (props.panel && !isAreaInColumn('last', props.area, props.areas)) {
+  //   const rightWidth = getWorkspacePanelLength('width', size, props.right);
+  //   if (rightWidth !== 0) {
+  //     width = `${width} - ${rightWidth}`;
+  //   }
+  // }
 
-  return width === '100%' ? width : `calc(${width})`;
+  // return width === '100%' ? width : `calc(${width})`;
+  return 'auto';
 };
 
 const Component: React.FC<DashboardHorizontalPanelComponentProps> = (props) => {
@@ -102,10 +106,10 @@ Component.displayName = 'DashboardHorizontalPanel';
 
 const style: ComponentStyle<DashboardHorizontalPanelComponentProps> = (props) => {
   return css`
-    grid-area: ${props.area};
     height: ${getDashboardPanelLength('height', 'small', props.panel)};
     width: ${getWidth('small', props)};
     transform: translate(${getTranslateX('small', props)}, ${getTranslateY('small', props)});
+    transition: transform 0.3s;
     ${props.panel ? 'transition: transform 0.3s, width 0.3s, height 0.3s;' : 'transition: none'}
     ${props.panel && props.panel[getFloatingKey('small')] ? 'z-index: 1001;' : 'auto;'}
     @media only screen and (min-width: 768px) {

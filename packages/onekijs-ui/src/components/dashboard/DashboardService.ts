@@ -6,6 +6,8 @@ import {
   isMobile,
   isTrue,
   reducer,
+  saga,
+  SagaEffect,
   service,
   set,
 } from 'onekijs-framework';
@@ -123,9 +125,9 @@ export class DashboardService extends DefaultService<DashboardState> {
       floatingLarge: props.floatingLarge ?? props.floating ?? false,
       floatingMedium: props.floatingMedium ?? props.floating ?? false,
       floatingSmall: props.floatingSmall ?? props.floating ?? true,
-      minHeight: props.minHeight ?? 0,
-      height: props.height ?? '70px',
-      maxHeight: props.maxHeight ?? 0,
+      minHeight: props.minHeight ?? 'none',
+      height: props.height ?? 'auto',
+      maxHeight: props.maxHeight ?? 'none',
       resizable: props.resizable || false,
       resizerGap: props.resizerGap || 0,
     };
@@ -159,189 +161,210 @@ export class DashboardService extends DefaultService<DashboardState> {
   }
 
   @reducer
-  resizeHeight(area: DashboardHorizontalArea, nextHeight: number, step: ResizeStep): void {
-    const panel = this.state[area];
-    const panelRef = this.refs[area];
+  setPanelHeight(area: DashboardHorizontalArea, height: number): void {
+    const panel = this.state[area]
     if (panel) {
-      const maxHeight = parseInt(`${panel.maxHeight}`);
-      const minHeight = parseInt(`${panel.minHeight}`);
-      if (maxHeight > 0 && nextHeight > maxHeight) return;
-      if (minHeight > 0 && nextHeight < minHeight) return;
-    }
-    const left = this.state.left;
-    const right = this.state.right;
-    const body = this.state.body;
-    const header = this.state.header;
-    const footer = this.state.footer;
-    const elements: AnonymousObject<HTMLDivElement | undefined> = {};
-    elements['panel'] = panel !== undefined && panelRef && panelRef.current !== null ? panelRef.current : undefined;
-    elements['body'] = body !== undefined && this.refs.body && this.refs.body.current !== null ? this.refs.body.current : undefined;
-    // only touch the left panel if it's at the footer of the header panel or at the header of the footer panel
-    elements['left'] =
-      isAreaInColumn('first', area, this.state.areas) && left !== undefined && this.refs.left && this.refs.left.current !== null
-        ? this.refs.left.current
-        : undefined;
-    // only touch the right panel if it's at the footer of the header panel or at the header of the footer panel
-    elements['right'] =
-      isAreaInColumn('last', area, this.state.areas) && right !== undefined && this.refs.right && this.refs.right.current !== null
-        ? this.refs.right.current
-        : undefined;
-
-    elements['header'] = header !== undefined && this.refs.header && this.refs.header.current !== null ? this.refs.header.current : undefined;
-    elements['footer'] = footer !== undefined && this.refs.footer && this.refs.footer.current !== null ? this.refs.footer.current : undefined;
-
-    switch (step) {
-      case 'start':
-        // deactivate transition animation during the resize
-        clearSelection();
-        forceCursor('n-resize');
-        ['panel', 'body', 'left', 'right'].forEach((_area) => {
-          const el = elements[_area];
-          if (el) el.style.transition = 'none';
-        });
-        break;
-      case 'stop':
-        forceCursor(undefined);
-        // set the new height in the panel object. Will be used by styled to set the correct height via CSS
-        if (panel) panel.height = `${nextHeight}px`;
-        // remove any style added during the resize and let styled managed height and height via CSS
-        ['panel', 'body', 'left', 'right'].forEach((_area) => {
-          const el = elements[_area];
-          if (el) {
-            ['transition', 'height', 'transform'].forEach((k) => {
-              el.style[k as any] = '';
-            });
-          }
-        });
-        break;
-      case 'run':
-        if (elements['panel']) {
-          // force the new height via the style
-          elements['panel'].style.height = `${nextHeight}px`;
-          // if the resized panel is the footer one, we must translateX the panel in addition of changing the size
-          if (area === 'footer') {
-            const translate = getTranslateXY(elements['panel']);
-            elements['panel'].style.transform = `translate(${translate.x}px,-${nextHeight}px)`;
-          }
-
-          (['left', 'right', 'body'] as DashboardArea[]).forEach((_area) => {
-            let height = '100%';
-            const el = elements[_area];
-            if (el) {
-              if (!isAreaInColumn('first', _area, this.state.areas) && header && elements['header']) {
-                // remove the header height
-                height = `${height} - ${header[this._getFloatingKey()] ? 0 : elements['header'].offsetHeight}px`;
-              }
-
-              if (!isAreaInColumn('last', _area, this.state.areas) && footer && elements['footer']) {
-                // remove the header height
-                height = `${height} - ${footer[this._getFloatingKey()] ? 0 : elements['footer'].offsetHeight}px`;
-              }
-
-              el.style.height = height === '100%' ? height : `calc(${height})`;
-              // If the resized panel is the header one, we must translateX non vertical panels in addition of changing the size
-              if (area === 'header') {
-                const translate = getTranslateXY(el);
-                el.style.transform = `translate(${translate.x}px,${nextHeight}px)`;
-              }
-            }
-          });
-        }
-        break;
+      panel.height = `${height}px`;
     }
   }
 
+  @saga(SagaEffect.Throttle, 100)
+  *resizeHeight(area: DashboardHorizontalArea, nextHeight: number, step: ResizeStep) {
+    yield this.setPanelHeight(area, nextHeight);
+
+    // const panel = this.state[area];
+    // const panelRef = this.refs[area];
+    // if (panel) {
+    //   const maxHeight = parseInt(`${panel.maxHeight}`);
+    //   const minHeight = parseInt(`${panel.minHeight}`);
+    //   if (maxHeight > 0 && nextHeight > maxHeight) return;
+    //   if (minHeight > 0 && nextHeight < minHeight) return;
+    // }
+    // const left = this.state.left;
+    // const right = this.state.right;
+    // const body = this.state.body;
+    // const header = this.state.header;
+    // const footer = this.state.footer;
+    // const elements: AnonymousObject<HTMLDivElement | undefined> = {};
+    // elements['panel'] = panel !== undefined && panelRef && panelRef.current !== null ? panelRef.current : undefined;
+    // elements['body'] = body !== undefined && this.refs.body && this.refs.body.current !== null ? this.refs.body.current : undefined;
+    // // only touch the left panel if it's at the footer of the header panel or at the header of the footer panel
+    // elements['left'] =
+    //   isAreaInColumn('first', area, this.state.areas) && left !== undefined && this.refs.left && this.refs.left.current !== null
+    //     ? this.refs.left.current
+    //     : undefined;
+    // // only touch the right panel if it's at the footer of the header panel or at the header of the footer panel
+    // elements['right'] =
+    //   isAreaInColumn('last', area, this.state.areas) && right !== undefined && this.refs.right && this.refs.right.current !== null
+    //     ? this.refs.right.current
+    //     : undefined;
+
+    // elements['header'] = header !== undefined && this.refs.header && this.refs.header.current !== null ? this.refs.header.current : undefined;
+    // elements['footer'] = footer !== undefined && this.refs.footer && this.refs.footer.current !== null ? this.refs.footer.current : undefined;
+
+    // switch (step) {
+    //   case 'start':
+    //     // deactivate transition animation during the resize
+    //     clearSelection();
+    //     forceCursor('n-resize');
+    //     ['panel', 'body', 'left', 'right'].forEach((_area) => {
+    //       const el = elements[_area];
+    //       if (el) el.style.transition = 'none';
+    //     });
+    //     break;
+    //   case 'stop':
+    //     forceCursor(undefined);
+    //     // set the new height in the panel object. Will be used by styled to set the correct height via CSS
+    //     if (panel) panel.height = `${nextHeight}px`;
+    //     // remove any style added during the resize and let styled managed height and height via CSS
+    //     ['panel', 'body', 'left', 'right'].forEach((_area) => {
+    //       const el = elements[_area];
+    //       if (el) {
+    //         ['transition', 'height', 'transform'].forEach((k) => {
+    //           el.style[k as any] = '';
+    //         });
+    //       }
+    //     });
+    //     break;
+    //   case 'run':
+    //     if (elements['panel']) {
+    //       // force the new height via the style
+    //       elements['panel'].style.height = `${nextHeight}px`;
+    //       // if the resized panel is the footer one, we must translateX the panel in addition of changing the size
+    //       if (area === 'footer') {
+    //         const translate = getTranslateXY(elements['panel']);
+    //         elements['panel'].style.transform = `translate(${translate.x}px,-${nextHeight}px)`;
+    //       }
+
+    //       (['left', 'right', 'body'] as DashboardArea[]).forEach((_area) => {
+    //         let height = '100%';
+    //         const el = elements[_area];
+    //         if (el) {
+    //           if (!isAreaInColumn('first', _area, this.state.areas) && header && elements['header']) {
+    //             // remove the header height
+    //             height = `${height} - ${header[this._getFloatingKey()] ? 0 : elements['header'].offsetHeight}px`;
+    //           }
+
+    //           if (!isAreaInColumn('last', _area, this.state.areas) && footer && elements['footer']) {
+    //             // remove the header height
+    //             height = `${height} - ${footer[this._getFloatingKey()] ? 0 : elements['footer'].offsetHeight}px`;
+    //           }
+
+    //           el.style.height = height === '100%' ? height : `calc(${height})`;
+    //           // If the resized panel is the header one, we must translateX non vertical panels in addition of changing the size
+    //           if (area === 'header') {
+    //             const translate = getTranslateXY(el);
+    //             el.style.transform = `translate(${translate.x}px,${nextHeight}px)`;
+    //           }
+    //         }
+    //       });
+    //     }
+    //     break;
+    // }
+  }
+
+
   @reducer
-  resizeWidth(area: DashboardVerticalArea, nextWidth: number, step: ResizeStep): void {
-    const panel = this.state[area];
-    const panelRef = this.refs[area];
+  setPanelWidth(area: DashboardVerticalArea, width: number): void {
+    const panel = this.state[area]
     if (panel) {
-      const maxWidth = parseInt(`${panel.maxWidth}`);
-      const minWidth = parseInt(`${panel.minWidth}`);
-      if (maxWidth > 0 && nextWidth > maxWidth) return;
-      if (minWidth > 0 && nextWidth < minWidth) return;
+      panel.width = `${width}px`;
     }
-    const header = this.state.header;
-    const footer = this.state.footer;
-    const body = this.state.body;
-    const left = this.state.left;
-    const right = this.state.right;
-    const elements: AnonymousObject<HTMLDivElement | undefined> = {};
-    elements['panel'] = panel !== undefined && panelRef && panelRef.current !== null ? panelRef.current : undefined;
-    elements['body'] = body !== undefined && this.refs.body && this.refs.body.current !== null ? this.refs.body.current : undefined;
-    // only touch the header panel if it's at the right of the left panel or at the left of the right panel
-    elements['header'] =
-      isAreaInRow('first', area, this.state.areas) && header !== undefined && this.refs.header && this.refs.header.current !== null
-        ? this.refs.header.current
-        : undefined;
-    // only touch the footer panel if it's at the right of the left panel or at the left of the right panel
-    elements['footer'] =
-      isAreaInRow('last', area, this.state.areas) && footer !== undefined && this.refs.footer && this.refs.footer.current !== null
-        ? this.refs.footer.current
-        : undefined;
+  }
 
-    elements['left'] = left !== undefined && this.refs.left && this.refs.left.current !== null ? this.refs.left.current : undefined;
-    elements['right'] = right !== undefined && this.refs.right && this.refs.right.current !== null ? this.refs.right.current : undefined;
 
-    switch (step) {
-      case 'start':
-        clearSelection();
-        forceCursor('e-resize');
-        // deactivate transition animation during the resize
-        ['panel', 'body', 'header', 'footer'].forEach((_area) => {
-          const el = elements[_area];
-          if (el) el.style.transition = 'none';
-        });
-        break;
-      case 'stop':
-        forceCursor(undefined);
-        // set the new width in the panel object. Will be used by styled to set the correct width via CSS
-        if (panel) panel.width = `${nextWidth}px`;
-        // remove any style added during the resize and let styled managed width and height via CSS
-        ['panel', 'body', 'header', 'footer'].forEach((_area) => {
-          const el = elements[_area];
-          if (el) {
-            ['transition', 'width', 'transform'].forEach((k) => {
-              el.style[k as any] = '';
-            });
-          }
-        });
-        break;
-      case 'run':
-        if (elements['panel']) {
-          // force the new width via the style
-          elements['panel'].style.width = `${nextWidth}px`;
-          // if the resized panel is the right one, we must translateX the panel in addition of changing the size
-          if (area === 'right') {
-            const translate = getTranslateXY(elements['panel']);
-            elements['panel'].style.transform = `translate(-${nextWidth}px,${translate.y}px)`;
-          }
+  @saga(SagaEffect.Throttle, 50)
+  *resizeWidth(area: DashboardVerticalArea, nextWidth: number, step: ResizeStep) {
+    yield this.setPanelWidth(area, nextWidth);
+    // const panel = this.state[area];
+    // const panelRef = this.refs[area];
+    // if (panel) {
+    //   const maxWidth = parseInt(`${panel.maxWidth}`);
+    //   const minWidth = parseInt(`${panel.minWidth}`);
+    //   if (maxWidth > 0 && nextWidth > maxWidth) return;
+    //   if (minWidth > 0 && nextWidth < minWidth) return;
+    // }
+    // const header = this.state.header;
+    // const footer = this.state.footer;
+    // const body = this.state.body;
+    // const left = this.state.left;
+    // const right = this.state.right;
+    // const elements: AnonymousObject<HTMLDivElement | undefined> = {};
+    // elements['panel'] = panel !== undefined && panelRef && panelRef.current !== null ? panelRef.current : undefined;
+    // elements['body'] = body !== undefined && this.refs.body && this.refs.body.current !== null ? this.refs.body.current : undefined;
+    // // only touch the header panel if it's at the right of the left panel or at the left of the right panel
+    // elements['header'] =
+    //   isAreaInRow('first', area, this.state.areas) && header !== undefined && this.refs.header && this.refs.header.current !== null
+    //     ? this.refs.header.current
+    //     : undefined;
+    // // only touch the footer panel if it's at the right of the left panel or at the left of the right panel
+    // elements['footer'] =
+    //   isAreaInRow('last', area, this.state.areas) && footer !== undefined && this.refs.footer && this.refs.footer.current !== null
+    //     ? this.refs.footer.current
+    //     : undefined;
 
-          (['header', 'footer', 'body'] as DashboardArea[]).forEach((_area) => {
-            let width = '100%';
-            const el = elements[_area];
-            if (el) {
-              if (!isAreaInColumn('first', _area, this.state.areas) && left && elements['left']) {
-                // remove the left width
-                width = `${width} - ${left[this._getFloatingKey()] ? 0 : elements['left'].offsetWidth}px`;
-              }
+    // elements['left'] = left !== undefined && this.refs.left && this.refs.left.current !== null ? this.refs.left.current : undefined;
+    // elements['right'] = right !== undefined && this.refs.right && this.refs.right.current !== null ? this.refs.right.current : undefined;
 
-              if (!isAreaInColumn('last', _area, this.state.areas) && right && elements['right']) {
-                // remove the left width
-                width = `${width} - ${right[this._getFloatingKey()] ? 0 : elements['right'].offsetWidth}px`;
-              }
+    // switch (step) {
+    //   case 'start':
+    //     clearSelection();
+    //     forceCursor('e-resize');
+    //     // deactivate transition animation during the resize
+    //     ['panel', 'body', 'header', 'footer'].forEach((_area) => {
+    //       const el = elements[_area];
+    //       if (el) el.style.transition = 'none';
+    //     });
+    //     break;
+    //   case 'stop':
+    //     forceCursor(undefined);
+    //     // set the new width in the panel object. Will be used by styled to set the correct width via CSS
+    //     if (panel) panel.width = `${nextWidth}px`;
+    //     // remove any style added during the resize and let styled managed width and height via CSS
+    //     ['panel', 'body', 'header', 'footer'].forEach((_area) => {
+    //       const el = elements[_area];
+    //       if (el) {
+    //         ['transition', 'width', 'transform'].forEach((k) => {
+    //           el.style[k as any] = '';
+    //         });
+    //       }
+    //     });
+    //     break;
+    //   case 'run':
+    //     if (elements['panel']) {
+    //       // force the new width via the style
+    //       elements['panel'].style.width = `${nextWidth}px`;
+    //       // if the resized panel is the right one, we must translateX the panel in addition of changing the size
+    //       if (area === 'right') {
+    //         const translate = getTranslateXY(elements['panel']);
+    //         elements['panel'].style.transform = `translate(-${nextWidth}px,${translate.y}px)`;
+    //       }
 
-              el.style.width = width === '100%' ? width : `calc(${width})`;
-              // If the resized panel is the left one, we must translateX non vertical panels in addition of changing the size
-              if (area === 'left') {
-                const translate = getTranslateXY(el);
-                el.style.transform = `translate(${nextWidth}px,${translate.y}px)`;
-              }
-            }
-          });
-        }
-        break;
-    }
+    //       (['header', 'footer', 'body'] as DashboardArea[]).forEach((_area) => {
+    //         let width = '100%';
+    //         const el = elements[_area];
+    //         if (el) {
+    //           if (!isAreaInColumn('first', _area, this.state.areas) && left && elements['left']) {
+    //             // remove the left width
+    //             width = `${width} - ${left[this._getFloatingKey()] ? 0 : elements['left'].offsetWidth}px`;
+    //           }
+
+    //           if (!isAreaInColumn('last', _area, this.state.areas) && right && elements['right']) {
+    //             // remove the left width
+    //             width = `${width} - ${right[this._getFloatingKey()] ? 0 : elements['right'].offsetWidth}px`;
+    //           }
+
+    //           el.style.width = width === '100%' ? width : `calc(${width})`;
+    //           // If the resized panel is the left one, we must translateX non vertical panels in addition of changing the size
+    //           if (area === 'left') {
+    //             const translate = getTranslateXY(el);
+    //             el.style.transform = `translate(${nextWidth}px,${translate.y}px)`;
+    //           }
+    //         }
+    //       });
+    //     }
+    //     break;
+    // }
   }
 
   @reducer
