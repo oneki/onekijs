@@ -89,6 +89,7 @@ export type DashboardSidePanelProps = {
   floatingLarge?: boolean;
   resizable?: boolean;
   resizerGap?: number;
+  resizing?: boolean;
 };
 
 export type DashboardSize = 'small' | 'medium' | 'large';

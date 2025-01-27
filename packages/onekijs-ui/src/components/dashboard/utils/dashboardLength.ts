@@ -16,22 +16,15 @@ export const getDashboardPanelLength = (
 ): string | 0 => {
   if (!panel || (panel[getFloatingKey(size)] && panel[getCollapseKey(size)])) return 0;
 
+  const isCollapsed = isTrue(panel[getCollapseKey(size)]);
 
+  if (isCollapsed) {
+    return type === 'width'
+    ? (panel as DashboardVerticalPanel)?.collapseWidth
+    : (panel as DashboardHorizontalPanel)?.collapseHeight;
+  }
 
-  const panelCollapseLength =
-    type === 'width'
-      ? (panel as DashboardVerticalPanel)?.collapseWidth
-      : (panel as DashboardHorizontalPanel)?.collapseHeight;
-
-  const panelLength =
-    type === 'width' ? (panel as DashboardVerticalPanel)?.width : (panel as DashboardHorizontalPanel)?.height;
-
-  console.log("panel", panel, panelCollapseLength, panelLength);
-
-  // if (!panel[getFloatingKey(size)] && (size === 'small' || isTrue(panel[getCollapseKey(size)]))) {
-  //   return parseFloat(`${panelCollapseLength}`) < parseFloat(`${panelLength}`) ? panelCollapseLength : panelLength;
-  // }
-  return panelLength;
+  return type === 'width' ? (panel as DashboardVerticalPanel).width : (panel as DashboardHorizontalPanel).height;
 };
 
 // get the actual width of a panel on the workspace

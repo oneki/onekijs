@@ -55,14 +55,8 @@ export const DashboardPageComponent: React.FC<StylableProps> = ({ className }) =
           Footer
         </DashboardFooter>
 
-
-
-
-
-
-
-      <DashboardLeft resizable>
-          <div style={{backgroundColor: 'darkblue', height: '100%'}}>Left</div>
+      <DashboardLeft resizable width="200px" collapseWidth="50px">
+          <div>Left</div>
         </DashboardLeft>
 
 
