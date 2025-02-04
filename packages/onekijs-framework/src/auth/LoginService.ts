@@ -325,19 +325,43 @@ export default class LoginService extends DefaultLocalService<LoginState> {
         [token, securityContext] = yield callback(response, idp, this.context);
       }
 
-      if (isOauth(idp) && idp.nonce && get(token as any, 'id_token')) {
-        // validates the nonce found in the id_token
-        // https://openid.net/specs/openid-connect-core-1_0.html#TokenResponseValidation
-        const id_token = parseJwt((token as { id_token: string }).id_token);
-        const nonce = getIdpStorage(idp).getItem(`onekijs.${identity}.nonce`);
-        const hash: string = yield sha256(nonce || undefined);
-        getIdpStorage(idp).removeItem(`onekijs.${identity}.nonce`);
-        if (hash !== id_token.nonce) {
-          throw Error('Invalid oauth2 nonce');
+
+      let mfa: Mfa = { required: false };
+      if (typeof idp.mfa === 'function') {
+        yield idp.mfa(response, idp, this.context);
+      } else if (idp.mfa) {
+        mfa = idp.mfa;
+      } else {
+        mfa = {
+          required: get(token, 'mfa_required', false),
+          token: get(token, 'mfa_token'),
+          token_type: get(token, 'token_type'),
+          totpSecret: get(token, 'totp_secret'),
+          user: get(token, 'mfa_user'),
         }
       }
 
-      yield this.successLogin(token as any, securityContext, idpName, onError, onSuccess);
+      if (mfa.required) {
+        // we have to add an additional step (ask the TOTP to the user)
+        // if totp_secret is set, it means that the user haven't yet configured his MFA
+        yield this.setMfa(mfa);
+      } else {
+        if (isOauth(idp) && idp.nonce && get(token as any, 'id_token')) {
+          // validates the nonce found in the id_token
+          // https://openid.net/specs/openid-connect-core-1_0.html#TokenResponseValidation
+          const id_token = parseJwt((token as { id_token: string }).id_token);
+          const nonce = getIdpStorage(idp).getItem(`onekijs.${identity}.nonce`);
+          const hash: string = yield sha256(nonce || undefined);
+          getIdpStorage(idp).removeItem(`onekijs.${identity}.nonce`);
+          if (hash !== id_token.nonce) {
+            throw Error('Invalid oauth2 nonce');
+          }
+        }
+
+        yield this.successLogin(token as any, securityContext, idpName, onError, onSuccess);
+      }
+
+
     } catch (e) {
       if (process.env.NODE_ENV === 'development') {
         console.error('External login callback error', e);
