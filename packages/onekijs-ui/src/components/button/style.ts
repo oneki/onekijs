@@ -85,6 +85,12 @@ const buttonStyle: ComponentStyle<ButtonProps> = ({
     .o-icon-loading-container {
       ${marginRight('xs')}
     }
+
+    .o-icon-loading-svg {
+      ${color(fontColor, {
+        hover: disabled ? fontColor : hoverFontColor,
+      })}
+    }
   `;
 };
 

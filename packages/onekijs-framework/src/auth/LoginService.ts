@@ -13,7 +13,7 @@ import { sha256 } from '../utils/crypt';
 import { get } from '../utils/object';
 import { absoluteUrl } from '../utils/router';
 import AuthService from './AuthService';
-import { LoginState, Mfa } from './typings';
+import { Idp, LoginState, Mfa } from './typings';
 import {
   generateCodeChallenge,
   generateCodeVerifier,
@@ -344,7 +344,15 @@ export default class LoginService extends DefaultLocalService<LoginState> {
       if (mfa.required) {
         // we have to add an additional step (ask the TOTP to the user)
         // if totp_secret is set, it means that the user haven't yet configured his MFA
-        yield this.setMfa(mfa);
+
+        const noMfaToken = this.authService.loadNoMfaToken(idp, identity);
+
+        if (noMfaToken) {
+          yield this.sendNoMfaToken(noMfaToken, mfa, idp, onSuccess);
+        } else {
+          yield this.setMfa(mfa);
+          yield this.onSuccess();
+        }
       } else {
         if (isOauth(idp) && idp.nonce && get(token as any, 'id_token')) {
           // validates the nonce found in the id_token
@@ -465,7 +473,14 @@ export default class LoginService extends DefaultLocalService<LoginState> {
         }
         // we have to add an additional step (ask the TOTP to the user)
         // if totp_secret is set, it means that the user haven't yet configured his MFA
-        yield this.setMfa(mfa);
+        const noMfaToken = this.authService.loadNoMfaToken(idp, identity);
+        if (noMfaToken) {
+          yield this.sendNoMfaToken(noMfaToken, mfa, idp, onSuccess);
+        } else {
+          yield this.setMfa(mfa);
+          yield this.onSuccess();
+        }
+
       } else {
         yield this.formLoginResponse(response, idpName, onError, onSuccess);
       }
@@ -486,6 +501,22 @@ export default class LoginService extends DefaultLocalService<LoginState> {
       }
     }
     yield this.setLoading(false);
+  }
+
+  @saga(SagaEffect.Latest)
+  *sendNoMfaToken(noMfaToken: string, mfa: Mfa, idp: Idp, onSuccess?: SuccessCallback) {
+    try {
+      yield this.verifyTotp({
+        no_mfa_token: noMfaToken,
+        token: mfa.token,
+        token_type: mfa.token_type,
+      }, idp.name, undefined, onSuccess);
+    } catch (e) {
+      // error during the usage of the no_mfa_token, just ask the verification code to the user
+      yield this.setMfa(mfa);
+      yield this.onSuccess();
+    }
+
   }
 
 /**
@@ -559,11 +590,18 @@ export default class LoginService extends DefaultLocalService<LoginState> {
           throw new DefaultBasicError(`Invalid totpEndpoint for IDP ${idp.name}`);
         }
 
-        const body = {
-          totp: data.totp,
-        };
+        const body: AnonymousObject = {}
+        if (data.totp) {
+          body.totp = data.totp;
+        }
+        if (data.trusted_device) {
+          body.trusted_device = data.trusted_device;
+        }
+        if (data.no_mfa_token) {
+          body.no_mfa_token = data.no_mfa_token;
+        }
 
-        const token_type = get(this.state.mfa, 'token_type');
+        const token_type = data.token_type ?? get(this.state.mfa, 'token_type');
 
         response = yield asyncHttp(absoluteUrl(url, get(settings, 'server.baseUrl')), 'POST', body, {
           headers: {
