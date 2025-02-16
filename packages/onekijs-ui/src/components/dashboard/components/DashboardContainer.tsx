@@ -114,12 +114,6 @@ class Matrix {
     };
   }
 
-  log() {
-    console.log(this.areas[0][0], this.areas[0][1], this.areas[0][2]);
-    console.log(this.areas[1][0], this.areas[1][1], this.areas[1][2]);
-    console.log(this.areas[2][0], this.areas[2][1], this.areas[2][2]);
-  }
-
   _count(area: DashboardArea, axis: 'line' | 'col', startLine: number, startCol: number) {
     let count = 0;
     if (axis === 'line') {
@@ -189,8 +183,6 @@ const DashboardContainerComponent: FCC<DashboardContainerProps> = (props) => {
       }
     }
   });
-
-  matrix.log();
 
   const startArea = matrix.getArea(0, 0);
 
@@ -647,10 +639,6 @@ const DashboardContainer = styled(DashboardContainerComponent)`
 
   .o-dashboard-footer {
     background-color: darkblue;
-  }
-
-  .o-dashboard-left {
-    background-color: darkgreen;
   }
 
   .o-dashboard-right {

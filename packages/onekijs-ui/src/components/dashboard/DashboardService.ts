@@ -12,7 +12,6 @@ import {
   set,
 } from 'onekijs-framework';
 import React, { MutableRefObject, ReactNode } from 'react';
-import { clearSelection, forceCursor, getTranslateXY } from '../../utils/dom';
 import { ResizeStep } from '../resizer/typings';
 import {
   DashboardArea,
@@ -27,8 +26,8 @@ import {
   DashboardVerticalPanel,
   DashboardVerticalPanelProps,
 } from './typings';
-import { isAreaInColumn, isAreaInRow } from './utils/dashboardArea';
 import { getCollapseKey, getFloatingKey } from './utils/dashboardLength';
+import { delay } from 'redux-saga/effects';
 
 @service
 export class DashboardService extends DefaultService<DashboardState> {
@@ -38,21 +37,30 @@ export class DashboardService extends DefaultService<DashboardState> {
     ['none', 'none', 'none'],
   ];
 
-  public refs: AnonymousObject<MutableRefObject<HTMLDivElement | null> | null | undefined> = {}
+  public refs: AnonymousObject<MutableRefObject<HTMLDivElement | null> | null | undefined> = {};
 
   @reducer
   clearContent(area: DashboardHorizontalArea | DashboardVerticalArea): void {
     set<any>(this.state, `${area}.content`, undefined);
   }
 
-  @reducer
-  collapse(area: DashboardArea | 'all', collapse = true): void {
-    if (area === 'all') {
-      ['left', 'right', 'header', 'footer'].forEach((area) => {
-        set<any>(this.state, `${area}.${this._getCollapseKey()}`, collapse);
-      });
-    } else {
-      set<any>(this.state, `${area}.${this._getCollapseKey()}`, collapse);
+  @saga(SagaEffect.Latest)
+  *collapse(area: DashboardHorizontalArea | DashboardVerticalArea | 'all', collapse = true) {
+    let areas: (DashboardHorizontalArea|DashboardVerticalArea)[] = area === 'all' ? ['left', 'right', 'header', 'footer'] : [area];
+
+    for (const area of areas) {
+      yield this._setCollapse(area, collapse);
+      const panel = get(this.state, area);
+      if (panel?.animation) {
+        yield this._setExpanding(area, !collapse);
+        yield this._setCollapsing(area, collapse);
+        yield delay(panel.animation);
+        if (collapse && this.state[area]?.collapsing) {
+          yield this._setCollapsing(area, false);
+        } else if (!collapse && this.state[area]?.expanding) {
+          yield this._setExpanding(area, false);
+        }
+      }
     }
   }
 
@@ -90,7 +98,9 @@ export class DashboardService extends DefaultService<DashboardState> {
     return this.state[area];
   }
 
-  getRef(area: 'left' | 'right' | 'header' | 'footer' | 'body' | 'container'): React.MutableRefObject<HTMLDivElement | null> | null | undefined {
+  getRef(
+    area: 'left' | 'right' | 'header' | 'footer' | 'body' | 'container',
+  ): React.MutableRefObject<HTMLDivElement | null> | null | undefined {
     return this.refs[area];
   }
 
@@ -100,26 +110,27 @@ export class DashboardService extends DefaultService<DashboardState> {
 
   @reducer
   initBodyPanel(_props: DashboardBodyPanelProps): void {
-    this.state.body = { };
+    this.state.body = {};
   }
 
   @reducer
   initContainer(ref: React.MutableRefObject<HTMLDivElement | null>): void {
     this.state.container = { ref };
+    this.refs.container = ref;
   }
 
   @reducer
-  initHorizontalPanel(
-    area: 'footer' | 'header',
-    props: DashboardHorizontalPanelProps,
-  ): void {
+  initHorizontalPanel(area: 'footer' | 'header', props: DashboardHorizontalPanelProps): void {
     const dashboardPanel: DashboardHorizontalPanel = {
+      animation: props.animation ?? 300,
       area,
-      className: props.className || '',
+      backgroundColor: 'inherits',
       collapseHeight: props.collapseHeight ?? 'auto',
       collapseLarge: props.collapseLarge ?? props.collapse ?? false,
       collapseMedium: props.collapseMedium ?? props.collapse ?? true,
       collapseSmall: props.collapseSmall ?? props.collapse ?? true,
+      collapsing: false,
+      expanding: false,
       floatingLarge: props.floatingLarge ?? props.floating ?? false,
       floatingMedium: props.floatingMedium ?? props.floating ?? false,
       floatingSmall: props.floatingSmall ?? props.floating ?? true,
@@ -134,18 +145,17 @@ export class DashboardService extends DefaultService<DashboardState> {
   }
 
   @reducer
-  initVerticalPanel(
-    area: 'left' | 'right',
-    props: DashboardVerticalPanelProps,
-  ): void {
-    console.log('init vertical panel', area, props.width);
+  initVerticalPanel(area: 'left' | 'right', props: DashboardVerticalPanelProps): void {
     const dashboardPanel: DashboardVerticalPanel = {
+      animation: props.animation ?? 300,
       area,
-      className: props.className || '',
+      backgroundColor: 'inherits',
       collapseLarge: props.collapseLarge ?? props.collapse ?? false,
       collapseMedium: props.collapseMedium ?? props.collapse ?? true,
       collapseSmall: props.collapseSmall ?? props.collapse ?? true,
       collapseWidth: props.collapseWidth ?? 'auto',
+      collapsing: false,
+      expanding: false,
       floatingLarge: props.floatingLarge ?? props.floating ?? false,
       floatingMedium: props.floatingMedium ?? props.floating ?? false,
       floatingSmall: props.floatingSmall ?? props.floating ?? true,
@@ -159,6 +169,13 @@ export class DashboardService extends DefaultService<DashboardState> {
     this.state[area] = dashboardPanel;
   }
 
+  isCollapse(area: 'left' | 'right' | 'header' | 'footer'): boolean {
+    return get(this.state, `${area}.${this._getCollapseKey()}`, false);
+  }
+
+  isFloating(area: 'left' | 'right' | 'header' | 'footer'): boolean {
+    return get(this.state, `${area}.${this._getFloatingKey()}`, false);
+  }
 
   @saga(SagaEffect.Throttle, 100)
   *resizeHeight(area: DashboardHorizontalArea, nextHeight: number, step: ResizeStep) {
@@ -180,10 +197,9 @@ export class DashboardService extends DefaultService<DashboardState> {
     yield this.setPanelWidth(area, nextWidth);
   }
 
-
   @reducer
   setPanelHeight(area: DashboardHorizontalArea, height: number): void {
-    const panel = this.state[area]
+    const panel = this.state[area];
     if (panel) {
       panel.height = `${height}px`;
     }
@@ -191,30 +207,29 @@ export class DashboardService extends DefaultService<DashboardState> {
 
   @reducer
   setPanelResizing(area: DashboardVerticalArea | DashboardHorizontalArea, resizing: boolean): void {
-    const panel = this.state[area]
+    const panel = this.state[area];
     if (panel) {
       panel.resizing = resizing;
     }
   }
 
-
   @reducer
   setPanelWidth(area: DashboardVerticalArea, width: number): void {
-    const panel = this.state[area]
+    const panel = this.state[area];
     if (panel) {
       panel.width = `${width}px`;
     }
   }
-
-
-
 
   @reducer
   setContent(area: DashboardHorizontalArea | DashboardVerticalArea, content: ReactNode): void {
     set<any>(this.state, `${area}.content`, content);
   }
 
-  setRef(area: 'left' | 'right' | 'header' | 'footer' | 'body' | 'container', ref: React.MutableRefObject<HTMLDivElement | null> | null | undefined): void  {
+  setRef(
+    area: 'left' | 'right' | 'header' | 'footer' | 'body' | 'container',
+    ref: React.MutableRefObject<HTMLDivElement | null> | null | undefined,
+  ): void {
     this.refs[area] = ref;
   }
 
@@ -254,9 +269,25 @@ export class DashboardService extends DefaultService<DashboardState> {
       return isMobile() ? 'small' : 'large';
     }
     const dashboardWidth = this.refs.container.current.offsetWidth;
+
     if (dashboardWidth < 768) return 'small';
     if (dashboardWidth < 992) return 'medium';
     return 'large';
+  }
+
+  @reducer
+  _setCollapse(area: DashboardArea, collapse: boolean): void {
+    set<any>(this.state, `${area}.${this._getCollapseKey()}`, collapse);
+  }
+
+  @reducer
+  _setCollapsing(area: DashboardArea, collapsing: boolean): void {
+    set<any>(this.state, `${area}.collapsing`, collapsing);
+  }
+
+  @reducer
+  _setExpanding(area: DashboardArea, expanding: boolean): void {
+    set<any>(this.state, `${area}.expanding`, expanding);
   }
 
 }

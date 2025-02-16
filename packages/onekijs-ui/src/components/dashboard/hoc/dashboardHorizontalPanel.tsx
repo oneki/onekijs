@@ -1,6 +1,9 @@
 import { FCC } from 'onekijs-framework';
 import React, { CSSProperties, useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
+import { backgroundColor } from '../../../styles/background';
+import { position } from '../../../styles/position';
+import { margin, padding } from '../../../styles/spacing';
 import { ComponentStyle } from '../../../styles/typings';
 import { addClassname } from '../../../utils/style';
 import Resizer from '../../resizer';
@@ -11,39 +14,10 @@ import {
   DashboardHorizontalArea,
   DashboardHorizontalPanelComponentProps,
   DashboardHorizontalPanelProps,
-  DashboardSize,
+  DashboardSize
 } from '../typings';
-import { isAreaInColumn } from '../utils/dashboardArea';
-import { getDashboardPanelLength, getFloatingKey, getWorkspacePanelLength } from '../utils/dashboardLength';
+import { getCollapseKey, getDashboardPanelContainerSize, getDashboardPanelSize, getFloatingKey } from '../utils/dashboardLength';
 
-// const getTranslateX = (size: DashboardSize, props: DashboardHorizontalPanelComponentProps): string | 0 => {
-//   let translate: string | 0 = 0;
-
-//   // if the panel is not in the first column, we have to translateX the width of the left panel
-//   if (props.panel && !isAreaInColumn('first', props.area, props.areas)) {
-//     translate = getWorkspacePanelLength('width', size, props.left);
-//   }
-
-//   // return translate;
-//   console.log(props.area, "translateX", translate);
-//   return 0;
-// };
-
-// const getTranslateY = (size: DashboardSize, props: DashboardHorizontalPanelComponentProps): string | 0 => {
-//   let translate: string | 0 = 0;
-
-//   if (props.panel && props.panel.area === 'footer') {
-//     const height = props.panel[getFloatingKey(size)]
-//       ? getDashboardPanelLength('height', size, props.panel) // actual size of the panel
-//       : getWorkspacePanelLength('height', size, props.panel); // size of the panel on the workspace (if floating, the workspace panel size is 0)
-//     if (height !== 0) {
-//       translate = `-${height}`;
-//     }
-//   }
-//   console.log(props.area, "translateY", translate);
-//   // return translate;
-//   return 0;
-// };
 
 const Component: React.FC<DashboardHorizontalPanelComponentProps> = (props) => {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -68,33 +42,128 @@ const Component: React.FC<DashboardHorizontalPanelComponentProps> = (props) => {
     }
   });
 
+
+  const classNames = props.className ? props.className.split(' ') : [];
+  const styledClassNames = classNames.slice(0,2).join(' ')
+  const customClassNames = addClassname(props.area === 'header' ? 'o-dashboard-horizontal-panel o-dashboard-header' : 'o-dashboard-horizontal-panel o-dashboard-footer', classNames.slice(2).join(' '))
+
+
   return (
-    <div
-      className={addClassname(props.area === 'header' ? 'o-dashboard-header' : 'o-dashboard-footer', props.className)}
-      ref={ref}
-      style={style}
-    >
-      {stepRef.current && props.children}
+    <div className={styledClassNames}>
+      <div
+        className={customClassNames}
+        ref={ref}
+        style={style}
+      >
+        {stepRef.current && props.children}
+      </div>
     </div>
   );
 };
 
-Component.displayName = 'DashboardHorizontalPanel';
-
 const style: ComponentStyle<DashboardHorizontalPanelComponentProps> = (props) => {
+  const t = props.theme.dashboard[props.area];
+  let transition = 'none';
+  let containerTransition = 'none';
+  const sizes: DashboardSize[] = ['small', 'medium', 'large'];
+  const containerHeights = {
+    'small': '',
+    'medium': '',
+    'large': '',
+  }
+
+  const heights = {
+    'small': '',
+    'medium': '',
+    'large': '',
+  }
+  const positions = {
+    'small': '',
+    'medium': '',
+    'large': '',
+  }
+
+  const translates = {
+    'small': '',
+    'medium': '',
+    'large': '',
+  }
+
+  let bgColor = t.bgColor;
+  const panel = props.panel;
+  if (panel) {
+    transition =  panel.resizing ? 'height 0.1s' : 'height 0.3s';
+    containerTransition =  panel.resizing ? 'height 0.1s' : 'height 0.3s';
+    sizes.forEach((size) => {
+      const containerHeight = getDashboardPanelContainerSize('height', size, props.panel);
+      containerHeights[size] = containerHeight === null ? '' : `height: ${getDashboardPanelContainerSize('height', size, props.panel)};`;
+      heights[size] =  `height: ${getDashboardPanelSize('height', size, props.panel)};`;
+      if (panel[getFloatingKey(size)]) {
+        positions[size] = 'position: absolute; top: 0; left: 0; z-index: 1001;';
+      } else {
+        positions[size] = 'position: static; z-index: auto;';
+      }
+      const isFloating = panel[getFloatingKey(size)];
+      if(isFloating || parseInt(`${panel.collapseHeight}`) === 0) {
+        if (!panel.resizing) {
+          transition =  'transform 0.3s';
+        }
+        if (panel[getCollapseKey(size)]) {
+          const fullHeight = getDashboardPanelSize('height', size, props.panel, true);
+          translates[size] = `transform: translate(0, -${fullHeight});`;
+        } else {
+          translates[size] = `transform: translate(0, 0);`;
+        }
+
+        const fullHeight= getDashboardPanelSize('height', size, props.panel, true);
+        if (panel[getCollapseKey(size)]) {
+          translates[size] = `transform: translate(0,${panel.area === 'header' ? `-${fullHeight}` : '0'});`;
+        } else {
+          translates[size] = `transform: translate(0, ${panel.area === 'header' ? '0' : `${isFloating ? `-${fullHeight}` : '0'}`});`;
+        }
+      }
+    })
+    if (panel.backgroundColor !== 'inherits') {
+      bgColor = panel.backgroundColor;
+    }
+  }
+
+
   return css`
-    height: ${getDashboardPanelLength('height', 'small', props.panel)};
-    width: 100%;
-    transition: height ${props.panel && props.panel.resizing ? '0.1s' : '0.3s'};
-    ${props.panel && props.panel[getFloatingKey('small')] ? 'z-index: 1001;' : 'auto;'}
+    ${position('relative')}
+    ${margin(0)}
+    ${padding(0)}
+    ${containerHeights.small}
+    transition: ${containerTransition};
     @media only screen and (min-width: 768px) {
-      height: ${getDashboardPanelLength('height', 'medium', props.panel)};
-      ${props.panel && props.panel[getFloatingKey('medium')] ? 'z-index: 1001;' : 'z-index: auto'}
+      ${containerHeights.medium}
     }
     @media only screen and (min-width: 992px) {
-      height: ${getDashboardPanelLength('height', 'large', props.panel)};
-      ${props.panel && props.panel[getFloatingKey('medium')] ? 'z-index: 1001;' : 'z-index: auto'}
+      ${containerHeights.large}
     }
+
+    .o-dashboard-horizontal-panel {
+      ${position('relative')}
+      ${backgroundColor(bgColor)}
+      ${margin(0)}
+      ${padding(0)}
+      ${heights.small}
+      ${positions.small}
+      ${translates.small}
+      width: 100%;
+      transition: ${transition};
+      @media only screen and (min-width: 768px) {
+        ${heights.medium}
+        ${positions.medium}
+        ${translates.medium}
+      }
+      @media only screen and (min-width: 992px) {
+        ${heights.large}
+        ${positions.large}
+        ${translates.large}
+      }
+    }
+
   `;
 };
 
@@ -114,14 +183,17 @@ const dashboardHorizontalPanel = (area: DashboardHorizontalArea): FCC<DashboardH
 
     return (
       <StyledComponent {...state} {...props} area={area} panel={panel}>
-        {props.resizable && (
+        {props.resizable && !service.isCollapse(area) && (
           <Resizer onResize={onResize} handles={[area === 'header' ? 's' : 'n']} gap={panel?.resizerGap}>
             {panel?.content ? <>{panel.content}</> : props.children}
           </Resizer>
         )}
-        {!props.resizable && (panel?.content ? <>{panel.content}</> : props.children)}
+        {(!props.resizable  || service.isCollapse(area)) && (panel?.content ? <>{panel.content}</> : props.children)}
       </StyledComponent>
     );
+  };
+  Panel.defaultProps = {
+    area
   };
   return Panel;
 };

@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { StylableProps } from '../../styles/typings';
+import { ColorPropertyTheme, StylableProps } from '../../styles/typings';
 import { DashboardService } from './DashboardService';
 
 
@@ -59,7 +59,7 @@ type DashboardHorizontalProps = {
   minHeight?: string | 0;
 };
 
-export type DashboardHorizontalPanelProps = DashboardSidePanelProps & DashboardHorizontalProps & {
+export type DashboardHorizontalPanelProps = StylableProps & DashboardSidePanelProps & DashboardHorizontalProps & {
   area?: DashboardHorizontalArea;
 };
 
@@ -74,11 +74,14 @@ export type DashboardOverlayProps = React.InputHTMLAttributes<HTMLDivElement> & 
 };
 
 export type DashboardSidePanel = Omit<Required<DashboardSidePanelProps>, 'collapse' | 'floating'> & {
+  collapsing: boolean;
   content?: ReactNode;
+  expanding: boolean,
 };
 
 export type DashboardSidePanelProps = {
-  className?: string;
+  animation?: number;
+  backgroundColor?: ColorPropertyTheme | string;
   collapse?: boolean;
   collapseSmall?: boolean;
   collapseMedium?: boolean;
@@ -115,7 +118,7 @@ export type DashboardVerticalPanel = DashboardSidePanel &
     area: DashboardVerticalArea;
   };
 
-export type DashboardVerticalPanelComponentProps = React.InputHTMLAttributes<HTMLDivElement> &
+export type DashboardVerticalPanelComponentProps = StylableProps & React.InputHTMLAttributes<HTMLDivElement> &
   DashboardState &
   DashboardVerticalPanelProps & {
     panel?: DashboardVerticalPanel;
