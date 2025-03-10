@@ -338,6 +338,7 @@ export default class LoginService extends DefaultLocalService<LoginState> {
           token_type: get(token, 'token_type'),
           totpSecret: get(token, 'totp_secret'),
           user: get(token, 'mfa_user'),
+          delay: get(token, 'mfa_delay'),
         }
       }
 
@@ -463,6 +464,7 @@ export default class LoginService extends DefaultLocalService<LoginState> {
           token_type: get(response, 'token_type'),
           totpSecret: get(response, 'totp_secret'),
           user: data.username,
+          delay: get(response, 'mfa_delay'),
         }
       }
 
