@@ -80,7 +80,7 @@ const SelectOptionComponent = <T, I extends SelectItem<T> = SelectItem<T>>(props
     return <OptionLoadingComponent />;
   }
 
-  if (!item || !item.data) return null;
+  if (!item || item.data === undefined) return null;
 
   return (
     <>

@@ -1,11 +1,11 @@
 import React from 'react';
 import { ListItem, ListItemProps } from '../typings';
 
-export const ListItemContent = <T = any, I extends ListItem<T> = ListItem<T>>({ item }: ListItemProps<T, I>) => {
+export const ListItemContent = <T extends any = any, I extends ListItem<T> = ListItem<T>>({ item }: ListItemProps<T, I>) => {
   return <>{item.text || ''}</>;
 };
 
-const ListItemComponent = <T = any, I extends ListItem<T> = ListItem<T>>(props: ListItemProps<T, I>) => {
+const ListItemComponent = <T extends any = any, I extends ListItem<T> = ListItem<T>>(props: ListItemProps<T, I>) => {
   const { item, index, onMouseEnter, onMouseLeave, onClick, ItemContentComponent = ListItemContent } = props;
   return (
     <div
