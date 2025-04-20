@@ -66,9 +66,9 @@ const VirtualItemWrapper = <T extends any = any, I extends ListItem<T> = ListIte
     >
       <div ref={ref}>
         {listItem?.loadingStatus === LoadingStatus.Loading && <ItemLoadingComponent />}
-        {listItem?.loadingStatus !== LoadingStatus.Loading && listItem && listItem.data && (
+        {listItem?.loadingStatus !== LoadingStatus.Loading && listItem && listItem.data !== undefined && (
           <ItemComponent
-            key={`item-${listItem?.uid || index}`}
+            key={`item-${listItem.uid || index}`}
             index={index}
             item={listItem}
             data={listItem.data}

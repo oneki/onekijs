@@ -7,11 +7,11 @@ const SelectTokenComponent = <T, I extends SelectItem<T> = SelectItem<T>>({
   index,
 }: SelectTokenProps<T, I>) => {
   return (
-    <div className="o-select-token">
+    <div className={`o-select-token${token.disabled ? ' o-select-token-disabled': ''}`}>
       <div className="o-select-token-text" key="o-select-token-text">
         {token.text}
       </div>
-      <div
+      {!token.disabled && <div
         className="o-select-token-remove"
         key="o-select-token-remove"
         onClick={(e) => {
@@ -20,7 +20,7 @@ const SelectTokenComponent = <T, I extends SelectItem<T> = SelectItem<T>>({
         }}
       >
         &#10006;
-      </div>
+      </div>}
     </div>
   );
 };

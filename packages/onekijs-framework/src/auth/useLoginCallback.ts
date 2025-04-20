@@ -1,12 +1,13 @@
 import BasicError from '../core/BasicError';
-import { LoginOptions } from './typings';
+import { AnyFunction } from '../types/core';
+import { LoginOptions, Mfa } from './typings';
 import useLogin from './useLogin';
 
 // manage the result of a external login
-const useLoginCallback = (idpName = 'default', options: LoginOptions = {}): [BasicError | undefined, boolean] => {
+const useLoginCallback = (idpName = 'default', options: LoginOptions = {}): [BasicError | undefined, boolean, AnyFunction, Mfa | undefined] => {
   options.callback = true;
-  const [error, loading] = useLogin(idpName, options);
-  return [error, loading];
+  const [error, loading, submit, mfa] = useLogin(idpName, options);
+  return [error, loading, submit, mfa];
 };
 
 export const useLoginCallbackService = useLoginCallback;

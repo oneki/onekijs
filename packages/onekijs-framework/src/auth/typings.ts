@@ -60,6 +60,7 @@ export interface Mfa {
   token_type?: string;
   totpSecret?: string;
   user?: string;
+  delay?: number;
 }
 
 export interface IdpSettings extends AnonymousObject {

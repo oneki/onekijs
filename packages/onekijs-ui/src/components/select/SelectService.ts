@@ -42,6 +42,8 @@ class SelectService<
       return; // this validation will be done when the data will be loaded (can be delayed due to a fetchOnce)
     }
 
+
+
     let invalidItems: I[] = [];
     const defaultItems: I[] = this.defaultValue ? toArray(this.defaultValue).map((v) => this._adapt(v)) : [];
 
@@ -55,12 +57,11 @@ class SelectService<
       defaultItems.map((i) => call([this, this._filterItem], i, query, true)),
     );
 
-    const validDefaultValue = (filterDefaultItems.filter((i) => i !== undefined && i.data) as I[]).map(
+    const validDefaultValue = (filterDefaultItems.filter((i) => i !== undefined && i.data !== undefined) as I[]).map(
       (i) => i.data,
     ) as T[];
 
     const multiple = this.config && this.config.multiple ? this.config.multiple : false;
-
 
     if (multiple) {
       yield this._setValidDefaultValue(validDefaultValue);
@@ -73,17 +74,19 @@ class SelectService<
           : this.config.defaultValue === undefined ||
             this.config.defaultValue === null ||
             this.state.defaultValue === null
-          ? this.state.items[0]?.data || null
+          ? this.state.items[0]?.data === undefined
+            ? null
+            : this.state.items[0].data
           : null,
       );
     }
-
 
     if (this.state.selected !== undefined) {
       const item = this.getItem(this.state.selected[0]);
       const filterItems: (I | undefined)[] = yield all([this._filterItem(item, query, false)]);
       invalidItems = filterItems.filter((i) => i !== undefined) as I[];
     }
+
     yield call(this._setInvalidItems, invalidItems);
   }
 
@@ -113,7 +116,10 @@ class SelectService<
 
   @reducer
   setItemWidth(_item: I, value: number) {
-    if (this.config?.dropdownWidthModifier === 'min' && (this.state.width === undefined || (value + 30) > this.state.width)) {
+    if (
+      this.config?.dropdownWidthModifier === 'min' &&
+      (this.state.width === undefined || value + 30 > this.state.width)
+    ) {
       this.state.width = value + 30;
     }
   }

@@ -411,7 +411,7 @@ const ControlledSelectComponent = <
             onChange && onChange(service.state.validDefaultValue || null);
           }
         }
-      } else if (!search && !nullable && !value && service.state.validDefaultValue) {
+      } else if (!search && !nullable && (value === null || value === undefined) && service.state.validDefaultValue) {
         onChange && onChange(service.state.validDefaultValue);
       }
     }

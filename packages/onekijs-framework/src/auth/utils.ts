@@ -117,7 +117,7 @@ export const isExternal = (idp: Idp): boolean => idp.external === true;
  */
 export const parseHashToken = (hash: AnonymousObject): AnonymousObject => {
   const token: AnonymousObject = {};
-  ['access_token', 'id_token', 'refresh_token', 'expires_in', 'expires_at', 'token_type'].forEach((k) => {
+  ['access_token', 'id_token', 'refresh_token', 'expires_in', 'expires_at', 'token_type', 'mfa_user', 'totp_secret', 'mfa_token', 'mfa_required'].forEach((k) => {
     if (hash[k]) {
       token[k] = hash[k];
     }
