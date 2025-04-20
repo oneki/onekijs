@@ -101,7 +101,7 @@ export const baseTheme = (customTheme: Partial<Theme> = {}): Theme => {
         '4xl': '2.25rem',
         '5xl': '3rem',
         '6xl': '4rem',
-        default: '.0875rem',
+        default: '.875rem',
       },
       spacings: {
         xs: '-0.05em',

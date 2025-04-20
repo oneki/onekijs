@@ -16,14 +16,15 @@ const useGet = <T = any>(url?: string | null, options: UseGetOptions<T> = {}): [
     result: optionsRef.current.defaultValue,
   } as FetchState);
 
-  const refresh = useCallback(() => {
+  const refresh = useCallback((refreshOptions?: UseGetOptions<T>) => {
     if (url) {
       if (pollingTaskRef !== null) {
         pollingTaskRef.current?.cancel();
         pollingTaskRef.current = null;
       }
-      if (optionsRef.current.pollingMs) {
-        service.poll(url, optionsRef.current.pollingMs, fetchOptions).then((task: Task) => {
+      const pollingMs = refreshOptions?.pollingMs || optionsRef.current.pollingMs;
+      if (pollingMs) {
+        service.poll(url, pollingMs, fetchOptions).then((task: Task) => {
           pollingTaskRef.current = task;
         });
       } else {
