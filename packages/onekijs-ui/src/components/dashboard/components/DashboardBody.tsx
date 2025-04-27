@@ -42,9 +42,15 @@ const style: ComponentStyle<DashboardBodyComponentProps> = (props) => {
   const t = props.theme.dashboard.body;
   return css`
     ${backgroundColor(t.bgColor)}
-    overflow-x: auto;
-    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
     transition: ${() => (props.panel ? 'transform 0.3s, width 0.3s, height 0.3s' : 'none')};
+    .o-dashboard-body-content {
+      flex: 1 0 0;
+      overflow-x: auto;
+      overflow-y: scroll;
+    }
   `;
 };
 
@@ -58,7 +64,9 @@ const DashboardBody: FCC<DashboardBodyPanelProps> = (props) => {
   const panel = state.body;
   return (
     <StyledDashboardBody {...state} panel={panel} className={addClassname('o-dashboard-body', props.className)}>
-      {props.children}
+      <div className='o-dashboard-body-content'>
+        {props.children}
+      </div>
     </StyledDashboardBody>
   );
 };

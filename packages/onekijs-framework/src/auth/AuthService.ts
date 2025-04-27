@@ -253,6 +253,7 @@ export default class AuthService extends DefaultGlobalService {
           // if the token was not found, we are not yet authenticated
           throw new HTTPError(401);
         }
+
         securityContext = token_prop ? parseJwt(token[token_prop]) : parseJwt(token);
       } else {
         // the userinfo endpoint is an URL, do a ajax call to

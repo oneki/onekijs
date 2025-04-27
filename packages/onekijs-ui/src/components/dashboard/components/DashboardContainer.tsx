@@ -620,7 +620,6 @@ const DashboardContainer = styled(DashboardContainerComponent)`
   height: 100vh;
   overflow-x: hidden;
   overflow-y: hidden;
-  color: white;
   display: flex;
 
   .o-dashboard-horizontal-layer {
@@ -633,22 +632,6 @@ const DashboardContainer = styled(DashboardContainerComponent)`
     flex-direction: column;
   }
 
-  .o-dashboard-header {
-    background-color: darkred;
-  }
-
-  .o-dashboard-footer {
-    background-color: darkblue;
-  }
-
-  .o-dashboard-right {
-    background-color: darkorange;
-  }
-
-  .o-dashboard-body {
-    background-color: darkgray;
-    flex-grow: 1;
-  }
 
   .o-dashboard-horizontal-layer:has(.o-dashboard-body) {
     flex-grow: 1;

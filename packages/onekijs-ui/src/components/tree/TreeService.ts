@@ -88,6 +88,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
   @saga(SagaEffect.Every)
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   *expand(item: I) {
+    console.log('expand', item);
     if (item.type === 'folder' && item.children === undefined) {
       yield this._fetchChildren(item, this._expand);
     } else {
@@ -327,6 +328,8 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
       this.state.collapsing = this.state.collapsing.filter((uid) => uid !== item.uid);
       this.setParam('collapsing', this.state.collapsing);
     }
+
+    console.log('state', Object.assign({}, this.state));
     this.refresh();
   }
 
