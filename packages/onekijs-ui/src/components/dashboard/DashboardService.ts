@@ -29,6 +29,14 @@ import {
 import { getCollapseKey, getFloatingKey } from './utils/dashboardLength';
 import { delay } from 'redux-saga/effects';
 
+export const isHorizontalPanel = (panel: any): panel is DashboardHorizontalPanel => {
+  return get(panel, 'height') !== undefined;
+}
+
+export const isVerticalPanel = (panel: any): panel is DashboardVerticalPanel => {
+  return get(panel, 'width') !== undefined;
+}
+
 @service
 export class DashboardService extends DefaultService<DashboardState> {
   protected areas: DashboardArea[][] = [
@@ -49,8 +57,15 @@ export class DashboardService extends DefaultService<DashboardState> {
     let areas: (DashboardHorizontalArea|DashboardVerticalArea)[] = area === 'all' ? ['left', 'right', 'header', 'footer'] : [area];
 
     for (const area of areas) {
-      yield this._setCollapse(area, collapse);
       const panel = get(this.state, area);
+      // if the size is auto, we first need to set the hardcode the size in the html (to activate the animation)
+      let fixed = false;
+      if (panel?.animation) {
+        fixed = yield this._fixPanelSize(area);
+      }
+
+      yield this._setCollapse(area, collapse);
+
       if (panel?.animation) {
         yield this._setExpanding(area, !collapse);
         yield this._setCollapsing(area, collapse);
@@ -59,6 +74,9 @@ export class DashboardService extends DefaultService<DashboardState> {
           yield this._setCollapsing(area, false);
         } else if (!collapse && this.state[area]?.expanding) {
           yield this._setExpanding(area, false);
+        }
+        if (fixed) {
+          yield this._unfixPanelSize(area);
         }
       }
     }
@@ -115,7 +133,7 @@ export class DashboardService extends DefaultService<DashboardState> {
 
   @reducer
   initContainer(ref: React.MutableRefObject<HTMLDivElement | null>): void {
-    this.state.container = { ref };
+    this.state.container = { };
     this.refs.container = ref;
   }
 
@@ -125,7 +143,7 @@ export class DashboardService extends DefaultService<DashboardState> {
       animation: props.animation ?? 300,
       area,
       backgroundColor: 'inherits',
-      collapseHeight: props.collapseHeight ?? 'auto',
+      collapseHeight: props.collapseHeight ?? 0,
       collapseLarge: props.collapseLarge ?? props.collapse ?? false,
       collapseMedium: props.collapseMedium ?? props.collapse ?? true,
       collapseSmall: props.collapseSmall ?? props.collapse ?? true,
@@ -153,7 +171,7 @@ export class DashboardService extends DefaultService<DashboardState> {
       collapseLarge: props.collapseLarge ?? props.collapse ?? false,
       collapseMedium: props.collapseMedium ?? props.collapse ?? true,
       collapseSmall: props.collapseSmall ?? props.collapse ?? true,
-      collapseWidth: props.collapseWidth ?? 'auto',
+      collapseWidth: props.collapseWidth ?? 0,
       collapsing: false,
       expanding: false,
       floatingLarge: props.floatingLarge ?? props.floating ?? false,
@@ -256,6 +274,33 @@ export class DashboardService extends DefaultService<DashboardState> {
     });
   }
 
+  @reducer
+  _fixPanelSize(area: DashboardHorizontalArea | DashboardVerticalArea):  boolean {
+    const panel = this.state[area];
+    const ref = this.refs[area];
+    if (ref && ref.current) {
+      if (isHorizontalPanel(panel) && panel.height === 'auto') {
+        panel.height = `${ref.current.offsetHeight}px`;
+        return true;
+      } else if(isVerticalPanel(panel) && panel.width === 'auto') {
+        panel.width = `${ref.current.offsetWidth}px`;
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  @reducer
+  _unfixPanelSize(area: DashboardHorizontalArea | DashboardVerticalArea):  void {
+    const panel = this.state[area];
+    if (isHorizontalPanel(panel)) {
+      panel.height = 'auto';
+    } else if(isVerticalPanel(panel)) {
+      panel.width = 'auto';
+    }
+  }
+
   _getCollapseKey(): 'collapseSmall' | 'collapseMedium' | 'collapseLarge' {
     return getCollapseKey(this._getSize());
   }
@@ -265,7 +310,7 @@ export class DashboardService extends DefaultService<DashboardState> {
   }
 
   _getSize(): DashboardSize {
-    if (!this.state.container || !this.refs.container?.current) {
+    if (!this.refs.container?.current) {
       return isMobile() ? 'small' : 'large';
     }
     const dashboardWidth = this.refs.container.current.offsetWidth;
