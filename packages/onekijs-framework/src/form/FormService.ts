@@ -170,7 +170,7 @@ export default class FormService<T extends object = any> extends DefaultService<
           }
           obj = obj[container].children as AnonymousObject<FormDisplayerField>;
         }
-      };
+      }
       const metadata = this.state.metadata[fieldName];
       if (!hidden && (metadata?.visible ?? true)) {
         obj[fieldName] = Object.assign({
@@ -236,8 +236,6 @@ export default class FormService<T extends object = any> extends DefaultService<
         }
       });
     }
-
-
   }
 
   decorator(name: string, options: FormDecoratorOptions = {}): FormDecorator {
@@ -257,7 +255,7 @@ export default class FormService<T extends object = any> extends DefaultService<
   disable(fieldOrDecoratorName: string, match = true): void {
     // ignore if the field is not editable
     if (this.isField(fieldOrDecoratorName) && this.isReadOnlyField(fieldOrDecoratorName)) {
-      return
+      return;
     }
     this.setMetadata(fieldOrDecoratorName, 'disabled', match);
   }
@@ -369,7 +367,7 @@ export default class FormService<T extends object = any> extends DefaultService<
 
   isReadOnlyField(fieldName: NestedKeyOf<T>) {
     const metadata = this.state.metadata[fieldName] || {};
-    return metadata.readOnly || (this.config.reconfigure && !metadata.editable)
+    return metadata.readOnly || (this.config.reconfigure && !metadata.editable);
   }
 
   getContainerFieldValidation(
@@ -451,16 +449,11 @@ export default class FormService<T extends object = any> extends DefaultService<
     return result;
   }
 
-  getMetadata<K extends keyof FormMetadata>(
-    fieldOrDecoratorName: string,
-    key: K,
-  ): FormMetadata[K] | undefined {
+  getMetadata<K extends keyof FormMetadata>(fieldOrDecoratorName: string, key: K): FormMetadata[K] | undefined {
     return get(this.state.metadata, `${fieldOrDecoratorName}.${key}`);
   }
 
-  getMetadatas(
-    fieldOrDecoratorName: string,
-  ): FormMetadata | undefined {
+  getMetadatas(fieldOrDecoratorName: string): FormMetadata | undefined {
     return get(this.state.metadata, fieldOrDecoratorName);
   }
 
@@ -567,7 +560,12 @@ export default class FormService<T extends object = any> extends DefaultService<
     return get<any>(this.state.values, fieldName, defaultValue);
   }
 
-  hasValidation(fieldName: NestedKeyOf<T> | undefined, validatorName: string, code: ValidationCode, message?: string): boolean {
+  hasValidation(
+    fieldName: NestedKeyOf<T> | undefined,
+    validatorName: string,
+    code: ValidationCode,
+    message?: string,
+  ): boolean {
     if (fieldName === undefined) {
       const validation = get<any>(this.validations, `${code}.${validatorName}`);
       if (!message) {
@@ -708,7 +706,7 @@ export default class FormService<T extends object = any> extends DefaultService<
       this.defaultValues[name] = isUndefined(initialValue) ? options.defaultValue : initialValue;
 
       // we force disable to true if the field is not editable and this is a reconfiguration
-      const disabled = (this.config.reconfigure && !options.editable || options.readOnly) ? true : options.disabled;
+      const disabled = (this.config.reconfigure && !options.editable) || options.readOnly ? true : options.disabled;
 
       this.defaultMetadata[name] = Object.assign(
         {
@@ -724,7 +722,7 @@ export default class FormService<T extends object = any> extends DefaultService<
     // some options are not dynamically managed by the FormService. We erase the value
     ['Displayer', 'ValueDisplayer', 'label', 'protected', 'containers'].forEach((f: any) => {
       set(this.fields[name], f, get(options, f));
-    })
+    });
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.fields[name]!.context;
@@ -773,7 +771,6 @@ export default class FormService<T extends object = any> extends DefaultService<
                 }),
               );
             }
-
           } else {
             const nextField = this.fields[`${fieldArrayName}.${i}.${fieldName}` as NestedKeyOf<T>] as Field<T>;
             const currentField = this.fields[`${fieldArrayName}.${i + 1}.${fieldName}` as NestedKeyOf<T>] as Field<T>;
@@ -929,48 +926,81 @@ export default class FormService<T extends object = any> extends DefaultService<
 
   @reducer
   remove(fieldArrayName: NestedKeyOf<T>, index: number, changeValue = true): void {
-    const replace = (currentField: any, nextField: any, ignore: string[]) => {
-
-      Object.keys(currentField).forEach((key) => {
-        if (!ignore.includes(key)) {
-          delete currentField[key];
-        }
-
-      });
-
-      Object.keys(nextField).forEach((key) => {
-        if (!ignore.includes(key)) {
-          currentField[key] = nextField[key];
-        }
-      });
-
-    }
-
-    const move = (oldIndex: string, newIndex: string) => {
-      const nextField: Field<T> | undefined = this.fields[oldIndex as NestedKeyOf<T>];
-      const currentField = this.fields[newIndex as NestedKeyOf<T>] as Field<T>;
-
-      if (nextField) {
-        this.state.validations[newIndex] = this.state.validations[oldIndex];
-        this.state.metadata[newIndex] = this.state.metadata[oldIndex];
-        replace(currentField, nextField, ['name', 'context']);
-        this.fields[newIndex as NestedKeyOf<T>] = currentField;
-
-        this.pendingDispatch.validationChange.add(newIndex);
-        this.pendingDispatch.metadataChange.add(newIndex);
-      } else {
-        delete this.state.validations[newIndex];
-        delete this.state.metadata[newIndex];
-        delete this.fields[newIndex as NestedKeyOf<T>];
+    const replace = (targetField: any, sourceField: any, ignore: string[]) => {
+      if (targetField) {
+        Object.keys(targetField).forEach((key) => {
+          if (!ignore.includes(key)) {
+            delete targetField[key];
+          }
+        });
       }
-      delete this.triggered[oldIndex];
+
+      if (targetField && sourceField) {
+        Object.keys(sourceField).forEach((key) => {
+          if (!ignore.includes(key)) {
+            targetField[key] = sourceField[key];
+          }
+        });
+      }
+    };
+
+    const move = (sourceIndex: string, targetIndex: string, sub=false) => {
+      const sourceField: Field<T> | undefined = this.fields[sourceIndex as NestedKeyOf<T>];
+      const targetField = this.fields[targetIndex as NestedKeyOf<T>] as Field<T>;
+
+      const sourceSubFieldIndexes = Object.keys(this.fields || {}).filter((f) => f.startsWith(`${sourceIndex}.`));
+      const targetSubFieldIndexes = Object.keys(this.fields || {}).filter((f) => f.startsWith(`${targetIndex}.`));
+      // remove all subfield of the row (there is column containing a table) that are not present in the row that we are moving
+      if (!sub) {
+        for (const targetSubFieldIndex of targetSubFieldIndexes) {
+          if (!sourceSubFieldIndexes.includes(targetSubFieldIndex.replace(targetIndex, sourceIndex))) {
+            rm(targetSubFieldIndex);
+          }
+        }
+      }
+
+
+      if (sourceField) {
+        this.state.validations[targetIndex] = this.state.validations[sourceIndex];
+        this.state.metadata[targetIndex] = this.state.metadata[sourceIndex];
+        replace(targetField, sourceField, ['name', 'context']);
+        this.fields[targetIndex as NestedKeyOf<T>] = targetField;
+
+        this.pendingDispatch.validationChange.add(targetIndex);
+        this.pendingDispatch.metadataChange.add(targetIndex);
+
+        if (!sub) {
+          for (const sourceSubFieldIndex of sourceSubFieldIndexes) {
+            const subField = this.fields[sourceSubFieldIndex as NestedKeyOf<T>]
+            if (subField && subField.containers) {
+              for (const i in subField.containers) {
+                if (subField.containers[i] === sourceIndex) {
+                  subField.containers[i] = targetIndex;
+                }else if (subField.containers[i].startsWith(sourceIndex)) {
+                  subField.containers[i] = subField.containers[i].replace(sourceIndex, targetIndex);
+                }
+              }
+            }
+            move(sourceSubFieldIndex, sourceSubFieldIndex.replace(sourceIndex, targetIndex), true)
+          }
+        }
+      } else {
+        rm(sourceIndex);
+      }
+      delete this.triggered[sourceIndex];
     };
 
     const rm = (oldIndex: string) => {
       delete this.state.metadata[oldIndex];
       delete this.state.validations[oldIndex];
       delete this.fields[oldIndex as NestedKeyOf<T>];
+      delete this.decorators[oldIndex];
       delete this.triggered[oldIndex];
+
+      const subFieldIndexes = Object.keys(this.fields || {}).filter((f) => f.startsWith(`${oldIndex}.`));
+      for (const oldSubFieldIndex of subFieldIndexes) {
+        rm(oldSubFieldIndex);
+      }
     };
 
     const currentArrayValue = (get<any>(this.state.values, fieldArrayName) || []) as any[];
@@ -1253,7 +1283,7 @@ export default class FormService<T extends object = any> extends DefaultService<
       const nextValue = values[key as NestedKeyOf<T>] as PathType<T, NestedKeyOf<T>>;
 
       if (Array.isArray(currentValue) && Array.isArray(nextValue) && currentValue.length > nextValue.length) {
-        for (let i = currentValue.length-1; i >= nextValue.length; i--) {
+        for (let i = currentValue.length - 1; i >= nextValue.length; i--) {
           this.remove(key as NestedKeyOf<T>, i, false);
         }
       }
@@ -1292,8 +1322,7 @@ export default class FormService<T extends object = any> extends DefaultService<
           if (typeof this.config.onError === 'function') {
             yield this.config.onError(fields, this.state.values);
           }
-        }
-        finally {
+        } finally {
           yield this.setSubmitting(false);
         }
         break;
