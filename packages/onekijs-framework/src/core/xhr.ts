@@ -36,6 +36,7 @@ export async function xhr(url: string, method: string, body?: unknown, options: 
       }
     }
   }
+  console.log('xhr', url, method, body, options);
   if (options.auth) {
     if (get(options, 'auth.token.access_token')) {
       headers.Authorization = `Bearer ${options.auth.token.access_token}`;
