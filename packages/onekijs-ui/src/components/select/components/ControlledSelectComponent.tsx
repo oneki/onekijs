@@ -118,8 +118,9 @@ const ControlledSelectComponent = <
   if (nullable === undefined) {
     nullable = !required;
   }
+  const [initialized, setInitialized] = useState(false);
   const [internalOpen, setOpen] = useState(false);
-  const open = externalOpen ?? internalOpen;
+  const open = initialized && (externalOpen ?? internalOpen);
 
   const [focus, setFocus] = useState(false);
   const stateRef = useRef<AnonymousObject>({});
@@ -314,6 +315,10 @@ const ControlledSelectComponent = <
   const clearSearch = useCallback(() => {
     setTimeout(service.clearSearch, animationMs);
   }, [service, animationMs]);
+
+  useEffect(() => {
+    setInitialized(true);
+  }, [setInitialized]);
 
   const onBlur = useCallback(() => {
     if (!stateRef.current.keepFocus) {
