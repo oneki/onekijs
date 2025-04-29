@@ -113,11 +113,14 @@ const ControlledSelectComponent = <
   autoCompleteSearch = true,
   maxDisplayTokens,
   validateValue = true,
+  open: externalOpen,
 }: ControllerSelectProps<T, I, S, C>) => {
   if (nullable === undefined) {
     nullable = !required;
   }
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setOpen] = useState(false);
+  const open = externalOpen ?? internalOpen;
+
   const [focus, setFocus] = useState(false);
   const stateRef = useRef<AnonymousObject>({});
   const service = controller.asService();

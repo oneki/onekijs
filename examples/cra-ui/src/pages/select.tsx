@@ -148,6 +148,7 @@ export const SelectPage = () => {
             name="simple"
             required
             nullable={true}
+            open={true}
           />
           <br />
           {/* <FormSelect label="Simple select" help="help" size="small" layout="vertical" description="Only one entry is permitted" placeholder="Search by position" controller={collection} name="simple" required /><br/>
