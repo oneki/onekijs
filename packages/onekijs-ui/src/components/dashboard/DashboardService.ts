@@ -62,6 +62,7 @@ export class DashboardService extends DefaultService<DashboardState> {
       let fixed = false;
       if (panel?.animation) {
         fixed = yield this._fixPanelSize(area);
+        yield delay(1);
       }
 
       yield this._setCollapse(area, collapse);
@@ -74,10 +75,11 @@ export class DashboardService extends DefaultService<DashboardState> {
           yield this._setCollapsing(area, false);
         } else if (!collapse && this.state[area]?.expanding) {
           yield this._setExpanding(area, false);
+          if (fixed) {
+            yield this._unfixPanelSize(area);
+          }
         }
-        if (fixed) {
-          yield this._unfixPanelSize(area);
-        }
+
       }
     }
   }
@@ -142,6 +144,7 @@ export class DashboardService extends DefaultService<DashboardState> {
     const dashboardPanel: DashboardHorizontalPanel = {
       animation: props.animation ?? 300,
       area,
+      autoHeight: props.height === undefined || props.height === 'auto',
       backgroundColor: 'inherits',
       collapseHeight: props.collapseHeight ?? 0,
       collapseLarge: props.collapseLarge ?? props.collapse ?? false,
@@ -167,6 +170,7 @@ export class DashboardService extends DefaultService<DashboardState> {
     const dashboardPanel: DashboardVerticalPanel = {
       animation: props.animation ?? 300,
       area,
+      autoWidth: props.width === undefined || props.width === 'auto',
       backgroundColor: 'inherits',
       collapseLarge: props.collapseLarge ?? props.collapse ?? false,
       collapseMedium: props.collapseMedium ?? props.collapse ?? true,
@@ -294,9 +298,9 @@ export class DashboardService extends DefaultService<DashboardState> {
   @reducer
   _unfixPanelSize(area: DashboardHorizontalArea | DashboardVerticalArea):  void {
     const panel = this.state[area];
-    if (isHorizontalPanel(panel)) {
+    if (isHorizontalPanel(panel) && panel.autoHeight) {
       panel.height = 'auto';
-    } else if(isVerticalPanel(panel)) {
+    } else if(isVerticalPanel(panel) && panel.autoWidth) {
       panel.width = 'auto';
     }
   }

@@ -51,11 +51,11 @@ export const DashboardPageComponent: React.FC<StylableProps> = ({ className }) =
 
         </DashboardHeader>
 
-        <DashboardRight resizable  width="350px" collapseWidth="0px" floating={false}>
-          Right
+        <DashboardRight resizable  width="auto" collapseWidth="50px" floating={false}>
+          RightRightRightRightRightRightRightRightRightRight
         </DashboardRight>
 
-      <DashboardFooter resizable collapse={true} floating={false} collapseHeight="25px">
+      <DashboardFooter resizable collapse={true} floating={false} collapseHeight="0px">
           Footer<br/>Footer<br/>Footer<br/>Footer<br/>Footer<br/>Footer<br/>Footer<br/>
         </DashboardFooter>
 

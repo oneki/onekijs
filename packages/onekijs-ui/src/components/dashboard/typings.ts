@@ -53,6 +53,7 @@ export type DashboardHorizontalPanelComponentProps = React.InputHTMLAttributes<H
   };
 
 type DashboardHorizontalProps = {
+  autoHeight?: boolean;
   collapseHeight?: string | 0;
   height?: string | 0;
   maxHeight?: string | 0;
@@ -126,6 +127,7 @@ export type DashboardVerticalPanelComponentProps = StylableProps & React.InputHT
   };
 
 type DashboardVerticalProps = {
+  autoWidth?: boolean;
   collapseWidth?: string | 0;
   maxWidth?: string | 0;
   minWidth?: string | 0;
