@@ -112,7 +112,7 @@ export default class LogoutService extends DefaultLocalService<LogoutState> {
           // call the server
           const method = idp.logoutMethod || 'GET';
           yield asyncHttp(absoluteUrl(idp.logoutEndpoint, get(settings, 'server.baseUrl')), method, undefined, {
-            auth: store.getState().auth,
+            auth: store.getState().auth[identity],
           });
         }
 
