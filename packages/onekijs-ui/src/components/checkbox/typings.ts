@@ -1,12 +1,13 @@
 import { FormFieldProps, ValidationStatus } from 'onekijs-framework';
 import { FieldLayoutProps } from '../field/typings';
+import { ReactNode } from 'react';
 
 export interface CheckboxProps
   extends Omit<
     React.InputHTMLAttributes<HTMLInputElement>,
     'type' | 'onChange' | 'value' | 'checked' | 'defaultValue'
   > {
-  label?: string;
+  text?: ReactNode;
   onChange?: (checked: boolean) => void;
   value?: boolean;
   bordered?: boolean;
