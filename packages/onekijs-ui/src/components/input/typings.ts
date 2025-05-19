@@ -50,7 +50,7 @@ export type FormInputProps = InputProps &
      *
      * @remarks #important#
      */
-    defaultValue?: string;
+    defaultValue?: string | number;
     /**
      * Replace the default component that display the input
      *

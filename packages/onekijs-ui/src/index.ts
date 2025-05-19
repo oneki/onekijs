@@ -17,6 +17,7 @@ export { default as buttonStyle, dropdownButtonStyle } from './components/button
 export { ButtonProps, DropDownButtonProps, SubmitButtonProps } from './components/button/typings';
 export { default as Card } from './components/card';
 export { default as FormCard } from './components/card/FormCard';
+export { default as FormBlock } from './components/card/FormBlock';
 export { default as CardComponent } from './components/card/components/CardComponent';
 export { default as CardTitle } from './components/card/components/CardTitle';
 export { cardStyle } from './components/card/style';
