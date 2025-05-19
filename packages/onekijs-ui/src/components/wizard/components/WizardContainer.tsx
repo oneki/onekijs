@@ -29,10 +29,15 @@ const WizardContainer: FCC<Omit<WizardProps, 'Component'>> = ({
   title,
   stepSize = 3,
   TitleComponent = StepTitle,
+  forwardOnly = true,
+  hasSummaryStep = false,
+  reviewLabel = 'Review and Submit'
 }) => {
   const classNames = addClassname('o-wizard', className);
   const state = useWizardState();
   const service = useWizardService();
+
+  const lastStepUid = service.getLastStep()?.uid;
 
   const activate = useCallback(
     (step: StepState) => {
@@ -78,7 +83,10 @@ const WizardContainer: FCC<Omit<WizardProps, 'Component'>> = ({
         })}
       </Col>
       <Col size={(12 - stepSize) as GridSize} className="o-wizard-content-panel">
-        <div className="o-wizard-content">{children}</div>
+        <div className="o-wizard-content">
+          {children}
+        </div>
+
         <div className="o-wizard-control">
           {onCancel && (
             <Button
@@ -114,17 +122,17 @@ const WizardContainer: FCC<Omit<WizardProps, 'Component'>> = ({
               {nextLabel}
             </Button>
           )}
-          {service.isLastStep() && (
+          {(service.isLastStep() || !forwardOnly) && (
             <SubmitButton
               kind={errorRef.current.length > 0 ? 'danger' : 'success'}
               pattern="solid"
               className="o-wizard-control-button"
               disabled={errorRef.current.length > 0}
-              onClick={onDone}
+              onClick={(hasSummaryStep && !service.isLastStep() && lastStepUid) ? () => service.activate(lastStepUid): onDone}
               type="button"
               showErrors={true}
             >
-              {doneLabel}
+              {(hasSummaryStep && !service.isLastStep()) ? reviewLabel : doneLabel}
             </SubmitButton>
           )}
         </div>

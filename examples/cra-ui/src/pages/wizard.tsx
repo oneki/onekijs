@@ -1,5 +1,5 @@
 import { Input, Form, useFormController } from 'onekijs';
-import { ComponentStyle, Step, Wizard, WizardModal } from 'onekijs-ui';
+import { ComponentStyle, Step, useWizardService, useWizardState, Wizard, WizardModal } from 'onekijs-ui';
 import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
 
@@ -14,9 +14,13 @@ const wizardStyle: ComponentStyle<{}> = () => {
   `;
 };
 
+
+
 const Page: React.FC<{ className?: string }> = ({ className }) => {
   const formController = useFormController();
   const [open, setOpen] = useState(false);
+
+
 
   return (
     <>
@@ -26,11 +30,12 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
           open={open}
           title="New Virtual Machine"
           layout="vertical"
-          forwardOnly={true}
+          forwardOnly={false}
           onDone={formController.submit}
           closeOnEscape={true}
           onClose={() => setOpen(false)}
           size="large"
+          hasSummaryStep={true}
         >
           <Step title="Services" key="test" help="this is an help message">
           Lastname : <Input name="lastname" required={true} />
@@ -142,6 +147,7 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
           <Step title="Volumes" key="test3">
             <div>Section3</div>
           </Step>
+          <Step title="Summary">Summary</Step>
         </WizardModal>
 
       </Form>

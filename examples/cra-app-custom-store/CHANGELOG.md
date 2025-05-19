@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.20.8](https://github.com/oneki/onekijs/compare/v0.20.7...v0.20.8) (2025-04-30)
+
+**Note:** Version bump only for package cra-app-custom-store
+
+
+
+
+
 ## [0.20.7](https://github.com/oneki/onekijs/compare/v0.20.6...v0.20.7) (2025-03-28)
 
 **Note:** Version bump only for package cra-app-custom-store
