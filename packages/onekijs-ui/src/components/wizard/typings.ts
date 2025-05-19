@@ -1,5 +1,5 @@
 import { AnyFunction, FCC } from 'onekijs-framework';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { GridSize } from '../grid/typings';
 import { ModalProps } from '../modal/typings';
 import { TabProps, TabsProps, TabsState, TabState, TabTitleProps } from '../tab/typings';
@@ -36,13 +36,14 @@ export type WizardProps<M extends StepState = StepState> = Omit<
   TabsProps,
   'controller' | 'Component' | 'TitleComponent'
 > & {
-  cancelLabel?: string;
+  cancelLabel?: ReactNode;
   controller?: WizardService;
   Component?: FCC<Omit<WizardProps, 'Component'>>;
-  doneLabel?: string;
+  doneLabel?: ReactNode;
+  reviewLabel?: ReactNode;
   forwardOnly?: boolean;
   inModal?: boolean;
-  nextLabel?: string;
+  nextLabel?: ReactNode;
   previousLabel?: string;
   stepSize?: GridSize;
   onCancel?: AnyFunction;
@@ -51,6 +52,8 @@ export type WizardProps<M extends StepState = StepState> = Omit<
   onPrevious?: (currentStep: M, previousStep: M) => boolean;
   title?: ReactNode;
   TitleComponent?: React.FC<StepTitleProps>;
+  hasSummaryStep?: boolean;
+
 };
 
 export type WizardState<M extends StepState = StepState> = TabsState<M> &

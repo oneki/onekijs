@@ -37,6 +37,10 @@ export class WizardService<
     return undefined;
   }
 
+  getLastStep(): M | undefined {
+    return this.state.members.filter((m) => m.visible && !m.disabled).slice(-1)[0]
+  }
+
   getPreviousStep(): M | undefined {
     for (let i = this.getCurrentActiveIndex() - 1; i >= 0; i--) {
       const step = this.state.members[i];
