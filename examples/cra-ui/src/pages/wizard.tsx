@@ -1,5 +1,13 @@
 import { Input, Form, useFormController } from 'onekijs';
-import { ComponentStyle, Step, useWizardService, useWizardState, Wizard, WizardModal } from 'onekijs-ui';
+import {
+  ComponentStyle,
+  Step,
+  StepTitleProps,
+  useWizardService,
+  useWizardState,
+  Wizard,
+  WizardModal,
+} from 'onekijs-ui';
 import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
 
@@ -14,13 +22,17 @@ const wizardStyle: ComponentStyle<{}> = () => {
   `;
 };
 
-
+const TitleContentComponent: React.FC<StepTitleProps> = ({ member }) => {
+  return (
+    <span className="o-step-title">
+      {`${member.title}`}
+    </span>
+  );
+};
 
 const Page: React.FC<{ className?: string }> = ({ className }) => {
   const formController = useFormController();
   const [open, setOpen] = useState(false);
-
-
 
   return (
     <>
@@ -38,7 +50,7 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
           hasSummaryStep={true}
         >
           <Step title="Services" key="test" help="this is an help message">
-          Lastname : <Input name="lastname" required={true} />
+            Lastname : <Input name="lastname" required={true} />
             <p>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
               dolore magna aliqua. Est lorem ipsum dolor sit amet consectetur. Quam nulla porttitor massa id neque
@@ -149,7 +161,6 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
           </Step>
           <Step title="Summary">Summary</Step>
         </WizardModal>
-
       </Form>
       <div>
         <pre>{JSON.stringify(formController.getValue())}</pre>

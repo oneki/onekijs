@@ -29,6 +29,7 @@ const WizardContainer: FCC<Omit<WizardProps, 'Component'>> = ({
   title,
   stepSize = 3,
   TitleComponent = StepTitle,
+  TitleContentComponent,
   forwardOnly = true,
   hasSummaryStep = false,
   reviewLabel = 'Review and Submit'
@@ -78,6 +79,7 @@ const WizardContainer: FCC<Omit<WizardProps, 'Component'>> = ({
               member={step}
               onActivate={activate}
               index={indexRef.current}
+              TitleContentComponent={TitleContentComponent}
             />
           );
         })}
