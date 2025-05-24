@@ -6,7 +6,7 @@ import { useTabsState } from '../hooks/useTabsState';
 import { TabsProps, TabState } from '../typings';
 import TabTitle from './TabTitle';
 
-const TabsContainer: FCC<Omit<TabsProps, 'Component'>> = ({ className, children, TitleComponent = TabTitle }) => {
+const TabsContainer: FCC<Omit<TabsProps, 'Component'>> = ({ className, children, TitleComponent = TabTitle, onActivate }) => {
   const classNames = addClassname('o-tabs', className);
   const state = useTabsState();
   const service = useTabsService();
@@ -15,10 +15,10 @@ const TabsContainer: FCC<Omit<TabsProps, 'Component'>> = ({ className, children,
     (tab: TabState) => {
       if (!tab || tab.disabled) return;
       if (!tab.active) {
-        service.activate(tab.uid);
+        onActivate ? onActivate(tab) : service.activate(tab.uid);
       }
     },
-    [service],
+    [service, onActivate],
   );
 
   return (
