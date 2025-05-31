@@ -14,8 +14,10 @@ const TabsContainer: FCC<Omit<TabsProps, 'Component'>> = ({ className, children,
   const activate = useCallback(
     (tab: TabState) => {
       if (!tab || tab.disabled) return;
-      if (!tab.active) {
-        onActivate ? onActivate(tab) : service.activate(tab.uid);
+      if (onActivate) {
+        onActivate(tab)
+      } else if (!tab.active) {
+        service.activate(tab.uid);
       }
     },
     [service, onActivate],
