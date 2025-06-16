@@ -737,7 +737,7 @@ export default class CollectionService<
       this._setQuery(query);
     }
 
-    if (this.state.status !== LoadingStatus.NotReady) {
+    if (this.status !== LoadingStatus.NotReady) {
       this.state.status = LoadingStatus.NotInitialized;
       if (this.state.fetchOnce) {
         this.state.local = true;
