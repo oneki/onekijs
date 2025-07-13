@@ -635,10 +635,12 @@ const DashboardContainer = styled(DashboardContainerComponent)`
 
   .o-dashboard-horizontal-layer:has(.o-dashboard-body) {
     flex-grow: 1;
+    overflow: auto;
   }
 
   .o-dashboard-vertical-layer:has(.o-dashboard-body) {
     flex-grow: 1;
+    overflow: auto;
   }
 `;
 

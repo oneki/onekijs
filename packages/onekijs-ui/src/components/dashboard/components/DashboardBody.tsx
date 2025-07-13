@@ -46,11 +46,9 @@ const style: ComponentStyle<DashboardBodyComponentProps> = (props) => {
     flex-direction: column;
     flex-grow: 1;
     transition: ${() => (props.panel ? 'transform 0.3s, width 0.3s, height 0.3s' : 'none')};
-    .o-dashboard-body-content {
-      flex: 1 0 0;
-      overflow-x: auto;
-      overflow-y: scroll;
-    }
+    overflow-x: auto;
+    overflow-y: scroll;
+
   `;
 };
 
