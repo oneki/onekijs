@@ -3,10 +3,12 @@ import {
   clone,
   CollectionFetcherResult,
   CollectionService,
+  CollectionStatus,
   defaultComparator,
   ensureFieldValue,
   isNull,
   LoadingStatus,
+  Primitive,
   Query,
   reducer,
   saga,
@@ -88,6 +90,13 @@ class SelectService<
     }
 
     yield call(this._setInvalidItems, invalidItems);
+  }
+
+  get status(): CollectionStatus {
+    if (!this._doSearch(this.state.search)) {
+      return LoadingStatus.NotReady;
+    }
+    return super.status;
   }
 
   @reducer
@@ -206,6 +215,17 @@ class SelectService<
       return a === b;
     }
     return a.id === b.id;
+  }
+
+  _doSearch(search: Primitive | undefined) {
+    const minChars = this.config?.minChars || 0;
+    if (search === undefined) {
+      search = '';
+    }
+    if (typeof search === 'string' && search.length < minChars) {
+      return false;
+    }
+    return true;
   }
 
   @reducer
