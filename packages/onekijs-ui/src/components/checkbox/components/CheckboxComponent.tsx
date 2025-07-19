@@ -3,7 +3,7 @@ import { addClassname } from '../../../utils/style';
 import { CheckboxProps } from '../typings';
 
 const CheckboxComponent: FC<CheckboxProps> = ({
-  text,
+  label,
   className = '',
   onChange,
   value = false,
@@ -33,7 +33,7 @@ const CheckboxComponent: FC<CheckboxProps> = ({
             className="o-checkbox-input"
           />
         </div>
-        {text && <span className="o-checkbox-label">{text}</span>}
+        {label && <span className="o-checkbox-label">{label}</span>}
       </label>
     </div>
   );

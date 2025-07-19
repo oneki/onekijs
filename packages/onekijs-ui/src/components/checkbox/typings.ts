@@ -7,7 +7,7 @@ export interface CheckboxProps
     React.InputHTMLAttributes<HTMLInputElement>,
     'type' | 'onChange' | 'value' | 'checked' | 'defaultValue'
   > {
-  text?: ReactNode;
+  label?: ReactNode;
   onChange?: (checked: boolean) => void;
   value?: boolean;
   bordered?: boolean;
