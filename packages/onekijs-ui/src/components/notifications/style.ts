@@ -60,6 +60,7 @@ export const notifcationsStyle: ComponentStyle<NotificationsProps> = ({ position
       &.o-notification-error {
         ${backgroundColor('red-100')}
         ${borderColor('red-200')}
+        ${color('danger')}
         .o-notification-timer {
           ${color('danger')}
         }
@@ -67,6 +68,7 @@ export const notifcationsStyle: ComponentStyle<NotificationsProps> = ({ position
       &.o-notification-success {
         ${backgroundColor('green-0')}
         ${borderColor('green-100')}
+        ${color('green-500')}
         .o-notification-timer {
           ${color('green-500')}
         }
@@ -74,6 +76,7 @@ export const notifcationsStyle: ComponentStyle<NotificationsProps> = ({ position
       &.o-notification-info {
         ${backgroundColor('blue-0')}
         ${borderColor('blue-200')}
+        ${color('blue-500')}
         .o-notification-timer {
           ${color('blue-500')}
         }
@@ -81,6 +84,7 @@ export const notifcationsStyle: ComponentStyle<NotificationsProps> = ({ position
       &.o-notification-warning {
         ${backgroundColor('yellow-100')}
         ${borderColor('yellow-200')}
+         ${color('warning')}
         .o-notification-timer {
           ${color('warning')}
         }

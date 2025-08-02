@@ -395,6 +395,10 @@ export {
   WizardProps,
   WizardState,
 } from './components/wizard/typings';
+// export { sliderStyle } from './components/slider/style';
+// export { default as Slider } from './components/slider';
+// export { default as SliderCompoent }  from './components/slider/components/SliderComponent';
+// export { SliderProps } from './components/slider/typings';
 export * from './styles/alignment';
 export * from './styles/animation';
 export * from './styles/background';
