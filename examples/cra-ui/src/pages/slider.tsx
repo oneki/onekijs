@@ -1,4 +1,4 @@
-import { Tabs, Tab, ComponentStyle, Slider } from 'onekijs-ui';
+import { Tabs, Tab, ComponentStyle } from 'onekijs-ui';
 import React from 'react';
 import styled, { css } from 'styled-components';
 
