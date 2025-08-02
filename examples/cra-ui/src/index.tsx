@@ -25,6 +25,7 @@ import { TreePage } from './pages/tree';
 import { WizardPage } from './pages/wizard';
 import UiServicePage from './pages/service';
 import { AlertPage } from './pages/alert';
+import { SliderPage } from './pages/slider';
 
 const container = document.getElementById('root');
 const root = createRoot(container!); // createRoot(container!) if you use TypeScript
@@ -80,6 +81,7 @@ root.render(
             <Route path="/timer" element={<TimerPage />} />
             <Route path="/service" element={<UiServicePage />} />
             <Route path="/alert" element={<AlertPage />} />
+            <Route path="/slider" element={<SliderPage />} />
           </Routes>
         </div>
       </div>

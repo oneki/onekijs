@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { height, minHeight, width } from '../../../styles/size';
 import { marginY } from '../../../styles/spacing';
 import { addClassname } from '../../../utils/style';
+import { backgroundColor } from '../../../styles/background';
 
 const LoadingItem: React.FC<{ className?: string, minHeight?: number }> = ({ className }) => {
   return <div className={addClassname('o-loading-item', className)} />;
@@ -19,10 +20,10 @@ export default styled(LoadingItem)`
 
   @keyframes skeleton-loading {
     0% {
-      background-color: hsl(200, 20%, 95%);
+      ${backgroundColor('lightest')};
     }
     100% {
-      background-color: hsl(200, 20%, 80%);
+      ${backgroundColor('light')};
     }
   }
 `;
