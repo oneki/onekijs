@@ -3,6 +3,59 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.21.0 (2025-08-02)
+
+
+* refactor!: merge onekijs/cra,onekijs/next and @oneki/xxx into onekijs (#20) ([7af6c32](https://github.com/oneki/onekijs/commit/7af6c322a52ccc9e28800baf699c34c050f05328)), closes [#20](https://github.com/oneki/onekijs/issues/20)
+
+
+### Features
+
+* add checkbox form grid component ([fd0c336](https://github.com/oneki/onekijs/commit/fd0c336d9135ab8aba9467487f01614cdc3617a0))
+* add collection broker to proxy request to several collection at once ([1297a19](https://github.com/oneki/onekijs/commit/1297a1972cc8b715a9bc4a1a2b846314b7cc8b48))
+* add typings for theme ([52753cb](https://github.com/oneki/onekijs/commit/52753cbaddbb58d945d7513caff47d50a0ced7b9))
+
+
+### BREAKING CHANGES
+
+* the code specific to a CRA app is imported via
+- import {xxx} from 'onekijs/cra'
+instead of
+- import {xxx} from 'onekijs'
+
+* chore: getting-started next: step01 and step02
+
+* refactor: merge everything in onekijs package
+
+* core: fix wrong import
+
+* core: fix style component dependency
+
+* chore: put next and cra into onekijs
+
+* chore: add getting started next step04
+
+* chore: add getting started next step05
+
+* chore: add getting started next step06
+
+* chore: add getting started next step07
+
+* chore: add getting started next step08
+
+* chore: add getting started next step09
+
+* feat: support filtering and sorting for grid
+
+* chore: add getting started next step10
+
+Co-authored-by: Olivier Franki <olivier.franki@gmail.com>
+Co-authored-by: Bruno Franki <bruno.franki@gmail.com>
+
+
+
+
+
 ## [0.20.9](https://github.com/oneki/onekijs/compare/v0.20.8...v0.20.9) (2025-06-16)
 
 **Note:** Version bump only for package cra-ui
