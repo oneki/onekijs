@@ -1,8 +1,11 @@
-import { days } from '../../../utils/date';
+import { days, months } from '../../../utils/date';
 import { addClassname } from '../../../utils/style';
 import { CalendarComponentProps, CalendarDay } from '../typings';
-import React, { FC, useCallback } from 'react';
+import React, { FC, useCallback, useEffect } from 'react';
 import { useDatePickerContext } from './DatePickerComponent';
+import TogglerIcon from '../../icon/TogglerIcon';
+import Select from '../../select';
+import useSelectController from '../../select/hooks/useSelectController';
 
 const isCurrent = (d: Date, year: number, month: number, day: number): boolean => {
   return d.getFullYear() === year && d.getMonth() === month && d.getDate() === day;
@@ -72,8 +75,14 @@ const CalendarComponent: FC<CalendarComponentProps> = ({
   }, [forwardChange, setOpen]);
 
   return (
+
     <div className={addClassname('o-calendar-container', className)}>
-      <div className="o-calendar-month"></div>
+      <div className="o-calendar-month">
+        <TogglerIcon width="20px" closeArrowPosition="w" />
+        <Select dataSource={months} nullable={false} value={months[month]}  className="o-calendar-select-month"  size="small" />
+        <Select dataSource={[2024,2025]} value={year} nullable={false} className="o-calendar-select-year" size="small" />
+        <TogglerIcon width="20px" closeArrowPosition="e" />
+      </div>
       <div className="o-calendar-day-container">
         {days.map((day) => (
           <div className="o-calendar-day-title">{day.substring(0, 2)}</div>
@@ -90,6 +99,7 @@ const CalendarComponent: FC<CalendarComponentProps> = ({
         ))}
       </div>
     </div>
+
   );
 };
 

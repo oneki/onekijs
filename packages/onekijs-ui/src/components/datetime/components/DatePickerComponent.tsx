@@ -8,9 +8,21 @@ import Input from '../../input';
 import { InputProps } from '../../input/typings';
 import { DatePickerContext, DatePickerProps } from '../typings';
 import CalendarComponent from './CalendarComponent';
+import CalendarIcon from '../../icon/CalendarIcon';
 
 const IconComponent: React.FC<InputProps> = () => {
-  return <span className="o-datepicker-icon"><SearchIcon width="20px" height="20px" /></span>;
+  const context = useDatePickerContext();
+  return (
+    <span className="o-datepicker-icon">
+      <CalendarIcon
+        width="20px"
+        height="20px"
+        color="primary"
+        marginRight="sm"
+        onClick={() => context.setOpen(!context.open)}
+      />
+    </span>
+  );
 };
 
 export const DefaultDatePickerContext = React.createContext<DatePickerContext>(null!);
@@ -31,7 +43,7 @@ const DatePickerComponent: FC<DatePickerProps> = ({
   onFocus: forwardFocus,
   openOnFocus = false,
   placeholder,
-  value: externalValue
+  value: externalValue,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const stateRef = useRef<AnonymousObject>({});
@@ -39,9 +51,9 @@ const DatePickerComponent: FC<DatePickerProps> = ({
   const [focus, setFocus] = useState(false);
   const [Dropdown, triggerRef] = useDropdown();
   const [internalValue, setValue] = useState<string | null>(null);
-  const value = (externalValue !== undefined) ? externalValue : internalValue;
+  const value = externalValue !== undefined ? externalValue : internalValue;
   const [date, time] = value ? value.split(' ') : [undefined, undefined];
-  const [year, month, day] = date ? date.split('-') : [undefined, undefined, undefined]
+  const [year, month, day] = date ? date.split('-') : [undefined, undefined, undefined];
 
   const id = useId();
 
@@ -71,14 +83,16 @@ const DatePickerComponent: FC<DatePickerProps> = ({
     }
   }, [open, forwardBlur, setOpen, focus]);
 
-  const onChange = useCallback((nextValue: string | null) => {
-    if (forwardChange) {
-      forwardChange(nextValue);
-    } else {
-      setValue(nextValue);
-    }
-  }, [forwardChange, setValue]);
-
+  const onChange = useCallback(
+    (nextValue: string | null) => {
+      if (forwardChange) {
+        forwardChange(nextValue);
+      } else {
+        setValue(nextValue);
+      }
+    },
+    [forwardChange, setValue],
+  );
 
   const onOpen = useCallback(() => {
     eventLocks.lock('escape', id);
@@ -108,19 +122,7 @@ const DatePickerComponent: FC<DatePickerProps> = ({
         onMouseDown={() => (stateRef.current.keepFocus = true)}
         onMouseUp={() => (stateRef.current.keepFocus = false)}
       >
-        <span ref={triggerRef}>
-          <Input
-            placeholder={placeholder}
-            onChange={(e) => onChange(e.target.value)}
-            value={value === null ? '' : value}
-            onFocus={onFocus}
-            onBlur={onBlur}
-            autoFocus={autoFocus}
-            disabled={disabled}
-            SuffixComponent={IconComponent}
-            onClick={() => setOpen(!open) }
-          />
-        </span>
+
         <Dropdown
           attachToBody={attachDropdownToBody}
           open={open}
@@ -135,6 +137,19 @@ const DatePickerComponent: FC<DatePickerProps> = ({
         >
           <CalendarComponent year={year} month={month} day={day} onChange={onChange} />
         </Dropdown>
+        <span ref={triggerRef}>
+          <Input
+            placeholder={placeholder}
+            onChange={(e) => onChange(e.target.value)}
+            value={value === null ? '' : value}
+            onFocus={onFocus}
+            onBlur={onBlur}
+            autoFocus={autoFocus}
+            disabled={disabled}
+            SuffixComponent={IconComponent}
+            onClick={() => setOpen(!open)}
+          />
+        </span>
       </div>
     </DefaultDatePickerContext.Provider>
   );

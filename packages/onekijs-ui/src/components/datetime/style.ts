@@ -1,7 +1,7 @@
 import { css } from 'styled-components';
 import { alignItems, columnGap, justifyContent, rowGap } from '../../styles/alignment';
 import { backgroundColor } from '../../styles/background';
-import { borderColor, borderRadius, borderTopLeftRadius, borderTopRightRadius, borderTopWidth, borderWidth, boxShadow } from '../../styles/border';
+import { borderColor, borderRadius, borderStyle, borderTopLeftRadius, borderTopRightRadius, borderTopWidth, borderWidth, boxShadow } from '../../styles/border';
 import { display } from '../../styles/display';
 import { gridTemplateColumns } from '../../styles/grid';
 import { cursor } from '../../styles/interactivity';
@@ -9,7 +9,8 @@ import { ComponentStyle } from '../../styles/typings';
 import { color, fontWeight } from '../../styles/typography';
 import { DatePickerProps } from './typings';
 import { zIndex } from '../../styles/position';
-import { padding } from '../../styles/spacing';
+import { marginBottom, marginLeft, marginRight, padding } from '../../styles/spacing';
+import { width } from '../../styles/size';
 
 export const datePickerStyle: ComponentStyle<DatePickerProps> = () => {
   return css`
@@ -25,6 +26,21 @@ export const datePickerStyle: ComponentStyle<DatePickerProps> = () => {
       ${borderTopWidth(0)}
       ${padding('lg')}
     }
+    .o-calendar-month {
+      ${display('flex')}
+      ${alignItems('center')}
+      ${marginBottom('md')}
+      ${columnGap('sm')}
+    }
+
+    .o-calendar-select-month {
+      ${width(24)}
+    }
+
+    .o-calendar-select-year {
+      ${width(12)}
+    }
+
     .o-calendar-day-container {
       ${display('grid')}
       ${color('light')}
@@ -51,8 +67,9 @@ export const datePickerStyle: ComponentStyle<DatePickerProps> = () => {
       ${backgroundColor('lighter')}
     }
     .o-calendar-day-current {
-      ${color('white')}
-      ${backgroundColor('darker')}
+      ${borderColor('darker')}
+      ${borderWidth('2px')}
+      ${borderStyle('solid')}
       ${fontWeight('medium')}
     }
     .o-calendar-day-active {
