@@ -4,6 +4,8 @@ import { DropdownWidthModifier } from '../dropdown/typings';
 export type CalendarComponentProps = StylableProps & {
   month?: string | number;
   year?: string | number;
+  minYear?: number;
+  maxYear?: number;
   day?: string | number;
   onChange: (value: string | null) => void;
 }
@@ -40,4 +42,9 @@ export type DatePickerContext = {
   open: boolean;
   setOpen: (open: boolean) => void;
   triggerRef: React.Dispatch<React.SetStateAction<HTMLElement | null>>;
+}
+
+export type TimeComponentProps = StylableProps & {
+  hour?: number | string;
+  minute?: number | string;
 }

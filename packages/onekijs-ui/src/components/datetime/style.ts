@@ -1,20 +1,23 @@
 import { css } from 'styled-components';
 import { alignItems, columnGap, justifyContent, rowGap } from '../../styles/alignment';
 import { backgroundColor } from '../../styles/background';
-import { borderColor, borderRadius, borderStyle, borderTopLeftRadius, borderTopRightRadius, borderTopWidth, borderWidth, boxShadow } from '../../styles/border';
+import { borderColor, borderRadius, borderStyle, borderTopLeftRadius, borderTopRightRadius, borderWidth, boxShadow } from '../../styles/border';
 import { display } from '../../styles/display';
 import { gridTemplateColumns } from '../../styles/grid';
 import { cursor } from '../../styles/interactivity';
+import { zIndex } from '../../styles/position';
+import { width } from '../../styles/size';
+import { marginBottom, marginLeft, marginTop, padding } from '../../styles/spacing';
 import { ComponentStyle } from '../../styles/typings';
 import { color, fontWeight } from '../../styles/typography';
 import { DatePickerProps } from './typings';
-import { zIndex } from '../../styles/position';
-import { marginBottom, marginLeft, marginRight, padding } from '../../styles/spacing';
-import { width } from '../../styles/size';
 
 export const datePickerStyle: ComponentStyle<DatePickerProps> = () => {
   return css`
-    .o-calendar-container {
+    .o-calendar {
+      ${width('300px')}
+    }
+    .o-datepicker-dropdown-content {
       ${borderRadius('sm')}
       ${borderTopLeftRadius(0)}
       ${borderTopRightRadius(0)}
@@ -23,7 +26,7 @@ export const datePickerStyle: ComponentStyle<DatePickerProps> = () => {
       ${backgroundColor('white')}
       ${borderWidth(1)}
       ${borderColor('light')}
-      ${borderTopWidth(0)}
+      ${marginTop('-1px')}
       ${padding('lg')}
     }
     .o-calendar-month {
@@ -80,6 +83,21 @@ export const datePickerStyle: ComponentStyle<DatePickerProps> = () => {
 
     .o-datepicker-icon {
       ${cursor('pointer')}
+    }
+
+    .o-datepicker-dropdown-content {
+      ${display('flex')}
+      ${alignItems('center')}
+    }
+
+    .o-toggler-icon {
+      ${cursor('pointer')}
+    }
+
+    .o-time-container {
+      ${display('flex')}
+      ${marginLeft('xl')}
+      ${alignItems('center')}
     }
   `;
 };

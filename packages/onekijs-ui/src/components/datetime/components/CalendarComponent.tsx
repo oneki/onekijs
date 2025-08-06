@@ -1,27 +1,58 @@
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { days, months } from '../../../utils/date';
 import { addClassname } from '../../../utils/style';
-import { CalendarComponentProps, CalendarDay } from '../typings';
-import React, { FC, useCallback, useEffect } from 'react';
-import { useDatePickerContext } from './DatePickerComponent';
 import TogglerIcon from '../../icon/TogglerIcon';
 import Select from '../../select';
-import useSelectController from '../../select/hooks/useSelectController';
+import { CalendarComponentProps, CalendarDay } from '../typings';
+import { useDatePickerContext } from '../hooks/useDatePickerContext';
 
 const isCurrent = (d: Date, year: number, month: number, day: number): boolean => {
   return d.getFullYear() === year && d.getMonth() === month && d.getDate() === day;
 };
 
+const getMonth = (candidate: string | number | undefined, defaultValue: number) => {
+  if (typeof candidate === 'string') {
+    candidate = parseInt(candidate) - 1;
+  }
+  if (candidate === undefined || isNaN(candidate) || candidate < 0 || candidate > 11) {
+    return defaultValue;
+  }
+  return candidate;
+}
+
+const getYear = (candidate: string | number | undefined, defaultValue: number, min: number, max: number) => {
+  if (typeof candidate === 'string') {
+    candidate = parseInt(candidate);
+  }
+  if (candidate === undefined || isNaN(candidate) || candidate < min || candidate > max) {
+    return defaultValue;
+  }
+  return candidate;
+}
+
+const defaultMinYear = 1900;
+const defaultMaxYear = 2100;
+
+
+
 const CalendarComponent: FC<CalendarComponentProps> = ({
   day: externalDay,
   month: externalMonth,
   year: externalYear,
+  minYear = defaultMinYear,
+  maxYear = defaultMaxYear,
   className,
   onChange: forwardChange,
 }) => {
   const { setOpen } = useDatePickerContext();
+  const years = useRef([...Array(maxYear).keys()].slice(minYear));
   const d = new Date();
-  const month = externalMonth === undefined ? d.getMonth() : parseInt(`${externalMonth}`) - 1;
-  const year = externalYear === undefined ? d.getFullYear() : parseInt(`${externalYear}`);
+
+  const lastExternalMonth = useRef(externalMonth);
+  const lastExternalYear = useRef(externalYear);
+
+  const [month, setMonth] = useState<number>(getMonth(externalMonth, d.getMonth()));
+  const [year, setYear] = useState<number>(getYear(externalYear, d.getFullYear(), minYear, maxYear));
   const day = externalDay === undefined ? undefined : parseInt(`${externalDay}`)
 
   const firstDayOfCurrentMonth = new Date(`${year}-${String(month + 1).padStart(2, '0')}-01`);
@@ -37,7 +68,7 @@ const CalendarComponent: FC<CalendarComponentProps> = ({
   firstDayOfNextMonth.setMonth(firstDayOfNextMonth.getMonth() + 1);
 
   let calendarDays: CalendarDay[] =
-    firstDayOfCurrentMonth.getDate() === 0
+    firstDayOfCurrentMonth.getDate() === 0 || firstDayOfCurrentMonth.getDay() === 0
       ? []
       : [...Array(lastDayOfPreviousMonth.getDate() + 1).keys()].slice(-firstDayOfCurrentMonth.getDay()).map((n) => ({
           day: n,
@@ -74,21 +105,47 @@ const CalendarComponent: FC<CalendarComponentProps> = ({
     setOpen(false);
   }, [forwardChange, setOpen]);
 
+  useEffect(() => {
+    if (externalMonth !== lastExternalMonth.current) {
+      lastExternalMonth.current = externalMonth;
+      setMonth(getMonth(externalMonth, month));
+    }
+    if (externalYear !== lastExternalYear.current) {
+      lastExternalYear.current = externalYear;
+      setYear(getYear(externalYear, year, minYear, maxYear));
+    }
+  });
+
   return (
 
     <div className={addClassname('o-calendar-container', className)}>
       <div className="o-calendar-month">
-        <TogglerIcon width="20px" closeArrowPosition="w" />
-        <Select dataSource={months} nullable={false} value={months[month]}  className="o-calendar-select-month"  size="small" />
-        <Select dataSource={[2024,2025]} value={year} nullable={false} className="o-calendar-select-year" size="small" />
-        <TogglerIcon width="20px" closeArrowPosition="e" />
+        <TogglerIcon key="previous" width="20px" closeArrowPosition="w" onClick={() => {
+          if (month === 0) {
+            setMonth(11);
+            setYear(year - 1);
+          } else {
+            setMonth(month - 1);
+          }
+        }} />
+        <Select key="month" dataSource={months} nullable={false} value={months[month]}  className="o-calendar-select-month"  size="small" onChange={(value) => setMonth(months.indexOf(`${value}`))} />
+        <Select key="year" dataSource={years.current} value={year} nullable={false} className="o-calendar-select-year" size="small"  onChange={(value) => setYear(parseInt(`${value}`))} />
+        <TogglerIcon key="next" width="20px" closeArrowPosition="e"  onClick={() => {
+          if (month === 11) {
+            setMonth(0);
+            setYear(year + 1);
+          } else {
+            setMonth(month + 1);
+          }
+        }} />
       </div>
       <div className="o-calendar-day-container">
         {days.map((day) => (
-          <div className="o-calendar-day-title">{day.substring(0, 2)}</div>
+          <div className="o-calendar-day-title" key={`${day}`}>{day.substring(0, 2)}</div>
         ))}
-        {calendarDays.map((calendarDay) => (
+        {calendarDays.map((calendarDay, index) => (
           <div
+            key={`${day}-${index}`}
             className={`o-calendar-day${calendarDay.active ? ' o-calendar-day-active' : ''}${
               calendarDay.month === month ? ' o-calendar-day-in-month' : ''
             }${calendarDay.current ? ' o-calendar-day-current' : ''}`}

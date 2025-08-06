@@ -1,14 +1,15 @@
 import { AnonymousObject, eventLocks } from 'onekijs-framework';
-import React, { FC, useCallback, useContext, useId, useMemo, useRef, useState } from 'react';
+import React, { FC, useCallback, useId, useMemo, useRef, useState } from 'react';
 import { useClickOutside, useFocusOutside } from '../../../utils/event';
 import { addClassname } from '../../../utils/style';
 import useDropdown from '../../dropdown/hooks/useDropdown';
-import SearchIcon from '../../icon/SearchIcon';
+import CalendarIcon from '../../icon/CalendarIcon';
 import Input from '../../input';
 import { InputProps } from '../../input/typings';
-import { DatePickerContext, DatePickerProps } from '../typings';
+import { DefaultDatePickerContext, useDatePickerContext } from '../hooks/useDatePickerContext';
+import { DatePickerProps } from '../typings';
 import CalendarComponent from './CalendarComponent';
-import CalendarIcon from '../../icon/CalendarIcon';
+import TimeComponent from './TimeComponent';
 
 const IconComponent: React.FC<InputProps> = () => {
   const context = useDatePickerContext();
@@ -25,11 +26,6 @@ const IconComponent: React.FC<InputProps> = () => {
   );
 };
 
-export const DefaultDatePickerContext = React.createContext<DatePickerContext>(null!);
-
-export const useDatePickerContext = (): DatePickerContext => {
-  return useContext(DefaultDatePickerContext);
-};
 
 const DatePickerComponent: FC<DatePickerProps> = ({
   animationMs = 200,
@@ -37,7 +33,7 @@ const DatePickerComponent: FC<DatePickerProps> = ({
   autoFocus,
   className,
   disabled,
-  dropdownWidthModifier = 'same',
+  dropdownWidthModifier = 'min',
   onBlur: forwardBlur,
   onChange: forwardChange,
   onFocus: forwardFocus,
@@ -54,6 +50,7 @@ const DatePickerComponent: FC<DatePickerProps> = ({
   const value = externalValue !== undefined ? externalValue : internalValue;
   const [date, time] = value ? value.split(' ') : [undefined, undefined];
   const [year, month, day] = date ? date.split('-') : [undefined, undefined, undefined];
+  const [hour, minute] = time ? time.split(':') : [undefined, undefined];
 
   const id = useId();
 
@@ -135,7 +132,15 @@ const DatePickerComponent: FC<DatePickerProps> = ({
           className={className}
           zIndex={attachDropdownToBody ? 2000 : undefined}
         >
-          <CalendarComponent year={year} month={month} day={day} onChange={onChange} />
+          <div className="o-datepicker-dropdown-content">
+            <div className="o-calendar">
+              <CalendarComponent year={year} month={month} day={day} onChange={onChange} />
+            </div>
+            <div className="o-time">
+              <TimeComponent hour={hour} minute={minute} />
+            </div>
+          </div>
+
         </Dropdown>
         <span ref={triggerRef}>
           <Input
@@ -147,7 +152,7 @@ const DatePickerComponent: FC<DatePickerProps> = ({
             autoFocus={autoFocus}
             disabled={disabled}
             SuffixComponent={IconComponent}
-            onClick={() => setOpen(!open)}
+            onClick={() => !open && setOpen(true)}
           />
         </span>
       </div>
