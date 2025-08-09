@@ -66,6 +66,7 @@ const useFieldContainer = ({
               fieldsRef.current.push(name);
               set(valueRef.current, name, clone(field.value));
             }
+            forceRender();
             return field;
           };
         } else if (prop === 'remove') {

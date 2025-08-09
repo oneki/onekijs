@@ -385,7 +385,7 @@ export default class FormService<T extends object = any> extends DefaultService<
     const keys = Object.keys(validations) as NestedKeyOf<T>[];
     for (const fieldName of keys.filter((k: string) => k.startsWith(prefix) && k !== FORM_GLOBAL_VALIDATION_KEY)) {
       const field = fields[fieldName as NestedKeyOf<T>];
-      if (field !== undefined && (!touchedOnly || field.touched)) {
+      if (!touchedOnly || (field !== undefined && field.touched)) {
         const validation = validations[fieldName];
         if (validation.code <= result.code && validation.code < ValidationCode.None) {
           if (validation.code < result.code) {
@@ -396,7 +396,8 @@ export default class FormService<T extends object = any> extends DefaultService<
           }
           result.fields[fieldName] = validation.message;
           if (validation.message) {
-            messages.push(`<${fieldName}>: ${validation.message}`);
+            const fieldLabel = field?.label || fieldName;
+            messages.push(`${fieldLabel}: ${validation.message}`);
           }
         }
       }
