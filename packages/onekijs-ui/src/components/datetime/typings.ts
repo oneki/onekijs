@@ -7,7 +7,7 @@ export type CalendarComponentProps = StylableProps & {
   minYear?: number;
   maxYear?: number;
   day?: string | number;
-  onChange: (value: string | null) => void;
+  onChange: (value: string) => void;
 }
 
 
@@ -23,10 +23,13 @@ export type CalendarDay = {
   year: number;
 }
 
-export type DatePickerProps = StylableProps & {
+export type DatePickerProps = Omit<BaseDatePickerComponentProps, 'range' | 'time' | 'date'>;
+
+export type BaseDatePickerComponentProps = StylableProps & {
   animationMs?: number;
   attachDropdownToBody?: boolean;
   autoFocus?: boolean;
+  date: boolean;
   disabled?: boolean;
   dropdownWidthModifier?: DropdownWidthModifier;
   nullable?: boolean;
@@ -35,6 +38,8 @@ export type DatePickerProps = StylableProps & {
   onFocus?: () => void;
   openOnFocus?: boolean;
   placeholder?: string;
+  range: boolean;
+  time: boolean;
   value?: string | null;
 }
 
@@ -47,4 +52,11 @@ export type DatePickerContext = {
 export type TimeComponentProps = StylableProps & {
   hour?: number | string;
   minute?: number | string;
+  onChange: (value: string) => void;
+}
+
+export type TimePartComponentProps = {
+  type: 'hour' | 'minute' | 'second';
+  value: string | number;
+  onChange: (value: string) => void;
 }

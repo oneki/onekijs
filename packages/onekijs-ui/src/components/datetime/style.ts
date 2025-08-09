@@ -7,12 +7,13 @@ import { gridTemplateColumns } from '../../styles/grid';
 import { cursor } from '../../styles/interactivity';
 import { zIndex } from '../../styles/position';
 import { width } from '../../styles/size';
-import { marginBottom, marginLeft, marginTop, padding } from '../../styles/spacing';
+import { marginBottom, marginLeft, marginTop, marginX, marginY, padding } from '../../styles/spacing';
 import { ComponentStyle } from '../../styles/typings';
-import { color, fontWeight } from '../../styles/typography';
-import { DatePickerProps } from './typings';
+import { color, fontWeight, textAlign } from '../../styles/typography';
+import { BaseDatePickerComponentProps } from './typings';
+import { flexDirection } from '../../styles/flex';
 
-export const datePickerStyle: ComponentStyle<DatePickerProps> = () => {
+export const datePickerStyle: ComponentStyle<BaseDatePickerComponentProps> = () => {
   return css`
     .o-calendar {
       ${width('300px')}
@@ -75,11 +76,15 @@ export const datePickerStyle: ComponentStyle<DatePickerProps> = () => {
       ${borderStyle('solid')}
       ${fontWeight('medium')}
     }
-    .o-calendar-day-active {
-      ${color('white')}
-      ${backgroundColor('primary')}
-      ${fontWeight('medium')}
+
+    .o-datepicker-active {
+      .o-calendar-day-active {
+        ${color('white')}
+        ${backgroundColor('primary')}
+        ${fontWeight('medium')}
+      }
     }
+
 
     .o-datepicker-icon {
       ${cursor('pointer')}
@@ -98,6 +103,24 @@ export const datePickerStyle: ComponentStyle<DatePickerProps> = () => {
       ${display('flex')}
       ${marginLeft('xl')}
       ${alignItems('center')}
+      ${fontWeight('bold')}
+    }
+
+    .o-time-input {
+      ${width(10)}
+      ${marginX('lg')}
+      .o-input-field {
+        ${textAlign('center')}
+      }
+    }
+
+    .o-time-part {
+      ${display('flex')}
+      ${flexDirection('column')}
+      ${alignItems('center')}
+      .o-toggler-icon-container {
+        ${marginY('md')}
+      }
     }
   `;
 };

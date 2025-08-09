@@ -4,7 +4,6 @@ import { addClassname } from '../../../utils/style';
 import TogglerIcon from '../../icon/TogglerIcon';
 import Select from '../../select';
 import { CalendarComponentProps, CalendarDay } from '../typings';
-import { useDatePickerContext } from '../hooks/useDatePickerContext';
 
 const isCurrent = (d: Date, year: number, month: number, day: number): boolean => {
   return d.getFullYear() === year && d.getMonth() === month && d.getDate() === day;
@@ -44,7 +43,6 @@ const CalendarComponent: FC<CalendarComponentProps> = ({
   className,
   onChange: forwardChange,
 }) => {
-  const { setOpen } = useDatePickerContext();
   const years = useRef([...Array(maxYear).keys()].slice(minYear));
   const d = new Date();
 
@@ -55,6 +53,7 @@ const CalendarComponent: FC<CalendarComponentProps> = ({
   const [year, setYear] = useState<number>(getYear(externalYear, d.getFullYear(), minYear, maxYear));
   const day = externalDay === undefined ? undefined : parseInt(`${externalDay}`)
 
+  const firstDayOfExternalMonth = new Date(`${year}-${String(getMonth(externalMonth, d.getMonth()) + 1).padStart(2, '0')}-01`);
   const firstDayOfCurrentMonth = new Date(`${year}-${String(month + 1).padStart(2, '0')}-01`);
 
   const lastDayOfPreviousMonth = new Date(firstDayOfCurrentMonth);
@@ -80,7 +79,7 @@ const CalendarComponent: FC<CalendarComponentProps> = ({
   calendarDays = calendarDays.concat(
     [...Array(lastDayOfCurrentMonth.getDate() + 1).keys()].slice(1).map((n) => ({
       day: n,
-      active: day === n,
+      active: day === n && lastDayOfCurrentMonth.getMonth() === firstDayOfExternalMonth.getMonth(),
       current: isCurrent(d, lastDayOfCurrentMonth.getFullYear(), lastDayOfCurrentMonth.getMonth(), n),
       month: lastDayOfCurrentMonth.getMonth(),
       year: lastDayOfCurrentMonth.getFullYear()
@@ -98,12 +97,12 @@ const CalendarComponent: FC<CalendarComponentProps> = ({
         })),
   );
 
-  const onChange = useCallback((nextValue: string | null) => {
+  const onChange = useCallback((nextValue: string) => {
     if (forwardChange) {
       forwardChange(nextValue);
     }
-    setOpen(false);
-  }, [forwardChange, setOpen]);
+    //setOpen(false);
+  }, [forwardChange]);
 
   useEffect(() => {
     if (externalMonth !== lastExternalMonth.current) {
