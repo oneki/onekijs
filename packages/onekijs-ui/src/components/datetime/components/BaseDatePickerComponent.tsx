@@ -7,7 +7,7 @@ import CalendarIcon from '../../icon/CalendarIcon';
 import Input from '../../input';
 import { InputProps } from '../../input/typings';
 import { DefaultDatePickerContext, useDatePickerContext } from '../hooks/useDatePickerContext';
-import { BaseDatePickerComponentProps } from '../typings';
+import { BaseDatePickerComponentProps, DatePickerDate, DatePickerType } from '../typings';
 import CalendarComponent from './CalendarComponent';
 import TimeComponent from './TimeComponent';
 import { isValidDate, isValidTime } from '../../../utils/date';
@@ -27,13 +27,48 @@ const IconComponent: React.FC<InputProps> = () => {
   );
 };
 
+const parseDate = (value: string | null | undefined): DatePickerDate => {
+  let date, time, year, month, day, hour, minute, second = undefined;
+  if (value) {
+    [date, time] = value.trim().split(' ');
+    [year, month, day] = date ? date.split('-') : [undefined, undefined, undefined];
+    [hour, minute, second] = time ? time.split(':') : [undefined, undefined, undefined];
+  }
+  return {date, time, year, month, day, hour, minute, second};
+}
+
+const formatDate = (type: DatePickerType, fromDate: string | undefined, fromTime: string | undefined, toDate: string | undefined, toTime: string | undefined ) => {
+  let result = '';
+  if (type['date']) {
+    result += `${fromDate || ''}`
+  }
+  if (type['time']) {
+    if (type['date'] && fromTime) {
+      result += ' ';
+    }
+    result += `${fromTime || ''}`
+  }
+  if (type['range']) {
+    result += ' to '
+    if (type['date']) {
+      result += `${toDate || ''}`
+    }
+    if (type['time']) {
+      if (type['date'] && toTime) {
+        result += ' ';
+      }
+      result += `${toTime || ''}`
+    }
+  }
+  return result;
+
+}
 
 const BaseDatePickerComponent: FC<BaseDatePickerComponentProps> = ({
   animationMs = 200,
   attachDropdownToBody = true,
   autoFocus,
   className,
-  date: showDate,
   disabled,
   dropdownWidthModifier = 'min',
   onBlur: forwardBlur,
@@ -41,11 +76,9 @@ const BaseDatePickerComponent: FC<BaseDatePickerComponentProps> = ({
   onFocus: forwardFocus,
   openOnFocus = false,
   placeholder,
-  range: isRange,
-  time: showTime,
+  type,
   value: externalValue,
 }) => {
-  const d = new Date();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const stateRef = useRef<AnonymousObject>({});
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -53,26 +86,28 @@ const BaseDatePickerComponent: FC<BaseDatePickerComponentProps> = ({
   const [focus, setFocus] = useState(false);
   const [Dropdown, triggerRef] = useDropdown();
   const [internalValue, setInternalValue] = useState<string|null>(null);
-  const value = externalValue ? externalValue : internalValue;
-  const [from, to] = value ? value.split(' ~ ') : [undefined, undefined];
+  const value = internalValue ? internalValue : externalValue;
+  const tokens = value ? value.trim().split(' to ') : [];
 
-  const [fromCandidateDate, fromCandidateTime] = from ? from.split(' ') : [undefined, undefined];
-  const [fromCandidateYear, fromCandidateMonth, fromCandidateDay] = fromCandidateDate ? fromCandidateDate.split('-') : [undefined, undefined, undefined];
+  const validFromRef = useRef<string | undefined>();
+  const lastFromRef = useRef<string | undefined>();
 
-  const [toCandidateDate, toCandidateTime] = to ? to.split(' ') : [undefined, undefined];
-  const [toCandidateYear, toCandidateMonth, toCandidateDay] = toCandidateDate ? toCandidateDate.split('-') : [undefined, undefined, undefined];
+  const validToRef = useRef<string | undefined>();
+  const lastToRef = useRef<string | undefined>();
 
-  const validValueRef = useRef(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`);
-  const lastValueRef = useRef<string | undefined>();
-
-  if (isValidDate(`${fromCandidateDay}-${fromCandidateMonth}-${fromCandidateYear}`) && isValidTime(fromCandidateTime)) {
-    validValueRef.current = `${fromCandidateYear}-${fromCandidateMonth}-${fromCandidateDay} ${fromCandidateTime}`
-    lastValueRef.current = validValueRef.current;
+  let from = parseDate(tokens[0]);
+  if ((!type['date'] || isValidDate(`${from['day']}-${from['month']}-${from['year']}`)) && (!type['time'] || isValidTime(from['time']))) {
+    validFromRef.current = `${type['date'] ? `${from['year']}-${from['month']}-${from['day']}` : ''}${type['date'] && type['time'] ? ' ' : ''}${type['time'] ? from['time'] : ''}`
+    lastFromRef.current = validFromRef.current;
   }
+  from = parseDate(validFromRef.current);
 
-  const [date, time] = validValueRef.current.split(' ');
-  const [year, month, day] = date.split('-');
-  const [hour, minute] = time.split(':');
+  let to = parseDate(tokens[1]);
+  if ((!type['date'] || isValidDate(`${to['day']}-${to['month']}-${to['year']}`)) && (!type['time'] || isValidTime(to['time']))) {
+    validToRef.current = `${type['date'] ? `${to['year']}-${to['month']}-${to['day']}` : ''}${type['date'] && type['time'] ? ' ' : ''}${type['time'] ? to['time'] : ''}`
+    lastToRef.current = validToRef.current;
+  }
+  to = parseDate(validToRef.current);
 
   const id = useId();
 
@@ -113,13 +148,23 @@ const BaseDatePickerComponent: FC<BaseDatePickerComponentProps> = ({
     [forwardChange, setInternalValue],
   );
 
-  const onChangeDate = useCallback((nextDate: string) => {
-    onChange(`${nextDate} ${time}`);
-  }, [time, onChange])
+  const onChangeDate = (fromDate: string | undefined, toDate?: string) => {
+    if (fromDate === undefined) {
+      fromDate = from['date']
+    }
+    if (toDate === undefined) {
+      toDate = to['date']
+    }
+    onChange(formatDate(type, fromDate, from['time'], toDate, to['time']));
+  }
 
-  const onChangeTime = useCallback((nextTime: string) => {
-    onChange(`${date} ${nextTime}`);
-  }, [date, onChange])
+  const onChangeTime = (nextTime: string, dir: 'from' | 'to') => {
+    if (dir === 'from') {
+      onChange(formatDate(type, from['date'], nextTime, to['date'], to['time']));
+    } else {
+      onChange(formatDate(type, from['date'], from['time'], to['date'], nextTime));
+    }
+  }
 
   const onOpen = useCallback(() => {
     eventLocks.lock('escape', id);
@@ -162,13 +207,17 @@ const BaseDatePickerComponent: FC<BaseDatePickerComponentProps> = ({
           className={className}
           zIndex={attachDropdownToBody ? 2000 : undefined}
         >
-          <div ref={dropdownRef} className={`o-datepicker-dropdown-content${lastValueRef.current !== undefined ? ' o-datepicker-active' : ''}`}>
-            <div className="o-calendar">
-              <CalendarComponent year={year} month={month} day={day} onChange={onChangeDate} />
-            </div>
-            <div className="o-time">
-              <TimeComponent hour={hour} minute={minute} onChange={onChangeTime} />
-            </div>
+          <div ref={dropdownRef} className={`o-datepicker-dropdown-content${type['range'] ? ' o-datepicker-range' : ''}${lastFromRef.current !== undefined ? ' o-datepicker-active' : ''}`}>
+            {type['date'] && (
+              <div className="o-calendar">
+                <CalendarComponent from={from} to={to} type={type} onChange={onChangeDate} />
+              </div>
+            )}
+            {type['time'] && (
+              <div className="o-time">
+                <TimeComponent from={from} to={to} type={type} onChange={onChangeTime} />
+              </div>
+            )}
           </div>
 
         </Dropdown>
@@ -176,7 +225,7 @@ const BaseDatePickerComponent: FC<BaseDatePickerComponentProps> = ({
           <Input
             placeholder={placeholder}
             onChange={(e) => onChange(e.target.value)}
-            value={value === null ? '' : value}
+            value={!value ? '' : value}
             onFocus={onFocus}
             onBlur={onBlur}
             autoFocus={autoFocus}

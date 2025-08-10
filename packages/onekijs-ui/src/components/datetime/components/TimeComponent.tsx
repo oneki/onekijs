@@ -37,13 +37,13 @@ const getValue = (candidate: string | number | undefined, max: number, defaultVa
   return candidate;
 };
 
-export const TimePartComponent: React.FC<TimePartComponentProps> = ({ onChange, type, value }) => {
+export const TimePartComponent: React.FC<TimePartComponentProps> = ({ onChange, type, value, dir }) => {
   const onValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
     if (type === 'minute' && (value === '' || isValidMinuteOrSecond(value))) {
-      onChange(value);
+      onChange(value, dir);
     } else if (type === 'hour' && (value === '' || isValidHour(value))) {
-      onChange(value);
+      onChange(value, dir);
     }
   };
 
@@ -54,7 +54,7 @@ export const TimePartComponent: React.FC<TimePartComponentProps> = ({ onChange, 
         width="20px"
         closeArrowPosition="n"
         onClick={() => {
-          onChange(getNextValue(value, type === 'hour' ? 23 : 59, 'previous'));
+          onChange(getNextValue(value, type === 'hour' ? 23 : 59, 'previous'), dir);
         }}
       />
       <Input
@@ -70,7 +70,7 @@ export const TimePartComponent: React.FC<TimePartComponentProps> = ({ onChange, 
         width="20px"
         closeArrowPosition="s"
         onClick={() => {
-          onChange(getNextValue(value, type === 'hour' ? 23 : 59, 'next'));
+          onChange(getNextValue(value, type === 'hour' ? 23 : 59, 'next'), dir);
         }}
       />
     </div>
@@ -78,14 +78,15 @@ export const TimePartComponent: React.FC<TimePartComponentProps> = ({ onChange, 
 };
 
 const TimeComponent: React.FC<TimeComponentProps> = ({
-  hour: externalHour,
-  minute: externalMinute,
+  from,
+  to,
+  type,
   className,
   onChange,
 }) => {
   const d = new Date();
-  const hourInt = getValue(externalHour, 23, d.getHours());
-  const minuteInt = getValue(externalMinute, 59, d.getMinutes());
+  const hourInt = getValue(from['hour'], 23, d.getHours());
+  const minuteInt = getValue(from['minute'], 59, d.getMinutes());
 
   const [internalHour, setInternalHour] = useState(String(hourInt).padStart(2, '0'));
   const [internalMinute, setInternalMinute] = useState(String(minuteInt).padStart(2, '0'));
@@ -97,7 +98,7 @@ const TimeComponent: React.FC<TimeComponentProps> = ({
     (value: string) => {
       setInternalHour(value);
       if (value !== '') {
-        onChange(`${String(value).padStart(2, '0')}:${String(minute).padStart(2, '0')}`);
+        onChange(`${String(value).padStart(2, '0')}:${String(minute).padStart(2, '0')}`, 'from');
       }
 
     },
@@ -107,16 +108,16 @@ const TimeComponent: React.FC<TimeComponentProps> = ({
   const onChangeMinute = useCallback(
     (value: string) => {
       setInternalMinute(value);
-      onChange(`${String(hour).padStart(2, '0')}:${String(value).padStart(2, '0')}`);
+      onChange(`${String(hour).padStart(2, '0')}:${String(value).padStart(2, '0')}`, 'from');
     },
     [hour, onChange],
   );
 
   return (
     <div className={addClassname('o-time-container', className)}>
-      <TimePartComponent key="hour" type="hour" value={hour} onChange={onChangeHour} />
+      <TimePartComponent key="hour" type="hour" value={hour} onChange={onChangeHour} dir='from' />
       <span className="o-time-separator">:</span>
-      <TimePartComponent key="minute" type="minute" value={minute} onChange={onChangeMinute} />
+      <TimePartComponent key="minute" type="minute" value={minute} onChange={onChangeMinute} dir='from' />
     </div>
   );
 };

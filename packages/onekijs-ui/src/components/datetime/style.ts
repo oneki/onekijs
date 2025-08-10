@@ -1,7 +1,7 @@
 import { css } from 'styled-components';
 import { alignItems, columnGap, justifyContent, rowGap } from '../../styles/alignment';
 import { backgroundColor } from '../../styles/background';
-import { borderColor, borderRadius, borderStyle, borderTopLeftRadius, borderTopRightRadius, borderWidth, boxShadow } from '../../styles/border';
+import { borderBottomLeftRadius, borderBottomRightRadius, borderColor, borderRadius, borderStyle, borderTopLeftRadius, borderTopRightRadius, borderWidth, boxShadow } from '../../styles/border';
 import { display } from '../../styles/display';
 import { gridTemplateColumns } from '../../styles/grid';
 import { cursor } from '../../styles/interactivity';
@@ -10,25 +10,13 @@ import { width } from '../../styles/size';
 import { marginBottom, marginLeft, marginTop, marginX, marginY, padding } from '../../styles/spacing';
 import { ComponentStyle } from '../../styles/typings';
 import { color, fontWeight, textAlign } from '../../styles/typography';
-import { BaseDatePickerComponentProps } from './typings';
 import { flexDirection } from '../../styles/flex';
+import { DatePickerProps } from './typings';
 
-export const datePickerStyle: ComponentStyle<BaseDatePickerComponentProps> = () => {
+export const datePickerStyle: ComponentStyle<DatePickerProps> = () => {
   return css`
     .o-calendar {
       ${width('300px')}
-    }
-    .o-datepicker-dropdown-content {
-      ${borderRadius('sm')}
-      ${borderTopLeftRadius(0)}
-      ${borderTopRightRadius(0)}
-      ${boxShadow('lg')}
-      ${zIndex(2000)}
-      ${backgroundColor('white')}
-      ${borderWidth(1)}
-      ${borderColor('light')}
-      ${marginTop('-1px')}
-      ${padding('lg')}
     }
     .o-calendar-month {
       ${display('flex')}
@@ -77,11 +65,55 @@ export const datePickerStyle: ComponentStyle<BaseDatePickerComponentProps> = () 
       ${fontWeight('medium')}
     }
 
+    .o-calendar-day-in-range {
+      ${backgroundColor('lightblue')}
+      ${borderRadius('none')}
+      ${color('white')}
+    }
+
+    .o-calendar-day-in-range-transient {
+      ${backgroundColor('dark')}
+      ${borderRadius('none')}
+      ${color('white')}
+    }
+
+    .o-calendar-day-start-range, .o-calendar-day-start-range-transient {
+      ${borderTopRightRadius('none')}
+      ${borderBottomRightRadius('none')}
+    }
+
+    .o-calendar-day-end-range, .o-calendar-day-end-range-transient {
+      ${borderTopLeftRadius('none')}
+      ${borderBottomLeftRadius('none')}
+    }
+
+    .o-datepicker-dropdown-content {
+      ${borderRadius('sm')}
+      ${borderTopLeftRadius(0)}
+      ${borderTopRightRadius(0)}
+      ${boxShadow('lg')}
+      ${zIndex(2000)}
+      ${backgroundColor('white')}
+      ${borderWidth(1)}
+      ${borderColor('light')}
+      ${marginTop('-1px')}
+      ${padding('lg')}
+    }
+
     .o-datepicker-active {
       .o-calendar-day-active {
         ${color('white')}
         ${backgroundColor('primary')}
         ${fontWeight('medium')}
+        &.o-calendar-day-end-range-transient {
+          ${backgroundColor('darkest')}
+          &.o-calendar-day-start-range {
+            ${backgroundColor('primary')}
+          }
+        }
+        &.o-calendar-day-start-range-transient {
+          ${backgroundColor('darkest')}
+        }
       }
     }
 
