@@ -12,7 +12,7 @@ const getValue = (candidate: string | number | undefined, max: number, defaultVa
   return candidate;
 };
 
-const TimeSelectorComponent: React.FC<TimeSelectorComponentProps> = ({ value, edge, onChange, size }) => {
+const TimeSelectorComponent: React.FC<TimeSelectorComponentProps> = ({ value, onChange, size }) => {
   const d = new Date();
   const hourInt = getValue(value.hour, 23, d.getHours());
   const minuteInt = getValue(value.minute, 59, d.getMinutes());

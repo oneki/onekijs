@@ -47,6 +47,8 @@ export type DatePickerContext = {
   open: boolean;
   setOpen: (open: boolean) => void;
   triggerRef: React.Dispatch<React.SetStateAction<HTMLElement | null>>;
+  nullable?: boolean;
+  onChange: (value: string | null) => void;
 }
 
 export type DatePickerDate = {

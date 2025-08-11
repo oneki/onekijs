@@ -11,7 +11,7 @@ const datetimeStyle: ComponentStyle<{}> = () => {
 const Page: React.FC<{ className?: string }> = ({ className }) => {
   return (
     <div className={className}>
-      <DateTimeRangePicker />
+      <DateTimeRangePicker nullable={true} />
     </div>
   );
 };

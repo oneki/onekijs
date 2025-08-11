@@ -9,7 +9,7 @@ import { zIndex } from '../../styles/position';
 import { width } from '../../styles/size';
 import { marginBottom, marginLeft, marginRight, marginTop, marginX, marginY, padding, paddingX } from '../../styles/spacing';
 import { ComponentStyle } from '../../styles/typings';
-import { color, fontStyle, fontWeight, textAlign, textTransform } from '../../styles/typography';
+import { color, fontFamily, fontStyle, fontWeight, textAlign, textTransform } from '../../styles/typography';
 import { flexDirection } from '../../styles/flex';
 import { DatePickerProps } from './typings';
 
@@ -126,11 +126,21 @@ export const datePickerStyle: ComponentStyle<DatePickerProps> = () => {
 
     .o-datepicker-icon {
       ${cursor('pointer')}
+      ${display('flex')}
+      ${alignItems('center')}
     }
 
     .o-datepicker-dropdown-content {
       ${display('flex')}
       ${alignItems('center')}
+    }
+
+    .o-datepicker-remover {
+      ${cursor('pointer')}
+      ${color('light')}
+      ${fontFamily('Arial')}
+      ${paddingX('sm')}
+      ${userSelect('none')}
     }
 
     .o-toggler-icon {

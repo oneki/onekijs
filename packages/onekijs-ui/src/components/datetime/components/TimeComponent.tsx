@@ -1,24 +1,8 @@
-import React, { useCallback, useState } from 'react';
-import { TimeComponentProps, TimeRangeComponentProps, TimeSelectorComponentProps, TimeSelectorPartComponentProps } from '../typings';
+import React from 'react';
 import { addClassname } from '../../../utils/style';
-import Input from '../../input';
-import TogglerIcon from '../../icon/TogglerIcon';
-import { isValidDate, isValidHour, isValidMinuteOrSecond } from '../../../utils/date';
+import { TimeComponentProps } from '../typings';
 import TimeRangeComponent from './TimeRangeComponent';
 import TimeSelectorComponent from './TimeSelectorComponent';
-
-
-
-const getValue = (candidate: string | number | undefined, max: number, defaultValue: number) => {
-  if (typeof candidate === 'string') {
-    candidate = parseInt(candidate);
-  }
-  if (candidate === undefined || isNaN(candidate) || candidate < 0 || candidate > max) {
-    return defaultValue;
-  }
-  return candidate;
-};
-
 
 const TimeComponent: React.FC<TimeComponentProps> = ({ from, to, type, className, onChange }) => {
   if (type['range'] && type['date']) {
