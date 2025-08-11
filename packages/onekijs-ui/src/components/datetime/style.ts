@@ -1,15 +1,15 @@
 import { css } from 'styled-components';
-import { alignItems, columnGap, justifyContent, rowGap } from '../../styles/alignment';
+import { alignItems, columnGap, gap, justifyContent, rowGap } from '../../styles/alignment';
 import { backgroundColor } from '../../styles/background';
-import { borderBottomLeftRadius, borderBottomRightRadius, borderColor, borderRadius, borderStyle, borderTopLeftRadius, borderTopRightRadius, borderWidth, boxShadow } from '../../styles/border';
+import { borderBottomColor, borderBottomLeftRadius, borderBottomRightRadius, borderBottomStyle, borderBottomWidth, borderColor, borderRadius, borderStyle, borderTopLeftRadius, borderTopRightRadius, borderWidth, boxShadow } from '../../styles/border';
 import { display } from '../../styles/display';
 import { gridTemplateColumns } from '../../styles/grid';
-import { cursor } from '../../styles/interactivity';
+import { cursor, userSelect } from '../../styles/interactivity';
 import { zIndex } from '../../styles/position';
 import { width } from '../../styles/size';
-import { marginBottom, marginLeft, marginTop, marginX, marginY, padding } from '../../styles/spacing';
+import { marginBottom, marginLeft, marginRight, marginTop, marginX, marginY, padding, paddingX } from '../../styles/spacing';
 import { ComponentStyle } from '../../styles/typings';
-import { color, fontWeight, textAlign } from '../../styles/typography';
+import { color, fontStyle, fontWeight, textAlign, textTransform } from '../../styles/typography';
 import { flexDirection } from '../../styles/flex';
 import { DatePickerProps } from './typings';
 
@@ -53,6 +53,11 @@ export const datePickerStyle: ComponentStyle<DatePickerProps> = () => {
       ${justifyContent('center')}
       ${cursor('pointer')}
       ${borderRadius('md')}
+
+      &:hover {
+        ${backgroundColor('darkest')}
+        ${color('white')}
+      }
     }
     .o-calendar-day-in-month {
       ${color('darkest')}
@@ -98,6 +103,7 @@ export const datePickerStyle: ComponentStyle<DatePickerProps> = () => {
       ${borderColor('light')}
       ${marginTop('-1px')}
       ${padding('lg')}
+      ${userSelect('none')}
     }
 
     .o-datepicker-active {
@@ -132,27 +138,75 @@ export const datePickerStyle: ComponentStyle<DatePickerProps> = () => {
     }
 
     .o-time-container {
-      ${display('flex')}
       ${marginLeft('xl')}
+      .o-time-separator {
+        ${marginX('lg')}
+      }
+    }
+
+    .o-time-selector {
+      ${display('flex')}
       ${alignItems('center')}
+    }
+
+    .o-time-edge-title {
       ${fontWeight('bold')}
+      ${marginBottom('xs')}
+      ${borderBottomWidth('1px')}
+      ${borderBottomColor('lighter')}
+      ${borderBottomStyle('solid')}
+      ${textTransform('uppercase')}
+      ${color('primary')}
+    }
+
+    .o-time-edge-empty {
+      ${color('dark')}
+      ${fontStyle('italic')}
+      ${marginTop('md')}
+    }
+
+    .o-time-edge-date {
+      ${fontWeight('medium')}
+      ${backgroundColor('lightest')}
+      ${paddingX('sm')}
+      ${marginRight('md')}
+    }
+
+    .o-time-container-range {
+      ${marginLeft('2xl')}
+      ${display('flex')}
+      ${flexDirection('column')}
+      ${gap('xl')}
+      .o-time-separator {
+        ${marginX('sm')}
+      }
+    }
+
+
+    .o-time-edge-content {
+      ${display('flex')}
+      ${alignItems('center')}
+    }
+
+    .o-time-separator {
+       ${fontWeight('bold')}
     }
 
     .o-time-input {
       ${width(10)}
-      ${marginX('lg')}
       .o-input-field {
         ${textAlign('center')}
       }
     }
 
-    .o-time-part {
+    .o-time-selector-part {
       ${display('flex')}
       ${flexDirection('column')}
       ${alignItems('center')}
-      .o-toggler-icon-container {
-        ${marginY('md')}
-      }
+    }
+
+    .o-time-selector-part-large.o-toggler-icon-container {
+      ${marginY('md')}
     }
   `;
 };

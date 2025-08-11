@@ -409,7 +409,7 @@ export { default as DateTimePickerComponent }  from './components/datetime/compo
 export { default as DateTimeRangePickerComponent }  from './components/datetime/components/DateTimeRangePickerComponent';
 export { default as TimePickerComponent }  from './components/datetime/components/TimePickerComponent';
 export { default as TimeRangePickerComponent }  from './components/datetime/components/TimeRangePickerComponent';
-export { DatePickerProps, CalendarComponentProps, BaseDatePickerComponentProps, CalendarDay, DatePickerContext, DatePickerDate, DatePickerType, TimeComponentProps, TimePartComponentProps } from './components/datetime/typings';
+export { DatePickerProps, CalendarComponentProps, BaseDatePickerComponentProps, CalendarDay, DatePickerContext, DatePickerDate, DatePickerType, TimeComponentProps, TimeSelectorPartComponentProps as TimePartComponentProps } from './components/datetime/typings';
 export * from './styles/alignment';
 export * from './styles/animation';
 export * from './styles/background';

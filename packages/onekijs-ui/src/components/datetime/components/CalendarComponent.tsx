@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { days, months } from '../../../utils/date';
 import { addClassname } from '../../../utils/style';
 import TogglerIcon from '../../icon/TogglerIcon';

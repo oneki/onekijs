@@ -38,27 +38,26 @@ const parseDate = (value: string | null | undefined): DatePickerDate => {
 }
 
 const formatDate = (type: DatePickerType, fromDate: string | undefined, fromTime: string | undefined, toDate: string | undefined, toTime: string | undefined ) => {
-  let result = '';
-  if (type['date']) {
-    result += `${fromDate || ''}`
-  }
-  if (type['time']) {
-    if (type['date'] && fromTime) {
-      result += ' ';
+  const format = (date: string | undefined, time: string | undefined): string => {
+    let result = '';
+    if (type.date) {
+      result += `${date || ''}`
     }
-    result += `${fromTime || ''}`
-  }
-  if (type['range']) {
-    result += ' to '
-    if (type['date']) {
-      result += `${toDate || ''}`
-    }
-    if (type['time']) {
-      if (type['date'] && toTime) {
-        result += ' ';
+    if (type.time) {
+      if (type.date && date) {
+        result += ` ${time || '00:00'}`;
+      } else if (type.date && time) {
+        result += ` ${time}`;
+      } else if (time) {
+        result += time
       }
-      result += `${toTime || ''}`
     }
+    return result;
+  }
+
+  let result = format(fromDate, fromTime);
+  if (type.range) {
+    result += ` to ${format(toDate, toTime)}`
   }
   return result;
 
@@ -87,27 +86,65 @@ const BaseDatePickerComponent: FC<BaseDatePickerComponentProps> = ({
   const [Dropdown, triggerRef] = useDropdown();
   const [internalValue, setInternalValue] = useState<string|null>(null);
   const value = internalValue ? internalValue : externalValue;
-  const tokens = value ? value.trim().split(' to ') : [];
+  const tokens = value ? value.split(/ to\s*/) : [];
 
   const validFromRef = useRef<string | undefined>();
-  const lastFromRef = useRef<string | undefined>();
-
   const validToRef = useRef<string | undefined>();
-  const lastToRef = useRef<string | undefined>();
 
-  let from = parseDate(tokens[0]);
-  if ((!type['date'] || isValidDate(`${from['day']}-${from['month']}-${from['year']}`)) && (!type['time'] || isValidTime(from['time']))) {
-    validFromRef.current = `${type['date'] ? `${from['year']}-${from['month']}-${from['day']}` : ''}${type['date'] && type['time'] ? ' ' : ''}${type['time'] ? from['time'] : ''}`
-    lastFromRef.current = validFromRef.current;
-  }
-  from = parseDate(validFromRef.current);
 
-  let to = parseDate(tokens[1]);
-  if ((!type['date'] || isValidDate(`${to['day']}-${to['month']}-${to['year']}`)) && (!type['time'] || isValidTime(to['time']))) {
-    validToRef.current = `${type['date'] ? `${to['year']}-${to['month']}-${to['day']}` : ''}${type['date'] && type['time'] ? ' ' : ''}${type['time'] ? to['time'] : ''}`
-    lastToRef.current = validToRef.current;
+  const from = parseDate(tokens[0]?.trim());
+  const previousFrom = parseDate(validFromRef.current);
+  if (!type['date'] || !isValidDate(`${from['day']}-${from['month']}-${from['year']}`)) {
+    from.year = previousFrom.year;
+    from.month = previousFrom.month;
+    from.day = previousFrom.day;
+    from.date = previousFrom.date;
   }
-  to = parseDate(validToRef.current);
+  if (type['date'] && isValidDate(`${from['day']}-${from['month']}-${from['year']}`)) {
+    validFromRef.current = `${from['year']}-${from['month']}-${from['day']}`
+  }
+  if (!type['time'] || !isValidTime(from['time'])) {
+    from.hour = previousFrom.hour;
+    from.minute = previousFrom.minute;
+    from.second = previousFrom.second;
+    from.time = previousFrom.time;
+  }
+  if (type['time'] && isValidTime(`${from['time']}`)) {
+    if (validFromRef.current === undefined) {
+      validFromRef.current = '';
+    }
+    if (type['date']) {
+      validFromRef.current += ' ';
+    }
+    validFromRef.current += `${from['time']}`
+  }
+
+  const to = parseDate(tokens[1]?.trim());
+  const previousTo = parseDate(validToRef.current);
+  if (!type['date'] || !isValidDate(`${to['day']}-${to['month']}-${to['year']}`)) {
+    to.year = previousTo.year;
+    to.month = previousTo.month;
+    to.day = previousTo.day;
+    to.date = previousTo.date;
+  }
+  if (type['date'] && isValidDate(`${to['day']}-${to['month']}-${to['year']}`)) {
+    validToRef.current = `${to['year']}-${to['month']}-${to['day']}`
+  }
+  if (!type['time'] || !isValidTime(to['time'])) {
+    to.hour = previousTo.hour;
+    to.minute = previousTo.minute;
+    to.second = previousTo.second;
+    to.time = previousTo.time;
+  }
+  if (type['time'] && isValidTime(`${to['time']}`)) {
+    if (validToRef.current === undefined) {
+      validToRef.current = '';
+    }
+    if (type['date']) {
+      validToRef.current += ' ';
+    }
+    validToRef.current += `${to['time']}`
+  }
 
   const id = useId();
 
@@ -158,8 +195,8 @@ const BaseDatePickerComponent: FC<BaseDatePickerComponentProps> = ({
     onChange(formatDate(type, fromDate, from['time'], toDate, to['time']));
   }
 
-  const onChangeTime = (nextTime: string, dir: 'from' | 'to') => {
-    if (dir === 'from') {
+  const onChangeTime = (nextTime: string, edge: 'from' | 'to') => {
+    if (edge === 'from') {
       onChange(formatDate(type, from['date'], nextTime, to['date'], to['time']));
     } else {
       onChange(formatDate(type, from['date'], from['time'], to['date'], nextTime));
@@ -186,6 +223,7 @@ const BaseDatePickerComponent: FC<BaseDatePickerComponentProps> = ({
     };
   }, [open, setOpen, triggerRef]);
 
+  console.log({from, to})
   return (
     <DefaultDatePickerContext.Provider value={context}>
       <div
@@ -207,7 +245,7 @@ const BaseDatePickerComponent: FC<BaseDatePickerComponentProps> = ({
           className={className}
           zIndex={attachDropdownToBody ? 2000 : undefined}
         >
-          <div ref={dropdownRef} className={`o-datepicker-dropdown-content${type['range'] ? ' o-datepicker-range' : ''}${lastFromRef.current !== undefined ? ' o-datepicker-active' : ''}`}>
+          <div ref={dropdownRef} className={`o-datepicker-dropdown-content${type['range'] ? ' o-datepicker-range' : ''}${validFromRef.current !== undefined ? ' o-datepicker-active' : ''}`}>
             {type['date'] && (
               <div className="o-calendar">
                 <CalendarComponent from={from} to={to} type={type} onChange={onChangeDate} />
