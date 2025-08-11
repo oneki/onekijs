@@ -70,13 +70,13 @@ export type TimeComponentProps = StylableProps & {
   from: DatePickerDate;
   to: DatePickerDate;
   type: DatePickerType;
-  onChange: (value: string, dir: 'from' | 'to') => void;
+  onChange: (value: string, edge: 'from' | 'to') => void;
 }
 
 export type TimeSelectorComponentProps = {
-  dir: 'from' | 'to';
+  edge: 'from' | 'to';
   value: DatePickerDate;
-  onChange: (value: string, dir: 'from' | 'to') => void;
+  onChange: (value: string, edge: 'from' | 'to') => void;
   size?: 'small' | 'large';
 }
 
@@ -87,8 +87,8 @@ export type TimeSelectorPartComponentProps = Omit<TimeSelectorComponentProps, 'v
 }
 
 export type TimeRangeComponentProps = {
-  dir: 'from' | 'to';
+  edge: 'from' | 'to';
   value: DatePickerDate;
   type: DatePickerType;
-  onChange: (value: string, dir: 'from' | 'to') => void;
+  onChange: (value: string, edge: 'from' | 'to') => void;
 }
