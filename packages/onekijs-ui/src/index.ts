@@ -408,7 +408,7 @@ export {
   TimePicker,
   TimeRangePicker,
 } from './components/datetime';
-export { default as BaseDatePickerComponent } from './components/datetime/components/BaseDatePickerComponent';
+export { default as PickerComponent } from './components/datetime/components/PickerComponent';
 export { default as CalendarComponent } from './components/datetime/components/CalendarComponent';
 export { default as DatePickerComponent } from './components/datetime/components/DatePickerComponent';
 export { default as DateRangePickerComponent } from './components/datetime/components/DateRangePickerComponent';
@@ -423,14 +423,22 @@ export {
   TimeRangeComponentProps,
   TimeSelectorComponentProps,
   CalendarComponentProps,
-  BaseDatePickerComponentProps,
+  PickerComponentProps,
   CalendarDay,
   DatePickerContext,
   DatePickerDate,
   DatePickerType,
   TimeComponentProps,
-  TimeSelectorPartComponentProps as TimePartComponentProps,
+  TimeSelectorPartComponentProps,
+  BasePickerProps,
+  DateQuickRange,
+  DateTimePickerProps,
+  DateTimeRangePickerProps,
+  DisplayTime,
+  QuickTimeRangeComponentProps
 } from './components/datetime/typings';
+
+export { defaultQuickRanges, qr, toDateRange } from './components/datetime/util';
 export * from './styles/alignment';
 export * from './styles/animation';
 export * from './styles/background';

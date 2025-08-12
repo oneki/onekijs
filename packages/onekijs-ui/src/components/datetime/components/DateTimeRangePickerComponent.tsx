@@ -1,6 +1,6 @@
 import React from 'react';
 import { DatePickerProps, DatePickerType, DateTimeRangePickerProps } from '../typings';
-import BaseDatePickerComponent from './BaseDatePickerComponent';
+import PickerComponent from './PickerComponent';
 import { toDateRange } from '../util';
 
 const type: DatePickerType = {
@@ -18,7 +18,7 @@ const DateTimeRangePickerComponent: React.FC<DateTimeRangePickerProps> = (props)
 
   const value = externalValue ? `${externalValue.from || ''} to ${externalValue.to || ''}` : null;
 
-  return <BaseDatePickerComponent {...datePickerProps} value={value} onChange={onChange} type={type} />
+  return <PickerComponent {...datePickerProps} value={value} onChange={onChange} type={type} />
 }
 
 export default DateTimeRangePickerComponent;

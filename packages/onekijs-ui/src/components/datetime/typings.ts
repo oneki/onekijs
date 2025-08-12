@@ -1,3 +1,4 @@
+import { AnonymousObject } from 'onekijs-framework';
 import { StylableProps } from '../../styles/typings';
 import { DropdownWidthModifier } from '../dropdown/typings';
 
@@ -21,7 +22,7 @@ export type CalendarDay = {
   year: number;
 };
 
-export type DatePickerProps = StylableProps & {
+export type BasePickerProps = StylableProps & {
   animationMs?: number;
   attachDropdownToBody?: boolean;
   autoFocus?: boolean;
@@ -29,10 +30,13 @@ export type DatePickerProps = StylableProps & {
   dropdownWidthModifier?: DropdownWidthModifier;
   nullable?: boolean;
   onBlur?: () => void;
-  onChange?: (value: string | null) => void;
   onFocus?: () => void;
   openOnFocus?: boolean;
   placeholder?: string;
+};
+
+export type DatePickerProps = BasePickerProps & {
+  onChange?: (value: string | null) => void;
   value?: string | null;
 };
 
@@ -42,34 +46,36 @@ export type DateRange = {
 };
 
 export type DateQuickRange = {
-  label: string;
   from: Date;
   to: Date;
 };
 
-export type DateQuickRanges = (DateQuickRange | 'Last hour' | 'Last day' | 'Last week' | 'Last month' | 'Last year')[];
-
-export type DateRangePickerProps = Omit<DatePickerProps, 'value' | 'onChange' | 'defaultValue'> & {
+export type DateRangePickerProps = BasePickerProps & {
   value?: DateRange | null;
   onChange?: (value: DateRange | null) => void;
-  quickRanges?: DateQuickRanges;
+  quickRanges?: AnonymousObject<DateQuickRange>;
   defaultValue?: DateRange | null | string;
 };
 
-type TimePickerProps = {
+export type TimePickerProps = BasePickerProps & DisplayTime & {
+  onChange?: (value: string | null) => void;
+  value?: string | null;
+};
+
+export type DateTimePickerProps = DatePickerProps & DisplayTime;
+
+export type DateTimeRangePickerProps = DateRangePickerProps & DisplayTime;
+
+export type DisplayTime = {
   displayHours?: boolean;
   displayMinutes?: boolean;
   displaySeconds?: boolean;
-};
+}
 
-export type DateTimePickerProps = DatePickerProps & TimePickerProps;
-
-export type DateTimeRangePickerProps = DateRangePickerProps & TimePickerProps;
-
-export type BaseDatePickerComponentProps = DatePickerProps &
-  TimePickerProps & {
+export type PickerComponentProps = DatePickerProps &
+  DisplayTime & {
     type: DatePickerType;
-    quickRanges?: DateQuickRanges;
+    quickRanges?: AnonymousObject<DateQuickRange>;
   };
 
 export type DatePickerContext = {
@@ -98,19 +104,19 @@ export type DatePickerType = {
 };
 
 export type QuickTimeRangeComponentProps = {
-  quickRanges: DateQuickRanges;
-  onChange: (quickRange: DateQuickRange) => void;
+  quickRanges: AnonymousObject<DateQuickRange>;
+  onChange: (quickRangeLabel: string) => void;
 };
 
 export type TimeComponentProps = StylableProps &
-  Required<TimePickerProps> & {
+  Required<DisplayTime> & {
     from: DatePickerDate;
     to: DatePickerDate;
     type: DatePickerType;
     onChange: (value: string, edge: 'from' | 'to') => void;
   };
 
-export type TimeSelectorComponentProps = Required<TimePickerProps> & {
+export type TimeSelectorComponentProps = Required<DisplayTime> & {
   edge: 'from' | 'to';
   value: DatePickerDate;
   onChange: (value: string, edge: 'from' | 'to') => void;
@@ -124,7 +130,7 @@ export type TimeSelectorPartComponentProps = {
   size?: 'small' | 'large';
 };
 
-export type TimeRangeComponentProps = Required<TimePickerProps> & {
+export type TimeRangeComponentProps = Required<DisplayTime> & {
   edge: 'from' | 'to';
   value: DatePickerDate;
   type: DatePickerType;

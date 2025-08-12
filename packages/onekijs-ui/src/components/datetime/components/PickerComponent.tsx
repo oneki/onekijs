@@ -1,5 +1,6 @@
-import { AnonymousObject, DefaultBasicError, eventLocks } from 'onekijs-framework';
-import React, { FC, useCallback, useId, useMemo, useRef, useState } from 'react';
+import { AnonymousObject, eventLocks } from 'onekijs-framework';
+import React, { FC, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
+import { isValidDate, isValidTime } from '../../../utils/date';
 import { useClickOutside, useFocusOutside } from '../../../utils/event';
 import { addClassname } from '../../../utils/style';
 import useDropdown from '../../dropdown/hooks/useDropdown';
@@ -7,11 +8,11 @@ import CalendarIcon from '../../icon/CalendarIcon';
 import Input from '../../input';
 import { InputProps } from '../../input/typings';
 import { DefaultDatePickerContext, useDatePickerContext } from '../hooks/useDatePickerContext';
-import { BaseDatePickerComponentProps, DatePickerDate, DatePickerType, DateQuickRange } from '../typings';
+import { DatePickerDate, DatePickerType, PickerComponentProps } from '../typings';
+import { findQuickRangeLabel } from '../util';
 import CalendarComponent from './CalendarComponent';
-import TimeComponent from './TimeComponent';
-import { isValidDate, isValidTime } from '../../../utils/date';
 import QuickTimeRangeComponent from './QuickTimeRangeComponent';
+import TimeComponent from './TimeComponent';
 
 const IconComponent: React.FC<InputProps> = () => {
   const { nullable, setOpen, onChange, open } = useDatePickerContext();
@@ -86,7 +87,7 @@ const dateToString = (d: Date): string => {
 }
 
 
-const BaseDatePickerComponent: FC<BaseDatePickerComponentProps> = ({
+const PickerComponent: FC<PickerComponentProps> = ({
   animationMs = 200,
   attachDropdownToBody = true,
   autoFocus,
@@ -241,9 +242,14 @@ const BaseDatePickerComponent: FC<BaseDatePickerComponentProps> = ({
     }
   };
 
-  const onChangeQuickRange = (quickRange: DateQuickRange) => {
-    onChange(`${dateToString(quickRange.from)} to ${dateToString(quickRange.to)}`)
-    setLabel(quickRange.label);
+  const onChangeQuickRange = (quickRangeLabel: string) => {
+    if (quickRanges) {
+      const quickRange = quickRanges[quickRangeLabel];
+      if (quickRange) {
+        onChange(`${dateToString(quickRange.from)} to ${dateToString(quickRange.to)}`)
+        setLabel(quickRangeLabel);
+      }
+    }
   }
 
   const onOpen = useCallback(() => {
@@ -267,6 +273,15 @@ const BaseDatePickerComponent: FC<BaseDatePickerComponentProps> = ({
       onChange
     };
   }, [open, setOpen, triggerRef, nullable, onChange]);
+
+  useEffect(() => {
+    if (type.range) {
+      const quickRangeLabel = findQuickRangeLabel(quickRanges, value);
+      if (quickRangeLabel) {
+        setLabel(quickRangeLabel);
+      }
+    }
+  }, [value])
 
   return (
     <DefaultDatePickerContext.Provider value={context}>
@@ -294,7 +309,7 @@ const BaseDatePickerComponent: FC<BaseDatePickerComponentProps> = ({
               validFromRef.current !== undefined ? ' o-datepicker-active' : ''
             }`}
           >
-            {type['range'] && quickRanges && quickRanges.length > 0 && (
+            {type['range'] && quickRanges && Object.keys(quickRanges).length > 0 && (
               <QuickTimeRangeComponent key="quick_range" quickRanges={quickRanges} onChange={onChangeQuickRange} />
             )}
             {type['date'] && (
@@ -319,7 +334,13 @@ const BaseDatePickerComponent: FC<BaseDatePickerComponentProps> = ({
             autoFocus={autoFocus}
             disabled={disabled}
             SuffixComponent={IconComponent}
-            onClick={() => !open && setOpen(true)}
+            onClick={() => {
+              if (!open) {
+                setOpen(true);
+              } else {
+                setLabel(null);
+              }
+            }}
           />
         </span>
       </div>
@@ -327,4 +348,4 @@ const BaseDatePickerComponent: FC<BaseDatePickerComponentProps> = ({
   );
 };
 
-export default BaseDatePickerComponent;
+export default PickerComponent;

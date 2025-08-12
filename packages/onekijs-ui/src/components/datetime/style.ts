@@ -3,6 +3,7 @@ import { alignItems, columnGap, gap, justifyContent, rowGap } from '../../styles
 import { backgroundColor } from '../../styles/background';
 import { borderBottomColor, borderBottomLeftRadius, borderBottomRightRadius, borderBottomStyle, borderBottomWidth, borderColor, borderRadius, borderStyle, borderTopLeftRadius, borderTopRightRadius, borderWidth, boxShadow } from '../../styles/border';
 import { display } from '../../styles/display';
+import { flexDirection } from '../../styles/flex';
 import { gridTemplateColumns } from '../../styles/grid';
 import { cursor, userSelect } from '../../styles/interactivity';
 import { zIndex } from '../../styles/position';
@@ -10,8 +11,6 @@ import { width } from '../../styles/size';
 import { marginBottom, marginLeft, marginRight, marginTop, marginX, marginY, padding, paddingRight, paddingX } from '../../styles/spacing';
 import { ComponentStyle, StylableProps } from '../../styles/typings';
 import { color, fontFamily, fontStyle, fontWeight, textAlign, textTransform, whiteSpace } from '../../styles/typography';
-import { flexDirection } from '../../styles/flex';
-import { DatePickerProps } from './typings';
 
 export const datePickerStyle: ComponentStyle<StylableProps> = () => {
   return css`
