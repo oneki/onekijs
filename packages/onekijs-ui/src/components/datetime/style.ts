@@ -7,13 +7,13 @@ import { gridTemplateColumns } from '../../styles/grid';
 import { cursor, userSelect } from '../../styles/interactivity';
 import { zIndex } from '../../styles/position';
 import { width } from '../../styles/size';
-import { marginBottom, marginLeft, marginRight, marginTop, marginX, marginY, padding, paddingX } from '../../styles/spacing';
-import { ComponentStyle } from '../../styles/typings';
-import { color, fontFamily, fontStyle, fontWeight, textAlign, textTransform } from '../../styles/typography';
+import { marginBottom, marginLeft, marginRight, marginTop, marginX, marginY, padding, paddingRight, paddingX } from '../../styles/spacing';
+import { ComponentStyle, StylableProps } from '../../styles/typings';
+import { color, fontFamily, fontStyle, fontWeight, textAlign, textTransform, whiteSpace } from '../../styles/typography';
 import { flexDirection } from '../../styles/flex';
 import { DatePickerProps } from './typings';
 
-export const datePickerStyle: ComponentStyle<DatePickerProps> = () => {
+export const datePickerStyle: ComponentStyle<StylableProps> = () => {
   return css`
     .o-calendar {
       ${width('300px')}
@@ -104,6 +104,7 @@ export const datePickerStyle: ComponentStyle<DatePickerProps> = () => {
       ${marginTop('-1px')}
       ${padding('lg')}
       ${userSelect('none')}
+      ${display('flex')}
     }
 
     .o-datepicker-active {
@@ -130,10 +131,6 @@ export const datePickerStyle: ComponentStyle<DatePickerProps> = () => {
       ${alignItems('center')}
     }
 
-    .o-datepicker-dropdown-content {
-      ${display('flex')}
-      ${alignItems('center')}
-    }
 
     .o-datepicker-remover {
       ${cursor('pointer')}
@@ -175,15 +172,21 @@ export const datePickerStyle: ComponentStyle<DatePickerProps> = () => {
       ${marginTop('md')}
     }
 
+    .o-time-edge-date-container {
+      ${width('150px')}
+    }
+
     .o-time-edge-date {
       ${fontWeight('medium')}
       ${backgroundColor('lightest')}
       ${paddingX('sm')}
       ${marginRight('md')}
+      ${whiteSpace('nowrap')}
     }
 
     .o-time-container-range {
-      ${marginLeft('2xl')}
+      ${marginLeft('3xl')}
+      ${marginTop('2xl')}
       ${display('flex')}
       ${flexDirection('column')}
       ${gap('xl')}
@@ -217,6 +220,22 @@ export const datePickerStyle: ComponentStyle<DatePickerProps> = () => {
 
     .o-time-selector-part-large.o-toggler-icon-container {
       ${marginY('md')}
+    }
+
+    .o-quick-time-range-container {
+      ${paddingRight('2xl')}
+      ${marginTop('2xl')}
+      ${marginX('md')}
+    }
+
+    .o-quick-time-range-title {
+      ${fontWeight('bold')}
+    }
+
+    .o-quick-time-range {
+      ${cursor('pointer')}
+      ${fontWeight('medium')}
+      ${color('primary')}
     }
   `;
 };

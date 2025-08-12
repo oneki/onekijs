@@ -4,7 +4,7 @@ import { isValidDate } from '../../../utils/date';
 import TimeSelectorComponent from './TimeSelectorComponent';
 import { ucfirst } from 'onekijs-framework';
 
-const TimeRangeComponent: React.FC<TimeRangeComponentProps> = ({ edge, onChange, value }) => {
+const TimeRangeComponent: React.FC<TimeRangeComponentProps> = ({ edge, onChange, value, displayHours, displayMinutes, displaySeconds }) => {
   const valid = isValidDate(`${value.day}-${value.month}-${value.year}`);
   let d: Date | undefined;
   if (valid) {
@@ -20,8 +20,8 @@ const TimeRangeComponent: React.FC<TimeRangeComponentProps> = ({ edge, onChange,
       )}
       {valid && d && (
         <div className="o-time-edge-content" key="content">
-          <span className="o-time-edge-date" key="date">{d.toUTCString().split(' ', 4).join(' ')}</span>
-          <TimeSelectorComponent value={value} onChange={onChange} size="small" edge={edge} key="selector" />
+          <div className="o-time-edge-date-container" key="date"><span className="o-time-edge-date">{d.toUTCString().split(' ', 4).join(' ')}</span></div>
+          <TimeSelectorComponent value={value} onChange={onChange} size="small" edge={edge} key="selector" displayHours={displayHours} displayMinutes={displayMinutes} displaySeconds={displaySeconds} />
         </div>
       )}
     </div>

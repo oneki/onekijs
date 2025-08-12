@@ -22,7 +22,7 @@ export const isValidDate = (value: string | null | undefined) => {
 
 export const isValidTime = (value: string | null | undefined) => {
   if (!value) return false;
-  return /^(2[0-3]|[0-1][0-9]):([0-5][0-9])$/.test(value);
+  return /^(2[0-3]|[0-1][0-9]):([0-5][0-9]):([0-5][0-9])$/.test(value);
 }
 
 export const isValidMinuteOrSecond = (value: string | null | undefined) => {

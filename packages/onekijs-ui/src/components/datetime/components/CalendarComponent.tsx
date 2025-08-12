@@ -148,18 +148,18 @@ const CalendarComponent: FC<CalendarComponentProps> = ({
       ? []
       : [...Array(lastDayOfPreviousMonth.getDate() + 1).keys()].slice(-firstDayOfCurrentMonth.getDay()).map((n) => {
           const startRange =
-            fromDay === n && lastDayOfPreviousMonth.getMonth() === firstDayOfExternalFromMonth?.getMonth();
-          const endRange = toDay === n && lastDayOfPreviousMonth.getMonth() === firstDayOfExternalToMonth?.getMonth();
+            fromDay === n && lastDayOfPreviousMonth.getMonth() === firstDayOfExternalFromMonth?.getMonth() && lastDayOfPreviousMonth.getFullYear() === firstDayOfExternalFromMonth?.getFullYear();
+          const endRange = toDay === n && lastDayOfPreviousMonth.getMonth() === firstDayOfExternalToMonth?.getMonth() && lastDayOfPreviousMonth.getFullYear() === firstDayOfExternalToMonth?.getFullYear();
           return {
             day: n,
             active: startRange || endRange,
             current: isCurrent(d, lastDayOfPreviousMonth.getFullYear(), lastDayOfPreviousMonth.getMonth(), n),
             month: lastDayOfPreviousMonth.getMonth(),
             year: lastDayOfPreviousMonth.getFullYear(),
-            startRange: startRange && type['range'],
-            endRange: isActive(from) && endRange && type['range'],
+            startRange: startRange && type.range,
+            endRange: isActive(from) && endRange && type.range,
             inRange:
-              type['range'] &&
+              type.range &&
               inRange(
                 lastDayOfPreviousMonth.getFullYear(),
                 lastDayOfPreviousMonth.getMonth(),
@@ -172,18 +172,18 @@ const CalendarComponent: FC<CalendarComponentProps> = ({
 
   calendarDays = calendarDays.concat(
     [...Array(lastDayOfCurrentMonth.getDate() + 1).keys()].slice(1).map((n) => {
-      const startRange = fromDay === n && lastDayOfCurrentMonth.getMonth() === firstDayOfExternalFromMonth?.getMonth();
-      const endRange = toDay === n && lastDayOfCurrentMonth.getMonth() === firstDayOfExternalToMonth?.getMonth();
+      const startRange = fromDay === n && lastDayOfCurrentMonth.getMonth() === firstDayOfExternalFromMonth?.getMonth() && lastDayOfCurrentMonth.getFullYear() === firstDayOfExternalFromMonth?.getFullYear();
+      const endRange = toDay === n && lastDayOfCurrentMonth.getMonth() === firstDayOfExternalToMonth?.getMonth() && lastDayOfCurrentMonth.getFullYear() === firstDayOfExternalToMonth?.getFullYear();
       return {
         day: n,
         active: startRange || endRange,
         current: isCurrent(d, lastDayOfCurrentMonth.getFullYear(), lastDayOfCurrentMonth.getMonth(), n),
         month: lastDayOfCurrentMonth.getMonth(),
         year: lastDayOfCurrentMonth.getFullYear(),
-        startRange: startRange && type['range'],
-        endRange: isActive(from) && endRange && type['range'],
+        startRange: startRange && type.range,
+        endRange: isActive(from) && endRange && type.range,
         inRange:
-          type['range'] &&
+          type.range &&
           inRange(
             lastDayOfCurrentMonth.getFullYear(),
             lastDayOfCurrentMonth.getMonth(),
@@ -200,18 +200,18 @@ const CalendarComponent: FC<CalendarComponentProps> = ({
       ? []
       : [...Array(6 - lastDayOfCurrentMonth.getDay() + 1).keys()].slice(1).map((n) => {
           const startRange =
-            fromDay === n && firstDayOfNextMonth.getMonth() === firstDayOfExternalFromMonth?.getMonth();
-          const endRange = toDay === n && firstDayOfNextMonth.getMonth() === firstDayOfExternalToMonth?.getMonth();
+            fromDay === n && firstDayOfNextMonth.getMonth() === firstDayOfExternalFromMonth?.getMonth() && firstDayOfNextMonth.getFullYear() === firstDayOfExternalFromMonth?.getFullYear();
+          const endRange = toDay === n && firstDayOfNextMonth.getMonth() === firstDayOfExternalToMonth?.getMonth() && firstDayOfNextMonth.getFullYear() === firstDayOfExternalToMonth?.getFullYear();
           return {
             day: n,
             active: startRange || endRange,
             current: isCurrent(d, firstDayOfNextMonth.getFullYear(), firstDayOfNextMonth.getMonth(), n),
             month: firstDayOfNextMonth.getMonth(),
             year: firstDayOfNextMonth.getFullYear(),
-            startRange: startRange && type['range'],
-            endRange: isActive(from) && endRange && type['range'],
+            startRange: startRange && type.range,
+            endRange: isActive(from) && endRange && type.range,
             inRange:
-              type['range'] &&
+              type.range &&
               inRange(
                 firstDayOfNextMonth.getFullYear(),
                 firstDayOfNextMonth.getMonth(),
@@ -224,13 +224,13 @@ const CalendarComponent: FC<CalendarComponentProps> = ({
   );
 
   useEffect(() => {
-    if (type['range'] && to['month'] !== lastExternalToMonth.current) {
+    if (type.range && to['month'] !== lastExternalToMonth.current) {
       // the user has changed the toMonth from the input field
       // we move the calendar to this month if it's a valid month
       lastExternalToMonth.current = to['month'];
       setCurrentMonth(getMonth(to['month'], currentMonth));
     }
-    if (type['range'] && to['year'] !== lastExternalToYear.current) {
+    if (type.range && to['year'] !== lastExternalToYear.current) {
       // the user has changed the toYear from the input field
       // we move the calendar to this year if it's a valid year
       lastExternalToYear.current = to['year'];
@@ -320,7 +320,7 @@ const CalendarComponent: FC<CalendarComponentProps> = ({
               const currentDateString = `${calendarDay.year}-${String(calendarDay.month + 1).padStart(2, '0')}-${String(
                 calendarDay.day,
               ).padStart(2, '0')}`;
-              if (type['range'] && from.year !== undefined && from.month !== undefined && from.day !== undefined) {
+              if (type.range && from.year !== undefined && from.month !== undefined && from.day !== undefined) {
                 // we assume we change the "to" date
                 // if the new "to" date is before the "from" date, we need to switch
                 const fromDateString = `${from.year}-${from.month.padStart(2, '0')}-${String(from.day).padStart(

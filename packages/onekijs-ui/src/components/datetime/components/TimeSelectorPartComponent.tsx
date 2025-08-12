@@ -31,6 +31,8 @@ const TimeSelectorPartComponent: React.FC<TimeSelectorPartComponentProps> = ({ o
     let value = e.target.value;
     if (type === 'minute' && (value === '' || isValidMinuteOrSecond(value))) {
       onChange(value);
+    } else if (type === 'second' && (value === '' || isValidMinuteOrSecond(value))) {
+      onChange(value);
     } else if (type === 'hour' && (value === '' || isValidHour(value))) {
       onChange(value);
     }

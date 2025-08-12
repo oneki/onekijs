@@ -1,5 +1,5 @@
 import React from 'react';
-import { DatePickerProps, DatePickerType } from '../typings';
+import { DatePickerType, DateTimePickerProps } from '../typings';
 import BaseDatePickerComponent from './BaseDatePickerComponent';
 
 const type: DatePickerType = {
@@ -8,7 +8,7 @@ const type: DatePickerType = {
   range: false
 }
 
-const DateTimePickerComponent: React.FC<DatePickerProps> = (props) => {
+const DateTimePickerComponent: React.FC<DateTimePickerProps> = (props) => {
   return <BaseDatePickerComponent {...props} type={type} />
 }
 

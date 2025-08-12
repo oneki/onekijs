@@ -1,4 +1,4 @@
-import { AnonymousObject, eventLocks } from 'onekijs-framework';
+import { AnonymousObject, DefaultBasicError, eventLocks } from 'onekijs-framework';
 import React, { FC, useCallback, useId, useMemo, useRef, useState } from 'react';
 import { useClickOutside, useFocusOutside } from '../../../utils/event';
 import { addClassname } from '../../../utils/style';
@@ -7,10 +7,11 @@ import CalendarIcon from '../../icon/CalendarIcon';
 import Input from '../../input';
 import { InputProps } from '../../input/typings';
 import { DefaultDatePickerContext, useDatePickerContext } from '../hooks/useDatePickerContext';
-import { BaseDatePickerComponentProps, DatePickerDate, DatePickerType } from '../typings';
+import { BaseDatePickerComponentProps, DatePickerDate, DatePickerType, DateQuickRange } from '../typings';
 import CalendarComponent from './CalendarComponent';
 import TimeComponent from './TimeComponent';
 import { isValidDate, isValidTime } from '../../../utils/date';
+import QuickTimeRangeComponent from './QuickTimeRangeComponent';
 
 const IconComponent: React.FC<InputProps> = () => {
   const { nullable, setOpen, onChange, open } = useDatePickerContext();
@@ -63,7 +64,7 @@ const formatDate = (
     }
     if (type.time) {
       if (type.date && date) {
-        result += ` ${time || '00:00'}`;
+        result += ` ${time || '00:00:00'}`;
       } else if (type.date && time) {
         result += ` ${time}`;
       } else if (time) {
@@ -80,6 +81,11 @@ const formatDate = (
   return result;
 };
 
+const dateToString = (d: Date): string => {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
+}
+
+
 const BaseDatePickerComponent: FC<BaseDatePickerComponentProps> = ({
   animationMs = 200,
   attachDropdownToBody = true,
@@ -93,7 +99,11 @@ const BaseDatePickerComponent: FC<BaseDatePickerComponentProps> = ({
   onFocus: forwardFocus,
   openOnFocus = false,
   placeholder,
+  quickRanges,
   type,
+  displayHours = true,
+  displayMinutes = true,
+  displaySeconds = true,
   value: externalValue,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -105,6 +115,7 @@ const BaseDatePickerComponent: FC<BaseDatePickerComponentProps> = ({
   const [internalValue, setInternalValue] = useState<string | null>(null);
   const value = internalValue ? internalValue : externalValue;
   const [fromString, toString] = value ? value.split(/ to\s*/) : [];
+  const [label, setLabel] = useState<string | null>(null);
 
 
   const validFromRef = useRef<string | undefined>();
@@ -202,6 +213,7 @@ const BaseDatePickerComponent: FC<BaseDatePickerComponentProps> = ({
 
   const onChange = useCallback(
     (nextValue: string | null) => {
+      setLabel(null);
       if (forwardChange) {
         forwardChange(nextValue);
       } else {
@@ -229,6 +241,11 @@ const BaseDatePickerComponent: FC<BaseDatePickerComponentProps> = ({
     }
   };
 
+  const onChangeQuickRange = (quickRange: DateQuickRange) => {
+    onChange(`${dateToString(quickRange.from)} to ${dateToString(quickRange.to)}`)
+    setLabel(quickRange.label);
+  }
+
   const onOpen = useCallback(() => {
     eventLocks.lock('escape', id);
   }, [id]);
@@ -251,7 +268,6 @@ const BaseDatePickerComponent: FC<BaseDatePickerComponentProps> = ({
     };
   }, [open, setOpen, triggerRef, nullable, onChange]);
 
-  console.log({ from, to });
   return (
     <DefaultDatePickerContext.Provider value={context}>
       <div
@@ -278,23 +294,26 @@ const BaseDatePickerComponent: FC<BaseDatePickerComponentProps> = ({
               validFromRef.current !== undefined ? ' o-datepicker-active' : ''
             }`}
           >
+            {type['range'] && quickRanges && quickRanges.length > 0 && (
+              <QuickTimeRangeComponent key="quick_range" quickRanges={quickRanges} onChange={onChangeQuickRange} />
+            )}
             {type['date'] && (
-              <div className="o-calendar">
+              <div className="o-calendar" key="calendar">
                 <CalendarComponent from={from} to={to} type={type} onChange={onChangeDate} />
               </div>
             )}
             {type['time'] && (
-              <div className="o-time">
-                <TimeComponent from={from} to={to} type={type} onChange={onChangeTime} />
+              <div className="o-time" key="time">
+                <TimeComponent from={from} to={to} type={type} onChange={onChangeTime} displayHours={displayHours} displayMinutes={displayMinutes} displaySeconds={displaySeconds} />
               </div>
             )}
           </div>
         </Dropdown>
-        <span ref={triggerRef}>
+        <span ref={triggerRef} key="input">
           <Input
             placeholder={placeholder}
             onChange={(e) => onChange(e.target.value)}
-            value={!value ? '' : value}
+            value={label ? label : !value ? '' : value}
             onFocus={onFocus}
             onBlur={onBlur}
             autoFocus={autoFocus}

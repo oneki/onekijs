@@ -12,40 +12,67 @@ const getValue = (candidate: string | number | undefined, max: number, defaultVa
   return candidate;
 };
 
-const TimeSelectorComponent: React.FC<TimeSelectorComponentProps> = ({ value, onChange, size }) => {
+const TimeSelectorComponent: React.FC<TimeSelectorComponentProps> = ({ value, onChange, size, edge, displayHours, displayMinutes, displaySeconds  }) => {
   const d = new Date();
-  const hourInt = getValue(value.hour, 23, d.getHours());
-  const minuteInt = getValue(value.minute, 59, d.getMinutes());
+  const hourInt = getValue(value.hour, 23, displayHours ? d.getHours() : 0);
+  const minuteInt = getValue(value.minute, 59, displayMinutes ? d.getMinutes() : 0);
+  const secondInt = getValue(value.second, 59, displaySeconds ? d.getSeconds() : 0);
 
   const [internalHour, setInternalHour] = useState(String(hourInt).padStart(2, '0'));
   const [internalMinute, setInternalMinute] = useState(String(minuteInt).padStart(2, '0'));
+  const [internalSecond, setInternalSecond] = useState(String(secondInt).padStart(2, '0'));
 
   const hour = internalHour === '' ? '' : parseInt(internalHour) === hourInt ? internalHour : hourInt;
-  const minute = parseInt(internalMinute) === minuteInt ? internalMinute : minuteInt;
+  const minute = internalMinute === '' ? '' : parseInt(internalMinute) === minuteInt ? internalMinute : minuteInt;
+  const second = internalSecond === '' ? '' : parseInt(internalSecond) === secondInt ? internalSecond : secondInt;
 
   const onChangeHour = useCallback(
     (value: string) => {
       setInternalHour(value);
       if (value !== '') {
-        onChange(`${String(value).padStart(2, '0')}:${String(minute).padStart(2, '0')}`, 'from');
+        onChange(`${String(value || 0).padStart(2, '0')}:${String(minute || 0).padStart(2, '0')}:${String(second || 0).padStart(2, '0')}`, edge);
       }
     },
-    [minute, onChange],
+    [minute, second, onChange],
   );
 
   const onChangeMinute = useCallback(
     (value: string) => {
       setInternalMinute(value);
-      onChange(`${String(hour).padStart(2, '0')}:${String(value).padStart(2, '0')}`, 'from');
+      if (value !== '') {
+        onChange(`${String(hour || 0).padStart(2, '0')}:${String(value || 0).padStart(2, '0')}:${String(second || 0).padStart(2, '0')}`, edge);
+      }
     },
-    [hour, onChange],
+    [hour, second, onChange],
+  );
+
+  const onChangeSecond = useCallback(
+    (value: string) => {
+      setInternalSecond(value);
+      if (value !== '') {
+        onChange(`${String(hour || 0).padStart(2, '0')}:${String(minute || 0).padStart(2, '0')}:${String(value || 0).padStart(2, '0')}`, edge);
+      }
+    },
+    [hour, minute, onChange],
   );
 
   return (
     <div className="o-time-selector">
-      <TimeSelectorPartComponent key="hour" type="hour" value={hour} onChange={onChangeHour} edge="from" size={size} />
-      <span className="o-time-separator">:</span>
-      <TimeSelectorPartComponent key="minute" type="minute" value={minute} onChange={onChangeMinute} edge="from" size={size} />
+      {displayHours && (
+        <TimeSelectorPartComponent key="hour" type="hour" value={hour} onChange={onChangeHour} size={size} />
+      )}
+      {displayHours && (displayMinutes || displaySeconds) && (
+        <span key="sep1" className="o-time-separator">:</span>
+      )}
+      {displayMinutes && (
+        <TimeSelectorPartComponent key="minute" type="minute" value={minute} onChange={onChangeMinute} size={size} />
+      )}
+      {displaySeconds && (displayHours || displayMinutes) && (
+        <span key="sep2" className="o-time-separator">:</span>
+      )}
+      {displaySeconds && (
+        <TimeSelectorPartComponent key="second" type="second" value={second} onChange={onChangeSecond} size={size} />
+      )}
     </div>
   )
 }
