@@ -269,7 +269,6 @@ const PickerComponent: FC<PickerComponentProps> = ({
         setInternalValue(null);
         forwardChange(nextValue);
       } else {
-        console.log('wrong value', nextValue);
         setInternalValue(nextValue);
       }
     },
@@ -310,6 +309,9 @@ const PickerComponent: FC<PickerComponentProps> = ({
 
   const onClosed = useCallback(() => {
     eventLocks.unlock('escape', id);
+    if (lastExternalValueRef.current !== undefined) {
+      setInternalValue(null);
+    }
   }, [id]);
 
   useClickOutside([containerRef, dropdownRef], onBlur);

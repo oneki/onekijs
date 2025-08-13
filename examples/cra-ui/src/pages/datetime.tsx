@@ -13,7 +13,7 @@ const datetimeStyle: ComponentStyle<{}> = () => {
 
 const Page: React.FC<{ className?: string }> = ({ className }) => {
   const qr = useQuickRanges('all');
-  const adapter = useTimestampRangeAdapter();
+  const adapter = useDateRangeAdapter();
   const [value, setValue] = useState(adapter.fromDateRange(qr['Last week']));
   return (
     <>
