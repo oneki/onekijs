@@ -19,17 +19,17 @@ const IconComponent: React.FC<InputProps> = () => {
   return (
     <span className="o-datepicker-icon">
       {nullable && (
-        <div className="o-datepicker-remover" onClick={() => { onChange(null); setOpen(false)} }>
+        <div
+          className="o-datepicker-remover"
+          onClick={() => {
+            onChange(null);
+            setOpen(false);
+          }}
+        >
           &#10006;
         </div>
       )}
-      <CalendarIcon
-        width="20px"
-        height="20px"
-        color="primary"
-        marginRight="sm"
-        onClick={() => setOpen(!open)}
-      />
+      <CalendarIcon width="20px" height="20px" color="primary" marginRight="sm" onClick={() => setOpen(!open)} />
     </span>
   );
 };
@@ -50,6 +50,47 @@ const parseDate = (value: string | null | undefined): DatePickerDate => {
   }
   return { date, time, year, month, day, hour, minute, second };
 };
+
+const isValidValue = (value: string | null, type: DatePickerType): boolean => {
+  const isValidDate = (value: string): boolean =>  {
+    const d = new Date(value);
+    return !isNaN(d as any);
+  }
+
+  if (!value) return true;
+  if (type.range) {
+    const [from, to] = value.split(' to ');
+    if (!from || !to) return false;
+    return isValidDate(from) && isValidDate(to);
+  } else {
+    return isValidDate(value);
+  }
+}
+
+const isSameDate = (d1: string | null | undefined, d2: string | null | undefined, type: DatePickerType) => {
+  const isSameDate = (d1: string | undefined, d2: string | undefined) => {
+    if (!d1 && !d2) return true;
+    if (!d1 || !d2) return false;
+    const date1 = new Date(`${d1}`);
+    const date2 = new Date(`${d2}`);
+    if (isNaN(date1 as any) || isNaN(date2 as any)) {
+      return false;
+    }
+    return date1.toString() === date2.toString();
+  }
+
+  if (d1 === null && d2 === null) return true;
+  if (!d1 || !d2) return false;
+
+  if (type.range) {
+    const [from1, to1] = d1.split(' to ');
+    const [from2, to2] = d2.split(' to ');
+    return isSameDate(from1, from2) && isSameDate(to1, to2);
+  } else {
+    return isSameDate(d1, d2);
+  }
+}
+
 
 const formatDate = (
   type: DatePickerType,
@@ -82,11 +123,6 @@ const formatDate = (
   return result;
 };
 
-const dateToString = (d: Date): string => {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
-}
-
-
 const PickerComponent: FC<PickerComponentProps> = ({
   animationMs = 200,
   attachDropdownToBody = true,
@@ -110,14 +146,25 @@ const PickerComponent: FC<PickerComponentProps> = ({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const stateRef = useRef<AnonymousObject>({});
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const quickRangesRef = useRef(quickRanges);
+  const lastExternalValueRef = useRef<string | null | undefined>();
+  const currentValueRef = useRef<string | null>(null);
   const [open, setOpen] = useState(false);
   const [focus, setFocus] = useState(false);
   const [Dropdown, triggerRef] = useDropdown();
   const [internalValue, setInternalValue] = useState<string | null>(null);
-  const value = internalValue ? internalValue : externalValue;
-  const [fromString, toString] = value ? value.split(/ to\s*/) : [];
-  const [label, setLabel] = useState<string | null>(null);
+  let value = internalValue ? internalValue : externalValue;
+  if (currentValueRef.current !== value && isSameDate(currentValueRef.current, value, type)) {
+    value = currentValueRef.current;
+  }
 
+  const [fromString, toString] = value ? value.split(/ to\s*/) : [];
+  const [label, setLabel] = useState<string | undefined>(() => {
+    if (type.range) {
+      return findQuickRangeLabel(quickRangesRef.current, value);
+    }
+    return;
+  });
 
   const validFromRef = useRef<string | undefined>();
   const validToRef = useRef<string | undefined>();
@@ -214,14 +261,19 @@ const PickerComponent: FC<PickerComponentProps> = ({
 
   const onChange = useCallback(
     (nextValue: string | null) => {
-      setLabel(null);
-      if (forwardChange) {
+      currentValueRef.current = nextValue;
+      setLabel(undefined);
+      // check if the nextValue is a valid value
+      // if it's not a valid value, we keep it internally
+      if (forwardChange && isValidValue(nextValue, type)) {
+        setInternalValue(null);
         forwardChange(nextValue);
       } else {
+        console.log('wrong value', nextValue);
         setInternalValue(nextValue);
       }
     },
-    [forwardChange, setInternalValue],
+    [forwardChange, setInternalValue, type],
   );
 
   const onChangeDate = (fromDate: string | undefined, toDate?: string) => {
@@ -243,14 +295,14 @@ const PickerComponent: FC<PickerComponentProps> = ({
   };
 
   const onChangeQuickRange = (quickRangeLabel: string) => {
-    if (quickRanges) {
-      const quickRange = quickRanges[quickRangeLabel];
+    if (quickRangesRef.current) {
+      const quickRange = quickRangesRef.current[quickRangeLabel];
       if (quickRange) {
-        onChange(`${dateToString(quickRange.from)} to ${dateToString(quickRange.to)}`)
+        onChange(`${quickRange.from} to ${quickRange.to}`);
         setLabel(quickRangeLabel);
       }
     }
-  }
+  };
 
   const onOpen = useCallback(() => {
     eventLocks.lock('escape', id);
@@ -270,18 +322,27 @@ const PickerComponent: FC<PickerComponentProps> = ({
       setOpen,
       triggerRef,
       nullable,
-      onChange
+      onChange,
     };
   }, [open, setOpen, triggerRef, nullable, onChange]);
 
   useEffect(() => {
-    if (type.range) {
-      const quickRangeLabel = findQuickRangeLabel(quickRanges, value);
+    if (type.range && !label) {
+      const quickRangeLabel = findQuickRangeLabel(quickRangesRef.current, value);
       if (quickRangeLabel) {
         setLabel(quickRangeLabel);
       }
     }
-  }, [value])
+  }, [value]);
+
+  useEffect(() => {
+    if (forwardChange && lastExternalValueRef.current !== undefined && externalValue !== undefined && externalValue !== lastExternalValueRef.current) {
+      // case when we block the onChange due to a wrong internal value
+      // and the value is changed from the exterior (not due to change done internally)
+      setInternalValue(null);
+    }
+    lastExternalValueRef.current = externalValue;
+  });
 
   return (
     <DefaultDatePickerContext.Provider value={context}>
@@ -309,8 +370,13 @@ const PickerComponent: FC<PickerComponentProps> = ({
               validFromRef.current !== undefined ? ' o-datepicker-active' : ''
             }`}
           >
-            {type['range'] && quickRanges && Object.keys(quickRanges).length > 0 && (
-              <QuickTimeRangeComponent key="quick_range" quickRanges={quickRanges} onChange={onChangeQuickRange} />
+            {type['range'] && quickRangesRef.current && Object.keys(quickRangesRef.current).length > 0 && (
+              <QuickTimeRangeComponent
+                key="quick_range"
+                quickRanges={quickRangesRef.current}
+                onChange={onChangeQuickRange}
+                currentQuickRangeLabel={label}
+              />
             )}
             {type['date'] && (
               <div className="o-calendar" key="calendar">
@@ -319,7 +385,15 @@ const PickerComponent: FC<PickerComponentProps> = ({
             )}
             {type['time'] && (
               <div className="o-time" key="time">
-                <TimeComponent from={from} to={to} type={type} onChange={onChangeTime} displayHours={displayHours} displayMinutes={displayMinutes} displaySeconds={displaySeconds} />
+                <TimeComponent
+                  from={from}
+                  to={to}
+                  type={type}
+                  onChange={onChangeTime}
+                  displayHours={displayHours}
+                  displayMinutes={displayMinutes}
+                  displaySeconds={displaySeconds}
+                />
               </div>
             )}
           </div>
@@ -338,7 +412,7 @@ const PickerComponent: FC<PickerComponentProps> = ({
               if (!open) {
                 setOpen(true);
               } else {
-                setLabel(null);
+                setLabel(undefined);
               }
             }}
           />

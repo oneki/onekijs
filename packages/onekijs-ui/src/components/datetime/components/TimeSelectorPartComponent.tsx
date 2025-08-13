@@ -26,6 +26,14 @@ const getNextValue = (value: string | number, max: number, type: 'next' | 'previ
   return String(result).padStart(2, '0');
 };
 
+const isMin = (value: string | number, _type: TimeSelectorPartComponentProps['type']): boolean => {
+  return parseInt(`${value}`) === 0;
+}
+
+const isMax = (value: string | number, type: TimeSelectorPartComponentProps['type']): boolean => {
+  return type === 'hour' ? parseInt(`${value}`) === 23 : parseInt(`${value}`) === 59;
+}
+
 const TimeSelectorPartComponent: React.FC<TimeSelectorPartComponentProps> = ({ onChange, type, value, size = 'large' }) => {
   const onValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
@@ -41,11 +49,14 @@ const TimeSelectorPartComponent: React.FC<TimeSelectorPartComponentProps> = ({ o
   return (
     <div className={`o-time-selector-part o-time-selector-part-${size} o-time-${type}`}>
       <TogglerIcon
+        className={isMin(value, type) ? 'o-time-selector-part-icon-disabled' : undefined}
         key="previous"
         width="20px"
         closeArrowPosition="n"
         onClick={() => {
-          onChange(getNextValue(value, type === 'hour' ? 23 : 59, 'previous'));
+          if (!isMin(value, type)) {
+            onChange(getNextValue(value, type === 'hour' ? 23 : 59, 'previous'));
+          }
         }}
       />
       <Input
@@ -57,11 +68,14 @@ const TimeSelectorPartComponent: React.FC<TimeSelectorPartComponentProps> = ({ o
         onChange={onValueChange}
       />
       <TogglerIcon
+        className={isMax(value, type) ? 'o-time-selector-part-icon-disabled' : undefined}
         key="next"
         width="20px"
         closeArrowPosition="s"
         onClick={() => {
-          onChange(getNextValue(value, type === 'hour' ? 23 : 59, 'next'));
+          if (!isMax(value, type)) {
+            onChange(getNextValue(value, type === 'hour' ? 23 : 59, 'next'));
+          }
         }}
       />
     </div>

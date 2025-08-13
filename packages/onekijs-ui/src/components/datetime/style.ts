@@ -141,6 +141,14 @@ export const datePickerStyle: ComponentStyle<StylableProps> = () => {
 
     .o-toggler-icon {
       ${cursor('pointer')}
+      ${color('primary')}
+    }
+
+    .o-time-selector-part-icon-disabled {
+      .o-toggler-icon {
+        ${cursor('not-allowed')}
+        ${color('light')}
+      }
     }
 
     .o-time-container {
@@ -235,6 +243,11 @@ export const datePickerStyle: ComponentStyle<StylableProps> = () => {
       ${cursor('pointer')}
       ${fontWeight('medium')}
       ${color('primary')}
+      &.o-quick-time-range-selected {
+        ${cursor('auto')}
+        ${fontWeight('bold')}
+        ${color('pink')}
+      }
     }
   `;
 };

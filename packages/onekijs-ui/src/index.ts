@@ -416,9 +416,13 @@ export { default as DateTimePickerComponent } from './components/datetime/compon
 export { default as DateTimeRangePickerComponent } from './components/datetime/components/DateTimeRangePickerComponent';
 export { default as TimePickerComponent } from './components/datetime/components/TimePickerComponent';
 export { default as TimeRangePickerComponent } from './components/datetime/components/TimeRangePickerComponent';
+export { DefaultDatePickerContext, useDatePickerContext } from './components/datetime/hooks/useDatePickerContext';
+export { default as useQuickRanges } from './components/datetime/hooks/useQuickRanges';
+export { default as useDateRangeAdapter } from './components/datetime/hooks/useDateRangeAdapter';
+export { default as useTimestampRangeAdapter } from './components/datetime/hooks/useTimestampRangeAdapter';
 export {
   DatePickerProps,
-  DateRange,
+  DateStringRange,
   DateRangePickerProps,
   TimeRangeComponentProps,
   TimeSelectorComponentProps,
@@ -435,10 +439,16 @@ export {
   DateTimePickerProps,
   DateTimeRangePickerProps,
   DisplayTime,
-  QuickTimeRangeComponentProps
+  QuickTimeRangeComponentProps,
+  DefaultQuickRange,
+  TimePickerProps,
+  DateAdapter,
+  DateRangeAdapter,
+  DateRange,
+  TimestampRange,
 } from './components/datetime/typings';
 
-export { defaultQuickRanges, qr, toDateRange } from './components/datetime/util';
+export { defaultQuickRanges, qr, toDateRange, dateToString, findQuickRangeLabel } from './components/datetime/util';
 export * from './styles/alignment';
 export * from './styles/animation';
 export * from './styles/background';
