@@ -312,7 +312,7 @@ export {
   UseTableController,
   UseTableOptions,
   TableCellSerializer,
-  TableSerializerFormat
+  TableSerializerFormat,
 } from './components/table/typings';
 export { default as Tag } from './components/tag';
 export { default as TagComponent } from './components/tag/components/TagComponent';
@@ -397,10 +397,60 @@ export {
   WizardProps,
   WizardState,
 } from './components/wizard/typings';
-// export { sliderStyle } from './components/slider/style';
-// export { default as Slider } from './components/slider';
-// export { default as SliderCompoent }  from './components/slider/components/SliderComponent';
-// export { SliderProps } from './components/slider/typings';
+export { sliderStyle } from './components/slider/style';
+export { default as Slider } from './components/slider';
+export { default as SliderComponent } from './components/slider/components/SliderComponent';
+export { SliderProps } from './components/slider/typings';
+export { datePickerStyle } from './components/datetime/style';
+export {
+  DatePicker,
+  DateRangePicker,
+  DateTimePicker,
+  DateTimeRangePicker,
+  TimePicker,
+  TimeRangePicker,
+} from './components/datetime';
+export { default as PickerComponent } from './components/datetime/components/PickerComponent';
+export { default as CalendarComponent } from './components/datetime/components/CalendarComponent';
+export { default as DatePickerComponent } from './components/datetime/components/DatePickerComponent';
+export { default as DateRangePickerComponent } from './components/datetime/components/DateRangePickerComponent';
+export { default as DateTimePickerComponent } from './components/datetime/components/DateTimePickerComponent';
+export { default as DateTimeRangePickerComponent } from './components/datetime/components/DateTimeRangePickerComponent';
+export { default as TimePickerComponent } from './components/datetime/components/TimePickerComponent';
+export { default as TimeRangePickerComponent } from './components/datetime/components/TimeRangePickerComponent';
+export { DefaultDatePickerContext, useDatePickerContext } from './components/datetime/hooks/useDatePickerContext';
+export { default as useQuickRanges } from './components/datetime/hooks/useQuickRanges';
+export { default as useDateRangeAdapter } from './components/datetime/hooks/useDateRangeAdapter';
+export { default as useTimestampRangeAdapter } from './components/datetime/hooks/useTimestampRangeAdapter';
+export {
+  DatePickerProps,
+  DateStringRange,
+  DateRangePickerProps,
+  TimeRangeComponentProps,
+  TimeSelectorComponentProps,
+  CalendarComponentProps,
+  PickerComponentProps,
+  CalendarDay,
+  DatePickerContext,
+  DatePickerDate,
+  DatePickerType,
+  TimeComponentProps,
+  TimeSelectorPartComponentProps,
+  BasePickerProps,
+  DateQuickRange,
+  DateTimePickerProps,
+  DateTimeRangePickerProps,
+  DisplayTime,
+  QuickTimeRangeComponentProps,
+  DefaultQuickRange,
+  TimePickerProps,
+  DateAdapter,
+  DateRangeAdapter,
+  DateRange,
+  TimestampRange,
+} from './components/datetime/typings';
+
+export { defaultQuickRanges, qr, toDateRange, dateToString, findQuickRangeLabel } from './components/datetime/util';
 export * from './styles/alignment';
 export * from './styles/animation';
 export * from './styles/background';

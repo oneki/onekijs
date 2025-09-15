@@ -12,6 +12,7 @@ const InputComponent: FC<InputProps> = (props) => {
     onFocus: forwardFocus,
     onBlur: forwardBlur,
     onChange: forwardChange,
+    selectOnFocus = false,
     value,
     ...inputProps
   } = props;
@@ -27,6 +28,9 @@ const InputComponent: FC<InputProps> = (props) => {
 
   const onFocus = (e: React.FocusEvent<HTMLInputElement, Element>) => {
     setFocus(true);
+    if (selectOnFocus) {
+      e.target.select();
+    }
     forwardFocus && forwardFocus(e);
   };
 
