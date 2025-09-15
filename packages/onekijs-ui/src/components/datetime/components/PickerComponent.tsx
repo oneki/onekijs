@@ -136,6 +136,7 @@ const PickerComponent: FC<PickerComponentProps> = ({
   onFocus: forwardFocus,
   openOnFocus = false,
   placeholder,
+  placement = 'bottom-start',
   quickRanges,
   type,
   displayHours = true,
@@ -361,7 +362,7 @@ const PickerComponent: FC<PickerComponentProps> = ({
           animationTimeout={animationMs}
           onDropStart={onOpen}
           onCollapseDone={onClosed}
-          placement="bottom-start"
+          placement={placement}
           widthModifier={dropdownWidthModifier}
           className={className}
           zIndex={attachDropdownToBody ? 2000 : undefined}

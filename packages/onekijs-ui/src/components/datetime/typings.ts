@@ -1,6 +1,7 @@
 import { AnonymousObject } from 'onekijs-framework';
 import { StylableProps } from '../../styles/typings';
 import { DropdownWidthModifier } from '../dropdown/typings';
+import { Placement } from '@popperjs/core';
 
 export type BasePickerProps = StylableProps & {
   animationMs?: number;
@@ -13,6 +14,7 @@ export type BasePickerProps = StylableProps & {
   onFocus?: () => void;
   openOnFocus?: boolean;
   placeholder?: string;
+  placement?: Placement;
 };
 
 export type CalendarComponentProps = StylableProps & {
