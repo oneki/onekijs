@@ -421,8 +421,10 @@ const PickerComponent: FC<PickerComponentProps> = ({
             onClick={() => {
               if (!open) {
                 setOpen(true);
-              } else {
+              } else if (!combo) {
                 setLabel(undefined);
+              } else {
+                setOpen(false);
               }
             }}
           />
