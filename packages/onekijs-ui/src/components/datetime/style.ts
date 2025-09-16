@@ -123,6 +123,12 @@ export const datePickerStyle: ComponentStyle<StylableProps> = () => {
       }
     }
 
+    .o-datepicker-input {
+      input:read-only {
+        ${cursor('pointer')}
+      }
+    }
+
 
     .o-datepicker-icon {
       ${cursor('pointer')}

@@ -7,6 +7,7 @@ export type BasePickerProps = StylableProps & {
   animationMs?: number;
   attachDropdownToBody?: boolean;
   autoFocus?: boolean;
+  combo?: boolean;
   disabled?: boolean;
   dropdownWidthModifier?: DropdownWidthModifier;
   nullable?: boolean;
@@ -21,6 +22,7 @@ export type CalendarComponentProps = StylableProps & {
   from: DatePickerDate;
   maxDate?: Date;
   minDate?: Date;
+  nextSelectEdge: 'from' | 'to';
   onChange: (formDate: string | undefined, toDate?: string) => void;
   type: DatePickerType;
   to: DatePickerDate;
@@ -101,9 +103,10 @@ export type DateRangeAdapter<T extends any = any> = {
 
 export type DateRangePickerProps<T extends any = any> = BasePickerProps & {
   adapter?: DateRangeAdapter<T>;
-  value?: T | null;
+  closeOnQuickSelect?: boolean;
   onChange?: (value: T | null) => void;
   quickRanges?: AnonymousObject<DateStringRange>;
+  value?: T | null;
 };
 
 export type DateTimePickerProps<T extends any = any> = DatePickerProps<T> & DisplayTime;
@@ -120,6 +123,7 @@ export type DisplayTime = {
 
 export type PickerComponentProps = BasePickerProps &
   DisplayTime & {
+    closeOnQuickSelect?: boolean;
     type: DatePickerType;
     quickRanges?: AnonymousObject<DateStringRange>;
     value?: string | null;

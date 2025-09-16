@@ -128,6 +128,8 @@ const PickerComponent: FC<PickerComponentProps> = ({
   attachDropdownToBody = true,
   autoFocus,
   className,
+  closeOnQuickSelect = true,
+  combo = true,
   disabled,
   dropdownWidthModifier = 'min',
   nullable = false,
@@ -177,6 +179,9 @@ const PickerComponent: FC<PickerComponentProps> = ({
   if (!toString || /\s*/.test(toString)) {
     validToRef.current = undefined;
   }
+
+  // this setting is used to detect if the user changes the from or the to
+  const nextSelectEdgeRef = useRef<'from' | 'to'>('to');
 
   const from = parseDate(fromString?.trim());
   const previousFrom = parseDate(validFromRef.current);
@@ -283,6 +288,11 @@ const PickerComponent: FC<PickerComponentProps> = ({
     if (toDate === undefined) {
       toDate = to['date'];
     }
+    if (fromDate !== from['date']) {
+      nextSelectEdgeRef.current = 'to';
+    } else {
+      nextSelectEdgeRef.current = 'from';
+    }
     onChange(formatDate(type, fromDate, from['time'], toDate, to['time']));
   };
 
@@ -300,6 +310,9 @@ const PickerComponent: FC<PickerComponentProps> = ({
       if (quickRange) {
         onChange(`${quickRange.from} to ${quickRange.to}`);
         setLabel(quickRangeLabel);
+      }
+      if (closeOnQuickSelect) {
+       setOpen(false);
       }
     }
   };
@@ -383,7 +396,7 @@ const PickerComponent: FC<PickerComponentProps> = ({
             )}
             {type['date'] && (
               <div className="o-calendar" key="calendar">
-                <CalendarComponent from={from} to={to} type={type} onChange={onChangeDate} />
+                <CalendarComponent from={from} to={to} type={type} onChange={onChangeDate} nextSelectEdge={nextSelectEdgeRef.current} />
               </div>
             )}
             {type['time'] && (
@@ -403,6 +416,7 @@ const PickerComponent: FC<PickerComponentProps> = ({
         </Dropdown>
         <span ref={triggerRef} key="input">
           <Input
+            className="o-datepicker-input"
             placeholder={placeholder}
             onChange={(e) => onChange(e.target.value)}
             value={label ? label : !value ? '' : value}
@@ -411,11 +425,14 @@ const PickerComponent: FC<PickerComponentProps> = ({
             autoFocus={autoFocus}
             disabled={disabled}
             SuffixComponent={IconComponent}
+            readOnly={combo}
             onClick={() => {
               if (!open) {
                 setOpen(true);
-              } else {
+              } else if (!combo) {
                 setLabel(undefined);
+              } else {
+                setOpen(false);
               }
             }}
           />

@@ -86,6 +86,7 @@ const CalendarComponent: FC<CalendarComponentProps> = ({
   type,
   minDate = defaultMinDate,
   maxDate = defaultMaxDate,
+  nextSelectEdge,
   className,
   onChange,
 }) => {
@@ -317,26 +318,47 @@ const CalendarComponent: FC<CalendarComponentProps> = ({
               calendarDay.month === currentMonth ? ' o-calendar-day-in-month' : ''
             }${calendarDay.current ? ' o-calendar-day-current' : ''}`}
             onClick={() => {
-              const currentDateString = `${calendarDay.year}-${String(calendarDay.month + 1).padStart(2, '0')}-${String(
+              const nextDateString = `${calendarDay.year}-${String(calendarDay.month + 1).padStart(2, '0')}-${String(
                 calendarDay.day,
               ).padStart(2, '0')}`;
               if (type.range && from.year !== undefined && from.month !== undefined && from.day !== undefined) {
-                // we assume we change the "to" date
-                // if the new "to" date is before the "from" date, we need to switch
+                // It's a date range and not the first selection
+                // We must determine if it's a change for the from or the to
                 const fromDateString = `${from.year}-${from.month.padStart(2, '0')}-${String(from.day).padStart(
                   2,
                   '0',
                 )}`;
                 const fromDate = new Date(fromDateString);
-                const endDate = new Date(currentDateString);
-                if (fromDate <= endDate) {
-                  onChange(undefined, currentDateString);
+                let endDate: Date | undefined = undefined;
+                let endDateString: string | undefined = undefined;
+                if (to.year !== undefined && to.month !== undefined && to.day !== undefined) {
+                  // it's not the second click
+                  endDateString = `${to.year}-${to.month.padStart(2, '0')}-${String(to.day).padStart(
+                    2,
+                    '0',
+                  )}`;
+                  endDate = new Date(endDateString);
+                }
+
+                const nextDate = new Date(nextDateString);
+                if (endDate) {
+                  if (nextDate <= fromDate) {
+                     onChange(nextDateString, endDateString);
+                  } else if (nextDate >= endDate) {
+                     onChange(fromDateString, nextDateString);
+                  } else if (nextSelectEdge === 'from') {
+                    onChange(nextDateString, endDateString);
+                  } else {
+                    onChange(fromDateString, nextDateString);
+                  }
+                } else if (nextDate <= fromDate) {
+                  onChange(nextDateString, fromDateString);
                 } else {
-                  onChange(currentDateString, fromDateString);
+                  onChange(fromDateString, nextDateString);
                 }
               } else {
                 // we assume that it's not a range or the first selection of the range
-                onChange(currentDateString);
+                onChange(nextDateString);
               }
             }}
             onMouseEnter={() => {
