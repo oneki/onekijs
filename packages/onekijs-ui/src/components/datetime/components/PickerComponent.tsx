@@ -128,6 +128,8 @@ const PickerComponent: FC<PickerComponentProps> = ({
   attachDropdownToBody = true,
   autoFocus,
   className,
+  closeOnQuickSelect = true,
+  combo = true,
   disabled,
   dropdownWidthModifier = 'min',
   nullable = false,
@@ -301,6 +303,9 @@ const PickerComponent: FC<PickerComponentProps> = ({
         onChange(`${quickRange.from} to ${quickRange.to}`);
         setLabel(quickRangeLabel);
       }
+      if (closeOnQuickSelect) {
+       setOpen(false);
+      }
     }
   };
 
@@ -403,6 +408,7 @@ const PickerComponent: FC<PickerComponentProps> = ({
         </Dropdown>
         <span ref={triggerRef} key="input">
           <Input
+            className="o-datepicker-input"
             placeholder={placeholder}
             onChange={(e) => onChange(e.target.value)}
             value={label ? label : !value ? '' : value}
@@ -411,6 +417,7 @@ const PickerComponent: FC<PickerComponentProps> = ({
             autoFocus={autoFocus}
             disabled={disabled}
             SuffixComponent={IconComponent}
+            readOnly={combo}
             onClick={() => {
               if (!open) {
                 setOpen(true);
