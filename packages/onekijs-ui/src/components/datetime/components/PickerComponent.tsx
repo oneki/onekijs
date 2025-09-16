@@ -180,6 +180,9 @@ const PickerComponent: FC<PickerComponentProps> = ({
     validToRef.current = undefined;
   }
 
+  // this setting is used to detect if the user changes the from or the to
+  const nextSelectEdgeRef = useRef<'from' | 'to'>('to');
+
   const from = parseDate(fromString?.trim());
   const previousFrom = parseDate(validFromRef.current);
   if (!type['date'] || !isValidDate(`${from['day']}-${from['month']}-${from['year']}`)) {
@@ -285,6 +288,11 @@ const PickerComponent: FC<PickerComponentProps> = ({
     if (toDate === undefined) {
       toDate = to['date'];
     }
+    if (fromDate !== from['date']) {
+      nextSelectEdgeRef.current = 'to';
+    } else {
+      nextSelectEdgeRef.current = 'from';
+    }
     onChange(formatDate(type, fromDate, from['time'], toDate, to['time']));
   };
 
@@ -388,7 +396,7 @@ const PickerComponent: FC<PickerComponentProps> = ({
             )}
             {type['date'] && (
               <div className="o-calendar" key="calendar">
-                <CalendarComponent from={from} to={to} type={type} onChange={onChangeDate} />
+                <CalendarComponent from={from} to={to} type={type} onChange={onChangeDate} nextSelectEdge={nextSelectEdgeRef.current} />
               </div>
             )}
             {type['time'] && (

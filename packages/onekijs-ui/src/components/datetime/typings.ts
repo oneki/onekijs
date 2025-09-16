@@ -22,6 +22,7 @@ export type CalendarComponentProps = StylableProps & {
   from: DatePickerDate;
   maxDate?: Date;
   minDate?: Date;
+  nextSelectEdge: 'from' | 'to';
   onChange: (formDate: string | undefined, toDate?: string) => void;
   type: DatePickerType;
   to: DatePickerDate;
