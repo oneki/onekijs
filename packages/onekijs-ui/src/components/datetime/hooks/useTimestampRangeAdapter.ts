@@ -26,15 +26,17 @@ const useTimestampRangeAdapter = (format: 'seconds' | 'milliseconds' = 'millisec
       return {
         from: toTimestamp(range.from),
         to: toTimestamp(range.to),
+        label: range.label,
       }
     },
     toDateRange: (value) => {
       return {
         from: fromTimestamp(value.from),
         to: fromTimestamp(value.to),
+        label: value.label,
       }
     }
-  } as DateRangeAdapter<{ from: number | null, to: number | null}>)
+  } as DateRangeAdapter<{ from: number | null, to: number | null, label?: string | null}>)
   return ref.current;
 }
 

@@ -8,12 +8,13 @@ export const dateToString = (d: Date | string): string => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
 }
 
-export const toDateRange = (value: string | null): DateStringRange | null => {
+export const toDateRange = (value: string | null, label?: string | null): DateStringRange | null => {
     if (value) {
       const [from, to] = value.trim().split(/ to\s*/);
       return {
         from: from && from.trim() ? from.trim() : null,
         to: to && to.trim() ? to.trim() : null,
+        label,
       };
     } else {
       return null;
@@ -33,7 +34,7 @@ export const qr = (quickRange: string): DateStringRange | null => {
       default: return null;
     }
 
-    return { from: dateToString(from), to: dateToString(to) };
+    return { from: dateToString(from), to: dateToString(to), label: quickRange };
   }
   return quickRange;
 }

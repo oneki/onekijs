@@ -1,9 +1,9 @@
-import { AnonymousObject, useLazyRef } from 'onekijs-framework';
+import { AnonymousObject } from 'onekijs-framework';
 import { DateQuickRange, DateStringRange, DefaultQuickRange } from '../typings';
 import { dateToString, defaultQuickRanges, qr } from '../util';
 
+
 const useQuickRanges = (ranges: DateQuickRange | DefaultQuickRange| ((DateQuickRange | DefaultQuickRange)[])): AnonymousObject<DateStringRange> => {
-  const ref = useLazyRef(() => {
     if (!Array.isArray(ranges)) {
       ranges = [ranges];
     }
@@ -21,13 +21,11 @@ const useQuickRanges = (ranges: DateQuickRange | DefaultQuickRange| ((DateQuickR
         accumulator[range.label] = {
           from: dateToString(range.from),
           to: dateToString(range.to),
+          label: range.label,
         }
       }
       return accumulator;
     }, {} as AnonymousObject<DateStringRange>)
-  });
-
-  return ref.current;
 }
 
 export default useQuickRanges;
