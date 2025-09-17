@@ -23,7 +23,6 @@ const DateTimeRangePickerComponent: React.FC<DateTimeRangePickerProps> = (props)
 
   let value: PickerComponentProps['value'] = null;
   let valueLabel: string | null | undefined;
-  console.log('externalValue', externalValue);
   if (externalValue) {
     if (adapter) {
       const { from, to, label } = adapter.toDateRange(externalValue);

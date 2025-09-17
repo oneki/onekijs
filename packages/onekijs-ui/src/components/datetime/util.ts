@@ -1,7 +1,10 @@
 import { AnonymousObject } from 'onekijs-framework';
-import { DateStringRange } from './typings';
+import { DateQuickRange, DateStringRange, DefaultQuickRange } from './typings';
 
-export const dateToString = (d: Date | string): string => {
+export const dateToString = (d: Date | string | (() => Date)): string => {
+  if (typeof d === 'function') {
+    d = d();
+  }
   if (typeof d === 'string') {
     d = new Date(d);
   }
@@ -21,32 +24,32 @@ export const toDateRange = (value: string | null, label?: string | null): DateSt
     }
 }
 
-export const qr = (quickRange: string): DateStringRange | null => {
-  if (typeof quickRange === 'string') {
-    const from = new Date();
-    const to = new Date();
-    switch(quickRange) {
-      case 'Last hour': from.setHours(from.getHours() - 1); break;
-      case 'Last day': from.setDate(from.getDate() - 1); break;
-      case 'Last week': from.setDate(from.getDate() - 7); break;
-      case 'Last month': from.setMonth(from.getMonth() - 1); break;
-      case 'Last year': from.setFullYear(from.getFullYear() - 1); break;
-      default: return null;
-    }
-
-    return { from: dateToString(from), to: dateToString(to), label: quickRange };
+export const qr = (quickRange: DefaultQuickRange): DateQuickRange => {
+  return {
+    label: quickRange,
+    from: () => {
+      const d = new Date();
+      switch(quickRange) {
+        case 'Last hour': d.setHours(d.getHours() - 1); break;
+        case 'Last day': d.setDate(d.getDate() - 1); break;
+        case 'Last week': d.setDate(d.getDate() - 7); break;
+        case 'Last month': d.setMonth(d.getMonth() - 1); break;
+        case 'Last year': d.setFullYear(d.getFullYear() - 1); break;
+      }
+      return d;
+    },
+    to: () => new Date(),
   }
-  return quickRange;
 }
 
-export const defaultQuickRanges = (): AnonymousObject<DateStringRange>  => {
-  return ['Last hour', 'Last day', 'Last week', 'Last month', 'Last year'].reduce((accumulator, label) => {
+export const defaultQuickRanges = (): AnonymousObject<DateQuickRange>  => {
+  return (['Last hour', 'Last day', 'Last week', 'Last month', 'Last year'] as DefaultQuickRange[]).reduce((accumulator, label) => {
     const quickRange = qr(label);
     if (quickRange) {
       accumulator[label] = quickRange;
     }
     return accumulator;
-  }, {} as AnonymousObject<DateStringRange>)
+  }, {} as AnonymousObject<DateQuickRange>)
 }
 
 export const findQuickRangeLabel = (quickRanges: AnonymousObject<DateStringRange> | undefined, dateRange: DateStringRange | string | null | undefined): string | undefined => {
