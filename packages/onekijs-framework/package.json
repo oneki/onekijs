@@ -38,8 +38,7 @@
     "redux": "^4.2.1",
     "redux-saga": "^1.2.3",
     "reflect-metadata": "^0.1.13",
-    "rfc4648": "^1.5.2",
-    "text-encoding-shim": "^1.0.5"
+    "rfc4648": "^1.5.2"
   },
   "devDependencies": {
     "@types/react-transition-group": "^4.4.0",

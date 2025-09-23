@@ -1,5 +1,4 @@
 import { base64url } from 'rfc4648';
-import { TextDecoder, TextEncoder } from 'text-encoding-shim';
 import { generateRandomString } from './string';
 
 // https://medium.com/@fsjohnny/fun-times-with-webcrypto-part-2-encrypting-decrypting-dfb9fadba5bc
@@ -16,7 +15,7 @@ async function getDerivation(
   iterations: number,
   keyLength: number,
 ): Promise<ArrayBuffer> {
-  const textEncoder = new TextEncoder('utf-8');
+  const textEncoder = new TextEncoder();
   const passwordBuffer = textEncoder.encode(password);
   const importedKey = await crypto.subtle.importKey('raw', passwordBuffer, 'PBKDF2', false, ['deriveBits']);
 
@@ -41,7 +40,7 @@ async function getKey(derivation: ArrayBuffer) {
 }
 
 async function encryptText(text: string | undefined, keyObject: { key: any; iv: any }): Promise<ArrayBuffer> {
-  const textEncoder = new TextEncoder('utf-8');
+  const textEncoder = new TextEncoder();
   const textBuffer = textEncoder.encode(text);
   const encryptedText = await crypto.subtle.encrypt({ name: 'AES-CBC', iv: keyObject.iv }, keyObject.key, textBuffer);
   return encryptedText;
