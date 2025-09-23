@@ -19,7 +19,6 @@ const config = [
       'redux-saga',
       'reflect-metadata',
       'rfc4648',
-      'text-encoding-shim',
       '@popperjs/core',
       'onekijs-framework',
       'react-icons',
