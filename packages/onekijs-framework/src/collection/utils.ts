@@ -541,10 +541,18 @@ export const shouldResetData = (query: Query, nextQuery: Query): boolean => {
   if (!isSameSortBy(query.sortBy, nextQuery.sortBy)) return true;
   if (query.sort !== nextQuery.sort) return true;
   if (!isSameArray(query.fields, nextQuery.fields)) return true;
-  if (!shallowEqual(query.params || null, nextQuery.params || null)) return true;
+  if (!shallowEqual(removeSystemParams(query.params), removeSystemParams(nextQuery.params))) return true;
   if (query.search !== nextQuery.search) return true;
   return false;
 };
+
+const removeSystemParams = (params: AnonymousObject | undefined | null): AnonymousObject | null => {
+  if (!params) return null;
+  const p = Object.assign({}, params);
+  delete p.noCache;
+  delete p.noLoading;
+  return p;
+}
 
 const handleQueryEntry = (key: string, value: string, result: Query): void => {
   value = decodeURIComponent(value);
