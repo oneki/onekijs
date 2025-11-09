@@ -6,7 +6,7 @@ const AccordionPanelTitle: FC<AccordionPanelTitleProps<any>> = ({ title, active,
   return (
     <div className="o-accordion-panel-title" onClick={onClick}>
       <TogglerIcon open={active} />
-      <span>{`${title}`}</span>
+      <span>{title}</span>
     </div>
   );
 };

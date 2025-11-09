@@ -540,7 +540,6 @@ export default class CollectionService<
       }
       const method = push ? 'push' : 'replace';
       this._refreshing = true;
-
       this.state.router[method](urlBuilder(path, {}, urlSerializer(query)));
     }
   }
@@ -728,6 +727,7 @@ export default class CollectionService<
     this._cache = {};
     this.state.dataSource = url;
     this.state.url = url;
+
     this.state.items = undefined;
     this.state.local = false;
 
@@ -1096,6 +1096,7 @@ export default class CollectionService<
     delete q2.limit;
     delete q2.offset;
     let same = isSameQuery(q1, q2);
+
     this.state.error = undefined;
     this.state.total = undefined;
 

@@ -77,23 +77,26 @@ export type DatePickerType = {
 
 export type DateQuickRange = {
   label: string;
-  from: Date;
-  to: Date;
+  from: Date | (() => Date);
+  to: Date | (() => Date);
 };
 
 export type DateRange = {
   from: Date | null;
   to: Date | null;
+  label?: string | null;
 };
 
 export type DateStringRange = {
   from: string | null;
   to: string | null;
+  label?: string | null;
 };
 
 export type TimestampRange = {
   from: number | null;
   to: number | null;
+  label?: string | null;
 };
 
 export type DateRangeAdapter<T extends any = any> = {
@@ -127,11 +130,14 @@ export type PickerComponentProps = BasePickerProps &
     type: DatePickerType;
     quickRanges?: AnonymousObject<DateStringRange>;
     value?: string | null;
-    onChange?: (value: string | null) => void;
+    onChange?: (value: string | null, label?: string | null) => void;
+    label?: string | null;
   };
 
+export type QuickRange = DefaultQuickRange | DateQuickRange
+
 export type QuickTimeRangeComponentProps = {
-  currentQuickRangeLabel?: string;
+  currentQuickRangeLabel?: string | null;
   quickRanges: AnonymousObject<DateStringRange>;
   onChange: (quickRangeLabel: string) => void;
 };

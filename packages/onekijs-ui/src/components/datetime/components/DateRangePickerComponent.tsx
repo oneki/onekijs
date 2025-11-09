@@ -12,8 +12,8 @@ const type: DatePickerType = {
 const DateRangePickerComponent: React.FC<DateRangePickerProps> = (props) => {
   const { onChange: forwardChange, value: externalValue, adapter, ...datePickerProps } = props;
 
-  const onChange: PickerComponentProps['onChange'] = forwardChange ? (value) => {
-    const dateRange = toDateRange(value);
+  const onChange: PickerComponentProps['onChange'] = forwardChange ? (value, label) => {
+    const dateRange = toDateRange(value, label);
     if (dateRange === null || !adapter) {
       forwardChange(dateRange);
     } else {
@@ -22,16 +22,19 @@ const DateRangePickerComponent: React.FC<DateRangePickerProps> = (props) => {
   } : undefined;
 
   let value: PickerComponentProps['value'] = null;
+  let valueLabel: string | null | undefined;
   if (externalValue) {
     if (adapter) {
-      const {from, to} = adapter.toDateRange(externalValue);
+      const { from, to, label } = adapter.toDateRange(externalValue);
       value = `${from || ''} to ${to || ''}`
+      valueLabel = label;
     } else {
       value = `${externalValue.from || ''} to ${externalValue.to || ''}`
+      valueLabel = externalValue.label;
     }
   }
 
-  return <PickerComponent {...datePickerProps} value={value} onChange={onChange} type={type} />
+  return <PickerComponent {...datePickerProps} value={value} onChange={onChange} type={type} label={valueLabel} />
 }
 
 export default DateRangePickerComponent;

@@ -9,7 +9,6 @@ import Input from '../../input';
 import { InputProps } from '../../input/typings';
 import { DefaultDatePickerContext, useDatePickerContext } from '../hooks/useDatePickerContext';
 import { DatePickerDate, DatePickerType, PickerComponentProps } from '../typings';
-import { findQuickRangeLabel } from '../util';
 import CalendarComponent from './CalendarComponent';
 import QuickTimeRangeComponent from './QuickTimeRangeComponent';
 import TimeComponent from './TimeComponent';
@@ -129,9 +128,10 @@ const PickerComponent: FC<PickerComponentProps> = ({
   autoFocus,
   className,
   closeOnQuickSelect = true,
-  combo = true,
+  combo = false,
   disabled,
   dropdownWidthModifier = 'min',
+  label,
   nullable = false,
   onBlur: forwardBlur,
   onChange: forwardChange,
@@ -149,7 +149,6 @@ const PickerComponent: FC<PickerComponentProps> = ({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const stateRef = useRef<AnonymousObject>({});
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const quickRangesRef = useRef(quickRanges);
   const lastExternalValueRef = useRef<string | null | undefined>();
   const currentValueRef = useRef<string | null>(null);
   const [open, setOpen] = useState(false);
@@ -162,12 +161,6 @@ const PickerComponent: FC<PickerComponentProps> = ({
   }
 
   const [fromString, toString] = value ? value.split(/ to\s*/) : [];
-  const [label, setLabel] = useState<string | undefined>(() => {
-    if (type.range) {
-      return findQuickRangeLabel(quickRangesRef.current, value);
-    }
-    return;
-  });
 
   const validFromRef = useRef<string | undefined>();
   const validToRef = useRef<string | undefined>();
@@ -266,14 +259,13 @@ const PickerComponent: FC<PickerComponentProps> = ({
   }, [open, forwardBlur, setOpen, focus]);
 
   const onChange = useCallback(
-    (nextValue: string | null) => {
+    (nextValue: string | null, label?: string | null) => {
       currentValueRef.current = nextValue;
-      setLabel(undefined);
       // check if the nextValue is a valid value
       // if it's not a valid value, we keep it internally
       if (forwardChange && isValidValue(nextValue, type)) {
         setInternalValue(null);
-        forwardChange(nextValue);
+        forwardChange(nextValue, label);
       } else {
         setInternalValue(nextValue);
       }
@@ -281,7 +273,7 @@ const PickerComponent: FC<PickerComponentProps> = ({
     [forwardChange, setInternalValue, type],
   );
 
-  const onChangeDate = (fromDate: string | undefined, toDate?: string) => {
+  const onChangeDate = (fromDate?: string, toDate?: string) => {
     if (fromDate === undefined) {
       fromDate = from['date'];
     }
@@ -296,6 +288,10 @@ const PickerComponent: FC<PickerComponentProps> = ({
     onChange(formatDate(type, fromDate, from['time'], toDate, to['time']));
   };
 
+  const removeLabel = () => {
+    onChangeDate();
+  }
+
   const onChangeTime = (nextTime: string, edge: 'from' | 'to') => {
     if (edge === 'from') {
       onChange(formatDate(type, from['date'], nextTime, to['date'], to['time']));
@@ -305,11 +301,10 @@ const PickerComponent: FC<PickerComponentProps> = ({
   };
 
   const onChangeQuickRange = (quickRangeLabel: string) => {
-    if (quickRangesRef.current) {
-      const quickRange = quickRangesRef.current[quickRangeLabel];
+    if (quickRanges) {
+      const quickRange = quickRanges[quickRangeLabel];
       if (quickRange) {
-        onChange(`${quickRange.from} to ${quickRange.to}`);
-        setLabel(quickRangeLabel);
+        onChange(`${quickRange.from} to ${quickRange.to}`, quickRangeLabel);
       }
       if (closeOnQuickSelect) {
        setOpen(false);
@@ -341,15 +336,6 @@ const PickerComponent: FC<PickerComponentProps> = ({
       onChange,
     };
   }, [open, setOpen, triggerRef, nullable, onChange]);
-
-  useEffect(() => {
-    if (type.range && !label) {
-      const quickRangeLabel = findQuickRangeLabel(quickRangesRef.current, value);
-      if (quickRangeLabel) {
-        setLabel(quickRangeLabel);
-      }
-    }
-  }, [value]);
 
   useEffect(() => {
     if (forwardChange && lastExternalValueRef.current !== undefined && externalValue !== undefined && externalValue !== lastExternalValueRef.current) {
@@ -386,10 +372,10 @@ const PickerComponent: FC<PickerComponentProps> = ({
               validFromRef.current !== undefined ? ' o-datepicker-active' : ''
             }`}
           >
-            {type['range'] && quickRangesRef.current && Object.keys(quickRangesRef.current).length > 0 && (
+            {type['range'] && quickRanges && Object.keys(quickRanges).length > 0 && (
               <QuickTimeRangeComponent
                 key="quick_range"
-                quickRanges={quickRangesRef.current}
+                quickRanges={quickRanges}
                 onChange={onChangeQuickRange}
                 currentQuickRangeLabel={label}
               />
@@ -425,12 +411,12 @@ const PickerComponent: FC<PickerComponentProps> = ({
             autoFocus={autoFocus}
             disabled={disabled}
             SuffixComponent={IconComponent}
-            readOnly={combo}
+            readOnly={!combo}
             onClick={() => {
               if (!open) {
                 setOpen(true);
-              } else if (!combo) {
-                setLabel(undefined);
+              } else if (combo) {
+                removeLabel();
               } else {
                 setOpen(false);
               }

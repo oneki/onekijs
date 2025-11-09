@@ -387,7 +387,7 @@ export default class FormService<T extends object = any> extends DefaultService<
       const field = fields[fieldName as NestedKeyOf<T>];
       if (!touchedOnly || (field !== undefined && field.touched)) {
         const validation = validations[fieldName];
-        if (validation.code <= result.code && validation.code < ValidationCode.None) {
+        if (validation && validation.code <= result.code && validation.code < ValidationCode.None) {
           if (validation.code < result.code) {
             result.status = validation.status;
             result.code = validation.code;
