@@ -70,7 +70,6 @@ export default class DefaultCollectionBroker<
     this.currentSearch = options.initialSearch;
     this.currentSort = options.initialSort;
     this.initialLimit = options.initialLimit;
-    this.initialOffset = options.initialOffset;
   }
 
   addFilter(

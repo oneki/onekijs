@@ -6,7 +6,7 @@ import { ControllerTreeProps, TreeConfig, TreeItem } from '../typings';
 import TreeBodyComponent from './TreeBodyComponent';
 import VirtualTreeBodyComponent from './VirtualTreeBodyComponent';
 
-const ControllerTreeComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
+const ControllerTreeComponent = <T extends any = any, I extends TreeItem<T> = TreeItem<T>>({
   controller,
   className,
   onActivate,
@@ -19,6 +19,7 @@ const ControllerTreeComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
   TreeItemContentComponent,
   treeItemClassName,
   TreeTogglerComponent,
+  NotFoundComponent,
   paddingLeft,
   paddingRight,
   animate = true,
@@ -39,6 +40,7 @@ const ControllerTreeComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
       TreeItemContentComponent,
       treeItemClassName,
       TreeTogglerComponent,
+      NotFoundComponent,
       paddingLeft,
       paddingRight,
       keyboardNavigable,
@@ -55,6 +57,7 @@ const ControllerTreeComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
     TreeIconComponent,
     TreeItemComponent,
     TreeItemContentComponent,
+    NotFoundComponent,
     treeItemClassName,
     TreeTogglerComponent,
     paddingLeft,
