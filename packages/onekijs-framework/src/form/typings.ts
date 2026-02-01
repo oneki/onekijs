@@ -24,6 +24,7 @@ export interface Field<T extends object = any> extends FieldOptions<T> {
   touchOn: TouchOnType;
   validators: AnonymousObject<Validator>;
   context: FieldProps<T>;
+  initialized: boolean;
 }
 
 export interface FieldContainer {

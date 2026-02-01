@@ -673,6 +673,7 @@ export default class FormService<T extends object = any> extends DefaultService<
               validations: [],
               touched: options.touchOn === TouchOn.Load,
               touchOn: options.touchOn,
+              initialized: this.initializing, // if form is initializing, it means the form will initialize the field otherwise the field must be initialized by itself
               context: {
                 name,
                 onChange: (value: any): void => {
@@ -773,7 +774,7 @@ export default class FormService<T extends object = any> extends DefaultService<
               );
             }
           } else {
-            const nextField = this.fields[`${fieldArrayName}.${i}.${fieldName}` as NestedKeyOf<T>] as Field<T>;
+            const nextField = this.fields[`${fieldArrayName}.${i}.${fieldName}` as NestedKeyOf<T>] as Field<T> || {};
             const currentField = this.fields[`${fieldArrayName}.${i + 1}.${fieldName}` as NestedKeyOf<T>] as Field<T>;
             if (currentField) {
               this.fields[`${fieldArrayName}.${i + 1}.${fieldName}` as NestedKeyOf<T>] = Object.assign(nextField, {
@@ -804,6 +805,7 @@ export default class FormService<T extends object = any> extends DefaultService<
     } else {
       this.add(fieldArrayName, initialValue);
     }
+
   }
 
   isTouched(fieldName: NestedKeyOf<T>): boolean {

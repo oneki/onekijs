@@ -1,4 +1,4 @@
-import { FormValueListener, LengthValidator, useForm, useFormMetadata, useLazyRef } from 'onekijs-framework';
+import { FormValueListener, LengthValidator, useForm, useFormMetadata, useLazyRef, useValue } from 'onekijs-framework';
 import React, { useEffect, useId, useState } from 'react';
 import { addClassname } from '../../../utils/style';
 import Checkbox from '../../checkbox';
@@ -8,12 +8,18 @@ import useFormTableContext, { DefaultFormTableContext } from '../hooks/useFormTa
 import useTableColumns from '../hooks/useTableColumns';
 import { FormTableContext, FormTableProps, TableBodyCellProps, TableFooterProps, TableItem } from '../typings';
 import ControllerTableComponent from './ControllerTableComponent';
+import useTableService from '../hooks/useTableService';
 
-const DeleteRowComponent: React.FC<TableBodyCellProps> = ({ rowIndex }) => {
+const DefaultDeleteRowComponent: React.FC<TableBodyCellProps> = ({ rowIndex }) => {
   const form = useForm();
-  const { tableName } = useFormTableContext();
+  const { tableName, onRemove } = useFormTableContext();
   const removeRow = () => {
-    form.remove(tableName, rowIndex);
+    const row = form.getValue(`${tableName}.${rowIndex}`);
+    if (onRemove) {
+      onRemove(form, row, rowIndex);
+    } else {
+      form.remove(tableName, rowIndex);
+    }
   };
 
   const metadata = useFormMetadata(tableName);
@@ -29,7 +35,7 @@ const DeleteRowComponent: React.FC<TableBodyCellProps> = ({ rowIndex }) => {
   );
 };
 
-const SelectRowComponent: React.FC<TableBodyCellProps> = ({ item }) => {
+const DefaultSelectRowComponent: React.FC<TableBodyCellProps> = ({ item }) => {
   const { onSelect } = useFormTableContext();
   const selected = item?.selected;
   const toggle = (selected: boolean) => onSelect(item, selected);
@@ -54,12 +60,31 @@ const FooterComponent: React.FC<TableFooterProps> = () => {
   );
 };
 
+const CheckAllComponent: React.FC = () => {
+  const form = useForm();
+  const { tableName } = useFormTableContext();
+  const fieldValue = useValue(tableName);
+  const tableService = useTableService(); 
+  const isAllChecked = Array.isArray(fieldValue) && Array.isArray(fieldValue) && fieldValue.length > 0;
+  const toggle = (selected: boolean) => {
+    if (selected) {
+      const items = tableService.items.map((item) => item?.data).filter((data) => data !== undefined);
+      form.setValue(tableName, items);
+    } else {
+      form.setValue(tableName, []);
+    }
+  };
+  return <Checkbox className="o-form-table-check-all" value={isAllChecked} onChange={toggle}/>;
+}
+
 const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.memo(
   ({
     addLabel = 'add',
     controller,
     value,
+    onAdd,
     onChange,
+    onRemove,
     className,
     name,
     format = 'auto',
@@ -67,6 +92,8 @@ const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.
     minLength,
     maxLength,
     showAddButton = true,
+    DeleteRowComponent = DefaultDeleteRowComponent,
+    SelectRowComponent = DefaultSelectRowComponent,
     ...props
   }) => {
     const form = useForm();
@@ -87,7 +114,7 @@ const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.
     const tableService = controller.asService();
     const formatRef = useLazyRef<'id' | 'object'>(() => {
       if (format === 'auto') {
-        return value && value.length > 0 && typeof value[0] === 'object' ? 'object' : 'id';
+        return value && value.length > 0 && typeof value[0] !== 'object' ? 'id' : 'object';
       }
       return format;
     });
@@ -106,13 +133,14 @@ const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.
           onChange && onChange(currentValues.filter((v: any) => getId(v) !== getId(value)));
         }
       };
+      if (!onAdd) {
+        onAdd = (initialValue: Partial<unknown> | undefined) => {
+          formTableContext.current.editable = true;
+          form.add(name, initialValue);
+        };
+      }
 
-      const onAdd = (initialValue: Partial<unknown> | undefined) => {
-        formTableContext.current.editable = true;
-        form.add(name, initialValue);
-      };
-
-      return { tableName: name, onSelect, onAdd, addLabel, required, minLength, maxLength };
+      return { tableName: name, onSelect, onAdd, onRemove, addLabel, required, minLength, maxLength };
     });
 
     // listen on value change from the form
@@ -145,6 +173,7 @@ const FormTableComponent: React.FC<FormTableProps<any, TableItem<any>>> = React.
             filterable: false,
             sortable: false,
             CellComponent: SelectRowComponent,
+            TitleComponent: () => <CheckAllComponent />,
           },
           0,
         );

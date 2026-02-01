@@ -18,9 +18,10 @@ const useField = <T extends object = any>(
   field.value = isUndefined(value) ? (options.defaultValue === undefined ? '' : options.defaultValue) : value;
   const optionsRef = useRef<FieldOptions>(options);
   const nameRef = useRef<string>(fieldName);
+  const initialized = form.fields[fieldName]?.initialized ?? false;
 
   useEffect(() => {
-    if (!form.initializing) {
+    if (!initialized) {
       field.onChange(field.value);
       const disabled = form.config.reconfigure && !optionsRef.current.editable ? true : optionsRef.current.disabled;
       if (disabled) {
@@ -31,8 +32,9 @@ const useField = <T extends object = any>(
       }
       form.setMetadata(nameRef.current, 'readOnly', optionsRef.current.readOnly);
       form.setMetadata(nameRef.current, 'editable', optionsRef.current.editable);
+      (form.fields as any)[nameRef.current].initialized = true;
     }
-  }, [form]);
+  }, [form, initialized]);
 
   return field;
 };
