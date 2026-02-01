@@ -10,7 +10,7 @@ export const ListPage = () => {
   return (
     <div style={{ display: 'flex', justifyContent: 'center', height: '100vh', overflow: 'scroll' }} ref={ref}>
       <div style={{ width: '300px' }}>
-        <List height={200} controller={collection} parentRef={ref} />
+        <List controller={collection} parentRef={ref} virtual={true}/>
       </div>
     </div>
   );
