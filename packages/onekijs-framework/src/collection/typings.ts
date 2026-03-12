@@ -73,6 +73,7 @@ export type Collection<
     target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][],
   ): I[];
   setSelected<B extends keyof CollectionBy<T, I>>(by: B, target: CollectionBy<T, I>[B] | CollectionBy<T, I>[B][]): I[];
+  setStatus: (status: LoadingStatus) => void;
   startAutoRefresh(interval: number): void;
   startFollow(interval: number): void;
   stopAutoRefresh(): void;
@@ -153,6 +154,7 @@ export type CollectionBroker<
   setFields(fields: string[], subscriberId?: string): void;
   setParam(key: string, value: any, subscriberId?: string): void;
   setParams(params: AnonymousObject, subscriberId?: string): void;
+  setStatus(status: LoadingStatus): void;
   setUrl(url: string, query?: Query, subscriberId?: string): void;
   sort(dir: QuerySortDir, subscriberId?: string): void;
   sortBy(sortBy: string | QuerySortBy | QuerySortBy[], subscriberId?: string): void;
