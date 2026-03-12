@@ -38,7 +38,7 @@ echo
 # Login to NPM
 echo
 echo "Log in NPM ..."
-npm login
+# npm login
 echo
 
 # Lerna Publish
