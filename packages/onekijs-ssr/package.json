@@ -36,5 +36,6 @@
     "rimraf": "^3.0.2",
     "rollup": "^3.26.3"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "gitHead": "087a696661791bc2e7825446151a6f21f54e22d8"
 }
