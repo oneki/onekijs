@@ -6,6 +6,7 @@ import {
   Collection,
   CollectionBroker,
   Item,
+  LoadingStatus,
   Query,
   QueryFilter,
   QueryFilterCriteria,
@@ -56,6 +57,9 @@ export default class DefaultCollectionBroker<
 
   protected initialLimit: number | undefined;
   protected initialOffset: number | undefined;
+
+  protected status: LoadingStatus | undefined;
+  protected subscriberStatus: AnonymousObject<LoadingStatus | undefined> = {};
 
   constructor(dataSource: T[] | string | undefined, options: UseCollectionOptions<T, I>) {
     if (Array.isArray(dataSource)) {
@@ -437,6 +441,18 @@ export default class DefaultCollectionBroker<
       this.subscriberFields[subscriberId] = fields;
     }
     this._getSubscribers(subscriberId).forEach((s) => s.setFields(fields));
+  }
+
+  setStatus(status: LoadingStatus, subscriberId?: string): void {
+    if (subscriberId === undefined) {
+      Object.keys(this.subscriberStatus).forEach((subscriberId) => {
+        this.subscriberStatus[subscriberId] = status;
+      });
+      this.status = status;
+    } else {
+      this.subscriberStatus[subscriberId] = status;
+    }
+    this._getSubscribers(subscriberId).forEach((s) => s.setStatus(status));
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types

@@ -20,6 +20,13 @@ build_package() {
   echo
 }
 
+echo "Please ensure that you are logged in NPM"
+echo "Go to https://www.npmjs.com/settings/~/tokens and generate a new access token with the setting bypass 2fa set to true"
+echo "Then use the command: npm config set //registry.npmjs.org/:_authToken=YOUR_TOKEN_HERE"
+
+echo -n "Press enter when it's done"
+read
+
 # Build all packages
 build_package "onekijs-framework"
 build_package "onekijs"
@@ -38,7 +45,7 @@ echo
 # Login to NPM
 echo
 echo "Log in NPM ..."
-npm login
+# npm login
 echo
 
 # Lerna Publish
