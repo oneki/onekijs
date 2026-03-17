@@ -191,22 +191,33 @@ const useFieldContainer = ({
   }, [form]);
 
   const hide = useCallback(() => {
-    fieldsRef.current.forEach((field) => {
-      const visible = form.getMetadata(field, 'visible');
+    fieldsRef.current.forEach((fieldName) => {
+      const visible = form.getMetadata(fieldName, 'visible');
       if (visible !== undefined) {
-        fieldMetadataRef.current[field] = fieldMetadataRef.current[field] || {};
-        fieldMetadataRef.current[field]['visible'] = visible;
+        fieldMetadataRef.current[fieldName] = fieldMetadataRef.current[fieldName] || {};
+        fieldMetadataRef.current[fieldName]['visible'] = visible;
       }
-      form.disableValidator(field, 'required')
+      form.disableValidator(fieldName, 'required')
     });
   }, [form]);
 
   const show = useCallback(() => {
-    fieldsRef.current.forEach((field) => {
-      if (get(fieldMetadataRef.current, `${field}.visible`) !== false) {
-        form.enableValidator(field, 'required')
+    fieldsRef.current.forEach((fieldName) => {
+      const field = form.fields[fieldName];
+      let containerVisible = true;
+      let containerDisabled = false;
+      for (const containerName of get(field, 'containers', [])) {
+        if (form.getMetadata(containerName, 'visible') === false) {
+          containerVisible = false;
+        }
+        if (form.getMetadata(containerName, 'disabled') === true) {
+          containerDisabled = true;
+        }
       }
-      del(fieldMetadataRef.current, `${field}.visible`);
+      if (get(fieldMetadataRef.current, `${fieldName}.visible`) !== false && get(fieldMetadataRef.current, `${fieldName}.disabled`) !== true && containerVisible && !containerDisabled) {
+        form.enableValidator(fieldName, 'required')
+      }
+      del(fieldMetadataRef.current, `${fieldName}.visible`);
     });
   }, [form]);
 
@@ -222,11 +233,24 @@ const useFieldContainer = ({
   }, [form]);
 
   const enable = useCallback(() => {
-    fieldsRef.current.forEach((field) => {
-      if (get(fieldMetadataRef.current, `${field}.disabled`) !== true) {
-        form.enableValidator(field, 'required')
+    fieldsRef.current.forEach((fieldName) => {
+      const field = form.fields[fieldName];
+      let containerVisible = true;
+      let containerDisabled = false;
+      for (const containerName of get(field, 'containers', [])) {
+        if (form.getMetadata(containerName, 'visible') === false) {
+          containerVisible = false;
+        }
+        if (form.getMetadata(containerName, 'disabled') === true) {
+          containerDisabled = true;
+        }
       }
-      del(fieldMetadataRef.current, `${field}.disabled`);
+      if (get(fieldMetadataRef.current, `${fieldName}.visible`) !== false && get(fieldMetadataRef.current, `${fieldName}.disabled`) !== true && containerVisible && !containerDisabled) {
+        form.enableValidator(fieldName, 'required')
+      }
+      del(fieldMetadataRef.current, `${fieldName}.disabled`);
+
+
     });
   }, [form]);
 

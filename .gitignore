@@ -34,3 +34,6 @@ out
 
 # tsbuild
 .buildcache
+
+# NVM
+.nvmrc

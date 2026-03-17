@@ -26,7 +26,6 @@ import UiServicePage from './pages/service';
 import { AlertPage } from './pages/alert';
 import { SliderPage } from './pages/slider';
 import { DatetimePage } from './pages/datetime';
-import { ContextMenuPage } from './pages/contextmenu';
 
 const container = document.getElementById('root');
 const root = createRoot(container!); // createRoot(container!) if you use TypeScript
@@ -85,7 +84,6 @@ root.render(
             <Route path="/alert" element={<AlertPage />} />
             <Route path="/slider" element={<SliderPage />} />
             <Route path="/datetime" element={<DatetimePage />} />
-            <Route path="/contextmenu" element={<ContextMenuPage />} />
           </Routes>
         </div>
       </div>
