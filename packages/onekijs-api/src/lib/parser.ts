@@ -38,9 +38,6 @@ export class ElementParser {
 
   parse(id: number): ParsedElement | undefined {
     const indexedElement = this.indexer.elements[id];
-    if (id === 9760) {
-      console.log(indexedElement);
-    }
     if (!indexedElement) return;
     const subject = indexedElement.element;
     // Check if we have not already processed this item
