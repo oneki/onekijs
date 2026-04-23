@@ -23,7 +23,11 @@ const TreeBodyComponent = <T extends any = any, I extends TreeItem<T> = TreeItem
       service={service}
       state={service.state}
       onItemSelect={config.onSelect}
+      onItemUnselect={config.onUnselect}
       onItemActivate={config.onActivate}
+      onItemDeactivate={config.onDeactivate}
+      onItemHighlight={config.onHighlight}
+      onItemUnhighlight={config.onUnhighlight}
       keyboardNavigable={config.keyboardNavigable}
     />
   );

@@ -39,6 +39,17 @@ const TreeSelectListComponent = <T extends any = any, I extends TreeSelectItem<T
       return false;
     }
   };
+  const onUnselect: ListItemHandler<T, I> = (item, index) => {
+    if (item.selectable !== false && props.onItemUnselect) {
+      props.onItemUnselect(item, index);
+      return true;
+    } else {
+      isTreeItemExpanded(item, treeProps.controller)
+        ? treeProps.controller.collapse(item, index)
+        : treeProps.controller.expand(item, index);
+      return false;
+    }
+  };
 
   return (
     <Tree
@@ -47,7 +58,9 @@ const TreeSelectListComponent = <T extends any = any, I extends TreeSelectItem<T
       TreeItemComponent={SelectOptionComponent}
       className={addClassname('o-select-options', treeProps.className)}
       onSelect={onSelect}
+      onUnselect={onUnselect}
       onActivate={props.onItemActivate}
+      onDeactivate={props.onItemDeactivate}
       keyboardNavigable={true}
       listRef={props.optionsRef}
     />

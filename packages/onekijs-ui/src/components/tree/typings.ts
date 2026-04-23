@@ -34,7 +34,11 @@ export type TreeConfig<T = any, I extends TreeItem<T> = TreeItem<T>> = {
   TreeIconComponent?: React.FC<TreeItemProps<T, I>>;
   TreeTogglerComponent?: React.FC<TreeItemToggleProps<T, I>>;
   onActivate?: TreeItemHandler<T, I>;
+  onDeactivate?: TreeItemHandler<T, I>;
+  onHighlight?: TreeItemHandler<T, I>;
+  onUnhighlight?: TreeItemHandler<T, I>;
   onSelect?: TreeItemHandler<T, I>;
+  onUnselect?: TreeItemHandler<T, I>;
   virtual?: boolean;
   gap?: number;
   paddingLeft?: number;

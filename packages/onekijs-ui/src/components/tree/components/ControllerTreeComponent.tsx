@@ -6,11 +6,15 @@ import { ControllerTreeProps, TreeConfig, TreeItem } from '../typings';
 import TreeBodyComponent from './TreeBodyComponent';
 import VirtualTreeBodyComponent from './VirtualTreeBodyComponent';
 
-const ControllerTreeComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
+const ControllerTreeComponent = <T extends any = any, I extends TreeItem<T> = TreeItem<T>>({
   controller,
   className,
   onActivate,
+  onDeactivate,
   onSelect,
+  onUnselect,
+  onHighlight,
+  onUnhighlight,
   height,
   virtual,
   gap,
@@ -29,8 +33,12 @@ const ControllerTreeComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
     return {
       className,
       onActivate,
+      onDeactivate,
       animate,
       onSelect,
+      onUnselect,
+      onHighlight,
+      onUnhighlight,
       height,
       virtual,
       gap,
@@ -47,8 +55,12 @@ const ControllerTreeComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
   }, [
     className,
     onActivate,
+    onDeactivate,
     animate,
     onSelect,
+    onUnselect,
+    onHighlight,
+    onUnhighlight,
     height,
     virtual,
     gap,
