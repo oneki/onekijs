@@ -9,6 +9,8 @@ import {
   useService,
 } from 'onekijs';
 import {
+  AutoComplete,
+  FormAutoComplete,
   FormSelect,
   SelectItem,
   SelectItemAdapter,
@@ -18,7 +20,6 @@ import {
 } from 'onekijs-ui';
 import { useCallback, useMemo, useState } from 'react';
 import { generateTree, User, userAdapter, users, userSearcher } from '../data/users';
-import { cp } from 'fs';
 
 const staticAdapter: SelectItemAdapter<any> = (data) => {
   return {
@@ -131,6 +132,7 @@ export const SelectPage = () => {
       },
     ],
   });
+  console.log(formController.getValue());
   const [value, setValue] = useState<User | null>(null);
 
   return (
@@ -187,6 +189,17 @@ export const SelectPage = () => {
           controller={treeCollection}
           value={value}
           onChange={(nextValue) => setValue(nextValue as User | null)}
+        />
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <FormAutoComplete
+          height={500}
+          type="number"
+          dataSource={[1,2]}
+          name="autocomplete"
+          label="AutoComplete"
+          help="This is an autocomplete select"
+          placeholder="Type to search..."
         />
       </div>
     </Form>

@@ -29,7 +29,7 @@ import {
   SelectOptionHandler,
   SelectState,
 } from '../typings';
-import { findSelectItem, findSelectItemIndex } from '../util';
+import { defaultAutocompleteAdapter, findSelectItem, findSelectItemIndex } from '../util';
 import SelectInputComponent from './SelectInputComponent';
 import SelectNotFoundComponent from './SelectNotFoundComponent';
 import SelectOptionComponent, { SelectOptionContent } from './SelectOptionComponent';
@@ -111,6 +111,8 @@ const ControlledSelectComponent = <
   clickable = true,
   ListComponent = DefaultSelectListComponent,
   autoCompleteSearch = true,
+  autoCompleteAdapter = defaultAutocompleteAdapter,
+  mode,
   maxDisplayTokens,
   validateValue = true,
 }: ControllerSelectProps<T, I, S, C>) => {
@@ -157,6 +159,8 @@ const ControlledSelectComponent = <
       sameWidth,
       overscan,
       autoCompleteSearch,
+      autoCompleteAdapter,
+      mode,
       maxDisplayTokens,
       validateValue,
     };
@@ -196,6 +200,8 @@ const ControlledSelectComponent = <
       sameWidth,
       overscan,
       autoCompleteSearch,
+      autoCompleteAdapter,
+      mode,
       maxDisplayTokens,
       validateValue,
     };
@@ -221,6 +227,9 @@ const ControlledSelectComponent = <
   const showActiveRef = useRef(false);
 
   const proxyItem = useMemo(() => {
+    if (mode === 'autocomplete') {
+      return undefined;
+    }
     const search = controller.getSearch();
     const active = controller.state.active;
     const selected = controller.state.selected;
@@ -244,7 +253,7 @@ const ControlledSelectComponent = <
     if (!multiple) {
       return controller.adapt(value as T | null | undefined);
     }
-  }, [focus, controller, value, multiple, autoCompleteSearch]);
+  }, [focus, controller, value, multiple, autoCompleteSearch, mode]);
 
   const optionsRef = useRef<HTMLDivElement | null>(null);
 
@@ -432,7 +441,11 @@ const ControlledSelectComponent = <
     if (nextValue === null) {
       onSelect(null);
     } else {
+      if (mode === 'autocomplete') {
+        service.setInputValue(nextValue);
+      }
       service.search(nextValue);
+
       if (!open) {
         setOpen(true);
       }
@@ -619,7 +632,17 @@ const ControlledSelectComponent = <
           loading={loading}
           fetching={fetching}
           onChange={onInputChange}
-          value={autoCompleteSearch ? (proxyItem ? proxyItem.text : '') : controller.getSearch() || ''}
+          value={
+            mode === 'autocomplete'
+              ? value === null || value === undefined
+                ? value
+                : `${value}`
+              : autoCompleteSearch
+              ? proxyItem
+                ? proxyItem.text
+                : ''
+              : controller.getSearch() || ''
+          }
           focus={focus}
           onFocus={onFocus}
           onBlur={onBlur}

@@ -45,7 +45,7 @@ const SelectInputComponent = <T, I extends SelectItem<T> = SelectItem<T>>(
   // value that is actually shown in the input.
   // This value is set to the partial value (that is the unselected part of the value) if the value is pending loading or we don't
   const showPartialValue =
-    value === undefined ||
+    value === undefined || value === null ||
     fetching ||
     loading ||
     !showSelectedRef.current ||
@@ -53,7 +53,7 @@ const SelectInputComponent = <T, I extends SelectItem<T> = SelectItem<T>>(
 
   const proxyValue = showPartialValue
     ? focus || loading || fetching
-      ? value !== undefined &&
+      ? value !== undefined && value !== null &&
         showSelectedRef.current &&
         value.toString().toLowerCase().startsWith(partialValue.toLowerCase())
         ? value
@@ -127,7 +127,7 @@ const SelectInputComponent = <T, I extends SelectItem<T> = SelectItem<T>>(
     const autoSizer = autoSizeRef.current;
     if (input && focus) {
       if (
-        value !== undefined &&
+        value !== undefined && value !== null &&
         value !== partialValueRef.current &&
         value.toLowerCase().startsWith((partialValueRef.current || '').toLowerCase()) &&
         showSelectedRef.current
@@ -236,7 +236,7 @@ const SelectInputComponent = <T, I extends SelectItem<T> = SelectItem<T>>(
           &#10006;
         </div>
       )}
-      <IconComponent onClick={onIconClick} open={open} loading={loading} fetching={fetching} />
+      {IconComponent && <IconComponent onClick={onIconClick} open={open} loading={loading} fetching={fetching} />}
     </div>
   );
 };

@@ -5,6 +5,7 @@ import {
   CollectionBroker,
   CollectionProxy,
   FormFieldProps,
+  Primitive,
   ValidationStatus,
 } from 'onekijs-framework';
 import React, { FC } from 'react';
@@ -38,6 +39,17 @@ export type ArrayTreeSelectProps<T = any, I extends TreeSelectItem<T> = TreeSele
   dataSource: T[] | string;
 };
 
+export type AutoCompleteAdapter<T = any> = (value: string | null) => T | null | Promise<T | null>;
+
+export type AutoCompleteProps<
+  T = Primitive,
+  I extends SelectItem<T> = SelectItem<T>,
+  S extends SelectState<T, I> = SelectState<T, I>,
+  C extends SelectController<T, I, S> = SelectController<T, I, S>,
+> = Omit<SelectProps<T, I, S, C>, 'mode' | 'autoCompleteSearch' | 'validateValue' | 'clickable' | 'searchable'> & {
+  type?: 'text' | 'number';
+};
+
 export type ControllerSelectProps<
   T = any,
   I extends SelectItem<T> = SelectItem<T>,
@@ -53,6 +65,13 @@ export type ControllerTreeSelectProps<
   S extends TreeSelectState<T, I> = TreeSelectState<T, I>,
   C extends TreeSelectController<T, I, S> = TreeSelectController<T, I, S>,
 > = ControllerSelectProps<T, I, S, C> & TreeProps<T, I, S, C>;
+
+export type FormAutoCompleteProps<T = Primitive, I extends SelectItem<T> = SelectItem<T>> = AutoCompleteProps<T, I> &
+  FormFieldProps<T> &
+  FieldLayoutProps & {
+    defaultValue?: T | T[] | null;
+    FieldComponent?: React.FC<AutoCompleteProps<T, I>>;
+  };
 
 export type FormSelectProps<T = any, I extends SelectItem<T> = SelectItem<T>> = SelectProps<T, I> &
   FormFieldProps<T> &
@@ -72,6 +91,7 @@ export type SelectController<
   setDefaultValue: (defaultValue: T | T[] | null | undefined) => void;
   setDefaultValueLoading: (loading: boolean) => void;
   setItemWidth: (item: I, width: number) => void;
+  setInputValue: (value: string | null) => void;
 };
 
 export interface SelectIconProps {
@@ -83,7 +103,7 @@ export interface SelectIconProps {
 
 export interface SelectInputProps<T = any, I extends SelectItem<T> = SelectItem<T>>
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> {
-  IconComponent?: FC<SelectIconProps>;
+  IconComponent?: FC<SelectIconProps> | null;
   focus: boolean;
   value?: string;
   tokens?: I[];
@@ -144,6 +164,7 @@ export type SelectProps<
   C extends SelectController<T, I, S> = SelectController<T, I, S>,
 > = SelectConfig<T, I> & {
   adapter?: SelectItemAdapter<T>;
+  autoCompleteAdapter?: AutoCompleteAdapter<T>;
   controller?: CollectionProxy<T, I, S, C>;
   dataSource?: T[] | [T, string][] | string;
   fetchOnce?: boolean;
@@ -163,8 +184,8 @@ export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omi
   InputComponent?: React.ForwardRefExoticComponent<
     React.PropsWithoutRef<SelectInputProps<T, I>> & React.RefAttributes<HTMLDivElement>
   >;
-  IconComponent?: FC<SelectIconProps>;
-  NotFoundComponent?: FC<SelectNotFoundProps>;
+  IconComponent?: FC<SelectIconProps> | null;
+  NotFoundComponent?: FC<SelectNotFoundProps> | null;
   placeholder?: string;
   value?: T | T[] | null;
   onChange?: ChangeHandler<T | T[] | null>;
@@ -195,8 +216,10 @@ export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omi
   sameWidth?: boolean;
   ListComponent?: React.FC<SelectListComponentProps<T, I>>;
   autoCompleteSearch?: boolean;
+  autoCompleteAdapter?: AutoCompleteAdapter<T>;
   maxDisplayTokens?: number;
   validateValue?: boolean;
+  mode?: 'default' | 'autocomplete';
 };
 
 export type SelectListComponentProps<T = any, I extends SelectItem<T> = SelectItem<T>> = CollectionListProps<T, I> & {

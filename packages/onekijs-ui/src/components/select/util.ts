@@ -1,6 +1,24 @@
 import { CollectionProxy, isSameFilter, Query, shallowEqual } from 'onekijs-framework';
 import { SelectController, SelectItem, SelectState } from './typings';
 
+export const defaultAutocompleteAdapter = <T>(value: string | null): T | null => {
+  if (value === '' || value === null) {
+    return null;
+  }
+  return value as unknown as T;
+}
+
+export const numberAutocompleteAdapter = <T>(value: string | null): T | null => {
+  if (value === null) {
+    return null;
+  }
+  const parsed = Number(value);
+  if (isNaN(parsed)) {
+    return null;
+  }
+  return parsed as unknown as T;
+}
+
 export const findSelectItem = <
   T = any,
   I extends SelectItem<T> = SelectItem<T>,

@@ -112,7 +112,7 @@ export type ListConfig<T = any, I extends ListItem<T> = ListItem<T>> = {
   ItemLoadingComponent?: FC;
   ItemComponent?: FC<ListItemProps<T, I>>;
   ItemContentComponent?: FC<ListItemProps<T, I>>;
-  NotFoundComponent?: FC<ListNotFoundProps>;
+  NotFoundComponent?: FC<ListNotFoundProps> | null;
   LoadingComponent?: FC<StylableProps>;
   itemHeight?: number | ((index: number) => number);
   keyboardNavigable?: boolean;

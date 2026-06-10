@@ -154,6 +154,8 @@ export { default as PropertiesComponent } from './components/properties/componen
 export { default as Property } from './components/properties/components/Property';
 export { propertiesStyle } from './components/properties/style';
 export { PropertiesContext, PropertiesList, PropertiesProps, PropertyProps } from './components/properties/typings';
+export { default as AutoComplete } from './components/select/AutoComplete';
+export { FormAutoComplete } from './components/select/AutoComplete';
 export { default as Select } from './components/select';
 export { default as FormSelect } from './components/select/FormSelect';
 export { default as DefaultSelectBroker } from './components/select/SelectBroker';
@@ -202,6 +204,9 @@ export {
   TreeSelectState,
   UseSelectController,
   UseSelectOptions,
+  AutoCompleteAdapter,
+  AutoCompleteProps,
+  FormAutoCompleteProps,
 } from './components/select/typings';
 export { findSelectItem, findSelectItemIndex, shouldCheckSelect } from './components/select/util';
 export { default as Tabs } from './components/tab';
