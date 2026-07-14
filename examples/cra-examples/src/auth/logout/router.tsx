@@ -3,7 +3,7 @@ import CallbackPage from './CallbackPage';
 import LogoutPage from './IndexPage';
 
 
-const LogoutRouter = (): JSX.Element => {
+const LogoutRouter = (): import('react').JSX.Element => {
   return (
     <Routes>
       <Route path="callback" element={<CallbackPage />} />

@@ -5,7 +5,7 @@ import AuthRouter from './auth/router';
 import StateManagementRouter from './state-management/router';
 import UiRouter from './ui/router';
 
-const RootRouter = (): JSX.Element => {
+const RootRouter = (): import('react').JSX.Element => {
   return (
     <Routes>
       <Route element={<AppLayout />}>

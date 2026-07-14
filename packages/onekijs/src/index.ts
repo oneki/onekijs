@@ -509,7 +509,14 @@ export {
 export {
   BrowserRouter,
   BrowserRouterProps,
-  Hash,
+  createBrowserRouter,
+  createHashRouter,
+  createMemoryRouter,
+  DataRouter,
+  ActionFunction,
+  ActionFunctionArgs,
+  LoaderFunction,
+  LoaderFunctionArgs,
   HashRouter,
   HashRouterProps,
   HistoryRouterProps,
@@ -533,15 +540,15 @@ export {
   Path,
   PathMatch,
   PathRouteProps,
-  Pathname,
   Route,
   RouteMatch,
   RouteObject,
   RouteProps,
   RouterProps,
+  RouterProvider,
+  RouterProviderProps,
   Routes,
   RoutesProps,
-  Search,
   To,
   UNSAFE_LocationContext,
   UNSAFE_NavigationContext,
@@ -569,8 +576,10 @@ export {
   useResolvedPath,
   useRoutes,
   useSearchParams
-} from 'react-router-dom';
+} from 'react-router';
 export { App } from './App';
+export { DataRouterProvider } from './router/DataRouterProvider';
+export { DataRouterProviderProps } from './router/DataRouterProvider';
 export { default as FadeSwitch } from './router/FadeRoutes';
 export { ReactRouter } from './router/ReactRouter';
 export { AppProps } from './typings';

@@ -1,6 +1,8 @@
+'use client';
+
+import Link from 'next/link';
 import { useSecurityContext } from 'onekijs-next';
 import React from 'react';
-import { Link } from 'onekijs-next';
 
 const Navbar: React.FC = () => {
   const [loggedUser] = useSecurityContext('username');

@@ -28,4 +28,4 @@ const CartPage: React.FC = () => {
   );
 };
 
-export default secure(CartPage);
+export default secure(CartPage as any);

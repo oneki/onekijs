@@ -1,6 +1,6 @@
 import { LinkProps, toI18nLocation, toRelativeUrl, toUrl, useI18n, useLocation, useSettings } from 'onekijs-framework';
 import React, { ForwardRefExoticComponent, PropsWithoutRef, ReactNode, RefAttributes } from 'react';
-import { Link as ReactRouterLink, NavLink } from 'react-router-dom';
+import { Link as ReactRouterLink, NavLink } from 'react-router';
 
 const Link: ForwardRefExoticComponent<PropsWithoutRef<LinkProps> & RefAttributes<HTMLAnchorElement>> = React.forwardRef<HTMLAnchorElement, LinkProps>(
   (

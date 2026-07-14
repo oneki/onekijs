@@ -45,7 +45,7 @@ export type TreeConfig<T = any, I extends TreeItem<T> = TreeItem<T>> = {
   paddingRight?: number;
   animate?: boolean;
   keyboardNavigable?: boolean;
-  listRef?: React.RefObject<HTMLDivElement>;
+  listRef?: React.RefObject<HTMLDivElement | null>;
 };
 
 export type TreeController<

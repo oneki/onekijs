@@ -1,6 +1,5 @@
-import { AppState, DefaultLoadingComponent, FCC, simpleMergeDeep, useLazyRef } from 'onekijs-framework';
-import React, { FC, useEffect, useMemo } from 'react';
-import { SS_KEY_404 } from './404';
+import { AppState, DefaultLoadingComponent, FCC, useLazyRef } from 'onekijs-framework';
+import React from 'react';
 import NextRouter from './router/NextRouter';
 import { useRouterSync } from './router/useRouterSync';
 import { AppProps } from './typings';
@@ -10,40 +9,20 @@ const Router: FCC<{ router: NextRouter }> = ({ router, children }) => {
   return <>{children}</>;
 };
 
-export const App: FC<AppProps> = ({
+/**
+ * App Router client provider. Render this component from a module that starts
+ * with the `use client` directive, for example an `app/providers.tsx` file.
+ */
+export const App: FCC<AppProps> = ({
   LoadingComponent = DefaultLoadingComponent,
-  Component,
-  pageProps,
   initialLocale,
   translations,
   i18nNs,
-  router: nextRouter,
   Theme,
+  children,
   ...appProps
 }) => {
   const routerRef = useLazyRef(() => new NextRouter([]));
-  i18nNs = useMemo(() => {
-    return Object.keys(pageProps.translations || {})
-      .concat(Object.keys(translations || {}))
-      .concat(i18nNs || []);
-  }, [pageProps.translations, translations, i18nNs]);
-
-  translations = useMemo(() => {
-    return simpleMergeDeep(Object.assign({}, pageProps.translations), translations);
-  }, [pageProps.translations, translations]);
-
-  initialLocale = useMemo(() => {
-    if (nextRouter.locale) return nextRouter.locale;
-    return initialLocale;
-  }, [nextRouter.locale, initialLocale]);
-
-  useEffect(() => {
-    if (nextRouter.pathname === nextRouter.asPath) {
-      sessionStorage.removeItem(SS_KEY_404);
-    }
-  }, [nextRouter]);
-
-  const getLayout = (Component && (Component as any).getLayout) || ((page: any) => page);
 
   return (
     <AppState
@@ -55,8 +34,7 @@ export const App: FC<AppProps> = ({
       router={routerRef.current}
     >
       <Router router={routerRef.current}>
-        {Theme && <Theme>{getLayout(<Component {...pageProps}></Component>)}</Theme>}
-        {!Theme && getLayout(<Component {...pageProps}></Component>)}
+        {Theme ? <Theme>{children}</Theme> : children}
       </Router>
     </AppState>
   );

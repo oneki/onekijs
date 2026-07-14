@@ -39,14 +39,14 @@ export type ListBodyProps<
   | 'keyboardNavigable'
   | 'tail'
 > & {
-  bodyRef?: React.RefObject<HTMLDivElement>;
+  bodyRef?: React.RefObject<HTMLDivElement | null>;
   className?: string;
   ItemLoadingComponent?: FC;
   ItemComponent?: FC<ListItemProps<T, I>>;
   ItemContentComponent?: FC<ListItemProps<T, I>>;
   items: (I | undefined)[];
   ListComponent?: FC<StandardListProps<T, I>>;
-  parentRef?: React.RefObject<HTMLDivElement>;
+  parentRef?: React.RefObject<HTMLDivElement | null>;
   service: C;
   state: S;
   style?: React.CSSProperties;

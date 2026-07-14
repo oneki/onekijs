@@ -149,7 +149,7 @@ const PickerComponent: FC<PickerComponentProps> = ({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const stateRef = useRef<AnonymousObject>({});
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const lastExternalValueRef = useRef<string | null | undefined>();
+  const lastExternalValueRef = useRef<string | null | undefined>(undefined);
   const currentValueRef = useRef<string | null>(null);
   const [open, setOpen] = useState(false);
   const [focus, setFocus] = useState(false);
@@ -162,8 +162,8 @@ const PickerComponent: FC<PickerComponentProps> = ({
 
   const [fromString, toString] = value ? value.split(/ to\s*/) : [];
 
-  const validFromRef = useRef<string | undefined>();
-  const validToRef = useRef<string | undefined>();
+  const validFromRef = useRef<string | undefined>(undefined);
+  const validToRef = useRef<string | undefined>(undefined);
 
   if (!fromString || /\s*/.test(fromString)) {
     validFromRef.current = undefined;

@@ -12,7 +12,7 @@ import { getDashboardPanelLength, getFloatingKey, getWorkspacePanelLength } from
 const DashboardBodyComponent: FCC<DashboardBodyComponentProps> = (props) => {
   const ref = useRef<HTMLDivElement | null>(null);
   const service = useDashboardService();
-  const stepRef = useRef<'initializing' | 'initialized' | undefined>();
+  const stepRef = useRef<'initializing' | 'initialized' | undefined>(undefined);
   const style: CSSProperties = {};
   if (stepRef.current !== 'initialized') {
     style.transition = 'none';

@@ -1,7 +1,7 @@
 {
   "name": "onekijs-theme-clarity",
   "private": false,
-  "version": "0.22.0",
+  "version": "1.0.0",
   "description": "Opiniated React framework built on top of Next.js",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -12,7 +12,7 @@
     "src"
   ],
   "engines": {
-    "node": ">=10"
+    "node": ">=22.22.0"
   },
   "exports": {
     ".": {
@@ -33,23 +33,21 @@
   "unpkg": "dist/index.umd.js",
   "scripts": {
     "clean": "rimraf dist",
-    "build": "rimraf dist && rollup --config rollup.config.js",
+    "build": "rimraf dist && tsc --emitDeclarationOnly --incremental false && rollup --config rollup.config.js",
     "start": "rollup -w --config rollup.config.js"
   },
   "author": "Oneki",
   "license": "MIT",
   "dependencies": {
     "@clr/city": "^1.1.0",
-    "onekijs-ui": "^0.22.0"
+    "onekijs-ui": "^1.0.0"
   },
   "devDependencies": {
-    "@types/react-virtualized-auto-sizer": "^1.0.0",
-    "@types/react-window": "^1.8.2",
-    "rollup": "^3.26.3"
+    "rollup": "^4.62.2"
   },
   "peerDependencies": {
-    "react": ">=18",
-    "react-dom": ">=18"
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
   },
   "sideEffects": false,
   "gitHead": "97569ff810eb1afad90c7df70bf52f04a7066132"

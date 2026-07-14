@@ -1,6 +1,7 @@
 import { AppState, DefaultLoadingComponent, FCC, useLazyRef } from 'onekijs-framework';
 import React, { FC, Suspense } from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router';
+import { DataRouterProvider } from './router/DataRouterProvider';
 import { ReactRouter } from './router/ReactRouter';
 import { useRouterSync } from './router/useRouterSync';
 import { AppProps, AppRouterProps } from './typings';
@@ -10,7 +11,23 @@ const AppRouterSync: FC = () => {
   return null;
 };
 
+const hasDataRouterProvider = (children: React.ReactNode): boolean => {
+  let found = false;
+  React.Children.forEach(children, (child) => {
+    if (found || !React.isValidElement(child)) return;
+    if (child.type === DataRouterProvider) {
+      found = true;
+    } else if (child.type === React.Fragment) {
+      found = hasDataRouterProvider((child as React.ReactElement<{ children?: React.ReactNode }>).props.children);
+    }
+  });
+  return found;
+};
+
 const AppRouter: FCC<AppRouterProps> = ({ basename, children }) => {
+  if (hasDataRouterProvider(children)) {
+    return <>{children}</>;
+  }
   return (
     <BrowserRouter basename={basename}>
       <AppRouterSync />
@@ -39,7 +56,8 @@ const FCCApp: FCC<AppProps> = ({ LoadingComponent = DefaultLoadingComponent, chi
  * - creating a Redux store:
  *   - If the `store` property is present, **_App_** doesn't create a Redux store but uses the one referenced by the property.
  *   - Otherwise, **&lt;App/&gt;** creates the Redux store. The initial state of the store is the object referenced by the property `initialState`.
- * - creating a React Router. By default, it creates a **BrowserRouter** that can be changed / configured via the **settings.ts** file
+ * - creating a React Router. By default, it creates a **BrowserRouter** that can be changed / configured via the **settings.ts** file.
+ *   Render a direct-child `DataRouterProvider` to use a React Router data router instead.
  * - creating and injecting global **services** in the Redux store
  * - creating a context that contains three elements:
  *   - **router**: accessible via useRouter()

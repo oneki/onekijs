@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Link } from 'onekijs-next';
+import Link from 'next/link';
 import { ProductType } from '../../../../data/products';
 
 interface ProductProps {

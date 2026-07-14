@@ -1,3 +1,5 @@
+'use client';
+
 import { ErrorBoundaryComponentProps } from 'onekijs-next';
 import React from 'react';
 

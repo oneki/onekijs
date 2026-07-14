@@ -1,5 +1,4 @@
-import React, { FC } from 'react';
-import { Link } from 'onekijs-next';
+import Link from 'next/link';
 import { ProductType } from '../../../../data/products';
 
 interface ProductProps {
@@ -9,7 +8,7 @@ interface ProductProps {
   onNotify: () => void;
 }
 
-const Product: FC<ProductProps> = ({ product, id, onClick, onNotify }) => {
+const Product = ({ product, id, onClick, onNotify }: ProductProps) => {
   return (
     <div>
       <h3>

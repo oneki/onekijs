@@ -19,7 +19,7 @@ export interface ResizerProps {
 
 export interface ResizeSplitterProps {
   onResize: ResizerHandler;
-  target: React.RefObject<HTMLDivElement>;
+  target: React.RefObject<HTMLDivElement | null>;
   gap: number;
 }
 

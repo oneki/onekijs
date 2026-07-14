@@ -7,8 +7,8 @@ import { ProductType } from '../modules/products/components/Product';
 const CartPage: React.FC = () => {
   // retrieve the content of the cart from the global store of the application
   // Each time the cart is updated, the component is refreshed
-  const cart: ProductType[] = useGlobalProp(STATE_CART, []); 
+  const cart: ProductType[] = useGlobalProp(STATE_CART, []);
   return <Cart cart={cart} />;
 };
 
-export default secure(CartPage);
+export default secure(CartPage as any);

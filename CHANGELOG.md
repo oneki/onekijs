@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## Unreleased
+
+### Breaking changes
+
+* Upgrade the published packages to React 19, React Router 8, Next.js 16, and Node.js 22.22+.
+* Replace `react-popper` with Floating UI and support Next.js App Router only in `onekijs-next`.
+* Generate TypeScript declarations during every published-package build.
+
 # 0.22.0 (2026-06-10)
 
 

@@ -114,8 +114,8 @@ export type TableBodyProps<T = any, I extends TableItem<T> = TableItem<T>> = {
   className?: string;
   columns: TableColumn<T, I>[];
   items: (I | undefined)[];
-  contentRef: React.RefObject<HTMLDivElement>;
-  tableRef: React.RefObject<HTMLDivElement>;
+  contentRef: React.RefObject<HTMLDivElement | null>;
+  tableRef: React.RefObject<HTMLDivElement | null>;
 };
 
 export type TableBodyRowProps<T = any, I extends TableItem<T> = TableItem<T>> = Omit<
@@ -196,7 +196,7 @@ export type TableController<
   initCell(
     rowIndex: number | 'header-title' | 'header-filter' | 'footer',
     colId: string,
-    ref: React.RefObject<HTMLDivElement>,
+    ref: React.RefObject<HTMLDivElement | null>,
   ): void;
   removeColumn(id: string): void;
   removeSelected<B extends keyof CollectionBy<T, I>>(

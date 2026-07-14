@@ -7,8 +7,6 @@ const Link: FC<LinkProps> = ({
   replace,
   scroll,
   prefetch,
-  locale,
-  shallow,
   children,
   Component,
   isActive,
@@ -26,11 +24,9 @@ const Link: FC<LinkProps> = ({
       replace={replace}
       scroll={scroll}
       prefetch={prefetch}
-      locale={locale}
-      shallow={shallow}
-      passHref
+      {...anchorProps}
     >
-      <a {...anchorProps}>{children}</a>
+      {children}
     </NextLink>
   );
 };

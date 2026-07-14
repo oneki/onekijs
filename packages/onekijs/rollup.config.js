@@ -14,7 +14,6 @@ const config = [
       'react-dom',
       'onekijs-framework',
       'react-router',
-      'react-router-dom',
       'history',
       'react-transition-group',
     ],

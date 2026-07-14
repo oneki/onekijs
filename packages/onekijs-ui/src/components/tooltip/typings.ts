@@ -1,11 +1,11 @@
+import { Placement } from '@floating-ui/react';
 import { ReactNode } from 'react';
-import { Config, PopperOptions } from 'react-popper-tooltip';
 import { ColorPropertyTheme } from '../../styles/typings';
 
-export interface TooltipProps extends Config {
+export interface TooltipProps {
   content?: ReactNode;
   className?: string;
-  popperOptions?: PopperOptions;
+  placement?: Placement;
   kind?: ColorPropertyTheme;
   delayHide?: number;
   delayShow?: number;

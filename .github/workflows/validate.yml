@@ -1,0 +1,37 @@
+name: validate
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - react19
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.22.0'
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm --workspace cra-app-custom-store run build
+      - run: npm --workspace cra-examples run build
+      - run: npm --workspace cra-ui run build
+      - run: cd getting-started/next/step01-next-app && npm run build
+      - run: cd getting-started/next/step02-navigation && npm run build
+      - run: cd getting-started/next/step03-global-state && npm run build
+      - run: cd getting-started/next/step04-authentication && npm run build
+      - run: cd getting-started/next/step05-data && npm run build
+      - run: cd getting-started/next/step06-notification && npm run build
+      - run: cd getting-started/next/step07-error-handling && npm run build
+      - run: cd getting-started/next/step08-i18n && npm run build
+      - run: cd getting-started/next/step09-form && npm run build
+      - run: cd getting-started/next/step10-service && npm run build
+      - run: cd getting-started/next/step11-theming && npm run build

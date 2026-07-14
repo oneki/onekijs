@@ -1,7 +1,7 @@
 {
   "name": "onekijs",
-  "version": "0.22.0",
-  "description": "Opiniated React framework built on top of Next.js",
+  "version": "1.0.0",
+  "description": "Opinionated React framework for browser applications",
   "source": "src/index.ts",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -11,7 +11,7 @@
     "src"
   ],
   "engines": {
-    "node": ">=10"
+    "node": ">=22.22.0"
   },
   "exports": {
     ".": {
@@ -24,24 +24,23 @@
   "unpkg": "dist/index.umd.js",
   "scripts": {
     "clean": "rimraf dist",
-    "build": "rimraf dist && rollup --config rollup.config.js",
+    "build": "rimraf dist && tsc --emitDeclarationOnly --incremental false && rollup --config rollup.config.js",
     "start": "rollup -w --config rollup.config.js"
   },
   "author": "Oneki",
   "license": "MIT",
   "dependencies": {
     "history": "^5.3.0",
-    "onekijs-framework": "^0.22.0",
-    "react-router": "^6.14.1",
-    "react-router-dom": "^6.14.1"
+    "onekijs-framework": "^1.0.0",
+    "react-router": "^8.2.0"
   },
   "devDependencies": {
-    "rimraf": "^5.0.1",
-    "rollup": "^3.26.3"
+    "rimraf": "^6.1.3",
+    "rollup": "^4.62.2"
   },
   "peerDependencies": {
-    "react": ">=18",
-    "react-dom": ">=18"
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
   },
   "sideEffects": false,
   "gitHead": "edb06e2c862c07ff7ec19f5711a3d71664126638"

@@ -26,7 +26,7 @@ const Input: FCC<InputProps> = React.memo((props) => {
   }
 
   const ref = useRef<HTMLInputElement | null>(null);
-  const selectorRef = useRef<number | null | undefined>()
+  const selectorRef = useRef<number | null | undefined>(undefined)
   const onValueChange: React.InputHTMLAttributes<HTMLInputElement>['onChange'] = (e) => {
     selectorRef.current = e.target.selectionStart;
     onChange && onChange(e);

@@ -1,5 +1,7 @@
-import { Placement } from '@popperjs/core';
+import { Placement } from '@floating-ui/react';
 import { AnyFunction } from 'onekijs-framework';
+
+export type DropdownPlacement = Placement | 'auto' | 'auto-start' | 'auto-end';
 
 export type DropdownProps = {
   attachToBody?: boolean;
@@ -15,8 +17,8 @@ export type DropdownProps = {
   onCollapseDone?: (node: HTMLElement) => void;
   onCollapsing?: (node: HTMLElement) => void;
   animationTimeout?: number;
-  placement?: Placement;
-  fallbackPlacements?: Placement[];
+  placement?: DropdownPlacement;
+  fallbackPlacements?: DropdownPlacement[];
   widthModifier?: DropdownWidthModifier;
   width?: string;
   zIndex?: number;

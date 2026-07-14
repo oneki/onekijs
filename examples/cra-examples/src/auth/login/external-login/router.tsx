@@ -3,7 +3,7 @@ import ExternalLoginCallbackPage from './ExternalLoginCallbackPage';
 import ExternalLoginPage from './IndexPage';
 
 
-const ExternalLoginRouter = (): JSX.Element => {
+const ExternalLoginRouter = (): import('react').JSX.Element => {
   return (
     <Routes>
       <Route path="callback" element={<ExternalLoginCallbackPage />} />

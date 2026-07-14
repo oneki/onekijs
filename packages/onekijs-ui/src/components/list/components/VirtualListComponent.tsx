@@ -16,7 +16,7 @@ const VirtualItemWrapper = <T extends any = any, I extends ListItem<T> = ListIte
 }: VirtualItemWrapperProps<T, I>) => {
   const { index, measureRef, start } = virtualItem;
   const ref = useRef<HTMLDivElement | null>(null);
-  const previousHeightRef = useRef<number | undefined>();
+  const previousHeightRef = useRef<number | undefined>(undefined);
 
   const measure = useCallback(
     (el: HTMLElement | null) => {

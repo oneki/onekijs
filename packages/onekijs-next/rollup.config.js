@@ -13,7 +13,7 @@ const config = [
       'onekijs-framework',
       'regenerator-runtime',
       'next',
-      'next/router',
+      'next/navigation',
       'next/link',
       'react-transition-group',
     ],

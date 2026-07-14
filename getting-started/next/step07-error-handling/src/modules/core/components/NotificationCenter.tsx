@@ -1,3 +1,5 @@
+'use client';
+
 import { Notification, useNotifications } from 'onekijs-next';
 import React from 'react';
 import { NOTIF_TOPIC_ERROR, NOTIF_TOPIC_SUCCESS } from '../libs/constants';

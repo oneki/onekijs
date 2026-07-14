@@ -245,4 +245,6 @@ SelectInputComponent.displayName = 'SelectInput';
 
 // export default SelectInputComponent;
 
-export default React.forwardRef<HTMLDivElement, any>(SelectInputComponent);
+export default React.forwardRef<HTMLDivElement, any>(
+  SelectInputComponent as unknown as React.ForwardRefRenderFunction<HTMLDivElement, any>,
+);

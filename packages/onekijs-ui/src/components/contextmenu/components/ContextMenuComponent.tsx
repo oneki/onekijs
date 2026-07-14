@@ -1,7 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { usePopper } from 'react-popper';
-// Import the specific type for virtual anchors from Popper core
-import { VirtualElement } from '@popperjs/core';
+import { autoUpdate, flip, offset, shift, useFloating, VirtualElement } from '@floating-ui/react';
 import { ContextMenuProps } from '../typings';
 import { FCC } from 'onekijs-framework';
 import { addClassname } from '../../../utils/style';
@@ -9,21 +7,10 @@ import { addClassname } from '../../../utils/style';
 const ContextMenuComponent: FCC<ContextMenuProps> = ({ refElement, className, children, offsetX = 0, offsetY = 0 }) => {
   const [visible, setVisible] = useState(false);
 
-  // State for the anchor (the mouse coordinates) and the menu element
-  const [virtualElement, setVirtualElement] = useState<VirtualElement | null>(null);
-  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
-
-  // Initialize Popper with a virtual reference
-  const { styles, attributes } = usePopper(virtualElement, popperElement, {
+  const { floatingStyles, refs } = useFloating({
     placement: 'bottom-start',
-    modifiers: [
-      {
-        name: 'offset',
-        options: {
-          offset: [offsetX, offsetY], // Slight offset so the menu isn't directly under the cursor
-        },
-      },
-    ],
+    middleware: [offset({ crossAxis: offsetX, mainAxis: offsetY }), flip(), shift()],
+    whileElementsMounted: autoUpdate,
   });
 
   // Handle the right-click event
@@ -48,7 +35,7 @@ const ContextMenuComponent: FCC<ContextMenuProps> = ({ refElement, className, ch
       }),
     };
 
-    setVirtualElement(newVirtualElement);
+    refs.setPositionReference(newVirtualElement);
     setVisible(true);
   }, []);
 
@@ -79,12 +66,11 @@ const ContextMenuComponent: FCC<ContextMenuProps> = ({ refElement, className, ch
   if (visible) {
     return (
         <div
-          ref={setPopperElement}
+          ref={refs.setFloating}
           className={addClassname('o-context-menu', className)}
           style={{
-            ...styles.popper,
+            ...floatingStyles,
           }}
-          {...attributes.popper}
         >
           {children}
         </div>

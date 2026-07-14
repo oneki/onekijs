@@ -1,4 +1,3 @@
-import Router, { NextRouter as NextRouterType } from 'next/router';
 import {
   BaseRouter,
   LinkProps,
@@ -13,26 +12,38 @@ import {
 import React from 'react';
 import Link from '../Link';
 
+export interface AppRouterNavigation {
+  push(href: string): void;
+  replace(href: string): void;
+  back(): void;
+  forward(): void;
+}
+
 export default class NextRouter extends BaseRouter {
   listeners: LocationChangeCallback[];
+  private nativeRouter: AppRouterNavigation | null = null;
 
   constructor(listeners: LocationChangeCallback[]) {
     super();
     this.listeners = listeners;
   }
 
-  get native(): NextRouterType | null {
-    return Router.router;
+  get native(): AppRouterNavigation | null {
+    return this.nativeRouter;
   }
 
   back(delta = 1): void {
-    if (typeof window !== 'undefined') {
+    if (delta === 1 && this.nativeRouter) {
+      this.nativeRouter.back();
+    } else if (typeof window !== 'undefined') {
       window.history.go(-delta);
     }
   }
 
   forward(delta = 1): void {
-    if (typeof window !== 'undefined') {
+    if (delta === 1 && this.nativeRouter) {
+      this.nativeRouter.forward();
+    } else if (typeof window !== 'undefined') {
       window.history.go(delta);
     }
   }
@@ -41,7 +52,7 @@ export default class NextRouter extends BaseRouter {
     return this.history[0];
   }
 
-  getLinkComponent(props: LinkProps): JSX.Element {
+  getLinkComponent(props: LinkProps): React.JSX.Element {
     return <Link {...props} />;
   }
 
@@ -107,11 +118,12 @@ export default class NextRouter extends BaseRouter {
   //   sesssionStorage.setItem('onekijs.from_route', fromRoute);
   // }
 
-  sync(nextRouter: NextRouterType): void {
-    const asPath = nextRouter.asPath;
+  sync(pathname: string, search: string, nativeRouter: AppRouterNavigation): void {
+    const asPath = search ? `${pathname}?${search}` : pathname;
     const location = toLocation(asPath, this.settings);
-    this.route = nextRouter.route;
-    this.params = nextRouter.query || {};
+    this.nativeRouter = nativeRouter;
+    this.route = pathname;
+    this.params = Object.fromEntries(new URLSearchParams(search));
     this._pushLocation(location);
   }
 
@@ -128,11 +140,11 @@ export default class NextRouter extends BaseRouter {
     if (nextLocation && this.location && nextLocation.baseurl !== this.location.baseurl) {
       const nextUrl = toUrl(nextLocation);
       type === 'push' ? window.location.assign(nextUrl) : window.location.replace(nextUrl);
-    } else if (Router.router) {
+    } else if (this.nativeRouter) {
       const nextUrl = toRouteUrl(nextLocation);
       type === 'push'
-        ? Router.router.push(nextUrl, undefined, { locale: options?.locale })
-        : Router.router.replace(nextUrl, undefined, { locale: options?.locale });
+        ? this.nativeRouter.push(nextUrl)
+        : this.nativeRouter.replace(nextUrl);
     }
   }
 }

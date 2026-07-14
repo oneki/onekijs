@@ -34,7 +34,7 @@ const TextareaComponent: FC<TextareaProps> = (props) => {
   };
 
   const ref = useRef<HTMLTextAreaElement>(null);
-  const selectorRef = useRef<number | null | undefined>()
+  const selectorRef = useRef<number | null | undefined>(undefined)
   const onChange: React.InputHTMLAttributes<HTMLTextAreaElement>['onChange'] = (e) => {
     selectorRef.current = e.target.selectionStart;
     forwardChange && forwardChange(e);

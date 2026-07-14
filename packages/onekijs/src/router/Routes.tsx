@@ -1,7 +1,7 @@
 import { FCC, toLocation, useSettings } from 'onekijs-framework';
 import React from 'react';
 import { useLocation } from 'react-router';
-import { Routes as ReactRouterRoutes } from 'react-router-dom';
+import { Routes as ReactRouterRoutes } from 'react-router';
 
 const Routes: FCC = ({ children }) => {
   const location = useLocation();

@@ -1,7 +1,7 @@
 import { Route, Routes } from 'onekijs';
 import FormInputBasicPage from './FormInputBasicPage';
 
-const FormInputRouter = (): JSX.Element => {
+const FormInputRouter = (): import('react').JSX.Element => {
   return (
     <Routes>
       <Route path="basic" element={<FormInputBasicPage />} />

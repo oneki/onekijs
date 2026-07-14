@@ -214,9 +214,9 @@ const ControlledSelectComponent = <
 
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  const previousSearchRef = useRef<Primitive>();
+  const previousSearchRef = useRef<Primitive | undefined>(undefined);
 
-  const previousProxyItemRef = useRef<I>();
+  const previousProxyItemRef = useRef<I | undefined>(undefined);
 
   const tokens = useMemo<I[]>(() => {
     return (controller.state.selected || [])

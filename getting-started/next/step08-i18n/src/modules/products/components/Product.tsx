@@ -1,5 +1,8 @@
+'use client';
+
+import Link from 'next/link';
 import React, { FC } from 'react';
-import { Link, useTranslation } from 'onekijs-next';
+import { useTranslation } from 'onekijs-next';
 import { ProductType } from '../../../../data/products';
 
 interface ProductProps {
@@ -10,11 +13,11 @@ interface ProductProps {
 }
 
 const Product: FC<ProductProps> = ({ product, id, onClick, onNotify }) => {
-  const [T] = useTranslation();
+  const [T, , locale] = useTranslation();
   return (
     <div>
       <h3>
-        <Link href={`/products/${id}`}>
+        <Link href={`/${locale}/products/${id}`}>
           <T>{product.name}</T>
         </Link>
       </h3>

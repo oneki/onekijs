@@ -1,6 +1,6 @@
 import { FCC } from 'onekijs-framework';
 import React from 'react';
-import { Routes as RouterRoutes, RoutesProps, useLocation } from 'react-router-dom';
+import { Routes as RouterRoutes, RoutesProps, useLocation } from 'react-router';
 import { SwitchTransition, Transition } from 'react-transition-group';
 import { TransitionStatus } from 'react-transition-group/Transition';
 

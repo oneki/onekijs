@@ -1,6 +1,6 @@
 import { AnonymousObject, FCC, SecureRouteProps, useGlobalProp, useSetting } from 'onekijs-framework';
 import React from 'react';
-import { Navigate, Route } from 'react-router-dom';
+import { Navigate, Route } from 'react-router';
 
 const SecureRoute: FCC<SecureRouteProps> = ({ component: Component, ...props }) => {
   const token = useGlobalProp('auth.token', null);

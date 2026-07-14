@@ -5,7 +5,7 @@ import FormLoginRouter from './form/router';
 import LoginPage from './IndexPage';
 
 
-const LoginRouter = (): JSX.Element => {
+const LoginRouter = (): import('react').JSX.Element => {
   return (
     <Routes>
       <Route path="external-login/*" element={<ExternalLoginRouter />} />

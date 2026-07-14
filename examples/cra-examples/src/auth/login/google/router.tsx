@@ -3,7 +3,7 @@ import LoginCallbackPage from './LoginCallbackPage';
 import GoogleLoginPage from './IndexPage';
 
 
-const GoogleRouter = (): JSX.Element => {
+const GoogleRouter = (): import('react').JSX.Element => {
   return (
     <Routes>
       <Route path="callback" element={<LoginCallbackPage />} />

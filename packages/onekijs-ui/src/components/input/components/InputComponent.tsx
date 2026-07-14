@@ -40,7 +40,7 @@ const InputComponent: FC<InputProps> = (props) => {
   };
 
   const ref = useRef<HTMLInputElement>(null);
-  const selectorRef = useRef<number | null | undefined>()
+  const selectorRef = useRef<number | null | undefined>(undefined)
   const onChange: React.InputHTMLAttributes<HTMLInputElement>['onChange'] = (e) => {
     selectorRef.current = e.target.selectionStart;
     forwardChange && forwardChange(e);

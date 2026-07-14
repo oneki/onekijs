@@ -4,7 +4,7 @@ import { useMemo, useRef } from 'react';
 type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any ? A : never;
 
 const useThrottle = <F extends Function>(fn: F, delayMs: number): F => {
-  const argsRef = useRef<any[]>();
+  const argsRef = useRef<any[] | undefined>(undefined);
   const delayRef = useRef(false);
 
   const result: F = useMemo(() => {

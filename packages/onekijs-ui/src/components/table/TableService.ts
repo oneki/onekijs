@@ -49,13 +49,13 @@ class TableService<T = any, I extends TableItem<T> = TableItem<T>, S extends Tab
   implements TableController<T, I>
 {
   // contains a reference to each initial cells (the one built during the initial render)
-  protected cells: AnonymousObject<AnonymousObject<React.RefObject<HTMLDivElement>>> = {};
+  protected cells: AnonymousObject<AnonymousObject<React.RefObject<HTMLDivElement | null>>> = {};
 
   // ref of the table container
-  protected tableRef: React.RefObject<HTMLDivElement> | null = null;
+  protected tableRef: React.RefObject<HTMLDivElement | null> | null = null;
 
   // ref of the body container
-  protected contentRef: React.RefObject<HTMLDivElement> | null = null;
+  protected contentRef: React.RefObject<HTMLDivElement | null> | null = null;
 
   // config coming from the component
   public config: TableConfig<T, I> | undefined;
@@ -88,7 +88,7 @@ class TableService<T = any, I extends TableItem<T> = TableItem<T>, S extends Tab
   initCell(
     rowNumber: number | 'header-title' | 'header-filter' | 'footer',
     colId: string,
-    ref: React.RefObject<HTMLDivElement>,
+    ref: React.RefObject<HTMLDivElement | null>,
   ): void {
     this.cells[colId] = this.cells[colId] || {};
     this.cells[colId][`${rowNumber}`] = ref;

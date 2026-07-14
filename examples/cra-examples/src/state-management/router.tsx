@@ -5,7 +5,7 @@ import StateManagementIndexPage from './IndexPage';
 import UseLocalServicePage from './UseLocalServicePage';
 
 
-const StateManagementRouter = (): JSX.Element => {
+const StateManagementRouter = (): import('react').JSX.Element => {
   return (
     <Routes>
       <Route path="use-global-state" element={<UseGlobalStatePage />} />

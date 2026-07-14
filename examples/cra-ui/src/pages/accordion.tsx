@@ -1,10 +1,6 @@
-import { Accordion, AccordionPanel, ComponentStyle } from 'onekijs-ui';
+import { Accordion, AccordionPanel } from 'onekijs-ui';
 import React from 'react';
-import styled, { css } from 'styled-components';
-
-const accordionStyle: ComponentStyle<{}> = () => {
-  return css``;
-};
+import styled from 'styled-components';
 
 const Page: React.FC<{ className?: string }> = ({ className }) => {
   return (
@@ -30,5 +26,4 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
 };
 
 export const AccordionPage = styled(Page)`
-  ${accordionStyle}
 `;

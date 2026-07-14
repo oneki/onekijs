@@ -223,7 +223,7 @@ export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omi
 };
 
 export type SelectListComponentProps<T = any, I extends SelectItem<T> = SelectItem<T>> = CollectionListProps<T, I> & {
-  optionsRef: React.RefObject<HTMLDivElement>;
+  optionsRef: React.RefObject<HTMLDivElement | null>;
 };
 
 export type SelectState<T = any, I extends SelectItem<T> = SelectItem<T>> = ListState<T, I> & {
