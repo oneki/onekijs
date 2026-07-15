@@ -14,10 +14,14 @@ import {
   DashboardHorizontalArea,
   DashboardHorizontalPanelComponentProps,
   DashboardHorizontalPanelProps,
-  DashboardSize
+  DashboardSize,
 } from '../typings';
-import { getCollapseKey, getDashboardPanelContainerSize, getDashboardPanelSize, getFloatingKey } from '../utils/dashboardLength';
-
+import {
+  getCollapseKey,
+  getDashboardPanelContainerSize,
+  getDashboardPanelSize,
+  getFloatingKey,
+} from '../utils/dashboardLength';
 
 const Component: React.FC<DashboardHorizontalPanelComponentProps> = (props) => {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -42,19 +46,18 @@ const Component: React.FC<DashboardHorizontalPanelComponentProps> = (props) => {
     };
   });
 
-
   const classNames = props.className ? props.className.split(' ') : [];
-  const styledClassNames = classNames.slice(0,2).join(' ')
-  const customClassNames = addClassname(props.area === 'header' ? 'o-dashboard-horizontal-panel o-dashboard-header' : 'o-dashboard-horizontal-panel o-dashboard-footer', classNames.slice(2).join(' '))
-
+  const styledClassNames = classNames.slice(0, 2).join(' ');
+  const customClassNames = addClassname(
+    props.area === 'header'
+      ? 'o-dashboard-horizontal-panel o-dashboard-header'
+      : 'o-dashboard-horizontal-panel o-dashboard-footer',
+    classNames.slice(2).join(' '),
+  );
 
   return (
     <div className={styledClassNames}>
-      <div
-        className={customClassNames}
-        ref={ref}
-        style={style}
-      >
+      <div className={customClassNames} ref={ref} style={style}>
         {stepRef.current && props.children}
       </div>
     </div>
@@ -67,46 +70,47 @@ const style: ComponentStyle<DashboardHorizontalPanelComponentProps> = (props) =>
   let containerTransition = 'none';
   const sizes: DashboardSize[] = ['small', 'medium', 'large'];
   const containerHeights = {
-    'small': '',
-    'medium': '',
-    'large': '',
-  }
+    small: '',
+    medium: '',
+    large: '',
+  };
 
   const heights = {
-    'small': '',
-    'medium': '',
-    'large': '',
-  }
+    small: '',
+    medium: '',
+    large: '',
+  };
   const positions = {
-    'small': '',
-    'medium': '',
-    'large': '',
-  }
+    small: '',
+    medium: '',
+    large: '',
+  };
 
   const translates = {
-    'small': '',
-    'medium': '',
-    'large': '',
-  }
+    small: '',
+    medium: '',
+    large: '',
+  };
 
   let bgColor = t.bgColor;
   const panel = props.panel;
   if (panel) {
-    transition =  panel.resizing ? 'height 0.1s' : 'height 0.3s';
-    containerTransition =  panel.resizing ? 'height 0.1s' : 'height 0.3s';
+    transition = panel.resizing ? 'height 0.1s' : 'height 0.3s';
+    containerTransition = panel.resizing ? 'height 0.1s' : 'height 0.3s';
     sizes.forEach((size) => {
       const containerHeight = getDashboardPanelContainerSize('height', size, props.panel);
-      containerHeights[size] = containerHeight === null ? '' : `height: ${getDashboardPanelContainerSize('height', size, props.panel)};`;
-      heights[size] =  `height: ${getDashboardPanelSize('height', size, props.panel)};`;
+      containerHeights[size] =
+        containerHeight === null ? '' : `height: ${getDashboardPanelContainerSize('height', size, props.panel)};`;
+      heights[size] = `height: ${getDashboardPanelSize('height', size, props.panel)};`;
       if (panel[getFloatingKey(size)]) {
         positions[size] = 'position: absolute; top: 0; left: 0; z-index: 1001;';
       } else {
         positions[size] = 'position: static; z-index: auto;';
       }
       const isFloating = panel[getFloatingKey(size)];
-      if(isFloating || parseInt(`${panel.collapseHeight}`) === 0) {
+      if (isFloating || parseInt(`${panel.collapseHeight}`) === 0) {
         if (!panel.resizing) {
-          transition =  'transform 0.3s';
+          transition = 'transform 0.3s';
         }
         if (panel[getCollapseKey(size)]) {
           const fullHeight = getDashboardPanelSize('height', size, props.panel, true);
@@ -115,19 +119,20 @@ const style: ComponentStyle<DashboardHorizontalPanelComponentProps> = (props) =>
           translates[size] = `transform: translate(0, 0);`;
         }
 
-        const fullHeight= getDashboardPanelSize('height', size, props.panel, true);
+        const fullHeight = getDashboardPanelSize('height', size, props.panel, true);
         if (panel[getCollapseKey(size)]) {
           translates[size] = `transform: translate(0,${panel.area === 'header' ? `-${fullHeight}` : '0'});`;
         } else {
-          translates[size] = `transform: translate(0, ${panel.area === 'header' ? '0' : `${isFloating ? `-${fullHeight}` : '0'}`});`;
+          translates[size] = `transform: translate(0, ${
+            panel.area === 'header' ? '0' : `${isFloating ? `-${fullHeight}` : '0'}`
+          });`;
         }
       }
-    })
+    });
     if (panel.backgroundColor !== 'inherits') {
       bgColor = panel.backgroundColor;
     }
   }
-
 
   return css`
     ${position('relative')}
@@ -163,7 +168,6 @@ const style: ComponentStyle<DashboardHorizontalPanelComponentProps> = (props) =>
         ${translates.large}
       }
     }
-
   `;
 };
 
@@ -188,12 +192,9 @@ const dashboardHorizontalPanel = (area: DashboardHorizontalArea): FCC<DashboardH
             {panel?.content ? <>{panel.content}</> : props.children}
           </Resizer>
         )}
-        {(!props.resizable  || service.isCollapse(area)) && (panel?.content ? <>{panel.content}</> : props.children)}
+        {(!props.resizable || service.isCollapse(area)) && (panel?.content ? <>{panel.content}</> : props.children)}
       </StyledComponent>
     );
-  };
-  Panel.defaultProps = {
-    area
   };
   return Panel;
 };

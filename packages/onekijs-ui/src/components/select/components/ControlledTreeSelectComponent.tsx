@@ -24,7 +24,7 @@ export const useTreeSelectPropsContext = <
   return useContext(TreeSelectPropsContext);
 };
 
-const TreeSelectListComponent = <T extends any = any, I extends TreeSelectItem<T> = TreeSelectItem<T>>(
+const TreeSelectListComponent = <T = any, I extends TreeSelectItem<T> = TreeSelectItem<T>>(
   props: SelectListComponentProps<T, I>,
 ) => {
   const treeProps = useTreeSelectPropsContext<T, I>();
@@ -33,9 +33,11 @@ const TreeSelectListComponent = <T extends any = any, I extends TreeSelectItem<T
       props.onItemSelect(item, index);
       return true;
     } else {
-      isTreeItemExpanded(item, treeProps.controller)
-        ? treeProps.controller.collapse(item, index)
-        : treeProps.controller.expand(item, index);
+      if (isTreeItemExpanded(item, treeProps.controller)) {
+        treeProps.controller.collapse(item, index);
+      } else {
+        treeProps.controller.expand(item, index);
+      }
       return false;
     }
   };
@@ -44,9 +46,11 @@ const TreeSelectListComponent = <T extends any = any, I extends TreeSelectItem<T
       props.onItemUnselect(item, index);
       return true;
     } else {
-      isTreeItemExpanded(item, treeProps.controller)
-        ? treeProps.controller.collapse(item, index)
-        : treeProps.controller.expand(item, index);
+      if (isTreeItemExpanded(item, treeProps.controller)) {
+        treeProps.controller.collapse(item, index);
+      } else {
+        treeProps.controller.expand(item, index);
+      }
       return false;
     }
   };

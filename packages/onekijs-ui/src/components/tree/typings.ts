@@ -7,7 +7,13 @@ import {
   UseCollectionOptions,
 } from 'onekijs-framework';
 import React, { FC, ReactNode } from 'react';
-import { ListItemHandler, ListItemProps, ListNotFoundProps, StandardListProps, VirtualListProps } from '../list/typings';
+import {
+  ListItemHandler,
+  ListItemProps,
+  ListNotFoundProps,
+  StandardListProps,
+  VirtualListProps,
+} from '../list/typings';
 
 export type ArrayTreeProps<T = any, I extends TreeItem<T> = TreeItem<T>> = TreeConfig<T, I> & {
   adapter?: TreeItemAdapter<T>;
@@ -33,7 +39,7 @@ export type TreeConfig<T = any, I extends TreeItem<T> = TreeItem<T>> = {
   TreeItemContentComponent?: React.FC<TreeItemProps<T, I>>;
   TreeIconComponent?: React.FC<TreeItemProps<T, I>>;
   TreeTogglerComponent?: React.FC<TreeItemToggleProps<T, I>>;
-  NotFoundComponent?: FC<ListNotFoundProps>;
+  NotFoundComponent?: FC<ListNotFoundProps> | null;
   onActivate?: TreeItemHandler<T, I>;
   onDeactivate?: TreeItemHandler<T, I>;
   onHighlight?: TreeItemHandler<T, I>;

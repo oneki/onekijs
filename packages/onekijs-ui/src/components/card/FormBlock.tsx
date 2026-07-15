@@ -1,19 +1,25 @@
-import { FCC, FormContext, FormDisplayerProps, useFieldContainer, useFormDecorator, useFormMetadata } from 'onekijs-framework';
+import {
+  FCC,
+  FormContext,
+  FormDisplayerProps,
+  useFieldContainer,
+  useFormDecorator,
+  useFormMetadata,
+} from 'onekijs-framework';
 import React, { useEffect, useRef } from 'react';
-import { addClassname } from 'utils/style';
 import Alert from '../alert';
 import FormBlockDisplayer from './FormBlockDisplayer';
 import { FormBlockProps } from './typings';
-
+import { addClassname } from '../../utils/style';
 
 const FormBlock: FCC<FormBlockProps> = ({ name, help, children, visible, disabled, className }) => {
-    const decorator = useFormDecorator(name, {
+  const decorator = useFormDecorator(name, {
     Displayer: (displayerProps: FormDisplayerProps) => {
-      return <FormBlockDisplayer {...displayerProps} />
+      return <FormBlockDisplayer {...displayerProps} />;
     },
     visible,
     disabled,
-   });
+  });
   const metadata = useFormMetadata(decorator.name);
 
   const fieldContainer = useFieldContainer({
@@ -53,7 +59,6 @@ const FormBlock: FCC<FormBlockProps> = ({ name, help, children, visible, disable
     initializedRef.current = true;
   }, [metadata.visible, metadata.disabled, hide, show, disable, enable]);
 
-
   if (metadata.visible === false) {
     return null;
   }
@@ -61,8 +66,12 @@ const FormBlock: FCC<FormBlockProps> = ({ name, help, children, visible, disable
   return (
     <FormContext.Provider value={fieldContainer.context}>
       <div className={addClassname('o-form-block', className)}>
-          {help && <Alert kind="info" size="small" marginBottom="2xl">{help}</Alert>}
-          {children}
+        {help && (
+          <Alert kind="info" size="small" marginBottom="2xl">
+            {help}
+          </Alert>
+        )}
+        {children}
       </div>
     </FormContext.Provider>
   );
