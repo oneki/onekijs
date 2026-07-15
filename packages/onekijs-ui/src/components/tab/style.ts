@@ -71,8 +71,5 @@ export const tabsStyle: ComponentStyle<TabsProps> = ({ layout = 'horizontal', th
     .o-tabs-content {
       ${paddingTop('lg')}
     }
-
-
-
   `;
 };

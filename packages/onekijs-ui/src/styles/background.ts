@@ -1,6 +1,4 @@
-import {
-  Property
-} from 'csstype';
+import { Property } from 'csstype';
 import { colorFormatter } from '../utils/formatter';
 import { cssProperty } from '../utils/style';
 import { ColorPropertyTheme, TLength } from './typings';

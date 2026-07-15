@@ -55,8 +55,17 @@ const Tab: FCC<TabProps> = ({
   }
 
   return (
-    <CSSTransition in={true} nodeRef={tabRef} timeout={animate} appear={true} onEnter={onEnterWithRef} onEntering={onEntering}>
-      <div ref={tabRef} className={addClassname('o-tab', className)}>{children}</div>
+    <CSSTransition
+      in={true}
+      nodeRef={tabRef}
+      timeout={animate}
+      appear={true}
+      onEnter={onEnterWithRef}
+      onEntering={onEntering}
+    >
+      <div ref={tabRef} className={addClassname('o-tab', className)}>
+        {children}
+      </div>
     </CSSTransition>
   );
 };

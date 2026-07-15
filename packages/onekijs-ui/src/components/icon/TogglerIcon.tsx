@@ -30,7 +30,6 @@ const IconComponent: FC<TogglerIconProps> = ({
   model = 'arrow',
   closeArrowPosition = 'e',
   openArrowPosition = 's',
-
 }) => {
   const iconClassName = addClassname('o-toggler-icon-container', className);
   if (!loading) {
@@ -67,7 +66,14 @@ const IconComponent: FC<TogglerIconProps> = ({
 };
 
 const TogglerIcon = styled(IconComponent)`
-  ${({ width = '24px', height = '24px', color: cssColor = 'inherit', visible = true,  marginLeft: ml = '0', marginRight: mr = '0' }) => css`
+  ${({
+    width = '24px',
+    height = '24px',
+    color: cssColor = 'inherit',
+    visible = true,
+    marginLeft: ml = '0',
+    marginRight: mr = '0',
+  }) => css`
     width: ${width};
     height: ${height};
     ${marginLeft(ml)}

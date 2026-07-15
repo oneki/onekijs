@@ -3,11 +3,17 @@ import React from 'react';
 import FieldDisplayer from '../FieldDisplayer';
 import { titlelize } from '../../../utils/misc';
 
-const defaultFieldDisplayer = (props: AnonymousObject) : React.FC<FormDisplayerProps> => {
+const defaultFieldDisplayer = (props: AnonymousObject): React.FC<FormDisplayerProps> => {
   const Component = (displayerProps: FormDisplayerProps) => {
     const form = useForm();
     let value = form.getValue(displayerProps.name) ?? '';
-    const ValueDisplayer = props.ValueDisplayer ?? (() => <><>{`${value || ''}`}</></>);
+    const ValueDisplayer =
+      props.ValueDisplayer ??
+      (() => (
+        <>
+          <>{`${value || ''}`}</>
+        </>
+      ));
     return (
       <FieldDisplayer
         label={displayerProps.label ?? titlelize(displayerProps.name)}
@@ -20,6 +26,6 @@ const defaultFieldDisplayer = (props: AnonymousObject) : React.FC<FormDisplayerP
     );
   };
   return Component;
-}
+};
 
 export default defaultFieldDisplayer;

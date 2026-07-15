@@ -109,8 +109,7 @@ export default class CollectionService<
     this.initDb(this.state.dataSource);
 
     if (this.state.local === undefined) {
-      this.state.local =
-        this.state.dataSource === undefined || Array.isArray(this.state.dataSource);
+      this.state.local = this.state.dataSource === undefined || Array.isArray(this.state.dataSource);
     }
 
     if (this.state.local && this.state.dataSource !== undefined) {
@@ -409,9 +408,9 @@ export default class CollectionService<
     if (currentSortBy === undefined) {
       currentSortBy = [];
     } else if (typeof currentSortBy === 'string') {
-      currentSortBy = [{field: currentSortBy}];
+      currentSortBy = [{ field: currentSortBy }];
     } else if (!Array.isArray(currentSortBy)) {
-      currentSortBy = [currentSortBy]
+      currentSortBy = [currentSortBy];
     }
     return currentSortBy;
   }
@@ -456,7 +455,10 @@ export default class CollectionService<
    */
   @reducer
   initialLoad(): void {
-    if (!this.state.local && (this.state.status === LoadingStatus.NotReady || this.state.status === LoadingStatus.NotInitialized)) {
+    if (
+      !this.state.local &&
+      (this.state.status === LoadingStatus.NotReady || this.state.status === LoadingStatus.NotInitialized)
+    ) {
       this.state.status = LoadingStatus.NotInitialized;
       if (this.state.fetchOnce) {
         this.state.local = true;
@@ -1258,13 +1260,12 @@ export default class CollectionService<
         result = this.state.onQuerySuccess(result);
       }
       return result;
-    } catch(e) {
+    } catch (e) {
       if (this.state.onQueryError) {
         this.state.onQueryError(DefaultBasicError.of(e));
       }
       throw e;
     }
-
   }
 
   _getId(data: T): string | number | undefined {

@@ -38,7 +38,7 @@ export class WizardService<
   }
 
   getLastStep(): M | undefined {
-    return this.state.members.filter((m) => m.visible && !m.disabled).slice(-1)[0]
+    return this.state.members.filter((m) => m.visible && !m.disabled).slice(-1)[0];
   }
 
   getPreviousStep(): M | undefined {

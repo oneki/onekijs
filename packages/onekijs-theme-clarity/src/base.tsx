@@ -337,8 +337,6 @@ export const clarityTheme = (customTheme: Partial<Theme> = {}): Theme => {
 
   clarityTheme.accordion.activeBgColor = lighten(get<any>(clarityTheme.colors, 'primary', ''), 500);
 
-
-
   Object.keys(ColorKeys).forEach((kind) => {
     set<any>(clarityTheme, `buttons.${kind}.fontWeight`, 'medium');
     set<any>(clarityTheme, `buttons.${kind}.hoverBgColor`, lighten(get<any>(clarityTheme.colors, kind, ''), 100));

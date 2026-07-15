@@ -9,7 +9,7 @@ import WarningIcon from '../../icon/WarningIcon';
 import SuccessIcon from '../../icon/SuccessIcon';
 
 const getDefautltIconComponent = (kind: AlertProps['kind']) => {
-  switch(kind) {
+  switch (kind) {
     case 'debug':
       return DebugIcon;
     case 'error':
@@ -21,10 +21,10 @@ const getDefautltIconComponent = (kind: AlertProps['kind']) => {
     default:
       return InfoIcon;
   }
-}
+};
 
 const getIconSize = (size: AlertProps['size']) => {
-  switch(size) {
+  switch (size) {
     case 'small':
       return '24px';
     case 'large':
@@ -32,25 +32,20 @@ const getIconSize = (size: AlertProps['size']) => {
     default:
       return '36px';
   }
-}
+};
 
-const AlertComponent: FCC<AlertProps> = ({
-  kind = 'info',
-  icon = true,
-  IconComponent,
-  className,
-  children,
-  size,
-}) => {
+const AlertComponent: FCC<AlertProps> = ({ kind = 'info', icon = true, IconComponent, className, children, size }) => {
   if (IconComponent === undefined) {
     IconComponent = getDefautltIconComponent(kind);
   }
   return (
     <div className={addClassname(`o-alert o-alert-${kind}`, className)}>
-      {icon && <IconComponent width={getIconSize(size)} height={getIconSize(size)} marginRight='20px' marginLeft='20px' />}
+      {icon && (
+        <IconComponent width={getIconSize(size)} height={getIconSize(size)} marginRight="20px" marginLeft="20px" />
+      )}
       <div>{children}</div>
     </div>
-  )
-}
+  );
+};
 
 export default AlertComponent;

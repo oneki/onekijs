@@ -1,6 +1,4 @@
-import {
-  Property,
-} from 'csstype';
+import { Property } from 'csstype';
 import { cssProperty } from '../utils/style';
 import { Formatter, SizePropertyTheme, Theme, TLength } from './typings';
 import { pxFormatter } from '../utils/formatter';

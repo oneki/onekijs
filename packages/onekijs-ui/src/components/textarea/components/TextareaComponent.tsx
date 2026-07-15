@@ -34,11 +34,11 @@ const TextareaComponent: FC<TextareaProps> = (props) => {
   };
 
   const ref = useRef<HTMLTextAreaElement>(null);
-  const selectorRef = useRef<number | null | undefined>(undefined)
+  const selectorRef = useRef<number | null | undefined>(undefined);
   const onChange: React.InputHTMLAttributes<HTMLTextAreaElement>['onChange'] = (e) => {
     selectorRef.current = e.target.selectionStart;
     forwardChange && forwardChange(e);
-  }
+  };
 
   useEffect(() => {
     if (selectorRef.current !== undefined && selectorRef.current !== null && ref.current) {
@@ -49,7 +49,15 @@ const TextareaComponent: FC<TextareaProps> = (props) => {
 
   return (
     <div className={classNames}>
-      <textarea className="o-textarea-field" {...textareaProps} ref={ref} onFocus={onFocus} onBlur={onBlur} onChange={value === undefined ? undefined : onChange} value={value} />
+      <textarea
+        className="o-textarea-field"
+        {...textareaProps}
+        ref={ref}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        onChange={value === undefined ? undefined : onChange}
+        value={value}
+      />
     </div>
   );
 };

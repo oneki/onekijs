@@ -28,13 +28,18 @@ const getNextValue = (value: string | number, max: number, type: 'next' | 'previ
 
 const isMin = (value: string | number, _type: TimeSelectorPartComponentProps['type']): boolean => {
   return parseInt(`${value}`) === 0;
-}
+};
 
 const isMax = (value: string | number, type: TimeSelectorPartComponentProps['type']): boolean => {
   return type === 'hour' ? parseInt(`${value}`) === 23 : parseInt(`${value}`) === 59;
-}
+};
 
-const TimeSelectorPartComponent: React.FC<TimeSelectorPartComponentProps> = ({ onChange, type, value, size = 'large' }) => {
+const TimeSelectorPartComponent: React.FC<TimeSelectorPartComponentProps> = ({
+  onChange,
+  type,
+  value,
+  size = 'large',
+}) => {
   const onValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
     if (type === 'minute' && (value === '' || isValidMinuteOrSecond(value))) {

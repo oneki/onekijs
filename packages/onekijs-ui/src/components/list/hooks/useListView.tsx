@@ -122,8 +122,6 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
               }
             }
 
-
-
             // check forward
             const end =
               state.total !== undefined

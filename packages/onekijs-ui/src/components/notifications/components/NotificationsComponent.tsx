@@ -100,7 +100,9 @@ const NotificationsComponent: React.FC<NotificationsProps> = ({
     <div className={classNames}>
       {notifications.length > 1 && (
         <div className="o-notification-close-all">
-          <span className="o-notification-close-all-content" onClick={() => notificationService.clearAll()}>Close all</span>
+          <span className="o-notification-close-all-content" onClick={() => notificationService.clearAll()}>
+            Close all
+          </span>
         </div>
       )}
       <TransitionGroup component={null}>

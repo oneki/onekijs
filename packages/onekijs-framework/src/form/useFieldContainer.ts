@@ -196,14 +196,14 @@ const useFieldContainer = ({
         fieldMetadataRef.current[field] = fieldMetadataRef.current[field] || {};
         fieldMetadataRef.current[field]['visible'] = visible;
       }
-      form.disableValidator(field, 'required')
+      form.disableValidator(field, 'required');
     });
   }, [form]);
 
   const show = useCallback(() => {
     fieldsRef.current.forEach((field) => {
       if (get(fieldMetadataRef.current, `${field}.visible`) !== false) {
-        form.enableValidator(field, 'required')
+        form.enableValidator(field, 'required');
       }
       del(fieldMetadataRef.current, `${field}.visible`);
     });
@@ -223,7 +223,7 @@ const useFieldContainer = ({
   const enable = useCallback(() => {
     fieldsRef.current.forEach((field) => {
       if (get(fieldMetadataRef.current, `${field}.disabled`) !== true) {
-        form.enableValidator(field, 'required')
+        form.enableValidator(field, 'required');
       }
       del(fieldMetadataRef.current, `${field}.disabled`);
     });

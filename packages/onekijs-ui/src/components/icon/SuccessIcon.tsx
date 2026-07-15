@@ -25,7 +25,13 @@ const SuccessIconComponent: FC<IconProps> = (props) => {
 };
 
 export default styled(SuccessIconComponent)`
-  ${({ width = '16px', height = '16px', color: cssColor = 'success', marginLeft: ml = '0', marginRight: mr = '0' }) => css`
+  ${({
+    width = '16px',
+    height = '16px',
+    color: cssColor = 'success',
+    marginLeft: ml = '0',
+    marginRight: mr = '0',
+  }) => css`
     width: ${width};
     height: ${height};
     ${display('flex')};

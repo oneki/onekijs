@@ -6,9 +6,9 @@ import LoadingItem from '../../list/components/LoadingItem';
 import { TableBodyRowProps } from '../typings';
 import { useTableConfig } from '../hooks/useTableConfig';
 
-const TableLoadingRowComponent: React.FC<TableBodyRowProps>= (props) => {
+const TableLoadingRowComponent: React.FC<TableBodyRowProps> = (props) => {
   const { itemHeight } = useTableConfig();
-  const minHeight = typeof itemHeight === 'function' ? itemHeight(props.index) : itemHeight
+  const minHeight = typeof itemHeight === 'function' ? itemHeight(props.index) : itemHeight;
   return <LoadingItem {...props} minHeight={minHeight} />;
 };
 

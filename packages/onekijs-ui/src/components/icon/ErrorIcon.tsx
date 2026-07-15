@@ -22,7 +22,13 @@ const ErrorIconComponent: FC<IconProps> = (props) => {
 };
 
 export default styled(ErrorIconComponent)`
-  ${({ width = '16px', height = '16px', color: cssColor = 'danger', marginLeft: ml = '0', marginRight: mr = '0' }) => css`
+  ${({
+    width = '16px',
+    height = '16px',
+    color: cssColor = 'danger',
+    marginLeft: ml = '0',
+    marginRight: mr = '0',
+  }) => css`
     width: ${width};
     height: ${height};
     ${marginLeft(ml)}

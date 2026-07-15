@@ -18,7 +18,8 @@
     "lerna-version": "lerna version --conventional-commits",
     "lerna-publish": "lerna publish --conventional-commits",
     "lerna-release": "lerna publish --conventional-commits --create-release github",
-    "lint": "lerna exec --parallel --scope onekijs -- eslint 'src/**/*.{js,ts,tsx}' --fix"
+    "lint": "lerna exec --parallel --scope onekijs -- eslint 'src/**/*.{js,ts,tsx}' --fix",
+    "format:packages": "prettier \"packages/**/*.{ts,tsx}\" --write"
   },
   "workspaces": [
     "./packages/*",

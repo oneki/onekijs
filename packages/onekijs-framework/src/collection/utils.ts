@@ -198,12 +198,7 @@ export const applySortBy = <T = any, I extends Item<T> = Item<T>>(
                   ? defaultComparator
                   : comparators[field.comparator] || defaultComparator;
               const reverse = s.dir === 'desc' ? -1 : 1;
-              result =
-                reverse *
-                comparator(
-                  get<any>(a, `data.${fieldName}`),
-                  get<any>(b, `data.${fieldName}`),
-                );
+              result = reverse * comparator(get<any>(a, `data.${fieldName}`), get<any>(b, `data.${fieldName}`));
               if (result !== 0) {
                 break;
               }
@@ -552,7 +547,7 @@ const removeSystemParams = (params: AnonymousObject | undefined | null): Anonymo
   delete p.noCache;
   delete p.noLoading;
   return p;
-}
+};
 
 const handleQueryEntry = (key: string, value: string, result: Query): void => {
   value = decodeURIComponent(value);
@@ -853,40 +848,50 @@ export const toQuerySortBy = (sortBy: QuerySortBy | QuerySortBy[] | string | und
     return [];
   }
   if (typeof sortBy === 'string') {
-    return [{
-      id: undefined,
-      dir: 'asc',
-      comparator: undefined,
-      field: sortBy,
-    }]
+    return [
+      {
+        id: undefined,
+        dir: 'asc',
+        comparator: undefined,
+        field: sortBy,
+      },
+    ];
   }
   if (isQuerySortByMultiFields(sortBy)) {
     if (sortBy.fields.length === 1) {
-      return [{
-        id: sortBy.id,
-        dir: sortBy.dir || 'asc',
-        comparator: (typeof sortBy.fields[0] === 'string') ? undefined: sortBy.fields[0].comparator,
-        field: (typeof sortBy.fields[0] === 'string') ? sortBy.fields[0] : sortBy.fields[0].name,
-      }]
+      return [
+        {
+          id: sortBy.id,
+          dir: sortBy.dir || 'asc',
+          comparator: typeof sortBy.fields[0] === 'string' ? undefined : sortBy.fields[0].comparator,
+          field: typeof sortBy.fields[0] === 'string' ? sortBy.fields[0] : sortBy.fields[0].name,
+        },
+      ];
     } else {
-      return [{
-        id: sortBy.id || generateUniqueId(),
-        fields: sortBy.fields.map((f) => typeof f === 'string' ? ({name: f, comparator: undefined}) : f),
-        dir: sortBy.dir || 'asc',
-      }]
+      return [
+        {
+          id: sortBy.id || generateUniqueId(),
+          fields: sortBy.fields.map((f) => (typeof f === 'string' ? { name: f, comparator: undefined } : f)),
+          dir: sortBy.dir || 'asc',
+        },
+      ];
     }
   } else {
-    return [{
-      id: sortBy.id,
-      dir: sortBy.dir || 'asc',
-      comparator: sortBy.comparator,
-      field: sortBy.field
-    }]
+    return [
+      {
+        id: sortBy.id,
+        dir: sortBy.dir || 'asc',
+        comparator: sortBy.comparator,
+        field: sortBy.field,
+      },
+    ];
   }
-}
+};
 
-
-export const formatSortBy = (sortBy: string | QuerySortBy | QuerySortBy[] | undefined, currentSortBy?: QuerySortBy[]): QuerySortBy[] => {
+export const formatSortBy = (
+  sortBy: string | QuerySortBy | QuerySortBy[] | undefined,
+  currentSortBy?: QuerySortBy[],
+): QuerySortBy[] => {
   if (sortBy === undefined) {
     return currentSortBy || [];
   }
@@ -894,7 +899,7 @@ export const formatSortBy = (sortBy: string | QuerySortBy | QuerySortBy[] | unde
   if (currentSortBy === undefined) {
     return sortBy;
   } else if (isSameSortBy(sortBy, currentSortBy)) {
-    return currentSortBy;  // keep the reference
+    return currentSortBy; // keep the reference
   } else {
     return sortBy;
   }

@@ -62,7 +62,7 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
       const columns = useTableColumns();
       const className =
         typeof rowClassName === 'function' ? rowClassName(props.item, props.index, columns) : rowClassName;
-        return (
+      return (
         <RowComponent
           {...props}
           columns={columns}

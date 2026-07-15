@@ -27,10 +27,14 @@ const TableBodyCellComponent: FC<Omit<TableBodyCellProps, 'data'>> = React.memo(
 
   return (
     <div ref={ref} className={addClassname('o-table-body-cell', className)} style={getCellWidth(column, fit, grow)}>
-      {props.item && ErrorBoundaryComponent && <ErrorBoundaryComponent {...props} data={props.item?.data}><Component {...props} data={props.item.data} /></ErrorBoundaryComponent>}
+      {props.item && ErrorBoundaryComponent && (
+        <ErrorBoundaryComponent {...props} data={props.item?.data}>
+          <Component {...props} data={props.item.data} />
+        </ErrorBoundaryComponent>
+      )}
       {props.item && !ErrorBoundaryComponent && <Component {...props} data={props.item.data} />}
     </div>
-  )
+  );
 });
 
 TableBodyCellComponent.displayName = 'TableCell';

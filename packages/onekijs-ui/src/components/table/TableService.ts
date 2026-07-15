@@ -115,11 +115,11 @@ class TableService<T = any, I extends TableItem<T> = TableItem<T>, S extends Tab
 
     const serializableColumns = (this.state.columns || []).filter((c) => c.serializer !== undefined);
 
-    switch(format) {
+    switch (format) {
       case 'csv':
-        let result = 'sep=,'
-        const header = serializableColumns.map((c) => escapeCsvValue(get(c, 'title', get(c, 'id')))).join(',')
-        result = `${result}\n${header}`
+        let result = 'sep=,';
+        const header = serializableColumns.map((c) => escapeCsvValue(get(c, 'title', get(c, 'id')))).join(',');
+        result = `${result}\n${header}`;
         const csvRows = data.map((row) => {
           const columns = serializableColumns
             .map((c) => c.serializer!(row, c, format))

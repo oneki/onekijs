@@ -142,9 +142,7 @@ export default class NextRouter extends BaseRouter {
       type === 'push' ? window.location.assign(nextUrl) : window.location.replace(nextUrl);
     } else if (this.nativeRouter) {
       const nextUrl = toRouteUrl(nextLocation);
-      type === 'push'
-        ? this.nativeRouter.push(nextUrl)
-        : this.nativeRouter.replace(nextUrl);
+      type === 'push' ? this.nativeRouter.push(nextUrl) : this.nativeRouter.replace(nextUrl);
     }
   }
 }

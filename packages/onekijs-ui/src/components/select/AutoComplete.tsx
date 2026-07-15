@@ -26,7 +26,6 @@ const AutoComplete = <
       validateValue={false}
       searchable={true}
       clickable={false}
-
     />
   );
 };

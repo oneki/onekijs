@@ -10,7 +10,7 @@ export type InputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size
   PrefixComponent?: React.FC<InputProps>;
   /*
    * When the component is focus, the text is auto-selected
-  */
+   */
   selectOnFocus?: boolean;
   /**
    * A component rendered in after the input component (actually inside the border of the input component)

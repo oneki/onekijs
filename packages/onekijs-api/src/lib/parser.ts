@@ -103,7 +103,7 @@ export class ElementParser {
   protected buildLink(element: ReferenceType, context: Context) {
     if (context.doNotBuildLink === true) return element.name;
     const id = element.target;
-    if (typeof(id) == 'number') {
+    if (typeof id == 'number') {
       if (!id || !this.indexer.elements[id]) return element.name;
       const parsedElement = this.getIndexedParsedElement(id);
       if (!parsedElement) return element.name;
@@ -111,7 +111,6 @@ export class ElementParser {
     } else {
       return element.name;
     }
-
   }
 
   protected handleCallSignature(element: SignatureReflection, context: Context) {
@@ -377,7 +376,7 @@ export class ElementParser {
 
   protected handleType(type: SomeType, context: Context) {
     if (type.type === 'reference') {
-      if (type.target && typeof(type.target) == 'number') {
+      if (type.target && typeof type.target == 'number') {
         const parsedElement = this.getIndexedParsedElement(type.target);
         if (parsedElement) {
           if (context.specialType === 'element' || context.specialType === 'component') {

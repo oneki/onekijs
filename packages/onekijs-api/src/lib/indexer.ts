@@ -26,7 +26,7 @@ export class Indexer {
     } else if (element.children) {
       element.children.forEach((child) => {
         this.populateTopApis(child, apis);
-      })
+      });
     }
   }
 
@@ -35,7 +35,7 @@ export class Indexer {
     this.populateTopApis(mergedApis, apis);
     apis.forEach((api) => {
       this.buildApiIndexes(api);
-    })
+    });
   }
 
   buildApiIndexes(api: DeclarationReflection) {

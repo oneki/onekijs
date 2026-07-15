@@ -45,7 +45,7 @@ const DashboardContainerComponent: FCC<DashboardContainerProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     return () => {
       props.onDestroy();
-    }
+    };
   }, []);
 
   return (

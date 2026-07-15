@@ -944,7 +944,7 @@ export default class FormService<T extends object = any> extends DefaultService<
       }
     };
 
-    const move = (sourceIndex: string, targetIndex: string, sub=false) => {
+    const move = (sourceIndex: string, targetIndex: string, sub = false) => {
       const sourceField: Field<T> | undefined = this.fields[sourceIndex as NestedKeyOf<T>];
       const targetField = this.fields[targetIndex as NestedKeyOf<T>] as Field<T>;
 
@@ -959,7 +959,6 @@ export default class FormService<T extends object = any> extends DefaultService<
         }
       }
 
-
       if (sourceField) {
         this.state.validations[targetIndex] = this.state.validations[sourceIndex];
         this.state.metadata[targetIndex] = this.state.metadata[sourceIndex];
@@ -971,17 +970,17 @@ export default class FormService<T extends object = any> extends DefaultService<
 
         if (!sub) {
           for (const sourceSubFieldIndex of sourceSubFieldIndexes) {
-            const subField = this.fields[sourceSubFieldIndex as NestedKeyOf<T>]
+            const subField = this.fields[sourceSubFieldIndex as NestedKeyOf<T>];
             if (subField && subField.containers) {
               for (const i in subField.containers) {
                 if (subField.containers[i] === sourceIndex) {
                   subField.containers[i] = targetIndex;
-                }else if (subField.containers[i].startsWith(sourceIndex)) {
+                } else if (subField.containers[i].startsWith(sourceIndex)) {
                   subField.containers[i] = subField.containers[i].replace(sourceIndex, targetIndex);
                 }
               }
             }
-            move(sourceSubFieldIndex, sourceSubFieldIndex.replace(sourceIndex, targetIndex), true)
+            move(sourceSubFieldIndex, sourceSubFieldIndex.replace(sourceIndex, targetIndex), true);
           }
         }
       } else {

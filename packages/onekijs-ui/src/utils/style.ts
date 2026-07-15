@@ -94,8 +94,8 @@ export const toCss = <T>(
   variants: AnonymousObject,
 ): ReturnType<typeof css> => {
   let result = css`
-  ${property === null ? '' : property + ': '}${(props) => formatValue(value, props.theme, formatter)};
-`;
+    ${property === null ? '' : property + ': '}${(props) => formatValue(value, props.theme, formatter)};
+  `;
 
   const responsives: AnonymousObject = {
     all: {},
@@ -125,23 +125,23 @@ export const toCss = <T>(
       pseudo = toKebabCase(pseudo);
       if (isPseudoClass(pseudo)) {
         result = result.concat(css`
-        &:${pseudo} {
-          ${property === null ? '' : property + ': '}${(props) =>
-          formatValue(responsives[media][pseudo], props.theme, formatter)};
-        }
-      `);
+          &: ${pseudo} {
+            ${property === null ? '' : property + ': '}${(props) =>
+              formatValue(responsives[media][pseudo], props.theme, formatter)};
+          }
+        `);
       } else if (isPseudoElement(pseudo)) {
         result = result.concat(css`
-        &::${pseudo} {
-          ${property === null ? '' : property + ': '}${(props) =>
-          formatValue(responsives[media][pseudo], props.theme, formatter)};
-        }
-      `);
+          &::${pseudo} {
+            ${property === null ? '' : property + ': '}${(props) =>
+              formatValue(responsives[media][pseudo], props.theme, formatter)};
+          }
+        `);
       } else if (pseudo === 'all') {
         result = result.concat(css`
-      ${property === null ? '' : property + ': '}${(props) =>
-          formatValue(responsives[media][pseudo], props.theme, formatter)};;
-      `);
+          ${property === null ? '' : property + ': '}${(props) =>
+            formatValue(responsives[media][pseudo], props.theme, formatter)};
+        `);
       }
     });
     if (media !== 'all' && Object.keys(responsives[media]).length > 0) {

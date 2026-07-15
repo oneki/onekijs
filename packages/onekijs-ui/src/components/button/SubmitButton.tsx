@@ -11,7 +11,14 @@ const TooltipContent: React.FC<{ code: ValidationCode; fields: AnonymousObject<s
         <div>Some fields are {code === ValidationCode.Error ? 'in error' : 'loading'}</div>
         {Object.keys(fields).map((fieldName, index) => (
           <div key={`error-${index}`}>
-            {fieldName !== FORM_GLOBAL_VALIDATION_KEY ? <><b>fieldName</b>:</>  : ''}{fields[fieldName]}
+            {fieldName !== FORM_GLOBAL_VALIDATION_KEY ? (
+              <>
+                <b>fieldName</b>:
+              </>
+            ) : (
+              ''
+            )}
+            {fields[fieldName]}
           </div>
         ))}
       </>

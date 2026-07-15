@@ -40,11 +40,11 @@ const InputComponent: FC<InputProps> = (props) => {
   };
 
   const ref = useRef<HTMLInputElement>(null);
-  const selectorRef = useRef<number | null | undefined>(undefined)
+  const selectorRef = useRef<number | null | undefined>(undefined);
   const onChange: React.InputHTMLAttributes<HTMLInputElement>['onChange'] = (e) => {
     selectorRef.current = e.target.selectionStart;
     forwardChange && forwardChange(e);
-  }
+  };
 
   useEffect(() => {
     if (selectorRef.current !== undefined && selectorRef.current !== null && ref.current) {
@@ -56,7 +56,15 @@ const InputComponent: FC<InputProps> = (props) => {
   return (
     <div className={classNames}>
       {PrefixComponent && <PrefixComponent {...props} className="o-input-prefix" />}
-      <input className="o-input-field" {...inputProps} ref={ref} onFocus={onFocus} onBlur={onBlur} onChange={value === undefined ? undefined : onChange} value={value} />
+      <input
+        className="o-input-field"
+        {...inputProps}
+        ref={ref}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        onChange={value === undefined ? undefined : onChange}
+        value={value}
+      />
       {SuffixComponent && <SuffixComponent {...props} className="o-input-suffix" />}
     </div>
   );

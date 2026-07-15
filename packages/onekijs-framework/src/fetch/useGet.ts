@@ -16,22 +16,25 @@ const useGet = <T = any>(url?: string | null, options: UseGetOptions<T> = {}): [
     result: optionsRef.current.defaultValue,
   } as FetchState);
 
-  const refresh = useCallback((refreshOptions?: UseGetOptions<T>) => {
-    if (url) {
-      if (pollingTaskRef !== null) {
-        pollingTaskRef.current?.cancel();
-        pollingTaskRef.current = null;
+  const refresh = useCallback(
+    (refreshOptions?: UseGetOptions<T>) => {
+      if (url) {
+        if (pollingTaskRef !== null) {
+          pollingTaskRef.current?.cancel();
+          pollingTaskRef.current = null;
+        }
+        const pollingMs = refreshOptions?.pollingMs || optionsRef.current.pollingMs;
+        if (pollingMs) {
+          service.poll(url, pollingMs, fetchOptions).then((task: Task) => {
+            pollingTaskRef.current = task;
+          });
+        } else {
+          service.get(url, fetchOptions as FetchOptions);
+        }
       }
-      const pollingMs = refreshOptions?.pollingMs || optionsRef.current.pollingMs;
-      if (pollingMs) {
-        service.poll(url, pollingMs, fetchOptions).then((task: Task) => {
-          pollingTaskRef.current = task;
-        });
-      } else {
-        service.get(url, fetchOptions as FetchOptions);
-      }
-    }
-  }, [url, service, fetchOptions]);
+    },
+    [url, service, fetchOptions],
+  );
 
   useEffect(() => {
     refresh();

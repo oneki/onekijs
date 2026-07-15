@@ -69,14 +69,13 @@ const TooltipComponent: FCC<TooltipProps> = (props) => {
     </div>
   );
 
-
   if (attachToBody) {
     return (
       <div ref={refs.setReference} {...getReferenceProps()}>
         {children}
         {show && open && content && ReactDOM.createPortal(<div className={classNames}>{element}</div>, document.body)}
       </div>
-    )
+    );
   } else {
     return (
       <div className={classNames} ref={refs.setReference} {...getReferenceProps()}>

@@ -1,11 +1,6 @@
 import { AppSettings, I18n, useI18n, useRouter, useSettings } from 'onekijs-framework';
 import { FC, useEffect } from 'react';
-import {
-  DataRouter,
-  Location as ReactRouterLocation,
-  RouterProvider,
-  RouterProviderProps,
-} from 'react-router';
+import { DataRouter, Location as ReactRouterLocation, RouterProvider, RouterProviderProps } from 'react-router';
 import { ReactRouter } from './ReactRouter';
 
 export interface DataRouterProviderProps extends Omit<RouterProviderProps, 'router'> {

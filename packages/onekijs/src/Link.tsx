@@ -2,7 +2,10 @@ import { LinkProps, toI18nLocation, toRelativeUrl, toUrl, useI18n, useLocation, 
 import React, { ForwardRefExoticComponent, PropsWithoutRef, ReactNode, RefAttributes } from 'react';
 import { Link as ReactRouterLink, NavLink } from 'react-router';
 
-const Link: ForwardRefExoticComponent<PropsWithoutRef<LinkProps> & RefAttributes<HTMLAnchorElement>> = React.forwardRef<HTMLAnchorElement, LinkProps>(
+const Link: ForwardRefExoticComponent<PropsWithoutRef<LinkProps> & RefAttributes<HTMLAnchorElement>> = React.forwardRef<
+  HTMLAnchorElement,
+  LinkProps
+>(
   (
     {
       href,

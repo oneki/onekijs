@@ -41,9 +41,7 @@ interface ScrollOptions<T> {
   initialRect?: Rect;
 }
 
-declare function useDefaultScroll<T>(
-  options: ScrollOptions<T>,
-): {
+declare function useDefaultScroll<T>(options: ScrollOptions<T>): {
   outerSize: number;
   scrollOffset: number;
   scrollToFn: (offset: number, reason: ScrollReason) => void;
@@ -63,9 +61,7 @@ export interface Options<T> extends ScrollOptions<T> {
   useScroll?: typeof useDefaultScroll;
 }
 
-declare function useVirtual<T>(
-  options: Options<T>,
-): {
+declare function useVirtual<T>(options: Options<T>): {
   virtualItems: VirtualItem[];
   totalSize: number;
   scrollToOffset: (index: number, options?: ScrollToOffsetOptions) => void;

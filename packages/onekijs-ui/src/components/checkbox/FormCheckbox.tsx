@@ -14,42 +14,42 @@ const FormCheckboxValueDisplayer: React.FC<FormFieldValueDisplayerProps> = ({ va
     return (
       <div style={{ display: 'flex', alignItems: 'center', marginTop: value ? '2px' : '4px' }}>
         <SuccessIcon />
-        <span style={{marginLeft: '5px'}}>Yes</span>
+        <span style={{ marginLeft: '5px' }}>Yes</span>
       </div>
-    )
+    );
   }
   return (
     <div style={{ display: 'flex', alignItems: 'center', marginTop: value ? '2px' : '4px' }}>
-      <RemoveIcon color="red" width="14px" height="14px" /><span style={{marginLeft: '5px'}}>No</span>
+      <RemoveIcon color="red" width="14px" height="14px" />
+      <span style={{ marginLeft: '5px' }}>No</span>
     </div>
   );
 };
 
 const FormCheckbox: FC<FormCheckboxProps> = React.memo((props) => {
   const [fieldLayoutProps, fieldComponentProps] = useFieldLayout<CheckboxProps>(
-    Object.assign(
-      {},
-      props,
-      {
-        isUndefined: (value: any) => value !== true && value !== false,
-        defaultValue: props.defaultValue !== true ? false : true,
-        Displayer: props.Displayer === undefined ? ((displayerProps: FormDisplayerProps) => {
-          const form = useForm();
-          let value = form.getValue(displayerProps.name) ?? false;
-          const ValueDisplayer = props.ValueDisplayer ?? FormCheckboxValueDisplayer;
-          return (
-            <FieldDisplayer
-              label={displayerProps.label ?? titlelize(displayerProps.name)}
-              help={props.help}
-              first={displayerProps.first}
-              last={displayerProps.last}
-              value={<ValueDisplayer value={value} />}
-              format={displayerProps.format}
-            />
-          );
-        }): props.Displayer,
-      },
-    ),
+    Object.assign({}, props, {
+      isUndefined: (value: any) => value !== true && value !== false,
+      defaultValue: props.defaultValue !== true ? false : true,
+      Displayer:
+        props.Displayer === undefined
+          ? (displayerProps: FormDisplayerProps) => {
+              const form = useForm();
+              let value = form.getValue(displayerProps.name) ?? false;
+              const ValueDisplayer = props.ValueDisplayer ?? FormCheckboxValueDisplayer;
+              return (
+                <FieldDisplayer
+                  label={displayerProps.label ?? titlelize(displayerProps.name)}
+                  help={props.help}
+                  first={displayerProps.first}
+                  last={displayerProps.last}
+                  value={<ValueDisplayer value={value} />}
+                  format={displayerProps.format}
+                />
+              );
+            }
+          : props.Displayer,
+    }),
   );
   const Component = props.FieldComponent || Checkbox;
 

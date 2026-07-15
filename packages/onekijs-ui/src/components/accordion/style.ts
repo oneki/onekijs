@@ -49,7 +49,6 @@ export const accordionStyle: ComponentStyle<AccordionProps> = ({ border = false,
         ${color(t.activeFontColor, { hover: t.activeFontColor })}
       }
       .o-accordion-content {
-
       }
     }
 

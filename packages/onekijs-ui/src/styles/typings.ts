@@ -1,14 +1,13 @@
 import { Globals, Property } from 'csstype';
 import { AnonymousObject } from 'onekijs-framework';
-import {
-  DefaultTheme,
-  createGlobalStyle,
-  css,
-} from 'styled-components';
+import { DefaultTheme, createGlobalStyle, css } from 'styled-components';
 
 export type TshirtSize = 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge';
 
-export type CssProperty<T> = (value: T, variants?: AnonymousObject) => ReturnType<typeof css> | ReturnType<typeof css>[];
+export type CssProperty<T> = (
+  value: T,
+  variants?: AnonymousObject,
+) => ReturnType<typeof css> | ReturnType<typeof css>[];
 export type Formatter<T> = (value: T, theme: DefaultTheme) => string;
 export type Media = 'all' | 'sm' | 'md' | 'lg' | 'xl';
 export enum ColorKeys {
@@ -661,8 +660,8 @@ export type RadiusPropertyTheme = keyof typeof RadiusKeys;
 export type ShadowPropertyTheme = keyof typeof ShadowKeys;
 
 export type PropsWithTheme<P, T extends Theme = Theme> = P & {
-  theme: T
-}
+  theme: T;
+};
 
 export type ComponentStyle<P extends object, T extends Theme = Theme> = (
   propsWithTheme: PropsWithTheme<P, T>,

@@ -10,7 +10,7 @@ const isReactNode = (value: ReactNode | Partial<PropertyProps>): value is ReactN
     return false;
   }
   return true;
-}
+};
 
 const PropertiesComponent: FC<PropertiesProps> = ({
   className,
@@ -47,7 +47,15 @@ const PropertiesComponent: FC<PropertiesProps> = ({
           const value = isReactNode(property) ? property : property.value;
           const help = isReactNode(property) ? undefined : property.help;
           const name = isReactNode(property) ? key : property.name ?? key;
-          return <PropertyComponent key={key} name={name} value={value} help={help} ErrorBoundaryComponent={ErrorBoundaryComponent} />
+          return (
+            <PropertyComponent
+              key={key}
+              name={name}
+              value={value}
+              help={help}
+              ErrorBoundaryComponent={ErrorBoundaryComponent}
+            />
+          );
         })}
       </div>
     </DefaultPropertiesContext.Provider>

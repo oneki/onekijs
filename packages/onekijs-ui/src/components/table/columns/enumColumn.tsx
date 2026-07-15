@@ -6,7 +6,6 @@ import DefaultCellDisplayer from '../displayers/DefaultCellDisplayer';
 import { get } from 'onekijs-framework';
 import defaultCellSerializer from '../seralizers/defaultCellSerializer';
 
-
 const enumColumn = <T extends any = any, I extends TableItem<T> = TableItem<T>>(
   id: string,
   options: EnumColumnOptions<T, I>,
@@ -20,12 +19,12 @@ const enumColumn = <T extends any = any, I extends TableItem<T> = TableItem<T>>(
         }
       }
       return false;
-    })
+    });
     if (entry) {
       return entry[1];
     }
     return defaultCellSerializer(data, column, format);
-  }
+  };
   return Object.assign(
     {
       CellComponent: DefaultCellComponent,

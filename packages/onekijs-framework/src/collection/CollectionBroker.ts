@@ -464,7 +464,7 @@ export default class DefaultCollectionBroker<
           this.subscriberParams[subscriberId] = this.params || {};
         }
         (this.subscriberParams[subscriberId] as any) = Object.assign({}, this.subscriberParams[subscriberId], {
-          [key]: value
+          [key]: value,
         });
       });
       if (this.params === undefined) {
@@ -472,12 +472,11 @@ export default class DefaultCollectionBroker<
       }
       this.params[key] = value;
     } else {
-
       if (this.subscriberParams[subscriberId] === undefined) {
         this.subscriberParams[subscriberId] = this.params || {};
       }
       (this.subscriberParams[subscriberId] as any) = Object.assign({}, this.subscriberParams[subscriberId], {
-        [key]: value
+        [key]: value,
       });
     }
     this._getSubscribers(subscriberId).forEach((s) => s.setParam(key, value));

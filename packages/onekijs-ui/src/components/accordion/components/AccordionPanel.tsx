@@ -22,7 +22,6 @@ const AccordionPanel: FCC<AccordionPanelProps<any>> = ({
   const router = useTryRouter();
   const contentRef = React.useRef<HTMLDivElement | null>(null);
 
-
   const toggle = () => {
     if (!panel) return;
     if (link) {

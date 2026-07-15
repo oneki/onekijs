@@ -31,7 +31,7 @@ const ContextMenuComponent: FCC<ContextMenuProps> = ({ refElement, className, ch
         left: x,
         x: x,
         y: y,
-        toJSON: () => {}
+        toJSON: () => {},
       }),
     };
 
@@ -48,7 +48,7 @@ const ContextMenuComponent: FCC<ContextMenuProps> = ({ refElement, className, ch
 
     if (refElement instanceof HTMLElement) {
       refElement.addEventListener('contextmenu', handleContextMenu);
-    } else if(refElement.current !== null) {
+    } else if (refElement.current !== null) {
       refElement.current.addEventListener('contextmenu', handleContextMenu);
     }
 
@@ -57,7 +57,7 @@ const ContextMenuComponent: FCC<ContextMenuProps> = ({ refElement, className, ch
       window.removeEventListener('scroll', closeMenu);
       if (refElement instanceof HTMLElement) {
         refElement.removeEventListener('contextmenu', handleContextMenu);
-      } else if(refElement.current !== null) {
+      } else if (refElement.current !== null) {
         refElement.current.removeEventListener('contextmenu', handleContextMenu);
       }
     };
@@ -65,16 +65,16 @@ const ContextMenuComponent: FCC<ContextMenuProps> = ({ refElement, className, ch
 
   if (visible) {
     return (
-        <div
-          ref={refs.setFloating}
-          className={addClassname('o-context-menu', className)}
-          style={{
-            ...floatingStyles,
-          }}
-        >
-          {children}
-        </div>
-      )
+      <div
+        ref={refs.setFloating}
+        className={addClassname('o-context-menu', className)}
+        style={{
+          ...floatingStyles,
+        }}
+      >
+        {children}
+      </div>
+    );
   }
   return null;
 };

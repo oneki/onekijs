@@ -19,13 +19,7 @@ const Link: FC<LinkProps> = ({
   }
 
   return (
-    <NextLink
-      href={href}
-      replace={replace}
-      scroll={scroll}
-      prefetch={prefetch}
-      {...anchorProps}
-    >
+    <NextLink href={href} replace={replace} scroll={scroll} prefetch={prefetch} {...anchorProps}>
       {children}
     </NextLink>
   );

@@ -36,7 +36,7 @@ export class DashboardService extends DefaultService<DashboardState> {
     ['none', 'none', 'none'],
   ];
 
-  public refs: AnonymousObject<MutableRefObject<HTMLDivElement | null> | null | undefined> = {}
+  public refs: AnonymousObject<MutableRefObject<HTMLDivElement | null> | null | undefined> = {};
 
   @reducer
   clearContent(area: DashboardHorizontalArea | DashboardVerticalArea): void {
@@ -88,7 +88,9 @@ export class DashboardService extends DefaultService<DashboardState> {
     return this.state[area];
   }
 
-  getRef(area: 'left' | 'right' | 'header' | 'footer' | 'body' | 'container'): React.MutableRefObject<HTMLDivElement | null> | null | undefined {
+  getRef(
+    area: 'left' | 'right' | 'header' | 'footer' | 'body' | 'container',
+  ): React.MutableRefObject<HTMLDivElement | null> | null | undefined {
     return this.refs[area];
   }
 
@@ -99,7 +101,7 @@ export class DashboardService extends DefaultService<DashboardState> {
   @reducer
   initBodyPanel(_props: DashboardBodyPanelProps): void {
     this.areas[1][1] = 'body';
-    this.state.body = { };
+    this.state.body = {};
     this._compileAreas();
   }
 
@@ -109,10 +111,7 @@ export class DashboardService extends DefaultService<DashboardState> {
   }
 
   @reducer
-  initHorizontalPanel(
-    area: 'footer' | 'header',
-    props: DashboardHorizontalPanelProps,
-  ): void {
+  initHorizontalPanel(area: 'footer' | 'header', props: DashboardHorizontalPanelProps): void {
     const dashboardPanel: DashboardHorizontalPanel = {
       area,
       className: props.className || '',
@@ -134,10 +133,7 @@ export class DashboardService extends DefaultService<DashboardState> {
   }
 
   @reducer
-  initVerticalPanel(
-    area: 'left' | 'right',
-    props: DashboardVerticalPanelProps,
-  ): void {
+  initVerticalPanel(area: 'left' | 'right', props: DashboardVerticalPanelProps): void {
     const dashboardPanel: DashboardVerticalPanel = {
       area,
       className: props.className || '',
@@ -175,20 +171,33 @@ export class DashboardService extends DefaultService<DashboardState> {
     const footer = this.state.footer;
     const elements: AnonymousObject<HTMLDivElement | undefined> = {};
     elements['panel'] = panel !== undefined && panelRef && panelRef.current !== null ? panelRef.current : undefined;
-    elements['body'] = body !== undefined && this.refs.body && this.refs.body.current !== null ? this.refs.body.current : undefined;
+    elements['body'] =
+      body !== undefined && this.refs.body && this.refs.body.current !== null ? this.refs.body.current : undefined;
     // only touch the left panel if it's at the footer of the header panel or at the header of the footer panel
     elements['left'] =
-      isAreaInColumn('first', area, this.state.areas) && left !== undefined && this.refs.left && this.refs.left.current !== null
+      isAreaInColumn('first', area, this.state.areas) &&
+      left !== undefined &&
+      this.refs.left &&
+      this.refs.left.current !== null
         ? this.refs.left.current
         : undefined;
     // only touch the right panel if it's at the footer of the header panel or at the header of the footer panel
     elements['right'] =
-      isAreaInColumn('last', area, this.state.areas) && right !== undefined && this.refs.right && this.refs.right.current !== null
+      isAreaInColumn('last', area, this.state.areas) &&
+      right !== undefined &&
+      this.refs.right &&
+      this.refs.right.current !== null
         ? this.refs.right.current
         : undefined;
 
-    elements['header'] = header !== undefined && this.refs.header && this.refs.header.current !== null ? this.refs.header.current : undefined;
-    elements['footer'] = footer !== undefined && this.refs.footer && this.refs.footer.current !== null ? this.refs.footer.current : undefined;
+    elements['header'] =
+      header !== undefined && this.refs.header && this.refs.header.current !== null
+        ? this.refs.header.current
+        : undefined;
+    elements['footer'] =
+      footer !== undefined && this.refs.footer && this.refs.footer.current !== null
+        ? this.refs.footer.current
+        : undefined;
 
     switch (step) {
       case 'start':
@@ -268,20 +277,29 @@ export class DashboardService extends DefaultService<DashboardState> {
     const right = this.state.right;
     const elements: AnonymousObject<HTMLDivElement | undefined> = {};
     elements['panel'] = panel !== undefined && panelRef && panelRef.current !== null ? panelRef.current : undefined;
-    elements['body'] = body !== undefined && this.refs.body && this.refs.body.current !== null ? this.refs.body.current : undefined;
+    elements['body'] =
+      body !== undefined && this.refs.body && this.refs.body.current !== null ? this.refs.body.current : undefined;
     // only touch the header panel if it's at the right of the left panel or at the left of the right panel
     elements['header'] =
-      isAreaInRow('first', area, this.state.areas) && header !== undefined && this.refs.header && this.refs.header.current !== null
+      isAreaInRow('first', area, this.state.areas) &&
+      header !== undefined &&
+      this.refs.header &&
+      this.refs.header.current !== null
         ? this.refs.header.current
         : undefined;
     // only touch the footer panel if it's at the right of the left panel or at the left of the right panel
     elements['footer'] =
-      isAreaInRow('last', area, this.state.areas) && footer !== undefined && this.refs.footer && this.refs.footer.current !== null
+      isAreaInRow('last', area, this.state.areas) &&
+      footer !== undefined &&
+      this.refs.footer &&
+      this.refs.footer.current !== null
         ? this.refs.footer.current
         : undefined;
 
-    elements['left'] = left !== undefined && this.refs.left && this.refs.left.current !== null ? this.refs.left.current : undefined;
-    elements['right'] = right !== undefined && this.refs.right && this.refs.right.current !== null ? this.refs.right.current : undefined;
+    elements['left'] =
+      left !== undefined && this.refs.left && this.refs.left.current !== null ? this.refs.left.current : undefined;
+    elements['right'] =
+      right !== undefined && this.refs.right && this.refs.right.current !== null ? this.refs.right.current : undefined;
 
     switch (step) {
       case 'start':
@@ -349,7 +367,10 @@ export class DashboardService extends DefaultService<DashboardState> {
     set<any>(this.state, `${area}.content`, content);
   }
 
-  setRef(area: 'left' | 'right' | 'header' | 'footer' | 'body' | 'container', ref: React.MutableRefObject<HTMLDivElement | null> | null | undefined): void  {
+  setRef(
+    area: 'left' | 'right' | 'header' | 'footer' | 'body' | 'container',
+    ref: React.MutableRefObject<HTMLDivElement | null> | null | undefined,
+  ): void {
     this.refs[area] = ref;
   }
 

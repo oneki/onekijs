@@ -23,8 +23,8 @@ const selectColumn = <
     const adapter: SelectItemAdapter<S> = (data: S) => {
       const entry = (opts.dataSource as [S, string][]).find((entry) => entry[0] === data);
       return {
-        text: entry ? entry[1] : ''
-      }
+        text: entry ? entry[1] : '',
+      };
     };
     opts.adapter = adapter;
   }
@@ -39,14 +39,14 @@ const selectColumn = <
           }
         }
         return false;
-      })
+      });
       if (entry && Array.isArray(entry)) {
         return entry[1];
       }
     }
 
     return defaultCellSerializer(data, column, format);
-  }
+  };
 
   const broker = new DefaultSelectBroker(dataSource, opts);
 

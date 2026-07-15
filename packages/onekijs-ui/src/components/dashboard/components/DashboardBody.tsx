@@ -29,7 +29,7 @@ const DashboardBodyComponent: FCC<DashboardBodyComponentProps> = (props) => {
     }
     return () => {
       service.destroyPanel('body');
-    }
+    };
   });
 
   return (

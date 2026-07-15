@@ -87,7 +87,7 @@ const Component: React.FC<DashboardVerticalPanelComponentProps> = (props) => {
     }
     return () => {
       service.destroyPanel(props.area);
-    }
+    };
   });
 
   return (
@@ -109,7 +109,10 @@ const style: ComponentStyle<DashboardVerticalPanelComponentProps> = (props) => {
     width: ${getDashboardPanelLength('width', 'small', props.panel)};
     height: ${getHeight('small', props)};
     transform: translate(${getTranslateX('small', props)}, ${getTranslateY('small', props)});
-    transition: transform 0.3s, width 0.3s, height 0.3s;
+    transition:
+      transform 0.3s,
+      width 0.3s,
+      height 0.3s;
     ${props.panel && props.panel[getFloatingKey('small')] ? 'z-index: 1001;' : 'auto;'}
     @media only screen and (min-width: 768px) {
       width: ${getDashboardPanelLength('width', 'medium', props.panel)};

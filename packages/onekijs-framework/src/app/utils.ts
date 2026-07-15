@@ -30,9 +30,12 @@ export const createReduxStore = (
     middlewares.push(sagaMiddleware);
   }
 
-  const store = createStore(() => {
-    return initialState;
-  }, applyMiddleware(...middlewares)) as AppStore;
+  const store = createStore(
+    () => {
+      return initialState;
+    },
+    applyMiddleware(...middlewares),
+  ) as AppStore;
 
   const buildReducer = (store: Store) => {
     return (state = store.getState(), action: AnyAction) => {

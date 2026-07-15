@@ -325,7 +325,6 @@ export default class LoginService extends DefaultLocalService<LoginState> {
         [token, securityContext] = yield callback(response, idp, this.context);
       }
 
-
       let mfa: Mfa = { required: false };
       if (typeof idp.mfa === 'function') {
         yield idp.mfa(response, idp, this.context);
@@ -339,7 +338,7 @@ export default class LoginService extends DefaultLocalService<LoginState> {
           totpSecret: get(token, 'totp_secret'),
           user: get(token, 'mfa_user'),
           delay: get(token, 'mfa_delay'),
-        }
+        };
       }
 
       if (mfa.required) {
@@ -369,8 +368,6 @@ export default class LoginService extends DefaultLocalService<LoginState> {
 
         yield this.successLogin(token as any, securityContext, idpName, onError, onSuccess);
       }
-
-
     } catch (e) {
       if (process.env.NODE_ENV === 'development') {
         console.error('External login callback error', e);
@@ -388,7 +385,7 @@ export default class LoginService extends DefaultLocalService<LoginState> {
     }
   }
 
-/**
+  /**
    * Submit the login form
    *
    * @param data:
@@ -465,9 +462,8 @@ export default class LoginService extends DefaultLocalService<LoginState> {
           totpSecret: get(response, 'totp_secret'),
           user: data.username,
           delay: get(response, 'mfa_delay'),
-        }
+        };
       }
-
 
       if (mfa.required) {
         if (!mfa.user) {
@@ -482,11 +478,9 @@ export default class LoginService extends DefaultLocalService<LoginState> {
           yield this.setMfa(mfa);
           yield this.onSuccess();
         }
-
       } else {
         yield this.formLoginResponse(response, idpName, onError, onSuccess);
       }
-
     } catch (e) {
       if (process.env.NODE_ENV === 'development') {
         console.error('Form login error', e);
@@ -508,20 +502,24 @@ export default class LoginService extends DefaultLocalService<LoginState> {
   @saga(SagaEffect.Latest)
   *sendNoMfaToken(noMfaToken: string, mfa: Mfa, idp: Idp, onSuccess?: SuccessCallback) {
     try {
-      yield this.verifyTotp({
-        no_mfa_token: noMfaToken,
-        token: mfa.token,
-        token_type: mfa.token_type,
-      }, idp.name, undefined, onSuccess);
+      yield this.verifyTotp(
+        {
+          no_mfa_token: noMfaToken,
+          token: mfa.token,
+          token_type: mfa.token_type,
+        },
+        idp.name,
+        undefined,
+        onSuccess,
+      );
     } catch (e) {
       // error during the usage of the no_mfa_token, just ask the verification code to the user
       yield this.setMfa(mfa);
       yield this.onSuccess();
     }
-
   }
 
-/**
+  /**
    * Submit the login form
    *
    * @param response: response from the server
@@ -558,10 +556,9 @@ export default class LoginService extends DefaultLocalService<LoginState> {
       securityContext = response;
     }
     yield this.successLogin(token, securityContext, idpName, onError, onSuccess);
-
   }
 
-/**
+  /**
    * Verify a MFA TOTP
    *
    * @param data:
@@ -592,7 +589,7 @@ export default class LoginService extends DefaultLocalService<LoginState> {
           throw new DefaultBasicError(`Invalid totpEndpoint for IDP ${idp.name}`);
         }
 
-        const body: AnonymousObject = {}
+        const body: AnonymousObject = {};
         if (data.totp) {
           body.totp = data.totp;
         }
@@ -608,13 +605,12 @@ export default class LoginService extends DefaultLocalService<LoginState> {
         response = yield asyncHttp(absoluteUrl(url, get(settings, 'server.baseUrl')), 'POST', body, {
           headers: {
             'content-type': 'application/json',
-            'authorization': `${(token_type) ? `${token_type} ` : '' }${data.token ?? get(this.state.mfa, 'token')}`,
+            authorization: `${token_type ? `${token_type} ` : ''}${data.token ?? get(this.state.mfa, 'token')}`,
           },
         });
       }
 
       yield this.formLoginResponse(response, idpName, onError, onSuccess);
-
     } catch (e) {
       if (process.env.NODE_ENV === 'development') {
         console.error('Form login error', e);

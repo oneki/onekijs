@@ -20,7 +20,13 @@ const IconComponent: FC<IconProps> = (props) => {
 };
 
 export default styled(IconComponent)`
-  ${({ width = '16px', height = '16px', color: cssColor = 'currentColor', marginLeft: ml = '0', marginRight: mr = '0' }) => css`
+  ${({
+    width = '16px',
+    height = '16px',
+    color: cssColor = 'currentColor',
+    marginLeft: ml = '0',
+    marginRight: mr = '0',
+  }) => css`
     width: ${width};
     height: ${height};
     ${marginLeft(ml)}

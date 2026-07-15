@@ -44,8 +44,6 @@ class SelectService<
       return; // this validation will be done when the data will be loaded (can be delayed due to a fetchOnce)
     }
 
-
-
     let invalidItems: I[] = [];
     const defaultItems: I[] = this.defaultValue ? toArray(this.defaultValue).map((v) => this._adapt(v)) : [];
 

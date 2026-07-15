@@ -67,10 +67,21 @@ const Step: FCC<StepProps> = ({
   }
 
   return (
-    <CSSTransition in={true} nodeRef={stepRef} timeout={animate} appear={true} onEnter={onEnter} onEntering={onEntering}>
+    <CSSTransition
+      in={true}
+      nodeRef={stepRef}
+      timeout={animate}
+      appear={true}
+      onEnter={onEnter}
+      onEntering={onEntering}
+    >
       <div ref={stepRef} className={addClassname('o-step-content', className)}>
         {showTitle && <div className="o-step-content-title">{title}</div>}
-        {help && <Alert kind="info" marginBottom='lg'>{help}</Alert>}
+        {help && (
+          <Alert kind="info" marginBottom="lg">
+            {help}
+          </Alert>
+        )}
         {children}
       </div>
     </CSSTransition>

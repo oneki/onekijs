@@ -76,7 +76,7 @@ export type FormTableContext<T = any> = {
   required?: boolean;
   maxLength?: number;
   minLength?: number;
-  editable?: boolean;   // if we add a element afterwards, it must be editable (if not, mark it as read only)
+  editable?: boolean; // if we add a element afterwards, it must be editable (if not, mark it as read only)
 };
 
 export type FormTableItemDisplayerProps<T = any> = {
@@ -133,7 +133,7 @@ export type TableBodyRowProps<T = any, I extends TableItem<T> = TableItem<T>> = 
   onCollapsed?: (item: I | undefined, index: number) => void;
 };
 
-export type TableSerializerFormat = 'csv' | 'json'
+export type TableSerializerFormat = 'csv' | 'json';
 
 export type TableConfig<T = any, I extends TableItem<T> = TableItem<T>> = {
   autoRefresh?: number;
@@ -227,7 +227,11 @@ export type TableCellDisplayerProps<T, I extends TableItem<T> = TableItem<T>> = 
   format: FormDisplayerProps['format'];
 };
 
-export type TableCellSerializer<T, I extends TableItem<T> = TableItem<T>> = (data: T, column: TableColumn<T, I>, format: TableSerializerFormat) => any;
+export type TableCellSerializer<T, I extends TableItem<T> = TableItem<T>> = (
+  data: T,
+  column: TableColumn<T, I>,
+  format: TableSerializerFormat,
+) => any;
 
 export type TableColumnSpec<T, I extends TableItem<T> = TableItem<T>> = {
   className?: string | ((item: I, column: TableColumn<T, I>, rowIndex: number) => string);

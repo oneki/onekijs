@@ -22,7 +22,7 @@ const ButtonComponent = React.forwardRef<HTMLButtonElement, ButtonProps>((props,
     } else {
       onClick(e);
     }
-  }
+  };
 
   return (
     <span className={classNames} onClick={handleClick} ref={ref}>

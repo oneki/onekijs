@@ -37,5 +37,4 @@ export default styled(PasswordComponent)`
     ${marginLeft('sm')}
     ${cursor('pointer')}
   }
-
 `;

@@ -20,9 +20,7 @@ export type DashboardBodyPanelProps = {
   className?: string;
 };
 
-export type DashboardContainer = {
-
-};
+export type DashboardContainer = {};
 
 export type DashboardContainerProps = {
   areas?: DashboardArea[][];

@@ -15,7 +15,15 @@ import {
 import { display } from '../../styles/display';
 import { flexDirection, flexGrow } from '../../styles/flex';
 import { cursor } from '../../styles/interactivity';
-import { marginLeft, padding, paddingBottom, paddingLeft, paddingRight, paddingTop, paddingX } from '../../styles/spacing';
+import {
+  marginLeft,
+  padding,
+  paddingBottom,
+  paddingLeft,
+  paddingRight,
+  paddingTop,
+  paddingX,
+} from '../../styles/spacing';
 import { ComponentStyle } from '../../styles/typings';
 import { color, fontSize, fontWeight, lineHeight, textDecoration } from '../../styles/typography';
 import { WizardModalProps, WizardProps } from './typings';
@@ -160,16 +168,16 @@ export const wizardModalStyle: ComponentStyle<WizardModalProps> = () => {
 };
 
 export const wizardSummaryStyle: ComponentStyle<{}> = () => {
-  return css `
-  .o-accordion-panel {
-    ${paddingBottom('md')}
-  }
-  .o-accordion-panel-title {
-    ${backgroundColor('lighter')}
-  }
-  .o-accordion-content {
-    ${paddingX('sm')}
-    ${paddingBottom('sm')}
-  }
-  `
-}
+  return css`
+    .o-accordion-panel {
+      ${paddingBottom('md')}
+    }
+    .o-accordion-panel-title {
+      ${backgroundColor('lighter')}
+    }
+    .o-accordion-content {
+      ${paddingX('sm')}
+      ${paddingBottom('sm')}
+    }
+  `;
+};

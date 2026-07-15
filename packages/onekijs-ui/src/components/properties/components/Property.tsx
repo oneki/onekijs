@@ -22,7 +22,7 @@ const Property: FC<PropertyProps> = React.memo((props) => {
   return (
     <Row className="o-property" gapX="10px" gapY="0px">
       <Col size={nameSize} sm={context.sm} md={context.md} lg={context.lg} xl={context.xl} className="o-property-key">
-      <span className="o-property-name">{name}</span>
+        <span className="o-property-name">{name}</span>
         {props.help && (
           <Tooltip content={props.help} placement="top">
             <HelpIcon />

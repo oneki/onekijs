@@ -171,8 +171,6 @@ export type ComponentProps = {
   options?: ComponentOptions;
 };
 
-
-
 export const FccMyComponent2: FCC<ComponentProps> = ({ name }) => {
   return null;
 };

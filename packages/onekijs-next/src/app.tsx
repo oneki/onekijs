@@ -33,9 +33,7 @@ export const App: FCC<AppProps> = ({
       LoadingComponent={LoadingComponent}
       router={routerRef.current}
     >
-      <Router router={routerRef.current}>
-        {Theme ? <Theme>{children}</Theme> : children}
-      </Router>
+      <Router router={routerRef.current}>{Theme ? <Theme>{children}</Theme> : children}</Router>
     </AppState>
   );
 };

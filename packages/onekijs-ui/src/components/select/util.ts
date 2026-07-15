@@ -6,7 +6,7 @@ export const defaultAutocompleteAdapter = <T>(value: string | null): T | null =>
     return null;
   }
   return value as unknown as T;
-}
+};
 
 export const numberAutocompleteAdapter = <T>(value: string | null): T | null => {
   if (value === null) {
@@ -17,7 +17,7 @@ export const numberAutocompleteAdapter = <T>(value: string | null): T | null => 
     return null;
   }
   return parsed as unknown as T;
-}
+};
 
 export const findSelectItem = <
   T = any,

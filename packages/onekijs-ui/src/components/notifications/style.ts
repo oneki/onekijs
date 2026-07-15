@@ -36,7 +36,7 @@ export const notifcationsStyle: ComponentStyle<NotificationsProps> = ({ position
       ${paddingRight('sm')}
       ${paddingBottom('sm')}
     }
-    .o-notification-close-all-content{
+    .o-notification-close-all-content {
       ${fontSize('lg')}
       ${cursor('pointer')}
       ${color('primary')}

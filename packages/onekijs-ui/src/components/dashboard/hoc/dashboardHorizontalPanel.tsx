@@ -84,7 +84,7 @@ const Component: React.FC<DashboardHorizontalPanelComponentProps> = (props) => {
     }
     return () => {
       service.destroyPanel(props.area);
-    }
+    };
   });
 
   return (

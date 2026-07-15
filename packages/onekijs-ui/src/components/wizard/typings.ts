@@ -53,7 +53,6 @@ export type WizardProps<M extends StepState = StepState> = Omit<
   title?: ReactNode;
   TitleComponent?: React.FC<StepTitleProps>;
   hasSummaryStep?: boolean;
-
 };
 
 export type WizardState<M extends StepState = StepState> = TabsState<M> &

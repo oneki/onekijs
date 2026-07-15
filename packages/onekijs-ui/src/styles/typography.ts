@@ -92,9 +92,8 @@ export const textDecorationColor = cssProperty<Property.TextDecorationColor>(
 
 export const textDecorationLine = cssProperty<Property.TextDecorationLine>('text-decoration-line');
 export const textDecorationStyle = cssProperty<Property.TextDecorationStyle>('text-decoration-style');
-export const textDecorationThickness = cssProperty<Property.TextDecorationThickness<TLength>>(
-  'text-decoration-thickness',
-);
+export const textDecorationThickness =
+  cssProperty<Property.TextDecorationThickness<TLength>>('text-decoration-thickness');
 
 export const textEmphasis = cssProperty<Property.TextEmphasis>('text-emphasis');
 
