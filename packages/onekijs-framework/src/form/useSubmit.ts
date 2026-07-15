@@ -11,8 +11,9 @@ const useSubmit = (): {
   status: ValidationStatus;
   code: ValidationCode;
   fields: AnonymousObject<string>;
+  message: string;
 } => {
-  const { status, code, fields } = useFormStatus();
+  const { status, code, fields, message } = useFormStatus();
   const form = useForm();
   const id = useId();
   const [submitting, setSubmitting] = useState(form.state.submitting || false);
@@ -44,6 +45,7 @@ const useSubmit = (): {
     status,
     code,
     fields,
+    message,
   };
 };
 

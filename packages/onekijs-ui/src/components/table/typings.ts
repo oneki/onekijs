@@ -4,6 +4,7 @@ import {
   CollectionProxy,
   FormDisplayerProps,
   FormFieldProps,
+  FormService,
   Item,
   ItemAdaptee,
   Primitive,
@@ -57,11 +58,15 @@ export type FormTableProps<
     addLabel?: string;
     format?: 'id' | 'object' | 'auto';
     defaultValue?: T[];
+    DeleteRowComponent?: React.FC<TableBodyCellProps<T, I>>;
     FieldComponent?: React.FC<FormTableProps<T, I, S, C>>;
     value?: T[];
-    onFocus?: () => void;
+    onAdd?: (initialValue: Partial<T> | undefined) => void;
     onBlur?: () => void;
-    onChange?: (value: T[]) => void;
+    onChange?: (value: T[]) => void;    
+    onFocus?: () => void;
+    onRemove?: (form: FormService, removedValue: T, index: number) => void;
+    SelectRowComponent?: React.FC<TableBodyCellProps<T, I>>;
     status?: ValidationStatus;
     size?: TshirtSize;
     showAddButton?: boolean;
@@ -72,6 +77,7 @@ export type FormTableContext<T = any> = {
   tableName: string;
   onSelect: (item: TableItem<T>, selected: boolean) => void;
   onAdd: (initialValue: Partial<T> | undefined) => void;
+  onRemove?: (form: FormService, removedValue: T, index: number) => void;
   addLabel: string;
   required?: boolean;
   maxLength?: number;

@@ -1,5 +1,6 @@
 import { FormDecoratorOptions } from 'onekijs-framework';
 import { FC, ReactNode } from 'react';
+import { StylableProps } from 'styles/typings';
 
 export type CardProps = {
   bordered?: boolean;
@@ -22,8 +23,10 @@ export type CardTitleProps = {
   animate?: number;
 };
 
-export type FormCardProps = CardProps &
-  FormDecoratorOptions & {
+export type FormCardProps = CardProps & FormBlockProps;
+
+export type FormBlockProps = StylableProps & 
+    FormDecoratorOptions & {
     name: string;
     help?: ReactNode;
   };

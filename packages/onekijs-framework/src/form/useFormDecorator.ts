@@ -10,10 +10,12 @@ const useFormDecorator = (name: string, options: FormDecoratorOptions = {}): For
 
   useEffect(() => {
     if (!form.initializing) {
-      if (optionsRef.current.disabled) {
+      const currentDisabled = form.getMetadata(name, 'disabled');
+      if (currentDisabled === undefined && optionsRef.current.disabled) {
         form.setMetadata(nameRef.current, 'disabled', optionsRef.current.disabled);
       }
-      if (optionsRef.current.visible === false) {
+      const currentVisible = form.getMetadata(name, 'visible');
+      if (currentVisible === undefined && optionsRef.current.visible === false) {
         form.setMetadata(nameRef.current, 'visible', optionsRef.current.visible);
       }
     }

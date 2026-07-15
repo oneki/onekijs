@@ -18,7 +18,7 @@ const useFormMetadata = (fieldName: string): FormMetadata => {
     };
   }, [form, id]);
 
-  return metadata;
+  return metadata || {};
 };
 
 export default useFormMetadata;

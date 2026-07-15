@@ -11,6 +11,7 @@ const VirtualTreeBodyComponent = <T extends any = any, I extends TreeItem<T> = T
   className,
   controller,
   height,
+  NotFoundComponent
 }: ControllerTreeProps<T, I>) => {
   const service = useTreeService();
   const ref = useRef<HTMLDivElement | null>(null);
@@ -41,6 +42,7 @@ const VirtualTreeBodyComponent = <T extends any = any, I extends TreeItem<T> = T
       onItemUnhighlight={config.onUnhighlight}
       keyboardNavigable={config.keyboardNavigable}
       scrollToIndex={scrollToIndex}
+      NotFoundComponent={NotFoundComponent}
     />
   );
 };

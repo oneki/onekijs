@@ -1,9 +1,10 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { days, months } from '../../../utils/date';
 import { addClassname } from '../../../utils/style';
 import TogglerIcon from '../../icon/TogglerIcon';
 import Select from '../../select';
 import { CalendarComponentProps, CalendarDay, DatePickerDate } from '../typings';
+import { isSameDay } from '../util';
 
 const isCurrent = (d: Date, year: number, month: number, day: number): boolean => {
   return d.getFullYear() === year && d.getMonth() === month && d.getDate() === day;
@@ -58,7 +59,7 @@ function getMonth(candidate: string | number | undefined, defaultValue: any) {
   return candidate;
 }
 
-function getYear<T>(candidate: string | number | undefined, min: number, max: number, defaultValue: number): number;
+function getYear(candidate: string | number | undefined, min: number, max: number, defaultValue: number): number;
 function getYear(
   candidate: string | number | undefined,
   min: number,
@@ -355,7 +356,22 @@ const CalendarComponent: FC<CalendarComponentProps> = ({
 
                 const nextDate = new Date(nextDateString);
                 if (endDate) {
-                  if (nextDate <= fromDate) {
+                  // case when we click on the same day than the fromDate
+                  if (isSameDay(fromDate, nextDate)) {
+                    if (nextDate <= fromDate) {
+                      onChange(nextDateString, fromDateString);
+                    } else {
+                      onChange(fromDateString, nextDateString);
+                    }
+                  }
+                  // case when we click on the same day than the endDate
+                  else if (isSameDay(endDate, nextDate)) {
+                    if (nextDate <= endDate) {
+                      onChange(nextDateString, endDateString);
+                    } else {
+                      onChange(endDateString, nextDateString);
+                    }
+                  } else if (nextDate <= fromDate) {
                     onChange(nextDateString, endDateString);
                   } else if (nextDate >= endDate) {
                     onChange(fromDateString, nextDateString);

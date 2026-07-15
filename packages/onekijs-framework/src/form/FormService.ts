@@ -385,7 +385,7 @@ export default class FormService<T extends object = any> extends DefaultService<
     const keys = Object.keys(validations) as NestedKeyOf<T>[];
     for (const fieldName of keys.filter((k: string) => k.startsWith(prefix) && k !== FORM_GLOBAL_VALIDATION_KEY)) {
       const field = fields[fieldName as NestedKeyOf<T>];
-      if (field !== undefined && (!touchedOnly || field.touched)) {
+      if (!touchedOnly || (field !== undefined && field.touched)) {
         const validation = validations[fieldName];
         if (validation && validation.code <= result.code && validation.code < ValidationCode.None) {
           if (validation.code < result.code) {
@@ -396,7 +396,8 @@ export default class FormService<T extends object = any> extends DefaultService<
           }
           result.fields[fieldName] = validation.message;
           if (validation.message) {
-            messages.push(`<${fieldName}>: ${validation.message}`);
+            const fieldLabel = field?.label || fieldName;
+            messages.push(`${fieldLabel}: ${validation.message}`);
           }
         }
       }
@@ -450,11 +451,14 @@ export default class FormService<T extends object = any> extends DefaultService<
   }
 
   getMetadata<K extends keyof FormMetadata>(fieldOrDecoratorName: string, key: K): FormMetadata[K] | undefined {
-    return get(this.state.metadata, `${fieldOrDecoratorName}.${key}`);
+    const metadatas = this.state.metadata || {}
+    const fieldMetadata = metadatas[fieldOrDecoratorName] || {};
+    return fieldMetadata[key];
   }
 
   getMetadatas(fieldOrDecoratorName: string): FormMetadata | undefined {
-    return get(this.state.metadata, fieldOrDecoratorName);
+    const metadatas = this.state.metadata || {}
+    return metadatas[fieldOrDecoratorName];
   }
 
   obfuscate(value: any, fieldName?: string): any {
@@ -672,6 +676,7 @@ export default class FormService<T extends object = any> extends DefaultService<
               validations: [],
               touched: options.touchOn === TouchOn.Load,
               touchOn: options.touchOn,
+              initialized: this.initializing, // if form is initializing, it means the form will initialize the field otherwise the field must be initialized by itself
               context: {
                 name,
                 onChange: (value: any): void => {
@@ -772,7 +777,7 @@ export default class FormService<T extends object = any> extends DefaultService<
               );
             }
           } else {
-            const nextField = this.fields[`${fieldArrayName}.${i}.${fieldName}` as NestedKeyOf<T>] as Field<T>;
+            const nextField = this.fields[`${fieldArrayName}.${i}.${fieldName}` as NestedKeyOf<T>] as Field<T> || {};
             const currentField = this.fields[`${fieldArrayName}.${i + 1}.${fieldName}` as NestedKeyOf<T>] as Field<T>;
             if (currentField) {
               this.fields[`${fieldArrayName}.${i + 1}.${fieldName}` as NestedKeyOf<T>] = Object.assign(nextField, {
@@ -803,6 +808,7 @@ export default class FormService<T extends object = any> extends DefaultService<
     } else {
       this.add(fieldArrayName, initialValue);
     }
+
   }
 
   isTouched(fieldName: NestedKeyOf<T>): boolean {

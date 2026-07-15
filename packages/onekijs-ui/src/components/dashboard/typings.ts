@@ -1,5 +1,7 @@
 import React, { ReactNode } from 'react';
-import { StylableProps } from '../../styles/typings';
+import { ColorPropertyTheme, StylableProps } from '../../styles/typings';
+import { DashboardService } from './DashboardService';
+
 
 export type DashboardArea = DashboardHorizontalArea | DashboardVerticalArea | 'body' | 'none';
 
@@ -49,17 +51,21 @@ export type DashboardHorizontalPanelComponentProps = React.InputHTMLAttributes<H
   };
 
 type DashboardHorizontalProps = {
+  autoHeight?: boolean;
   collapseHeight?: string | 0;
   height?: string | 0;
   maxHeight?: string | 0;
   minHeight?: string | 0;
 };
 
-export type DashboardHorizontalPanelProps = DashboardSidePanelProps & DashboardHorizontalProps;
+export type DashboardHorizontalPanelProps = StylableProps & DashboardSidePanelProps & DashboardHorizontalProps & {
+  area?: DashboardHorizontalArea;
+};
 
 export type DashboardProps = StylableProps & {
   ContainerComponent?: React.FC<DashboardContainerProps>;
   OverlayComponent?: React.FC<DashboardOverlayProps>;
+  controller?: DashboardService;
 };
 
 export type DashboardOverlayProps = React.InputHTMLAttributes<HTMLDivElement> & {
@@ -67,11 +73,14 @@ export type DashboardOverlayProps = React.InputHTMLAttributes<HTMLDivElement> & 
 };
 
 export type DashboardSidePanel = Omit<Required<DashboardSidePanelProps>, 'collapse' | 'floating'> & {
+  collapsing: boolean;
   content?: ReactNode;
+  expanding: boolean,
 };
 
 export type DashboardSidePanelProps = {
-  className?: string;
+  animation?: number;
+  backgroundColor?: ColorPropertyTheme | string;
   collapse?: boolean;
   collapseSmall?: boolean;
   collapseMedium?: boolean;
@@ -82,6 +91,7 @@ export type DashboardSidePanelProps = {
   floatingLarge?: boolean;
   resizable?: boolean;
   resizerGap?: number;
+  resizing?: boolean;
 };
 
 export type DashboardSize = 'small' | 'medium' | 'large';
@@ -107,7 +117,7 @@ export type DashboardVerticalPanel = DashboardSidePanel &
     area: DashboardVerticalArea;
   };
 
-export type DashboardVerticalPanelComponentProps = React.InputHTMLAttributes<HTMLDivElement> &
+export type DashboardVerticalPanelComponentProps = StylableProps & React.InputHTMLAttributes<HTMLDivElement> &
   DashboardState &
   DashboardVerticalPanelProps & {
     panel?: DashboardVerticalPanel;
@@ -115,10 +125,13 @@ export type DashboardVerticalPanelComponentProps = React.InputHTMLAttributes<HTM
   };
 
 type DashboardVerticalProps = {
+  autoWidth?: boolean;
   collapseWidth?: string | 0;
   maxWidth?: string | 0;
   minWidth?: string | 0;
   width?: string | 0;
 };
 
-export type DashboardVerticalPanelProps = DashboardSidePanelProps & DashboardVerticalProps;
+export type DashboardVerticalPanelProps = DashboardSidePanelProps & DashboardVerticalProps & {
+  area?: DashboardVerticalArea;
+};

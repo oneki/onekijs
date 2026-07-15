@@ -245,6 +245,7 @@ export default class AuthService extends DefaultGlobalService {
           // if the token was not found, we are not yet authenticated
           throw new HTTPError(401);
         }
+
         securityContext = token_prop ? parseJwt(token[token_prop]) : parseJwt(token);
       } else {
         // the userinfo endpoint is an URL, do a ajax call to
@@ -440,7 +441,9 @@ export default class AuthService extends DefaultGlobalService {
             };
           }
         }
+        console.log('idp.tokenEndpoint', idp.tokenEndpoint);
         if (idp.tokenEndpoint) {
+          console.log('Refreshing token with endpoint', idp.tokenEndpoint, body, headers);
           nextToken = yield asyncPost(idp.tokenEndpoint, body, {
             headers,
           });
@@ -522,6 +525,10 @@ export default class AuthService extends DefaultGlobalService {
       yield this.setToken(token, identity, idp.name);
 
       if (!(token instanceof String) && (token as AnonymousObject).refresh_token) {
+        if (!token.hasOwnProperty('expires_at') && token.hasOwnProperty('expires_in')) {
+          // add a expires_at property to the token for convenience
+          (token as AnonymousObject).expires_at = Date.now() + parseInt((token as AnonymousObject).expires_in) * 1000;
+        }
         yield spawn([this, this.refreshToken], token as AnonymousObject, idp, false, onError);
       }
       return token;

@@ -140,6 +140,7 @@ export function del(content: any, property: string | number) {
       subContent.splice(index, 1);
     } else {
       delete subContent[index];
+ 
     }
   }
   return content;

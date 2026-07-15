@@ -44,6 +44,7 @@ export type TabsProps = {
   controller?: TabsService;
   onAdd?: AnyFunction;
   layout?: 'horizontal' | 'vertical';
+  onActivate?: (tab: TabState) => void;
 };
 
 export type ControlledTabsProps = TabsProps & {

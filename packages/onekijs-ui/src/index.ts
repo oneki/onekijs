@@ -17,6 +17,7 @@ export { default as buttonStyle, dropdownButtonStyle } from './components/button
 export { ButtonProps, DropDownButtonProps, SubmitButtonProps } from './components/button/typings';
 export { default as Card } from './components/card';
 export { default as FormCard } from './components/card/FormCard';
+export { default as FormBlock } from './components/card/FormBlock';
 export { default as CardComponent } from './components/card/components/CardComponent';
 export { default as CardTitle } from './components/card/components/CardTitle';
 export { cardStyle } from './components/card/style';
@@ -37,6 +38,7 @@ export { default as DashboardOverlay, dashboardOverlayStyle } from './components
 export { default as DashboardRight } from './components/dashboard/components/DashboardRight';
 export { default as DashboardToggler } from './components/dashboard/components/DashboardToggler';
 export { default as useDashboard } from './components/dashboard/hooks/useDashboard';
+export { default as useDashboardController } from './components/dashboard/hooks/useDashboardController';
 export { default as RefreshIcon } from './components/icon/RefreshIcon';
 export {
   useDashboardHorizontalPanel,

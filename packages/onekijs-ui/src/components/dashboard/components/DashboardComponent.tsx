@@ -1,5 +1,4 @@
 import { FCC } from 'onekijs-framework';
-import React from 'react';
 import { DashboardService } from '../DashboardService';
 import { DashboardServiceContext } from '../hooks/useDashboardService';
 import { DashboardStateContext } from '../hooks/useDashboardState';
@@ -23,7 +22,7 @@ const DashboardComponent: FCC<DashboardProps & { service: DashboardService }> = 
           left={service.state.left}
           right={service.state.right}
           body={service.state.body}
-          onInit={() => undefined}
+          onInit={service.initContainer}
           onDestroy={() => service.destroyPanel('container')}
         >
           <OverlayComponent show={service.showOverlay()} onClick={() => service.collapseFloating()} />

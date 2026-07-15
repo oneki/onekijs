@@ -203,6 +203,7 @@ export type SelectConfig<T = any, I extends SelectItem<T> = SelectItem<T>> = Omi
   clickable?: boolean;
   searchable?: boolean;
   dropdownWidthModifier?: DropdownWidthModifier;
+  open?: boolean;
   OptionComponent?: FC<SelectOptionProps<T, I>>;
   OptionGroupComponent?: FC<SelectOptionProps<T, I>>;
   OptionContentComponent?: FC<SelectOptionProps<T, I>>;
