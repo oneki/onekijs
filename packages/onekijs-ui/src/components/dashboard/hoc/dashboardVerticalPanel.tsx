@@ -189,9 +189,6 @@ const dashboardVerticalPanel = (area: DashboardVerticalArea): FCC<DashboardVerti
       </StyledComponent>
     );
   };
-  Panel.defaultProps = {
-    area,
-  };
   return Panel;
 };
 

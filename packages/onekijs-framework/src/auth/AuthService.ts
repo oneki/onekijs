@@ -441,9 +441,7 @@ export default class AuthService extends DefaultGlobalService {
             };
           }
         }
-        console.log('idp.tokenEndpoint', idp.tokenEndpoint);
         if (idp.tokenEndpoint) {
-          console.log('Refreshing token with endpoint', idp.tokenEndpoint, body, headers);
           nextToken = yield asyncPost(idp.tokenEndpoint, body, {
             headers,
           });

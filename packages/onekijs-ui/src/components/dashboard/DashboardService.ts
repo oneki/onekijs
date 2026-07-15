@@ -129,8 +129,8 @@ export class DashboardService extends DefaultService<DashboardState> {
   }
 
   @reducer
-  initBodyPanel(_props: DashboardBodyPanelProps): void {
-    this.state.body = {};
+  initBodyPanel(props: DashboardBodyPanelProps = {}): void {
+    this.state.body = props;
   }
 
   @reducer
