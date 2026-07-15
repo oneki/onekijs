@@ -1,38 +1,33 @@
-import { RequestHandler, rest } from 'msw';
+import { HttpHandler, HttpResponse, http } from 'msw';
 import { SESSION_STORAGE_USERNAME_KEY, SESSION_STORAGE_USERS } from '../constants';
 import { GetUserResponse, User } from './dto/user';
 interface UserInfoResponse {
   username: string;
 }
 
-const userInfoHandler = rest.get<UserInfoResponse>('/userinfo', (req, res, ctx) => {
-  const { username } = req.cookies;
-  const user = username || sessionStorage.getItem(SESSION_STORAGE_USERNAME_KEY); // Specific code to work on CodeSandbox
+const userInfoHandler = http.get('/userinfo', () => {
+  const user = sessionStorage.getItem(SESSION_STORAGE_USERNAME_KEY); // Specific code to work on CodeSandbox
   if (!user) {
-    return res(ctx.status(401));
+    return new HttpResponse(null, { status: 401 });
   }
-  return res(
-    ctx.json({
-      username: user,
-    }),
-  );
+  return HttpResponse.json({
+    username: user,
+  } satisfies UserInfoResponse);
 });
 
-const getUserHandler = rest.get<GetUserResponse>('/users/:username', (req, res, ctx) => {
-  const { username } = req.params;
+const getUserHandler = http.get('/users/:username', ({ params }) => {
+  const username = params.username;
   const users: User[] = JSON.parse(sessionStorage.getItem(SESSION_STORAGE_USERS) ?? '[]');
   const user = users.find((user) => user.username === username);
   if (!user) {
-    return res(ctx.status(404));
+    return new HttpResponse(null, { status: 404 });
   }
-  return res(
-    ctx.json({
-      username: user,
-    }),
-  );
+  return HttpResponse.json({
+    username: user.username,
+  } satisfies GetUserResponse);
 });
 
-const userHandlers = (): RequestHandler[] => {
+const userHandlers = (): HttpHandler[] => {
   return [userInfoHandler, getUserHandler];
 };
 

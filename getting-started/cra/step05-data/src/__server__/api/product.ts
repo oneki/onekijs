@@ -1,12 +1,12 @@
-import { RequestHandler, rest } from 'msw';
+import { HttpHandler, HttpResponse, http } from 'msw';
 import { CartResponse, CartType } from './dto/cart';
 import { ProductType } from './dto/product';
 
 // The cart is stored in the session storage of the browser
 // We can do that because we mock a server in the browser
 
-const getProductsHandler = rest.get<CartResponse>('/products', (_, res, ctx) => {
-  return res(ctx.json(loadProducts()));
+const getProductsHandler = http.get('/products', () => {
+  return HttpResponse.json(loadProducts() satisfies CartResponse);
 });
 
 const products: ProductType[] = [
@@ -32,12 +32,11 @@ const loadProducts = (): CartType => {
   };
 };
 
-const getProductHandler = rest.get<ProductType>('/products/:productId', (req, res, ctx) => {
-  const { productId } = req.params;
-  return res(ctx.json(products[+productId]));
+const getProductHandler = http.get('/products/:productId', ({ params }) => {
+  return HttpResponse.json(products[Number(params.productId)] satisfies ProductType);
 });
 
-const productHandlers = (): RequestHandler[] => {
+const productHandlers = (): HttpHandler[] => {
   return [getProductsHandler, getProductHandler];
 };
 

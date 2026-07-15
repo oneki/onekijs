@@ -143,7 +143,11 @@
   },
   "overrides": {
     "nanoid": "3.3.16",
-    "postcss": "8.5.19"
+    "postcss": "8.5.19",
+    "lerna": {
+      "js-yaml": "^4.2.0",
+      "tar": "^7.5.16"
+    }
   },
   "config": {
     "commitizen": {

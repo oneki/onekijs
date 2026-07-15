@@ -1,4 +1,4 @@
-import { PathParams, RequestHandler, rest } from 'msw';
+import { HttpHandler, HttpResponse, http } from 'msw';
 import { SESSION_STORAGE_CART_KEY } from '../constants';
 import { CartType, CartResponse } from './dto/cart';
 import { AddProductRequest, AddProductResponse } from './dto/product';
@@ -6,33 +6,26 @@ import { AddProductRequest, AddProductResponse } from './dto/product';
 // The cart is stored in the session storage of the browser
 // We can do that because we mock a server in the browser
 
-const getCartHandler = rest.get<CartResponse>('/cart', (req, res, ctx) => {
-  return res(ctx.json(loadCart()));
+const getCartHandler = http.get('/cart', () => {
+  return HttpResponse.json(loadCart() satisfies CartResponse);
 });
 
-const deleteCartHandler = rest.delete('/cart', (req, res, ctx) => {
+const deleteCartHandler = http.delete('/cart', () => {
   sessionStorage.removeItem(SESSION_STORAGE_CART_KEY);
-  return res();
+  return new HttpResponse(null);
 });
 
-const addProductHandler = rest.post<AddProductRequest, PathParams, AddProductResponse>('/cart/products', (req, res, ctx) => {
+const addProductHandler = http.post('/cart/products', async ({ request }) => {
   const cart = loadCart();
-  cart.products.push(req.body);
+  cart.products.push((await request.json()) as AddProductRequest);
   sessionStorage.setItem(SESSION_STORAGE_CART_KEY, JSON.stringify(cart));
-  return res(ctx.json(cart));
+  return HttpResponse.json(cart satisfies AddProductResponse);
 });
 
-const addProductNotAvailableHandler = rest.post<AddProductRequest, { message: string }>(
-  '/cart/products-not-available',
-  (req, res, ctx) => {
-    return res(
-      ctx.status(400),
-      ctx.json({
-        message: `The product ${req.body.name} is not available at this moment`,
-      }),
-    );
-  },
-);
+const addProductNotAvailableHandler = http.post('/cart/products-not-available', async ({ request }) => {
+  const { name } = (await request.json()) as AddProductRequest;
+  return HttpResponse.json({ message: `The product ${name} is not available at this moment` }, { status: 400 });
+});
 
 const loadCart = (): CartType => {
   const products = sessionStorage.getItem(SESSION_STORAGE_CART_KEY); // Specific code to work on CodeSandbox
@@ -45,7 +38,7 @@ const loadCart = (): CartType => {
   return cart;
 };
 
-const cartHandlers = (): RequestHandler[] => {
+const cartHandlers = (): HttpHandler[] => {
   return [getCartHandler, deleteCartHandler, addProductHandler, addProductNotAvailableHandler];
 };
 
