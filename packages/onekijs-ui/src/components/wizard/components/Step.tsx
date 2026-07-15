@@ -1,5 +1,5 @@
 import { FCC } from 'onekijs-framework';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { addClassname } from '../../../utils/style';
 import useStep from '../hooks/useStep';
@@ -23,6 +23,7 @@ const Step: FCC<StepProps> = ({
   help,
 }) => {
   const { animate, forwardOnly } = useWizardState();
+  const stepRef = useRef<HTMLDivElement | null>(null);
 
   const step = useStep({
     title,
@@ -40,11 +41,15 @@ const Step: FCC<StepProps> = ({
 
   const touched = step?.touched;
 
-  const onEnter = (node: HTMLElement) => {
+  const onEnter = () => {
+    const node = stepRef.current;
+    if (!node) return;
     node.style.opacity = '0';
   };
 
-  const onEntering = (node: HTMLElement) => {
+  const onEntering = () => {
+    const node = stepRef.current;
+    if (!node) return;
     setTimeout(() => {
       node.style.opacity = '1';
       node.style.transition = `opacity ${animate}ms ease-in-out`;
@@ -62,8 +67,8 @@ const Step: FCC<StepProps> = ({
   }
 
   return (
-    <CSSTransition in={true} timeout={animate} appear={true} onEnter={onEnter} onEntering={onEntering}>
-      <div className={addClassname('o-step-content', className)}>
+    <CSSTransition in={true} nodeRef={stepRef} timeout={animate} appear={true} onEnter={onEnter} onEntering={onEntering}>
+      <div ref={stepRef} className={addClassname('o-step-content', className)}>
         {showTitle && <div className="o-step-content-title">{title}</div>}
         {help && <Alert kind="info" marginBottom='lg'>{help}</Alert>}
         {children}

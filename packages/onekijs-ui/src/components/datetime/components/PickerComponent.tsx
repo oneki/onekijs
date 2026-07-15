@@ -51,10 +51,10 @@ const parseDate = (value: string | null | undefined): DatePickerDate => {
 };
 
 const isValidValue = (value: string | null, type: DatePickerType): boolean => {
-  const isValidDate = (value: string): boolean =>  {
+  const isValidDate = (value: string): boolean => {
     const d = new Date(value);
     return !isNaN(d as any);
-  }
+  };
 
   if (!value) return true;
   if (type.range) {
@@ -64,7 +64,7 @@ const isValidValue = (value: string | null, type: DatePickerType): boolean => {
   } else {
     return isValidDate(value);
   }
-}
+};
 
 const isSameDate = (d1: string | null | undefined, d2: string | null | undefined, type: DatePickerType) => {
   const isSameDate = (d1: string | undefined, d2: string | undefined) => {
@@ -76,7 +76,7 @@ const isSameDate = (d1: string | null | undefined, d2: string | null | undefined
       return false;
     }
     return date1.toString() === date2.toString();
-  }
+  };
 
   if (d1 === null && d2 === null) return true;
   if (!d1 || !d2) return false;
@@ -88,8 +88,7 @@ const isSameDate = (d1: string | null | undefined, d2: string | null | undefined
   } else {
     return isSameDate(d1, d2);
   }
-}
-
+};
 
 const formatDate = (
   type: DatePickerType,
@@ -123,7 +122,7 @@ const formatDate = (
 };
 
 const PickerComponent: FC<PickerComponentProps> = ({
-  animationMs = 200,
+  animationMs = 100,
   attachDropdownToBody = true,
   autoFocus,
   className,
@@ -290,7 +289,7 @@ const PickerComponent: FC<PickerComponentProps> = ({
 
   const removeLabel = () => {
     onChangeDate();
-  }
+  };
 
   const onChangeTime = (nextTime: string, edge: 'from' | 'to') => {
     if (edge === 'from') {
@@ -307,7 +306,7 @@ const PickerComponent: FC<PickerComponentProps> = ({
         onChange(`${quickRange.from} to ${quickRange.to}`, quickRangeLabel);
       }
       if (closeOnQuickSelect) {
-       setOpen(false);
+        setOpen(false);
       }
     }
   };
@@ -338,7 +337,12 @@ const PickerComponent: FC<PickerComponentProps> = ({
   }, [open, setOpen, triggerRef, nullable, onChange]);
 
   useEffect(() => {
-    if (forwardChange && lastExternalValueRef.current !== undefined && externalValue !== undefined && externalValue !== lastExternalValueRef.current) {
+    if (
+      forwardChange &&
+      lastExternalValueRef.current !== undefined &&
+      externalValue !== undefined &&
+      externalValue !== lastExternalValueRef.current
+    ) {
       // case when we block the onChange due to a wrong internal value
       // and the value is changed from the exterior (not due to change done internally)
       setInternalValue(null);
@@ -382,7 +386,13 @@ const PickerComponent: FC<PickerComponentProps> = ({
             )}
             {type['date'] && (
               <div className="o-calendar" key="calendar">
-                <CalendarComponent from={from} to={to} type={type} onChange={onChangeDate} nextSelectEdge={nextSelectEdgeRef.current} />
+                <CalendarComponent
+                  from={from}
+                  to={to}
+                  type={type}
+                  onChange={onChangeDate}
+                  nextSelectEdge={nextSelectEdgeRef.current}
+                />
               </div>
             )}
             {type['time'] && (

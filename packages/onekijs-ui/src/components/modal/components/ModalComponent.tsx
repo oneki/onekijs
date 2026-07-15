@@ -25,8 +25,11 @@ const ModalComponent: FCC<ModalProps> = ({
   const theme = useContext(ThemeContext);
   const maskOpacity = theme?.modal.maskOpacity ?? '0.85';
   const ref = useRef<HTMLDivElement | null>(null);
+  const modalRef = useRef<HTMLDivElement | null>(null);
 
-  const onEntering = (node: HTMLElement): void => {
+  const onEntering = (): void => {
+    const node = modalRef.current;
+    if (!node) return;
     eventLocks.lock('escape', id);
     node.style.opacity = '0';
     node.style.transition = `opacity ${animationDuration}ms ease-out`;
@@ -42,7 +45,9 @@ const ModalComponent: FCC<ModalProps> = ({
     }, 0);
   };
 
-  const onExiting = (node: HTMLElement): void => {
+  const onExiting = (): void => {
+    const node = modalRef.current;
+    if (!node) return;
     node.style.opacity = maskOpacity.toString();
     node.style.transition = `opacity ${animationDuration}ms ease-out`;
     if (ref.current) {
@@ -57,7 +62,9 @@ const ModalComponent: FCC<ModalProps> = ({
     }, 0);
   };
 
-  const onEntered = (node: HTMLElement): void => {
+  const onEntered = (): void => {
+    const node = modalRef.current;
+    if (!node) return;
     node.style.opacity = '';
     node.style.transition = '';
     if (ref.current) {
@@ -66,7 +73,9 @@ const ModalComponent: FCC<ModalProps> = ({
     }
   };
 
-  const onExited = (node: HTMLElement): void => {
+  const onExited = (): void => {
+    const node = modalRef.current;
+    if (!node) return;
     eventLocks.unlock('escape', id);
     node.style.opacity = '';
     node.style.transition = '';
@@ -94,6 +103,7 @@ const ModalComponent: FCC<ModalProps> = ({
   const element = (
     <CSSTransition
       in={open}
+      nodeRef={modalRef}
       classNames="o-modal"
       timeout={animationDuration}
       unmountOnExit={true}
@@ -102,7 +112,7 @@ const ModalComponent: FCC<ModalProps> = ({
       onExiting={onExiting}
       onExited={onExited}
     >
-      <div className={addClassname('o-modal', className)}>
+      <div ref={modalRef} className={addClassname('o-modal', className)}>
         <div ref={ref} className="o-modal-dialog">
           {closeIcon && (
             <span onClick={onClose} className="o-modal-close-icon">

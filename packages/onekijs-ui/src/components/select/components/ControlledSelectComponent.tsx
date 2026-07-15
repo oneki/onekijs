@@ -34,6 +34,7 @@ import SelectInputComponent from './SelectInputComponent';
 import SelectNotFoundComponent from './SelectNotFoundComponent';
 import SelectOptionComponent, { SelectOptionContent } from './SelectOptionComponent';
 
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
 const DefaultSelectListComponent = <T extends any = any, I extends SelectItem<T> = SelectItem<T>>(
   props: SelectListComponentProps<T, I>,
 ) => {
@@ -101,7 +102,7 @@ const ControlledSelectComponent = <
   dropdownWidthModifier = 'min',
   preload = 50,
   increment = 50,
-  animationMs = 200,
+  animationMs = 100,
   disabled,
   defaultValue,
   defaultValueLoading,
@@ -417,11 +418,11 @@ const ControlledSelectComponent = <
           const currentItem = service.adapt(value as T | null | undefined);
           if (invalidItems.find((i) => i.id === currentItem.id)) {
             // set the defaultValue if it's a valid value otherwise set null
-            onChange && onChange(service.state.validDefaultValue || null);
+            if (onChange) onChange(service.state.validDefaultValue || null);
           }
         }
       } else if (!search && !nullable && (value === null || value === undefined) && service.state.validDefaultValue) {
-        onChange && onChange(service.state.validDefaultValue);
+        if (onChange) onChange(service.state.validDefaultValue);
       }
     }
   }, [

@@ -1,5 +1,5 @@
 import { FCC } from 'onekijs-framework';
-import React from 'react';
+import React, { useRef } from 'react';
 import { Routes as RouterRoutes, RoutesProps, useLocation } from 'react-router';
 import { SwitchTransition, Transition } from 'react-transition-group';
 import { TransitionStatus } from 'react-transition-group/Transition';
@@ -20,12 +20,13 @@ const FadeRoutes: FCC<FadeRoutesProps> = ({
 }) => {
   const location = useLocation();
   const key = fadeOn === 'pathnameChange' ? location.pathname : `${location.pathname}${location.search}`;
+  const routeRef = useRef<HTMLDivElement | null>(null);
 
   return (
     <SwitchTransition>
-      <Transition key={key} appear={true} timeout={duration}>
+      <Transition key={key} nodeRef={routeRef} appear={true} timeout={duration}>
         {(state) => (
-          <div style={transitionStyles(state, duration)}>
+          <div ref={routeRef} style={transitionStyles(state, duration)}>
             <RouterRoutes {...routeProps} location={location}>
               {children}
             </RouterRoutes>

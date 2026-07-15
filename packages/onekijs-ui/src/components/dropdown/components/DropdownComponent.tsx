@@ -1,6 +1,6 @@
-import { FCC, useIsomorphicLayoutEffect, useThrottle } from 'onekijs-framework';
 import { autoPlacement, autoUpdate, flip, offset, size, useFloating, type Placement } from '@floating-ui/react';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { FCC, useIsomorphicLayoutEffect, useThrottle } from 'onekijs-framework';
+import { useCallback, useMemo, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { CSSTransition } from 'react-transition-group';
 import { addClassname } from '../../../utils/style';
@@ -32,7 +32,11 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
   const normalizedFallbackPlacements = fallbackPlacements?.filter((item) => !item.startsWith('auto')) as
     | Placement[]
     | undefined;
-  const { floatingStyles, refs, update: updatePosition } = useFloating({
+  const {
+    floatingStyles,
+    refs,
+    update: updatePosition,
+  } = useFloating({
     placement: autoPlacementEnabled ? undefined : (placement as Placement | undefined),
     middleware: [
       offset({ crossAxis: skidding, mainAxis: distance }),
@@ -51,10 +55,11 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
   });
 
   const triggerZIndexRef = useRef<string | undefined>(undefined);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const update = useCallback(() => {
     updatePosition();
-    onUpdate && onUpdate();
+    if (onUpdate) onUpdate();
   }, [updatePosition, onUpdate]);
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -88,7 +93,9 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
   const classNames = addClassname(`o-dropdown-${open ? 'open' : 'close'}`, className);
 
   const onEnter = useCallback(
-    (node: HTMLElement, isAppearing: boolean) => {
+    (isAppearing: boolean) => {
+      const node = dropdownRef.current;
+      if (!node) return;
       if (refElement !== null && refElement !== undefined) {
         triggerZIndexRef.current = refElement.style.zIndex;
         refElement.style.zIndex = `${zIndex + 1}`;
@@ -101,7 +108,9 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
   );
 
   const onEntered = useCallback(
-    (node: HTMLElement, isAppearing: boolean) => {
+    (isAppearing: boolean) => {
+      const node = dropdownRef.current;
+      if (!node) return;
       node.style.transform = '';
       if (refElement !== null && refElement !== undefined) {
         refElement.style.zIndex = triggerZIndexRef.current || '';
@@ -114,7 +123,9 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
   );
 
   const onEntering = useCallback(
-    (node: HTMLElement, isAppearing: boolean) => {
+    (isAppearing: boolean) => {
+      const node = dropdownRef.current;
+      if (!node) return;
       node.style.transform = 'translateY(-40px)';
       node.style.opacity = '0';
       node.style.transition = `transform ${animationTimeout}ms ease-out, opacity ${animationTimeout}ms ease-out`;
@@ -129,45 +140,42 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
     [onDropping, animationTimeout],
   );
 
-  const onExit = useCallback(
-    (node: HTMLElement) => {
-      if (refElement !== null && refElement !== undefined) {
-        refElement.style.zIndex = `${zIndex + 1}`;
-      }
-      if (onCollapseStart) {
-        onCollapseStart(node);
-      }
-    },
-    [onCollapseStart, refElement, zIndex],
-  );
+  const onExit = useCallback(() => {
+    const node = dropdownRef.current;
+    if (!node) return;
+    if (refElement !== null && refElement !== undefined) {
+      refElement.style.zIndex = `${zIndex + 1}`;
+    }
+    if (onCollapseStart) {
+      onCollapseStart(node);
+    }
+  }, [onCollapseStart, refElement, zIndex]);
 
-  const onExiting = useCallback(
-    (node: HTMLElement) => {
-      node.style.opacity = '1';
-      node.style.transform = 'translateY(0px)';
-      node.style.transition = `transform ${animationTimeout}ms ease-in, opacity ${animationTimeout}ms ease-in`;
-      setTimeout(() => {
-        node.style.opacity = '0';
-        node.style.transform = 'translateY(-40px)';
-      }, 0);
-      if (onCollapsing) {
-        onCollapsing(node);
-      }
-    },
-    [onCollapsing, animationTimeout],
-  );
+  const onExiting = useCallback(() => {
+    const node = dropdownRef.current;
+    if (!node) return;
+    node.style.opacity = '1';
+    node.style.transform = 'translateY(0px)';
+    node.style.transition = `transform ${animationTimeout}ms ease-in, opacity ${animationTimeout}ms ease-in`;
+    setTimeout(() => {
+      node.style.opacity = '0';
+      node.style.transform = 'translateY(-40px)';
+    }, 0);
+    if (onCollapsing) {
+      onCollapsing(node);
+    }
+  }, [onCollapsing, animationTimeout]);
 
-  const onExited = useCallback(
-    (node: HTMLElement) => {
-      if (refElement !== null && refElement !== undefined) {
-        refElement.style.zIndex = triggerZIndexRef.current || '';
-      }
-      if (onCollapseDone) {
-        onCollapseDone(node);
-      }
-    },
-    [onCollapseDone, refElement],
-  );
+  const onExited = useCallback(() => {
+    const node = dropdownRef.current;
+    if (!node) return;
+    if (refElement !== null && refElement !== undefined) {
+      refElement.style.zIndex = triggerZIndexRef.current || '';
+    }
+    if (onCollapseDone) {
+      onCollapseDone(node);
+    }
+  }, [onCollapseDone, refElement]);
 
   const element = (
     <div
@@ -178,6 +186,7 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
     >
       <CSSTransition
         in={open}
+        nodeRef={dropdownRef}
         classNames="o-dropdown"
         timeout={animationTimeout}
         mountOnEnter={true}
@@ -190,7 +199,9 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
         onExited={onExited}
         onExiting={onExiting}
       >
-        <div className="o-dropdown">{children}</div>
+        <div ref={dropdownRef} className="o-dropdown">
+          {children}
+        </div>
       </CSSTransition>
     </div>
   );

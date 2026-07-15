@@ -39,6 +39,7 @@ const VirtualTreeListItemComponent = <T = any, I extends TreeItem<T> = TreeItem<
   const className = typeof itemClassName !== 'function' ? itemClassName : item ? itemClassName(item) : undefined;
   const service = useTreeService();
   const { animate } = useTreeConfig();
+  const childrenRef = useRef<HTMLDivElement | null>(null);
 
   const expand: TreeItemHandler<T, I> = (item, index) => {
     if (animate) {
@@ -106,15 +107,21 @@ const VirtualTreeListItemComponent = <T = any, I extends TreeItem<T> = TreeItem<
       </div>
       <CSSTransition
         in={expanded}
+        nodeRef={childrenRef}
         classNames="o-tree-item-children"
         timeout={timeout}
         mountOnEnter={true}
         appear={false}
         unmountOnExit={true}
-        onExiting={onExiting}
-        onEntering={onEntering}
+        onExiting={() => {
+          if (childrenRef.current) onExiting(childrenRef.current);
+        }}
+        onEntering={() => {
+          if (childrenRef.current) onEntering(childrenRef.current);
+        }}
       >
         <div
+          ref={childrenRef}
           className={`o-tree-item-children${item?.expanding ? ' o-tree-item-children-expanding' : ''}${
             item?.collapsing ? ' o-tree-item-children-collapsing' : ''
           }`}

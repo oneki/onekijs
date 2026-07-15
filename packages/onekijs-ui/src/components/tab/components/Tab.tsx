@@ -35,8 +35,15 @@ const Tab: FCC<TabProps> = ({
   };
 
   const { animate } = useTabsState();
+  const tabRef = React.useRef<HTMLDivElement | null>(null);
 
-  const onEntering = (node: HTMLElement) => {
+  const onEnterWithRef = () => {
+    if (tabRef.current) onEnter(tabRef.current);
+  };
+
+  const onEntering = () => {
+    const node = tabRef.current;
+    if (!node) return;
     setTimeout(() => {
       node.style.opacity = '1';
       node.style.transition = `opacity ${animate}ms ease-in-out`;
@@ -48,8 +55,8 @@ const Tab: FCC<TabProps> = ({
   }
 
   return (
-    <CSSTransition in={true} timeout={animate} appear={true} onEnter={onEnter} onEntering={onEntering}>
-      <div className={addClassname('o-tab', className)}>{children}</div>
+    <CSSTransition in={true} nodeRef={tabRef} timeout={animate} appear={true} onEnter={onEnterWithRef} onEntering={onEntering}>
+      <div ref={tabRef} className={addClassname('o-tab', className)}>{children}</div>
     </CSSTransition>
   );
 };

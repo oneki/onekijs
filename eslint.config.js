@@ -37,20 +37,17 @@ module.exports = [
       ...typescriptEslint.configs.recommended.rules,
       ...jestDom.configs.recommended.rules,
       ...prettierConfig.rules,
-      'prettier/prettier': [
-        'error',
-        {
-          trailingComma: 'es5',
-          singleQuote: true,
-          semi: true,
-          tabWidth: 2,
-          printWidth: 120,
-        },
-      ],
+      'prettier/prettier': 'error',
       'react/prop-types': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       'react/jsx-uses-react': 'off',
       'react/react-in-jsx-scope': 'off',
+    },
+  },
+  {
+    files: ['eslint.config.js'],
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
     },
   },
 ];

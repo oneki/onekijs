@@ -56,7 +56,8 @@ root.render(
           <Link href="/checkbox">Checkbox</Link> | <Link href="/tag">Tag</Link> | <Link href="/modal">Modal</Link> |{' '}
           <Link href="/wizard">Wizard</Link> | <Link href="/form">Form</Link> |{' '}
           <Link href="/actionmenu">Action Menu</Link> | <Link href="/notifications">Notifications</Link> |{' '}
-          <Link href="/timer">Timer</Link> | <Link href="/service">Service</Link> | <Link href="/alert">Alert</Link>  | <Link href="/datetime">DateTime</Link> | <Link href="/contextmenu">ContextMenu</Link>
+          <Link href="/timer">Timer</Link> | <Link href="/service">Service</Link> | <Link href="/alert">Alert</Link> |{' '}
+          <Link href="/datetime">DateTime</Link> | <Link href="/contextmenu">ContextMenu</Link>
         </div>
         <div style={{ paddingLeft: '100px', paddingRight: '100px' }}>
           <Routes>

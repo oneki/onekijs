@@ -1,5 +1,5 @@
 import { FCC } from 'onekijs-framework';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { addClassname } from '../../../utils/style';
 import { CardProps } from '../typings';
@@ -17,6 +17,7 @@ const CardComponent: FCC<CardProps> = ({
   onToggle,
 }) => {
   const classNames = addClassname('o-card', className);
+  const contentRef = useRef<HTMLDivElement | null>(null);
 
   // if onToggle is undefined, the component is not controlled.
   // we use this useState to do the action
@@ -31,7 +32,9 @@ const CardComponent: FCC<CardProps> = ({
     }
   };
 
-  const onEntering = (node: HTMLElement) => {
+  const onEntering = () => {
+    const node = contentRef.current;
+    if (!node) return;
     const currentHeight = node.getBoundingClientRect().height;
     node.style.height = '0px';
     setTimeout(() => {
@@ -39,11 +42,15 @@ const CardComponent: FCC<CardProps> = ({
     }, 0);
   };
 
-  const onEntered = (node: HTMLElement) => {
+  const onEntered = () => {
+    const node = contentRef.current;
+    if (!node) return;
     node.style.height = '';
   };
 
-  const onExiting = (node: HTMLElement) => {
+  const onExiting = () => {
+    const node = contentRef.current;
+    if (!node) return;
     node.style.height = `${node.getBoundingClientRect().height}px`;
     setTimeout(() => {
       node.style.height = '0px';
@@ -63,6 +70,7 @@ const CardComponent: FCC<CardProps> = ({
 
       <CSSTransition
         in={onToggle ? open : internalOpen}
+        nodeRef={contentRef}
         appear={false}
         classNames="o-card-animate"
         timeout={animate}
@@ -72,7 +80,7 @@ const CardComponent: FCC<CardProps> = ({
         onEntering={onEntering}
         onEntered={onEntered}
       >
-        <div>
+        <div ref={contentRef}>
           <div className="o-card-content">{children}</div>
         </div>
       </CSSTransition>
