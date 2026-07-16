@@ -1,5 +1,5 @@
-import { AnonymousObject, useLogger } from 'onekijs-framework';
-import React, { useRef } from 'react';
+import { AnonymousObject, useLogger, useThrottle } from 'onekijs-framework';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import LoadingItem from '../../list/components/LoadingItem';
 import { ListItemProps, VirtualItem } from '../../list/typings';
@@ -27,7 +27,8 @@ type VirtualTreeListItemProps<T = any, I extends TreeItem<T> = TreeItem<T>> = {
   defer?: () => void;
 };
 
-const VirtualTreeListItemComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
+const VirtualTreeListItemComponent = <T extends any = any, I extends TreeItem<T> = TreeItem<T>>({
   itemClassName,
   ItemComponent,
   virtualItem,
@@ -40,6 +41,8 @@ const VirtualTreeListItemComponent = <T = any, I extends TreeItem<T> = TreeItem<
   const service = useTreeService();
   const { animate } = useTreeConfig();
   const childrenRef = useRef<HTMLDivElement | null>(null);
+  const ref = useRef<HTMLDivElement | null>(null);
+  const previousHeightRef = useRef<number | undefined>(undefined);
 
   const expand: TreeItemHandler<T, I> = (item, index) => {
     if (animate) {
@@ -81,29 +84,62 @@ const VirtualTreeListItemComponent = <T = any, I extends TreeItem<T> = TreeItem<
 
   const expanded = !!(item && isTreeItemExpanded(item, service));
 
+  const measure = useCallback(
+    (el: HTMLElement | null) => {
+      if (el?.offsetHeight !== previousHeightRef.current && el?.offsetHeight) {
+        previousHeightRef.current = el.offsetHeight;
+        measureRef(el);
+      }
+    },
+    [measureRef],
+  );
+
+  const measureThrottle = useThrottle(measure, 50);
+
+  const resizeObserver = useMemo(() => {
+    return new ResizeObserver(() => {
+      measureThrottle(ref.current);
+    });
+  }, [measureThrottle]);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (el) {
+      previousHeightRef.current = el.offsetHeight;
+      resizeObserver.observe(el);
+    }
+    return () => {
+      if (el) {
+        resizeObserver.unobserve(el);
+      }
+    };
+  }, [resizeObserver]);
+
   return (
     <div>
       <div className="o-virtual-item" key={`virtual-item-${item?.uid || index}`} ref={measureRef}>
-        {(!item || !item.data) && <LoadingItem />}
-        {item && item.data && (
-          <DefaultTreeItemContext.Provider
-            value={{
-              onExpand: expand,
-              onCollapse: collapse,
-              className,
-            }}
-          >
-            <ItemComponent
-              key={`item-${item?.uid || index}`}
-              index={index}
-              item={item}
-              data={item.data}
-              onClick={onClick}
-              onMouseEnter={onMouseEnter}
-              onMouseLeave={onMouseLeave}
-            />
-          </DefaultTreeItemContext.Provider>
-        )}
+        <div ref={ref}>
+          {(!item || !item.data) && <LoadingItem />}
+          {item && item.data && (
+            <DefaultTreeItemContext.Provider
+              value={{
+                onExpand: expand,
+                onCollapse: collapse,
+                className,
+              }}
+            >
+              <ItemComponent
+                key={`item-${item?.uid || index}`}
+                index={index}
+                item={item}
+                data={item.data}
+                onClick={onClick}
+                onMouseEnter={onMouseEnter}
+                onMouseLeave={onMouseLeave}
+              />
+            </DefaultTreeItemContext.Provider>
+          )}
+        </div>
       </div>
       <CSSTransition
         in={expanded}
@@ -153,7 +189,8 @@ type NodeItem = {
   level: number;
 };
 
-const VirtualTreeListComponent = <T = any, I extends TreeItem<T> = TreeItem<T>>({
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
+const VirtualTreeListComponent = <T extends any = any, I extends TreeItem<T> = TreeItem<T>>({
   items,
   onItemClick,
   onItemMouseEnter,

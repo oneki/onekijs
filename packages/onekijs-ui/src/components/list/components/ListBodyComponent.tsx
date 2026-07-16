@@ -23,6 +23,7 @@ const findItemIndex = (items?: (Item<unknown> | undefined)[], uid?: string): num
   });
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
 const ListBodyComponent = <T extends any = any, I extends ListItem<T> = ListItem<T>>({
   autoRefresh,
   bodyRef,

@@ -4,6 +4,7 @@ import { ListItem, VirtualItemWrapperProps, VirtualListProps } from '../typings'
 import ListItemComponent, { ListItemContent } from './ListItemComponent';
 import LoadingItem from './LoadingItem';
 
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
 const VirtualItemWrapper = <T extends any = any, I extends ListItem<T> = ListItem<T>>({
   virtualItem,
   listItem,
@@ -83,6 +84,7 @@ const VirtualItemWrapper = <T extends any = any, I extends ListItem<T> = ListIte
   );
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
 const VirtualListComponent = <T extends any = any, I extends ListItem<T> = ListItem<T>>({
   items,
   ItemComponent = ListItemComponent,

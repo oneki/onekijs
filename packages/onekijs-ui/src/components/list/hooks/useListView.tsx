@@ -50,7 +50,6 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
       }
       return itemHeight;
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [itemHeight],
   );
 
@@ -61,7 +60,6 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
       const fn = keyExtractor || defaultKeyExtractor;
       return fn(index);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [keyExtractor, force],
   );
 
