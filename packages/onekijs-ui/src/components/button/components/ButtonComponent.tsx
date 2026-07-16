@@ -16,8 +16,16 @@ const ButtonComponent = React.forwardRef<HTMLButtonElement, ButtonProps>((props,
 
   return (
     <button ref={ref} className={classNames} {...buttonProps} type={type}>
-      {loading && <LoadingIcon onClick={undefined} color="currentColor" />}
-      {!loading && IconComponent && <IconComponent {...props} onClick={undefined} className="o-button-icon" />}
+      {loading && (
+        <span className="o-button-icon">
+          <LoadingIcon onClick={undefined} color="currentColor" />
+        </span>
+      )}
+      {!loading && IconComponent && (
+        <span className="o-button-icon">
+          <IconComponent {...props} onClick={undefined} />
+        </span>
+      )}
       <span className="o-button-content">{children}</span>
     </button>
   );
