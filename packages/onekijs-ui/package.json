@@ -1,7 +1,7 @@
 {
   "name": "onekijs-ui",
   "private": false,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Advanced React Web Components",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -35,7 +35,7 @@
     "@floating-ui/react": "^0.27.20",
     "@popperjs/core": "^2.11.8",
     "@reach/observe-rect": "^1.2.0",
-    "onekijs-framework": "^1.0.0",
+    "onekijs-framework": "^1.0.1",
     "react-virtualized-auto-sizer": "^2.0.3",
     "react-window": "^2.2.7",
     "react-window-infinite-loader": "^2.0.1",

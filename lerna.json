@@ -1,12 +1,9 @@
 {
-  "version": "0.22.0",
+  "version": "1.0.1",
   "npmClient": "npm",
   "command": {
     "publish": {
-      "ignoreChanges": [
-        "ignored-file",
-        "*.md"
-      ],
+      "ignoreChanges": ["ignored-file", "*.md"],
       "conventionalCommits": true
     },
     "version": {
@@ -15,11 +12,7 @@
       "allowBranch": "master"
     }
   },
-  "packages": [
-    "packages/*",
-    "examples/*",
-    "getting-started/*"
-  ],
+  "packages": ["packages/*", "examples/*", "getting-started/*"],
   "$schema": "node_modules/lerna/schemas/lerna-schema.json",
   "useNx": false
 }

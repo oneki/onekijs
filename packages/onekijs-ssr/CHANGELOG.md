@@ -3,421 +3,217 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# 0.22.0 (2026-06-10)
+## [1.0.1](https://github.com/oneki/onekijs/compare/v0.22.0...v1.0.1) (2026-07-16)
 
 **Note:** Version bump only for package onekijs-ssr
 
+# 0.22.0 (2026-06-10)
 
-
-
+**Note:** Version bump only for package onekijs-ssr
 
 ## [0.21.9](https://github.com/oneki/onekijs/compare/v0.21.8...v0.21.9) (2026-03-12)
 
 **Note:** Version bump only for package onekijs-ssr
 
-
-
-
-
 ## [0.21.8](https://github.com/oneki/onekijs/compare/v0.21.7...v0.21.8) (2026-03-12)
 
 **Note:** Version bump only for package onekijs-ssr
-
-
-
-
 
 ## [0.21.7](https://github.com/oneki/onekijs/compare/v0.21.6...v0.21.7) (2026-03-12)
 
 **Note:** Version bump only for package onekijs-ssr
 
-
-
-
-
 ## [0.21.6](https://github.com/oneki/onekijs/compare/v0.21.5...v0.21.6) (2026-03-12)
 
 **Note:** Version bump only for package onekijs-ssr
-
-
-
-
 
 ## [0.21.5](https://github.com/oneki/onekijs/compare/v0.21.4...v0.21.5) (2026-03-12)
 
 **Note:** Version bump only for package onekijs-ssr
 
-
-
-
-
 ## [0.21.4](https://github.com/oneki/onekijs/compare/v0.21.3...v0.21.4) (2025-10-21)
 
 **Note:** Version bump only for package onekijs-ssr
-
-
-
-
 
 ## [0.21.3](https://github.com/oneki/onekijs/compare/v0.21.2...v0.21.3) (2025-10-18)
 
 **Note:** Version bump only for package onekijs-ssr
 
-
-
-
-
 ## [0.21.1](https://github.com/oneki/onekijs/compare/v0.20.9...v0.21.1) (2025-08-14)
 
 **Note:** Version bump only for package onekijs-ssr
-
-
-
-
 
 # 0.21.0 (2025-08-02)
 
 **Note:** Version bump only for package onekijs-ssr
 
-
-
-
-
 ## [0.20.9](https://github.com/oneki/onekijs/compare/v0.20.8...v0.20.9) (2025-06-16)
 
 **Note:** Version bump only for package onekijs-ssr
-
-
-
-
 
 ## [0.20.8](https://github.com/oneki/onekijs/compare/v0.20.7...v0.20.8) (2025-04-30)
 
 **Note:** Version bump only for package onekijs-ssr
 
-
-
-
-
 ## [0.20.7](https://github.com/oneki/onekijs/compare/v0.20.6...v0.20.7) (2025-03-28)
 
 **Note:** Version bump only for package onekijs-ssr
-
-
-
-
 
 ## [0.20.6](https://github.com/oneki/onekijs/compare/v0.20.5...v0.20.6) (2025-03-10)
 
 **Note:** Version bump only for package onekijs-ssr
 
-
-
-
-
 ## [0.20.5](https://github.com/oneki/onekijs/compare/v0.20.4...v0.20.5) (2025-02-20)
 
 **Note:** Version bump only for package onekijs-ssr
-
-
-
-
 
 ## [0.20.4](https://github.com/oneki/onekijs/compare/v0.20.3...v0.20.4) (2025-02-12)
 
 **Note:** Version bump only for package onekijs-ssr
 
-
-
-
-
 ## [0.20.3](https://github.com/oneki/onekijs/compare/v0.20.2...v0.20.3) (2025-02-04)
 
 **Note:** Version bump only for package onekijs-ssr
-
-
-
-
 
 ## [0.20.2](https://github.com/oneki/onekijs/compare/v0.20.1...v0.20.2) (2025-01-08)
 
 **Note:** Version bump only for package onekijs-ssr
 
-
-
-
-
 ## [0.20.1](https://github.com/oneki/onekijs/compare/v0.19.30...v0.20.1) (2024-12-18)
 
 **Note:** Version bump only for package onekijs-ssr
-
-
-
-
 
 # 0.20.0 (2024-12-07)
 
 **Note:** Version bump only for package onekijs-ssr
 
-
-
-
-
 ## [0.19.30](https://github.com/oneki/onekijs/compare/v0.19.29...v0.19.30) (2024-11-27)
 
 **Note:** Version bump only for package onekijs-ssr
-
-
-
-
 
 ## [0.19.29](https://github.com/oneki/onekijs/compare/v0.19.28...v0.19.29) (2024-11-04)
 
 **Note:** Version bump only for package onekijs-ssr
 
-
-
-
-
 ## [0.19.28](https://github.com/oneki/onekijs/compare/v0.19.27...v0.19.28) (2024-10-07)
 
 **Note:** Version bump only for package onekijs-ssr
-
-
-
-
 
 ## [0.19.27](https://github.com/oneki/onekijs/compare/v0.19.26...v0.19.27) (2024-08-09)
 
 **Note:** Version bump only for package onekijs-ssr
 
-
-
-
-
 ## [0.19.26](https://github.com/oneki/onekijs/compare/v0.19.25...v0.19.26) (2024-07-22)
 
 **Note:** Version bump only for package onekijs-ssr
-
-
-
-
 
 ## [0.19.24](https://github.com/oneki/onekijs/compare/v0.19.23...v0.19.24) (2024-06-21)
 
 **Note:** Version bump only for package onekijs-ssr
 
-
-
-
-
 ## [0.19.23](https://github.com/oneki/onekijs/compare/v0.19.22...v0.19.23) (2024-05-24)
 
 **Note:** Version bump only for package onekijs-ssr
-
-
-
-
 
 ## [0.19.22](https://github.com/oneki/onekijs/compare/v0.19.21...v0.19.22) (2024-05-23)
 
 **Note:** Version bump only for package onekijs-ssr
 
-
-
-
-
 ## [0.19.20](https://github.com/oneki/onekijs/compare/v0.19.12...v0.19.20) (2024-05-22)
 
 **Note:** Version bump only for package onekijs-ssr
-
-
-
-
 
 ## [0.19.18](https://github.com/oneki/onekijs/compare/v0.19.17...v0.19.18) (2024-04-13)
 
 **Note:** Version bump only for package onekijs-ssr
 
-
-
-
-
 ## [0.19.16](https://github.com/oneki/onekijs/compare/v0.19.15...v0.19.16) (2024-03-04)
 
 **Note:** Version bump only for package onekijs-ssr
-
-
-
-
 
 ## [0.19.15](https://github.com/oneki/onekijs/compare/v0.19.14...v0.19.15) (2024-02-17)
 
 **Note:** Version bump only for package onekijs-ssr
 
-
-
-
-
 ## [0.19.14](https://github.com/oneki/onekijs/compare/v0.19.13...v0.19.14) (2024-02-17)
 
 **Note:** Version bump only for package onekijs-ssr
-
-
-
-
 
 ## [0.19.13](https://github.com/oneki/onekijs/compare/v0.19.11...v0.19.13) (2024-02-12)
 
 **Note:** Version bump only for package onekijs-ssr
 
-
-
-
-
 ## [0.19.12](https://github.com/oneki/onekijs/compare/v0.19.7...v0.19.12) (2024-02-06)
 
 **Note:** Version bump only for package onekijs-ssr
-
-
-
-
 
 ## [0.19.11](https://github.com/oneki/onekijs/compare/v0.19.10...v0.19.11) (2024-01-28)
 
 **Note:** Version bump only for package onekijs-ssr
 
-
-
-
-
 ## [0.19.10](https://github.com/oneki/onekijs/compare/v0.19.9...v0.19.10) (2024-01-15)
 
 **Note:** Version bump only for package onekijs-ssr
-
-
-
-
 
 ## [0.19.9](https://github.com/oneki/onekijs/compare/v0.19.8...v0.19.9) (2024-01-06)
 
 **Note:** Version bump only for package onekijs-ssr
 
-
-
-
-
 ## [0.19.8](https://github.com/oneki/onekijs/compare/v0.19.5...v0.19.8) (2023-12-30)
 
 **Note:** Version bump only for package onekijs-ssr
-
-
-
-
 
 ## [0.19.7](https://github.com/oneki/onekijs/compare/v0.19.6...v0.19.7) (2023-12-15)
 
 **Note:** Version bump only for package onekijs-ssr
 
-
-
-
-
 ## [0.19.6](https://github.com/oneki/onekijs/compare/v0.19.4...v0.19.6) (2023-12-14)
 
 **Note:** Version bump only for package onekijs-ssr
-
-
-
-
 
 ## [0.19.5](https://github.com/oneki/onekijs/compare/v0.19.2...v0.19.5) (2023-12-10)
 
 **Note:** Version bump only for package onekijs-ssr
 
-
-
-
-
 ## [0.19.4](https://github.com/oneki/onekijs/compare/v0.19.3...v0.19.4) (2023-12-01)
 
 **Note:** Version bump only for package onekijs-ssr
-
-
-
-
 
 ## [0.19.3](https://github.com/oneki/onekijs/compare/v0.18.1...v0.19.3) (2023-10-15)
 
 **Note:** Version bump only for package onekijs-ssr
 
-
-
-
-
 ## [0.19.2](https://github.com/oneki/onekijs/compare/v0.19.1...v0.19.2) (2023-10-08)
 
 **Note:** Version bump only for package onekijs-ssr
-
-
-
-
 
 ## [0.19.1](https://github.com/oneki/onekijs/compare/v0.18.2...v0.19.1) (2023-10-08)
 
 **Note:** Version bump only for package onekijs-ssr
 
-
-
-
-
 # 0.19.0 (2023-09-27)
 
 **Note:** Version bump only for package onekijs-ssr
-
-
-
-
 
 ## [0.18.2](https://github.com/oneki/onekijs/compare/v0.17.1...v0.18.2) (2023-09-10)
 
 **Note:** Version bump only for package onekijs-ssr
 
-
-
-
-
 ## [0.18.1](https://github.com/oneki/onekijs/compare/v0.18.0...v0.18.1) (2023-08-22)
 
 **Note:** Version bump only for package onekijs-ssr
-
-
-
-
 
 # 0.18.0 (2023-07-26)
 
 **Note:** Version bump only for package onekijs-ssr
 
-
-
-
-
 ## [0.17.1](https://github.com/oneki/onekijs/compare/v0.15.8...v0.17.1) (2023-07-23)
 
 **Note:** Version bump only for package onekijs-ssr
 
-
-
-
-
 # [0.17.0](https://github.com/oneki/onekijs/compare/v0.15.8...v0.17.0) (2023-07-23)
 
 **Note:** Version bump only for package onekijs-ssr
-
-
-
-
 
 ## [0.16.2](https://github.com/oneki/onekijs/compare/v0.16.1...v0.16.2) (2023-07-04)
 

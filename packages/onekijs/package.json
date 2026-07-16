@@ -1,6 +1,6 @@
 {
   "name": "onekijs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Opinionated React framework for browser applications",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -31,7 +31,7 @@
   "license": "MIT",
   "dependencies": {
     "history": "^5.3.0",
-    "onekijs-framework": "^1.0.0",
+    "onekijs-framework": "^1.0.1",
     "react-router": "^8.2.0"
   },
   "devDependencies": {
