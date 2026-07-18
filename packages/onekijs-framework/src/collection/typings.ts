@@ -272,7 +272,11 @@ export type CollectionStatus =
   | 'partial_loaded'
   | 'error';
 
-export type Item<T = any> = {
+export type DataObject<T = any> = {
+  data?: T;
+};
+
+export type Item<T = any> = DataObject<T> & {
   data?: T; // data can be undefined if the item is fetching or loading
   id?: string | number; // id can be undefined if the item is fetching or loading
   text?: string; // text can be undefined if the item is fetching or loading
@@ -368,7 +372,8 @@ export type QueryFilterCriteriaOperator =
   | 'gte'
   | 'lte'
   | 'in'
-  | 'is';
+  | 'is'
+  | 'contains';
 
 export type QueryFilterCriteriaValue = Primitive | null;
 

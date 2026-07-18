@@ -1272,12 +1272,14 @@ export default class CollectionService<
     return this.adapt(data).id;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _indexDb(item: I, _context?: AnonymousObject): void {
     if (this._positionIndex[item.uid] !== undefined && this._db) {
       set(this._db, this._positionIndex[item.uid] as any, item);
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _indexId(item: I, _context?: AnonymousObject): void {
     if (item.id !== undefined) {
       this._idIndex[item.id] = item;
@@ -1297,6 +1299,7 @@ export default class CollectionService<
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _indexUid(item: I, _context?: AnonymousObject): void {
     this._uidIndex[item.uid] = item;
   }

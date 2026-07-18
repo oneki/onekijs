@@ -4,10 +4,12 @@ import { Primitive } from '../types/core';
 import { AnonymousObject, NestedKeyOf } from '../types/object';
 import { isSameArray } from '../utils/array';
 import { clone, get, shallowEqual, toArray } from '../utils/object';
+import { generateUniqueId } from '../utils/string';
 import {
   Collection,
   CollectionState,
   CollectionStatus,
+  DataObject,
   Item,
   LoadingStatus,
   LocalQuery,
@@ -27,15 +29,11 @@ import {
   QuerySortComparator,
   QuerySortDir,
 } from './typings';
-import { generateUniqueId } from '../utils/string';
 
 let filterUid = 0;
 export const rootFilterId = Symbol();
 
-export const applyCriteria = <T = any, I extends Item<T> = Item<T>>(
-  item: I,
-  criteria: QueryFilterCriteria,
-): boolean => {
+export const applyCriteria = <T, I extends DataObject<T>>(item: I, criteria: QueryFilterCriteria): boolean => {
   const operator = criteria.operator || 'eq';
   const value = criteria.value;
   const source = get(item, `data.${criteria.field}` as NestedKeyOf<I>);
@@ -44,7 +42,7 @@ export const applyCriteria = <T = any, I extends Item<T> = Item<T>>(
   return not ? !result : result;
 };
 
-export const applyFields = <T = any, I extends Item<T> = Item<T>>(items: I[], fields?: string[]): I[] => {
+export const applyFields = <T, I extends DataObject<T>>(items: I[], fields?: string[]): I[] => {
   if (fields && fields.length > 0) {
     return items.map((item) => {
       const { data, ...nextItem } = item;
@@ -61,7 +59,7 @@ export const applyFields = <T = any, I extends Item<T> = Item<T>>(items: I[], fi
   return items;
 };
 
-export const applyFilter = <T = any, I extends Item<T> = Item<T>>(item: I, filter?: QueryFilter): boolean => {
+export const applyFilter = <T, I extends DataObject<T>>(item: I, filter?: QueryFilter): boolean => {
   let result = true;
 
   if (filter) {
@@ -82,7 +80,6 @@ export const applyFilter = <T = any, I extends Item<T> = Item<T>>(item: I, filte
 
 export const applyOperator = (
   operator: QueryFilterCriteriaOperator,
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   left: any,
   right?: QueryFilterCriteriaValue | QueryFilterCriteriaValue[],
 ): boolean => {
@@ -133,7 +130,7 @@ export const applyOperator = (
   }
 };
 
-export const applySearch = <T = any, I extends Item<T> = Item<T>>(
+export const applySearch = <T, I extends Item<T>>(
   item: I,
   search?: QueryFilterCriteriaValue,
   searcher?: QuerySearcher<T>,
@@ -148,7 +145,7 @@ export const applySearch = <T = any, I extends Item<T> = Item<T>>(
   return applyOperator(searcher, item.text, search);
 };
 
-export const applySort = <T = any, I extends Item<T> = Item<T>>(
+export const applySort = <T, I extends DataObject<T>>(
   items: I[],
   dir: QuerySortDir,
   comparator: QuerySortComparator<T>,
@@ -164,7 +161,7 @@ export const applySort = <T = any, I extends Item<T> = Item<T>>(
   return items;
 };
 
-export const applySortBy = <T = any, I extends Item<T> = Item<T>>(
+export const applySortBy = <T, I extends DataObject<T>>(
   items: I[],
   sortBy: QuerySortBy[],
   comparators: AnonymousObject<QuerySortComparator<T>>,
@@ -288,7 +285,7 @@ const _serializer = (query: Query, url: boolean) => {
     });
   }
 
-  return Object.fromEntries(Object.entries(result).filter(([_k, v]) => v !== undefined)) as QuerySerializerResult;
+  return Object.fromEntries(Object.entries(result).filter(([, v]) => v !== undefined)) as QuerySerializerResult;
 };
 
 export const generateFilterId = (): number => {

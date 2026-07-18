@@ -364,7 +364,17 @@ export { ResultCallback, SuccessCallback } from './types/callback';
 export { AnyFunction, FCC, Primitive } from './types/core';
 export { BasicError, ErrorCallback } from './types/error';
 export { FetchMethod, FetchOptions, FetchState, Fetcher, HttpMethod } from './types/fetch';
-export { FormLayout, ValidationStatus } from './types/form';
+export {
+  FormLayout,
+  ValidationStatus,
+  FormRule,
+  FormRuleFilterOrCriteria,
+  FormRulePositionalField,
+  FormRulePositionalValue,
+  FormRuleValidation,
+  FormRuleValidator,
+  FormRuleValue,
+} from './types/form';
 export { I18n } from './types/i18n';
 export {
   AnonymousKeyObject,
@@ -488,6 +498,7 @@ export {
   isPromise,
   isTrue,
 } from './utils/type';
+export { useRule } from './form/useRule';
 
 // declare module 'react' {
 //   interface HTMLAttributes<T> {

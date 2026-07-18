@@ -528,6 +528,14 @@ export {
   withLayout,
   wrap,
   xhr,
+  FormRule,
+  FormRuleFilterOrCriteria,
+  FormRulePositionalField,
+  FormRulePositionalValue,
+  FormRuleValidation,
+  FormRuleValidator,
+  FormRuleValue,
+  useRule,
 } from 'onekijs-framework';
 export {
   BrowserRouter,

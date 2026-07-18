@@ -1,4 +1,4 @@
-import { Form, useFormController, useFormWatcher } from 'onekijs';
+import { Form, useFormController, useFormWatcher, useRule } from 'onekijs';
 import {
   ComponentStyle,
   FormCard,
@@ -22,23 +22,34 @@ const fomStyle: ComponentStyle<{}> = () => {
 const Page: React.FC<{ className?: string }> = ({ className }) => {
   const form1 = useFormController();
 
-  useFormWatcher(form1, 'addresses.0.street', (value: string) => {
-  });
+  useRule(form1, [
+    {
+      watch: ['firstname'],
+      when: {
+        operator: 'eq',
+        field: 'firstname',
+        value: 'foo',
+      },
+      setError: {
+        field: 'firstname',
+        message: 'cannot be foo',
+      },
+    },
+  ]);
 
-  useFormWatcher(form1, 'addresses.street', (value: string, _previousValue: string | undefined, watch) => {
-  });
+  useFormWatcher(form1, 'addresses.0.street', (value: string) => {});
 
-
+  useFormWatcher(form1, 'addresses.street', (value: string, _previousValue: string | undefined, watch) => {});
 
   const formController2 = useFormController<any>({ firstname: 'c' });
 
   useFormWatcher(formController2, 'role', (role) => {
     formController2.show('outer-card', role === 'admin');
-  })
+  });
 
   useFormWatcher(formController2, 'auth', (auth) => {
     formController2.show('inner-card', auth === 'token');
-  })
+  });
 
   const streetColumn = useInputColumn('street', {
     title: 'Street',
@@ -117,11 +128,11 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
             description="Can only contain alphanumeric characters"
             help="This is an help message for this field"
           />
-          <FormSelect label="Role" name="role" dataSource={['admin', 'user']} defaultValue="admin"  />
+          <FormSelect label="Role" name="role" dataSource={['admin', 'user']} defaultValue="admin" />
           <FormCheckbox label="Backup" name="backup" />
 
           <FormCard name="outer-card">
-            <FormSelect label="Auth" name="auth" dataSource={['none', 'token']} defaultValue="none" required={true}  />
+            <FormSelect label="Auth" name="auth" dataSource={['none', 'token']} defaultValue="none" required={true} />
 
             <FormCard name="inner-card">
               <FormInput name="token" required={true} label="Token" />
