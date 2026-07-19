@@ -202,6 +202,9 @@ export {
   shouldResetData,
   urlSerializer,
   visitFilter,
+  deserializeFilterOrCriteria,
+  getDefaultCollectionStatus,
+  toQuerySortBy,
 } from './collection/utils';
 export { default as DefaultBasicError } from './core/BasicError';
 export { default as FetchService } from './core/FetchService';
@@ -374,6 +377,9 @@ export {
   FormRuleValidation,
   FormRuleValidator,
   FormRuleValue,
+  FormFieldControllerRegistry,
+  FormRuleFieldFilter,
+  FormRuleFieldFilterId,
 } from './types/form';
 export { I18n } from './types/i18n';
 export {

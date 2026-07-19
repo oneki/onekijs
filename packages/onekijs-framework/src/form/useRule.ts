@@ -1,13 +1,18 @@
 import { useEffect } from 'react';
-import { applyFilter, formatFilter } from '../collection/utils';
+import { applyFilter, deserializeFilterOrCriteria, formatFilter } from '../collection/utils';
 import useLazyRef from '../core/useLazyRef';
-import { FormRule } from '../types/form';
+import { FormFieldControllerRegistry, FormRule } from '../types/form';
 import { toArray } from '../utils/object';
 import { generateUniqueId } from '../utils/string';
 import FormService from './FormService';
 import { FormValueListener } from './typings';
 
-export function useRule(form: FormService, rule: FormRule | FormRule[], context?: any): void {
+export function useRule(
+  form: FormService,
+  rule: FormRule | FormRule[],
+  controllerRegistry?: FormFieldControllerRegistry,
+  context?: any,
+): void {
   const listenerIds = useLazyRef(() => {
     const result: string[] = [];
     const rules = toArray(rule);
@@ -93,6 +98,25 @@ export function useRule(form: FormService, rule: FormRule | FormRule[], context?
           });
           toArray(r.enableValidator).forEach((validator) => {
             form.disableValidator(validator.field, validator.name);
+          });
+          toArray(r.addFilter).forEach((fieldFilter) => {
+            const controller = controllerRegistry?.getController(fieldFilter.field);
+            if (controller && controller.addFilter) {
+              toArray(fieldFilter.filter).forEach((f) => {
+                if (typeof f === 'string') {
+                  f = deserializeFilterOrCriteria(f) || { operator: 'and', criterias: [] };
+                }
+                controller.addFilter(f);
+              });
+            }
+          });
+          toArray(r.removeFilter).forEach((fieldFilter) => {
+            const controller = controllerRegistry?.getController(fieldFilter.field);
+            if (controller && controller.removeFilter) {
+              toArray(fieldFilter.filterId).forEach((filterId) => {
+                controller.removeFilter(filterId);
+              });
+            }
           });
         }
       };

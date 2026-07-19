@@ -211,7 +211,6 @@ export const applySortBy = <T, I extends DataObject<T>>(
   return items;
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const defaultComparator = (a: any, b: any) => {
   if (typeof a === 'string') {
     a = a.toLowerCase();
@@ -811,17 +810,179 @@ export const dummyLogMetadata = (): void => {
   console.log(__metadata);
 };
 
+const filterOperators: QueryFilterCriteriaOperator[] = [
+  'eq',
+  'like',
+  'sw',
+  'ew',
+  'regex',
+  'i_eq',
+  'i_like',
+  'i_sw',
+  'i_ew',
+  'i_regex',
+  'gt',
+  'lt',
+  'gte',
+  'lte',
+  'in',
+  'is',
+  'contains',
+];
+
+const unescapeFilterValue = (value: string): string => {
+  let result = '';
+  for (let index = 0; index < value.length; index++) {
+    if (value[index] === '\\' && index + 1 < value.length) {
+      index++;
+    }
+    result += value[index];
+  }
+  return result;
+};
+
+const parseFilterValue = (value: string): QueryFilterCriteriaValue | undefined => {
+  const firstCharacter = value[0];
+  const lastCharacter = value[value.length - 1];
+  if (firstCharacter === '"' || firstCharacter === "'") {
+    if (firstCharacter !== lastCharacter) return;
+    return unescapeFilterValue(value.slice(1, -1));
+  }
+
+  if (/\s|["';]/.test(value)) return;
+
+  try {
+    return JSON.parse(value) as QueryFilterCriteriaValue;
+  } catch {
+    return value;
+  }
+};
+
+const splitFilterComponents = (value: string): string[] | undefined => {
+  const components: string[] = [];
+  let start = 0;
+  let depth = 0;
+  let quote: string | undefined;
+
+  for (let index = 0; index < value.length; index++) {
+    const character = value[index];
+    if (quote) {
+      if (character === '\\') {
+        index++;
+      } else if (character === quote) {
+        quote = undefined;
+      }
+      continue;
+    }
+    if (character === '"' || character === "'") {
+      quote = character;
+    } else if (character === '(') {
+      depth++;
+    } else if (character === ')') {
+      if (depth === 0) return;
+      depth--;
+    } else if (character === ';' && depth === 0) {
+      const component = value.slice(start, index).trim();
+      if (component) components.push(component);
+      start = index + 1;
+    }
+  }
+
+  if (quote || depth !== 0) return;
+  const component = value.slice(start).trim();
+  if (component) components.push(component);
+  return components;
+};
+
+export const deserializeFilterOrCriteria = (value: string): QueryFilter | QueryFilterCriteria | undefined => {
+  const trimmedValue = value.trim();
+  if (!trimmedValue) return;
+
+  const groupMatch = /^(?:(and|or)\s*)?\(/i.exec(trimmedValue);
+  if (groupMatch) {
+    const openingParenthesis = groupMatch[0].lastIndexOf('(');
+    let depth = 0;
+    let quote: string | undefined;
+    let closingParenthesis = -1;
+
+    for (let index = openingParenthesis; index < trimmedValue.length; index++) {
+      const character = trimmedValue[index];
+      if (quote) {
+        if (character === '\\') {
+          index++;
+        } else if (character === quote) {
+          quote = undefined;
+        }
+      } else if (character === '"' || character === "'") {
+        quote = character;
+      } else if (character === '(') {
+        depth++;
+      } else if (character === ')' && --depth === 0) {
+        closingParenthesis = index;
+        break;
+      }
+    }
+
+    if (quote || closingParenthesis === -1 || trimmedValue.slice(closingParenthesis + 1).trim()) return;
+    const components = splitFilterComponents(trimmedValue.slice(openingParenthesis + 1, closingParenthesis));
+    if (components === undefined) return;
+
+    const criterias = components.map(deserializeFilterOrCriteria);
+    if (criterias.some((criteria) => criteria === undefined)) return;
+    return {
+      operator: groupMatch[1]?.toLowerCase() === 'or' ? 'or' : 'and',
+      criterias: criterias as QueryFilterOrCriteria[],
+    };
+  }
+
+  const operatorPattern = filterOperators.join('|');
+  const criteriaMatch = new RegExp(
+    `^([a-zA-Z$_][a-zA-Z0-9$_.]*)\\s+(not\\s+)?(${operatorPattern})\\s+(.+?)$`,
+    'i',
+  ).exec(trimmedValue);
+  if (!criteriaMatch) return;
+
+  const operator = criteriaMatch[3].toLowerCase() as QueryFilterCriteriaOperator;
+  const parsedValue = parseFilterValue(criteriaMatch[4]);
+  if (parsedValue === undefined) return;
+  return {
+    field: criteriaMatch[1],
+    not: criteriaMatch[2] !== undefined,
+    operator,
+    value: operator === 'in' && typeof parsedValue === 'string' ? parsedValue.split(',') : parsedValue,
+  };
+};
+
 export const formatFilter = (
-  filter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[],
+  filter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | string | string[],
 ): QueryFilter | undefined => {
   if (!filter) {
     return;
   } else if (Array.isArray(filter)) {
-    // current filter is a QueryFilterOrCriteria[]
+    if (filter.length === 0) {
+      return {
+        id: rootFilterId,
+        operator: 'and',
+        criterias: [],
+      };
+    }
+    if (typeof filter[0] === 'string') {
+      filter = (filter as string[])
+        .map((f) => deserializeFilterOrCriteria(f))
+        .filter((f) => f !== undefined) as QueryFilterOrCriteria[];
+    }
     return {
       id: rootFilterId,
       operator: 'and',
-      criterias: filter,
+      criterias: filter as QueryFilterOrCriteria[],
+    };
+  } else if (typeof filter === 'string') {
+    // current filter is a QueryFilterCriteria
+    const filterOrCriteria = deserializeFilterOrCriteria(filter);
+    return {
+      id: rootFilterId,
+      operator: 'and',
+      criterias: filterOrCriteria ? [filterOrCriteria] : [],
     };
   } else if (isQueryFilterCriteria(filter)) {
     // current filter is a QueryFilterCriteria
