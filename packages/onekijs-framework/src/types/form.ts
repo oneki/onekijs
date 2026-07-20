@@ -15,20 +15,20 @@ export type FormFieldControllerRegistry = {
 export type FormLayout = 'horizontal' | 'vertical' | 'table';
 
 export type FormRule = {
-  addFilter?: FormRuleFieldFilter | FormRuleFieldFilter[];
-  appendValue?: FormRuleValue | FormRuleValue[];
+  add_filter?: FormRuleFieldFilter | FormRuleFieldFilter[];
+  append_value?: FormRuleValue | FormRuleValue[];
   disable?: string | string[];
-  disableValidator?: FormRuleValidator | FormRuleValidator[];
+  disable_validator?: FormRuleValidator | FormRuleValidator[];
   enable?: string | string[];
-  enableValidator?: FormRuleValidator | FormRuleValidator[];
+  enable_validator?: FormRuleValidator | FormRuleValidator[];
   event?: 'onChange' | 'onInit';
   hide?: string | string[];
-  insertValue?: FormRulePositionalValue | FormRulePositionalValue[];
-  removeFilter?: FormRuleFieldFilterId | FormRuleFieldFilterId[];
-  removeValue?: FormRulePositionalField | FormRulePositionalField[];
-  setError?: FormRuleValidation | FormRuleValidation[];
-  setValue?: FormRuleValue | FormRuleValue[];
-  setWarning?: FormRuleValidation | FormRuleValidation[];
+  insert_value?: FormRulePositionalValue | FormRulePositionalValue[];
+  remove_filter?: FormRuleFieldFilterId | FormRuleFieldFilterId[];
+  remove_value?: FormRulePositionalField | FormRulePositionalField[];
+  set_error?: FormRuleValidation | FormRuleValidation[];
+  set_value?: FormRuleValue | FormRuleValue[];
+  set_warning?: FormRuleValidation | FormRuleValidation[];
   show?: string | string[];
   watch?: string | string[];
   when?: FormRuleFilterOrCriteria | FormRuleFilterOrCriteria[] | string | string[];

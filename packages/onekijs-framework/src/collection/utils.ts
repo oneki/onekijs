@@ -36,7 +36,9 @@ export const rootFilterId = Symbol();
 export const applyCriteria = <T, I extends DataObject<T>>(item: I, criteria: QueryFilterCriteria): boolean => {
   const operator = criteria.operator || 'eq';
   const value = criteria.value;
-  const source = get(item, `data.${criteria.field}` as NestedKeyOf<I>);
+  const source = criteria.field
+    ? get(item, `data.${criteria.field}` as NestedKeyOf<I>)
+    : get(item, 'data' as NestedKeyOf<I>);
   const not = criteria.not;
   const result = applyOperator(operator, source, value);
   return not ? !result : result;
@@ -125,6 +127,8 @@ export const applyOperator = (
       return left === right;
     case 'in':
       return toArray(right || []).includes(left);
+    case 'contains':
+      return toArray(left || []).includes(right);
     default:
       return true;
   }

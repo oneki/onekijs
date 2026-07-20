@@ -47,18 +47,18 @@ export function useRule(
         toArray(r.enable).forEach((fieldName) => {
           form.enable(fieldName, condition);
         });
-        toArray(r.setError).forEach((validation) => {
+        toArray(r.set_error).forEach((validation) => {
           form.setError(validation.field, `error-${ruleId}`, validation.message, condition);
         });
-        toArray(r.setWarning).forEach((validation) => {
+        toArray(r.set_warning).forEach((validation) => {
           form.setWarning(validation.field, `warning-${ruleId}`, validation.message, condition);
         });
 
         if (condition) {
-          toArray(r.setValue).forEach((value) => {
+          toArray(r.set_value).forEach((value) => {
             form.setValue(value.field, value.value);
           });
-          toArray(r.appendValue).forEach((value) => {
+          toArray(r.append_value).forEach((value) => {
             const currentValue = form.getValue(value.field) ?? [];
             if (Array.isArray(currentValue)) {
               form.setValue(value.field, [...currentValue, value.value]);
@@ -66,7 +66,7 @@ export function useRule(
               form.setValue(value.field, [currentValue, value.value]);
             }
           });
-          toArray(r.insertValue).forEach((value) => {
+          toArray(r.insert_value).forEach((value) => {
             const currentValue = form.getValue(value.field) ?? [];
             if (Array.isArray(currentValue)) {
               const newValue = [...currentValue];
@@ -76,7 +76,7 @@ export function useRule(
               form.setValue(value.field, [value.value]);
             }
           });
-          toArray(r.removeValue).forEach((value) => {
+          toArray(r.remove_value).forEach((value) => {
             const currentValue = form.getValue(value.field) ?? [];
             if (Array.isArray(currentValue)) {
               const newValue = [...currentValue];
@@ -86,20 +86,20 @@ export function useRule(
               form.setValue(value.field, undefined);
             }
           });
-          toArray(r.disableValidator).forEach((validator) => {
+          toArray(r.disable_validator).forEach((validator) => {
             form.disableValidator(validator.field, validator.name);
           });
-          toArray(r.enableValidator).forEach((validator) => {
+          toArray(r.enable_validator).forEach((validator) => {
             form.enableValidator(validator.field, validator.name);
           });
         } else {
-          toArray(r.disableValidator).forEach((validator) => {
+          toArray(r.disable_validator).forEach((validator) => {
             form.enableValidator(validator.field, validator.name);
           });
-          toArray(r.enableValidator).forEach((validator) => {
+          toArray(r.enable_validator).forEach((validator) => {
             form.disableValidator(validator.field, validator.name);
           });
-          toArray(r.addFilter).forEach((fieldFilter) => {
+          toArray(r.add_filter).forEach((fieldFilter) => {
             const controller = controllerRegistry?.getController(fieldFilter.field);
             if (controller && controller.addFilter) {
               toArray(fieldFilter.filter).forEach((f) => {
@@ -110,7 +110,7 @@ export function useRule(
               });
             }
           });
-          toArray(r.removeFilter).forEach((fieldFilter) => {
+          toArray(r.remove_filter).forEach((fieldFilter) => {
             const controller = controllerRegistry?.getController(fieldFilter.field);
             if (controller && controller.removeFilter) {
               toArray(fieldFilter.filterId).forEach((filterId) => {

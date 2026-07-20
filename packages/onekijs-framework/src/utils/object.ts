@@ -18,17 +18,14 @@ export function applyMixins(derivedCtor: any, constructors: any[]) {
   });
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function isNull(value: any): boolean {
   return value === undefined || value === null;
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function isNullOrEmpty(value: any): boolean {
   return value === undefined || value === null || value === '';
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function or(value: any, defaultValue: any): any {
   return isNull(value) ? defaultValue : value;
 }
@@ -49,13 +46,13 @@ export function deepFreeze(object: AnonymousObject): Readonly<AnonymousObject> {
 }
 
 // https://gist.github.com/Salakar/1d7137de9cb8b704e48a
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+
 export function isObject(item: any): boolean {
   return item && typeof item === 'object' && !Array.isArray(item) && item !== null;
 }
 
 // https://gist.github.com/Salakar/1d7137de9cb8b704e48a
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+
 export function simpleMergeDeep(target: any, source: any): any {
   if (target === undefined) {
     return source;
@@ -77,7 +74,7 @@ export function mergeDefault(obj: any, defaults: any): any {
 }
 
 // https://stackoverflow.com/questions/4459928/how-to-deep-clone-in-javascript
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+
 export function clone(item: any): any {
   if (!item) {
     return item;
@@ -132,7 +129,6 @@ export function clone(item: any): any {
   return result;
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function del(content: any, property: string | number) {
   const [subContent, index] = find(content, property);
   if (!isNull(subContent)) {
@@ -140,13 +136,11 @@ export function del(content: any, property: string | number) {
       subContent.splice(index, 1);
     } else {
       delete subContent[index];
- 
     }
   }
   return content;
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function find(content: any, property: string | number, populate = false): any[] {
   let parentContent: any = undefined;
   let parentIndex: any = undefined;
@@ -176,7 +170,7 @@ export function find(content: any, property: string | number, populate = false):
           return [undefined, undefined];
         }
       }
-    } catch (e) {
+    } catch {
       if (populate) {
         if (!isNaN(Number(index)) && !Array.isArray(content)) {
           content = [];
@@ -231,7 +225,7 @@ export function get<T, K extends NestedKeyOf<T> = NestedKeyOf<T>>(
   property?: K,
   defaultValue?: PathType<T, K> | null,
 ): PathType<T, K> | null;
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+
 export function get(content: any, property: any, defaultValue: any): any {
   if (property === undefined || property === null || property === '') {
     return content;
@@ -261,7 +255,7 @@ export function get(content: any, property: any, defaultValue: any): any {
           return defaultValue;
         }
       }
-    } catch (e) {
+    } catch {
       return defaultValue;
     }
   }
@@ -269,7 +263,6 @@ export function get(content: any, property: any, defaultValue: any): any {
   return content;
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function append<T>(content: T, property: string | number, value: any): T {
   return update(content, property, (arr: any[]) => {
     if (isNull(arr)) {
@@ -282,7 +275,6 @@ export function append<T>(content: T, property: string | number, value: any): T 
   });
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function set<T, K extends NestedKeyOf<T> = NestedKeyOf<T>>(
   content: T | undefined,
   property: K,
@@ -315,7 +307,6 @@ export function set<T, K extends NestedKeyOf<T> = NestedKeyOf<T>>(
     }
   }
 
-  // eslint-disable-next-line prefer-const
   let [subContent, index, parentContent, parentIndex] = find(content, property, true);
   if (!isNull(subContent)) {
     if (force) {
@@ -383,7 +374,6 @@ function is(x: any, y: any) {
     return x !== 0 || y !== 0 || 1 / x === 1 / y;
   } else {
     // Step 6.a: NaN == NaN
-    // eslint-disable-next-line no-self-compare
     return x !== x && y !== y;
   }
 }
@@ -484,7 +474,6 @@ export const diffArrays = (
   return { added, removed, same };
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const toPayload = (args: any) => {
   const payload: AnonymousObject = {};
   Array.prototype.slice.call(args).forEach((arg, i) => (payload[`arg${i.toString().padStart(5, '0')}`] = arg));
@@ -501,7 +490,6 @@ export const fromPayload = (payload: AnonymousObject): any[] => {
   return args;
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const omit = <T, S = any>(source: S, keys: (keyof S)[]): T => {
   const clone = Object.assign({}, source);
   keys.forEach((key) => delete clone[key]);
@@ -514,19 +502,16 @@ export const pick = <T>(source: T & { [k: string]: any }, keys: (keyof T)[]): T 
   return result as T;
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const isGetter = (obj: any, property: string): boolean => {
   const descriptor = Object.getOwnPropertyDescriptor(obj, property);
   return descriptor !== undefined && descriptor.get !== undefined;
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const isSetter = (obj: any, property: string): boolean => {
   const descriptor = Object.getOwnPropertyDescriptor(obj, property);
   return descriptor !== undefined && descriptor.set !== undefined;
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const isGetterOrSetter = (obj: any, property: string): boolean => {
   const descriptor = Object.getOwnPropertyDescriptor(obj, property);
   return descriptor !== undefined && (descriptor.get !== undefined || descriptor.set !== undefined);
