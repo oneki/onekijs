@@ -148,7 +148,7 @@ export default class CollectionService<
   }
 
   @reducer
-  addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId: QueryFilterId = rootFilterId): void {
+  addFilter(filterOrCriteria: QueryFilterOrCriteria | string, parentFilterId: QueryFilterId = rootFilterId): void {
     this._setLoading({ limit: this.state.limit, offset: 0 });
     const query = this.getQuery();
     this._addFilter(query, filterOrCriteria, parentFilterId);
@@ -834,7 +834,7 @@ export default class CollectionService<
 
   _addFilter(
     query: Query,
-    filterOrCriteria: QueryFilterOrCriteria,
+    filterOrCriteria: QueryFilterOrCriteria | string,
     parentFilterId: QueryFilterId = rootFilterId,
   ): void {
     return aFilter(query, filterOrCriteria, parentFilterId);

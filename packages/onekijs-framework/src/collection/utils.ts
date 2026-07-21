@@ -36,9 +36,10 @@ export const rootFilterId = Symbol();
 export const applyCriteria = <T, I extends DataObject<T>>(item: I, criteria: QueryFilterCriteria): boolean => {
   const operator = criteria.operator || 'eq';
   const value = criteria.value;
-  const source = criteria.field
-    ? get(item, `data.${criteria.field}` as NestedKeyOf<I>)
-    : get(item, 'data' as NestedKeyOf<I>);
+  const source =
+    !criteria.field || criteria.field === '.'
+      ? get(item, 'data' as NestedKeyOf<I>)
+      : get(item, `data.${criteria.field}` as NestedKeyOf<I>);
   const not = criteria.not;
   const result = applyOperator(operator, source, value);
   return not ? !result : result;
@@ -782,10 +783,17 @@ export const visitFilter = (filter: QueryFilter, visitor: (filter: QueryFilter) 
 
 export const addFilter = (
   query: Query,
-  filterOrCriteria: QueryFilterOrCriteria,
+  filterOrCriteria: QueryFilterOrCriteria | string,
   parentFilterId: QueryFilterId = rootFilterId,
 ): void => {
   const filter = clone(formatFilter(query.filter) || { id: rootFilterId, operator: 'and', criterias: [] });
+  if (typeof filterOrCriteria === 'string') {
+    const parsedFilterOrCriteria = deserializeFilterOrCriteria(filterOrCriteria);
+    if (parsedFilterOrCriteria === undefined) {
+      throw new DefaultBasicError(`Invalid filter or criteria: ${filterOrCriteria}`);
+    }
+    filterOrCriteria = parsedFilterOrCriteria;
+  }
   visitFilter(filter, (filter) => {
     if (filter.id === parentFilterId) {
       let index = -1;
