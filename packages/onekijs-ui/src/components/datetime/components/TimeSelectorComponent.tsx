@@ -12,7 +12,15 @@ const getValue = (candidate: string | number | undefined, max: number, defaultVa
   return candidate;
 };
 
-const TimeSelectorComponent: React.FC<TimeSelectorComponentProps> = ({ value, onChange, size, edge, displayHours, displayMinutes, displaySeconds  }) => {
+const TimeSelectorComponent: React.FC<TimeSelectorComponentProps> = ({
+  value,
+  onChange,
+  size,
+  edge,
+  displayHours,
+  displayMinutes,
+  displaySeconds,
+}) => {
   const d = new Date();
   const hourInt = getValue(value.hour, 23, displayHours ? d.getHours() : 0);
   const minuteInt = getValue(value.minute, 59, displayMinutes ? d.getMinutes() : 0);
@@ -30,7 +38,12 @@ const TimeSelectorComponent: React.FC<TimeSelectorComponentProps> = ({ value, on
     (value: string) => {
       setInternalHour(value);
       if (value !== '') {
-        onChange(`${String(value || 0).padStart(2, '0')}:${String(minute || 0).padStart(2, '0')}:${String(second || 0).padStart(2, '0')}`, edge);
+        onChange(
+          `${String(value || 0).padStart(2, '0')}:${String(minute || 0).padStart(2, '0')}:${String(
+            second || 0,
+          ).padStart(2, '0')}`,
+          edge,
+        );
       }
     },
     [minute, second, onChange],
@@ -40,7 +53,13 @@ const TimeSelectorComponent: React.FC<TimeSelectorComponentProps> = ({ value, on
     (value: string) => {
       setInternalMinute(value);
       if (value !== '') {
-        onChange(`${String(hour || 0).padStart(2, '0')}:${String(value || 0).padStart(2, '0')}:${String(second || 0).padStart(2, '0')}`, edge);
+        onChange(
+          `${String(hour || 0).padStart(2, '0')}:${String(value || 0).padStart(2, '0')}:${String(second || 0).padStart(
+            2,
+            '0',
+          )}`,
+          edge,
+        );
       }
     },
     [hour, second, onChange],
@@ -50,7 +69,13 @@ const TimeSelectorComponent: React.FC<TimeSelectorComponentProps> = ({ value, on
     (value: string) => {
       setInternalSecond(value);
       if (value !== '') {
-        onChange(`${String(hour || 0).padStart(2, '0')}:${String(minute || 0).padStart(2, '0')}:${String(value || 0).padStart(2, '0')}`, edge);
+        onChange(
+          `${String(hour || 0).padStart(2, '0')}:${String(minute || 0).padStart(2, '0')}:${String(value || 0).padStart(
+            2,
+            '0',
+          )}`,
+          edge,
+        );
       }
     },
     [hour, minute, onChange],
@@ -62,19 +87,23 @@ const TimeSelectorComponent: React.FC<TimeSelectorComponentProps> = ({ value, on
         <TimeSelectorPartComponent key="hour" type="hour" value={hour} onChange={onChangeHour} size={size} />
       )}
       {displayHours && (displayMinutes || displaySeconds) && (
-        <span key="sep1" className="o-time-separator">:</span>
+        <span key="sep1" className="o-time-separator">
+          :
+        </span>
       )}
       {displayMinutes && (
         <TimeSelectorPartComponent key="minute" type="minute" value={minute} onChange={onChangeMinute} size={size} />
       )}
       {displaySeconds && (displayHours || displayMinutes) && (
-        <span key="sep2" className="o-time-separator">:</span>
+        <span key="sep2" className="o-time-separator">
+          :
+        </span>
       )}
       {displaySeconds && (
         <TimeSelectorPartComponent key="second" type="second" value={second} onChange={onChangeSecond} size={size} />
       )}
     </div>
-  )
-}
+  );
+};
 
 export default TimeSelectorComponent;

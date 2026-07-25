@@ -1,9 +1,10 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { days, months } from '../../../utils/date';
 import { addClassname } from '../../../utils/style';
 import TogglerIcon from '../../icon/TogglerIcon';
 import Select from '../../select';
 import { CalendarComponentProps, CalendarDay, DatePickerDate } from '../typings';
+import { isSameDay } from '../util';
 
 const isCurrent = (d: Date, year: number, month: number, day: number): boolean => {
   return d.getFullYear() === year && d.getMonth() === month && d.getDate() === day;
@@ -58,7 +59,7 @@ function getMonth(candidate: string | number | undefined, defaultValue: any) {
   return candidate;
 }
 
-function getYear<T>(candidate: string | number | undefined, min: number, max: number, defaultValue: number): number;
+function getYear(candidate: string | number | undefined, min: number, max: number, defaultValue: number): number;
 function getYear(
   candidate: string | number | undefined,
   min: number,
@@ -149,8 +150,13 @@ const CalendarComponent: FC<CalendarComponentProps> = ({
       ? []
       : [...Array(lastDayOfPreviousMonth.getDate() + 1).keys()].slice(-firstDayOfCurrentMonth.getDay()).map((n) => {
           const startRange =
-            fromDay === n && lastDayOfPreviousMonth.getMonth() === firstDayOfExternalFromMonth?.getMonth() && lastDayOfPreviousMonth.getFullYear() === firstDayOfExternalFromMonth?.getFullYear();
-          const endRange = toDay === n && lastDayOfPreviousMonth.getMonth() === firstDayOfExternalToMonth?.getMonth() && lastDayOfPreviousMonth.getFullYear() === firstDayOfExternalToMonth?.getFullYear();
+            fromDay === n &&
+            lastDayOfPreviousMonth.getMonth() === firstDayOfExternalFromMonth?.getMonth() &&
+            lastDayOfPreviousMonth.getFullYear() === firstDayOfExternalFromMonth?.getFullYear();
+          const endRange =
+            toDay === n &&
+            lastDayOfPreviousMonth.getMonth() === firstDayOfExternalToMonth?.getMonth() &&
+            lastDayOfPreviousMonth.getFullYear() === firstDayOfExternalToMonth?.getFullYear();
           return {
             day: n,
             active: startRange || endRange,
@@ -173,8 +179,14 @@ const CalendarComponent: FC<CalendarComponentProps> = ({
 
   calendarDays = calendarDays.concat(
     [...Array(lastDayOfCurrentMonth.getDate() + 1).keys()].slice(1).map((n) => {
-      const startRange = fromDay === n && lastDayOfCurrentMonth.getMonth() === firstDayOfExternalFromMonth?.getMonth() && lastDayOfCurrentMonth.getFullYear() === firstDayOfExternalFromMonth?.getFullYear();
-      const endRange = toDay === n && lastDayOfCurrentMonth.getMonth() === firstDayOfExternalToMonth?.getMonth() && lastDayOfCurrentMonth.getFullYear() === firstDayOfExternalToMonth?.getFullYear();
+      const startRange =
+        fromDay === n &&
+        lastDayOfCurrentMonth.getMonth() === firstDayOfExternalFromMonth?.getMonth() &&
+        lastDayOfCurrentMonth.getFullYear() === firstDayOfExternalFromMonth?.getFullYear();
+      const endRange =
+        toDay === n &&
+        lastDayOfCurrentMonth.getMonth() === firstDayOfExternalToMonth?.getMonth() &&
+        lastDayOfCurrentMonth.getFullYear() === firstDayOfExternalToMonth?.getFullYear();
       return {
         day: n,
         active: startRange || endRange,
@@ -201,8 +213,13 @@ const CalendarComponent: FC<CalendarComponentProps> = ({
       ? []
       : [...Array(6 - lastDayOfCurrentMonth.getDay() + 1).keys()].slice(1).map((n) => {
           const startRange =
-            fromDay === n && firstDayOfNextMonth.getMonth() === firstDayOfExternalFromMonth?.getMonth() && firstDayOfNextMonth.getFullYear() === firstDayOfExternalFromMonth?.getFullYear();
-          const endRange = toDay === n && firstDayOfNextMonth.getMonth() === firstDayOfExternalToMonth?.getMonth() && firstDayOfNextMonth.getFullYear() === firstDayOfExternalToMonth?.getFullYear();
+            fromDay === n &&
+            firstDayOfNextMonth.getMonth() === firstDayOfExternalFromMonth?.getMonth() &&
+            firstDayOfNextMonth.getFullYear() === firstDayOfExternalFromMonth?.getFullYear();
+          const endRange =
+            toDay === n &&
+            firstDayOfNextMonth.getMonth() === firstDayOfExternalToMonth?.getMonth() &&
+            firstDayOfNextMonth.getFullYear() === firstDayOfExternalToMonth?.getFullYear();
           return {
             day: n,
             active: startRange || endRange,
@@ -333,19 +350,31 @@ const CalendarComponent: FC<CalendarComponentProps> = ({
                 let endDateString: string | undefined = undefined;
                 if (to.year !== undefined && to.month !== undefined && to.day !== undefined) {
                   // it's not the second click
-                  endDateString = `${to.year}-${to.month.padStart(2, '0')}-${String(to.day).padStart(
-                    2,
-                    '0',
-                  )}`;
+                  endDateString = `${to.year}-${to.month.padStart(2, '0')}-${String(to.day).padStart(2, '0')}`;
                   endDate = new Date(endDateString);
                 }
 
                 const nextDate = new Date(nextDateString);
                 if (endDate) {
-                  if (nextDate <= fromDate) {
-                     onChange(nextDateString, endDateString);
+                  // case when we click on the same day than the fromDate
+                  if (isSameDay(fromDate, nextDate)) {
+                    if (nextDate <= fromDate) {
+                      onChange(nextDateString, fromDateString);
+                    } else {
+                      onChange(fromDateString, nextDateString);
+                    }
+                  }
+                  // case when we click on the same day than the endDate
+                  else if (isSameDay(endDate, nextDate)) {
+                    if (nextDate <= endDate) {
+                      onChange(nextDateString, endDateString);
+                    } else {
+                      onChange(endDateString, nextDateString);
+                    }
+                  } else if (nextDate <= fromDate) {
+                    onChange(nextDateString, endDateString);
                   } else if (nextDate >= endDate) {
-                     onChange(fromDateString, nextDateString);
+                    onChange(fromDateString, nextDateString);
                   } else if (nextSelectEdge === 'from') {
                     onChange(nextDateString, endDateString);
                   } else {

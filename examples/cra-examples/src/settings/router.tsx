@@ -3,7 +3,7 @@ import UseSettingsPage from './UseSettingsPage';
 import UseSettingPage from './UseSettingPage';
 import SettingsIndexPage from './IndexPage';
 
-const SettingsRouter = (): JSX.Element => {
+const SettingsRouter = (): import('react').JSX.Element => {
   return (
     <Routes>
       <Route path="use-setting" element={<UseSettingPage />} />

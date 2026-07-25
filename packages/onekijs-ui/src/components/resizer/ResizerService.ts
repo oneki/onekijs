@@ -61,7 +61,7 @@ export class ResizerService extends DefaultService<ResizerState> {
   }
 
   @reducer
-  startResize(handle: ResizerHandle, target: React.RefObject<HTMLDivElement>, x: number, y: number): void {
+  startResize(handle: ResizerHandle, target: React.RefObject<HTMLDivElement | null>, x: number, y: number): void {
     this.currentHandle = handle;
     this.state.active = true;
     this.state.lastX = x;

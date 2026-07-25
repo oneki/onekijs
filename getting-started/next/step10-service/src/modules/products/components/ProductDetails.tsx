@@ -1,3 +1,5 @@
+'use client';
+
 import React, { FC } from 'react';
 import { useLocalService, useTranslation } from 'onekijs-next';
 import { ProductType } from '../../../../data/products';

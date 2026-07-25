@@ -5,11 +5,11 @@ import PickerComponent from './PickerComponent';
 const type: DatePickerType = {
   date: false,
   time: true,
-  range: false
-}
+  range: false,
+};
 
 const TimePickerComponent: React.FC<TimePickerProps> = (props) => {
-  return <PickerComponent {...props} type={type} />
-}
+  return <PickerComponent {...props} type={type} />;
+};
 
 export default TimePickerComponent;

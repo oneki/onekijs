@@ -2,7 +2,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
 
-import packageJson from './package.json' assert { type: 'json' };
+import packageJson from './package.json' with { type: 'json' };
 
 const config = [
   {
@@ -13,7 +13,7 @@ const config = [
       'onekijs-framework',
       'regenerator-runtime',
       'next',
-      'next/router',
+      'next/navigation',
       'next/link',
       'react-transition-group',
     ],

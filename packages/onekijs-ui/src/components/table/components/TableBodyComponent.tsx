@@ -62,7 +62,7 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
       const columns = useTableColumns();
       const className =
         typeof rowClassName === 'function' ? rowClassName(props.item, props.index, columns) : rowClassName;
-        return (
+      return (
         <RowComponent
           {...props}
           columns={columns}
@@ -94,8 +94,8 @@ const TableBodyComponent: React.FC<TableBodyProps> = ({ className, tableRef, con
       className={addClassname('o-table-body', className)}
       follow={follow}
       height={height}
-      ItemComponent={ItemComponentRef.current}
-      ItemLoadingComponent={LoadingRowComponent}
+      ItemComponent={ItemComponentRef.current as unknown as React.FC<ListItemProps<any, any>>}
+      ItemLoadingComponent={LoadingRowComponent as unknown as React.FC}
       items={items}
       onItemSelect={onRowClick}
       onItemHighlight={onRowEnter}

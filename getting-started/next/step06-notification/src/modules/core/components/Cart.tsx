@@ -1,5 +1,4 @@
-import { Link } from 'onekijs-next';
-import React from 'react';
+import Link from 'next/link';
 import { CartType } from '../../../../data/dto/cart';
 import { currency } from '../libs/format';
 
@@ -7,7 +6,7 @@ interface CartProps {
   cart: CartType;
 }
 
-const Cart: React.FC<CartProps> = ({ cart }) => {
+const Cart = ({ cart }: CartProps) => {
   return (
     <div>
       <h3>Cart</h3>

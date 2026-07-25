@@ -4,6 +4,7 @@ import { ListItem, VirtualItemWrapperProps, VirtualListProps } from '../typings'
 import ListItemComponent, { ListItemContent } from './ListItemComponent';
 import LoadingItem from './LoadingItem';
 
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
 const VirtualItemWrapper = <T extends any = any, I extends ListItem<T> = ListItem<T>>({
   virtualItem,
   listItem,
@@ -16,7 +17,7 @@ const VirtualItemWrapper = <T extends any = any, I extends ListItem<T> = ListIte
 }: VirtualItemWrapperProps<T, I>) => {
   const { index, measureRef, start } = virtualItem;
   const ref = useRef<HTMLDivElement | null>(null);
-  const previousHeightRef = useRef<number | undefined>();
+  const previousHeightRef = useRef<number | undefined>(undefined);
 
   const measure = useCallback(
     (el: HTMLElement | null) => {
@@ -83,6 +84,7 @@ const VirtualItemWrapper = <T extends any = any, I extends ListItem<T> = ListIte
   );
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
 const VirtualListComponent = <T extends any = any, I extends ListItem<T> = ListItem<T>>({
   items,
   ItemComponent = ListItemComponent,

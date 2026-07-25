@@ -9,36 +9,56 @@ import { color } from '../../styles/typography';
 import { marginBottom, marginTop, padding } from '../../styles/spacing';
 
 const getBackgroundColor = (kind: AlertProps['kind']) => {
-  switch(kind) {
-    case 'success': return 'green-100';
-    case 'info': return 'blue-100';
-    case 'warning': return 'orange-200';
-    case 'error': return 'red-100';
-    default: return 'lighter';
+  switch (kind) {
+    case 'success':
+      return 'green-100';
+    case 'info':
+      return 'blue-100';
+    case 'warning':
+      return 'orange-200';
+    case 'error':
+      return 'red-100';
+    default:
+      return 'lighter';
   }
-}
+};
 
 const getBorderColor = (kind: AlertProps['kind']) => {
-  switch(kind) {
-    case 'success': return 'success';
-    case 'info': return 'info';
-    case 'warning': return 'warning';
-    case 'error': return 'danger';
-    default: return 'darker';
+  switch (kind) {
+    case 'success':
+      return 'success';
+    case 'info':
+      return 'info';
+    case 'warning':
+      return 'warning';
+    case 'error':
+      return 'danger';
+    default:
+      return 'darker';
   }
-}
+};
 
 const getFontColor = (kind: AlertProps['kind']) => {
-  switch(kind) {
-    case 'success': return 'green-800';
-    case 'info': return 'blue-800';
-    case 'warning': return 'orange-800';
-    case 'error': return 'red-800';
-    default: return 'darkest';
+  switch (kind) {
+    case 'success':
+      return 'green-800';
+    case 'info':
+      return 'blue-800';
+    case 'warning':
+      return 'orange-800';
+    case 'error':
+      return 'red-800';
+    default:
+      return 'darkest';
   }
-}
+};
 
-const alertStyle: ComponentStyle<AlertProps> = ({ kind = 'info', marginTop: mTop = '0px', marginBottom: mBottom = '0px', size = 'medium' }) => {
+const alertStyle: ComponentStyle<AlertProps> = ({
+  kind = 'info',
+  marginTop: mTop = '0px',
+  marginBottom: mBottom = '0px',
+  size = 'medium',
+}) => {
   return css`
     ${display('flex')}
     ${alignItems('center')}
@@ -51,7 +71,7 @@ const alertStyle: ComponentStyle<AlertProps> = ({ kind = 'info', marginTop: mTop
     ${borderRadius('sm')}
     ${marginTop(mTop)}
     ${marginBottom(mBottom)}
-  `
-}
+  `;
+};
 
 export default alertStyle;

@@ -1,4 +1,4 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/zeit/next.js/tree/canary/packages/create-next-app).
+This is a Next 16 App Router theming guide with locale-prefixed `/en` and `/fr` routes.
 
 ## Getting Started
 
@@ -10,21 +10,14 @@ npm run dev
 yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000/en](http://localhost:3000/en) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+The App Router source is under `src/app`. Login, signup, cart, user, and product-availability endpoints are route handlers under `src/app/api`. Signup uses OnekiJS `Form`, `useFormController`, `useValue`, `useValidation`, and `useSubmit` for client-side validation.
 
-## Learn More
+The OnekiJS `App` provider and `ClarityTheme` from `onekijs-theme-clarity/next` are mounted together in the `src/app/providers.tsx` client boundary. The Clarity font stylesheet is imported in the root layout, and `src/styled.d.ts` augments styled-components v6 `DefaultTheme`.
 
-To learn more about Next.js, take a look at the following resources:
+Product details retain the OnekiJS `AvailabilityService` decorator and `useLocalService` pattern in a client component. The availability handler is `src/app/api/products/[productId]/availability/route.ts`; it keeps the delayed response, unavailable product, and simulated server-error behavior from the original guide.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/zeit/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on ZEIT Now
-
-The easiest way to deploy your Next.js app is to use the [ZEIT Now Platform](https://zeit.co/import?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+This server-capable application uses App Router route handlers and does not support static export.

@@ -1,13 +1,16 @@
+'use client';
+
+import Link from 'next/link';
 import { useI18nService, useSecurityContext, useTranslation } from 'onekijs-next';
 import React from 'react';
-import { Link } from 'onekijs-next';
 
 const Navbar: React.FC = () => {
   const [T, , locale] = useTranslation();
   const [loggedUser] = useSecurityContext('username');
+  const localePath = `/${locale}`;
   return (
     <div className="app-top-bar">
-      <Link href="/">
+      <Link href={localePath}>
         <h1>
           <T>My Store</T>
         </h1>
@@ -16,12 +19,12 @@ const Navbar: React.FC = () => {
         {loggedUser && (
           <div className="user">
             {loggedUser}{' '}
-            <Link className="logout" href="/logout">
+            <Link className="logout" href={`${localePath}/logout`}>
               [<T>Log out</T>]
             </Link>
           </div>
         )}
-        <Link href="/cart" className="button fancy-button">
+        <Link href={`${localePath}/cart`} className="button fancy-button">
           <i className="material-icons">shopping_cart</i>
           <T>Checkout</T>
         </Link>

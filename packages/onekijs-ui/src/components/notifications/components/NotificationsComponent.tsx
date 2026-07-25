@@ -24,6 +24,16 @@ const NotificationsComponent: React.FC<NotificationsProps> = ({
   }
   const bodyOverflowXRef = useRef<string>('unset');
   const bodyOverflowYRef = useRef<string>('unset');
+  const transitionRefs = useRef(new Map<string, React.RefObject<HTMLDivElement | null>>());
+
+  const getTransitionRef = (id: string) => {
+    let ref = transitionRefs.current.get(id);
+    if (!ref) {
+      ref = React.createRef<HTMLDivElement>();
+      transitionRefs.current.set(id, ref);
+    }
+    return ref;
+  };
 
   const onExiting = (node: HTMLElement) => {
     bodyOverflowXRef.current = document.body.style.overflowX || document.body.style.overflow || 'unset';
@@ -90,32 +100,38 @@ const NotificationsComponent: React.FC<NotificationsProps> = ({
     <div className={classNames}>
       {notifications.length > 1 && (
         <div className="o-notification-close-all">
-          <span className="o-notification-close-all-content" onClick={() => notificationService.clearAll()}>Close all</span>
+          <span className="o-notification-close-all-content" onClick={() => notificationService.clearAll()}>
+            Close all
+          </span>
         </div>
       )}
       <TransitionGroup component={null}>
-        {notifications.map((notification, index) => (
-          <CSSTransition
-            timeout={{
-              appear: animate * 2,
-              enter: animate * 2,
-              exit: animate * 2,
-            }}
-            classNames="o-notification-animation"
-            mountOnEnter={true}
-            appear={true}
-            unmountOnExit={true}
-            key={`o-notification-${notification.id}`}
-            onEntering={onEntering}
-            onExiting={onExiting}
-            onEntered={onEntered}
-            onExited={onExited}
-          >
-            <div className="o-notification-container">
-              <NotificationComponent notification={notification} index={index} showTimer={showTimer} />
-            </div>
-          </CSSTransition>
-        ))}
+        {notifications.map((notification, index) => {
+          const transitionRef = getTransitionRef(`o-notification-${notification.id}`);
+          return (
+            <CSSTransition
+              timeout={{
+                appear: animate * 2,
+                enter: animate * 2,
+                exit: animate * 2,
+              }}
+              classNames="o-notification-animation"
+              mountOnEnter={true}
+              appear={true}
+              unmountOnExit={true}
+              key={`o-notification-${notification.id}`}
+              nodeRef={transitionRef}
+              onEntering={() => transitionRef.current && onEntering(transitionRef.current)}
+              onExiting={() => transitionRef.current && onExiting(transitionRef.current)}
+              onEntered={onEntered}
+              onExited={onExited}
+            >
+              <div ref={transitionRef} className="o-notification-container">
+                <NotificationComponent notification={notification} index={index} showTimer={showTimer} />
+              </div>
+            </CSSTransition>
+          );
+        })}
       </TransitionGroup>
     </div>
   );

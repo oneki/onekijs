@@ -22,12 +22,9 @@ const useSelectController = <T = any, I extends SelectItem<T> = SelectItem<T>>(
       options = Object.assign({}, options, { adapter });
     }
     return ds as T[] | string | undefined;
-  })
+  });
 
-  const initialState = useCollectionInitialState<T, I>(
-    ds.current,
-    Object.assign({ initialLimit: 20 }, options),
-  );
+  const initialState = useCollectionInitialState<T, I>(ds.current, Object.assign({ initialLimit: 20 }, options));
   const collection = useCollectionProxy<T, I, SelectState<T, I>, SelectService<T, I, SelectState<T, I>>>(
     ds.current,
     SelectService,

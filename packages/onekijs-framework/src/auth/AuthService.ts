@@ -98,16 +98,8 @@ export default class AuthService extends DefaultGlobalService {
       }
       if (token.no_mfa_token) {
         token.no_mfa_token_expires_at = Date.now() + parseInt(token.no_mfa_token_expires_in) * 1000;
-        setItem(
-          `onekijs.${identity}.no_mfa_token`,
-          `${token.no_mfa_token}`,
-          'localStorage'
-        );
-        setItem(
-          `onekijs.${identity}.no_mfa_token_expires_at`,
-          `${token.no_mfa_token_expires_at}`,
-          'localStorage'
-        );
+        setItem(`onekijs.${identity}.no_mfa_token`, `${token.no_mfa_token}`, 'localStorage');
+        setItem(`onekijs.${identity}.no_mfa_token_expires_at`, `${token.no_mfa_token_expires_at}`, 'localStorage');
       }
       // persist the token in the redux state. It can be added as a bearer to any ajax request.
       set(this.state, `auth.${identity}.token`, token);
@@ -253,6 +245,7 @@ export default class AuthService extends DefaultGlobalService {
           // if the token was not found, we are not yet authenticated
           throw new HTTPError(401);
         }
+
         securityContext = token_prop ? parseJwt(token[token_prop]) : parseJwt(token);
       } else {
         // the userinfo endpoint is an URL, do a ajax call to
@@ -363,7 +356,7 @@ export default class AuthService extends DefaultGlobalService {
     }
   }
 
-  loadNoMfaToken(idp: Idp, identity='default'): string | null {
+  loadNoMfaToken(idp: Idp, identity = 'default'): string | null {
     const noMfaToken = localStorage.getItem(`onekijs.${identity}.no_mfa_token`);
     const noMfaTokenExpiresAt = localStorage.getItem(`onekijs.${identity}.no_mfa_token_expires_at`);
     if (noMfaToken === null || noMfaTokenExpiresAt === null) {
@@ -371,7 +364,7 @@ export default class AuthService extends DefaultGlobalService {
     }
 
     const clockSkew = idp.clockSkew || 60;
-    if (parseInt(noMfaTokenExpiresAt) > (Date.now() + clockSkew * 1000)) {
+    if (parseInt(noMfaTokenExpiresAt) > Date.now() + clockSkew * 1000) {
       return noMfaToken;
     }
 
@@ -530,6 +523,10 @@ export default class AuthService extends DefaultGlobalService {
       yield this.setToken(token, identity, idp.name);
 
       if (!(token instanceof String) && (token as AnonymousObject).refresh_token) {
+        if (!token.hasOwnProperty('expires_at') && token.hasOwnProperty('expires_in')) {
+          // add a expires_at property to the token for convenience
+          (token as AnonymousObject).expires_at = Date.now() + parseInt((token as AnonymousObject).expires_in) * 1000;
+        }
         yield spawn([this, this.refreshToken], token as AnonymousObject, idp, false, onError);
       }
       return token;

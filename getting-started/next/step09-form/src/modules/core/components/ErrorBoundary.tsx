@@ -1,3 +1,5 @@
+'use client';
+
 import { ErrorBoundaryComponentProps, useTranslation } from 'onekijs-next';
 import React from 'react';
 

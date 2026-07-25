@@ -1,4 +1,4 @@
-import { Form, useFormController, useFormWatcher } from 'onekijs';
+import { Form, useFormController, useFormWatcher, useRule } from 'onekijs';
 import {
   ComponentStyle,
   FormCard,
@@ -22,13 +22,34 @@ const fomStyle: ComponentStyle<{}> = () => {
 const Page: React.FC<{ className?: string }> = ({ className }) => {
   const form1 = useFormController();
 
-  useFormWatcher(form1, 'addresses.0.street', (value: string) => {
+  useRule(form1, [
+    {
+      watch: ['firstname'],
+      when: {
+        operator: 'eq',
+        field: 'firstname',
+        value: 'foo',
+      },
+      setError: {
+        field: 'firstname',
+        message: 'cannot be foo',
+      },
+    },
+  ]);
+
+  useFormWatcher(form1, 'addresses.0.street', (value: string) => {});
+
+  useFormWatcher(form1, 'addresses.street', (value: string, _previousValue: string | undefined, watch) => {});
+
+  const formController2 = useFormController<any>({ firstname: 'c' });
+
+  useFormWatcher(formController2, 'role', (role) => {
+    formController2.show('outer-card', role === 'admin');
   });
 
-  useFormWatcher(form1, 'addresses.street', (value: string, _previousValue: string | undefined, watch) => {
+  useFormWatcher(formController2, 'auth', (auth) => {
+    formController2.show('inner-card', auth === 'token');
   });
-
-  const formController2 = useFormController({ firstname: 'toto' });
 
   const streetColumn = useInputColumn('street', {
     title: 'Street',
@@ -93,7 +114,7 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
           Metadata: <pre>{JSON.stringify(form1.state.metadata)}</pre>
         </div>
       </div>
-      <div style={{ marginTop: '500px' }}>
+      <div style={{ marginTop: '200px', marginBottom: '200px' }}>
         <Form
           controller={formController2}
           className={className}
@@ -104,12 +125,20 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
             label="Firstname"
             name="firstname"
             defaultValue="defaultFirstname"
-            required={true}
             description="Can only contain alphanumeric characters"
             help="This is an help message for this field"
           />
-          <FormSelect label="Role" name="role" dataSource={['admin', 'user']} defaultValue="admin" required={true} />
-          <FormCheckbox label="Backup" name="backup" required={true} />
+          <FormSelect label="Role" name="role" dataSource={['admin', 'user']} defaultValue="admin" />
+          <FormCheckbox label="Backup" name="backup" />
+
+          <FormCard name="outer-card">
+            <FormSelect label="Auth" name="auth" dataSource={['none', 'token']} defaultValue="none" required={true} />
+
+            <FormCard name="inner-card">
+              <FormInput name="token" required={true} label="Token" />
+            </FormCard>
+          </FormCard>
+
           <SubmitButton />
         </Form>
       </div>

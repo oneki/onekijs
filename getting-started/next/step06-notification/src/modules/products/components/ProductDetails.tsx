@@ -1,4 +1,3 @@
-import React, { FC } from 'react';
 import { ProductType } from '../../../../data/products';
 import { currency } from '../../../modules/core/libs/format';
 
@@ -7,7 +6,7 @@ interface ProductDetailsProps {
   onBuy: () => void;
 }
 
-const ProductDetails: FC<ProductDetailsProps> = ({ product, onBuy }) => {
+const ProductDetails = ({ product, onBuy }: ProductDetailsProps) => {
   return (
     <div>
       <h2>Product Details</h2>

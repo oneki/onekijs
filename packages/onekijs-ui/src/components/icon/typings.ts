@@ -3,8 +3,8 @@ import { ColorPropertyTheme, SpacingPropertyTheme, TLength } from '../../styles/
 
 export type IconProps = React.InputHTMLAttributes<HTMLDivElement> & {
   color?: ColorPropertyTheme | Property.Color;
-  marginRight?: SpacingPropertyTheme| Property.MarginRight<TLength>;
-  marginLeft?: SpacingPropertyTheme| Property.MarginLeft<TLength>;
+  marginRight?: SpacingPropertyTheme | Property.MarginRight<TLength>;
+  marginLeft?: SpacingPropertyTheme | Property.MarginLeft<TLength>;
 };
 
 export type TogglerIconProps = IconProps & {

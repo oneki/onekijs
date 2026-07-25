@@ -32,11 +32,11 @@ export default styled(FormTableValueDisplayer)`
     ${borderBottomStyle('solid')}
     ${borderBottomWidth('1px')}
     ${paddingY('sm')}
-    &.o-form-table-item-displayer-last{
+    &.o-form-table-item-displayer-last {
       ${paddingBottom(0)}
       ${borderBottomWidth(0)}
     }
-    &.o-form-table-item-displayer-first{
+    &.o-form-table-item-displayer-first {
       ${paddingTop(0)}
     }
   }

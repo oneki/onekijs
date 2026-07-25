@@ -39,14 +39,14 @@ export type ListBodyProps<
   | 'keyboardNavigable'
   | 'tail'
 > & {
-  bodyRef?: React.RefObject<HTMLDivElement>;
+  bodyRef?: React.RefObject<HTMLDivElement | null>;
   className?: string;
   ItemLoadingComponent?: FC;
   ItemComponent?: FC<ListItemProps<T, I>>;
   ItemContentComponent?: FC<ListItemProps<T, I>>;
   items: (I | undefined)[];
   ListComponent?: FC<StandardListProps<T, I>>;
-  parentRef?: React.RefObject<HTMLDivElement>;
+  parentRef?: React.RefObject<HTMLDivElement | null>;
   service: C;
   state: S;
   style?: React.CSSProperties;
@@ -112,7 +112,7 @@ export type ListConfig<T = any, I extends ListItem<T> = ListItem<T>> = {
   ItemLoadingComponent?: FC;
   ItemComponent?: FC<ListItemProps<T, I>>;
   ItemContentComponent?: FC<ListItemProps<T, I>>;
-  NotFoundComponent?: FC<ListNotFoundProps>;
+  NotFoundComponent?: FC<ListNotFoundProps> | null;
   LoadingComponent?: FC<StylableProps>;
   itemHeight?: number | ((index: number) => number);
   keyboardNavigable?: boolean;
@@ -125,6 +125,7 @@ export type ListConfig<T = any, I extends ListItem<T> = ListItem<T>> = {
   onItemUnselect?: ListItemHandler<T, I>;
   paddingEnd?: number;
   paddingStart?: number;
+  parentRef?: React.RefObject<HTMLDivElement>;
   overscan?: number;
   preload?: number;
   style?: React.CSSProperties;

@@ -6,6 +6,7 @@ import {
   Collection,
   CollectionBroker,
   Item,
+  LoadingStatus,
   Query,
   QueryFilter,
   QueryFilterCriteria,
@@ -57,6 +58,9 @@ export default class DefaultCollectionBroker<
   protected initialLimit: number | undefined;
   protected initialOffset: number | undefined;
 
+  protected status: LoadingStatus | undefined;
+  protected subscriberStatus: AnonymousObject<LoadingStatus | undefined> = {};
+
   constructor(dataSource: T[] | string | undefined, options: UseCollectionOptions<T, I>) {
     if (Array.isArray(dataSource)) {
       this.data = dataSource;
@@ -70,7 +74,6 @@ export default class DefaultCollectionBroker<
     this.currentSearch = options.initialSearch;
     this.currentSort = options.initialSort;
     this.initialLimit = options.initialLimit;
-    this.initialOffset = options.initialOffset;
   }
 
   addFilter(
@@ -440,6 +443,18 @@ export default class DefaultCollectionBroker<
     this._getSubscribers(subscriberId).forEach((s) => s.setFields(fields));
   }
 
+  setStatus(status: LoadingStatus, subscriberId?: string): void {
+    if (subscriberId === undefined) {
+      Object.keys(this.subscriberStatus).forEach((subscriberId) => {
+        this.subscriberStatus[subscriberId] = status;
+      });
+      this.status = status;
+    } else {
+      this.subscriberStatus[subscriberId] = status;
+    }
+    this._getSubscribers(subscriberId).forEach((s) => s.setStatus(status));
+  }
+
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   setParam(key: string, value: any, subscriberId?: string): void {
     if (subscriberId === undefined) {
@@ -448,7 +463,7 @@ export default class DefaultCollectionBroker<
           this.subscriberParams[subscriberId] = this.params || {};
         }
         (this.subscriberParams[subscriberId] as any) = Object.assign({}, this.subscriberParams[subscriberId], {
-          [key]: value
+          [key]: value,
         });
       });
       if (this.params === undefined) {
@@ -456,12 +471,11 @@ export default class DefaultCollectionBroker<
       }
       this.params[key] = value;
     } else {
-
       if (this.subscriberParams[subscriberId] === undefined) {
         this.subscriberParams[subscriberId] = this.params || {};
       }
       (this.subscriberParams[subscriberId] as any) = Object.assign({}, this.subscriberParams[subscriberId], {
-        [key]: value
+        [key]: value,
       });
     }
     this._getSubscribers(subscriberId).forEach((s) => s.setParam(key, value));

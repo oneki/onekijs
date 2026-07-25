@@ -109,8 +109,7 @@ export default class CollectionService<
     this.initDb(this.state.dataSource);
 
     if (this.state.local === undefined) {
-      this.state.local =
-        this.state.dataSource === undefined || Array.isArray(this.state.dataSource);
+      this.state.local = this.state.dataSource === undefined || Array.isArray(this.state.dataSource);
     }
 
     if (this.state.local && this.state.dataSource !== undefined) {
@@ -149,7 +148,7 @@ export default class CollectionService<
   }
 
   @reducer
-  addFilter(filterOrCriteria: QueryFilterOrCriteria, parentFilterId: QueryFilterId = rootFilterId): void {
+  addFilter(filterOrCriteria: QueryFilterOrCriteria | string, parentFilterId: QueryFilterId = rootFilterId): void {
     this._setLoading({ limit: this.state.limit, offset: 0 });
     const query = this.getQuery();
     this._addFilter(query, filterOrCriteria, parentFilterId);
@@ -409,9 +408,9 @@ export default class CollectionService<
     if (currentSortBy === undefined) {
       currentSortBy = [];
     } else if (typeof currentSortBy === 'string') {
-      currentSortBy = [{field: currentSortBy}];
+      currentSortBy = [{ field: currentSortBy }];
     } else if (!Array.isArray(currentSortBy)) {
-      currentSortBy = [currentSortBy]
+      currentSortBy = [currentSortBy];
     }
     return currentSortBy;
   }
@@ -456,7 +455,10 @@ export default class CollectionService<
    */
   @reducer
   initialLoad(): void {
-    if (!this.state.local && (this.state.status === LoadingStatus.NotReady || this.state.status === LoadingStatus.NotInitialized)) {
+    if (
+      !this.state.local &&
+      (this.state.status === LoadingStatus.NotReady || this.state.status === LoadingStatus.NotInitialized)
+    ) {
       this.state.status = LoadingStatus.NotInitialized;
       if (this.state.fetchOnce) {
         this.state.local = true;
@@ -832,7 +834,7 @@ export default class CollectionService<
 
   _addFilter(
     query: Query,
-    filterOrCriteria: QueryFilterOrCriteria,
+    filterOrCriteria: QueryFilterOrCriteria | string,
     parentFilterId: QueryFilterId = rootFilterId,
   ): void {
     return aFilter(query, filterOrCriteria, parentFilterId);
@@ -1258,25 +1260,26 @@ export default class CollectionService<
         result = this.state.onQuerySuccess(result);
       }
       return result;
-    } catch(e) {
+    } catch (e) {
       if (this.state.onQueryError) {
         this.state.onQueryError(DefaultBasicError.of(e));
       }
       throw e;
     }
-
   }
 
   _getId(data: T): string | number | undefined {
     return this.adapt(data).id;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _indexDb(item: I, _context?: AnonymousObject): void {
     if (this._positionIndex[item.uid] !== undefined && this._db) {
       set(this._db, this._positionIndex[item.uid] as any, item);
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _indexId(item: I, _context?: AnonymousObject): void {
     if (item.id !== undefined) {
       this._idIndex[item.id] = item;
@@ -1296,6 +1299,7 @@ export default class CollectionService<
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _indexUid(item: I, _context?: AnonymousObject): void {
     this._uidIndex[item.uid] = item;
   }

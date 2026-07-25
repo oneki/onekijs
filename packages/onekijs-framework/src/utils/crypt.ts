@@ -18,10 +18,12 @@ async function getDerivation(
 ): Promise<ArrayBuffer> {
   const textEncoder = new TextEncoder('utf-8');
   const passwordBuffer = textEncoder.encode(password);
-  const importedKey = await crypto.subtle.importKey('raw', passwordBuffer, 'PBKDF2', false, ['deriveBits']);
+  const importedKey = await crypto.subtle.importKey('raw', passwordBuffer as BufferSource, 'PBKDF2', false, [
+    'deriveBits',
+  ]);
 
   const saltBuffer = textEncoder.encode(salt);
-  const params = { name: 'PBKDF2', hash, salt: saltBuffer, iterations };
+  const params = { name: 'PBKDF2', hash, salt: saltBuffer as BufferSource, iterations };
   const derivation = await crypto.subtle.deriveBits(params, importedKey, keyLength * 8);
   return derivation;
 }
@@ -43,16 +45,20 @@ async function getKey(derivation: ArrayBuffer) {
 async function encryptText(text: string | undefined, keyObject: { key: any; iv: any }): Promise<ArrayBuffer> {
   const textEncoder = new TextEncoder('utf-8');
   const textBuffer = textEncoder.encode(text);
-  const encryptedText = await crypto.subtle.encrypt({ name: 'AES-CBC', iv: keyObject.iv }, keyObject.key, textBuffer);
+  const encryptedText = await crypto.subtle.encrypt(
+    { name: 'AES-CBC', iv: keyObject.iv as BufferSource },
+    keyObject.key,
+    textBuffer as BufferSource,
+  );
   return encryptedText;
 }
 
-async function decryptText(encryptedText: DataView | ArrayBuffer, keyObject: { key: any; iv: any }): Promise<string> {
+async function decryptText(encryptedText: BufferSource, keyObject: { key: any; iv: any }): Promise<string> {
   const textDecoder = new TextDecoder('utf-8');
   const decryptedText: any = await crypto.subtle.decrypt(
-    { name: 'AES-CBC', iv: keyObject.iv },
+    { name: 'AES-CBC', iv: keyObject.iv as BufferSource },
     keyObject.key,
-    encryptedText,
+    encryptedText as BufferSource,
   );
   return textDecoder.decode(decryptedText);
 }
@@ -92,7 +98,7 @@ export async function decrypt(encryptedB64?: string | null, pwd?: string): Promi
     const encryptedByteArray = new Uint8Array(matches.map((ch) => ch.charCodeAt(0)));
     const derivation = await getDerivation(hash, salt, pwd, iterations, keyLength);
     const keyObject = await getKey(derivation);
-    const decryptedText = await decryptText(encryptedByteArray, keyObject);
+    const decryptedText = await decryptText(encryptedByteArray as BufferSource, keyObject);
     return JSON.parse(decryptedText);
   }
 
@@ -102,7 +108,7 @@ export async function decrypt(encryptedB64?: string | null, pwd?: string): Promi
 // https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest
 export async function sha256(message?: string): Promise<string> {
   const msgUint8 = new TextEncoder().encode(message); // encode as (utf-8) Uint8Array
-  const hashBuffer = await window.crypto.subtle.digest('SHA-256', msgUint8); // hash the message
+  const hashBuffer = await window.crypto.subtle.digest('SHA-256', msgUint8 as BufferSource); // hash the message
   const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
   const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join(''); // convert bytes to hex string
   return hashHex;
@@ -167,8 +173,8 @@ export async function verify(
     return await window.crypto.subtle.verify(
       alg,
       key,
-      base64url.parse(jwsSignature, { loose: true }),
-      new TextEncoder().encode(jwsSigningInput),
+      base64url.parse(jwsSignature, { loose: true }) as BufferSource,
+      new TextEncoder().encode(jwsSigningInput) as BufferSource,
     );
   } catch (e) {
     throw e;

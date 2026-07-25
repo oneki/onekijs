@@ -44,8 +44,6 @@ class SelectService<
       return; // this validation will be done when the data will be loaded (can be delayed due to a fetchOnce)
     }
 
-
-
     let invalidItems: I[] = [];
     const defaultItems: I[] = this.defaultValue ? toArray(this.defaultValue).map((v) => this._adapt(v)) : [];
 
@@ -121,6 +119,16 @@ class SelectService<
   @reducer
   setDefaultValueLoading(loading: boolean): void {
     this.state.defaultValueLoading = loading;
+  }
+
+  // For autocomplete, get the direct value for the input field and send it to the requester
+  // We must first use the autocompleteAdapter to convert it to a T
+  @saga(SagaEffect.Latest)
+  *setInputValue(value: string | null) {
+    if (this.config?.autoCompleteAdapter) {
+      const adaptedValue: T = yield this.config.autoCompleteAdapter(value);
+      yield this.setValue(adaptedValue);
+    }
   }
 
   @reducer

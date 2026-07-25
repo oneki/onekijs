@@ -5,16 +5,14 @@ import { DropdownProps } from '../typings';
 
 const useDropdown = (): [FCC<DropdownProps>, React.Dispatch<React.SetStateAction<HTMLElement | null>>] => {
   const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
-  const elementRef = useRef<HTMLElement | null>();
+  const elementRef = useRef<HTMLElement | null | undefined>(undefined);
   elementRef.current = containerRef;
-  const DropdownRef = useLazyRef<FCC<DropdownProps>>(
-    (): FCC<DropdownProps> => {
-      const Component: FCC<DropdownProps> = (props) => {
-        return <Dropdown {...props} refElement={elementRef.current} />;
-      };
-      return Component;
-    },
-  );
+  const DropdownRef = useLazyRef<FCC<DropdownProps>>((): FCC<DropdownProps> => {
+    const Component: FCC<DropdownProps> = (props) => {
+      return <Dropdown {...props} refElement={elementRef.current} />;
+    };
+    return Component;
+  });
   return [DropdownRef.current, setContainerRef];
 };
 

@@ -34,7 +34,10 @@ export class ParsedElement implements Description {
   groups: string[];
   categories: string[];
 
-  constructor(public name: string, public type: string | ReflectionKind) {
+  constructor(
+    public name: string,
+    public type: string | ReflectionKind,
+  ) {
     this.props = [];
     this.description = '';
     this.groups = [];

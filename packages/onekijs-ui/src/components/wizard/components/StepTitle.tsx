@@ -1,7 +1,9 @@
 import React, { FC } from 'react';
 import { StepTitleProps } from '../typings';
+import StepTitleContent from './StepTitleContent';
 
-const StepTitle: FC<StepTitleProps> = ({ member, onActivate, index }) => {
+const StepTitle: FC<StepTitleProps> = (props) => {
+  const { member, onActivate, TitleContentComponent = StepTitleContent } = props;
   return (
     <div
       className={`o-step${member.active ? ' o-step-active' : ' o-step-inactive'}${
@@ -15,10 +17,7 @@ const StepTitle: FC<StepTitleProps> = ({ member, onActivate, index }) => {
       }`}
       onClick={() => onActivate(member)}
     >
-      {member.icon}
-      <span className="o-step-title">
-        {index}. {`${member.title}`}
-      </span>
+      <TitleContentComponent {...props} />
     </div>
   );
 };

@@ -16,12 +16,25 @@ import Step from './Step';
 const FormStep: FCC<FormStepProps> = ({ name, disabled = false, visible = true, ...stepProps }) => {
   const decorator = useFormDecorator(name, {
     Displayer: (displayerProps: FormDisplayerProps) => {
-      const total = Object.values(displayerProps.children ?? {}).length
+      const total = Object.values(displayerProps.children ?? {}).length;
       return (
-        <AccordionPanel title={stepProps.title} initialActive={displayerProps.index === 0} initialExpand={displayerProps.index === 0}>
+        <AccordionPanel
+          title={stepProps.title}
+          initialActive={displayerProps.index === 0}
+          initialExpand={displayerProps.index === 0}
+        >
           {Object.values(displayerProps.children ?? {}).map((field, index) => {
             const Displayer = field.Displayer ?? DefaultDisplayer;
-            return <Displayer {...field} index={index} key={`field-${index}`} first={index === 0} last={index === total-1} format={displayerProps.format} />;
+            return (
+              <Displayer
+                {...field}
+                index={index}
+                key={`field-${index}`}
+                first={index === 0}
+                last={index === total - 1}
+                format={displayerProps.format}
+              />
+            );
           })}
         </AccordionPanel>
       );

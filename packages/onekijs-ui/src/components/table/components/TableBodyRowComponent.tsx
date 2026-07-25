@@ -32,13 +32,18 @@ const TableBodyRowComponent: FC<TableBodyRowProps> = (props) => {
   } = useTableConfig();
 
   const expandedHeightRef = useRef<number>(0);
+  const expandedContentRef = useRef<HTMLDivElement | null>(null);
 
-  const onExiting = (node: HTMLElement) => {
+  const onExiting = () => {
+    const node = expandedContentRef.current;
+    if (!node) return;
     node.style.opacity = '0';
     onCollapsing && onCollapsing(item, index);
   };
 
-  const onEntering = (node: HTMLElement) => {
+  const onEntering = () => {
+    const node = expandedContentRef.current;
+    if (!node) return;
     expandedHeightRef.current = node.getBoundingClientRect().height;
     // node.style.height = '0px';
     node.style.opacity = '0';
@@ -102,6 +107,7 @@ const TableBodyRowComponent: FC<TableBodyRowProps> = (props) => {
       </div>
       <CSSTransition
         in={item.expanded}
+        nodeRef={expandedContentRef}
         classNames="o-table-body-row-expanded-content"
         timeout={timeout}
         mountOnEnter={true}
@@ -115,7 +121,7 @@ const TableBodyRowComponent: FC<TableBodyRowProps> = (props) => {
         onExit={() => onCollapse && onCollapse(item, index)}
         onExited={() => onCollapsed && onCollapsed(item, index)}
       >
-        <div className="o-table-body-row-expanded-content">
+        <div ref={expandedContentRef} className="o-table-body-row-expanded-content">
           {ExpandedComponent && <ExpandedComponent item={item} rowIndex={index} rowId={item.id} />}
         </div>
       </CSSTransition>

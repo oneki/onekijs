@@ -7,4 +7,4 @@ export type SliderProps = {
   fillColor: ColorPropertyTheme | Property.BackgroundColor;
   size: 'small' | 'medium' | 'large' | 'extra_large';
   width: SizePropertyTheme | Property.Width<TLength>;
-}
+};

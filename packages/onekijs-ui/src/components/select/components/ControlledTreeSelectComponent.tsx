@@ -24,7 +24,7 @@ export const useTreeSelectPropsContext = <
   return useContext(TreeSelectPropsContext);
 };
 
-const TreeSelectListComponent = <T extends any = any, I extends TreeSelectItem<T> = TreeSelectItem<T>>(
+const TreeSelectListComponent = <T = any, I extends TreeSelectItem<T> = TreeSelectItem<T>>(
   props: SelectListComponentProps<T, I>,
 ) => {
   const treeProps = useTreeSelectPropsContext<T, I>();
@@ -33,9 +33,24 @@ const TreeSelectListComponent = <T extends any = any, I extends TreeSelectItem<T
       props.onItemSelect(item, index);
       return true;
     } else {
-      isTreeItemExpanded(item, treeProps.controller)
-        ? treeProps.controller.collapse(item, index)
-        : treeProps.controller.expand(item, index);
+      if (isTreeItemExpanded(item, treeProps.controller)) {
+        treeProps.controller.collapse(item, index);
+      } else {
+        treeProps.controller.expand(item, index);
+      }
+      return false;
+    }
+  };
+  const onUnselect: ListItemHandler<T, I> = (item, index) => {
+    if (item.selectable !== false && props.onItemUnselect) {
+      props.onItemUnselect(item, index);
+      return true;
+    } else {
+      if (isTreeItemExpanded(item, treeProps.controller)) {
+        treeProps.controller.collapse(item, index);
+      } else {
+        treeProps.controller.expand(item, index);
+      }
       return false;
     }
   };
@@ -47,7 +62,9 @@ const TreeSelectListComponent = <T extends any = any, I extends TreeSelectItem<T
       TreeItemComponent={SelectOptionComponent}
       className={addClassname('o-select-options', treeProps.className)}
       onSelect={onSelect}
+      onUnselect={onUnselect}
       onActivate={props.onItemActivate}
+      onDeactivate={props.onItemDeactivate}
       keyboardNavigable={true}
       listRef={props.optionsRef}
     />

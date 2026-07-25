@@ -11,25 +11,26 @@ const FormSelectValueDisplayer: React.FC<FormFieldValueDisplayerProps> = ({ valu
   if (Array.isArray(value)) {
     return (
       <>
-      {value.map((v, index) => <div key={`item-${index}`} className="o-select-displayer-value">{v ?? ''}</div>)}
+        {value.map((v, index) => (
+          <div key={`item-${index}`} className="o-select-displayer-value">
+            {v ?? ''}
+          </div>
+        ))}
       </>
-    )
+    );
   }
   return <span className="o-select-displayer-value">{value ?? ''}</span>;
 };
-
-
 
 const FormSelect = <T extends any = any, I extends SelectItem<T> = SelectItem<T>>(props: FormSelectProps<T, I>) => {
   const service = props.controller ? props.controller.asService() : undefined;
   const defaultValue = props.defaultValue === undefined ? (props.multiple ? [] : null) : props.defaultValue;
   const [fieldLayoutProps, fieldComponentProps] = useFieldLayout<SelectProps<T, I>>(
-    Object.assign(
-      {},
-      props,
-      {
-        defaultValue,
-        Displayer: props.Displayer ?? ((displayerProps: FormDisplayerProps) => {
+    Object.assign({}, props, {
+      defaultValue,
+      Displayer:
+        props.Displayer ??
+        ((displayerProps: FormDisplayerProps) => {
           const form = useForm();
           let value = form.getValue(displayerProps.name) ?? '';
           const adapter = props.adapter;
@@ -40,7 +41,7 @@ const FormSelect = <T extends any = any, I extends SelectItem<T> = SelectItem<T>
               value = value.map((v) => {
                 const adaptee = service.adapt(v);
                 return adaptee.text ?? `${value}`;
-              })
+              });
             } else {
               const adaptee = service.adapt(value);
               value = adaptee.text ?? `${value}`;
@@ -49,8 +50,8 @@ const FormSelect = <T extends any = any, I extends SelectItem<T> = SelectItem<T>
             if (Array.isArray(value)) {
               value = value.map((v) => {
                 const adaptee = adapter(v);
-                return  adaptee.text ?? `${value}`;
-              })
+                return adaptee.text ?? `${value}`;
+              });
             } else {
               const adaptee = adapter(value);
               value = adaptee.text ?? `${value}`;
@@ -68,8 +69,7 @@ const FormSelect = <T extends any = any, I extends SelectItem<T> = SelectItem<T>
             />
           );
         }),
-      },
-    ),
+    }),
   );
   const Component = props.FieldComponent || Select;
 

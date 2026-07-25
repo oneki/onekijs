@@ -97,7 +97,7 @@ const TableFilterOperatorComponent: React.FC<TableFilterOperatorProps> = ({
           open={showOperators}
           placement="bottom-start"
           distance={5}
-          animationTimeout={200}
+          animationTimeout={100}
           onDropStart={() => {
             setDropping(true);
           }}

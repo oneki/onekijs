@@ -1,6 +1,4 @@
-import {
-  Property
-} from 'csstype';
+import { Property } from 'csstype';
 import { colorFormatter, pxFormatter, themeFormatter } from '../utils/formatter';
 import { cssProperty } from '../utils/style';
 import { ColorPropertyTheme, RadiusPropertyTheme, ShadowPropertyTheme, TLength } from './typings';
@@ -79,7 +77,10 @@ export const borderBottomWidth = cssProperty<number | Property.BorderBottomWidth
   'border-bottom-width',
   pxFormatter,
 );
-export const borderLeftWidth = cssProperty<number | Property.BorderLeftWidth<TLength>>('border-left-width', pxFormatter);
+export const borderLeftWidth = cssProperty<number | Property.BorderLeftWidth<TLength>>(
+  'border-left-width',
+  pxFormatter,
+);
 export const borderRightWidth = cssProperty<number | Property.BorderRightWidth<TLength>>(
   'border-right-width',
   pxFormatter,

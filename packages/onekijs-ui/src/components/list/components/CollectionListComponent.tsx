@@ -31,6 +31,7 @@ const CollectionListComponent = <T extends any = any, I extends ListItem<T> = Li
   onItemUnselect,
   paddingEnd,
   paddingStart,
+  parentRef,
   virtual,
   style,
   tail,
@@ -45,7 +46,7 @@ const CollectionListComponent = <T extends any = any, I extends ListItem<T> = Li
     paddingStart,
     preload,
     increment,
-    ref,
+    ref: parentRef ?? ref,
     virtual,
   });
 
@@ -70,6 +71,7 @@ const CollectionListComponent = <T extends any = any, I extends ListItem<T> = Li
           onItemUnhighlight={onItemUnhighlight}
           onItemSelect={onItemSelect}
           onItemUnselect={onItemUnselect}
+          parentRef={parentRef}
           multiSelect={multiSelect}
           scrollToIndex={scrollToIndex}
           scrollToOffset={scrollToOffset}

@@ -1,6 +1,6 @@
 import { useRouter } from 'onekijs-framework';
 import React, { FC } from 'react';
-import { matchPath, Route as ReactRouterRoute, RouteProps, useLocation } from 'react-router-dom';
+import { matchPath, Route as ReactRouterRoute, RouteProps, useLocation } from 'react-router';
 
 const Route: FC<RouteProps> = (props) => {
   const { pathname } = useLocation();

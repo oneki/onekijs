@@ -1,16 +1,47 @@
 import { css } from 'styled-components';
 import { alignItems, columnGap, gap, justifyContent, rowGap } from '../../styles/alignment';
 import { backgroundColor } from '../../styles/background';
-import { borderBottomColor, borderBottomLeftRadius, borderBottomRightRadius, borderBottomStyle, borderBottomWidth, borderColor, borderRadius, borderStyle, borderTopLeftRadius, borderTopRightRadius, borderWidth, boxShadow } from '../../styles/border';
+import {
+  borderBottomColor,
+  borderBottomLeftRadius,
+  borderBottomRightRadius,
+  borderBottomStyle,
+  borderBottomWidth,
+  borderColor,
+  borderRadius,
+  borderStyle,
+  borderTopLeftRadius,
+  borderTopRightRadius,
+  borderWidth,
+  boxShadow,
+} from '../../styles/border';
 import { display } from '../../styles/display';
 import { flexDirection } from '../../styles/flex';
 import { gridTemplateColumns } from '../../styles/grid';
 import { cursor, userSelect } from '../../styles/interactivity';
 import { zIndex } from '../../styles/position';
 import { width } from '../../styles/size';
-import { marginBottom, marginLeft, marginRight, marginTop, marginX, marginY, padding, paddingRight, paddingX } from '../../styles/spacing';
+import {
+  marginBottom,
+  marginLeft,
+  marginRight,
+  marginTop,
+  marginX,
+  marginY,
+  padding,
+  paddingRight,
+  paddingX,
+} from '../../styles/spacing';
 import { ComponentStyle, StylableProps } from '../../styles/typings';
-import { color, fontFamily, fontStyle, fontWeight, textAlign, textTransform, whiteSpace } from '../../styles/typography';
+import {
+  color,
+  fontFamily,
+  fontStyle,
+  fontWeight,
+  textAlign,
+  textTransform,
+  whiteSpace,
+} from '../../styles/typography';
 
 export const datePickerStyle: ComponentStyle<StylableProps> = () => {
   return css`
@@ -81,12 +112,14 @@ export const datePickerStyle: ComponentStyle<StylableProps> = () => {
       ${color('white')}
     }
 
-    .o-calendar-day-start-range, .o-calendar-day-start-range-transient {
+    .o-calendar-day-start-range,
+    .o-calendar-day-start-range-transient {
       ${borderTopRightRadius('none')}
       ${borderBottomRightRadius('none')}
     }
 
-    .o-calendar-day-end-range, .o-calendar-day-end-range-transient {
+    .o-calendar-day-end-range,
+    .o-calendar-day-end-range-transient {
       ${borderTopLeftRadius('none')}
       ${borderBottomLeftRadius('none')}
     }
@@ -129,13 +162,11 @@ export const datePickerStyle: ComponentStyle<StylableProps> = () => {
       }
     }
 
-
     .o-datepicker-icon {
       ${cursor('pointer')}
       ${display('flex')}
       ${alignItems('center')}
     }
-
 
     .o-datepicker-remover {
       ${cursor('pointer')}
@@ -208,14 +239,13 @@ export const datePickerStyle: ComponentStyle<StylableProps> = () => {
       }
     }
 
-
     .o-time-edge-content {
       ${display('flex')}
       ${alignItems('center')}
     }
 
     .o-time-separator {
-       ${fontWeight('bold')}
+      ${fontWeight('bold')}
     }
 
     .o-time-input {

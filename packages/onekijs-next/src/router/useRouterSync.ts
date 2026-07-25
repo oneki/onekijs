@@ -1,14 +1,15 @@
-import { useRouter } from 'next/router';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import OnekiRouter from './NextRouter';
 
-const useNextRouter = useRouter || (() => null);
-
 export const useRouterSync = (onekiRouter: OnekiRouter): void => {
-  const nextRouter = useNextRouter();
-  onekiRouter.sync(nextRouter);
+  const nextRouter = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const search = searchParams.toString();
+  onekiRouter.sync(pathname, search, nextRouter);
 
   useEffect(() => {
     onekiRouter.onLocationChange();
-  }, [nextRouter, onekiRouter]);
+  }, [pathname, search, onekiRouter]);
 };

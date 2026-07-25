@@ -22,7 +22,13 @@ const CloseIconComponent: FC<IconProps> = (props) => {
 };
 
 export default styled(CloseIconComponent)`
-  ${({ width = '16px', height = '16px', color: cssColor = 'inherit', marginLeft: ml = '0', marginRight: mr = '0' }) => css`
+  ${({
+    width = '16px',
+    height = '16px',
+    color: cssColor = 'inherit',
+    marginLeft: ml = '0',
+    marginRight: mr = '0',
+  }) => css`
     width: ${width};
     height: ${height};
     ${marginLeft(ml)}

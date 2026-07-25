@@ -138,13 +138,18 @@ const TreeListItemComponent = <T extends any = any, I extends TreeItem<T> = Tree
       </div>
       <CSSTransition
         in={expanded}
+        nodeRef={childrenAnimateRef}
         classNames="o-tree-item-animate"
         timeout={timeout}
         mountOnEnter={true}
         appear={false}
         unmountOnExit={true}
-        onEntering={onEntering}
-        onExiting={onExiting}
+        onEntering={() => {
+          if (childrenAnimateRef.current) onEntering(childrenAnimateRef.current);
+        }}
+        onExiting={() => {
+          if (childrenAnimateRef.current) onExiting(childrenAnimateRef.current);
+        }}
         onExited={onExited}
       >
         <div

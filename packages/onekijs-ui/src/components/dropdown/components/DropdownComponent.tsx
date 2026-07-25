@@ -1,9 +1,8 @@
+import { autoPlacement, autoUpdate, flip, offset, size, useFloating, type Placement } from '@floating-ui/react';
 import { FCC, useIsomorphicLayoutEffect, useThrottle } from 'onekijs-framework';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import ReactDOM from 'react-dom';
-import { usePopper } from 'react-popper';
 import { CSSTransition } from 'react-transition-group';
-import { maxWidthPopperModifier, minWidthPopperModifier, sameWidthPopperModifier } from '../../../utils/popper';
 import { addClassname } from '../../../utils/style';
 import { DropdownComponentProps } from '../typings';
 
@@ -29,44 +28,39 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
   widthModifier = 'same',
   zIndex = 1,
 }) => {
-  const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
-  const popperWidthModifier =
-    widthModifier === 'same'
-      ? sameWidthPopperModifier
-      : widthModifier === 'min'
-      ? minWidthPopperModifier
-      : maxWidthPopperModifier;
-  const { forceUpdate, styles, attributes } = usePopper(refElement, popperElement, {
-    placement,
-    modifiers: [
-      popperWidthModifier,
-      {
-        name: 'offset',
-        options: {
-          offset: [skidding, distance],
+  const autoPlacementEnabled = placement?.startsWith('auto') ?? false;
+  const normalizedFallbackPlacements = fallbackPlacements?.filter((item) => !item.startsWith('auto')) as
+    | Placement[]
+    | undefined;
+  const {
+    floatingStyles,
+    refs,
+    update: updatePosition,
+  } = useFloating({
+    placement: autoPlacementEnabled ? undefined : (placement as Placement | undefined),
+    middleware: [
+      offset({ crossAxis: skidding, mainAxis: distance }),
+      autoPlacementEnabled
+        ? autoPlacement({ allowedPlacements: normalizedFallbackPlacements })
+        : flip({ fallbackPlacements: normalizedFallbackPlacements }),
+      size({
+        apply({ elements, rects }) {
+          if (widthModifier === 'same') elements.floating.style.width = `${rects.reference.width}px`;
+          if (widthModifier === 'min') elements.floating.style.minWidth = `${rects.reference.width}px`;
+          if (widthModifier === 'max') elements.floating.style.maxWidth = `${rects.reference.width}px`;
         },
-      },
-      {
-        name: 'flip',
-        enabled: placement === 'auto' || (fallbackPlacements !== undefined && fallbackPlacements.length > 0),
-        options: fallbackPlacements && fallbackPlacements.length > 0 ? { fallbackPlacements } : undefined,
-      },
-      {
-        name: 'eventListeners',
-        options: {
-          scroll: true,
-          resize: true,
-        },
-      },
+      }),
     ],
+    whileElementsMounted: autoUpdate,
   });
 
-  const triggerZIndexRef = useRef<string>();
+  const triggerZIndexRef = useRef<string | undefined>(undefined);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const update = useCallback(() => {
-    forceUpdate && forceUpdate();
-    onUpdate && onUpdate();
-  }, [forceUpdate, onUpdate]);
+    updatePosition();
+    if (onUpdate) onUpdate();
+  }, [updatePosition, onUpdate]);
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   const throttleUpdate = useThrottle(update, 20);
@@ -79,6 +73,7 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
 
   useIsomorphicLayoutEffect(() => {
     const el = refElement;
+    refs.setReference(el || null);
     if (el) {
       resizeObserver.observe(el);
     }
@@ -87,7 +82,7 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
         resizeObserver.unobserve(el);
       }
     };
-  }, [refElement, forceUpdate]);
+  }, [refElement, refs, updatePosition]);
 
   useIsomorphicLayoutEffect(() => {
     if (open) {
@@ -98,7 +93,9 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
   const classNames = addClassname(`o-dropdown-${open ? 'open' : 'close'}`, className);
 
   const onEnter = useCallback(
-    (node: HTMLElement, isAppearing: boolean) => {
+    (isAppearing: boolean) => {
+      const node = dropdownRef.current;
+      if (!node) return;
       if (refElement !== null && refElement !== undefined) {
         triggerZIndexRef.current = refElement.style.zIndex;
         refElement.style.zIndex = `${zIndex + 1}`;
@@ -111,7 +108,9 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
   );
 
   const onEntered = useCallback(
-    (node: HTMLElement, isAppearing: boolean) => {
+    (isAppearing: boolean) => {
+      const node = dropdownRef.current;
+      if (!node) return;
       node.style.transform = '';
       if (refElement !== null && refElement !== undefined) {
         refElement.style.zIndex = triggerZIndexRef.current || '';
@@ -124,7 +123,9 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
   );
 
   const onEntering = useCallback(
-    (node: HTMLElement, isAppearing: boolean) => {
+    (isAppearing: boolean) => {
+      const node = dropdownRef.current;
+      if (!node) return;
       node.style.transform = 'translateY(-40px)';
       node.style.opacity = '0';
       node.style.transition = `transform ${animationTimeout}ms ease-out, opacity ${animationTimeout}ms ease-out`;
@@ -139,56 +140,53 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
     [onDropping, animationTimeout],
   );
 
-  const onExit = useCallback(
-    (node: HTMLElement) => {
-      if (refElement !== null && refElement !== undefined) {
-        refElement.style.zIndex = `${zIndex + 1}`;
-      }
-      if (onCollapseStart) {
-        onCollapseStart(node);
-      }
-    },
-    [onCollapseStart, refElement, zIndex],
-  );
+  const onExit = useCallback(() => {
+    const node = dropdownRef.current;
+    if (!node) return;
+    if (refElement !== null && refElement !== undefined) {
+      refElement.style.zIndex = `${zIndex + 1}`;
+    }
+    if (onCollapseStart) {
+      onCollapseStart(node);
+    }
+  }, [onCollapseStart, refElement, zIndex]);
 
-  const onExiting = useCallback(
-    (node: HTMLElement) => {
-      node.style.opacity = '1';
-      node.style.transform = 'translateY(0px)';
-      node.style.transition = `transform ${animationTimeout}ms ease-in, opacity ${animationTimeout}ms ease-in`;
-      setTimeout(() => {
-        node.style.opacity = '0';
-        node.style.transform = 'translateY(-40px)';
-      }, 0);
-      if (onCollapsing) {
-        onCollapsing(node);
-      }
-    },
-    [onCollapsing, animationTimeout],
-  );
+  const onExiting = useCallback(() => {
+    const node = dropdownRef.current;
+    if (!node) return;
+    node.style.opacity = '1';
+    node.style.transform = 'translateY(0px)';
+    node.style.transition = `transform ${animationTimeout}ms ease-in, opacity ${animationTimeout}ms ease-in`;
+    setTimeout(() => {
+      node.style.opacity = '0';
+      node.style.transform = 'translateY(-40px)';
+    }, 0);
+    if (onCollapsing) {
+      onCollapsing(node);
+    }
+  }, [onCollapsing, animationTimeout]);
 
-  const onExited = useCallback(
-    (node: HTMLElement) => {
-      if (refElement !== null && refElement !== undefined) {
-        refElement.style.zIndex = triggerZIndexRef.current || '';
-      }
-      if (onCollapseDone) {
-        onCollapseDone(node);
-      }
-    },
-    [onCollapseDone, refElement],
-  );
+  const onExited = useCallback(() => {
+    const node = dropdownRef.current;
+    if (!node) return;
+    if (refElement !== null && refElement !== undefined) {
+      refElement.style.zIndex = triggerZIndexRef.current || '';
+    }
+    if (onCollapseDone) {
+      onCollapseDone(node);
+    }
+  }, [onCollapseDone, refElement]);
 
   const element = (
     <div
-      style={Object.assign({width}, styles.popper)}
-      {...attributes.popper}
-      ref={setPopperElement}
+      style={Object.assign({ width }, floatingStyles)}
+      ref={refs.setFloating}
       key="dropdown-container"
       className={addClassname('o-dropdown-container', classNames)}
     >
       <CSSTransition
         in={open}
+        nodeRef={dropdownRef}
         classNames="o-dropdown"
         timeout={animationTimeout}
         mountOnEnter={true}
@@ -201,7 +199,9 @@ const DropdownComponent: FCC<DropdownComponentProps> = ({
         onExited={onExited}
         onExiting={onExiting}
       >
-        <div className="o-dropdown">{children}</div>
+        <div ref={dropdownRef} className="o-dropdown">
+          {children}
+        </div>
       </CSSTransition>
     </div>
   );

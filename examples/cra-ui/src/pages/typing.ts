@@ -1,4 +1,4 @@
-import { HeightProperty, WidthProperty } from "csstype";
+import { Property } from "csstype";
 import { AnonymousObject } from "onekijs";
 import { SizePropertyTheme, TLength, TshirtSize } from "onekijs-ui";
 import React from "react";
@@ -16,6 +16,6 @@ export type ActionMenuList<T extends AnonymousObject = {}> = React.FC<{
 export type ActionMenuItem<T extends AnonymousObject = {}> = React.FC<T> & {
   title: string;
   size?: TshirtSize;
-  width?: TshirtSize | SizePropertyTheme | WidthProperty<TLength>;
-  height?: TshirtSize | SizePropertyTheme | HeightProperty<TLength>;
+  width?: TshirtSize | SizePropertyTheme | Property.Width<TLength>;
+  height?: TshirtSize | SizePropertyTheme | Property.Height<TLength>;
 };

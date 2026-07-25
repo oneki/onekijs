@@ -1,5 +1,5 @@
 import { clone, get, QuerySearcher } from 'onekijs';
-import { SelectItemAdapter } from 'onekijs-ui/dist/components/select/typings';
+import { SelectItemAdapter } from 'onekijs-ui';
 
 export interface User {
   id: number,

@@ -23,6 +23,7 @@ const findItemIndex = (items?: (Item<unknown> | undefined)[], uid?: string): num
   });
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
 const ListBodyComponent = <T extends any = any, I extends ListItem<T> = ListItem<T>>({
   autoRefresh,
   bodyRef,
@@ -55,7 +56,7 @@ const ListBodyComponent = <T extends any = any, I extends ListItem<T> = ListItem
   LoadingComponent = ListLoadingComponent,
 }: ListBodyProps<T, I>) => {
   const scrollAlignRef = useRef<'center' | 'auto'>('center');
-  const lastActiveItemUid = useRef<string>();
+  const lastActiveItemUid = useRef<string | undefined>(undefined);
   const virtualRef = useRef<HTMLDivElement | null>(null);
   const tailRef = useRef({
     lastScrollTop: 0,
@@ -244,7 +245,7 @@ const ListBodyComponent = <T extends any = any, I extends ListItem<T> = ListItem
   const overflow = parentRef && parentRef !== bodyRef ? 'visible' : 'auto';
   if (virtualItems !== undefined) {
     if (virtualItems.length === 0) {
-      if (/*isCollectionInitializing(service) || */service.status === LoadingStatus.Fetching) {
+      if (/*isCollectionInitializing(service) || */ service.status === LoadingStatus.Fetching) {
         return null;
       }
       if (service.status === LoadingStatus.Loading) {

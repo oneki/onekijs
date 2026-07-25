@@ -7,15 +7,15 @@ import { BreakpointKeys, CssProperty, Formatter } from './typings';
 export const container: CssProperty<never> = () => {
   let result = css`
     width: 100%';
-    ${(props) => (
-      (['sm', 'md', 'lg', 'xl'] as BreakpointKeys[]).map((media) => {
-        return `@media (min-width: ${props.theme.breakpoints[media]}) {
+    ${(props) =>
+      (['sm', 'md', 'lg', 'xl'] as BreakpointKeys[])
+        .map((media) => {
+          return `@media (min-width: ${props.theme.breakpoints[media]}) {
           max-width: ${props.theme.breakpoints[media]};
-        }`
-      }).join(';')
-    )}
+        }`;
+        })
+        .join(';')}
   `;
-  ;
   return result;
 };
 

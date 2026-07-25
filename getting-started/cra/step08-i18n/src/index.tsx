@@ -14,7 +14,7 @@ const root = createRoot(container!); // createRoot(container!) if you use TypeSc
 
 console.log('settgings init', settings);
 root.render(
-  <App settings={settings} ErrorBoundaryComponent={ErrorBoundary}>
+  <App settings={settings} ErrorBoundaryComponent={ErrorBoundary as any}>
     {/* The routes are defined in the file src/@router.tsx */}
     <RootRouter />
   </App>,

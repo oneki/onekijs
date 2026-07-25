@@ -9,7 +9,7 @@ import {
   borderStyle,
   borderTopColor,
   borderWidth,
-  boxShadow
+  boxShadow,
 } from '../../styles/border';
 import { display } from '../../styles/display';
 import { cursor, pointerEvents } from '../../styles/interactivity';
@@ -125,7 +125,8 @@ const tooltipStyle: ComponentStyle<TooltipProps> = ({ kind = 'secondary', theme 
         }
       }
     }
-    &.o-tooltip-arrow, .o-tooltip-arrow {
+    &.o-tooltip-arrow,
+    .o-tooltip-arrow {
       ${height('1rem')}
       ${width('1rem')}
       ${position('absolute')}

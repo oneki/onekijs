@@ -1,4 +1,6 @@
-import { FCC, Link, useI18nService, useSecurityContext, useTranslation } from 'onekijs-next';
+'use client';
+
+import { FCC, useI18nService, useSecurityContext, useTranslation } from 'onekijs-next';
 import {
   alignItems,
   backgroundColor,
@@ -11,14 +13,16 @@ import {
   width,
 } from 'onekijs-ui';
 import React from 'react';
+import Link from 'next/link';
 import styled from 'styled-components';
 
 const Navbar: FCC = ({ className }) => {
   const [T, , locale] = useTranslation();
   const [loggedUser] = useSecurityContext('username');
+  const localePath = `/${locale}`;
   return (
     <div className={className}>
-      <Link href="/">
+      <Link href={localePath}>
         <h1>
           <T>My Store</T>
         </h1>
@@ -27,12 +31,12 @@ const Navbar: FCC = ({ className }) => {
         {loggedUser && (
           <div className="user">
             {loggedUser}{' '}
-            <Link className="logout" href="/logout">
+            <Link className="logout" href={`${localePath}/logout`}>
               [<T>Log out</T>]
             </Link>
           </div>
         )}
-        <Link href="/cart" className="button fancy-button">
+        <Link href={`${localePath}/cart`} className="button fancy-button">
           <i className="material-icons">shopping_cart</i>
           <T>Checkout</T>
         </Link>

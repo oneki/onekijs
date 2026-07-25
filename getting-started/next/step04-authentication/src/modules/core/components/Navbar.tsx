@@ -1,3 +1,5 @@
+'use client';
+
 import { useSecurityContext } from 'onekijs-next';
 import React from 'react';
 import { Link } from 'onekijs-next';

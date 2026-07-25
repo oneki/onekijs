@@ -2,13 +2,14 @@ import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
 
-import packageJson from './package.json' assert { type: 'json' };
+import packageJson from './package.json' with { type: 'json' };
 
 const config = [
   {
     input: 'src/index.ts',
     external: [
       '@popperjs/core',
+      '@floating-ui/react',
       'immer',
       'query-string',
       'react',
@@ -23,8 +24,6 @@ const config = [
       '@popperjs/core',
       'onekijs-framework',
       'react-icons',
-      'react-popper',
-      'react-popper-tooltip',
       'react-virtualized-auto-sizer',
       'react-window',
       'react-window-infinite-loader',

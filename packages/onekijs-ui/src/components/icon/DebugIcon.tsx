@@ -23,7 +23,13 @@ const DebugIconComponent: FC<IconProps> = (props) => {
 };
 
 export default styled(DebugIconComponent)`
-  ${({ width = '16px', height = '16px', color: cssColor = 'inherit', marginLeft: ml = '0', marginRight: mr = '0' }) => css`
+  ${({
+    width = '16px',
+    height = '16px',
+    color: cssColor = 'inherit',
+    marginLeft: ml = '0',
+    marginRight: mr = '0',
+  }) => css`
     width: ${width};
     height: ${height};
     ${marginLeft(ml)}

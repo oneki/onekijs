@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { SelectItem, SelectTokensProps } from '../typings';
 import SelectTokenComponent from './SelectTokenComponent';
@@ -8,6 +8,17 @@ const SelectTokensComponent = <T, I extends SelectItem<T> = SelectItem<T>>({
   onRemove,
   maxDisplayTokens,
 }: SelectTokensProps<T, I>) => {
+  const transitionRefs = useRef(new Map<string, React.RefObject<HTMLDivElement | null>>());
+
+  const getTransitionRef = (id: string) => {
+    let ref = transitionRefs.current.get(id);
+    if (!ref) {
+      ref = React.createRef<HTMLDivElement>();
+      transitionRefs.current.set(id, ref);
+    }
+    return ref;
+  };
+
   const onExiting = (node: HTMLElement) => {
     node.style.width = '0';
     node.style.opacity = '0';
@@ -24,27 +35,32 @@ const SelectTokensComponent = <T, I extends SelectItem<T> = SelectItem<T>>({
         node.style.opacity = '1';
       }, 0);
     }
-
   };
 
   if (tokens !== undefined) {
     if (!maxDisplayTokens || tokens.length <= maxDisplayTokens) {
       return (
         <TransitionGroup component={null}>
-          {tokens.map((token, index) => (
-            <CSSTransition
-              timeout={150}
-              classNames="o-select-token-animation"
-              mountOnEnter={true}
-              appear={true}
-              unmountOnExit={true}
-              key={`o-select-token-${token.id}`}
-              onEntering={onEntering}
-              onExiting={onExiting}
-            >
-              <SelectTokenComponent token={token} onRemove={onRemove} index={index} />
-            </CSSTransition>
-          ))}
+          {tokens.map((token, index) => {
+            const transitionRef = getTransitionRef(`o-select-token-${token.id}`);
+            return (
+              <CSSTransition
+                timeout={150}
+                classNames="o-select-token-animation"
+                mountOnEnter={true}
+                appear={true}
+                unmountOnExit={true}
+                key={`o-select-token-${token.id}`}
+                nodeRef={transitionRef}
+                onEntering={() => transitionRef.current && onEntering(transitionRef.current)}
+                onExiting={() => transitionRef.current && onExiting(transitionRef.current)}
+              >
+                <div ref={transitionRef}>
+                  <SelectTokenComponent token={token} onRemove={onRemove} index={index} />
+                </div>
+              </CSSTransition>
+            );
+          })}
         </TransitionGroup>
       );
     } else {

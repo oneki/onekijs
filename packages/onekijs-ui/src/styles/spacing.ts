@@ -40,7 +40,10 @@ export const paddingBottom = cssProperty<SpacingPropertyTheme | Property.Padding
   themeFormatter('spacings'),
 );
 
-export const margin = cssProperty<SpacingPropertyTheme | Property.Margin<TLength>>('margin', themeFormatter('spacings'));
+export const margin = cssProperty<SpacingPropertyTheme | Property.Margin<TLength>>(
+  'margin',
+  themeFormatter('spacings'),
+);
 
 export const marginY: CssProperty<SpacingPropertyTheme | Property.Margin<TLength>> = (value, variants = {}) => {
   return toCss('margin-top', themeFormatter('spacings'), value, variants).concat(

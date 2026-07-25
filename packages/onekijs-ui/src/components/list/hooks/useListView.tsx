@@ -12,7 +12,7 @@ const defaultKeyExtractor = (index: number) => index;
 
 const useListView: <T = any, I extends Item<T> = Item<T>>(
   props: Pick<CollectionListProps<T, I>, 'height' | 'itemHeight' | 'overscan' | 'preload' | 'increment' | 'virtual'> & {
-    ref: RefObject<HTMLDivElement>;
+    ref: RefObject<HTMLDivElement | null>;
     controller: ListCollection<T, I>;
     scrollToFn?: (offset: number, defaultScrollToFn?: (offset: number) => void) => void;
     keyExtractor?: (index: number) => number | string;
@@ -50,7 +50,6 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
       }
       return itemHeight;
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [itemHeight],
   );
 
@@ -61,7 +60,6 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
       const fn = keyExtractor || defaultKeyExtractor;
       return fn(index);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [keyExtractor, force],
   );
 
@@ -121,8 +119,6 @@ const useListView: <T = any, I extends Item<T> = Item<T>>(
                 to = from + increment;
               }
             }
-
-
 
             // check forward
             const end =

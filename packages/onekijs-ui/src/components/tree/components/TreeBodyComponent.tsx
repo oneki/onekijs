@@ -9,6 +9,7 @@ import TreeListComponent from './TreeListComponent';
 const TreeBodyComponent = <T extends any = any, I extends TreeItem<T> = TreeItem<T>>({
   className,
   controller,
+  NotFoundComponent,
 }: ControllerTreeProps<T, I>) => {
   const service = useTreeService();
   const ref = useRef<HTMLDivElement | null>(null);
@@ -23,8 +24,13 @@ const TreeBodyComponent = <T extends any = any, I extends TreeItem<T> = TreeItem
       service={service}
       state={service.state}
       onItemSelect={config.onSelect}
+      onItemUnselect={config.onUnselect}
       onItemActivate={config.onActivate}
+      onItemDeactivate={config.onDeactivate}
+      onItemHighlight={config.onHighlight}
+      onItemUnhighlight={config.onUnhighlight}
       keyboardNavigable={config.keyboardNavigable}
+      NotFoundComponent={NotFoundComponent}
     />
   );
 };

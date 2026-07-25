@@ -11,7 +11,7 @@ const DefaultDisplayer: React.FC<FormFieldDisplayerProps> = ({ name, label, form
         {label && <b>{label}: </b>}
         <span>{`${value}`}</span>
       </>
-    )
+    );
   }
 
   if (format === 'csv') {
@@ -20,7 +20,6 @@ const DefaultDisplayer: React.FC<FormFieldDisplayerProps> = ({ name, label, form
   }
 
   return null;
-
-}
+};
 
 export default DefaultDisplayer;

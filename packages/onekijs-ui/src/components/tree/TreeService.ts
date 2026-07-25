@@ -195,6 +195,8 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     };
 
     const treeAdaptee = adaptee as TreeItemAdaptee<T>;
+    const currentItem = this._idIndex[String(treeAdaptee.id)];
+
     const c = getChildren(data);
     ensureFieldValue(treeAdaptee, 'children', c);
     ensureFieldValue(treeAdaptee, 'icon', getIcon(data));
@@ -209,6 +211,13 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
     const position = context.position;
 
     const result = super._buildItem(data, treeAdaptee, context) as I;
+
+    if (currentItem) {
+      result.expanded = currentItem.expanded;
+      result.collapsing = currentItem.collapsing;
+      result.expanding = currentItem.expanding;
+    }
+
     const children =
       treeAdaptee.children === undefined
         ? treeAdaptee.type === 'leaf'
@@ -327,6 +336,7 @@ class TreeService<T = any, I extends TreeItem<T> = TreeItem<T>, S extends TreeSt
       this.state.collapsing = this.state.collapsing.filter((uid) => uid !== item.uid);
       this.setParam('collapsing', this.state.collapsing);
     }
+
     this.refresh();
   }
 

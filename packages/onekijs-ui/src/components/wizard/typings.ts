@@ -26,6 +26,7 @@ export type StepState = TabState & {
 
 export type StepTitleProps<M extends StepState = StepState> = TabTitleProps<M> & {
   index: number;
+  TitleContentComponent?: React.FC<StepTitleProps>;
 };
 
 export type UseWizardController = (props: WizardProps) => WizardService;
@@ -52,8 +53,8 @@ export type WizardProps<M extends StepState = StepState> = Omit<
   onPrevious?: (currentStep: M, previousStep: M) => boolean;
   title?: ReactNode;
   TitleComponent?: React.FC<StepTitleProps>;
+  TitleContentComponent?: React.FC<StepTitleProps>;
   hasSummaryStep?: boolean;
-
 };
 
 export type WizardState<M extends StepState = StepState> = TabsState<M> &

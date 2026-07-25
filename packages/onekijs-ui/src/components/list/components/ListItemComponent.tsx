@@ -1,7 +1,9 @@
 import React from 'react';
 import { ListItem, ListItemProps } from '../typings';
 
-export const ListItemContent = <T extends any = any, I extends ListItem<T> = ListItem<T>>({ item }: ListItemProps<T, I>) => {
+export const ListItemContent = <T extends any = any, I extends ListItem<T> = ListItem<T>>({
+  item,
+}: ListItemProps<T, I>) => {
   return <>{item.text || ''}</>;
 };
 

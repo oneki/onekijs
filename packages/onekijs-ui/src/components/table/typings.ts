@@ -4,6 +4,7 @@ import {
   CollectionProxy,
   FormDisplayerProps,
   FormFieldProps,
+  FormService,
   Item,
   ItemAdaptee,
   Primitive,
@@ -57,11 +58,15 @@ export type FormTableProps<
     addLabel?: string;
     format?: 'id' | 'object' | 'auto';
     defaultValue?: T[];
+    DeleteRowComponent?: React.FC<TableBodyCellProps<T, I>>;
     FieldComponent?: React.FC<FormTableProps<T, I, S, C>>;
     value?: T[];
-    onFocus?: () => void;
+    onAdd?: (initialValue: Partial<T> | undefined) => void;
     onBlur?: () => void;
-    onChange?: (value: T[]) => void;
+    onChange?: (value: T[]) => void;    
+    onFocus?: () => void;
+    onRemove?: (form: FormService, removedValue: T, index: number) => void;
+    SelectRowComponent?: React.FC<TableBodyCellProps<T, I>>;
     status?: ValidationStatus;
     size?: TshirtSize;
     showAddButton?: boolean;
@@ -72,11 +77,12 @@ export type FormTableContext<T = any> = {
   tableName: string;
   onSelect: (item: TableItem<T>, selected: boolean) => void;
   onAdd: (initialValue: Partial<T> | undefined) => void;
+  onRemove?: (form: FormService, removedValue: T, index: number) => void;
   addLabel: string;
   required?: boolean;
   maxLength?: number;
   minLength?: number;
-  editable?: boolean;   // if we add a element afterwards, it must be editable (if not, mark it as read only)
+  editable?: boolean; // if we add a element afterwards, it must be editable (if not, mark it as read only)
 };
 
 export type FormTableItemDisplayerProps<T = any> = {
@@ -114,8 +120,8 @@ export type TableBodyProps<T = any, I extends TableItem<T> = TableItem<T>> = {
   className?: string;
   columns: TableColumn<T, I>[];
   items: (I | undefined)[];
-  contentRef: React.RefObject<HTMLDivElement>;
-  tableRef: React.RefObject<HTMLDivElement>;
+  contentRef: React.RefObject<HTMLDivElement | null>;
+  tableRef: React.RefObject<HTMLDivElement | null>;
 };
 
 export type TableBodyRowProps<T = any, I extends TableItem<T> = TableItem<T>> = Omit<
@@ -133,7 +139,7 @@ export type TableBodyRowProps<T = any, I extends TableItem<T> = TableItem<T>> = 
   onCollapsed?: (item: I | undefined, index: number) => void;
 };
 
-export type TableSerializerFormat = 'csv' | 'json'
+export type TableSerializerFormat = 'csv' | 'json';
 
 export type TableConfig<T = any, I extends TableItem<T> = TableItem<T>> = {
   autoRefresh?: number;
@@ -196,7 +202,7 @@ export type TableController<
   initCell(
     rowIndex: number | 'header-title' | 'header-filter' | 'footer',
     colId: string,
-    ref: React.RefObject<HTMLDivElement>,
+    ref: React.RefObject<HTMLDivElement | null>,
   ): void;
   removeColumn(id: string): void;
   removeSelected<B extends keyof CollectionBy<T, I>>(
@@ -227,7 +233,11 @@ export type TableCellDisplayerProps<T, I extends TableItem<T> = TableItem<T>> = 
   format: FormDisplayerProps['format'];
 };
 
-export type TableCellSerializer<T, I extends TableItem<T> = TableItem<T>> = (data: T, column: TableColumn<T, I>, format: TableSerializerFormat) => any;
+export type TableCellSerializer<T, I extends TableItem<T> = TableItem<T>> = (
+  data: T,
+  column: TableColumn<T, I>,
+  format: TableSerializerFormat,
+) => any;
 
 export type TableColumnSpec<T, I extends TableItem<T> = TableItem<T>> = {
   className?: string | ((item: I, column: TableColumn<T, I>, rowIndex: number) => string);

@@ -10,7 +10,7 @@ export type InputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size
   PrefixComponent?: React.FC<InputProps>;
   /*
    * When the component is focus, the text is auto-selected
-  */
+   */
   selectOnFocus?: boolean;
   /**
    * A component rendered in after the input component (actually inside the border of the input component)
@@ -54,7 +54,7 @@ export type FormInputProps = InputProps &
      *
      * @remarks #important#
      */
-    defaultValue?: string;
+    defaultValue?: string | number;
     /**
      * Replace the default component that display the input
      *

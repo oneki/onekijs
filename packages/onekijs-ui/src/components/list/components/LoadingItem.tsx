@@ -5,7 +5,7 @@ import { marginY } from '../../../styles/spacing';
 import { addClassname } from '../../../utils/style';
 import { backgroundColor } from '../../../styles/background';
 
-const LoadingItem: React.FC<{ className?: string, minHeight?: number }> = ({ className }) => {
+const LoadingItem: React.FC<{ className?: string; minHeight?: number }> = ({ className }) => {
   return <div className={addClassname('o-loading-item', className)} />;
 };
 
@@ -13,7 +13,7 @@ export default styled(LoadingItem)`
   ${height('full')}
   ${width('full')}
   ${(props) => {
-    return minHeight(`${props.minHeight ?? 37}px`)
+    return minHeight(`${props.minHeight ?? 37}px`);
   }}
   ${marginY('1px')}
   animation: skeleton-loading 1s linear infinite alternate;

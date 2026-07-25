@@ -9,34 +9,58 @@ export const getFloatingKey = (size: DashboardSize): 'floatingSmall' | 'floating
   return `floating${ucfirst(size)}` as 'floatingSmall' | 'floatingMedium' | 'floatingLarge';
 };
 
-export const getDashboardPanelLength = (
+// full ignore collapse and float key => ask for the full width / height of the panel not collapsed and not floated
+export const getDashboardPanelSize = (
   type: 'width' | 'height',
   size: DashboardSize,
   panel: DashboardHorizontalPanel | DashboardVerticalPanel | undefined,
+  full = false,
 ): string | 0 => {
-  if (!panel || (panel[getFloatingKey(size)] && panel[getCollapseKey(size)])) return 0;
+  if (!panel) return 0;
 
-  const panelCollapseLength =
+  let isCollapsed = isTrue(panel[getCollapseKey(size)]);
+  let isCollapsing = isTrue(panel.collapsing);
+
+  const collapseSize =
     type === 'width'
       ? (panel as DashboardVerticalPanel)?.collapseWidth
       : (panel as DashboardHorizontalPanel)?.collapseHeight;
 
-  const panelLength =
-    type === 'width' ? (panel as DashboardVerticalPanel)?.width : (panel as DashboardHorizontalPanel)?.height;
-
-  if (!panel[getFloatingKey(size)] && (size === 'small' || isTrue(panel[getCollapseKey(size)]))) {
-    return parseFloat(`${panelCollapseLength}`) < parseFloat(`${panelLength}`) ? panelCollapseLength : panelLength;
+  if (isTrue(panel[getFloatingKey(size)]) || parseInt(`${collapseSize}`) === 0) {
+    if (isCollapsed && !isCollapsing && !full) return 0;
+    isCollapsed = false;
   }
-  return panelLength;
+
+  if (isCollapsed && !full) {
+    return type === 'width'
+      ? (panel as DashboardVerticalPanel)?.collapseWidth
+      : (panel as DashboardHorizontalPanel)?.collapseHeight;
+  }
+
+  return type === 'width' ? (panel as DashboardVerticalPanel).width : (panel as DashboardHorizontalPanel).height;
 };
 
-// get the actual width of a panel on the workspace
-// if the panel is floating, it takes no space
-export const getWorkspacePanelLength = (
+// full ignore collapse and float key => ask for the full width / height of the panel not collapsed and not floated
+export const getDashboardPanelContainerSize = (
   type: 'width' | 'height',
   size: DashboardSize,
   panel: DashboardHorizontalPanel | DashboardVerticalPanel | undefined,
-): string | 0 => {
-  if (!panel || panel[getFloatingKey(size)]) return 0;
-  return getDashboardPanelLength(type, size, panel);
+  full = false,
+): string | 0 | null => {
+  if (!panel || isTrue(panel[getFloatingKey(size)])) return null; // do not manage width/height at the container level
+
+  const collapseSize =
+    type === 'width'
+      ? (panel as DashboardVerticalPanel)?.collapseWidth
+      : (panel as DashboardHorizontalPanel)?.collapseHeight;
+
+  if (parseInt(`${collapseSize}`) !== 0) return null; // do not manage width/height at the container level
+
+  let isCollapsed = isTrue(panel[getCollapseKey(size)]);
+
+  if (isCollapsed && !full) {
+    return collapseSize;
+  }
+
+  return type === 'width' ? (panel as DashboardVerticalPanel).width : (panel as DashboardHorizontalPanel).height;
 };

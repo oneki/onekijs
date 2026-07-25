@@ -7,24 +7,26 @@ on:
       - refactoring/getting-started
     paths:
       - 'getting-started/cra/**'
+      - 'getting-started/next/**'
 
 jobs:
   Build:
 
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    
-    steps:
-      - uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v3
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22.22.0'
           cache: 'npm'
-      
-      - run: npm install
-      - run: npm i -g concurrently
+
+      - run: npm ci
+      - run: npm run typecheck
       - run: npm run build
+      - run: npm --workspace next-step09-form run build
       - run: |
           concurrently "cd getting-started/cra/step01-react-app && npm run deploy" \
           "cd getting-started/cra/step02-navigation && npm run deploy" \

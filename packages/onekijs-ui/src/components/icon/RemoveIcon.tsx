@@ -27,7 +27,13 @@ const RemoveIcon: FC<IconProps> = ({ className, onClick }) => {
 };
 
 export default styled(RemoveIcon)`
-  ${({ width = '16px', height = '16px', color: cssColor = 'inherit', marginLeft: ml = '0', marginRight: mr = '0' }) => css`
+  ${({
+    width = '16px',
+    height = '16px',
+    color: cssColor = 'inherit',
+    marginLeft: ml = '0',
+    marginRight: mr = '0',
+  }) => css`
     width: ${width};
     height: ${height};
     ${marginLeft(ml)}

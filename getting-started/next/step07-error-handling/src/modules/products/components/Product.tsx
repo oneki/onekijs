@@ -1,5 +1,7 @@
+'use client';
+
+import Link from 'next/link';
 import React, { FC } from 'react';
-import { Link } from 'onekijs-next';
 import { ProductType } from '../../../../data/products';
 
 interface ProductProps {

@@ -74,7 +74,7 @@ const SelectOptionComponent = <T, I extends SelectItem<T> = SelectItem<T>>(props
     if (ref.current) {
       service.setItemWidth(item, ref.current.clientWidth);
     }
-  })
+  });
 
   if (isItemLoading(item)) {
     return <OptionLoadingComponent />;
@@ -92,7 +92,7 @@ const SelectOptionComponent = <T, I extends SelectItem<T> = SelectItem<T>>(props
         onMouseLeave={() => hoverable && onMouseLeave && item && onMouseLeave(item, index)}
         key="content"
       >
-        <div style={{display: 'flex'}} ref={ref}>
+        <div style={{ display: 'flex' }} ref={ref}>
           {/* {multiple && <div className="o-select-option-icon">{meta?.selected? <>&#10003;</>:<></>}</div> } */}
           {service.config?.multiple && (
             <Checkbox

@@ -29,7 +29,13 @@ const useValidation = (name = '', touchedOnly = true): FieldValidation | Contain
 
   const [validation, setValidation] = useState(() => {
     if (isNullOrEmpty(argsRef.current.name)) {
-      return form.getContainerFieldValidation(form.state.validations, form.fields, '', argsRef.current.touchedOnly, true);
+      return form.getContainerFieldValidation(
+        form.state.validations,
+        form.fields,
+        '',
+        argsRef.current.touchedOnly,
+        true,
+      );
     } else {
       return getFieldValidation(argsRef.current.name, argsRef.current.touchedOnly);
     }

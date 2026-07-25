@@ -1,4 +1,7 @@
-import { Link, useTranslation } from 'onekijs-next';
+'use client';
+
+import Link from 'next/link';
+import { useTranslation } from 'onekijs-next';
 import React from 'react';
 import { CartType } from '../../../../data/dto/cart';
 import { currency } from '../libs/format';
@@ -9,7 +12,7 @@ interface CartProps {
 
 const Cart: React.FC<CartProps> = ({ cart }) => {
   const nbItems = cart.products.length;
-  const [T] = useTranslation();
+  const [T, , locale] = useTranslation();
   return (
     <div>
       <h3>
@@ -36,12 +39,12 @@ const Cart: React.FC<CartProps> = ({ cart }) => {
       {nbItems > 0 && (
         <h4>
           <T count={nbItems}>
-            There is <u>{{ nbItems }} item</u> in the shopping cart !
+            There is <u>{({ nbItems } as unknown) as React.ReactNode} item</u> in the shopping cart !
           </T>
         </h4>
       )}
       <p>
-        <Link href="/">
+        <Link href={`/${locale}`}>
           <T>Buy another products</T>
         </Link>
       </p>

@@ -13,7 +13,6 @@ const TreeSelectComponent = <
   props: TreeSelectProps<T, I, S, C>,
 ) => {
   const controller = props.controller;
-
   if (isCollection(controller)) {
     return <ControlledTreeSelectComponent {...props} controller={controller} />;
   } else {

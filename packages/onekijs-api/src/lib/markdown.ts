@@ -10,7 +10,11 @@ const isMandatoryProp = (prop: Props) => {
 };
 
 export class MarkdownBuilder {
-  constructor(public element: ParsedElement, public basePath: string, public markdown = '') {}
+  constructor(
+    public element: ParsedElement,
+    public basePath: string,
+    public markdown = '',
+  ) {}
 
   public build() {
     // build markdown
@@ -162,9 +166,9 @@ import Details from "@theme/Details"
     this.markdown += `\n\n### ${label}\n\n`;
 
     const mostUsedProps = props.filter((prop) => {
-      if (prop.flags.isOptional !== true ||  prop.remarks === 'important') return true;
+      if (prop.flags.isOptional !== true || prop.remarks === 'important') return true;
       return false;
-    })
+    });
     if (mostUsedProps.length > 0) {
       if (this.element.type !== 'Class') {
         this.markdown += `<font size="2"><i>(Mandatory ${label.toLocaleLowerCase()} are in bold)</i></font>\n\n`;
@@ -176,14 +180,14 @@ import Details from "@theme/Details"
     }
 
     const advancedProps = props.filter((prop) => {
-      if (prop.flags.isOptional === true &&  prop.remarks !== 'important') return true;
+      if (prop.flags.isOptional === true && prop.remarks !== 'important') return true;
       return false;
-    })
+    });
 
     if (advancedProps.length > 0) {
       this.markdown += `<Details summary={<summary><b>Additional properties for advanced use cases</b></summary>}><div>\n\n`;
       this.printProps(advancedProps, label, typeLabel);
-      this.markdown += `\n\n</div></Details>`
+      this.markdown += `\n\n</div></Details>`;
     }
 
     return this;
@@ -196,8 +200,7 @@ import Details from "@theme/Details"
     props.forEach((prop) => {
       this.markdown += this.buildProp(prop, depth);
     });
-
-  }  
+  }
 
   private section2() {
     const label = this.sectionLabel(2);

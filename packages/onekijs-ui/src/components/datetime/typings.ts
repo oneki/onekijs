@@ -42,7 +42,7 @@ export type CalendarDay = {
 export type DateAdapter<T extends any = any> = {
   fromDate: (date: string) => T;
   toDate: (value: T) => string;
-}
+};
 
 export type DatePickerContext = {
   open: boolean;
@@ -102,7 +102,7 @@ export type TimestampRange = {
 export type DateRangeAdapter<T extends any = any> = {
   fromDateRange: (range: DateStringRange) => T;
   toDateRange: (value: T) => DateStringRange;
-}
+};
 
 export type DateRangePickerProps<T extends any = any> = BasePickerProps & {
   adapter?: DateRangeAdapter<T>;
@@ -134,7 +134,7 @@ export type PickerComponentProps = BasePickerProps &
     label?: string | null;
   };
 
-export type QuickRange = DefaultQuickRange | DateQuickRange
+export type QuickRange = DefaultQuickRange | DateQuickRange;
 
 export type QuickTimeRangeComponentProps = {
   currentQuickRangeLabel?: string | null;

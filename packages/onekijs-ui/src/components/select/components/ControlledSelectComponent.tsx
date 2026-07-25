@@ -29,11 +29,12 @@ import {
   SelectOptionHandler,
   SelectState,
 } from '../typings';
-import { findSelectItem, findSelectItemIndex } from '../util';
+import { defaultAutocompleteAdapter, findSelectItem, findSelectItemIndex } from '../util';
 import SelectInputComponent from './SelectInputComponent';
 import SelectNotFoundComponent from './SelectNotFoundComponent';
 import SelectOptionComponent, { SelectOptionContent } from './SelectOptionComponent';
 
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
 const DefaultSelectListComponent = <T extends any = any, I extends SelectItem<T> = SelectItem<T>>(
   props: SelectListComponentProps<T, I>,
 ) => {
@@ -101,7 +102,7 @@ const ControlledSelectComponent = <
   dropdownWidthModifier = 'min',
   preload = 50,
   increment = 50,
-  animationMs = 200,
+  animationMs = 100,
   disabled,
   defaultValue,
   defaultValueLoading,
@@ -111,13 +112,19 @@ const ControlledSelectComponent = <
   clickable = true,
   ListComponent = DefaultSelectListComponent,
   autoCompleteSearch = true,
+  autoCompleteAdapter = defaultAutocompleteAdapter,
+  mode,
   maxDisplayTokens,
   validateValue = true,
+  open: externalOpen,
 }: ControllerSelectProps<T, I, S, C>) => {
   if (nullable === undefined) {
     nullable = !required;
   }
-  const [open, setOpen] = useState(false);
+  const [initialized, setInitialized] = useState(false);
+  const [internalOpen, setOpen] = useState(false);
+  const open = initialized && (externalOpen ?? internalOpen);
+
   const [focus, setFocus] = useState(false);
   const stateRef = useRef<AnonymousObject>({});
   const service = controller.asService();
@@ -157,6 +164,8 @@ const ControlledSelectComponent = <
       sameWidth,
       overscan,
       autoCompleteSearch,
+      autoCompleteAdapter,
+      mode,
       maxDisplayTokens,
       validateValue,
     };
@@ -196,6 +205,8 @@ const ControlledSelectComponent = <
       sameWidth,
       overscan,
       autoCompleteSearch,
+      autoCompleteAdapter,
+      mode,
       maxDisplayTokens,
       validateValue,
     };
@@ -208,9 +219,9 @@ const ControlledSelectComponent = <
 
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  const previousSearchRef = useRef<Primitive>();
+  const previousSearchRef = useRef<Primitive | undefined>(undefined);
 
-  const previousProxyItemRef = useRef<I>();
+  const previousProxyItemRef = useRef<I | undefined>(undefined);
 
   const tokens = useMemo<I[]>(() => {
     return (controller.state.selected || [])
@@ -221,6 +232,9 @@ const ControlledSelectComponent = <
   const showActiveRef = useRef(false);
 
   const proxyItem = useMemo(() => {
+    if (mode === 'autocomplete') {
+      return undefined;
+    }
     const search = controller.getSearch();
     const active = controller.state.active;
     const selected = controller.state.selected;
@@ -244,7 +258,7 @@ const ControlledSelectComponent = <
     if (!multiple) {
       return controller.adapt(value as T | null | undefined);
     }
-  }, [focus, controller, value, multiple, autoCompleteSearch]);
+  }, [focus, controller, value, multiple, autoCompleteSearch, mode]);
 
   const optionsRef = useRef<HTMLDivElement | null>(null);
 
@@ -311,6 +325,10 @@ const ControlledSelectComponent = <
   const clearSearch = useCallback(() => {
     setTimeout(service.clearSearch, animationMs);
   }, [service, animationMs]);
+
+  useEffect(() => {
+    setInitialized(true);
+  }, [setInitialized]);
 
   const onBlur = useCallback(() => {
     if (!stateRef.current.keepFocus) {
@@ -408,11 +426,11 @@ const ControlledSelectComponent = <
           const currentItem = service.adapt(value as T | null | undefined);
           if (invalidItems.find((i) => i.id === currentItem.id)) {
             // set the defaultValue if it's a valid value otherwise set null
-            onChange && onChange(service.state.validDefaultValue || null);
+            if (onChange) onChange(service.state.validDefaultValue || null);
           }
         }
       } else if (!search && !nullable && (value === null || value === undefined) && service.state.validDefaultValue) {
-        onChange && onChange(service.state.validDefaultValue);
+        if (onChange) onChange(service.state.validDefaultValue);
       }
     }
   }, [
@@ -432,7 +450,11 @@ const ControlledSelectComponent = <
     if (nextValue === null) {
       onSelect(null);
     } else {
+      if (mode === 'autocomplete') {
+        service.setInputValue(nextValue);
+      }
       service.search(nextValue);
+
       if (!open) {
         setOpen(true);
       }
@@ -619,7 +641,17 @@ const ControlledSelectComponent = <
           loading={loading}
           fetching={fetching}
           onChange={onInputChange}
-          value={autoCompleteSearch ? (proxyItem ? proxyItem.text : '') : controller.getSearch() || ''}
+          value={
+            mode === 'autocomplete'
+              ? value === null || value === undefined
+                ? value
+                : `${value}`
+              : autoCompleteSearch
+              ? proxyItem
+                ? proxyItem.text
+                : ''
+              : controller.getSearch() || ''
+          }
           focus={focus}
           onFocus={onFocus}
           onBlur={onBlur}

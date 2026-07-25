@@ -78,7 +78,11 @@ export default class FetchService<S extends FetchState = FetchState> extends Def
   }
 
   @saga(SagaEffect.Every)
-  *pollFetch<R = any>(url: string, fixedRateInMs: number | ((result: R | undefined) => number), options?: FetchOptions<any>): any {
+  *pollFetch<R = any>(
+    url: string,
+    fixedRateInMs: number | ((result: R | undefined) => number),
+    options?: FetchOptions<any>,
+  ): any {
     yield this.fetch(url, HttpMethod.Get, undefined, options);
     const interval = typeof fixedRateInMs === 'function' ? fixedRateInMs(this.state.result) : fixedRateInMs;
     if (interval > 0) {
@@ -89,7 +93,11 @@ export default class FetchService<S extends FetchState = FetchState> extends Def
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @saga(SagaEffect.Every)
-  *poll<R = any>(url: string, fixedRateInMs: number | ((result: R | undefined) => number), options?: FetchOptions<any>): any {
+  *poll<R = any>(
+    url: string,
+    fixedRateInMs: number | ((result: R | undefined) => number),
+    options?: FetchOptions<any>,
+  ): any {
     this.pollTask = yield spawn([this, this.pollFetch<R>], url, fixedRateInMs, options);
     return this.pollTask;
   }

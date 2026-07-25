@@ -22,7 +22,13 @@ const WarningIconComponent: FC<IconProps> = (props) => {
 };
 
 export default styled(WarningIconComponent)`
-  ${({ width = '16px', height = '16px', color: cssColor = 'warning', marginLeft: ml = '0', marginRight: mr = '0' }) => css`
+  ${({
+    width = '16px',
+    height = '16px',
+    color: cssColor = 'warning',
+    marginLeft: ml = '0',
+    marginRight: mr = '0',
+  }) => css`
     width: ${width};
     height: ${height};
     ${display('flex')};

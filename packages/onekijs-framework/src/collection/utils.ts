@@ -4,10 +4,12 @@ import { Primitive } from '../types/core';
 import { AnonymousObject, NestedKeyOf } from '../types/object';
 import { isSameArray } from '../utils/array';
 import { clone, get, shallowEqual, toArray } from '../utils/object';
+import { generateUniqueId } from '../utils/string';
 import {
   Collection,
   CollectionState,
   CollectionStatus,
+  DataObject,
   Item,
   LoadingStatus,
   LocalQuery,
@@ -27,24 +29,23 @@ import {
   QuerySortComparator,
   QuerySortDir,
 } from './typings';
-import { generateUniqueId } from '../utils/string';
 
 let filterUid = 0;
 export const rootFilterId = Symbol();
 
-export const applyCriteria = <T = any, I extends Item<T> = Item<T>>(
-  item: I,
-  criteria: QueryFilterCriteria,
-): boolean => {
+export const applyCriteria = <T, I extends DataObject<T>>(item: I, criteria: QueryFilterCriteria): boolean => {
   const operator = criteria.operator || 'eq';
   const value = criteria.value;
-  const source = get(item, `data.${criteria.field}` as NestedKeyOf<I>);
+  const source =
+    !criteria.field || criteria.field === '.'
+      ? get(item, 'data' as NestedKeyOf<I>)
+      : get(item, `data.${criteria.field}` as NestedKeyOf<I>);
   const not = criteria.not;
   const result = applyOperator(operator, source, value);
   return not ? !result : result;
 };
 
-export const applyFields = <T = any, I extends Item<T> = Item<T>>(items: I[], fields?: string[]): I[] => {
+export const applyFields = <T, I extends DataObject<T>>(items: I[], fields?: string[]): I[] => {
   if (fields && fields.length > 0) {
     return items.map((item) => {
       const { data, ...nextItem } = item;
@@ -61,7 +62,7 @@ export const applyFields = <T = any, I extends Item<T> = Item<T>>(items: I[], fi
   return items;
 };
 
-export const applyFilter = <T = any, I extends Item<T> = Item<T>>(item: I, filter?: QueryFilter): boolean => {
+export const applyFilter = <T, I extends DataObject<T>>(item: I, filter?: QueryFilter): boolean => {
   let result = true;
 
   if (filter) {
@@ -82,7 +83,6 @@ export const applyFilter = <T = any, I extends Item<T> = Item<T>>(item: I, filte
 
 export const applyOperator = (
   operator: QueryFilterCriteriaOperator,
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   left: any,
   right?: QueryFilterCriteriaValue | QueryFilterCriteriaValue[],
 ): boolean => {
@@ -128,12 +128,14 @@ export const applyOperator = (
       return left === right;
     case 'in':
       return toArray(right || []).includes(left);
+    case 'contains':
+      return toArray(left || []).includes(right);
     default:
       return true;
   }
 };
 
-export const applySearch = <T = any, I extends Item<T> = Item<T>>(
+export const applySearch = <T, I extends Item<T>>(
   item: I,
   search?: QueryFilterCriteriaValue,
   searcher?: QuerySearcher<T>,
@@ -148,7 +150,7 @@ export const applySearch = <T = any, I extends Item<T> = Item<T>>(
   return applyOperator(searcher, item.text, search);
 };
 
-export const applySort = <T = any, I extends Item<T> = Item<T>>(
+export const applySort = <T, I extends DataObject<T>>(
   items: I[],
   dir: QuerySortDir,
   comparator: QuerySortComparator<T>,
@@ -164,7 +166,7 @@ export const applySort = <T = any, I extends Item<T> = Item<T>>(
   return items;
 };
 
-export const applySortBy = <T = any, I extends Item<T> = Item<T>>(
+export const applySortBy = <T, I extends DataObject<T>>(
   items: I[],
   sortBy: QuerySortBy[],
   comparators: AnonymousObject<QuerySortComparator<T>>,
@@ -198,12 +200,7 @@ export const applySortBy = <T = any, I extends Item<T> = Item<T>>(
                   ? defaultComparator
                   : comparators[field.comparator] || defaultComparator;
               const reverse = s.dir === 'desc' ? -1 : 1;
-              result =
-                reverse *
-                comparator(
-                  get<any>(a, `data.${fieldName}`),
-                  get<any>(b, `data.${fieldName}`),
-                );
+              result = reverse * comparator(get<any>(a, `data.${fieldName}`), get<any>(b, `data.${fieldName}`));
               if (result !== 0) {
                 break;
               }
@@ -219,7 +216,6 @@ export const applySortBy = <T = any, I extends Item<T> = Item<T>>(
   return items;
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const defaultComparator = (a: any, b: any) => {
   if (typeof a === 'string') {
     a = a.toLowerCase();
@@ -293,7 +289,7 @@ const _serializer = (query: Query, url: boolean) => {
     });
   }
 
-  return Object.fromEntries(Object.entries(result).filter(([_k, v]) => v !== undefined)) as QuerySerializerResult;
+  return Object.fromEntries(Object.entries(result).filter(([, v]) => v !== undefined)) as QuerySerializerResult;
 };
 
 export const generateFilterId = (): number => {
@@ -552,7 +548,7 @@ const removeSystemParams = (params: AnonymousObject | undefined | null): Anonymo
   delete p.noCache;
   delete p.noLoading;
   return p;
-}
+};
 
 const handleQueryEntry = (key: string, value: string, result: Query): void => {
   value = decodeURIComponent(value);
@@ -787,10 +783,17 @@ export const visitFilter = (filter: QueryFilter, visitor: (filter: QueryFilter) 
 
 export const addFilter = (
   query: Query,
-  filterOrCriteria: QueryFilterOrCriteria,
+  filterOrCriteria: QueryFilterOrCriteria | string,
   parentFilterId: QueryFilterId = rootFilterId,
 ): void => {
   const filter = clone(formatFilter(query.filter) || { id: rootFilterId, operator: 'and', criterias: [] });
+  if (typeof filterOrCriteria === 'string') {
+    const parsedFilterOrCriteria = deserializeFilterOrCriteria(filterOrCriteria);
+    if (parsedFilterOrCriteria === undefined) {
+      throw new DefaultBasicError(`Invalid filter or criteria: ${filterOrCriteria}`);
+    }
+    filterOrCriteria = parsedFilterOrCriteria;
+  }
   visitFilter(filter, (filter) => {
     if (filter.id === parentFilterId) {
       let index = -1;
@@ -819,17 +822,179 @@ export const dummyLogMetadata = (): void => {
   console.log(__metadata);
 };
 
+const filterOperators: QueryFilterCriteriaOperator[] = [
+  'eq',
+  'like',
+  'sw',
+  'ew',
+  'regex',
+  'i_eq',
+  'i_like',
+  'i_sw',
+  'i_ew',
+  'i_regex',
+  'gt',
+  'lt',
+  'gte',
+  'lte',
+  'in',
+  'is',
+  'contains',
+];
+
+const unescapeFilterValue = (value: string): string => {
+  let result = '';
+  for (let index = 0; index < value.length; index++) {
+    if (value[index] === '\\' && index + 1 < value.length) {
+      index++;
+    }
+    result += value[index];
+  }
+  return result;
+};
+
+const parseFilterValue = (value: string): QueryFilterCriteriaValue | undefined => {
+  const firstCharacter = value[0];
+  const lastCharacter = value[value.length - 1];
+  if (firstCharacter === '"' || firstCharacter === "'") {
+    if (firstCharacter !== lastCharacter) return;
+    return unescapeFilterValue(value.slice(1, -1));
+  }
+
+  if (/\s|["';]/.test(value)) return;
+
+  try {
+    return JSON.parse(value) as QueryFilterCriteriaValue;
+  } catch {
+    return value;
+  }
+};
+
+const splitFilterComponents = (value: string): string[] | undefined => {
+  const components: string[] = [];
+  let start = 0;
+  let depth = 0;
+  let quote: string | undefined;
+
+  for (let index = 0; index < value.length; index++) {
+    const character = value[index];
+    if (quote) {
+      if (character === '\\') {
+        index++;
+      } else if (character === quote) {
+        quote = undefined;
+      }
+      continue;
+    }
+    if (character === '"' || character === "'") {
+      quote = character;
+    } else if (character === '(') {
+      depth++;
+    } else if (character === ')') {
+      if (depth === 0) return;
+      depth--;
+    } else if (character === ';' && depth === 0) {
+      const component = value.slice(start, index).trim();
+      if (component) components.push(component);
+      start = index + 1;
+    }
+  }
+
+  if (quote || depth !== 0) return;
+  const component = value.slice(start).trim();
+  if (component) components.push(component);
+  return components;
+};
+
+export const deserializeFilterOrCriteria = (value: string): QueryFilter | QueryFilterCriteria | undefined => {
+  const trimmedValue = value.trim();
+  if (!trimmedValue) return;
+
+  const groupMatch = /^(?:(and|or)\s*)?\(/i.exec(trimmedValue);
+  if (groupMatch) {
+    const openingParenthesis = groupMatch[0].lastIndexOf('(');
+    let depth = 0;
+    let quote: string | undefined;
+    let closingParenthesis = -1;
+
+    for (let index = openingParenthesis; index < trimmedValue.length; index++) {
+      const character = trimmedValue[index];
+      if (quote) {
+        if (character === '\\') {
+          index++;
+        } else if (character === quote) {
+          quote = undefined;
+        }
+      } else if (character === '"' || character === "'") {
+        quote = character;
+      } else if (character === '(') {
+        depth++;
+      } else if (character === ')' && --depth === 0) {
+        closingParenthesis = index;
+        break;
+      }
+    }
+
+    if (quote || closingParenthesis === -1 || trimmedValue.slice(closingParenthesis + 1).trim()) return;
+    const components = splitFilterComponents(trimmedValue.slice(openingParenthesis + 1, closingParenthesis));
+    if (components === undefined) return;
+
+    const criterias = components.map(deserializeFilterOrCriteria);
+    if (criterias.some((criteria) => criteria === undefined)) return;
+    return {
+      operator: groupMatch[1]?.toLowerCase() === 'or' ? 'or' : 'and',
+      criterias: criterias as QueryFilterOrCriteria[],
+    };
+  }
+
+  const operatorPattern = filterOperators.join('|');
+  const criteriaMatch = new RegExp(
+    `^([a-zA-Z$_][a-zA-Z0-9$_.]*)\\s+(not\\s+)?(${operatorPattern})\\s+(.+?)$`,
+    'i',
+  ).exec(trimmedValue);
+  if (!criteriaMatch) return;
+
+  const operator = criteriaMatch[3].toLowerCase() as QueryFilterCriteriaOperator;
+  const parsedValue = parseFilterValue(criteriaMatch[4]);
+  if (parsedValue === undefined) return;
+  return {
+    field: criteriaMatch[1],
+    not: criteriaMatch[2] !== undefined,
+    operator,
+    value: operator === 'in' && typeof parsedValue === 'string' ? parsedValue.split(',') : parsedValue,
+  };
+};
+
 export const formatFilter = (
-  filter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[],
+  filter?: QueryFilter | QueryFilterCriteria | QueryFilterOrCriteria[] | string | string[],
 ): QueryFilter | undefined => {
   if (!filter) {
     return;
   } else if (Array.isArray(filter)) {
-    // current filter is a QueryFilterOrCriteria[]
+    if (filter.length === 0) {
+      return {
+        id: rootFilterId,
+        operator: 'and',
+        criterias: [],
+      };
+    }
+    if (typeof filter[0] === 'string') {
+      filter = (filter as string[])
+        .map((f) => deserializeFilterOrCriteria(f))
+        .filter((f) => f !== undefined) as QueryFilterOrCriteria[];
+    }
     return {
       id: rootFilterId,
       operator: 'and',
-      criterias: filter,
+      criterias: filter as QueryFilterOrCriteria[],
+    };
+  } else if (typeof filter === 'string') {
+    // current filter is a QueryFilterCriteria
+    const filterOrCriteria = deserializeFilterOrCriteria(filter);
+    return {
+      id: rootFilterId,
+      operator: 'and',
+      criterias: filterOrCriteria ? [filterOrCriteria] : [],
     };
   } else if (isQueryFilterCriteria(filter)) {
     // current filter is a QueryFilterCriteria
@@ -853,40 +1018,50 @@ export const toQuerySortBy = (sortBy: QuerySortBy | QuerySortBy[] | string | und
     return [];
   }
   if (typeof sortBy === 'string') {
-    return [{
-      id: undefined,
-      dir: 'asc',
-      comparator: undefined,
-      field: sortBy,
-    }]
+    return [
+      {
+        id: undefined,
+        dir: 'asc',
+        comparator: undefined,
+        field: sortBy,
+      },
+    ];
   }
   if (isQuerySortByMultiFields(sortBy)) {
     if (sortBy.fields.length === 1) {
-      return [{
-        id: sortBy.id,
-        dir: sortBy.dir || 'asc',
-        comparator: (typeof sortBy.fields[0] === 'string') ? undefined: sortBy.fields[0].comparator,
-        field: (typeof sortBy.fields[0] === 'string') ? sortBy.fields[0] : sortBy.fields[0].name,
-      }]
+      return [
+        {
+          id: sortBy.id,
+          dir: sortBy.dir || 'asc',
+          comparator: typeof sortBy.fields[0] === 'string' ? undefined : sortBy.fields[0].comparator,
+          field: typeof sortBy.fields[0] === 'string' ? sortBy.fields[0] : sortBy.fields[0].name,
+        },
+      ];
     } else {
-      return [{
-        id: sortBy.id || generateUniqueId(),
-        fields: sortBy.fields.map((f) => typeof f === 'string' ? ({name: f, comparator: undefined}) : f),
-        dir: sortBy.dir || 'asc',
-      }]
+      return [
+        {
+          id: sortBy.id || generateUniqueId(),
+          fields: sortBy.fields.map((f) => (typeof f === 'string' ? { name: f, comparator: undefined } : f)),
+          dir: sortBy.dir || 'asc',
+        },
+      ];
     }
   } else {
-    return [{
-      id: sortBy.id,
-      dir: sortBy.dir || 'asc',
-      comparator: sortBy.comparator,
-      field: sortBy.field
-    }]
+    return [
+      {
+        id: sortBy.id,
+        dir: sortBy.dir || 'asc',
+        comparator: sortBy.comparator,
+        field: sortBy.field,
+      },
+    ];
   }
-}
+};
 
-
-export const formatSortBy = (sortBy: string | QuerySortBy | QuerySortBy[] | undefined, currentSortBy?: QuerySortBy[]): QuerySortBy[] => {
+export const formatSortBy = (
+  sortBy: string | QuerySortBy | QuerySortBy[] | undefined,
+  currentSortBy?: QuerySortBy[],
+): QuerySortBy[] => {
   if (sortBy === undefined) {
     return currentSortBy || [];
   }
@@ -894,7 +1069,7 @@ export const formatSortBy = (sortBy: string | QuerySortBy | QuerySortBy[] | unde
   if (currentSortBy === undefined) {
     return sortBy;
   } else if (isSameSortBy(sortBy, currentSortBy)) {
-    return currentSortBy;  // keep the reference
+    return currentSortBy; // keep the reference
   } else {
     return sortBy;
   }

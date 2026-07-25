@@ -7,7 +7,7 @@ import { display } from '../../styles/display';
 import { opacity } from '../../styles/effects';
 import { cursor, outline } from '../../styles/interactivity';
 import { position } from '../../styles/position';
-import { marginLeft, marginRight, paddingLeft, paddingX, paddingY } from '../../styles/spacing';
+import { marginLeft, marginRight, marginTop, paddingLeft, paddingX, paddingY } from '../../styles/spacing';
 import { ComponentStyle } from '../../styles/typings';
 import {
   color,
@@ -67,21 +67,17 @@ const buttonStyle: ComponentStyle<ButtonProps> = ({
       hover: disabled ? bColor : hoverBorderColor,
     })}
     ${cursor(disabled ? t.cursorDisabled : t.cursor)}
-    button {
-      ${cursor(disabled ? t.cursorDisabled : t.cursor)}
-      ${backgroundColor('inherit')}
-      ${color('inherit')}
-      ${fontWeight(t.fontWeight)}
-      ${whiteSpace(t.whiteSpace)}
-      ${textOverflow(t.textOverflow)}
-      ${textTransform(t.textTransform)}
-      ${letterSpacing(tLetterSpacing)}
-      ${lineHeight(tLineHeight)}
-      ${fontSize(tFontSize)}
-      ${opacity(disabled ? 0.6 : 1)}
-      ${marginLeft(IconComponent ? 'xs' : 'none')}
-      ${outline('none')}
-    }
+    ${fontWeight(t.fontWeight)}
+    ${whiteSpace(t.whiteSpace)}
+    ${textOverflow(t.textOverflow)}
+    ${textTransform(t.textTransform)}
+    ${letterSpacing(tLetterSpacing)}
+    ${lineHeight(tLineHeight)}
+    ${fontSize(tFontSize)}
+    ${opacity(disabled ? 0.6 : 1)}
+    ${marginLeft(IconComponent ? 'xs' : 'none')}
+    ${outline('none')}
+
     .o-icon-loading-container {
       ${marginRight('xs')}
     }
@@ -90,6 +86,11 @@ const buttonStyle: ComponentStyle<ButtonProps> = ({
       ${color(fontColor, {
         hover: disabled ? fontColor : hoverFontColor,
       })}
+    }
+
+    .o-button-icon {
+      ${marginRight('xs')}
+      ${marginTop('2px')}
     }
   `;
 };
@@ -100,10 +101,7 @@ export const dropdownButtonStyle: ComponentStyle<ButtonProps> = () => {
     ${display('inline-flex')}
     ${position('relative')}
     ${alignItems('center')}
-    button {
-      ${display('inline-flex')}
-      ${alignItems('center')}
-    }
+
     .o-button-dropdown-icon {
       ${paddingLeft('xs')}
       ${display('inline-flex')}

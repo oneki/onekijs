@@ -87,7 +87,9 @@ export default class LogoutService extends DefaultLocalService<LogoutState> {
           window.location.href = `${absoluteUrl(url, get(settings, 'server.baseUrl'))}`;
         } else if (idp.externalLogoutEndpoint) {
           // Build the logout URL
-          const redirectUri = absoluteUrl(idp.logoutCallbackRoute || get(settings, 'routes.logoutCallback') || `${router.pathname}/callback`);
+          const redirectUri = absoluteUrl(
+            idp.logoutCallbackRoute || get(settings, 'routes.logoutCallback') || `${router.pathname}/callback`,
+          );
           let search = '';
           if (isOauth(idp)) {
             // Build the logout URL based on specs
@@ -112,7 +114,7 @@ export default class LogoutService extends DefaultLocalService<LogoutState> {
           // call the server
           const method = idp.logoutMethod || 'GET';
           yield asyncHttp(absoluteUrl(idp.logoutEndpoint, get(settings, 'server.baseUrl')), method, undefined, {
-            auth: store.getState().auth,
+            auth: store.getState().auth[identity],
           });
         }
 
