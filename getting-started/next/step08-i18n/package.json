@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "next": "^16.2.10",
-    "onekijs-next": "^1.0.0",
+    "onekijs-next": "^1.0.1",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   },
