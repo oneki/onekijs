@@ -1,6 +1,6 @@
 {
   "name": "onekijs-next",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Opiniated React framework built on top of Next.js",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -30,7 +30,7 @@
   "author": "Oneki",
   "license": "MIT",
   "dependencies": {
-    "onekijs-framework": "^1.0.1",
+    "onekijs-framework": "^1.0.3",
     "regenerator-runtime": "^0.14.1"
   },
   "devDependencies": {
