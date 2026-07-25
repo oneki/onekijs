@@ -18,7 +18,7 @@ const DeleteRowComponent: React.FC<TableBodyCellProps> = ({ rowIndex }) => {
 
   const metadata = useFormMetadata(tableName);
   let disabled = false;
-  if (metadata.readOnly || (metadata.editable === false && form.config.reconfigure)) {
+  if (metadata.disabled || metadata.readOnly || (metadata.editable === false && form.config.reconfigure)) {
     disabled = true;
   }
 
