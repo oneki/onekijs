@@ -22,7 +22,7 @@ const TooltipComponent: FCC<TooltipProps> = (props) => {
   const [show, setShow] = useState<boolean>(true);
   const [open, setOpen] = useState(false);
   const arrowRef = useRef<HTMLDivElement | null>(null);
-  const { context, floatingStyles, middlewareData, refs } = useFloating({
+  const { context, floatingStyles, middlewareData, placement: resolvedPlacement, refs } = useFloating({
     open,
     onOpenChange: setOpen,
     placement,
@@ -59,7 +59,12 @@ const TooltipComponent: FCC<TooltipProps> = (props) => {
   }, [uid]);
 
   const element = (
-    <div ref={refs.setFloating} style={floatingStyles} {...getFloatingProps({ className: 'o-tooltip-container' })}>
+    <div
+      ref={refs.setFloating}
+      style={floatingStyles}
+      data-popper-placement={resolvedPlacement}
+      {...getFloatingProps({ className: 'o-tooltip-container' })}
+    >
       <div
         ref={arrowRef}
         className="o-tooltip-arrow"
