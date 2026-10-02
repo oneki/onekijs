@@ -6,7 +6,7 @@ export const ListPage = () => {
   const collection = useListController<User>(users, {
     adapter: userAdapter,
   });
-  const ref = useRef<HTMLDivElement | null>(null);
+  const ref = useRef<HTMLDivElement>(null);
   return (
     <div style={{ display: 'flex', justifyContent: 'center', height: '100vh', overflow: 'scroll' }} ref={ref}>
       <div style={{ width: '300px' }}>

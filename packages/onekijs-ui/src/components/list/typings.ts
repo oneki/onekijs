@@ -125,7 +125,7 @@ export type ListConfig<T = any, I extends ListItem<T> = ListItem<T>> = {
   onItemUnselect?: ListItemHandler<T, I>;
   paddingEnd?: number;
   paddingStart?: number;
-  parentRef?: React.RefObject<HTMLDivElement>;
+  parentRef?: React.RefObject<HTMLDivElement | null>;
   overscan?: number;
   preload?: number;
   style?: React.CSSProperties;

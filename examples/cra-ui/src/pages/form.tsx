@@ -30,7 +30,7 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
         field: 'firstname',
         value: 'foo',
       },
-      setError: {
+      set_error: {
         field: 'firstname',
         message: 'cannot be foo',
       },
@@ -131,10 +131,10 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
           <FormSelect label="Role" name="role" dataSource={['admin', 'user']} defaultValue="admin" />
           <FormCheckbox label="Backup" name="backup" />
 
-          <FormCard name="outer-card">
+          <FormCard name="outer-card" title="">
             <FormSelect label="Auth" name="auth" dataSource={['none', 'token']} defaultValue="none" required={true} />
 
-            <FormCard name="inner-card">
+            <FormCard name="inner-card" title="">
               <FormInput name="token" required={true} label="Token" />
             </FormCard>
           </FormCard>
