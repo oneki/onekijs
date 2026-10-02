@@ -1,9 +1,11 @@
-import { Button, ComponentStyle, Modal } from 'onekijs-ui';
+import { Button, ComponentStyle, Modal, padding } from 'onekijs-ui';
 import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
 
 const modalStyle: ComponentStyle<{}> = () => {
-  return css``;
+  return css`
+    ${padding('xl')}
+  `;
 };
 
 const Page: React.FC<{ className?: string }> = ({ className }) => {
@@ -12,16 +14,9 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
   return (
     <>
       <Modal title="Hello World" open={open} onClose={() => setOpen(false)} buttons={[cancelButton]} closeOnClickOutside={true} closeOnEscape={true}>
-      Hello World<br />Hello World<br />Hello World<br />Hello World<br />Hello World<br />Hello World<br />
-      Hello World<br />Hello World<br />Hello World<br />Hello World<br />Hello World<br />Hello World<br />
-      Hello World<br />Hello World<br />Hello World<br />Hello World<br />Hello World<br />Hello World<br />
-      Hello World<br />Hello World<br />Hello World<br />Hello World<br />Hello World<br />Hello World<br />
-      Hello World<br />Hello World<br />Hello World<br />Hello World<br />Hello World<br />Hello World<br />
-      Hello World<br />Hello World<br />Hello World<br />Hello World<br />Hello World<br />Hello World<br />
-      Hello World<br />Hello World<br />Hello World<br />Hello World<br />Hello World<br />Hello World<br />
-      Hello World<br />Hello World<br />Hello World<br />Hello World<br />Hello World<br />Hello World<br />
-      Hello World<br />Hello World<br />Hello World<br />Hello World<br />Hello World<br />Hello World<br />
-      Hello World<br />Hello World<br />Hello World<br />Hello World<br />Hello World<br />Hello World<br />
+      <div className={className}>
+        Hello World<br />
+      </div>
       </Modal>
       <button onClick={() => setOpen(!open)}>{open ? 'Close modal' : 'Open modal'}</button>
     </>

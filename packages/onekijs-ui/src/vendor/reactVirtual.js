@@ -31,7 +31,10 @@ export const useElementScroll = ({ parentRef, horizontal, useObserver, initialRe
   const [element, setElement] = React.useState(parentRef.current);
 
   useIsomorphicLayoutEffect(() => {
-    setElement(parentRef.current);
+    const currentElement = parentRef.current;
+    if (currentElement !== element) {
+      setElement(currentElement);
+    }
   });
 
   useIsomorphicLayoutEffect(() => {
@@ -84,7 +87,10 @@ const useWindowRect = (windowRef, initialRect = { width: 0, height: 0 }) => {
   const [element, setElement] = React.useState(windowRef.current);
 
   useIsomorphicLayoutEffect(() => {
-    setElement(windowRef.current);
+    const currentElement = windowRef.current;
+    if (currentElement !== element) {
+      setElement(currentElement);
+    }
   });
 
   useIsomorphicLayoutEffect(() => {
@@ -122,7 +128,10 @@ export const useWindowScroll = ({ windowRef, parentRef, horizontal, useWindowObs
   const scrollKey = horizontal ? 'scrollX' : 'scrollY';
 
   useIsomorphicLayoutEffect(() => {
-    setElement(windowRef.current);
+    const currentElement = windowRef.current;
+    if (currentElement !== element) {
+      setElement(currentElement);
+    }
   });
 
   useIsomorphicLayoutEffect(() => {
