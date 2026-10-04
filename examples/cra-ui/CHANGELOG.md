@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.4](https://github.com/oneki/onekijs/compare/v1.0.3...v1.0.4) (2026-10-02)
+
+**Note:** Version bump only for package cra-ui
+
 ## [1.0.3](https://github.com/oneki/onekijs/compare/v1.0.2...v1.0.3) (2026-07-25)
 
 **Note:** Version bump only for package cra-ui
