@@ -1,4 +1,4 @@
-import React, { FC, useRef } from 'react';
+import { FC, useRef } from 'react';
 import Button from '..';
 import { useClickOutside } from '../../../utils/event';
 import { addClassname } from '../../../utils/style';
@@ -34,8 +34,9 @@ const DropdownButtonComponent: FC<DropDownButtonProps> = ({
   const ref = useRef<HTMLSpanElement | null>(null);
 
   const [Dropdown, triggerRef] = useDropdown();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  useClickOutside(ref, () => onCollapse && onCollapse());
+  useClickOutside([ref, dropdownRef], () => onCollapse && onCollapse());
 
   return (
     <span ref={ref}>
@@ -76,7 +77,9 @@ const DropdownButtonComponent: FC<DropDownButtonProps> = ({
         placement={placement}
         animationTimeout={animationTimeout}
       >
-        {listElement}
+        <div ref={dropdownRef}>
+          {listElement}
+        </div>
       </Dropdown>
     </span>
   );
