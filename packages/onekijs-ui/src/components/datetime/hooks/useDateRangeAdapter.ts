@@ -2,8 +2,7 @@ import { useRef } from 'react';
 import { DateRangeAdapter } from '../typings';
 import { dateToString } from '../util';
 
-const useDateRangeAdapter = () => {
-  const ref = useRef({
+export const dateRangeAdapter = {
     fromDateRange: (range) => {
       return {
         from: range.from === null ? null : new Date(range.from),
@@ -18,8 +17,10 @@ const useDateRangeAdapter = () => {
         label: value.label,
       };
     },
-  } as DateRangeAdapter<{ from: Date | null; to: Date | null; label?: string | null }>);
-  return ref.current;
+  } as DateRangeAdapter<{ from: Date | null; to: Date | null; label?: string | null }>
+
+const useDateRangeAdapter = () => {
+  return dateRangeAdapter;
 };
 
 export default useDateRangeAdapter;

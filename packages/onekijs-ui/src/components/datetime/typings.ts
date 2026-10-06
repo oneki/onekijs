@@ -1,7 +1,8 @@
-import { AnonymousObject } from 'onekijs-framework';
+import { AnonymousObject, FormFieldProps } from 'onekijs-framework';
 import { StylableProps } from '../../styles/typings';
 import { DropdownWidthModifier } from '../dropdown/typings';
 import { Placement } from '@popperjs/core';
+import { FieldDisplayerProps, FieldLayoutProps } from '../field/typings';
 
 export type BasePickerProps = StylableProps & {
   animationMs?: number;
@@ -64,7 +65,7 @@ export type DatePickerDate = {
 };
 
 export type DatePickerProps<T extends any = any> = BasePickerProps & {
-  adapter?: DateAdapter<T>;
+  adapter?: DateAdapter<T> | 'timestamp' | 'date';
   onChange?: (value: T | null) => void;
   value?: T | null;
 };
@@ -93,19 +94,13 @@ export type DateStringRange = {
   label?: string | null;
 };
 
-export type TimestampRange = {
-  from: number | null;
-  to: number | null;
-  label?: string | null;
-};
-
 export type DateRangeAdapter<T extends any = any> = {
   fromDateRange: (range: DateStringRange) => T;
   toDateRange: (value: T) => DateStringRange;
 };
 
 export type DateRangePickerProps<T extends any = any> = BasePickerProps & {
-  adapter?: DateRangeAdapter<T>;
+  adapter?: DateRangeAdapter<T> | 'timestamp' | 'date';
   closeOnQuickSelect?: boolean;
   onChange?: (value: T | null) => void;
   quickRanges?: AnonymousObject<DateStringRange>;
@@ -123,6 +118,55 @@ export type DisplayTime = {
   displayMinutes?: boolean;
   displaySeconds?: boolean;
 };
+
+export type FormDatePickerProps<T> = DatePickerProps<T> &
+  FormFieldProps &
+  FieldLayoutProps & {
+    /**
+     * The default value of the field if no specific value has been specified
+     * A value can be passed to field
+     *   * either manually by the user filling the form
+     *   * via the setValue of the form controller (if the field is inside a <Form> component)
+     *   * via an initial value transmitted to the form
+     *
+     * @remarks #important#
+     */
+    defaultValue?: T;
+    /**
+     * There are three components used to display the value of an FormInput in the summary step
+     *   * Displayer: display (label + value)
+     *   * FieldDisplayer: extract the value from the field and display it
+     *   * ValueDisplayer: customize how the value is displayed
+     */
+    FieldDisplayer?: React.FC<FieldDisplayerProps>;
+  };
+
+export type FormDateRangePickerProps<T> = DateRangePickerProps<T> &
+  FormFieldProps &
+  FieldLayoutProps & {
+    /**
+     * The default value of the field if no specific value has been specified
+     * A value can be passed to field
+     *   * either manually by the user filling the form
+     *   * via the setValue of the form controller (if the field is inside a <Form> component)
+     *   * via an initial value transmitted to the form
+     *
+     * @remarks #important#
+     */
+    defaultValue?: T;
+    /**
+     * There are three components used to display the value of an FormInput in the summary step
+     *   * Displayer: display (label + value)
+     *   * FieldDisplayer: extract the value from the field and display it
+     *   * ValueDisplayer: customize how the value is displayed
+     */
+    FieldDisplayer?: React.FC<FieldDisplayerProps>;
+  };
+
+
+export type FormDateTimePickerProps<T> = FormDatePickerProps<T> & DisplayTime;
+
+export type FormDateTimeRangePickerProps<T> = FormDateRangePickerProps<T> & DisplayTime;
 
 export type PickerComponentProps = BasePickerProps &
   DisplayTime & {
@@ -175,4 +219,12 @@ export type TimeSelectorPartComponentProps = {
   value: string | number;
   onChange: (value: string) => void;
   size?: 'small' | 'large';
+};
+
+export type TimestampFormat = 'seconds' | 'milliseconds';
+
+export type TimestampRange = {
+  from: number | null;
+  to: number | null;
+  label?: string | null;
 };
