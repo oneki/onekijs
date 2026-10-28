@@ -2,6 +2,8 @@ import React from 'react';
 import { DatePickerType, DateRangePickerProps, PickerComponentProps } from '../typings';
 import { toDateRange } from '../util';
 import PickerComponent from './PickerComponent';
+import { timestampMilliSecondRangeAdapter } from '../hooks/useTimestampRangeAdapter';
+import { dateRangeAdapter } from '../hooks/useDateRangeAdapter';
 
 const type: DatePickerType = {
   date: true,
@@ -12,13 +14,15 @@ const type: DatePickerType = {
 const DateRangePickerComponent: React.FC<DateRangePickerProps> = (props) => {
   const { onChange: forwardChange, value: externalValue, adapter, ...datePickerProps } = props;
 
+  const _adapter = adapter === 'timestamp' ? timestampMilliSecondRangeAdapter : adapter === 'date' ? dateRangeAdapter : adapter;
+
   const onChange: PickerComponentProps['onChange'] = forwardChange
     ? (value, label) => {
         const dateRange = toDateRange(value, label);
-        if (dateRange === null || !adapter) {
+        if (dateRange === null || !_adapter) {
           forwardChange(dateRange);
         } else {
-          forwardChange(adapter.fromDateRange(dateRange));
+          forwardChange(_adapter.fromDateRange(dateRange));
         }
       }
     : undefined;
@@ -26,8 +30,8 @@ const DateRangePickerComponent: React.FC<DateRangePickerProps> = (props) => {
   let value: PickerComponentProps['value'] = null;
   let valueLabel: string | null | undefined;
   if (externalValue) {
-    if (adapter) {
-      const { from, to, label } = adapter.toDateRange(externalValue);
+    if (_adapter) {
+      const { from, to, label } = _adapter.toDateRange(externalValue);
       value = `${from || ''} to ${to || ''}`;
       valueLabel = label;
     } else {
