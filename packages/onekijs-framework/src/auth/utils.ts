@@ -37,9 +37,15 @@ export function generateState(): string {
 export function getIdp(settings: AppSettings, name?: string): Idp {
   const idps = settings.idp;
   name = name || 'default';
-  const idp = idps[name];
+  const [type, identity] = name.split(':');
+  const idp = idps[type];
   if (!idp) {
-    throw new DefaultBasicError(`Cannot find a valid IDP named ${name}`);
+    throw new DefaultBasicError(`Cannot find a valid IDP named ${type} in the settings`);
+  }
+  if (identity) {
+    idp.identity = identity;
+  } else if (!idp.identity) {
+    idp.identity = 'default';
   }
   return Object.assign({ name }, defaultIdpSettings[idp.type], idp);
 }
