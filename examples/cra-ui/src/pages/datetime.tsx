@@ -1,5 +1,5 @@
 import { AnonymousObject, Form, useFormController } from 'onekijs';
-import { Tabs, Tab, ComponentStyle, width, DateTimePicker, DatePicker, DateRangePicker, DateTimeRangePicker, DateRange, defaultQuickRanges, useQuickRanges, DateRangeAdapter, dateToString, useDateRangeAdapter, marginTop, useTimestampRangeAdapter, FormDateTimePicker, SubmitButton, FormDatePicker, FormDateRangePicker, FormDateTimeRangePicker, WizardSummary } from 'onekijs-ui';
+import { ComponentStyle, DateTimeRangePicker, FormDatePicker, FormDateRangePicker, FormDateTimePicker, FormDateTimeRangePicker, marginTop, SubmitButton, useDateRangeAdapter, useQuickRanges, width, WizardSummary } from 'onekijs-ui';
 import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
 
@@ -30,8 +30,8 @@ const Page: React.FC<{ className?: string }> = ({ className }) => {
       <Form controller={formController} onSubmit={(value) => setFormValue(value)}>
         <FormDatePicker name="date" adapter="date" />
         <FormDateTimePicker name="datetime" adapter="date" displaySeconds={false} />
-        <FormDateRangePicker name="dateRange" adapter="date" />
-        <FormDateTimeRangePicker name="datetimeRange" adapter="date" displaySeconds={false} />
+        <FormDateRangePicker name="dateRange" adapter="date" quickRanges={qr} />
+        <FormDateTimeRangePicker name="datetimeRange" adapter="date" displaySeconds={false} quickRanges={qr} />
 
         <WizardSummary />
 
