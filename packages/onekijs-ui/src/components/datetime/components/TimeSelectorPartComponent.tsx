@@ -1,8 +1,8 @@
 import React from 'react';
 import { isValidHour, isValidMinuteOrSecond } from '../../../utils/date';
 import TogglerIcon from '../../icon/TogglerIcon';
-import { TimeSelectorPartComponentProps } from '../typings';
 import Input from '../../input';
+import { TimeSelectorPartComponentProps } from '../typings';
 
 const getNextValue = (value: string | number, max: number, type: 'next' | 'previous') => {
   const valueInt = parseInt(`${value}`);
@@ -34,11 +34,25 @@ const isMax = (value: string | number, type: TimeSelectorPartComponentProps['typ
   return type === 'hour' ? parseInt(`${value}`) === 23 : parseInt(`${value}`) === 59;
 };
 
+const headerValue = (type: TimeSelectorPartComponentProps['type']): string => {
+  switch (type) {
+    case 'hour':
+      return 'HH';
+    case 'minute':
+      return 'MM';
+    case 'second':
+      return 'SS';
+    default:
+      return '';
+  }
+};
+
 const TimeSelectorPartComponent: React.FC<TimeSelectorPartComponentProps> = ({
   onChange,
   type,
   value,
   size = 'large',
+  displayHeaders = false,
 }) => {
   const onValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
@@ -53,6 +67,7 @@ const TimeSelectorPartComponent: React.FC<TimeSelectorPartComponentProps> = ({
 
   return (
     <div className={`o-time-selector-part o-time-selector-part-${size} o-time-${type}`}>
+      {displayHeaders && <div className="o-time-selector-part-header">{headerValue(type)}</div>}
       <TogglerIcon
         className={isMin(value, type) ? 'o-time-selector-part-icon-disabled' : undefined}
         key="previous"

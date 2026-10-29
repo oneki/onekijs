@@ -25,6 +25,7 @@ const TimeComponent: React.FC<TimeComponentProps> = ({
           displayHours={displayHours}
           displayMinutes={displayMinutes}
           displaySeconds={displaySeconds}
+          displayHeaders={false}
         />
         <TimeRangeComponent
           type={type}
@@ -34,6 +35,7 @@ const TimeComponent: React.FC<TimeComponentProps> = ({
           displayHours={displayHours}
           displayMinutes={displayMinutes}
           displaySeconds={displaySeconds}
+          displayHeaders={false}
         />
       </div>
     );
@@ -50,6 +52,7 @@ const TimeComponent: React.FC<TimeComponentProps> = ({
         displayHours={displayHours}
         displayMinutes={displayMinutes}
         displaySeconds={displaySeconds}
+        displayHeaders={true}
       />
     </div>
   );

@@ -1,8 +1,8 @@
-import React from 'react';
-import { TimeRangeComponentProps } from '../typings';
-import { isValidDate } from '../../../utils/date';
-import TimeSelectorComponent from './TimeSelectorComponent';
 import { ucfirst } from 'onekijs-framework';
+import React from 'react';
+import { isValidDate } from '../../../utils/date';
+import { TimeRangeComponentProps } from '../typings';
+import TimeSelectorComponent from './TimeSelectorComponent';
 
 const TimeRangeComponent: React.FC<TimeRangeComponentProps> = ({
   edge,
@@ -11,6 +11,7 @@ const TimeRangeComponent: React.FC<TimeRangeComponentProps> = ({
   displayHours,
   displayMinutes,
   displaySeconds,
+  displayHeaders,
 }) => {
   const valid = isValidDate(`${value.day}-${value.month}-${value.year}`);
   let d: Date | undefined;
@@ -43,6 +44,7 @@ const TimeRangeComponent: React.FC<TimeRangeComponentProps> = ({
             displayHours={displayHours}
             displayMinutes={displayMinutes}
             displaySeconds={displaySeconds}
+            displayHeaders={displayHeaders}
           />
         </div>
       )}

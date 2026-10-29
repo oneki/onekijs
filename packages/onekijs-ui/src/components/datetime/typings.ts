@@ -1,7 +1,7 @@
+import { Placement } from '@popperjs/core';
 import { AnonymousObject, FormFieldProps } from 'onekijs-framework';
 import { StylableProps } from '../../styles/typings';
 import { DropdownWidthModifier } from '../dropdown/typings';
-import { Placement } from '@popperjs/core';
 import { FieldDisplayerProps, FieldLayoutProps } from '../field/typings';
 
 export type BasePickerProps = StylableProps & {
@@ -192,6 +192,7 @@ export type TimeComponentProps = StylableProps &
     to: DatePickerDate;
     type: DatePickerType;
     onChange: (value: string, edge: 'from' | 'to') => void;
+    displayHeaders?: boolean;
   };
 
 export type TimePickerProps = BasePickerProps &
@@ -205,9 +206,11 @@ export type TimeRangeComponentProps = Required<DisplayTime> & {
   value: DatePickerDate;
   type: DatePickerType;
   onChange: (value: string, edge: 'from' | 'to') => void;
+  displayHeaders?: boolean;
 };
 
 export type TimeSelectorComponentProps = Required<DisplayTime> & {
+  displayHeaders?: boolean;
   edge: 'from' | 'to';
   value: DatePickerDate;
   onChange: (value: string, edge: 'from' | 'to') => void;
@@ -219,6 +222,7 @@ export type TimeSelectorPartComponentProps = {
   value: string | number;
   onChange: (value: string) => void;
   size?: 'small' | 'large';
+  displayHeaders?: boolean;
 };
 
 export type TimestampFormat = 'seconds' | 'milliseconds';

@@ -20,7 +20,7 @@ import { flexDirection } from '../../styles/flex';
 import { gridTemplateColumns } from '../../styles/grid';
 import { cursor, userSelect } from '../../styles/interactivity';
 import { zIndex } from '../../styles/position';
-import { width } from '../../styles/size';
+import { height, width } from '../../styles/size';
 import {
   marginBottom,
   marginLeft,
@@ -189,10 +189,20 @@ export const datePickerStyle: ComponentStyle<StylableProps> = () => {
     }
 
     .o-time-container {
-      ${marginLeft('xl')}
+      ${marginLeft('3xl')}
+      ${display('flex')}
+      ${alignItems('center')}
+      ${height('full')}
       .o-time-separator {
         ${marginX('lg')}
       }
+    }
+
+    .o-time-selector-part-header {
+      ${fontWeight('medium')}
+      ${backgroundColor('lightest')}
+      ${paddingX('sm')}
+      ${whiteSpace('nowrap')}
     }
 
     .o-time-selector {
@@ -230,8 +240,9 @@ export const datePickerStyle: ComponentStyle<StylableProps> = () => {
 
     .o-time-container-range {
       ${marginLeft('3xl')}
-      ${marginTop('2xl')}
       ${display('flex')}
+      ${justifyContent('center')}
+      ${height('full')}
       ${flexDirection('column')}
       ${gap('xl')}
       .o-time-separator {

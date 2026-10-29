@@ -12,7 +12,7 @@ const getValue = (candidate: string | number | undefined, max: number, defaultVa
   return candidate;
 };
 
-const TimeSelectorComponent: React.FC<TimeSelectorComponentProps> = ({
+const   TimeSelectorComponent: React.FC<TimeSelectorComponentProps> = ({
   value,
   onChange,
   size,
@@ -20,6 +20,7 @@ const TimeSelectorComponent: React.FC<TimeSelectorComponentProps> = ({
   displayHours,
   displayMinutes,
   displaySeconds,
+  displayHeaders,
 }) => {
   const d = new Date();
   const hourInt = getValue(value.hour, 23, displayHours ? d.getHours() : 0);
@@ -84,7 +85,7 @@ const TimeSelectorComponent: React.FC<TimeSelectorComponentProps> = ({
   return (
     <div className="o-time-selector">
       {displayHours && (
-        <TimeSelectorPartComponent key="hour" type="hour" value={hour} onChange={onChangeHour} size={size} />
+        <TimeSelectorPartComponent key="hour" type="hour" value={hour} onChange={onChangeHour} size={size} displayHeaders={displayHeaders} />
       )}
       {displayHours && (displayMinutes || displaySeconds) && (
         <span key="sep1" className="o-time-separator">
@@ -92,7 +93,7 @@ const TimeSelectorComponent: React.FC<TimeSelectorComponentProps> = ({
         </span>
       )}
       {displayMinutes && (
-        <TimeSelectorPartComponent key="minute" type="minute" value={minute} onChange={onChangeMinute} size={size} />
+        <TimeSelectorPartComponent key="minute" type="minute" value={minute} onChange={onChangeMinute} size={size} displayHeaders={displayHeaders} />
       )}
       {displaySeconds && (displayHours || displayMinutes) && (
         <span key="sep2" className="o-time-separator">
@@ -100,7 +101,7 @@ const TimeSelectorComponent: React.FC<TimeSelectorComponentProps> = ({
         </span>
       )}
       {displaySeconds && (
-        <TimeSelectorPartComponent key="second" type="second" value={second} onChange={onChangeSecond} size={size} />
+        <TimeSelectorPartComponent key="second" type="second" value={second} onChange={onChangeSecond} size={size} displayHeaders={displayHeaders} />
       )}
     </div>
   );
